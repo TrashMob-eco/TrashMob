@@ -2,6 +2,7 @@
 namespace FlashTrashMob.Web.Controllers
 {
     using System.Net;
+    using System.Security.Claims;
     using System.Threading.Tasks;
     using FlashTrashMob.Web.Models;
     using FlashTrashMob.Web.Persistence;
@@ -34,10 +35,10 @@ namespace FlashTrashMob.Web.Controllers
             var dinner = await _repository.GetCleanupEventAsync(dinnerId);
             if (dinner == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
-            var user = await _userManager.FindByIdAsync(Context.User.GetUserId());
+            var user = await _userManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var rsvp = await _repository.CreateRsvpAsync(dinner, user.UserName);
             return new JsonResult(rsvp);
         }
@@ -48,13 +49,13 @@ namespace FlashTrashMob.Web.Controllers
             var dinner = await _repository.GetCleanupEventAsync(dinnerId);
             if (dinner == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
-            var user = await _userManager.FindByIdAsync(Context.User.GetUserId());
+            var user = await _userManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
             await _repository.DeleteRsvpAsync(dinner, user.UserName);
-            return new HttpStatusCodeResult((int)HttpStatusCode.NoContent);
+            return StatusCode((int)HttpStatusCode.NoContent);
         }
     }
 }

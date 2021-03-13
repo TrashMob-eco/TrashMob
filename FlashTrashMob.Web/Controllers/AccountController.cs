@@ -48,7 +48,7 @@ namespace FlashTrashMob.Web.Controllers
             ViewBag.ReturnUrl = returnUrl;
             if (ModelState.IsValid)
             {
-                var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+                var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     return RedirectToLocal(returnUrl);
@@ -108,9 +108,9 @@ namespace FlashTrashMob.Web.Controllers
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult LogOff()
+        public async Task<IActionResult> LogOff()
         {
-            SignInManager.SignOut();
+            await SignInManager.SignOutAsync().ConfigureAwait(false);
             return RedirectToAction("Index", "Home");
         }
 
@@ -158,7 +158,7 @@ namespace FlashTrashMob.Web.Controllers
                 // If the user does not have an account, then ask the user to create an account.
                 ViewBag.ReturnUrl = returnUrl;
                 ViewBag.LoginProvider = info.LoginProvider;
-                var email = info.ExternalPrincipal.FindFirstValue(ClaimTypes.Email);
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
                 return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
             }
         }
@@ -170,7 +170,7 @@ namespace FlashTrashMob.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl = null)
         {
-            if (User.IsSignedIn())
+            if (SignInManager.IsSignedIn(User))
             {
                 return RedirectToAction("Index", "Manage");
             }
@@ -231,7 +231,7 @@ namespace FlashTrashMob.Web.Controllers
 
         private async Task<ApplicationUser> GetCurrentUserAsync()
         {
-            return await UserManager.FindByIdAsync(Context.User.GetUserId());
+            return await UserManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
         }
 
         private IActionResult RedirectToLocal(string returnUrl)

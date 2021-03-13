@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Net;
+    using System.Security.Claims;
     using System.Threading.Tasks;
     using FlashTrashMob.Web.Common;
     using FlashTrashMob.Web.Models;
@@ -32,7 +33,7 @@
             var dinner = await _repository.GetCleanupEventAsync(id);
             if (dinner == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             return new ObjectResult(dinner);
@@ -67,7 +68,7 @@
             string sort = null,
             bool descending = false)
         {
-            var user = await _userManager.FindByIdAsync(Context.User.GetUserId());
+            var user = await _userManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             return await _repository.GetCleanupEventsAsync(startDate, endDate, user.UserName, searchQuery, sort, descending, lat, lng, pageIndex, pageSize);
         }
 
@@ -89,13 +90,13 @@
         [AllowAnonymous]
         public async Task<IActionResult> IsUserHost(int id)
         {
-            if (Context.User.GetUserId() == null)
+            if (User.FindFirst(ClaimTypes.NameIdentifier).Value == null)
             {
                 return new ObjectResult(false);
             }
 
             var dinner = await _repository.GetCleanupEventAsync(id);
-            var user = await _userManager.FindByIdAsync(Context.User.GetUserId());
+            var user = await _userManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             return new ObjectResult(dinner.IsUserHost(user.UserName));
         }
 
@@ -103,29 +104,29 @@
         [AllowAnonymous]
         public async Task<IActionResult> IsUserRegistered(int id)
         {
-            if (Context.User.GetUserId() == null)
+            if (User.FindFirst(ClaimTypes.NameIdentifier).Value == null)
             {
                 return new ObjectResult(false);
             }
 
             var dinner = await _repository.GetCleanupEventAsync(id);
-            var user = await _userManager.FindByIdAsync(Context.User.GetUserId());
+            var user = await _userManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             return new ObjectResult(dinner.IsUserRegistered(user.UserName));
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCleanupEventAsync([FromBody] CleanupEvent dinner)
+        public async Task<IActionResult> CreateCleanupEventAsync([FromBody] CleanupEvent cleanupEvent)
         {
-            var user = await _userManager.FindByIdAsync(Context.User.GetUserId());
-            dinner.UserName = user.UserName;
+            var user = await _userManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            cleanupEvent.UserName = user.UserName;
 
-            GeoLocation.SearchByPlaceNameOrZip(dinner);
-            dinner = await _repository.CreateCleanupEventAsync(dinner);
-            var url = Url.RouteUrl("GetCleanupEventById", new { id = dinner.CleanupEventId }, Request.Scheme, Request.Host.ToUriComponent());
+            GeoLocation.SearchByPlaceNameOrZip(cleanupEvent);
+            cleanupEvent = await _repository.CreateCleanupEventAsync(cleanupEvent);
+            var url = Url.RouteUrl("GetCleanupEventById", new { id = cleanupEvent.CleanupEventId }, Request.Scheme, Request.Host.ToUriComponent());
 
-            Context.Response.StatusCode = (int)HttpStatusCode.Created;
-            Context.Response.Headers["Location"] = url;
-            return new ObjectResult(dinner);
+            Response.StatusCode = (int)HttpStatusCode.Created;
+            Response.Headers["Location"] = url;
+            return new ObjectResult(cleanupEvent);
         }
 
         [HttpPut("{id:int}", Name = "UpdateCleanupEventById")]
@@ -133,13 +134,13 @@
         {
             if (dinner.CleanupEventId != id)
             {
-                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
-            var user = await _userManager.FindByIdAsync(Context.User.GetUserId());
+            var user = await _userManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             if (!dinner.IsUserHost(user.UserName))
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             GeoLocation.SearchByPlaceNameOrZip(dinner);
@@ -151,15 +152,15 @@
         public async Task<IActionResult> DeleteCleanupEventAsync(int id)
         {
             var dinner = await _repository.GetCleanupEventAsync(id);
-            var user = await _userManager.FindByIdAsync(Context.User.GetUserId());
+            var user = await _userManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
             if (!dinner.IsUserHost(user.UserName))
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             await _repository.DeleteCleanupEventAsync(id);
-            return new HttpStatusCodeResult((int)HttpStatusCode.NoContent);
+            return StatusCode((int)HttpStatusCode.NoContent);
         }
     }
 }
