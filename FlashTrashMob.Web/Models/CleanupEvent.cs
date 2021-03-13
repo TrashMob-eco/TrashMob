@@ -6,11 +6,11 @@
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
-    public class PickupEvent
+    public class CleanupEvent
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long PickupId { get; set; }
+        public long CleanupEventId { get; set; }
 
         [Required]
         [MaxLength(64)]
@@ -41,7 +41,10 @@
 
         public double Longitude { get; set; }
 
+        public int MaxNumberOfParticipants { get; set; }
+
         public virtual ICollection<Rsvp> Rsvps { get; set; }
+
 
         public bool IsUserHost(string userName)
         {
@@ -50,7 +53,7 @@
 
         public bool IsUserRegistered(string userName)
         {
-            return Rsvps == null ? false : Rsvps.Any(r => string.Equals(r.UserName, userName, StringComparison.OrdinalIgnoreCase));
+            return Rsvps != null && Rsvps.Any(r => string.Equals(r.UserName, userName, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

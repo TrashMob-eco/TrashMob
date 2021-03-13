@@ -1,0 +1,14 @@
+﻿<div class="container main-view">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <form novalidate ng-submit="delete()">
+                <h4>Delete CleanupEvent Confirmation</h4>
+                <p>Please confirm that you want to cancel the cleanupEvent titled <span><b>{{cleanupEvent.title}}</b></span></p>
+                <p>
+                    <button type="submit" class="btn btn-primary">delete</button>
+                    <button type="button" class="btn btn-secondary" ng-click="cancel()">cancel</button>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>

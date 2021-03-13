@@ -1,0 +1,27 @@
+﻿<div class="container main-view">
+    <div class="row">
+        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+            <div id='cleanupEventMap' ng-init="loadMap()" class="cleanup-map"></div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+            <ul class="detail">
+                <li><h4>{{cleanupEvent.title}}</h4></li>
+                <li><b><span>When: </span></b><span>{{cleanupEvent.eventDate | date:'MMM dd, yyyy @ hh:mm a'}}</span></li>
+                <li><b><span>Where: </span></b><span>{{cleanupEvent.address}}</span></li>
+                <li><b><span>Description: </span></b><span>{{cleanupEvent.description}}</span></li>
+                <li><b><span>Organizer: </span></b><span>{{cleanupEvent.userName}}</span></li>
+                <rsvp-section></rsvp-section> 
+                <li><b><span>Who's coming:</span></b></li>
+                <li>
+                    <ul class="guests" ng-repeat="rsvp in cleanupEvent.rsvps">
+                        <li>{{rsvp.userName}}</li>
+                    </ul>
+                </li>
+                <li ng-show="isUserHost">
+                    <a href="#" class="link" ng-click="editCleanupEvent(cleanupEvent.cleanupEventId)">Edit CleanupEvent</a> |
+                    <a href="#" class="link" ng-click="deleteCleanupEvent(cleanupEvent.cleanupEventId)">Delete CleanupEvent</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
