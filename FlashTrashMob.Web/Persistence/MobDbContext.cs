@@ -1,18 +1,25 @@
 ﻿namespace FlashTrashMob.Web.Persistence
 {
-    using System.Data.Entity;
     using FlashTrashMob.Web.Models;
-    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
 
-    public class MobDbContext : IdentityDbContext<ApplicationUser>
+    public class MobDbContext : DbContext
     {
+        private readonly IConfiguration configuration;
+
+        public MobDbContext(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
+
         public virtual DbSet<CleanupEvent> CleanupEvents { get; set; }
 
         public virtual DbSet<Rsvp> Rsvp { get; set; }
 
-        public MobDbContext()
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            Database.EnsureCreatedAsync().Wait();
+            optionsBuilder.UseCosmos(configuration["DBEndpointUri"], configuration["DBPrimaryKey"]);
         }
     }
 }
