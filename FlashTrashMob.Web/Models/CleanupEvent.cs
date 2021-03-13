@@ -53,7 +53,7 @@
 
         public bool IsUserRegistered(string userName)
         {
-            return Rsvps == null ? false : Rsvps.Any(r => string.Equals(r.UserName, userName, StringComparison.OrdinalIgnoreCase));
+            return Rsvps != null && Rsvps.Any(r => string.Equals(r.UserName, userName, StringComparison.OrdinalIgnoreCase));
         }
     }
 }
