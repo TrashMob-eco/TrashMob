@@ -18,6 +18,6 @@
         public string UserName { get; set; }
 
         [JsonIgnore]
-        public PickupEvent PickupEvent { get; set; }
+        public CleanupEvent CleanupEvent { get; set; }
     }
 }
