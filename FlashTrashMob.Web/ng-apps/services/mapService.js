@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('nerdDinner')
+        .module('flashTrashMob')
         .service('mapService', mapService);
 
     mapService.$inject = ['$http', '$location', '$q'];
@@ -16,7 +16,7 @@
         var bingMapsKey = 'Al1IumsJbHmAUYWKYXq33XIxwbJCkRTRZcVGCO3wJD2J3-ICC0lWUp2Adu_z_qtt';
 
         this.loadDefaultMap = function () {
-            map = new Microsoft.Maps.Map(document.getElementById('dinnerMap'), {
+            map = new Microsoft.Maps.Map(document.getElementById('cleanupEventMap'), {
                 credentials: bingMapsKey,
                 mapTypeId: Microsoft.Maps.MapTypeId.road,
                 disableBirdseye: true,
@@ -57,40 +57,40 @@
                 });
         };
 
-        this.loadMap = function (dinners, zoomlevel) {
+        this.loadMap = function (cleanupEvents, zoomlevel) {
             if (map != null && map.entities) {
                 // map.entities.clear();
                 infobox = null;
                 infoboxLayer = new Microsoft.Maps.EntityCollection();
             }
-            map = new Microsoft.Maps.Map(document.getElementById('dinnerMap'), {
+            map = new Microsoft.Maps.Map(document.getElementById('cleanupEventMap'), {
                 credentials: bingMapsKey,
                 mapTypeId: Microsoft.Maps.MapTypeId.road,
                 disableBirdseye: true,
                 showMapTypeSelector: false
             });
 
-            dinners.$promise.then(function (result) {
-                dinners = result;
-                if (dinners.length) {
-                    loadDinnersOnMap(dinners, zoomlevel);
+            cleanupEvents.$promise.then(function (result) {
+                cleanupEvents = result;
+                if (cleanupEvents.length) {
+                    loadCleanupEventsOnMap(cleanupEvents, zoomlevel);
                 }
                 else {
-                    loadDetailsMap(dinners);
+                    loadDetailsMap(cleanupEvents);
                 }
             });
         };
 
-        this.showInfoBoxPin = function (dinner) {
-            var location = new Microsoft.Maps.Location(dinner.latitude, dinner.longitude);
+        this.showInfoBoxPin = function (cleanupEvent) {
+            var location = new Microsoft.Maps.Location(cleanupEvent.latitude, cleanupEvent.longitude);
             var pin = new Microsoft.Maps.Pushpin(location);
             //pin details
-            pin.Id = dinner.dinnerId;
-            pin.Title = dinner.title;
-            pin.Date = dinner.eventDate;
-            pin.Description = dinner.description;
-            pin.Address = dinner.address;
-            pin.rsvps = dinner.rsvps.length;
+            pin.Id = cleanupEvent.cleanupEventId;
+            pin.Title = cleanupEvent.title;
+            pin.Date = cleanupEvent.eventDate;
+            pin.Description = cleanupEvent.description;
+            pin.Address = cleanupEvent.address;
+            pin.rsvps = cleanupEvent.rsvps.length;
             var e = new Object();
             e.target = pin;
             displayInfobox(e);
@@ -104,27 +104,27 @@
             map.setView({ center: new Microsoft.Maps.Location(latitude, longitude), zoom: 10 });
         };
 
-        function loadDetailsMap(dinner) {
+        function loadDetailsMap(cleanupEvent) {
             map.entities.clear();
             map = null;
             infobox = null;
             infoboxLayer = new Microsoft.Maps.EntityCollection();
-            map = new Microsoft.Maps.Map(document.getElementById('dinnerMap'), {
+            map = new Microsoft.Maps.Map(document.getElementById('cleanupEventMap'), {
                 credentials: bingMapsKey,
                 mapTypeId: Microsoft.Maps.MapTypeId.road
             });
 
             var locs = [];
-            var location = new Microsoft.Maps.Location(dinner.latitude, dinner.longitude);
+            var location = new Microsoft.Maps.Location(cleanupEvent.latitude, cleanupEvent.longitude);
             locs.push(location);
 
             var pin = new Microsoft.Maps.Pushpin(location, { icon: '../../images/poi_usergenerated.gif', width: 50, height: 50 });
             //pin details
-            pin.Id = dinner.dinnerId;
-            pin.Title = dinner.title;
-            pin.Date = dinner.eventDate;
-            pin.Address = dinner.address;
-            pin.Description = dinner.description;
+            pin.Id = cleanupEvent.cleanupEventId;
+            pin.Title = cleanupEvent.title;
+            pin.Date = cleanupEvent.eventDate;
+            pin.Address = cleanupEvent.address;
+            pin.Description = cleanupEvent.description;
             pinLayer.push(pin);
             Microsoft.Maps.Events.addHandler(pin, 'mouseover', pinMouseOver);
             Microsoft.Maps.Events.addHandler(pin, 'mouseout', pinMouseOut);
@@ -187,13 +187,13 @@
             stopInfoboxTimer();
             var pin = e.target;
             if (pin != null) {
-                var currentDinnerId = pin.Id;
-                var currentDinnerTitle = pin.Title;
+                var currentCleanupEventId = pin.Id;
+                var currentCleanupEventTitle = pin.Title;
                 var date = new Date(pin.Date);
                 var dateString = date.toDateString();
                 var location = pin.getLocation();
                 var options = {
-                    id: pin.Id, zIndex: 999, visible: true, showPointer: true, showCloseButton: true, title: currentDinnerTitle, description: popupDescription(pin.Description, dateString, pin.rsvps), titleClickHandler: showDetail, offset: new Microsoft.Maps.Point(-12, 40)
+                    id: pin.Id, zIndex: 999, visible: true, showPointer: true, showCloseButton: true, title: currentCleanupEventTitle, description: popupDescription(pin.Description, dateString, pin.rsvps), titleClickHandler: showDetail, offset: new Microsoft.Maps.Point(-12, 40)
                 };
                 if (infobox != null) {
                     map.entities.remove(infobox);
@@ -224,23 +224,23 @@
         }
 
         function showDetail() {
-            window.location('/#dinners/detail/8');
+            window.location('/#cleanupEvents/detail/8');
         }
 
-        function loadDinnersOnMap(dinners, zoomlevel) {
+        function loadCleanupEventsOnMap(cleanupEvents, zoomlevel) {
             var locs = [];
-            for (var i = 0; i < dinners.length; i++) {
-                var location = new Microsoft.Maps.Location(dinners[i].latitude, dinners[i].longitude);
+            for (var i = 0; i < cleanupEvents.length; i++) {
+                var location = new Microsoft.Maps.Location(cleanupEvents[i].latitude, cleanupEvents[i].longitude);
                 locs.push(location);
 
                 var pin = new Microsoft.Maps.Pushpin(location, { icon: 'images/poi_usergenerated.gif', width: 50, height: 50 });
                 //pin details
-                pin.Id = dinners[i].dinnerId;
-                pin.Title = dinners[i].title;
-                pin.Date = dinners[i].eventDate;
-                pin.Address = dinners[i].address;
-                pin.Description = dinners[i].description;
-                pin.rsvps = dinners[i].rsvps.length;
+                pin.Id = cleanupEvents[i].cleanupEventId;
+                pin.Title = cleanupEvents[i].title;
+                pin.Date = cleanupEvents[i].eventDate;
+                pin.Address = cleanupEvents[i].address;
+                pin.Description = cleanupEvents[i].description;
+                pin.rsvps = cleanupEvents[i].rsvps.length;
                 pinLayer.push(pin);
                 Microsoft.Maps.Events.addHandler(pin, 'mouseover', pinMouseOver);
                 Microsoft.Maps.Events.addHandler(pin, 'mouseout', pinMouseOut);

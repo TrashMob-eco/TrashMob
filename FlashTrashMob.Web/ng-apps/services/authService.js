@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('nerdDinner')
+        .module('flashTrashMob')
         .service('authService', authService);
 
     authService.$inject = ['$http', '$q'];

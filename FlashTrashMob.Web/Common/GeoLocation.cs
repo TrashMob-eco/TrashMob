@@ -8,7 +8,7 @@
     {
         public static void SearchByPlaceNameOrZip(CleanupEvent cleanupEvent)
         {
-            string url = "http://ws.geonames.org/postalCodeSearch?{0}={1}&maxRows=1&style=SHORT&username=nerddinner";
+            string url = "http://ws.geonames.org/postalCodeSearch?{0}={1}&maxRows=1&style=SHORT&username=cleanupEvent";
             bool isNumeric = int.TryParse(cleanupEvent.Address, out int n);
             url = string.Format(url, isNumeric ? "postalcode" : "placename", cleanupEvent.Address);
 

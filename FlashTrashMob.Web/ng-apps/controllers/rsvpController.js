@@ -3,7 +3,7 @@
     'use strict';
 
     angular
-        .module('nerdDinner')
+        .module('flashTrashMob')
         .directive('rsvpSection', rsvpSection)
 
     /* RSVP Controller  */
@@ -11,12 +11,12 @@
 
     function rsvpController($scope, $routeParams, $location, rsvpService) {
         $scope.showMessage = false;
-        $scope.addRsvp = function (dinnerId) {
-            if ($scope.isUserAuthenticated == 'False') {
+        $scope.addRsvp = function (cleanupEventId) {
+            if ($scope.isUserAuthenticated === 'False') {
                 $location.path('/account/login');
             }
 
-            var result = rsvpService.addRsvp(dinnerId);
+            var result = rsvpService.addRsvp(cleanupEventId);
             result.then(function (result) {
                 if (result) {
                     $scope.message = 'Thanks - we\'ll see you there!';
@@ -28,12 +28,12 @@
             });
         }
 
-        $scope.cancelRsvp = function (dinnerId) {
-            if ($scope.isUserAuthenticated == 'False') {
+        $scope.cancelRsvp = function (cleanupEventId) {
+            if ($scope.isUserAuthenticated === 'False') {
                 $location.path('/account/login');
             }
 
-            var result = rsvpService.cancelRsvp(dinnerId);
+            var result = rsvpService.cancelRsvp(cleanupEventId);
             result.then(function (result) {
                 if (result) {
                     $scope.message = 'Sorry you can\'t make it!';

@@ -1,7 +1,7 @@
 ﻿<div class="container main-view">
     <div class="row" ng-show="error">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 alert-danger">
-            <h4>Failed to create dinner</h4>
+            <h4>Failed to create `</h4>
             <ul ng-repeat="(key, value) in errorMessage">
                 <li ng-show="value != ''">{{value}}</li>
             </ul>
@@ -9,25 +9,25 @@
     </div>
     <div class="row">
         <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
-            <div id='dinnerMap' ng-init="loadDefaultMap()" ng-model="newMap" class="nerd-map"></div>
+            <div id='cleanupEventMap' ng-init="loadDefaultMap()" ng-model="newMap" class="cleanup-map"></div>
         </div>
         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-            <h4>Host a Dinner</h4>
+            <h4>Host a CleanupEvent</h4>
             <form novalidate ng-submit="add()">
                 <div class="form-group">
-                    <input type="text" class="form-control" id="title" ng-model="dinner.title" placeholder="Dinner Title" />
+                    <input type="text" class="form-control" id="title" ng-model="cleanupEvent.title" placeholder="CleanupEvent Title" />
                 </div>
                 <div class="form-group">
-                    <input type="datetime-local" class="form-control" id="eventDate" ng-model="dinner.eventDate" placeholder="Event Date" />
+                    <input type="datetime-local" class="form-control" id="eventDate" ng-model="cleanupEvent.eventDate" placeholder="Event Date" />
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control" id="description" ng-model="dinner.description" placeholder="Description" />
+                    <input type="text" class="form-control" id="description" ng-model="cleanupEvent.description" placeholder="Description" />
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control" id="address" ng-model="dinner.address" placeholder="Address" ng-model-options="{ updateOn: 'blur' }" ng-change="changeAddress(dinner.address)" />
+                    <input type="text" class="form-control" id="address" ng-model="cleanupEvent.address" placeholder="Address" ng-model-options="{ updateOn: 'blur' }" ng-change="changeAddress(cleanupEvent.address)" />
                 </div>
                 <div class="form-group">
-                    <input type="tel" class="form-control" id="contact" ng-model="dinner.contactPhone" placeholder="Contact Phone" />
+                    <input type="tel" class="form-control" id="contact" ng-model="cleanupEvent.contactPhone" placeholder="Contact Phone" />
                 </div>
                 <button type="submit" class="btn btn-primary">save</button>
                 <button type="button" class="btn btn-secondary" ng-click="cancel()">cancel</button>

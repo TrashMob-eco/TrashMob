@@ -30,31 +30,31 @@ namespace FlashTrashMob.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateRsvpAsync(int dinnerId)
+        public async Task<IActionResult> CreateRsvpAsync(int cleanupEventId)
         {
-            var dinner = await _repository.GetCleanupEventAsync(dinnerId);
-            if (dinner == null)
+            var cleanupEvent = await _repository.GetCleanupEventAsync(cleanupEventId);
+            if (cleanupEvent == null)
             {
                 return NotFound();
             }
 
             var user = await _userManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var rsvp = await _repository.CreateRsvpAsync(dinner, user.UserName);
+            var rsvp = await _repository.CreateRsvpAsync(cleanupEvent, user.UserName);
             return new JsonResult(rsvp);
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteRsvpAsync(int dinnerId)
+        public async Task<IActionResult> DeleteRsvpAsync(int cleanupEventId)
         {
-            var dinner = await _repository.GetCleanupEventAsync(dinnerId);
-            if (dinner == null)
+            var cleanupEvent = await _repository.GetCleanupEventAsync(cleanupEventId);
+            if (cleanupEvent == null)
             {
                 return NotFound();
             }
 
             var user = await _userManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            await _repository.DeleteRsvpAsync(dinner, user.UserName);
+            await _repository.DeleteRsvpAsync(cleanupEvent, user.UserName);
             return StatusCode((int)HttpStatusCode.NoContent);
         }
     }

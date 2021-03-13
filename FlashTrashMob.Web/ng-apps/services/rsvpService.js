@@ -2,16 +2,16 @@
     'use strict';
 
     angular
-        .module('nerdDinner')
+        .module('flashTrashMob')
         .service('rsvpService', rsvpService);
 
     rsvpService.$inject = ['$http', '$q'];
 
     function rsvpService($http, $q) {
-        this.addRsvp = function (dinnerId) {
+        this.addRsvp = function (cleanupEventId) {
             var deferredObject = $q.defer();
             $http.post(
-                '/api/rsvp?dinnerId=' + dinnerId
+                '/api/rsvp?cleanupEventId=' + cleanupEventId
             ).
             success(function (data) {
                 if (data) {
@@ -27,10 +27,10 @@
             return deferredObject.promise;
         };
 
-        this.cancelRsvp = function (dinnerId) {
+        this.cancelRsvp = function (cleanupEventId) {
             var deferredObject = $q.defer();
             $http.delete(
-                '/api/rsvp?dinnerId=' + dinnerId
+                '/api/rsvp?cleanupEventId=' + cleanupEventId
             ).
             success(function (data) {
                 if (data) {

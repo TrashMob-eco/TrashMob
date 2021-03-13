@@ -16,15 +16,15 @@
     </div>
     <div class="container">
         <ul class="nav nav-tabs navbar-right">
-            <li role="presentation"><a href="/">Find Dinner</a></li>
+            <li role="presentation"><a href="/">Find CleanupEvent</a></li>
             @if (User.Identity.IsAuthenticated)
             {
-                <li role="presentation"><a href="/dinners/add">Host Dinner</a></li>
-                <li role="presentation"><a href="/dinners/my">My Dinners</a></li>
+                <li role="presentation"><a href="/cleanupEvents/add">Host CleanupEvent</a></li>
+                <li role="presentation"><a href="/cleanupEvents/my">My CleanupEvents</a></li>
             }
             else
             {
-                <li role="presentation"><a href="/account/login">Host Dinner</a></li>
+                <li role="presentation"><a href="/account/login">Host CleanupEvent</a></li>
             }
             <li role="presentation"><a href="/about">About</a></li>
         </ul>

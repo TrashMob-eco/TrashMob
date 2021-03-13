@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('nerdDinner')
+        .module('flashTrashMob')
         .controller('loginController', loginController);
 
     /* Login Controller  */

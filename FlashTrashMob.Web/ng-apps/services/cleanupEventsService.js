@@ -2,35 +2,35 @@
     'use strict';
 
     angular
-        .module('dinnersService', ['ngResource'])
-        .factory('dinner', dinner)
+        .module('cleanupEventsService', ['ngResource'])
+        .factory('cleanupEvent', cleanupEvent)
 
-    dinner.$inject = ['$resource', '$http', '$q'];
+    cleanupEvent.$inject = ['$resource', '$http', '$q'];
 
-    function dinner($resource, $http, $q) {
+    function cleanupEvent($resource, $http, $q) {
         return {
-            all: $resource('/api/dinners/:id', { id: "@_id" }),
+            all: $resource('/api/cleanupEvents/:id', { id: "@_id" }),
 
-            popular: $resource('/api/dinners/popular'),
+            popular: $resource('/api/cleanupEvents/popular'),
 
-            my: $resource('/api/dinners/my'),
+            my: $resource('/api/cleanupEvents/my'),
 
             count: function () {
-                return dinnerHelper($http, $q, '/api/dinners/count')
+                return cleanupEventHelper($http, $q, '/api/cleanupEvents/count')
             },
 
-            isUserHost: function (dinnerId) {
-                return dinnerHelper($http, $q, '/api/dinners/isUserHost?id=' + dinnerId)
+            isUserHost: function (cleanupEventId) {
+                return cleanupEventHelper($http, $q, '/api/cleanupEvents/isUserHost?id=' + cleanupEventId)
             },
 
-            isUserRegistered: function (dinnerId) {
-                return dinnerHelper($http, $q, '/api/dinners/isUserRegistered?id=' + dinnerId)
+            isUserRegistered: function (cleanupEventId) {
+                return cleanupEventHelper($http, $q, '/api/cleanupEvents/isUserRegistered?id=' + cleanupEventId)
             },
 
-            addDinner: function (dinner) {
+            addCleanupEvent: function (cleanupEvent) {
                 var deferredObject = $q.defer();
                 $http.post(
-                    '/api/dinners', dinner
+                    '/api/cleanupEvents', cleanupEvent
                 ).
                 success(function (data) {
                     if (data) {
@@ -46,10 +46,10 @@
                 return deferredObject.promise;
             },
 
-            editDinner: function (dinnerId, dinner) {
+            editCleanupEvent: function (cleanupEventId, cleanupEvent) {
                 var deferredObject = $q.defer();
                 $http.put(
-                    '/api/dinners/' + dinnerId, dinner
+                    '/api/cleanupEvents/' + cleanupEventId, cleanupEvent
                 ).
                 success(function (data) {
                     if (data) {
@@ -65,10 +65,10 @@
                 return deferredObject.promise;
             },
 
-            deleteDinner: function (dinnerId) {
+            deleteCleanupEvent: function (cleanupEventId) {
                 var deferredObject = $q.defer();
                 $http.delete(
-                    '/api/dinners/' + dinnerId
+                    '/api/cleanupEvents/' + cleanupEventId
                 ).
                 success(function (data) {
                     deferredObject.resolve({ success: true });
@@ -82,7 +82,7 @@
         };
     }
 
-    function dinnerHelper($http, $q, url) {
+    function cleanupEventHelper($http, $q, url) {
         var deferredObject = $q.defer();
         $http.get(url).
         success(function (data) {

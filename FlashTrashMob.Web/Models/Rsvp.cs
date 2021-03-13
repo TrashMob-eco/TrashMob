@@ -11,7 +11,7 @@
         public long RsvpId { get; set; }
 
         [Required]
-        public long DinnerId { get; set; }
+        public long CleanupEventId { get; set; }
 
         [Required]
         [MaxLength(64)]

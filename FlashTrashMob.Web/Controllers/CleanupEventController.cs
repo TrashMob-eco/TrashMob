@@ -30,13 +30,13 @@
         [AllowAnonymous]
         public async Task<IActionResult> GetCleanupEventAsync(int id)
         {
-            var dinner = await _repository.GetCleanupEventAsync(id);
-            if (dinner == null)
+            var cleanupEvent = await _repository.GetCleanupEventAsync(id);
+            if (cleanupEvent == null)
             {
                 return NotFound();
             }
 
-            return new ObjectResult(dinner);
+            return new ObjectResult(cleanupEvent);
         }
 
         [HttpGet]
@@ -95,9 +95,9 @@
                 return new ObjectResult(false);
             }
 
-            var dinner = await _repository.GetCleanupEventAsync(id);
+            var cleanupEvent = await _repository.GetCleanupEventAsync(id);
             var user = await _userManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            return new ObjectResult(dinner.IsUserHost(user.UserName));
+            return new ObjectResult(cleanupEvent.IsUserHost(user.UserName));
         }
 
         [HttpGet("isUserRegistered")]
@@ -109,9 +109,9 @@
                 return new ObjectResult(false);
             }
 
-            var dinner = await _repository.GetCleanupEventAsync(id);
+            var cleanupEvent = await _repository.GetCleanupEventAsync(id);
             var user = await _userManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            return new ObjectResult(dinner.IsUserRegistered(user.UserName));
+            return new ObjectResult(cleanupEvent.IsUserRegistered(user.UserName));
         }
 
         [HttpPost]
@@ -130,31 +130,31 @@
         }
 
         [HttpPut("{id:int}", Name = "UpdateCleanupEventById")]
-        public async Task<IActionResult> UpdateCleanupEventAsync(int id, [FromBody] CleanupEvent dinner)
+        public async Task<IActionResult> UpdateCleanupEventAsync(int id, [FromBody] CleanupEvent cleanupEvent)
         {
-            if (dinner.CleanupEventId != id)
+            if (cleanupEvent.CleanupEventId != id)
             {
                 return BadRequest();
             }
 
             var user = await _userManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            if (!dinner.IsUserHost(user.UserName))
+            if (!cleanupEvent.IsUserHost(user.UserName))
             {
                 return NotFound();
             }
 
-            GeoLocation.SearchByPlaceNameOrZip(dinner);
-            dinner = await _repository.UpdateCleanupEventAsync(dinner);
-            return new ObjectResult(dinner);
+            GeoLocation.SearchByPlaceNameOrZip(cleanupEvent);
+            cleanupEvent = await _repository.UpdateCleanupEventAsync(cleanupEvent);
+            return new ObjectResult(cleanupEvent);
         }
 
         [HttpDelete("{id:int}", Name = "DeleteCleanupEventById")]
         public async Task<IActionResult> DeleteCleanupEventAsync(int id)
         {
-            var dinner = await _repository.GetCleanupEventAsync(id);
+            var cleanupEvent = await _repository.GetCleanupEventAsync(id);
             var user = await _userManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            if (!dinner.IsUserHost(user.UserName))
+            if (!cleanupEvent.IsUserHost(user.UserName))
             {
                 return NotFound();
             }

@@ -12,7 +12,7 @@
 
         IQueryable<Rsvp> Rsvp { get; }
 
-        Task<CleanupEvent> GetCleanupEventAsync(int dinnerId);
+        Task<CleanupEvent> GetCleanupEventAsync(int cleanupEventId);
         
         Task<List<CleanupEvent>> GetCleanupEventsAsync(DateTime? startDate, DateTime? endDate, string userName, string searchQuery, string sort, bool descending, double? lat, double? lng, int? pageIndex, int? pageSize);
 
@@ -20,14 +20,14 @@
 
         Task<CleanupEvent> CreateCleanupEventAsync(CleanupEvent item);
 
-        Task<CleanupEvent> UpdateCleanupEventAsync(CleanupEvent dinner);
+        Task<CleanupEvent> UpdateCleanupEventAsync(CleanupEvent cleanupEvent);
 
-        Task DeleteCleanupEventAsync(int dinnerId);
+        Task DeleteCleanupEventAsync(int cleanupEventId);
 
         int GetCleanupEventsCount();
 
-        Task<Rsvp> CreateRsvpAsync(CleanupEvent dinner, string userName);
+        Task<Rsvp> CreateRsvpAsync(CleanupEvent cleanupEvent, string userName);
 
-        Task DeleteRsvpAsync(CleanupEvent dinner, string userName);
+        Task DeleteRsvpAsync(CleanupEvent cleanupEvent, string userName);
     }
 }

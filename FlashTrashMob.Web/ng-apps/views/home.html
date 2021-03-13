@@ -1,12 +1,12 @@
 ﻿<div class="container main-head">
     <div class="row">
-        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7 nerd-text">
+        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7 cleanup-text">
             <img src="/images/caption.png" />
         </div>
-        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5 nerd-search">
+        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5 cleanup-search">
             <div class="search-box pull-right">
                 <div>
-                    <a href="/dinners/all" class="link">View All Upcoming Dinners</a>
+                    <a href="/cleanupEvents/all" class="link">View All Upcoming Cleanup Events</a>
                     <span> or </span>
                 </div>
                 <div>
@@ -20,24 +20,24 @@
 <div class="container main-view">
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <h4>Find a Dinner</h4>
+            <h4>Find a Cleanup Event</h4>
         </div>
     </div>
     <div class="row">
         <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-            <div id='dinnerMap' ng-init="loadMap()" class="nerd-map"></div>
+            <div id='cleanupEventMap' ng-init="loadMap()" class="cleanup-map"></div>
         </div>
-        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 nerd-list">
-            <h4>Popular Dinners</h4>
-            <ul class="dinner-list" ng-repeat="dinner in dinners">
+        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 cleanup-list">
+            <h4>Popular Cleanup Events</h4>
+            <ul class="cleanupEvent-list" ng-repeat="cleanupEvent in cleanupEvents">
                 <li>
                     <div>
-                        <a href="" class="link" ng-click="selectDinner(dinner.dinnerId)" ng-mouseover="showLocationPin(dinner)" ng-mouseleave="hideInfoBoxPin()">{{dinner.title}}</a>
+                        <a href="" class="link" ng-click="selectCleanupEvent(cleanupEvent.cleanupEventId)" ng-mouseover="showLocationPin(cleanupEvent)" ng-mouseleave="hideInfoBoxPin()">{{cleanupEvent.title}}</a>
                     </div>
                     <div>
-                        <span><b>{{dinner.eventDate | date:'MMM dd'}}</b></span>
+                        <span><b>{{cleanupEvent.eventDate | date:'MMM dd'}}</b></span>
                         <span> with </span>
-                        <span>{{dinner.rsvps.length}}</span>
+                        <span>{{cleanupEvent.rsvps.length}}</span>
                         <span> RSVPs </span>
                     </div>
                 </li>
