@@ -5,31 +5,43 @@ export class FetchData extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { forecasts: [], loading: true };
+    this.state = { cleanupEvents: [], loading: true };
   }
 
   componentDidMount() {
-    this.populateWeatherData();
+    this.populateCleanupEvents();
   }
 
-  static renderForecastsTable(forecasts) {
+  static renderCleanupEventsTable(cleanupEvents) {
     return (
       <table className='table table-striped' aria-labelledby="tabelLabel">
         <thead>
           <tr>
             <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>
-            <th>Summary</th>
-          </tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Country</th>
+            <th>Description</th>
+            <th>Contact Phone</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>MaximumNumberOfParticpants</th>
+            <th>EventLead</th>
+           </tr>
         </thead>
         <tbody>
-          {forecasts.map(forecast =>
-            <tr key={forecast.date}>
-              <td>{forecast.date}</td>
-              <td>{forecast.temperatureC}</td>
-              <td>{forecast.temperatureF}</td>
-              <td>{forecast.summary}</td>
+          {cleanupEvents.map(cleanupEvent =>
+            <tr key={cleanupEvent.date}>
+                  <td>{cleanupEvent.eventDate}</td>
+                  <td>{cleanupEvent.name}</td>
+                  <td>{cleanupEvent.address}</td>
+                  <td>{cleanupEvent.country}</td>
+                  <td>{cleanupEvent.description}</td>
+                  <td>{cleanupEvent.contactPhone}</td>
+                  <td>{cleanupEvent.latitude}</td>
+                  <td>{cleanupEvent.longitude}</td>
+                  <td>{cleanupEvent.maxNumberOfParticipants}</td>
+                  <td>{cleanupEvent.userName}</td>
             </tr>
           )}
         </tbody>
@@ -40,20 +52,19 @@ export class FetchData extends Component {
   render() {
     let contents = this.state.loading
       ? <p><em>Loading...</em></p>
-      : FetchData.renderForecastsTable(this.state.forecasts);
+      : FetchData.renderCleanupEventsTable(this.state.cleanupEvents);
 
     return (
       <div>
-        <h1 id="tabelLabel" >Weather forecast</h1>
-        <p>This component demonstrates fetching data from the server.</p>
+        <h1 id="tabelLabel" >Cleanup Events</h1>
         {contents}
       </div>
     );
   }
 
-  async populateWeatherData() {
-    const response = await fetch('weatherforecast');
+  async populateCleanupEvents() {
+    const response = await fetch('cleanupEvent');
     const data = await response.json();
-    this.setState({ forecasts: data, loading: false });
+    this.setState({ cleanupEvents: data, loading: false });
   }
 }
