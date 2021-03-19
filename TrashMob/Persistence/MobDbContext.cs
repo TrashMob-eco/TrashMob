@@ -1,6 +1,6 @@
-﻿namespace FlashTrashMob.Web.Persistence
+﻿namespace TrashMob.Persistence
 {
-    using FlashTrashMob.Web.Models;
+    using TrashMob.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
 
