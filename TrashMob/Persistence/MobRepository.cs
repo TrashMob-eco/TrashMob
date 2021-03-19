@@ -1,12 +1,11 @@
-﻿
-namespace FlashTrashMob.Web.Persistence
+﻿namespace TrashMob.Persistence
 {
     using System;
     using System.Collections.Generic;
     using System.Data.Entity;
     using System.Linq;
     using System.Threading.Tasks;
-    using FlashTrashMob.Web.Models;
+    using TrashMob.Models;
 
     public class MobRepository : IMobRepository
     {
@@ -54,7 +53,7 @@ namespace FlashTrashMob.Web.Persistence
             if (!string.IsNullOrWhiteSpace(searchQuery))
             {
                 query = query.Where(
-                    d => d.Title.IndexOf(searchQuery, StringComparison.OrdinalIgnoreCase) != -1 ||
+                    d => d.Name.IndexOf(searchQuery, StringComparison.OrdinalIgnoreCase) != -1 ||
                     d.Description.IndexOf(searchQuery, StringComparison.OrdinalIgnoreCase) != -1);
             }
 
@@ -177,7 +176,7 @@ namespace FlashTrashMob.Web.Persistence
 
             if (string.Equals(sort, "Title", StringComparison.OrdinalIgnoreCase))
             {
-                query = descending ? query.OrderByDescending(d => d.Title) : query.OrderBy(d => d.Title);
+                query = descending ? query.OrderByDescending(d => d.Name) : query.OrderBy(d => d.Name);
             }
             else if (string.Equals(sort, "EventDate", StringComparison.OrdinalIgnoreCase))
             {

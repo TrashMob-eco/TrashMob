@@ -4,9 +4,11 @@ namespace TrashMob
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.HttpsPolicy;
     using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using TrashMob.Persistence;
 
     public class Startup
     {
@@ -27,6 +29,11 @@ namespace TrashMob
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/build";
+            });
+
+            services.AddDbContext<MobDbContext>(options =>
+            {
+                options.UseCosmos(Configuration["DBEndpointUri"], Configuration["DBPrimaryKey"]);
             });
         }
 

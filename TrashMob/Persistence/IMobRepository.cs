@@ -1,10 +1,10 @@
-﻿namespace FlashTrashMob.Web.Persistence
+﻿namespace TrashMob.Persistence
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using FlashTrashMob.Web.Models;
+    using TrashMob.Models;
 
     public interface IMobRepository
     {
