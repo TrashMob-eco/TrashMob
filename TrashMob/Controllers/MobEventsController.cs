@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TrashMob.Models;
@@ -13,23 +12,23 @@ namespace TrashMob.Controllers
     [ApiController]
     public class MobEventsController : ControllerBase
     {
-        private readonly MobDbContext _context;
+        private readonly IMobEventRepository mobEventRepository;
 
-        public MobEventsController(MobDbContext context)
+        public MobEventsController(IMobEventRepository mobEventRepository)
         {
-            _context = context;
+            this.mobEventRepository = mobEventRepository;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MobEvent>>> GetMobEvents()
+        public IEnumerable<MobEvent> GetMobEvents()
         {
-            return await _context.MobEvents.ToListAsync();
+            return mobEventRepository.GetAllMobEvents();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<MobEvent>> GetMobEvent(long id)
+        public ActionResult<MobEvent> GetMobEvent(Guid id)
         {
-            var mobEvent = await _context.MobEvents.FindAsync(id);
+            var mobEvent = mobEventRepository.GetMobEvent(id);
 
             if (mobEvent == null)
             {
@@ -43,18 +42,11 @@ namespace TrashMob.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMobEvent(Guid id, MobEvent mobEvent)
+        public ActionResult<Guid> PutMobEvent(Guid id, MobEvent mobEvent)
         {
-            if (id != mobEvent.MobEventId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(mobEvent).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                mobEventRepository.UpdateMobEvent(mobEvent);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -75,33 +67,23 @@ namespace TrashMob.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<MobEvent>> PostMobEvent(MobEvent mobEvent)
+        public ActionResult<MobEvent> PostMobEvent(MobEvent mobEvent)
         {
-            _context.MobEvents.Add(mobEvent);
-            await _context.SaveChangesAsync();
+            mobEventRepository.AddMobEvent(mobEvent);
 
             return CreatedAtAction("GetMobEvent", new { id = mobEvent.MobEventId }, mobEvent);
         }
 
         // DELETE: api/MobEvents/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<MobEvent>> DeleteMobEvent(long id)
+        public void DeleteMobEvent(Guid id)
         {
-            var mobEvent = await _context.MobEvents.FindAsync(id);
-            if (mobEvent == null)
-            {
-                return NotFound();
-            }
-
-            _context.MobEvents.Remove(mobEvent);
-            await _context.SaveChangesAsync();
-
-            return mobEvent;
+            mobEventRepository.DeleteMobEvent(id);
         }
 
         private bool MobEventExists(Guid id)
         {
-            return _context.MobEvents.Any(e => e.MobEventId == id);
+            return mobEventRepository.GetAllMobEvents().Any(e => e.MobEventId == id);
         }
     }
 }
