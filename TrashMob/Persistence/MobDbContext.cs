@@ -21,5 +21,11 @@
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"]);
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<MobEvent>().ToTable("MobEvents");
+            modelBuilder.Entity<Rsvp>().ToTable("Rsvps");
+        }
     }
 }

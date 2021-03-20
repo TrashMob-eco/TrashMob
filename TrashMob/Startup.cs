@@ -6,6 +6,7 @@ namespace TrashMob
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using System;
     using TrashMob.Persistence;
 
     public class Startup
@@ -30,6 +31,7 @@ namespace TrashMob
             });
 
             services.AddDbContext<MobDbContext>();
+            services.AddScoped<IMobEventRepository, MobEventRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
