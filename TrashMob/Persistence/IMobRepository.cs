@@ -8,26 +8,26 @@
 
     public interface IMobRepository
     {
-        IQueryable<CleanupEvent> CleanupEvents { get; }
+        IQueryable<MobEvent> MobEvents { get; }
 
         IQueryable<Rsvp> Rsvp { get; }
 
-        Task<CleanupEvent> GetCleanupEventAsync(int cleanupEventId);
+        Task<MobEvent> GetMobEventAsync(Guid mobEventId);
         
-        Task<List<CleanupEvent>> GetCleanupEventsAsync(DateTime? startDate, DateTime? endDate, string userName, string searchQuery, string sort, bool descending, double? lat, double? lng, int? pageIndex, int? pageSize);
+        Task<List<MobEvent>> GetMobEventsAsync(DateTime? startDate, DateTime? endDate, string userName, string searchQuery, string sort, bool descending, double? lat, double? lng, int? pageIndex, int? pageSize);
 
-        Task<List<CleanupEvent>> GetPopularCleanupEventsAsync();
+        Task<List<MobEvent>> GetPopularMobEventsAsync();
 
-        Task<CleanupEvent> CreateCleanupEventAsync(CleanupEvent item);
+        Task<MobEvent> CreateMobEventAsync(MobEvent item);
 
-        Task<CleanupEvent> UpdateCleanupEventAsync(CleanupEvent cleanupEvent);
+        Task<MobEvent> UpdateMobEventAsync(MobEvent mobEvent);
 
-        Task DeleteCleanupEventAsync(int cleanupEventId);
+        Task DeleteMobEventAsync(Guid mobEventId);
 
-        int GetCleanupEventsCount();
+        int GetMobEventsCount();
 
-        Task<Rsvp> CreateRsvpAsync(CleanupEvent cleanupEvent, string userName);
+        Task<Rsvp> CreateRsvpAsync(MobEvent mobEvent, string userName);
 
-        Task DeleteRsvpAsync(CleanupEvent cleanupEvent, string userName);
+        Task DeleteRsvpAsync(MobEvent mobEvent, string userName);
     }
 }

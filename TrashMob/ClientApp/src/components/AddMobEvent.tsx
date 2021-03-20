@@ -1,33 +1,39 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import { CleanupEventData } from './FetchCleanupEvent';  
+import { Guid } from "guid-typescript";
+import { MobEventData } from './FetchMobEvent';  
 
-interface AddCleanupEventDataState {
+interface AddMobEventDataState {
     title: string;
     loading: boolean;
-    eventData: CleanupEventData;
+    eventData: MobEventData;
+    eventId: Guid;
 }
 
-export class AddCleanupEvent extends React.Component<RouteComponentProps<{}>, AddCleanupEventDataState> {
-    constructor(props) {
+interface MatchParams {
+    eventId: string;
+}
+
+export class AddMobEvent extends React.Component<RouteComponentProps<MatchParams>, AddMobEventDataState> {
+    constructor(props: RouteComponentProps<MatchParams>) {
         super(props);
 
-        this.state = { title: "", loading: true, eventData: new CleanupEventData() };
+        this.state = { title: "", loading: true, eventData: new MobEventData(), eventId: Guid.create() };
 
         var eventId = this.props.match.params["eventId"];
 
-        // This will set state for Edit CleanupEvent  
-        if (eventId > 0) {
-            fetch('api/CleanupEvents/' + eventId)
-                .then(response => response.json() as Promise<CleanupEventData>)
+        // This will set state for Edit MobEvent  
+        if (eventId != null) {
+            fetch('api/MobEvents/' + eventId)
+                .then(response => response.json() as Promise<MobEventData>)
                 .then(data => {
                     this.setState({ title: "Edit", loading: false, eventData: data });
                 });
         }
 
-        // This will set state for Add CleanupEvent  
+        // This will set state for Add MobEvent  
         else {
-            this.state = { title: "Create", loading: false, eventData: new CleanupEventData() };
+            this.state = { title: "Create", loading: false, eventData: new MobEventData(), eventId: Guid.create() };
         }
 
         // This binding is necessary to make "this" work in the callback  
@@ -42,46 +48,46 @@ export class AddCleanupEvent extends React.Component<RouteComponentProps<{}>, Ad
 
         return <div>
             <h1>{this.state.title}</h1>
-            <h3>CleanupEvent</h3>
+            <h3>MobEvent</h3>
             <hr />
             {contents}
         </div>;
     }
 
     // This will handle the submit form event.  
-    private handleSave(event) {
+    private handleSave(event: any) {
         event.preventDefault();
         const data = new FormData(event.target);
 
-        // PUT request for Edit CleanupEvent.  
-        if (this.state.eventData.cleanupEventId) {
-            fetch('api/CleanupEvents', {
+        // PUT request for Edit MobEvent.  
+        if (this.state.eventData.mobEventId) {
+            fetch('api/MobEvents', {
                 method: 'PUT',
                 body: data,
 
             }).then((response) => response.json())
                 .then((responseJson) => {
-                    this.props.history.push("/fetchCleanupEvent");
+                    this.props.history.push("/fetchMobEvent");
                 })
         }
 
-        // POST request for Add CleanupEvent.  
+        // POST request for Add MobEvent.  
         else {
-            fetch('api/CleanupEvents', {
+            fetch('api/MobEvents', {
                 method: 'POST',
                 body: data,
 
             }).then((response) => response.json())
                 .then((responseJson) => {
-                    this.props.history.push("/fetchCleanupEvent");
+                    this.props.history.push("/fetchMobEvent");
                 })
         }
     }
 
     // This will handle Cancel button click event.  
-    private handleCancel(e) {
-        e.preventDefault();
-        this.props.history.push("/fetchCleanupEvent");
+    private handleCancel(event: any) {
+        event.preventDefault();
+        this.props.history.push("/fetchMobEvent");
     }
 
     // Returns the HTML Form to the render() method.  
@@ -89,7 +95,7 @@ export class AddCleanupEvent extends React.Component<RouteComponentProps<{}>, Ad
         return (
             <form onSubmit={this.handleSave} >
                 <div className="form-group row" >
-                    <input type="hidden" name="CleanupEventId" value={this.state.eventData.cleanupEventId} />
+                    <input type="hidden" name="MobEventId" value={this.state.eventData.mobEventId} />
                 </div>
                 < div className="form-group row" >
                     <label className=" control-label col-md-12" htmlFor="Name">Name</label>

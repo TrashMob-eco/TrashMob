@@ -13,13 +13,13 @@
             this.configuration = configuration;
         }
 
-        public virtual DbSet<CleanupEvent> CleanupEvents { get; set; }
+        public virtual DbSet<MobEvent> MobEvents { get; set; }
 
         public virtual DbSet<Rsvp> Rsvp { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseCosmos(configuration["DBEndpointUri"], configuration["DBPrimaryKey"]);
+            optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"]);
         }
     }
 }
