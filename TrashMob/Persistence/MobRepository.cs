@@ -16,20 +16,20 @@
             _database = database;
         }
 
-        public IQueryable<CleanupEvent> CleanupEvents => _database.CleanupEvents;
+        public IQueryable<MobEvent> MobEvents => _database.MobEvents;
 
         public IQueryable<Rsvp> Rsvp => _database.Rsvp;
 
-        public virtual async Task<CleanupEvent> GetCleanupEventAsync(int pickupEventId)
+        public virtual async Task<MobEvent> GetMobEventAsync(Guid mobEventId)
         {
-            return await _database.CleanupEvents
+            return await _database.MobEvents
                 .Include(d => d.Rsvps)
-                .SingleOrDefaultAsync(d => d.CleanupEventId == pickupEventId);
+                .SingleOrDefaultAsync(d => d.MobEventId == mobEventId);
         }        
 
-        public virtual async Task<List<CleanupEvent>> GetCleanupEventsAsync(DateTime? startDate, DateTime? endDate, string userName, string searchQuery, string sort, bool descending, double? lat, double? lng, int? pageIndex, int? pageSize)
+        public virtual async Task<List<MobEvent>> GetMobEventsAsync(DateTime? startDate, DateTime? endDate, string userName, string searchQuery, string sort, bool descending, double? lat, double? lng, int? pageIndex, int? pageSize)
         {
-            var query = _database.CleanupEvents.AsQueryable();
+            var query = _database.MobEvents.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(userName))
             {
@@ -67,7 +67,7 @@
                 query = query.Where(d => d.Longitude == lng.Value);
             }
 
-            query = ApplyCleanupEventSort(query, sort, descending);
+            query = ApplyMobEventSort(query, sort, descending);
 
             if(pageIndex.HasValue && pageSize.HasValue)
             {
@@ -77,16 +77,16 @@
             return await query.ToListAsync();
         }
 
-        public virtual async Task<List<CleanupEvent>> GetPopularCleanupEventsAsync()
+        public virtual async Task<List<MobEvent>> GetPopularMobEventsAsync()
         {
-            return await _database.CleanupEvents
+            return await _database.MobEvents
                 .Include(d => d.Rsvps)
                 .OrderByDescending(d => d.Rsvps.Count)
                 .Take(8)
                 .ToListAsync();
         }
 
-        public virtual async Task<CleanupEvent> CreateCleanupEventAsync(CleanupEvent pickupEvent)
+        public virtual async Task<MobEvent> CreateMobEventAsync(MobEvent pickupEvent)
         {
             var rsvp = new Rsvp
             {
@@ -102,16 +102,16 @@
             return pickupEvent;
         }
 
-        public virtual async Task<CleanupEvent> UpdateCleanupEventAsync(CleanupEvent pickupEvent)
+        public virtual async Task<MobEvent> UpdateMobEventAsync(MobEvent pickupEvent)
         {
             _database.Update(pickupEvent);
             await _database.SaveChangesAsync();
             return pickupEvent;
         }
 
-        public virtual async Task DeleteCleanupEventAsync(int pickupEventId)
+        public virtual async Task DeleteMobEventAsync(Guid mobEventId)
         {
-            var pickupEvent = await GetCleanupEventAsync(pickupEventId);
+            var pickupEvent = await GetMobEventAsync(mobEventId);
             if (pickupEvent != null)
             {
                 foreach (Rsvp rsvp in pickupEvent.Rsvps)
@@ -119,7 +119,7 @@
                     _database.Rsvp.Remove(rsvp);
                 }
 
-                _database.CleanupEvents.Remove(pickupEvent);
+                _database.MobEvents.Remove(pickupEvent);
 
                 await _database.SaveChangesAsync();
             }
@@ -127,12 +127,12 @@
             // Else no errors - this operation is idempotent
         }
 
-        public virtual int GetCleanupEventsCount()
+        public virtual int GetMobEventsCount()
         {
-            return _database.CleanupEvents.Where(d => d.EventDate >= DateTime.Now).Count();
+            return _database.MobEvents.Where(d => d.EventDate >= DateTime.Now).Count();
         }
 
-        public virtual async Task<Rsvp> CreateRsvpAsync(CleanupEvent pickupEvent, string userName)
+        public virtual async Task<Rsvp> CreateRsvpAsync(MobEvent pickupEvent, string userName)
         {
             Rsvp rsvp = null;
             if (pickupEvent != null)
@@ -157,7 +157,7 @@
             return rsvp;
         }
 
-        public virtual async Task DeleteRsvpAsync(CleanupEvent pickupEvent, string userName)
+        public virtual async Task DeleteRsvpAsync(MobEvent pickupEvent, string userName)
         {
             var rsvp = pickupEvent?.Rsvps.SingleOrDefault(r => string.Equals(r.UserName, userName, StringComparison.OrdinalIgnoreCase));
             if (rsvp != null)
@@ -169,10 +169,10 @@
             // Else no errors - this operation is idempotent
         }
 
-        private IQueryable<CleanupEvent> ApplyCleanupEventSort(IQueryable<CleanupEvent> query, string sort, bool descending)
+        private IQueryable<MobEvent> ApplyMobEventSort(IQueryable<MobEvent> query, string sort, bool descending)
         {
             // Default to sort by pickupEvent Id
-            query = descending ? query.OrderByDescending(d => d.CleanupEventId) : query.OrderBy(d => d.CleanupEventId);
+            query = descending ? query.OrderByDescending(d => d.MobEventId) : query.OrderBy(d => d.MobEventId);
 
             if (string.Equals(sort, "Title", StringComparison.OrdinalIgnoreCase))
             {

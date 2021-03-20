@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TrashMob.Models;
@@ -12,46 +11,46 @@ namespace TrashMob.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CleanupEventsController : ControllerBase
+    public class MobEventsController : ControllerBase
     {
         private readonly MobDbContext _context;
 
-        public CleanupEventsController(MobDbContext context)
+        public MobEventsController(MobDbContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CleanupEvent>>> GetCleanupEvents()
+        public async Task<ActionResult<IEnumerable<MobEvent>>> GetMobEvents()
         {
-            return await _context.CleanupEvents.ToListAsync();
+            return await _context.MobEvents.ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CleanupEvent>> GetCleanupEvent(long id)
+        public async Task<ActionResult<MobEvent>> GetMobEvent(long id)
         {
-            var cleanupEvent = await _context.CleanupEvents.FindAsync(id);
+            var mobEvent = await _context.MobEvents.FindAsync(id);
 
-            if (cleanupEvent == null)
+            if (mobEvent == null)
             {
                 return NotFound();
             }
 
-            return cleanupEvent;
+            return mobEvent;
         }
 
-        // PUT: api/CleanupEvents/5
+        // PUT: api/MobEvents/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCleanupEvent(long id, CleanupEvent cleanupEvent)
+        public async Task<IActionResult> PutMobEvent(Guid id, MobEvent mobEvent)
         {
-            if (id != cleanupEvent.CleanupEventId)
+            if (id != mobEvent.MobEventId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(cleanupEvent).State = EntityState.Modified;
+            _context.Entry(mobEvent).State = EntityState.Modified;
 
             try
             {
@@ -59,7 +58,7 @@ namespace TrashMob.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CleanupEventExists(id))
+                if (!MobEventExists(id))
                 {
                     return NotFound();
                 }
@@ -72,37 +71,37 @@ namespace TrashMob.Controllers
             return NoContent();
         }
 
-        // POST: api/CleanupEvents
+        // POST: api/MobEvents
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<CleanupEvent>> PostCleanupEvent(CleanupEvent cleanupEvent)
+        public async Task<ActionResult<MobEvent>> PostMobEvent(MobEvent mobEvent)
         {
-            _context.CleanupEvents.Add(cleanupEvent);
+            _context.MobEvents.Add(mobEvent);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCleanupEvent", new { id = cleanupEvent.CleanupEventId }, cleanupEvent);
+            return CreatedAtAction("GetMobEvent", new { id = mobEvent.MobEventId }, mobEvent);
         }
 
-        // DELETE: api/CleanupEvents/5
+        // DELETE: api/MobEvents/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<CleanupEvent>> DeleteCleanupEvent(long id)
+        public async Task<ActionResult<MobEvent>> DeleteMobEvent(long id)
         {
-            var cleanupEvent = await _context.CleanupEvents.FindAsync(id);
-            if (cleanupEvent == null)
+            var mobEvent = await _context.MobEvents.FindAsync(id);
+            if (mobEvent == null)
             {
                 return NotFound();
             }
 
-            _context.CleanupEvents.Remove(cleanupEvent);
+            _context.MobEvents.Remove(mobEvent);
             await _context.SaveChangesAsync();
 
-            return cleanupEvent;
+            return mobEvent;
         }
 
-        private bool CleanupEventExists(long id)
+        private bool MobEventExists(Guid id)
         {
-            return _context.CleanupEvents.Any(e => e.CleanupEventId == id);
+            return _context.MobEvents.Any(e => e.MobEventId == id);
         }
     }
 }

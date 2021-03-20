@@ -6,11 +6,11 @@
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
-    public class CleanupEvent
+    public class MobEvent
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long CleanupEventId { get; set; }
+        public Guid MobEventId { get; set; }
 
         [Required]
         [MaxLength(64)]

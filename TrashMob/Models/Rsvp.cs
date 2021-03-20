@@ -11,13 +11,13 @@
         public long RsvpId { get; set; }
 
         [Required]
-        public long CleanupEventId { get; set; }
+        public long MobEventId { get; set; }
 
         [Required]
         [MaxLength(64)]
         public string UserName { get; set; }
 
         [JsonIgnore]
-        public CleanupEvent CleanupEvent { get; set; }
+        public MobEvent MobEvent { get; set; }
     }
 }
