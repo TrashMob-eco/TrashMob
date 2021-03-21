@@ -14,7 +14,14 @@ export class FetchMobEvent extends React.Component<RouteComponentProps<{}>, Fetc
         super(props);
         this.state = { eventList: [], loading: true };
 
-        fetch('api/MobEvents')
+        fetch('api/MobEvents', {
+            method: 'GET',
+            headers: {
+                Allow: 'GET',
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+                },
+            })
             .then(response => response.json() as Promise<MobEventData[]>)
             .then(data => {
                 this.setState({ eventList: data, loading: false });
