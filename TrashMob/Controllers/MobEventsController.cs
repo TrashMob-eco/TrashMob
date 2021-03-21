@@ -20,9 +20,9 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<MobEvent> GetMobEvents()
+        public ActionResult<IEnumerable<MobEvent>> GetMobEvents()
         {
-            return mobEventRepository.GetAllMobEvents();
+            return Ok(mobEventRepository.GetAllMobEvents());
         }
 
         [HttpGet("{id}")]
@@ -35,18 +35,19 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            return mobEvent;
+            return Ok(mobEvent);
         }
 
         // PUT: api/MobEvents/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public ActionResult<Guid> PutMobEvent(Guid id, MobEvent mobEvent)
+        public ActionResult PutMobEvent(Guid id, MobEvent mobEvent)
         {
             try
             {
-                mobEventRepository.UpdateMobEvent(mobEvent);
+                _ = mobEventRepository.UpdateMobEvent(mobEvent);
+                return NoContent();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -59,8 +60,6 @@ namespace TrashMob.Controllers
                     throw;
                 }
             }
-
-            return NoContent();
         }
 
         // POST: api/MobEvents
@@ -70,16 +69,17 @@ namespace TrashMob.Controllers
         [Consumes("application/json")]
         public ActionResult<MobEvent> PostMobEvent(MobEvent mobEvent)
         {
-            mobEventRepository.AddMobEvent(mobEvent);
+            var newId = mobEventRepository.AddMobEvent(mobEvent);
 
-            return CreatedAtAction("GetMobEvent", new { id = mobEvent.MobEventId }, mobEvent);
+            return CreatedAtAction("GetMobEvent", new { id = newId }, mobEvent);
         }
 
         // DELETE: api/MobEvents/5
         [HttpDelete("{id}")]
-        public void DeleteMobEvent(Guid id)
+        public ActionResult DeleteMobEvent(Guid id)
         {
             mobEventRepository.DeleteMobEvent(id);
+            return NoContent();
         }
 
         private bool MobEventExists(Guid id)

@@ -65,9 +65,9 @@ export class AddMobEvent extends React.Component<RouteComponentProps<MatchParams
                 method: 'PUT',
                 body: data,
                 headers: {
-                    Allow: "POST",
-                    Accept: "application/json, text/plain",
-                    "Content-Type": "application/json"
+                    Allow: 'POST',
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
                 },
             }).then((response) => response.json())
                 .then((responseJson) => {
