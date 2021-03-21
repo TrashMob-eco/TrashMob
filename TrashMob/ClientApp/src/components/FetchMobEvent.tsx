@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
+import { Guid } from "guid-typescript";
 
 interface FetchMobEventDataState {
     eventList: MobEventData[];
@@ -41,7 +42,7 @@ export class FetchMobEvent extends React.Component<RouteComponentProps<{}>, Fetc
     }
 
     // Handle Delete request for an mob event  
-    private handleDelete(id: number) {
+    private handleDelete(id: Guid) {
         if (!window.confirm("Do you want to delete mob event with Id: " + id))
             return;
         else {
@@ -58,7 +59,7 @@ export class FetchMobEvent extends React.Component<RouteComponentProps<{}>, Fetc
         }
     }
 
-    handleEdit(id: number) {
+    handleEdit(id: Guid) {
         this.props.history.push("/mobevent/edit/" + id);
     }
 
@@ -81,7 +82,7 @@ export class FetchMobEvent extends React.Component<RouteComponentProps<{}>, Fetc
                 </thead>
                 <tbody>
                     {mobEvents.map(mobEvent =>
-                        <tr key={mobEvent.mobEventId}>
+                        <tr key={mobEvent.mobEventId.toString()}>
                             <td>{mobEvent.eventDate}</td>
                             <td>{mobEvent.name}</td>
                             <td>{mobEvent.address}</td>
@@ -105,7 +106,7 @@ export class FetchMobEvent extends React.Component<RouteComponentProps<{}>, Fetc
 }
 
 export class MobEventData {
-    mobEventId: number = 0;
+    mobEventId: Guid = Guid.create();
     name: string = "";
     eventDate: Date = new Date();
     description: string = "";
