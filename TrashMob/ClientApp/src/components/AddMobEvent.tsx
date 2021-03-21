@@ -64,7 +64,11 @@ export class AddMobEvent extends React.Component<RouteComponentProps<MatchParams
             fetch('api/MobEvents', {
                 method: 'PUT',
                 body: data,
-
+                headers: {
+                    Allow: "POST",
+                    Accept: "application/json, text/plain",
+                    "Content-Type": "application/json"
+                },
             }).then((response) => response.json())
                 .then((responseJson) => {
                     this.props.history.push("/fetchMobEvent");
@@ -76,7 +80,11 @@ export class AddMobEvent extends React.Component<RouteComponentProps<MatchParams
             fetch('api/MobEvents', {
                 method: 'POST',
                 body: data,
-
+                headers: {
+                    Allow: "POST",
+                    Accept: "application/json, text/plain",
+                    "Content-Type": "application/json"
+                },
             }).then((response) => response.json())
                 .then((responseJson) => {
                     this.props.history.push("/fetchMobEvent");
@@ -95,7 +103,7 @@ export class AddMobEvent extends React.Component<RouteComponentProps<MatchParams
         return (
             <form onSubmit={this.handleSave} >
                 <div className="form-group row" >
-                    <input type="hidden" name="MobEventId" value={this.state.eventData.mobEventId} />
+                    <input type="hidden" name="MobEventId" value={this.state.eventData.mobEventId.toString()} />
                 </div>
                 < div className="form-group row" >
                     <label className=" control-label col-md-12" htmlFor="Name">Name</label>

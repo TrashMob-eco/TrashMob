@@ -7,6 +7,7 @@ namespace TrashMob
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using System;
+    using TrashMob.Common;
     using TrashMob.Persistence;
 
     public class Startup
@@ -21,8 +22,13 @@ namespace TrashMob
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // The following line enables Application Insights telemetry collection.
+            services.AddApplicationInsightsTelemetry();
 
-            services.AddControllersWithViews();
+            services.AddControllersWithViews(option =>
+            {
+                option.Filters.Add<ValidationFilter>();
+            });
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

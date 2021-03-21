@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
+import * as React from 'react'
 
 export class Home extends Component {
   static displayName = Home.name;
