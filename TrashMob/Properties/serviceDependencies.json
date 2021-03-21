@@ -7,6 +7,10 @@
     "mssql1": {
       "type": "mssql",
       "connectionId": "TMDBServerConnectionString"
+    },
+    "appInsights1": {
+      "type": "appInsights",
+      "connectionId": "APPINSIGHTS_CONNECTIONSTRING"
     }
   }
 }

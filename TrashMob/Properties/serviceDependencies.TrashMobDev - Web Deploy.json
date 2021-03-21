@@ -11,6 +11,12 @@
       "type": "mssql.azure",
       "connectionId": "TMDBServerConnectionString",
       "secretStore": "AzureKeyVault"
+    },
+    "appInsights1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/microsoft.insights/components/as-tm-dev",
+      "type": "appInsights.azure",
+      "connectionId": "APPINSIGHTS_CONNECTIONSTRING",
+      "secretStore": "AzureAppSettings"
     }
   }
 }

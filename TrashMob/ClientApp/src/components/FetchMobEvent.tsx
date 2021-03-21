@@ -2,6 +2,7 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Guid } from "guid-typescript";
+import authService from './api-authorization/AuthorizeService'
 
 interface FetchMobEventDataState {
     eventList: MobEventData[];
@@ -14,12 +15,15 @@ export class FetchMobEvent extends React.Component<RouteComponentProps<{}>, Fetc
         super(props);
         this.state = { eventList: [], loading: true };
 
+        const token = authService.getAccessToken();
+
         fetch('api/MobEvents', {
             method: 'GET',
             headers: {
                 Allow: 'GET',
                 Accept: 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
                 },
             })
             .then(response => response.json() as Promise<MobEventData[]>)
@@ -53,8 +57,10 @@ export class FetchMobEvent extends React.Component<RouteComponentProps<{}>, Fetc
         if (!window.confirm("Do you want to delete mob event with Id: " + id))
             return;
         else {
+            const token = authService.getAccessToken();
             fetch('api/MobEvents/' + id, {
-                method: 'delete'
+                method: 'delete',
+                headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
             }).then(data => {
                 this.setState(
                     {

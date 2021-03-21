@@ -4,6 +4,9 @@ import { Layout } from './components/Layout';
 import { Home } from './components/Home';
 import { FetchMobEvent } from './components/FetchMobEvent';
 import { AddMobEvent } from './components/AddMobEvent';
+import AuthorizeRoute from './components/api-authorization/AuthorizeRoute';
+import ApiAuthorizationRoutes from './components/api-authorization/ApiAuthorizationRoutes';
+import { ApplicationPaths } from './components/api-authorization/ApiAuthorizationConstants';
 
 import './custom.css'
 
@@ -17,6 +20,7 @@ export default class App extends Component {
             <Route path='/fetchmobevent' component={FetchMobEvent} />
             <Route path='/addmobevent' component={AddMobEvent} />
             <Route path='/mobevent/edit/:eventid' component={AddMobEvent} />  
+            <Route path={ApplicationPaths.ApiAuthorizationPrefix} component={ApiAuthorizationRoutes} />
       </Layout>
     );
   }

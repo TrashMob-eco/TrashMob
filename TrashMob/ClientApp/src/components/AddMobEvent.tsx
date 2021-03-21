@@ -2,6 +2,7 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
 import { MobEventData } from './FetchMobEvent';  
+import authService from './api-authorization/AuthorizeService'
 
 interface AddMobEventDataState {
     title: string;
@@ -17,14 +18,16 @@ interface MatchParams {
 export class AddMobEvent extends React.Component<RouteComponentProps<MatchParams>, AddMobEventDataState> {
     constructor(props: RouteComponentProps<MatchParams>) {
         super(props);
-
+        const token = authService.getAccessToken();
         this.state = { title: "", loading: true, eventData: new MobEventData(), eventId: Guid.create() };
 
         var eventId = this.props.match.params["eventId"];
 
         // This will set state for Edit MobEvent  
         if (eventId != null) {
-            fetch('api/MobEvents/' + eventId)
+            fetch('api/MobEvents/' + eventId, {
+                headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
+            })
                 .then(response => response.json() as Promise<MobEventData>)
                 .then(data => {
                     this.setState({ title: "Edit", loading: false, eventData: data });
@@ -58,6 +61,7 @@ export class AddMobEvent extends React.Component<RouteComponentProps<MatchParams
     private handleSave(event: any) {
         event.preventDefault();
         const data = new FormData(event.target);
+        const token = authService.getAccessToken();
 
         // PUT request for Edit MobEvent.  
         if (this.state.eventData.mobEventId) {
@@ -67,7 +71,8 @@ export class AddMobEvent extends React.Component<RouteComponentProps<MatchParams
                 headers: {
                     Allow: 'POST',
                     Accept: 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
             }).then((response) => response.json())
                 .then((responseJson) => {
@@ -81,9 +86,10 @@ export class AddMobEvent extends React.Component<RouteComponentProps<MatchParams
                 method: 'POST',
                 body: data,
                 headers: {
-                    Allow: "POST",
-                    Accept: "application/json, text/plain",
-                    "Content-Type": "application/json"
+                    Allow: 'POST',
+                    Accept: 'application/json, text/plain',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
             }).then((response) => response.json())
                 .then((responseJson) => {
