@@ -1,19 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using TrashMob.Models;
-
-namespace TrashMob.Persistence
+﻿namespace TrashMob.Persistence
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using TrashMob.Models;
+
     public interface IMobEventRepository
     {
-        IEnumerable<MobEvent> GetAllMobEvents();
+        Task<IEnumerable<MobEvent>> GetAllMobEvents();
 
-        Guid AddMobEvent(MobEvent mobEvent);
+        Task<Guid> AddMobEvent(MobEvent mobEvent);
 
-        Guid UpdateMobEvent(MobEvent mobEvent);
+        Task<int> UpdateMobEvent(MobEvent mobEvent);
 
-        MobEvent GetMobEvent(Guid id);
+        Task<MobEvent> GetMobEvent(Guid id);
 
-        int DeleteMobEvent(Guid id);
+        Task<int> DeleteMobEvent(Guid id);
     }
 }

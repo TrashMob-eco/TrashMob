@@ -46,14 +46,14 @@ namespace TrashMob
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<MobDbContext>();
+            //services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            //    .AddEntityFrameworkStores<MobDbContext>();
 
-            services.AddIdentityServer()
-                .AddApiAuthorization<ApplicationUser, MobDbContext>();
+            //services.AddIdentityServer()
+            //    .AddApiAuthorization<ApplicationUser, MobDbContext>();
 
-            services.AddAuthentication()
-                .AddIdentityServerJwt();
+            //services.AddAuthentication()
+            //    .AddIdentityServerJwt();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,9 +76,9 @@ namespace TrashMob
             app.UseSpaStaticFiles();
 
             app.UseRouting();
-            app.UseAuthentication();
-            app.UseIdentityServer();
-            app.UseAuthorization();
+            //app.UseAuthentication();
+            //app.UseIdentityServer();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
