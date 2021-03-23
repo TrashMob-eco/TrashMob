@@ -1,14 +1,19 @@
 namespace TrashMob
 {
+    using System;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Identity.UI;
+    using Microsoft.AspNetCore.HttpsPolicy;
     using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using System;
     using TrashMob.Common;
     using TrashMob.Persistence;
+    using TrashMob.Models;
 
     public class Startup
     {
@@ -38,6 +43,17 @@ namespace TrashMob
 
             services.AddDbContext<MobDbContext>();
             services.AddScoped<IMobEventRepository, MobEventRepository>();
+
+            services.AddDatabaseDeveloperPageExceptionFilter();
+
+            //services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            //    .AddEntityFrameworkStores<MobDbContext>();
+
+            //services.AddIdentityServer()
+            //    .AddApiAuthorization<ApplicationUser, MobDbContext>();
+
+            //services.AddAuthentication()
+            //    .AddIdentityServerJwt();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,6 +62,7 @@ namespace TrashMob
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseMigrationsEndPoint();
             }
             else
             {
@@ -59,6 +76,9 @@ namespace TrashMob
             app.UseSpaStaticFiles();
 
             app.UseRouting();
+            //app.UseAuthentication();
+            //app.UseIdentityServer();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
