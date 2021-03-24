@@ -42,7 +42,7 @@ namespace TrashMob
             });
 
             services.AddDbContext<MobDbContext>();
-            services.AddScoped<IMobEventRepository, MobEventRepository>();
+            services.AddScoped<IEventRepository, EventRepository>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 

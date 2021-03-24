@@ -6,20 +6,20 @@
     using System.Threading.Tasks;
     using TrashMob.Models;
 
-    public class MobEventRepository : IMobEventRepository
+    public class EventRepository : IEventRepository
     {
         private readonly MobDbContext mobDbContext;
 
-        public MobEventRepository(MobDbContext mobDbContext)
+        public EventRepository(MobDbContext mobDbContext)
         {
             this.mobDbContext = mobDbContext;
         }
 
-        public async Task<IEnumerable<MobEvent>> GetAllMobEvents()
+        public async Task<IEnumerable<Event>> GetAllEvents()
         {
             try
             {
-                return await mobDbContext.MobEvents.ToListAsync().ConfigureAwait(false);
+                return await mobDbContext.Events.ToListAsync().ConfigureAwait(false);
             }
             catch
             {
@@ -27,15 +27,15 @@
             }
         }
 
-        // Add new mobEvent record     
-        public async Task<Guid> AddMobEvent(MobEvent mobEvent)
+        // Add new Event record     
+        public async Task<Guid> AddEvent(Event mobEvent)
         {
             try
             {
-                mobEvent.MobEventId = Guid.NewGuid();
-                mobDbContext.MobEvents.Add(mobEvent);
+                mobEvent.Id = Guid.NewGuid();
+                mobDbContext.Events.Add(mobEvent);
                 await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
-                return mobEvent.MobEventId;
+                return mobEvent.Id;
             }
             catch
             {
@@ -43,8 +43,8 @@
             }
         }
 
-        // Update the records of a particluar Mob Event  
-        public Task<int> UpdateMobEvent(MobEvent mobEvent)
+        // Update the records of a particluar Event  
+        public Task<int> UpdateEvent(Event mobEvent)
         {
             try
             {
@@ -57,12 +57,12 @@
             }
         }
 
-        // Get the details of a particular MobEvent    
-        public async Task<MobEvent> GetMobEvent(Guid id)
+        // Get the details of a particular Event    
+        public async Task<Event> GetEvent(Guid id)
         {
             try
             {
-                return await mobDbContext.MobEvents.FindAsync(id).ConfigureAwait(false);
+                return await mobDbContext.Events.FindAsync(id).ConfigureAwait(false);
             }
             catch
             {
@@ -71,12 +71,12 @@
         }
 
         // Delete the record of a particular Mob Event    
-        public async Task<int> DeleteMobEvent(Guid id)
+        public async Task<int> DeleteEvent(Guid id)
         {
             try
             {
-                var mobEvent = await mobDbContext.MobEvents.FindAsync(id).ConfigureAwait(false);
-                mobDbContext.MobEvents.Remove(mobEvent);
+                var mobEvent = await mobDbContext.Events.FindAsync(id).ConfigureAwait(false);
+                mobDbContext.Events.Remove(mobEvent);
                 return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
             }
             catch
