@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
-import { MobEventData } from './FetchMobEvent';  
+import { EventData } from './FetchEvent';  
 import authService from './api-authorization/AuthorizeService'
 
-interface AddMobEventDataState {
+interface AddEventDataState {
     title: string;
     loading: boolean;
-    eventData: MobEventData;
+    eventData: EventData;
     eventId: Guid;
 }
 
@@ -15,28 +15,28 @@ interface MatchParams {
     eventId: string;
 }
 
-export class AddMobEvent extends React.Component<RouteComponentProps<MatchParams>, AddMobEventDataState> {
+export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, AddEventDataState> {
     constructor(props: RouteComponentProps<MatchParams>) {
         super(props);
         const token = authService.getAccessToken();
-        this.state = { title: "", loading: true, eventData: new MobEventData(), eventId: Guid.create() };
+        this.state = { title: "", loading: true, eventData: new EventData(), eventId: Guid.create() };
 
         var eventId = this.props.match.params["eventId"];
 
-        // This will set state for Edit MobEvent  
+        // This will set state for Edit Event  
         if (eventId != null) {
-            fetch('api/MobEvents/' + eventId, {
+            fetch('api/Events/' + eventId, {
                 headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
             })
-                .then(response => response.json() as Promise<MobEventData>)
+                .then(response => response.json() as Promise<EventData>)
                 .then(data => {
                     this.setState({ title: "Edit", loading: false, eventData: data });
                 });
         }
 
-        // This will set state for Add MobEvent  
+        // This will set state for Add Event  
         else {
-            this.state = { title: "Create", loading: false, eventData: new MobEventData(), eventId: Guid.create() };
+            this.state = { title: "Create", loading: false, eventData: new EventData(), eventId: Guid.create() };
         }
 
         // This binding is necessary to make "this" work in the callback  
@@ -51,7 +51,7 @@ export class AddMobEvent extends React.Component<RouteComponentProps<MatchParams
 
         return <div>
             <h1>{this.state.title}</h1>
-            <h3>MobEvent</h3>
+            <h3>Event</h3>
             <hr />
             {contents}
         </div>;
@@ -63,9 +63,9 @@ export class AddMobEvent extends React.Component<RouteComponentProps<MatchParams
         const data = new FormData(event.target);
         const token = authService.getAccessToken();
 
-        // PUT request for Edit MobEvent.  
-        if (this.state.eventData.mobEventId) {
-            fetch('api/MobEvents', {
+        // PUT request for Edit Event.  
+        if (this.state.eventData.Id) {
+            fetch('api/Events', {
                 method: 'PUT',
                 body: data,
                 headers: {
@@ -76,13 +76,13 @@ export class AddMobEvent extends React.Component<RouteComponentProps<MatchParams
                 },
             }).then((response) => response.json())
                 .then((responseJson) => {
-                    this.props.history.push("/fetchMobEvent");
+                    this.props.history.push("/fetchEvent");
                 })
         }
 
-        // POST request for Add MobEvent.  
+        // POST request for Add Event.  
         else {
-            fetch('api/MobEvents', {
+            fetch('api/Events', {
                 method: 'POST',
                 body: data,
                 headers: {
@@ -93,7 +93,7 @@ export class AddMobEvent extends React.Component<RouteComponentProps<MatchParams
                 },
             }).then((response) => response.json())
                 .then((responseJson) => {
-                    this.props.history.push("/fetchMobEvent");
+                    this.props.history.push("/fetchEvent");
                 })
         }
     }
@@ -101,7 +101,7 @@ export class AddMobEvent extends React.Component<RouteComponentProps<MatchParams
     // This will handle Cancel button click event.  
     private handleCancel(event: any) {
         event.preventDefault();
-        this.props.history.push("/fetchMobEvent");
+        this.props.history.push("/fetchEvent");
     }
 
     // Returns the HTML Form to the render() method.  
@@ -109,7 +109,7 @@ export class AddMobEvent extends React.Component<RouteComponentProps<MatchParams
         return (
             <form onSubmit={this.handleSave} >
                 <div className="form-group row" >
-                    <input type="hidden" name="MobEventId" value={this.state.eventData.mobEventId.toString()} />
+                    <input type="hidden" name="Id" value={this.state.eventData.Id.toString()} />
                 </div>
                 < div className="form-group row" >
                     <label className=" control-label col-md-12" htmlFor="Name">Name</label>

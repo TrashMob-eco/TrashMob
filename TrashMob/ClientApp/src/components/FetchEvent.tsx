@@ -4,12 +4,12 @@ import { Link } from 'react-router-dom';
 import { Guid } from "guid-typescript";
 import authService from './api-authorization/AuthorizeService'
 
-interface FetchMobEventDataState {
-    eventList: MobEventData[];
+interface FetchEventDataState {
+    eventList: EventData[];
     loading: boolean;
 }  
 
-export class FetchMobEvent extends React.Component<RouteComponentProps<{}>, FetchMobEventDataState> {
+export class FetchEvent extends React.Component<RouteComponentProps<{}>, FetchEventDataState> {
 
     constructor(props: RouteComponentProps<{}>) {
         super(props);
@@ -17,7 +17,7 @@ export class FetchMobEvent extends React.Component<RouteComponentProps<{}>, Fetc
 
         const token = authService.getAccessToken();
 
-        fetch('api/MobEvents', {
+        fetch('api/Events', {
             method: 'GET',
             headers: {
                 Allow: 'GET',
@@ -26,7 +26,7 @@ export class FetchMobEvent extends React.Component<RouteComponentProps<{}>, Fetc
                 'Authorization': `Bearer ${token}`
                 },
             })
-            .then(response => response.json() as Promise<MobEventData[]>)
+            .then(response => response.json() as Promise<EventData[]>)
             .then(data => {
                 this.setState({ eventList: data, loading: false });
             });
@@ -39,7 +39,7 @@ export class FetchMobEvent extends React.Component<RouteComponentProps<{}>, Fetc
     public render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : this.renderMobEventsTable(this.state.eventList);
+            : this.renderEventsTable(this.state.eventList);
 
         return (
             <div>
@@ -58,14 +58,14 @@ export class FetchMobEvent extends React.Component<RouteComponentProps<{}>, Fetc
             return;
         else {
             const token = authService.getAccessToken();
-            fetch('api/MobEvents/' + id, {
+            fetch('api/Events/' + id, {
                 method: 'delete',
                 headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
             }).then(data => {
                 this.setState(
                     {
                         eventList: this.state.eventList.filter((rec) => {
-                            return (rec.mobEventId !== id);
+                            return (rec.id !== id);
                         })
                     });
             });
@@ -76,7 +76,7 @@ export class FetchMobEvent extends React.Component<RouteComponentProps<{}>, Fetc
         this.props.history.push("/mobevent/edit/" + id);
     }
 
-    private renderMobEventsTable(mobEvents: MobEventData[]) {
+    private renderEventsTable(events: EventData[]) {
         return (
             <table className='table table-striped' aria-labelledby="tabelLabel">
                 <thead>
@@ -94,8 +94,8 @@ export class FetchMobEvent extends React.Component<RouteComponentProps<{}>, Fetc
                     </tr>
                 </thead>
                 <tbody>
-                    {mobEvents.map(mobEvent =>
-                        <tr key={mobEvent.mobEventId.toString()}>
+                    {events.map(mobEvent =>
+                        <tr key={mobEvent.id.toString()}>
                             <td>{mobEvent.eventDate}</td>
                             <td>{mobEvent.name}</td>
                             <td>{mobEvent.address}</td>
@@ -107,8 +107,8 @@ export class FetchMobEvent extends React.Component<RouteComponentProps<{}>, Fetc
                             <td>{mobEvent.maxNumberOfParticipants}</td>
                             <td>{mobEvent.userName}</td>
                             <td>
-                                <a className="action" onClick={(id) => this.handleEdit(mobEvent.mobEventId)}>Edit</a>  |
-                                <a className="action" onClick={(id) => this.handleDelete(mobEvent.mobEventId)}>Delete</a>
+                                <a className="action" onClick={(id) => this.handleEdit(mobEvent.id)}>Edit</a>  |
+                                <a className="action" onClick={(id) => this.handleDelete(mobEvent.id)}>Delete</a>
                             </td> 
                         </tr>
                     )}
@@ -118,8 +118,8 @@ export class FetchMobEvent extends React.Component<RouteComponentProps<{}>, Fetc
     }
 }
 
-export class MobEventData {
-    mobEventId: Guid = Guid.create();
+export class EventData {
+    id: Guid = Guid.create();
     name: string = "";
     eventDate: Date = new Date();
     description: string = "";
