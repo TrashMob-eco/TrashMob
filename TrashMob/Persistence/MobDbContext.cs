@@ -7,7 +7,7 @@
     using Microsoft.Extensions.Configuration;
     using TrashMob.Models;
 
-    public class MobDbContext : ApiAuthorizationDbContext<ApplicationUser>
+    public class MobDbContext : ApiAuthorizationDbContext<AspNetUser>
     {
         private readonly IConfiguration configuration;
 
