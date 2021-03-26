@@ -1,7 +1,6 @@
-import React, { Component } from 'react';
-import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
+import * as React from 'react';
+import { NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { LoginMenu } from './api-authorization/LoginMenu';
 import './NavMenu.css';
 
 export class NavMenu extends React.Component<{}, {}> {

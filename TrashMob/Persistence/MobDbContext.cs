@@ -1,20 +1,14 @@
 ﻿namespace TrashMob.Persistence
 {
-    using IdentityServer4.EntityFramework.Options;
-    using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Options;
     using Microsoft.Extensions.Configuration;
     using TrashMob.Models;
 
-    public class MobDbContext : ApiAuthorizationDbContext<AspNetUser>
+    public class MobDbContext : DbContext
     {
         private readonly IConfiguration configuration;
 
-        public MobDbContext(
-            DbContextOptions options,
-            IOptions<OperationalStoreOptions> operationalStoreOptions,
-            IConfiguration configuration) : base(options, operationalStoreOptions)
+        public MobDbContext(IConfiguration configuration)
         {
             this.configuration = configuration;
         }
