@@ -23,11 +23,15 @@
     <title>TrashMob</title>
   </head>
   <body>
-    <noscript>
-      You need to enable JavaScript to run this app.
-    </noscript>
-    <div id="root"></div>
-    <!--
+      <noscript>
+          You need to enable JavaScript to run this app.
+      </noscript>
+      <script src="scripts/json.date-extensions.min.js"></script>
+      <script>
+            JSON.useDateParser();
+      </script>
+      <div id="root"></div>
+      <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
 

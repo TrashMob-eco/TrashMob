@@ -33,6 +33,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
+        [Route("GetEventStatuses")]
         public async Task<IActionResult> GetEventStatuses()
         {
             var result = await eventStatusRepository.GetAllEventStatuses().ConfigureAwait(false);
@@ -40,6 +41,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
+        [Route("GetEventTypes")]
         public async Task<IActionResult> GetEventTypes()
         {
             var result = await eventTypeRepository.GetAllEventTypes().ConfigureAwait(false);
