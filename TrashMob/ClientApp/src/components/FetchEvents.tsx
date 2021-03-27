@@ -113,7 +113,7 @@ export class FetchEvents extends React.Component<RouteComponentProps<{}>, FetchE
 }
 
 export class EventData {
-    id: Guid = Guid.create();
+    id: Guid = Guid.createEmpty();
     name: string = "";
     eventDate: Date = new Date();
     description: string = "";

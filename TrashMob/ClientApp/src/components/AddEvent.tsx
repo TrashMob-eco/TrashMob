@@ -59,12 +59,12 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
         const data = new FormData(event.target);
 
         // PUT request for Edit Event.  
-        if (this.state.eventData.id) {
+        if (this.state.eventData.id.toString() !== Guid.EMPTY) {
             fetch('api/Events', {
                 method: 'PUT',
                 body: data,
                 headers: {
-                    Allow: 'POST',
+                    Allow: 'POST, PUT',
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                 },
