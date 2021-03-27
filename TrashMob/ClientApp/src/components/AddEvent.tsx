@@ -135,7 +135,13 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="EventType">Event Type</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="eventType" defaultValue={this.state.eventData.eventTypeId.toString()} required />
+                        <input className="form-control" type="text" name="eventType" defaultValue={this.state.eventData.eventTypeId} required />
+                    </div>
+                </div >
+                <div className="form-group row">
+                    <label className="control-label col-md-12" htmlFor="EventStatusId">Event Status</label>
+                    <div className="col-md-4">
+                        <input className="form-control" type="text" name="eventStatus" defaultValue={this.state.eventData.eventStatusId} required />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -214,12 +220,6 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
                     <label className="control-label col-md-12" htmlFor="LastUpdatedDate">Last Updated Date</label>
                     <div className="col-md-4">
                         <input className="form-control" type="text" name="lastUpdatedDate" defaultValue={this.state.eventData.lastUpdatedDate.toString()} required />
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="EventStatusId">Event Status</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="eventStatus" defaultValue={this.state.eventData.eventStatusId.toString()} required />
                     </div>
                 </div >
 

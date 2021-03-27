@@ -133,7 +133,8 @@ export class EventData {
     name: string = "";
     description: string = "";
     eventDate: Date = new Date();
-    eventTypeId: Guid = Guid.createEmpty();
+    eventTypeId: number = 0;
+    eventStatusId: number = 0;
     streetAddress: string = "";
     city: string = "";
     stateProvince: string = "";
@@ -147,5 +148,4 @@ export class EventData {
     maxNumberOfParticipants: number = 0;
     lastUpdatedByUserId: string = "";
     lastUpdatedDate: Date = new Date();
-    eventStatusId: Guid = Guid.createEmpty();
 }
