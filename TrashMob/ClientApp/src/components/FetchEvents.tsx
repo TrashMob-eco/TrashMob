@@ -8,7 +8,7 @@ interface FetchEventDataState {
     loading: boolean;
 }  
 
-export class FetchEvent extends React.Component<RouteComponentProps<{}>, FetchEventDataState> {
+export class FetchEvents extends React.Component<RouteComponentProps<{}>, FetchEventDataState> {
 
     constructor(props: RouteComponentProps<{}>) {
         super(props);
@@ -41,7 +41,7 @@ export class FetchEvent extends React.Component<RouteComponentProps<{}>, FetchEv
             <div>
                 <h1 id="tabelLabel" >Mob Events</h1>
                 <p>
-                    <Link to="/addmobevent">Create New</Link>
+                    <Link to="/addevent">Create New</Link>
                 </p>
                 {contents}
             </div>
