@@ -7,6 +7,8 @@ interface AddEventDataState {
     title: string;
     loading: boolean;
     eventData: EventData;
+    statusList: StatusData[];
+    typeList: TypeData[];
     eventId: Guid;
 }
 
@@ -17,7 +19,20 @@ interface MatchParams {
 export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, AddEventDataState> {
     constructor(props: RouteComponentProps<MatchParams>) {
         super(props);
-        this.state = { title: "", loading: true, eventData: new EventData(), eventId: Guid.create() };
+        this.state = {
+            title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), statusList: [], typeList: [] };
+
+        fetch('api/events/GetEventStatuses')
+            .then(response => response.json() as Promise<Array<StatusData>>)
+            .then(data => {
+                this.setState({ statusList: data });
+            });  
+
+        fetch('api/events/GetEventTypes')
+            .then(response => response.json() as Promise<Array<TypeData>>)
+            .then(data => {
+                this.setState({ typeList: data });
+            });  
 
         var eventId = this.props.match.params["eventId"];
 
@@ -32,7 +47,7 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
 
         // This will set state for Add Event  
         else {
-            this.state = { title: "Create", loading: false, eventData: new EventData(), eventId: Guid.create() };
+            this.state = { title: "Create", loading: false, eventData: new EventData(), eventId: Guid.create(), statusList: [], typeList: [] };
         }
 
         // This binding is necessary to make "this" work in the callback  
@@ -43,7 +58,7 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
     public render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : this.renderCreateForm();
+            : this.renderCreateForm(this.state.statusList, this.state.typeList);
 
         return <div>
             <h1>{this.state.title}</h1>
@@ -108,7 +123,7 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
     }
 
     // Returns the HTML Form to the render() method.  
-    private renderCreateForm() {
+    private renderCreateForm(statusList: Array<StatusData>, typeList: Array<TypeData>) {
         return (
             <form onSubmit={this.handleSave} >
                 <div className="form-group row" >
@@ -135,13 +150,23 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="EventType">Event Type</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="eventType" defaultValue={this.state.eventData.eventTypeId} required />
+                        <select className="form-control" data-val="true" name="EventType" defaultValue={this.state.eventData.eventTypeId} required>
+                            <option value="">-- Select Event Type --</option>
+                            {typeList.map(type =>
+                                <option key={type.id} value={type.name}>{type.name}</option>
+                            )}
+                        </select>
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="EventStatusId">Event Status</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="eventStatus" defaultValue={this.state.eventData.eventStatusId} required />
+                        <select className="form-control" data-val="true" name="EventStatus" defaultValue={this.state.eventData.eventStatusId} required>
+                            <option value="">-- Select Event Status --</option>
+                            {statusList.map(status =>
+                                <option key={status.id} value={status.name}>{status.name}</option>
+                            )}
+                        </select>
                     </div>
                 </div >
                 <div className="form-group row">
@@ -230,4 +255,19 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
             </form >
         )
     }
+}
+
+export class StatusData {
+    id: number = 0;
+    name: string = "";
+    description: string = "";
+    displayOrder: number = 0;
+}
+
+export class TypeData {
+    id: number = 0;
+    name: string = "";
+    description: string = "";
+    displayOrder: number = 0;
+    isActive: boolean = true;
 }
