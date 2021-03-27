@@ -2,7 +2,6 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
 import { EventData } from './FetchEvent';  
-import authService from './api-authorization/AuthorizeService'
 
 interface AddEventDataState {
     title: string;
@@ -18,16 +17,13 @@ interface MatchParams {
 export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, AddEventDataState> {
     constructor(props: RouteComponentProps<MatchParams>) {
         super(props);
-        const token = authService.getAccessToken();
         this.state = { title: "", loading: true, eventData: new EventData(), eventId: Guid.create() };
 
         var eventId = this.props.match.params["eventId"];
 
         // This will set state for Edit Event  
         if (eventId != null) {
-            fetch('api/Events/' + eventId, {
-                headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
-            })
+            fetch('api/Events/' + eventId, {})
                 .then(response => response.json() as Promise<EventData>)
                 .then(data => {
                     this.setState({ title: "Edit", loading: false, eventData: data });
@@ -61,10 +57,9 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
     private handleSave(event: any) {
         event.preventDefault();
         const data = new FormData(event.target);
-        const token = authService.getAccessToken();
 
         // PUT request for Edit Event.  
-        if (this.state.eventData.Id) {
+        if (this.state.eventData.id) {
             fetch('api/Events', {
                 method: 'PUT',
                 body: data,
@@ -72,7 +67,6 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
                     Allow: 'POST',
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
             }).then((response) => response.json())
                 .then((responseJson) => {
@@ -88,8 +82,7 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
                 headers: {
                     Allow: 'POST',
                     Accept: 'application/json, text/plain',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'application/json'
                 },
             }).then((response) => response.json())
                 .then((responseJson) => {
@@ -109,7 +102,7 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
         return (
             <form onSubmit={this.handleSave} >
                 <div className="form-group row" >
-                    <input type="hidden" name="Id" value={this.state.eventData.Id.toString()} />
+                    <input type="hidden" name="Id" value={this.state.eventData.id.toString()} />
                 </div>
                 < div className="form-group row" >
                     <label className=" control-label col-md-12" htmlFor="Name">Name</label>
