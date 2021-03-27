@@ -75,31 +75,47 @@ export class FetchEvents extends React.Component<RouteComponentProps<{}>, FetchE
             <table className='table table-striped' aria-labelledby="tabelLabel">
                 <thead>
                     <tr>
-                        <th>Date</th>
                         <th>Name</th>
-                        <th>Address</th>
-                        <th>Country</th>
                         <th>Description</th>
-                        <th>Contact Phone</th>
+                        <th>Date</th>
+                        <th>Event Type</th>
+                        <th>Address</th>
+                        <th>City</th>
+                        <th>State / Province</th>
+                        <th>Country</th>
+                        <th>ZipCode</th>
+                        <th>Created By</th>
+                        <th>Created Date</th>
                         <th>Latitude</th>
                         <th>Longitude</th>
+                        <th>GPS Coords</th>
                         <th>MaximumNumberOfParticpants</th>
-                        <th>EventLead</th>
+                        <th>Last Updated By</th>
+                        <th>Last Updated Date</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     {events.map(mobEvent =>
                         <tr key={mobEvent.id.toString()}>
-                            <td>{mobEvent.eventDate}</td>
                             <td>{mobEvent.name}</td>
-                            <td>{mobEvent.address}</td>
-                            <td>{mobEvent.country}</td>
                             <td>{mobEvent.description}</td>
-                            <td>{mobEvent.contactPhone}</td>
+                            <td>{mobEvent.eventDate}</td>
+                            <td>{mobEvent.eventTypeId}</td>
+                            <td>{mobEvent.streetAddress}</td>
+                            <td>{mobEvent.city}</td>
+                            <td>{mobEvent.stateProvince}</td>
+                            <td>{mobEvent.country}</td>
+                            <td>{mobEvent.zipCode}</td>
+                            <td>{mobEvent.createdByUserId}</td>
+                            <td>{mobEvent.createdDate}</td>
                             <td>{mobEvent.latitude}</td>
                             <td>{mobEvent.longitude}</td>
+                            <td>{mobEvent.gpscoords}</td>
                             <td>{mobEvent.maxNumberOfParticipants}</td>
-                            <td>{mobEvent.userName}</td>
+                            <td>{mobEvent.lastUpdatedByUserId}</td>
+                            <td>{mobEvent.lastUpdatedDate}</td>
+                            <td>{mobEvent.eventStatusId}</td>
                             <td>
                                 <a className="action" onClick={(id) => this.handleEdit(mobEvent.id)}>Edit</a>  |
                                 <a className="action" onClick={(id) => this.handleDelete(mobEvent.id)}>Delete</a>
@@ -115,13 +131,21 @@ export class FetchEvents extends React.Component<RouteComponentProps<{}>, FetchE
 export class EventData {
     id: Guid = Guid.createEmpty();
     name: string = "";
-    eventDate: Date = new Date();
     description: string = "";
-    userName: string = "";
-    contactPhone: string = "";
+    eventDate: Date = new Date();
+    eventTypeId: Guid = Guid.createEmpty();
+    streetAddress: string = "";
+    city: string = "";
+    stateProvince: string = "";
     country: string = "";
-    address: string = "";
+    zipCode: string = "";
+    createdByUserId: string = "";
+    createdDate: Date = new Date();
     latitude: string = "";
     longitude: string = "";
+    gpscoords: string = "";
     maxNumberOfParticipants: number = 0;
+    lastUpdatedByUserId: string = "";
+    lastUpdatedDate: Date = new Date();
+    eventStatusId: Guid = Guid.createEmpty();
 }

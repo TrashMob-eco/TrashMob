@@ -53,10 +53,20 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
         </div>;
     }
 
+    private serializeForm(form) {
+        var obj = {};
+        var formData = new FormData(form);
+        for (var key of formData.keys()) {
+            obj[key] = formData.get(key);
+        }
+        return obj;
+    };
+
     // This will handle the submit form event.  
-    private handleSave(event: any) {
+    private handleSave(event) {
         event.preventDefault();
-        const data = new FormData(event.target);
+
+        const data = JSON.stringify(this.serializeForm(event.target));
 
         // PUT request for Edit Event.  
         if (this.state.eventData.id.toString() !== Guid.EMPTY) {
@@ -111,33 +121,63 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="EventDate">EventDate</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="eventDate" required />
-                    </div>
-                </div >
-                <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Description">Description</label>
                     <div className="col-md-4">
                         <input className="form-control" type="text" name="description" defaultValue={this.state.eventData.description} required />
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="ContactPhone">Contact Phone</label>
+                    <label className="control-label col-md-12" htmlFor="EventDate">EventDate</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="contactPhone" defaultValue={this.state.eventData.contactPhone} required />
+                        <input className="form-control" type="text" name="eventDate" defaultValue={this.state.eventData.eventDate.toString()} required />
+                    </div>
+                </div >
+                <div className="form-group row">
+                    <label className="control-label col-md-12" htmlFor="EventType">Event Type</label>
+                    <div className="col-md-4">
+                        <input className="form-control" type="text" name="eventType" defaultValue={this.state.eventData.eventTypeId.toString()} required />
+                    </div>
+                </div >
+                <div className="form-group row">
+                    <label className="control-label col-md-12" htmlFor="StreetAddress">StreetAddress</label>
+                    <div className="col-md-4">
+                        <input className="form-control" type="text" name="streetAddress" defaultValue={this.state.eventData.streetAddress} required />
+                    </div>
+                </div >
+                <div className="form-group row">
+                    <label className="control-label col-md-12" htmlFor="City">City</label>
+                    <div className="col-md-4">
+                        <input className="form-control" type="text" name="city" defaultValue={this.state.eventData.city} required />
+                    </div>
+                </div >
+                <div className="form-group row">
+                    <label className="control-label col-md-12" htmlFor="stateProvince">State / Province</label>
+                    <div className="col-md-4">
+                        <input className="form-control" type="text" name="stateProvince" defaultValue={this.state.eventData.stateProvince} required />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Country">Country</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="counntry" defaultValue={this.state.eventData.country} required />
+                        <input className="form-control" type="text" name="country" defaultValue={this.state.eventData.country} required />
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="Address">Address</label>
+                    <label className="control-label col-md-12" htmlFor="ZipCode">Zip Code</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="address" defaultValue={this.state.eventData.address} required />
+                        <input className="form-control" type="text" name="zipCode" defaultValue={this.state.eventData.zipCode} required />
+                    </div>
+                </div >
+                <div className="form-group row">
+                    <label className="control-label col-md-12" htmlFor="CreatedBy">Created By</label>
+                    <div className="col-md-4">
+                        <input className="form-control" type="text" name="createdBy" defaultValue={this.state.eventData.createdByUserId} required />
+                    </div>
+                </div >
+                <div className="form-group row">
+                    <label className="control-label col-md-12" htmlFor="CreatedDate">Created Date</label>
+                    <div className="col-md-4">
+                        <input className="form-control" type="text" name="createdDate" defaultValue={this.state.eventData.createdDate.toString()} required />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -153,9 +193,33 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
                     </div>
                 </div >
                 <div className="form-group row">
+                    <label className="control-label col-md-12" htmlFor="GPSCoords">GPS Coords</label>
+                    <div className="col-md-4">
+                        <input className="form-control" type="text" name="gpsCoords" defaultValue={this.state.eventData.gpscoords} required />
+                    </div>
+                </div >
+                <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="MaxNumberOfParticipants">Max Number Of Participants</label>
                     <div className="col-md-4">
                         <input className="form-control" type="text" name="maxNumberOfParticipants" defaultValue={this.state.eventData.maxNumberOfParticipants} required />
+                    </div>
+                </div >
+                <div className="form-group row">
+                    <label className="control-label col-md-12" htmlFor="LastUpdatedBy">Last Updated By</label>
+                    <div className="col-md-4">
+                        <input className="form-control" type="text" name="lastUpdatedBy" defaultValue={this.state.eventData.lastUpdatedByUserId} required />
+                    </div>
+                </div >
+                <div className="form-group row">
+                    <label className="control-label col-md-12" htmlFor="LastUpdatedDate">Last Updated Date</label>
+                    <div className="col-md-4">
+                        <input className="form-control" type="text" name="lastUpdatedDate" defaultValue={this.state.eventData.lastUpdatedDate.toString()} required />
+                    </div>
+                </div >
+                <div className="form-group row">
+                    <label className="control-label col-md-12" htmlFor="EventStatusId">Event Status</label>
+                    <div className="col-md-4">
+                        <input className="form-control" type="text" name="eventStatus" defaultValue={this.state.eventData.eventStatusId.toString()} required />
                     </div>
                 </div >
 
