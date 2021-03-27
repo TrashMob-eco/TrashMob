@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
-import { EventData } from './FetchEvent';  
+import { EventData } from './FetchEvents';  
 
 interface AddEventDataState {
     title: string;
@@ -70,7 +70,7 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
                 },
             }).then((response) => response.json())
                 .then((responseJson) => {
-                    this.props.history.push("/fetchEvent");
+                    this.props.history.push("/fetchEvents");
                 })
         }
 
@@ -86,7 +86,7 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
                 },
             }).then((response) => response.json())
                 .then((responseJson) => {
-                    this.props.history.push("/fetchEvent");
+                    this.props.history.push("/fetchEvents");
                 })
         }
     }
@@ -94,7 +94,7 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
     // This will handle Cancel button click event.  
     private handleCancel(event: any) {
         event.preventDefault();
-        this.props.history.push("/fetchEvent");
+        this.props.history.push("/fetchEvents");
     }
 
     // Returns the HTML Form to the render() method.  

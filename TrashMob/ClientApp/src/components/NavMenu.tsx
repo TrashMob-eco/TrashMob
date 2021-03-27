@@ -1,8 +1,5 @@
 import * as React from 'react';
-import { NavLink } from 'reactstrap';
-import { Link } from 'react-router-dom';
-import './NavMenu.css';
-
+import { Link, NavLink } from 'react-router-dom';
 export class NavMenu extends React.Component<{}, {}> {
     public render() {
         return <div className='main-nav'>
@@ -25,8 +22,8 @@ export class NavMenu extends React.Component<{}, {}> {
                             </NavLink>
                         </li>
                         <li>
-                            <NavLink to={'/fetchmobevent'} activeClassName='active'>
-                                <span className='glyphicon glyphicon-th-list'></span> Fetch employee
+                            <NavLink to={'/fetchevents'} activeClassName='active'>
+                                <span className='glyphicon glyphicon-th-list'></span> Fetch Event
                             </NavLink>
                         </li>
                     </ul>
