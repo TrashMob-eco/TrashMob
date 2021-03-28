@@ -34,6 +34,10 @@
             {
                 mobEvent.Id = Guid.NewGuid();
                 mobDbContext.Events.Add(mobEvent);
+
+                var eventHistory = new EventHistory(mobEvent);
+                mobDbContext.EventHistories.Add(eventHistory);
+
                 await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
                 return mobEvent.Id;
             }
@@ -49,6 +53,8 @@
             try
             {
                 mobDbContext.Entry(mobEvent).State = EntityState.Modified;
+                var eventHistory = new EventHistory(mobEvent);
+                mobDbContext.EventHistories.Add(eventHistory);
                 return mobDbContext.SaveChangesAsync();
             }
             catch
