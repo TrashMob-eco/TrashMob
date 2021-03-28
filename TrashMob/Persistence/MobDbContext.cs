@@ -15,6 +15,8 @@
         }
 
         public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        
+        public virtual DbSet<User> Users { get; set; }
 
         public virtual DbSet<Event> Events { get; set; }
 
@@ -42,9 +44,9 @@
             base.OnModelCreating(modelBuilder);
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
-            modelBuilder.Entity<ApplicationUser>(entity =>
+            modelBuilder.Entity<User>(entity =>
             {
-                entity.Property(e => e.UserId).ValueGeneratedNever();
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.PrivacyPolicyVersion).HasMaxLength(50);
 
@@ -52,8 +54,9 @@
 
                 entity.HasOne(d => d.RecruitedByUser)
                     .WithMany(p => p.UsersRecruited)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK_ApplicationUser_RecruitedBy");
+                    .HasForeignKey(d => d.RecruitedByUserId)
+                    .HasConstraintName("FK_ApplicationUser_RecruitedBy")
+                    .OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<AttendeeNotification>(entity =>
@@ -65,7 +68,7 @@
                     .HasForeignKey(d => d.EventId)
                     .HasConstraintName("FK_AttendeeNotification_Event");
 
-                entity.HasOne(d => d.ApplicationUser)
+                entity.HasOne(d => d.User)
                     .WithMany(p => p.AttendeeNotifications)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK_AttendeeNotification_ApplicationUser");
@@ -212,6 +215,12 @@
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.HasData(
+                    new EventStatus { Id = 1, Name = "Active", Description = "Event is actively recruiting new members", DisplayOrder = 1 },
+                    new EventStatus { Id = 2, Name = "Full", Description = "Event is full", DisplayOrder = 2 },
+                    new EventStatus { Id = 3, Name = "Canceled", Description = "Event has been canceled", DisplayOrder = 3 },
+                    new EventStatus { Id = 4, Name = "Completed", Description = "Event has completed", DisplayOrder = 4 });
             });
 
             modelBuilder.Entity<EventType>(entity =>
@@ -223,7 +232,23 @@
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
-            });
+
+                entity.HasData(
+                    new EventType { Id = 1, Name = "Park Cleanup", Description = "Park Cleanup", DisplayOrder = 1, IsActive = true },
+                    new EventType { Id = 2, Name = "School Cleanup", Description = "School Cleanup", DisplayOrder = 2, IsActive = true },
+                    new EventType { Id = 3, Name = "Neighborhood Cleanup", Description = "Neighborhood Cleanup", DisplayOrder = 3, IsActive = true },
+                    new EventType { Id = 4, Name = "Beach Cleanup", Description = "Beach Cleanup", DisplayOrder = 4, IsActive = true },
+                    new EventType { Id = 5, Name = "Highway Cleanup", Description = "Highway Cleanup", DisplayOrder = 5, IsActive = true },
+                    new EventType { Id = 6, Name = "Natural Disaster Cleanup", Description = "Natural Disaster Cleanup", DisplayOrder = 6, IsActive = true },
+                    new EventType { Id = 7, Name = "Trail Cleanup", Description = "Trail Cleanup", DisplayOrder = 7, IsActive = true },
+                    new EventType { Id = 8, Name = "Reef Cleanup", Description = "Reef Cleanup", DisplayOrder = 8, IsActive = true },
+                    new EventType { Id = 9, Name = "Private Land Cleanup", Description = "Private Land Cleanup", DisplayOrder = 9, IsActive = true },
+                    new EventType { Id = 10, Name = "Dog Park Cleanup", Description = "Dog Park Cleanup", DisplayOrder = 10, IsActive = true },
+                    new EventType { Id = 11, Name = "Waterway Cleanup", Description = "Waterway Cleanup", DisplayOrder = 11, IsActive = true },
+                    new EventType { Id = 12, Name = "Vandalism Cleanup", Description = "Vandalism Cleanup", DisplayOrder = 12, IsActive = true },
+                    new EventType { Id = 13, Name = "Social Event", Description = "Social Event", DisplayOrder = 13, IsActive = true },
+                    new EventType { Id = 14, Name = "Other", Description = "Other", DisplayOrder = 14, IsActive = true });
+        });
 
             modelBuilder.Entity<NotificationType>(entity =>
             {

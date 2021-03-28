@@ -20,9 +20,9 @@ namespace TrashMob.Models
         
         public string Comments { get; set; }
 
-        public virtual ApplicationUser RegardingUser { get; set; }
+        public virtual User RegardingUser { get; set; }
         
-        public virtual ApplicationUser User { get; set; }
+        public virtual User User { get; set; }
         
         public virtual Event Event { get; set; }
     }
