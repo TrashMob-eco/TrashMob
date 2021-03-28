@@ -38,9 +38,14 @@ Quite possibly. We'll see how fast the site gains momentum
 # Development Notes
 
 ## Database generation
-Currently, I am generating the model from the database as I found that easier to get started. To regnerate the models run the following command from within the Trashmod folder
+The project is now using Entity Framework Core V6 Model-First database updates.
+
+1. Update the models / MobDbContext as needed.
+2. In VS Code, run the following commands from the TrashMob folder
+
 ```
-dotnet ef dbcontext scaffold "Data Source=tcp:db-trashmob.database.windows.net,1433;Initial Catalog=ftm-dev;User Id=xxxx@db-trashmob;Password=" Microsoft.EntityFrameworkCore.SqlServer -o Models --force
+dotnet ef migrations add <YourMigrationName>
+dotnet ef database update
 ```
 
 ## Where do I get the connection for the database?
