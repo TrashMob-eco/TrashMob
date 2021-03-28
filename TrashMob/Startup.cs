@@ -1,15 +1,16 @@
+#define DefaultBehavior // or SuppressApiControllerBehavior
+
 namespace TrashMob
 {
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using TrashMob.Common;
     using TrashMob.Persistence;
-    using TrashMob.Models;
-
+    
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -25,11 +26,6 @@ namespace TrashMob
             // The following line enables Application Insights telemetry collection.
             services.AddApplicationInsightsTelemetry();
 
-            services.AddControllers(option =>
-            {
-                option.Filters.Add<ValidationFilter>();
-            });
-
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
@@ -42,6 +38,24 @@ namespace TrashMob
             services.AddScoped<IEventTypeRepository, EventTypeRepository>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
+
+#if SuppressApiControllerBehavior
+            #region snippet_ConfigureApiBehaviorOptions
+            services.AddControllers()
+                .ConfigureApiBehaviorOptions(options =>
+                {
+                    options.SuppressConsumesConstraintForFormFileParameters = true;
+                    options.SuppressInferBindingSourcesForParameters = true;
+                    options.SuppressModelStateInvalidFilter = true;
+                    options.SuppressMapClientErrors = true;
+                    options.ClientErrorMapping[StatusCodes.Status404NotFound].Link =
+                        "https://httpstatuses.com/404";
+                });
+            #endregion
+#endif
+#if DefaultBehavior
+            services.AddControllers();
+#endif
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -60,8 +74,6 @@ namespace TrashMob
             }
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
 
             app.UseRouting();
 
@@ -69,6 +81,9 @@ namespace TrashMob
             {
                 endpoints.MapControllers();
             });
+
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
 
             app.UseSpa(spa =>
             {

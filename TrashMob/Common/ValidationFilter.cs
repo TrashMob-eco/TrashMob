@@ -9,7 +9,7 @@ namespace TrashMob.Common
     {
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            //before contrller
+            //before controller
 
             if (!context.ModelState.IsValid)
             {
