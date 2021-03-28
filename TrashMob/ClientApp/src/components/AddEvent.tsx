@@ -82,17 +82,20 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
         </div>;
     }
 
-    private serializeForm(form) {
-        var obj = {};
+    private serializeForm(form: HTMLFormElement) {
+        let obj: { [key: string]: string } = {};
         var formData = new FormData(form);
-        for (var key of formData.keys()) {
-            obj[key] = formData.get(key);
+        for (var keyd of Array.from<string>(formData.keys())) {
+            var value = formData.get(keyd);
+            if (value && typeof value === 'string') {
+                obj[keyd] = value;
+            }
         }
         return obj;
     };
 
     // This will handle the submit form event.  
-    private handleSave(event) {
+    private handleSave(event : any) {
         event.preventDefault();
 
         const data = JSON.stringify(this.serializeForm(event.target));
