@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
-#nullable disable
+﻿#nullable disable
 
 namespace TrashMob.Models
 {
+    using System.Collections.Generic;
+
     public partial class EventStatus
     {
         public EventStatus()

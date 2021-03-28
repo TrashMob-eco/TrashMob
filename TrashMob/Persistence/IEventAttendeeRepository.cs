@@ -9,7 +9,7 @@
     {
         Task<IEnumerable<EventAttendee>> GetAllEventAttendees(Guid eventId);
 
-        Task<int> AddAttendeeToEvent(Guid eventId, string attendeeId);
+        Task<int> AddAttendeeToEvent(Guid eventId, Guid attendeeId);
 
         Task<int> UpdateEventAttendee(EventAttendee eventAttendee);
     }

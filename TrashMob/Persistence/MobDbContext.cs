@@ -1,10 +1,11 @@
 ﻿namespace TrashMob.Persistence
 {
+    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using TrashMob.Models;
 
-    public class MobDbContext : DbContext
+    public class MobDbContext : IdentityDbContext
     {
         private readonly IConfiguration configuration;
 
@@ -12,6 +13,8 @@
         {
             this.configuration = configuration;
         }
+
+        public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
         public virtual DbSet<Event> Events { get; set; }
 
@@ -24,8 +27,6 @@
         public virtual DbSet<EventType> EventTypes { get; set; }
 
         public virtual DbSet<NotificationType> NotificationTypes { get; set; }
-
-        public virtual DbSet<UserDetail> UserDetails { get; set; }
 
         public virtual DbSet<UserFeedback> UserFeedback { get; set; }
 
@@ -41,6 +42,40 @@
             base.OnModelCreating(modelBuilder);
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
+            modelBuilder.Entity<ApplicationUser>(entity =>
+            {
+                entity.Property(e => e.UserId).ValueGeneratedNever();
+
+                entity.Property(e => e.PrivacyPolicyVersion).HasMaxLength(50);
+
+                entity.Property(e => e.TermsOfServiceVersion).HasMaxLength(50);
+
+                entity.HasOne(d => d.RecruitedByUser)
+                    .WithMany(p => p.UsersRecruited)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK_ApplicationUser_RecruitedBy");
+            });
+
+            modelBuilder.Entity<AttendeeNotification>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.Event)
+                    .WithMany(p => p.AttendeeNotifications)
+                    .HasForeignKey(d => d.EventId)
+                    .HasConstraintName("FK_AttendeeNotification_Event");
+
+                entity.HasOne(d => d.ApplicationUser)
+                    .WithMany(p => p.AttendeeNotifications)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK_AttendeeNotification_ApplicationUser");
+
+                entity.HasOne(d => d.NotificationType)
+                    .WithMany(p => p.AttendeeNotifications)
+                    .HasForeignKey(d => d.NotificationTypeId)
+                    .HasConstraintName("FK_AttendeeNotification_NotificationType");
+            });
+
             modelBuilder.Entity<Event>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -53,7 +88,7 @@
                     .IsRequired()
                     .HasMaxLength(64);
 
-                entity.Property(e => e.CreatedByUserId).HasMaxLength(450);
+                entity.Property(e => e.CreatedByUserId);
 
                 entity.Property(e => e.Description)
                     .IsRequired()
@@ -63,7 +98,7 @@
                     .HasMaxLength(50)
                     .HasColumnName("GPSCoords");
 
-                entity.Property(e => e.LastUpdatedByUserId).HasMaxLength(450);
+                entity.Property(e => e.LastUpdatedByUserId);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -81,11 +116,6 @@
                     .IsRequired()
                     .HasMaxLength(25);
 
-                entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.EventCreatedByUsers)
-                    .HasForeignKey(d => d.CreatedByUserId)
-                    .HasConstraintName("FK_Events_AspNetUsers_CreatedByUser");
-
                 entity.HasOne(d => d.EventStatus)
                     .WithMany(p => p.Events)
                     .HasForeignKey(d => d.EventStatusId)
@@ -97,10 +127,17 @@
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Events_EventTypes");
 
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.EventsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Events_ApplicationUser_CreatedBy");
+
                 entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.EventLastUpdatedByUsers)
+                    .WithMany(p => p.EventsUpdated)
                     .HasForeignKey(d => d.LastUpdatedByUserId)
-                    .HasConstraintName("FK_Events_AspNetUsers_LastUpdatedBy");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Events_ApplicationUser_LastUpdatedBy");
             });
 
             modelBuilder.Entity<EventAttendee>(entity =>
@@ -108,8 +145,7 @@
                 entity.HasNoKey();
 
                 entity.Property(e => e.UserId)
-                    .IsRequired()
-                    .HasMaxLength(450);
+                    .IsRequired();
 
                 entity.HasOne(d => d.Event)
                     .WithMany()
@@ -121,7 +157,7 @@
                     .WithMany()
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_EventAttendees_AspNetUsers");
+                    .HasConstraintName("FK_EventAttendees_ApplicationUser");
             });
 
             modelBuilder.Entity<EventHistory>(entity =>
@@ -138,7 +174,7 @@
                     .IsRequired()
                     .HasMaxLength(64);
 
-                entity.Property(e => e.CreatedByUserId).HasMaxLength(450);
+                entity.Property(e => e.CreatedByUserId);
 
                 entity.Property(e => e.Description)
                     .IsRequired()
@@ -148,7 +184,7 @@
                     .HasMaxLength(50)
                     .HasColumnName("GPSCoords");
 
-                entity.Property(e => e.LastUpdatedByUserId).HasMaxLength(450);
+                entity.Property(e => e.LastUpdatedByUserId);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -171,7 +207,7 @@
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.Description).HasMaxLength(450);
+                entity.Property(e => e.Description);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -182,7 +218,7 @@
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.Description).HasMaxLength(450);
+                entity.Property(e => e.Description);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -193,62 +229,11 @@
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.Description).HasMaxLength(450);
+                entity.Property(e => e.Description);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<PersistedGrant>(entity =>
-            {
-                entity.HasKey(e => e.Key);
-
-                entity.HasIndex(e => e.Expiration, "IX_PersistedGrants_Expiration");
-
-                entity.HasIndex(e => new { e.SubjectId, e.ClientId, e.Type }, "IX_PersistedGrants_SubjectId_ClientId_Type");
-
-                entity.HasIndex(e => new { e.SubjectId, e.SessionId, e.Type }, "IX_PersistedGrants_SubjectId_SessionId_Type");
-
-                entity.Property(e => e.Key).HasMaxLength(200);
-
-                entity.Property(e => e.ClientId)
-                    .IsRequired()
-                    .HasMaxLength(200);
-
-                entity.Property(e => e.Data).IsRequired();
-
-                entity.Property(e => e.Description).HasMaxLength(200);
-
-                entity.Property(e => e.SessionId).HasMaxLength(100);
-
-                entity.Property(e => e.SubjectId).HasMaxLength(200);
-
-                entity.Property(e => e.Type)
-                    .IsRequired()
-                    .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<UserDetail>(entity =>
-            {
-                entity.HasKey(e => e.UserId);
-
-                entity.Property(e => e.PrivacyPolicyVersion).HasMaxLength(50);
-
-                entity.Property(e => e.RecruitedByUserId).HasMaxLength(450);
-
-                entity.Property(e => e.TermsOfServiceVersion).HasMaxLength(50);
-
-                entity.HasOne(d => d.RecruitedByUser)
-                    .WithMany(p => p.UserDetailRecruitedByUsers)
-                    .HasForeignKey(d => d.RecruitedByUserId)
-                    .HasConstraintName("FK_UserDetails_AspNetUsersRecruit");
-
-                entity.HasOne(d => d.User)
-                    .WithOne(p => p.UserDetailUser)
-                    .HasForeignKey<UserDetail>(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserDetails_AspNetUsers");
             });
 
             modelBuilder.Entity<UserFeedback>(entity =>
@@ -260,24 +245,23 @@
                 entity.Property(e => e.Comments).HasMaxLength(2000);
 
                 entity.Property(e => e.RegardingUserId)
-                    .IsRequired()
-                    .HasMaxLength(450);
+                    .IsRequired();
 
                 entity.Property(e => e.UserId)
-                    .IsRequired()
-                    .HasMaxLength(450);
+                    .IsRequired();
+
 
                 entity.HasOne(d => d.RegardingUser)
                     .WithMany(p => p.UserFeedbackRegardingUsers)
                     .HasForeignKey(d => d.RegardingUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserFeedback_AspNetUsersRegarding");
+                    .HasConstraintName("FK_UserFeedback_ApplicationUserRegarding");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.UserFeedbackUsers)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserFeedback_AspNetUsers");
+                    .HasConstraintName("FK_UserFeedback_ApplicationUser");
             });
 
             modelBuilder.Entity<UserSubscription>(entity =>
@@ -285,24 +269,22 @@
                 entity.HasNoKey();
 
                 entity.Property(e => e.UserId)
-                    .IsRequired()
-                    .HasMaxLength(450);
+                    .IsRequired();
 
-                entity.Property(e => e.UserIdFollowing)
-                    .IsRequired()
-                    .HasMaxLength(450);
+                entity.Property(e => e.FollowingId)
+                    .IsRequired();
 
                 entity.HasOne(d => d.User)
-                    .WithMany()
+                    .WithMany(p => p.UsersFollowing)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserSubscriptions_AspNetUsers");
+                    .HasConstraintName("FK_UserSubscriptions_ApplicationUserFollowed");
 
-                entity.HasOne(d => d.UserIdFollowingNavigation)
-                    .WithMany()
-                    .HasForeignKey(d => d.UserIdFollowing)
+                entity.HasOne(d => d.FollowingUser)
+                    .WithMany(p => p.UsersFollowed)
+                    .HasForeignKey(d => d.FollowingId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserSubscriptions_AspNetUsersFollowing");
+                    .HasConstraintName("FK_UserSubscriptions_ApplicationUsersFollowing");
             });
         }
     }
