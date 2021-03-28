@@ -2,14 +2,18 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
 import { EventData } from './FetchEvents';  
+import ScriptTag from 'react-script-tag';
+import DatePicker from 'react-datepicker';
+
+import 'react-datepicker/dist/react-datepicker.css';
 
 interface AddEventDataState {
     title: string;
     loading: boolean;
     eventData: EventData;
-    statusList: StatusData[];
     typeList: TypeData[];
     eventId: Guid;
+    eventDate: Date;
 }
 
 interface MatchParams {
@@ -20,20 +24,11 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
     constructor(props: RouteComponentProps<MatchParams>) {
         super(props);
         this.state = {
-            title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), statusList: [], typeList: [] };
+            title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), typeList: [], eventDate: new Date() };
 
-        fetch('api/eventStatuses', {
-            method: 'GET',
-            headers: {
-                Allow: 'GET',
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-                },
-            })
-            .then(response => response.json() as Promise<Array<any>>)
-            .then(data => {
-                this.setState({ statusList: data });
-            });  
+        const demo = props => (
+            <ScriptTag type="text/javascript" src="/nodemodules/json.date-extensions/json.date-extensions.min.js" />
+        )
 
         fetch('api/eventtypes', {
             method: 'GET',
@@ -61,7 +56,7 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
 
         // This will set state for Add Event  
         else {
-            this.state = { title: "Create", loading: false, eventData: new EventData(), eventId: Guid.create(), statusList: [], typeList: [] };
+            this.state = { title: "Create", loading: false, eventData: new EventData(), eventId: Guid.create(), typeList: [], eventDate: new Date() };
         }
 
         // This binding is necessary to make "this" work in the callback  
@@ -72,7 +67,7 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
     public render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : this.renderCreateForm(this.state.statusList, this.state.typeList);
+            : this.renderCreateForm(this.state.typeList);
 
         return <div>
             <h1>{this.state.title}</h1>
@@ -104,7 +99,7 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
         if (this.state.eventData.id.toString() !== Guid.EMPTY) {
             fetch('api/Events', {
                 method: 'PUT',
-                body: data,
+                body: JSON.stringify(data),
                 headers: {
                     Allow: 'POST, PUT',
                     Accept: 'application/json',
@@ -120,7 +115,7 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
         else {
             fetch('api/Events', {
                 method: 'POST',
-                body: data,
+                body: JSON.stringify(data),
                 headers: {
                     Allow: 'POST',
                     Accept: 'application/json, text/plain',
@@ -133,6 +128,12 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
         }
     }
 
+    private handleEventDateChange(date: Date) {
+        this.setState({
+            eventDate: date
+        })
+    }
+
     // This will handle Cancel button click event.  
     private handleCancel(event: any) {
         event.preventDefault();
@@ -140,7 +141,7 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
     }
 
     // Returns the HTML Form to the render() method.  
-    private renderCreateForm(statusList: Array<StatusData>, typeList: Array<TypeData>) {
+    private renderCreateForm(typeList: Array<TypeData>) {
         return (
             <form onSubmit={this.handleSave} >
                 <div className="form-group row" >
@@ -161,7 +162,7 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="EventDate">EventDate</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="eventDate" defaultValue={this.state.eventData.eventDate.toString()} required />
+                        <DatePicker selected={this.state.eventData.eventDate} name="eventDate" onChange={this.handleEventDateChange} />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -171,17 +172,6 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
                             <option value="">-- Select Event Type --</option>
                             {typeList.map(type =>
                                 <option key={type.id} value={type.name}>{type.name}</option>
-                            )}
-                        </select>
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="EventStatusId">Event Status</label>
-                    <div className="col-md-4">
-                        <select className="form-control" data-val="true" name="EventStatus" defaultValue={this.state.eventData.eventStatusId} required>
-                            <option value="">-- Select Event Status --</option>
-                            {statusList.map(status =>
-                                <option key={status.id} value={status.name}>{status.name}</option>
                             )}
                         </select>
                     </div>
@@ -217,18 +207,6 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="CreatedBy">Created By</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="createdBy" defaultValue={this.state.eventData.createdByUserId} required />
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="CreatedDate">Created Date</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="createdDate" defaultValue={this.state.eventData.createdDate.toString()} required />
-                    </div>
-                </div >
-                <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Latitude">Latitude</label>
                     <div className="col-md-4">
                         <input className="form-control" type="text" name="latitude" defaultValue={this.state.eventData.latitude} required />
@@ -252,19 +230,6 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
                         <input className="form-control" type="text" name="maxNumberOfParticipants" defaultValue={this.state.eventData.maxNumberOfParticipants} required />
                     </div>
                 </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="LastUpdatedBy">Last Updated By</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="lastUpdatedBy" defaultValue={this.state.eventData.lastUpdatedByUserId} required />
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="LastUpdatedDate">Last Updated Date</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="lastUpdatedDate" defaultValue={this.state.eventData.lastUpdatedDate.toString()} required />
-                    </div>
-                </div >
-
                 <div className="form-group">
                     <button type="submit" className="btn btn-default">Save</button>
                     <button className="btn" onClick={this.handleCancel}>Cancel</button>
@@ -272,13 +237,6 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
             </form >
         )
     }
-}
-
-export class StatusData {
-    id: number = 0;
-    name: string = "";
-    description: string = "";
-    displayOrder: number = 0;
 }
 
 export class TypeData {
