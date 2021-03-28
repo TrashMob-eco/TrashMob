@@ -142,7 +142,7 @@
 
             modelBuilder.Entity<EventAttendee>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.UserId, e.EventId });
 
                 entity.Property(e => e.UserId)
                     .IsRequired();
@@ -250,7 +250,6 @@
                 entity.Property(e => e.UserId)
                     .IsRequired();
 
-
                 entity.HasOne(d => d.RegardingUser)
                     .WithMany(p => p.UserFeedbackRegardingUsers)
                     .HasForeignKey(d => d.RegardingUserId)
@@ -266,7 +265,7 @@
 
             modelBuilder.Entity<UserSubscription>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.UserId, e.FollowingId });
 
                 entity.Property(e => e.UserId)
                     .IsRequired();
