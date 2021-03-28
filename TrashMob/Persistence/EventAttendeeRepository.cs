@@ -28,7 +28,7 @@
             }
         }
 
-        public Task<int> AddAttendeeToEvent(Guid eventId, Guid attendeeId)
+        public Task<int> AddEventAttendee(Guid eventId, Guid attendeeId)
         {
             try
             {
@@ -60,5 +60,20 @@
                 throw;
             }
         }
+
+        public async Task<int> DeleteEventAttendee(Guid eventId, Guid userId)
+        {
+            try
+            {
+                var eventAttendee = await mobDbContext.EventAttendees.FindAsync(eventId, userId).ConfigureAwait(false);
+                mobDbContext.EventAttendees.Remove(eventAttendee);
+                return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
     }
 }
