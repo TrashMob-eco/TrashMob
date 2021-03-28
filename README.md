@@ -15,7 +15,7 @@ Basically, TrashMob is the NerdDinner.com site re-purposed to allow people to st
 
 This project is currently under development, with the plan to launch in the spring of 2021. There's lots of work to get the site to an MVP state. I have a plan I have been working on that I will share if people are interested
 
-## WHat is the domain name going to be?
+## What is the domain name going to be?
 
 I'm working on procuring the domain name(s).
 
