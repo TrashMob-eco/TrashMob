@@ -9,8 +9,8 @@ namespace TrashMob.Controllers
     using TrashMob.Models;
     using TrashMob.Persistence;
 
-    [Route("api/events")]
     [ApiController]
+    [Route("api/events")]
     public class EventsController : ControllerBase
     {
         private readonly IEventRepository eventRepository;

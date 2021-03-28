@@ -5,8 +5,8 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Persistence;
 
-    [Route("api/eventtypes")]
     [ApiController]
+    [Route("api/eventtypes")]
     public class EventsTypesController : ControllerBase
     {
         private readonly IEventTypeRepository eventTypeRepository;
