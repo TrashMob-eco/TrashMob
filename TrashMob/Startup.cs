@@ -25,7 +25,7 @@ namespace TrashMob
             // The following line enables Application Insights telemetry collection.
             services.AddApplicationInsightsTelemetry();
 
-            services.AddControllersWithViews(option =>
+            services.AddControllers(option =>
             {
                 option.Filters.Add<ValidationFilter>();
             });
@@ -67,9 +67,7 @@ namespace TrashMob
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
+                endpoints.MapControllers();
             });
 
             app.UseSpa(spa =>
