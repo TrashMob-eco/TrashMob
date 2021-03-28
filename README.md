@@ -11,13 +11,13 @@ I read about a guy in California named [Edgar McGregor](https://twitter.com/edga
 Basically, TrashMob is the NerdDinner.com site re-purposed to allow people to start mobs of their own to tackle cleanup or whatever needs doing. And I keep coming up with more and more ideas for it. I'm hoping this site grows organically because of the good that we can do we get together.
 
 # FAQ 
-## What is the Current State of This Project
+## What is the current state of this project?
 
 This project is currently under development, with the plan to launch in the spring of 2021. There's lots of work to get the site to an MVP state. I have a plan I have been working on that I will share if people are interested
 
 ## What is the domain name going to be?
 
-I'm working on procuring the domain name(s).
+I'm still working on procuring the domain name(s).
 
 ## Are you looking for contributors?
 
