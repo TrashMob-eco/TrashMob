@@ -22,14 +22,28 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
         this.state = {
             title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), statusList: [], typeList: [] };
 
-        fetch('api/events/GetEventStatuses')
-            .then(response => response.json() as Promise<Array<StatusData>>)
+        fetch('api/eventStatuses', {
+            method: 'GET',
+            headers: {
+                Allow: 'GET',
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+                },
+            })
+            .then(response => response.json() as Promise<Array<any>>)
             .then(data => {
                 this.setState({ statusList: data });
             });  
 
-        fetch('api/events/GetEventTypes')
-            .then(response => response.json() as Promise<Array<TypeData>>)
+        fetch('api/eventtypes', {
+            method: 'GET',
+            headers: {
+                Allow: 'GET',
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+                },
+            })
+            .then(response => response.json() as Promise<Array<any>>)
             .then(data => {
                 this.setState({ typeList: data });
             });  

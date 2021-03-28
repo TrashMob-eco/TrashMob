@@ -9,42 +9,21 @@ namespace TrashMob.Controllers
     using TrashMob.Models;
     using TrashMob.Persistence;
 
-    // [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/events")]
     [ApiController]
     public class EventsController : ControllerBase
     {
         private readonly IEventRepository eventRepository;
-        private readonly IEventStatusRepository eventStatusRepository;
-        private readonly IEventTypeRepository eventTypeRepository;
 
-        public EventsController(IEventRepository eventRepository, IEventStatusRepository eventStatusRepository, IEventTypeRepository eventTypeRepository)
+        public EventsController(IEventRepository eventRepository)
         {
             this.eventRepository = eventRepository;
-            this.eventStatusRepository = eventStatusRepository;
-            this.eventTypeRepository = eventTypeRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetEvents()
         {
             var result = await eventRepository.GetAllEvents().ConfigureAwait(false);
-            return Ok(result);
-        }
-
-        [HttpGet]
-        [Route("GetEventStatuses")]
-        public async Task<IActionResult> GetEventStatuses()
-        {
-            var result = await eventStatusRepository.GetAllEventStatuses().ConfigureAwait(false);
-            return Ok(result);
-        }
-
-        [HttpGet]
-        [Route("GetEventTypes")]
-        public async Task<IActionResult> GetEventTypes()
-        {
-            var result = await eventTypeRepository.GetAllEventTypes().ConfigureAwait(false);
             return Ok(result);
         }
 
