@@ -28,7 +28,7 @@
             }
         }
 
-        public Task<int> AddAttendeeToEvent(Guid eventId, string attendeeId)
+        public Task<int> AddAttendeeToEvent(Guid eventId, Guid attendeeId)
         {
             try
             {

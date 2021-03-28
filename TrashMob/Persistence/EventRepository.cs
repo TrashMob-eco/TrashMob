@@ -4,6 +4,7 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using TrashMob.Extensions;
     using TrashMob.Models;
 
     public class EventRepository : IEventRepository
@@ -35,7 +36,7 @@
                 mobEvent.Id = Guid.NewGuid();
                 mobDbContext.Events.Add(mobEvent);
 
-                var eventHistory = new EventHistory(mobEvent);
+                var eventHistory = mobEvent.ToEventHistory();
                 mobDbContext.EventHistories.Add(eventHistory);
 
                 await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
@@ -53,7 +54,7 @@
             try
             {
                 mobDbContext.Entry(mobEvent).State = EntityState.Modified;
-                var eventHistory = new EventHistory(mobEvent);
+                var eventHistory = mobEvent.ToEventHistory();
                 mobDbContext.EventHistories.Add(eventHistory);
                 return mobDbContext.SaveChangesAsync();
             }
