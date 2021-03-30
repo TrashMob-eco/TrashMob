@@ -3,9 +3,11 @@ import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
 import { EventData } from './FetchEvents';  
 import ScriptTag from 'react-script-tag';
-import DatePicker from 'react-datepicker';
+import DateTimePicker from 'react-datetime-picker';
 
 import 'react-datepicker/dist/react-datepicker.css';
+import Moment from 'react-moment'
+import moment from 'moment';
 
 interface AddEventDataState {
     title: string;
@@ -24,11 +26,14 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
     constructor(props: RouteComponentProps<MatchParams>) {
         super(props);
         this.state = {
-            title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), typeList: [], eventDate: new Date() };
+            title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), typeList: [], eventDate: new Date()
+        };
 
         const demo = props => (
             <ScriptTag type="text/javascript" src="/nodemodules/json.date-extensions/json.date-extensions.min.js" />
         )
+
+        this.state.eventData.eventDate.toJSON = function () { return moment(this).format("yyyy-MM-ddThh:mm:ss.fff") };
 
         fetch('api/eventtypes', {
             method: 'GET',
@@ -64,6 +69,10 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
         this.handleCancel = this.handleCancel.bind(this);
     }
 
+    handleEventDateChange = (eventDate: Date) => {
+        this.setState(prevState => ({ eventData: { ...prevState.eventData, eventDate: eventDate }}));
+    }
+  
     public render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
@@ -86,6 +95,7 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
                 obj[keyd] = value;
             }
         }
+
         return obj;
     };
 
@@ -128,12 +138,6 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
         }
     }
 
-    private handleEventDateChange(date: Date) {
-        this.setState({
-            eventDate: date
-        })
-    }
-
     // This will handle Cancel button click event.  
     private handleCancel(event: any) {
         event.preventDefault();
@@ -162,13 +166,13 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="EventDate">EventDate</label>
                     <div className="col-md-4">
-                        <DatePicker selected={this.state.eventData.eventDate} name="eventDate" onChange={this.handleEventDateChange} />
+                        <DateTimePicker selected={this.state.eventData.eventDate} name="eventDate" onChange={this.handleEventDateChange} value={this.state.eventData.eventDate} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="EventType">Event Type</label>
                     <div className="col-md-4">
-                        <select className="form-control" data-val="true" name="EventType" defaultValue={this.state.eventData.eventTypeId} required>
+                        <select className="form-control" data-val="true" name="eventTypeId" defaultValue={this.state.eventData.eventTypeId} required>
                             <option value="">-- Select Event Type --</option>
                             {typeList.map(type =>
                                 <option key={type.id} value={type.name}>{type.name}</option>
