@@ -43,6 +43,28 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\components\assets\beachlitter.jpg" />
+    <None Remove="ClientApp\src\components\assets\litter.jpg" />
+    <None Remove="ClientApp\src\components\assets\sign.jpg" />
+    <None Remove="ClientApp\src\components\assets\streetlitter.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="ClientApp\src\components\assets\beachlitter.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ClientApp\src\components\assets\litter.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ClientApp\src\components\assets\sign.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ClientApp\src\components\assets\streetlitter.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Migrations\" />
   </ItemGroup>
 
