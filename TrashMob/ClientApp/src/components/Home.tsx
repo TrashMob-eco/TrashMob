@@ -11,13 +11,13 @@ export class Home extends Component {
         return (
             <div>
                 <div>
-                    <MainCarousel />;
+                    <MainCarousel />
                 </div>
                 <div>
-                    <FetchEvents />;
+                    <FetchEvents />
                 </div>
                 <div>
-                    <NearbyEventsMap />;
+                    <NearbyEventsMap />
                 </div>
             </div>
         );

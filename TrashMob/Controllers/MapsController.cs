@@ -1,6 +1,7 @@
 ﻿namespace TrashMob.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
+    using System.Threading.Tasks;
     using TrashMob.Persistence;
 
     [ApiController]
@@ -15,9 +16,10 @@
         }
 
         [HttpGet]
-        public IActionResult GetMapKey()
+        public async Task<IActionResult> GetMapKey()
         {
-            return Ok(mapRepository.GetMapKey());
+            var mapKey = await Task.FromResult(mapRepository.GetMapKey());
+            return Ok(mapKey);
         }
     }
 }

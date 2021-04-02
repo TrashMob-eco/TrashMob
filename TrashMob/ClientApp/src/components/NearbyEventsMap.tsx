@@ -30,8 +30,8 @@ export class NearbyEventsMap extends React.Component<MapProps, MapState> {
             method: 'GET',
             headers: {
                 Allow: 'GET',
-                Accept: 'application/text',
-                'Content-Type': 'application/text'
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
             },
         })
             .then(response => response.json() as Promise<string>)
