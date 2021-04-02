@@ -16,7 +16,7 @@
 
         public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
         
-        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<User> UserProfiles { get; set; }
 
         public virtual DbSet<Event> Events { get; set; }
 

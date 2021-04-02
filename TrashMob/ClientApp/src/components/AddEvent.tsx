@@ -79,10 +79,8 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
     private handleSave(event : any) {
         event.preventDefault();
 
-        Date.prototype.toJSON = function () { return this.toISOString(); }
-
         const jsonform = new FormData(event.target);
-        const obj = Object.fromEntries(jsonform.entries());
+        var obj = Object.fromEntries(jsonform.entries()) as EventData;
         var data = JSON.stringify(obj);
 
         // PUT request for Edit Event.  

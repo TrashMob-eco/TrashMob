@@ -1,5 +1,8 @@
 import { Component } from 'react';
 import * as React from 'react'
+import { FetchEvents } from './FetchEvents';  
+import { MainCarousel } from './MainCarousel';
+import { NearbyEventsMap } from './NearbyEventsMap';
 
 export class Home extends Component {
     static displayName = Home.name;
@@ -7,14 +10,15 @@ export class Home extends Component {
     render() {
         return (
             <div>
-                <h1>TrashMob!</h1>
-                <p>Welcome to TrashMob.org</p>
-
                 <div>
-                    Upcoming Events
-                    
+                    <MainCarousel />;
                 </div>
-
+                <div>
+                    <FetchEvents />;
+                </div>
+                <div>
+                    <NearbyEventsMap />;
+                </div>
             </div>
         );
     }
