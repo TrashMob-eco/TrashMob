@@ -2,12 +2,7 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
 import { EventData } from './FetchEvents';  
-import ScriptTag from 'react-script-tag';
 import DateTimePicker from 'react-datetime-picker';
-
-import 'react-datepicker/dist/react-datepicker.css';
-import Moment from 'react-moment'
-import moment from 'moment';
 
 interface AddEventDataState {
     title: string;
@@ -28,12 +23,6 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
         this.state = {
             title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), typeList: [], eventDate: new Date()
         };
-
-        const demo = props => (
-            <ScriptTag type="text/javascript" src="/nodemodules/json.date-extensions/json.date-extensions.min.js" />
-        )
-
-        this.state.eventData.eventDate.toJSON = function () { return moment(this).format("yyyy-MM-ddThh:mm:ss.fff") };
 
         fetch('api/eventtypes', {
             method: 'GET',
@@ -86,30 +75,21 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
         </div>;
     }
 
-    private serializeForm(form: HTMLFormElement) {
-        let obj: { [key: string]: string } = {};
-        var formData = new FormData(form);
-        for (var keyd of Array.from<string>(formData.keys())) {
-            var value = formData.get(keyd);
-            if (value && typeof value === 'string') {
-                obj[keyd] = value;
-            }
-        }
-
-        return obj;
-    };
-
     // This will handle the submit form event.  
     private handleSave(event : any) {
         event.preventDefault();
 
-        const data = JSON.stringify(this.serializeForm(event.target));
+        Date.prototype.toJSON = function () { return this.toISOString(); }
+
+        const jsonform = new FormData(event.target);
+        const obj = Object.fromEntries(jsonform.entries());
+        var data = JSON.stringify(obj);
 
         // PUT request for Edit Event.  
         if (this.state.eventData.id.toString() !== Guid.EMPTY) {
             fetch('api/Events', {
                 method: 'PUT',
-                body: JSON.stringify(data),
+                body: data,
                 headers: {
                     Allow: 'POST, PUT',
                     Accept: 'application/json',
@@ -125,7 +105,7 @@ export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, 
         else {
             fetch('api/Events', {
                 method: 'POST',
-                body: JSON.stringify(data),
+                body: data,
                 headers: {
                     Allow: 'POST',
                     Accept: 'application/json, text/plain',
