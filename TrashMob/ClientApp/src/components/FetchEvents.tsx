@@ -119,7 +119,6 @@ export class FetchEvents extends React.Component<PropsType, FetchEventDataState>
                                 <td>{mobEvent.lastUpdatedDate}</td>
                                 <td>{mobEvent.eventStatusId}</td>
                                 <td>
-                                    <a className="action" onClick={(id) => this.handleEdit(mobEvent.id)}>Edit</a>  |
                                 <a className="action" onClick={(id) => this.handleDelete(mobEvent.id)}>Delete</a>
                                 </td>
                             </tr>

@@ -13,6 +13,7 @@ import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { TermsOfService } from './components/TermsOfService';
 import { GettingStarted } from './components/GettingStarted';
 import { About } from './components/About';
+import { UserDashboard } from './components/UserDashboard';
 
 export default class App extends Component {
   static displayName = App.name;
@@ -30,7 +31,8 @@ export default class App extends Component {
             <Route path='/partners' component={Partners} />
             <Route path='/privacypolicy' component={PrivacyPolicy} />  
             <Route path='/sponsors' component={Sponsors} />
-            <Route path='/termsofservice' component={TermsOfService} />  
+            <Route path='/termsofservice' component={TermsOfService} />
+            <Route path='/userdashboard' component={UserDashboard} />  
       </Layout>
     );
   }
