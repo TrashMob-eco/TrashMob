@@ -1,10 +1,11 @@
 ﻿import React from 'react';
+import logo from "./assets/Logo1.png";
 
 export class Header extends React.Component {
     render() {
         return (
             <div>
-                <h1>TrashMob!</h1>
+                <img src={logo} alt="trashmob logo" />
             </div>
         );
     }
