@@ -20,7 +20,7 @@ namespace TrashMob.Models
 
         public virtual Event Event { get; set; }
 
-        public virtual User User { get; set; }
+        public virtual UserProfile UserProfile { get; set; }
 
         public virtual NotificationType NotificationType { get; set; }
     }

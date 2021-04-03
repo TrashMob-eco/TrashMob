@@ -57,9 +57,9 @@ namespace TrashMob.Models
 
         public virtual EventType EventType { get; set; }
 
-        public virtual User CreatedByUser { get; set; }
+        public virtual UserProfile CreatedByUser { get; set; }
 
-        public virtual User LastUpdatedByUser { get; set; }
+        public virtual UserProfile LastUpdatedByUser { get; set; }
 
         public virtual ICollection<AttendeeNotification> AttendeeNotifications { get; set; }
 

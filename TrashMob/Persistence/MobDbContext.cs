@@ -16,7 +16,7 @@
 
         public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
         
-        public virtual DbSet<User> UserProfiles { get; set; }
+        public virtual DbSet<UserProfile> UserProfiles { get; set; }
 
         public virtual DbSet<Event> Events { get; set; }
 
@@ -44,7 +44,7 @@
             base.OnModelCreating(modelBuilder);
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
-            modelBuilder.Entity<User>(entity =>
+            modelBuilder.Entity<UserProfile>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
@@ -68,7 +68,7 @@
                     .HasForeignKey(d => d.EventId)
                     .HasConstraintName("FK_AttendeeNotification_Event");
 
-                entity.HasOne(d => d.User)
+                entity.HasOne(d => d.UserProfile)
                     .WithMany(p => p.AttendeeNotifications)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK_AttendeeNotification_ApplicationUser");
@@ -156,7 +156,7 @@
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EventAttendees_Events");
 
-                entity.HasOne(d => d.User)
+                entity.HasOne(d => d.UserProfile)
                     .WithMany()
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
@@ -281,7 +281,7 @@
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserFeedback_ApplicationUserRegarding");
 
-                entity.HasOne(d => d.User)
+                entity.HasOne(d => d.UserProfile)
                     .WithMany(p => p.UserFeedbackUsers)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
@@ -298,7 +298,7 @@
                 entity.Property(e => e.FollowingId)
                     .IsRequired();
 
-                entity.HasOne(d => d.User)
+                entity.HasOne(d => d.UserProfile)
                     .WithMany(p => p.UsersFollowing)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
