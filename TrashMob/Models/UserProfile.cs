@@ -5,11 +5,11 @@ namespace TrashMob.Models
     using System;
     using System.Collections.Generic;
 
-    public partial class User
+    public partial class UserProfile
     {
-        public User()
+        public UserProfile()
         {
-            UsersRecruited = new HashSet<User>();
+            UsersRecruited = new HashSet<UserProfile>();
             UserFeedbackRegardingUsers = new HashSet<UserFeedback>();
             UserFeedbackUsers = new HashSet<UserFeedback>();
             UsersFollowing = new HashSet<UserSubscription>();
@@ -33,9 +33,9 @@ namespace TrashMob.Models
 
         public DateTimeOffset? MemberSince { get; set; }
 
-        public virtual User RecruitedByUser { get; set; }
+        public virtual UserProfile RecruitedByUser { get; set; }
 
-        public virtual ICollection<User> UsersRecruited { get; set; }
+        public virtual ICollection<UserProfile> UsersRecruited { get; set; }
 
         public virtual ICollection<UserFeedback> UserFeedbackRegardingUsers { get; set; }
 
