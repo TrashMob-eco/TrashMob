@@ -14,6 +14,7 @@ import { TermsOfService } from './components/TermsOfService';
 import { GettingStarted } from './components/GettingStarted';
 import { About } from './components/About';
 import { UserDashboard } from './components/UserDashboard';
+import { UserStories } from './components/UserStories';
 
 export default class App extends Component {
   static displayName = App.name;
@@ -33,6 +34,7 @@ export default class App extends Component {
             <Route path='/sponsors' component={Sponsors} />
             <Route path='/termsofservice' component={TermsOfService} />
             <Route path='/userdashboard' component={UserDashboard} />  
+            <Route path='/userstories' component={UserStories} />  
       </Layout>
     );
   }
