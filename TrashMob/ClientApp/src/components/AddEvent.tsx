@@ -3,7 +3,7 @@ import * as React from 'react'
 import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
 import { EventData } from './FetchEvents';  
-import DateTimePicker from 'react-datetime-picker';
+import DatePicker from 'react-datepicker';
 
 interface AddEventDataState {
     title: string;
@@ -80,9 +80,28 @@ export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEve
     private handleSave(event : any) {
         event.preventDefault();
 
-        const jsonform = new FormData(event.target);
-        var obj = Object.fromEntries(jsonform.entries()) as EventData;
-        var data = JSON.stringify(obj);
+        const form = new FormData(event.target);
+
+        var eventData = new EventData();
+        eventData.name = form.get("name")?.toString() ?? ""; 
+        eventData.description = form.get("description")?.toString() ?? ""; 
+        var eventDatest = form.get("eventDate")?.toString() ?? ""; 
+        if (eventDatest) {
+            eventData.eventDate = new Date(eventDatest);
+        }
+
+        eventData.eventTypeId = form.get("eventType")?.valueOf() as number ?? 0; 
+        eventData.streetAddress = form.get("streetAddress")?.toString() ?? ""; 
+        eventData.city = form.get("city")?.toString() ?? ""; 
+        eventData.stateProvince = form.get("stateProvince")?.toString() ?? ""; 
+        eventData.country = form.get("country")?.toString() ?? ""; 
+        eventData.zipCode = form.get("zipCode")?.toString() ?? ""; 
+        eventData.latitude = form.get("latitude")?.toString() ?? ""; 
+        eventData.longitude = form.get("longitude")?.toString() ?? ""; 
+        eventData.gpscoords = form.get("gpscoords")?.toString() ?? ""; 
+        eventData.maxNumberOfParticipants = form.get("maxNumberOfParticipants")?.valueOf() as number ?? 0
+
+        var data = JSON.stringify(eventData);
 
         // PUT request for Edit Event.  
         if (this.state.eventData.id.toString() !== Guid.EMPTY) {
@@ -145,7 +164,7 @@ export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEve
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="EventDate">EventDate</label>
                     <div className="col-md-4">
-                        <DateTimePicker selected={this.state.eventData.eventDate} name="eventDate" onChange={this.handleEventDateChange} value={this.state.eventData.eventDate} />
+                        <DatePicker selected={this.state.eventData.eventDate} name="eventDate" onChange={this.handleEventDateChange} value={this.state.eventData.eventDate.toDateString()} />
                     </div>
                 </div >
                 <div className="form-group row">
