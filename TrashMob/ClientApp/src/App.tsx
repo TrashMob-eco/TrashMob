@@ -23,13 +23,13 @@ import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { Sponsors } from './components/Sponsors';
 import { TermsOfService } from './components/TermsOfService';
 import { UserStories } from './components/UserStories';
-import { MsalAuthenticationTemplate , UnauthenticatedTemplate, MsalProvider } from '@azure/msal-react';
+import { MsalAuthenticationTemplate , UnauthenticatedTemplate, MsalProvider, MsalAuthenticationResult } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
 import { msalClient } from './store/AuthStore';
 import { initializeIcons } from '@uifabric/icons';
 
 export default class App extends Component {
-    constructor(props) {
+    constructor(props: any) {
         super(props);
         this.state = { loading: true }
     }
@@ -40,7 +40,7 @@ export default class App extends Component {
 
     static displayName = App.name;
 
-    private ErrorComponent({ error }) {
+    private ErrorComponent(error: MsalAuthenticationResult) {
         return <p>An Error Occurred: {error}</p>;
     }
 
@@ -60,22 +60,19 @@ export default class App extends Component {
                         <div className="row flex-fill flex-column flex-sm-row">
 
                             <BrowserRouter>
-                                <MsalAuthenticationTemplate
-                                    interactionType={InteractionType.Redirect}
-                                    errorComponent={this.ErrorComponent}
-                                    loadingComponent={this.LoadingComponent}>
-                                    <Switch>
-                                        <Route path="/addevent">
-                                            <AddEvent />
-                                        </Route>
-                                        <Route path="/event/edit/:eventid">
-                                            <AddEvent />
-                                        </Route>
-                                        <Route path="/mydashboard">
-                                            <MyDashboard />
-                                        </Route>
-                                    </Switch>
-                                </MsalAuthenticationTemplate >
+                                {/*<MsalAuthenticationTemplate*/}
+                                {/*    interactionType={InteractionType.Redirect}*/}
+                                {/*    errorComponent={this.ErrorComponent}*/}
+                                {/*    loadingComponent={this.LoadingComponent}>*/}
+                                {/*    <Switch>*/}
+                                {/*        */}{/*<Route path="/addevent">*/}
+                                {/*        */}{/*    <AddEvent />*/}
+                                {/*        */}{/*</Route>*/}
+                                {/*        <Route path="/mydashboard">*/}
+                                {/*            <MyDashboard />*/}
+                                {/*        </Route>*/}
+                                {/*    </Switch>*/}
+                                {/*</MsalAuthenticationTemplate >*/}
                                 <UnauthenticatedTemplate>
                                     <Switch>
                                         <Route path='/'>

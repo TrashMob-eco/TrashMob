@@ -51,6 +51,16 @@ dotnet ef database update
 ## Where do I get the connection for the database?
 The connection to the dev database is stored in an Azure KeyVault, and can be stored as a User Secret locally. At some point, I need to figure out how to make this work for multiple devs.
 
+## The secrets you will need to run locally
+
+```
+
+cd Trashmob
+dotnet user-secrets init
+dotnet user-secrets set "AzureMapsDev" "<insert secret here from keyvault>"
+dotnet user-secrets set "TMDBServerConnectionString" "<insert secret here from keyvault>"
+
+```
 ## How do I deploy to the Azure Web App?
 I currently use Visual Studio Publish to publish the site to the dev server. Eventually I want this to happen via GitHub.
 

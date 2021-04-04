@@ -5,7 +5,7 @@
     public class MapRepository : IMapRepository
     {
         private readonly IConfiguration configuration;
-        private const string GoogleMapKeyName = "GoogleMapKey";
+        private const string AzureMapKeyName = "AzureMapsDev";
 
         public MapRepository(IConfiguration configuration)
         {
@@ -14,7 +14,7 @@
 
         public string GetMapKey()
         {
-            return configuration[GoogleMapKeyName];
+            return configuration[AzureMapKeyName];
         }
     }
 }
