@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import * as React from 'react'
 import { Link } from 'react-router-dom';
+import { FetchUserEvents } from './FetchUserEvents'
 
 export class UserDashboard extends Component {
     render() {
