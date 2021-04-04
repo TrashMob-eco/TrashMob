@@ -11,6 +11,9 @@ export class UserDashboard extends Component {
                 </div>
                 <div>
                     My Upcoming Events
+                    <div>
+                        <FetchUserEvents />
+                    </div>
                 </div>
                 <div>
                     My Completed Events
