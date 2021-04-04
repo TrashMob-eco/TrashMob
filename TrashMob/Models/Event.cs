@@ -9,8 +9,6 @@ namespace TrashMob.Models
     {
         public Event()
         {
-            AttendeeNotifications = new HashSet<AttendeeNotification>();
-            UserFeedback = new HashSet<UserFeedback>();
         }
 
         public Guid Id { get; set; }
@@ -57,12 +55,8 @@ namespace TrashMob.Models
 
         public virtual EventType EventType { get; set; }
 
-        public virtual UserProfile CreatedByUser { get; set; }
+        public virtual User CreatedByUser { get; set; }
 
-        public virtual UserProfile LastUpdatedByUser { get; set; }
-
-        public virtual ICollection<AttendeeNotification> AttendeeNotifications { get; set; }
-
-        public virtual ICollection<UserFeedback> UserFeedback { get; set; }
+        public virtual User LastUpdatedByUser { get; set; }
     }
 }

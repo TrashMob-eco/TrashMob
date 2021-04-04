@@ -13,7 +13,7 @@
             this.configuration = configuration;
         }
 
-        public virtual DbSet<UserProfile> UserProfiles { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
         public virtual DbSet<Event> Events { get; set; }
 
@@ -25,12 +25,6 @@
 
         public virtual DbSet<EventType> EventTypes { get; set; }
 
-        public virtual DbSet<NotificationType> NotificationTypes { get; set; }
-
-        public virtual DbSet<UserFeedback> UserFeedback { get; set; }
-
-        public virtual DbSet<UserFeedback> UserSubscription { get; set; }
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"]);
@@ -41,39 +35,13 @@
             base.OnModelCreating(modelBuilder);
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
-            modelBuilder.Entity<UserProfile>(entity =>
+            modelBuilder.Entity<User>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.PrivacyPolicyVersion).HasMaxLength(50);
 
                 entity.Property(e => e.TermsOfServiceVersion).HasMaxLength(50);
-
-                entity.HasOne(d => d.RecruitedByUser)
-                    .WithMany(p => p.UsersRecruited)
-                    .HasForeignKey(d => d.RecruitedByUserId)
-                    .HasConstraintName("FK_ApplicationUser_RecruitedBy")
-                    .OnDelete(DeleteBehavior.NoAction);
-            });
-
-            modelBuilder.Entity<AttendeeNotification>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.HasOne(d => d.Event)
-                    .WithMany(p => p.AttendeeNotifications)
-                    .HasForeignKey(d => d.EventId)
-                    .HasConstraintName("FK_AttendeeNotification_Event");
-
-                entity.HasOne(d => d.UserProfile)
-                    .WithMany(p => p.AttendeeNotifications)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK_AttendeeNotification_ApplicationUser");
-
-                entity.HasOne(d => d.NotificationType)
-                    .WithMany(p => p.AttendeeNotifications)
-                    .HasForeignKey(d => d.NotificationTypeId)
-                    .HasConstraintName("FK_AttendeeNotification_NotificationType");
             });
 
             modelBuilder.Entity<Event>(entity =>
@@ -153,7 +121,7 @@
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EventAttendees_Events");
 
-                entity.HasOne(d => d.UserProfile)
+                entity.HasOne(d => d.User)
                     .WithMany()
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
@@ -245,67 +213,6 @@
                     new EventType { Id = 12, Name = "Vandalism Cleanup", Description = "Vandalism Cleanup", DisplayOrder = 12, IsActive = true },
                     new EventType { Id = 13, Name = "Social Event", Description = "Social Event", DisplayOrder = 13, IsActive = true },
                     new EventType { Id = 14, Name = "Other", Description = "Other", DisplayOrder = 14, IsActive = true });
-        });
-
-            modelBuilder.Entity<NotificationType>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Description);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<UserFeedback>(entity =>
-            {
-                entity.ToTable("UserFeedback");
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Comments).HasMaxLength(2000);
-
-                entity.Property(e => e.RegardingUserId)
-                    .IsRequired();
-
-                entity.Property(e => e.UserId)
-                    .IsRequired();
-
-                entity.HasOne(d => d.RegardingUser)
-                    .WithMany(p => p.UserFeedbackRegardingUsers)
-                    .HasForeignKey(d => d.RegardingUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserFeedback_ApplicationUserRegarding");
-
-                entity.HasOne(d => d.UserProfile)
-                    .WithMany(p => p.UserFeedbackUsers)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserFeedback_ApplicationUser");
-            });
-
-            modelBuilder.Entity<UserSubscription>(entity =>
-            {
-                entity.HasKey(e => new { e.UserId, e.FollowingId });
-
-                entity.Property(e => e.UserId)
-                    .IsRequired();
-
-                entity.Property(e => e.FollowingId)
-                    .IsRequired();
-
-                entity.HasOne(d => d.UserProfile)
-                    .WithMany(p => p.UsersFollowing)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserSubscriptions_ApplicationUserFollowed");
-
-                entity.HasOne(d => d.FollowingUser)
-                    .WithMany(p => p.UsersFollowed)
-                    .HasForeignKey(d => d.FollowingId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserSubscriptions_ApplicationUsersFollowing");
             });
         }
     }
