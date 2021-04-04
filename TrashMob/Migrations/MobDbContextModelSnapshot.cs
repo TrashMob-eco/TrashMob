@@ -20,37 +20,6 @@ namespace TrashMob.Migrations
                 .HasAnnotation("ProductVersion", "5.0.4")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("TrashMob.Models.AttendeeNotification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("AcknowledgedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("NotificationDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("NotificationTypeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("NotificationTypeId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AttendeeNotification");
-                });
-
             modelBuilder.Entity("TrashMob.Models.Event", b =>
                 {
                     b.Property<Guid>("Id")
@@ -150,13 +119,7 @@ namespace TrashMob.Migrations
                     b.Property<Guid>("EventId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("ArrivalTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<DateTimeOffset?>("CanceledDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset?>("DepartureTime")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset>("SignUpDate")
@@ -439,60 +402,7 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Models.NotificationType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NotificationTypes");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.UserFeedback", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Comments")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int?>("EventRating")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("RegardingUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int?>("UserRating")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("RegardingUserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserFeedback");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.UserProfile", b =>
+            modelBuilder.Entity("TrashMob.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -510,74 +420,18 @@ namespace TrashMob.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<Guid>("RecruitedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("TermsOfServiceVersion")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RecruitedByUserId");
-
-                    b.ToTable("UserProfiles");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.UserSubscription", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("FollowingId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("EndDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset>("StartDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.HasKey("UserId", "FollowingId");
-
-                    b.HasIndex("FollowingId");
-
-                    b.ToTable("UserSubscription");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.AttendeeNotification", b =>
-                {
-                    b.HasOne("TrashMob.Models.Event", "Event")
-                        .WithMany("AttendeeNotifications")
-                        .HasForeignKey("EventId")
-                        .HasConstraintName("FK_AttendeeNotification_Event")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TrashMob.Models.NotificationType", "NotificationType")
-                        .WithMany("AttendeeNotifications")
-                        .HasForeignKey("NotificationTypeId")
-                        .HasConstraintName("FK_AttendeeNotification_NotificationType")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TrashMob.Models.UserProfile", "UserProfile")
-                        .WithMany("AttendeeNotifications")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("FK_AttendeeNotification_ApplicationUser")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-
-                    b.Navigation("NotificationType");
-
-                    b.Navigation("UserProfile");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("TrashMob.Models.Event", b =>
                 {
-                    b.HasOne("TrashMob.Models.UserProfile", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("EventsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .HasConstraintName("FK_Events_ApplicationUser_CreatedBy")
@@ -596,7 +450,7 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_Events_EventTypes")
                         .IsRequired();
 
-                    b.HasOne("TrashMob.Models.UserProfile", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("EventsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .HasConstraintName("FK_Events_ApplicationUser_LastUpdatedBy")
@@ -619,7 +473,7 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_EventAttendees_Events")
                         .IsRequired();
 
-                    b.HasOne("TrashMob.Models.UserProfile", "UserProfile")
+                    b.HasOne("TrashMob.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK_EventAttendees_ApplicationUser")
@@ -627,72 +481,7 @@ namespace TrashMob.Migrations
 
                     b.Navigation("Event");
 
-                    b.Navigation("UserProfile");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.UserFeedback", b =>
-                {
-                    b.HasOne("TrashMob.Models.Event", "Event")
-                        .WithMany("UserFeedback")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TrashMob.Models.UserProfile", "RegardingUser")
-                        .WithMany("UserFeedbackRegardingUsers")
-                        .HasForeignKey("RegardingUserId")
-                        .HasConstraintName("FK_UserFeedback_ApplicationUserRegarding")
-                        .IsRequired();
-
-                    b.HasOne("TrashMob.Models.UserProfile", "UserProfile")
-                        .WithMany("UserFeedbackUsers")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("FK_UserFeedback_ApplicationUser")
-                        .IsRequired();
-
-                    b.Navigation("Event");
-
-                    b.Navigation("RegardingUser");
-
-                    b.Navigation("UserProfile");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.UserProfile", b =>
-                {
-                    b.HasOne("TrashMob.Models.UserProfile", "RecruitedByUser")
-                        .WithMany("UsersRecruited")
-                        .HasForeignKey("RecruitedByUserId")
-                        .HasConstraintName("FK_ApplicationUser_RecruitedBy")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("RecruitedByUser");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.UserSubscription", b =>
-                {
-                    b.HasOne("TrashMob.Models.UserProfile", "FollowingUser")
-                        .WithMany("UsersFollowed")
-                        .HasForeignKey("FollowingId")
-                        .HasConstraintName("FK_UserSubscriptions_ApplicationUsersFollowing")
-                        .IsRequired();
-
-                    b.HasOne("TrashMob.Models.UserProfile", "UserProfile")
-                        .WithMany("UsersFollowing")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("FK_UserSubscriptions_ApplicationUserFollowed")
-                        .IsRequired();
-
-                    b.Navigation("FollowingUser");
-
-                    b.Navigation("UserProfile");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.Event", b =>
-                {
-                    b.Navigation("AttendeeNotifications");
-
-                    b.Navigation("UserFeedback");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TrashMob.Models.EventStatus", b =>
@@ -705,28 +494,11 @@ namespace TrashMob.Migrations
                     b.Navigation("Events");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.NotificationType", b =>
+            modelBuilder.Entity("TrashMob.Models.User", b =>
                 {
-                    b.Navigation("AttendeeNotifications");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.UserProfile", b =>
-                {
-                    b.Navigation("AttendeeNotifications");
-
                     b.Navigation("EventsCreated");
 
                     b.Navigation("EventsUpdated");
-
-                    b.Navigation("UserFeedbackRegardingUsers");
-
-                    b.Navigation("UserFeedbackUsers");
-
-                    b.Navigation("UsersFollowed");
-
-                    b.Navigation("UsersFollowing");
-
-                    b.Navigation("UsersRecruited");
                 });
 #pragma warning restore 612, 618
         }

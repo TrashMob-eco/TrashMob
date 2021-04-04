@@ -16,12 +16,8 @@ namespace TrashMob.Models
         
         public DateTimeOffset? CanceledDate { get; set; }
         
-        public DateTimeOffset? ArrivalTime { get; set; }
-        
-        public DateTimeOffset? DepartureTime { get; set; }
-
         public virtual Event Event { get; set; }
         
-        public virtual UserProfile UserProfile { get; set; }
+        public virtual User User { get; set; }
     }
 }
