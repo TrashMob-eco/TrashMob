@@ -1,4 +1,6 @@
-import * as React from 'react';
+import { Component } from 'react';
+import * as React from 'react'
+
 import { Link } from 'react-router-dom';
 import { Guid } from "guid-typescript";
 
@@ -9,7 +11,7 @@ interface FetchEventDataState {
     loading: boolean;
 }
 
-export class FetchEvents extends React.Component<PropsType, FetchEventDataState> {
+export class FetchEvents extends Component<PropsType, FetchEventDataState> {
 
     constructor(props: FetchEventDataState) {
         super(props);

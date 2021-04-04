@@ -1,6 +1,8 @@
-import * as React from 'react';
+import { Component } from 'react';
+import * as React from 'react'
+
 import { Link, NavLink } from 'react-router-dom';
-export class NavMenu extends React.Component<{}, {}> {
+export class NavMenu extends Component<{}, {}> {
     public render() {
         return <div className='main-nav'>
             <div className='navbar navbar-inverse'>

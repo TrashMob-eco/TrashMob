@@ -1,4 +1,6 @@
-﻿import React from 'react';
+﻿import { Component } from 'react';
+import * as React from 'react'
+
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
 import sign from "./assets/sign.jpg";
@@ -6,7 +8,7 @@ import litter from "./assets/litter.jpg";
 import streetlitter from "./assets/streetlitter.jpg";
 import beachlitter from "./assets/beachlitter.jpg";
 
-export class MainCarousel extends React.Component {
+export class MainCarousel extends Component {
     render() {
         return (
             <Carousel>

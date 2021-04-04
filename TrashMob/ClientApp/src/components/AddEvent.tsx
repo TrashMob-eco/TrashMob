@@ -1,4 +1,5 @@
-import * as React from 'react';
+import { Component } from 'react';
+import * as React from 'react'
 import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
 import { EventData } from './FetchEvents';  
@@ -17,7 +18,7 @@ interface MatchParams {
     eventId: string;
 }
 
-export class AddEvent extends React.Component<RouteComponentProps<MatchParams>, AddEventDataState> {
+export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEventDataState> {
     constructor(props: RouteComponentProps<MatchParams>) {
         super(props);
         this.state = {

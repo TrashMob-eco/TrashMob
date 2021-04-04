@@ -1,6 +1,7 @@
-﻿import React from 'react';
+﻿import { Component } from 'react';
+import * as React from 'react'
 
-export class About extends React.Component {
+export class About extends Component {
     render() {
         return (
             <div>
