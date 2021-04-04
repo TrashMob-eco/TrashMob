@@ -61,7 +61,7 @@ export default class App extends Component {
 
                             <BrowserRouter>
                                 {/*<MsalAuthenticationTemplate*/}
-                                {/*    interactionType={InteractionType.Redirect}*/}
+                                {/*    interactionType={InteractionType.Popup}*/}
                                 {/*    errorComponent={this.ErrorComponent}*/}
                                 {/*    loadingComponent={this.LoadingComponent}>*/}
                                 {/*    <Switch>*/}
