@@ -15,6 +15,7 @@ import './custom.css'
 import { About } from './components/About';
 import { ContactUs } from './components/ContactUs';
 import { Faq } from './components/Faq';
+import { Footer } from './components/Footer';
 import { GettingStarted } from './components/GettingStarted';
 import { MyDashboard } from './components/MyDashboard';
 import { Partners } from './components/Partners';
@@ -22,13 +23,30 @@ import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { Sponsors } from './components/Sponsors';
 import { TermsOfService } from './components/TermsOfService';
 import { UserStories } from './components/UserStories';
-import { MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
+import { MsalAuthenticationTemplate , UnauthenticatedTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
 import { msalClient } from './store/AuthStore';
 import { initializeIcons } from '@uifabric/icons';
 
 export default class App extends Component {
+    constructor(props) {
+        super(props);
+        this.state = { loading: true }
+    }
+
+    componentDidMount() {
+            this.setState({ loading: false });
+    }
+
     static displayName = App.name;
+
+    private ErrorComponent({ error }) {
+        return <p>An Error Occurred: {error}</p>;
+    }
+
+    private LoadingComponent() {
+        return <p>Authentication in progress...</p>;
+    }
 
     render() {
         initializeIcons();
@@ -42,7 +60,23 @@ export default class App extends Component {
                         <div className="row flex-fill flex-column flex-sm-row">
 
                             <BrowserRouter>
-                                <MsalAuthenticationTemplate interactionType={InteractionType.Redirect}>
+                                <MsalAuthenticationTemplate
+                                    interactionType={InteractionType.Redirect}
+                                    errorComponent={this.ErrorComponent}
+                                    loadingComponent={this.LoadingComponent}>
+                                    <Switch>
+                                        <Route path="/addevent">
+                                            <AddEvent />
+                                        </Route>
+                                        <Route path="/event/edit/:eventid">
+                                            <AddEvent />
+                                        </Route>
+                                        <Route path="/mydashboard">
+                                            <MyDashboard />
+                                        </Route>
+                                    </Switch>
+                                </MsalAuthenticationTemplate >
+                                <UnauthenticatedTemplate>
                                     <Switch>
                                         <Route path='/'>
                                             <Home />
@@ -50,14 +84,8 @@ export default class App extends Component {
                                         <Route path="/about">
                                             <About />
                                         </Route>
-                                        <Route path="/addevent">
-                                            <AddEvent />
-                                        </Route>
                                         <Route path="/contactus">
                                             <ContactUs />
-                                        </Route>
-                                        <Route path="/event/edit/:eventid">
-                                            <AddEvent />
                                         </Route>
                                         <Route path="/faq">
                                             <Faq />
@@ -87,11 +115,12 @@ export default class App extends Component {
                                             <UserStories />
                                         </Route>
                                     </Switch>
-                                </MsalAuthenticationTemplate>
+                                </UnauthenticatedTemplate>
                             </BrowserRouter>
                         </div>
                     </div>
                 </div>
+                <Footer />
             </MsalProvider>
         );
     }
