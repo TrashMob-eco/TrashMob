@@ -1,11 +1,10 @@
 ﻿namespace TrashMob.Persistence
 {
-    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using TrashMob.Models;
 
-    public class MobDbContext : IdentityDbContext
+    public class MobDbContext : DbContext
     {
         private readonly IConfiguration configuration;
 
@@ -14,8 +13,6 @@
             this.configuration = configuration;
         }
 
-        public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
-        
         public virtual DbSet<UserProfile> UserProfiles { get; set; }
 
         public virtual DbSet<Event> Events { get; set; }
