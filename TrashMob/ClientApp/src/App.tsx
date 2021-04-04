@@ -113,11 +113,11 @@ export default class App extends Component {
                                         </Route>
                                     </Switch>
                                 </UnauthenticatedTemplate>
+                                <Footer />
                             </BrowserRouter>
                         </div>
                     </div>
                 </div>
-                <Footer />
             </MsalProvider>
         );
     }
