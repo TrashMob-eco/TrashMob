@@ -40,6 +40,7 @@ namespace TrashMob
             services.AddScoped<IEventStatusRepository, EventStatusRepository>();
             services.AddScoped<IEventTypeRepository, EventTypeRepository>();
             services.AddScoped<IMapRepository, MapRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
