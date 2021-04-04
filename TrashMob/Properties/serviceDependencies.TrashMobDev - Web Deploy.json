@@ -6,17 +6,17 @@
       "connectionId": "VaultUri",
       "secretStore": "AzureAppSettings"
     },
-    "mssql1": {
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/db-trashmob/databases/ftm-dev",
-      "type": "mssql.azure",
-      "connectionId": "TMDBServerConnectionString",
-      "secretStore": "AzureKeyVault"
-    },
     "appInsights1": {
       "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/microsoft.insights/components/as-tm-dev",
       "type": "appInsights.azure",
       "connectionId": "APPINSIGHTS_CONNECTIONSTRING",
       "secretStore": "AzureAppSettings"
+    },
+    "mssql1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/db-trashmob/databases/ftm-dev",
+      "type": "mssql.azure",
+      "connectionId": "TMDBServerConnectionString",
+      "secretStore": "AzureKeyVault"
     }
   }
 }

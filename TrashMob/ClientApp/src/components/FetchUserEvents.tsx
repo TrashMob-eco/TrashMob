@@ -16,6 +16,7 @@ export class FetchUserEvents extends React.Component<PropsType, FetchEventDataSt
         super(props);
         this.state = { eventList: [], loading: true, token: "" };
 
+        var token = "";
         const headers = new Headers();
         const bearer = `Bearer ${token}`;
 
