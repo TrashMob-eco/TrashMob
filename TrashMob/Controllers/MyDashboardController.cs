@@ -11,11 +11,11 @@ namespace TrashMob.Controllers
     [RequiredScope("https://Trashmob.onmicrosoft.com/api/Trashmob.Read")] // The web API will only accept tokens 1) for users, and 2) having the "access_as_user" scope for this API
     [ApiController]
     [Route("api/events")]
-    public class UserDashboardController : ControllerBase
+    public class MyDashboardController : ControllerBase
     {
         private readonly IEventRepository eventRepository;
 
-        public UserDashboardController(IEventRepository eventRepository)
+        public MyDashboardController(IEventRepository eventRepository)
         {
             this.eventRepository = eventRepository;
         }

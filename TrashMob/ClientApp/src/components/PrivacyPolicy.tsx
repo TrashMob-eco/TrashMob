@@ -1,6 +1,7 @@
-﻿import React from 'react';
+﻿import { Component } from 'react';
+import * as React from 'react'
 
-export class PrivacyPolicy extends React.Component {
+export class PrivacyPolicy extends Component {
     render() {
         return (
             <div>

@@ -1,4 +1,6 @@
-﻿import React from 'react';
+﻿import { Component } from 'react';
+import * as React from 'react'
+
 import GoogleMapReact from 'google-map-react';
 
 interface MapProps {
@@ -11,7 +13,7 @@ interface MapState {
     loading: boolean;
 }
 
-export class NearbyEventsMap extends React.Component<MapProps, MapState> {
+export class NearbyEventsMap extends Component<MapProps, MapState> {
     static defaultProps = {
         center: {
             lat: 59.95,

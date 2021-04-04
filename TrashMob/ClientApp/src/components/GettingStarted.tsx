@@ -1,7 +1,9 @@
-﻿import React from 'react';
+﻿import { Component } from 'react';
+import * as React from 'react'
+
 import { Link } from 'react-router-dom';
 
-export class GettingStarted extends React.Component {
+export class GettingStarted extends Component {
     render() {
         return (
             <div>
@@ -14,7 +16,7 @@ export class GettingStarted extends React.Component {
                     <li>A bucket</li>
                 </ol>
                 <p>
-                    Really, that's all you need. A single trip to the hardware store, and you're ready to go. For the gloves, we recommend <Link to="https://www.amazon.com/3100L-DZ-Gloves-Textured-Construction-12-Pairs/dp/B001YJHEDW/ref=sr_1_9?dchild=1&keywords=work+gloves&qid=1617415033&sr=8-9">Rubber Latex Double coated work gloves.</Link><nbsp /> 
+                    Really, that's all you need. A single trip to the hardware store, and you're ready to go. For the gloves, we recommend <Link to="https://www.amazon.com/3100L-DZ-Gloves-Textured-Construction-12-Pairs/dp/B001YJHEDW/ref=sr_1_9?dchild=1&keywords=work+gloves&qid=1617415033&sr=8-9">Rubber Latex Double coated work gloves.</Link>
                     There's a good chance you will find glass or something sharp out there, and these gloves will offer some protection from that. It's also likely that either the outside of the trash will be wet, or there will be something inside
                     the trash that is wet or icky. Get the gloves.
                 </p>
