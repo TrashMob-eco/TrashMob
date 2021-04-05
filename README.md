@@ -15,11 +15,17 @@ Basically, TrashMob is the NerdDinner.com site re-purposed to allow people to st
 
 This project is currently under development, with the plan to launch in the spring of 2021. There's lots of work to get the site to an MVP state. I have a plan I have been working on that I will share if people are interested
 
-## Top Priority Issues
+## Are you looking for contributors?
 
-Just a few of the development things I haven't solved yet (besides design).
+ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want to get involved. All kinds of skills needed, from logo design to reactjs, to website design, to aspnet core, to deployment / github skills.
+
+## Ship Blockers
+
+Here's what needs to be done before we can launch
 1. Fix routing for sub pages
+1. Styling
 1. When The MSALAuthenticationTemplate is added back into the App.tsx, every route on the site requires authentication, instead of just the pages inside the template
+1. Convert to Popup Authentication
 1. The Key for the Azure Maps control needs to be retrieved from the backend, but it's an async operation, and the page isn't waiting for it
 1. The Date Picker on the Add Event page needs to be replaced with a DateTime Picker that works
 1. Add a login / logout button
@@ -31,18 +37,11 @@ Just a few of the development things I haven't solved yet (besides design).
 1. Add My Dashboard with ability to add a new event, and view / update existing ones
 1. Get proper logo
 1. Figure out how to deploy to a production versus dev environment
+1. Get production domain name
 
 ## What is the domain name going to be?
 
 I'm still working on procuring the domain name(s).
-
-## Are you looking for contributors?
-
-ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want to get involved. All kinds of skills needed, from logo design to reactjs, to website design, to aspnet core, to deployment / github skills.
-
-## What needs to be done today?
-
-So much. Best to ping me as I am coding every day on this. 
 
 ## When this project is "done" will it be open sourced?
 
