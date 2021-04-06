@@ -23,11 +23,8 @@ ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want
 
 Here's what needs to be done before we can launch
 1. Styling
-1. When The MSALAuthenticationTemplate is added back into the App.tsx, every route on the site requires authentication, instead of just the pages inside the template
-1. Convert to Popup Authentication
 1. The Key for the Azure Maps control needs to be retrieved from the backend, but it's an async operation, and the page isn't waiting for it
 1. The Date Picker on the Add Event page needs to be replaced with a DateTime Picker that works
-1. Add a login / logout button
 1. When a new user signs up, create the user in the database
 1. Finish save event experience
 1. Need content for Privacy Policy
