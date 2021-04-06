@@ -11,25 +11,25 @@ export class MyDashboard extends Component {
     render() {
         return (
             <MsalProvider instance={msalClient} >
-            <MsalAuthenticationTemplate interactionType={InteractionType.Popup}>
+                <MsalAuthenticationTemplate interactionType={InteractionType.Popup}>
 
-            <div>
-                <div>
-                    <Link to="/addevent">Create a New Event</Link>
-                </div>
-                <div>
-                    My Upcoming Events
                     <div>
-                        <FetchUserEvents />
+                        <div>
+                            <Link to="/addevent">Create a New Event</Link>
+                        </div>
+                        <div>
+                            My Upcoming Events
+                    <div>
+                                <FetchUserEvents />
+                            </div>
+                        </div>
+                        <div>
+                            My Completed Events
+                </div>
+                        <div>
+                            My Stats
+                </div>
                     </div>
-                </div>
-                <div>
-                    My Completed Events
-                </div>
-                <div>
-                    My Stats
-                </div>
-                </div>
                 </MsalAuthenticationTemplate >
             </MsalProvider>
         );
