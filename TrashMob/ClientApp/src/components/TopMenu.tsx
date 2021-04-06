@@ -3,6 +3,7 @@ import * as React from 'react'
 
 import logo from './assets/Logo1.png';
 import { msalClient } from '../store/AuthStore';
+import { verifyAccount } from '../store/accountHandler'
 
 export const TopMenu: FunctionComponent = () => {
 
@@ -18,7 +19,8 @@ export const TopMenu: FunctionComponent = () => {
 
     function signIn(e: any) {
         e.preventDefault();
-        msalClient.loginPopup();
+        msalClient.loginPopup()
+            .then(result => verifyAccount(result));
     }
 
     return (
