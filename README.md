@@ -18,7 +18,6 @@ This project is currently under development, with the plan to launch in the spri
 ## Top Priority Issues
 
 Just a few of the development things I haven't solved yet (besides design).
-1. Fix routing for sub pages
 1. When The MSALAuthenticationTemplate is added back into the App.tsx, every route on the site requires authentication, instead of just the pages inside the template
 1. The Key for the Azure Maps control needs to be retrieved from the backend, but it's an async operation, and the page isn't waiting for it
 1. The Date Picker on the Add Event page needs to be replaced with a DateTime Picker that works
