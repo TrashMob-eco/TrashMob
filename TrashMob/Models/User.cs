@@ -15,6 +15,10 @@ namespace TrashMob.Models
 
         public Guid Id { get; set; }
 
+        public string UniqueId { get; set; }
+
+        public string TenantId { get; set; }
+
         public DateTimeOffset? DateAgreedToPrivacyPolicy { get; set; }
 
         public string PrivacyPolicyVersion { get; set; }
