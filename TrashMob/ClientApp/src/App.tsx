@@ -9,7 +9,7 @@ import { FetchEvents } from './components/FetchEvents';
 import { AddEvent } from './components/AddEvent';
 
 // Layout
-import { TopMenu } from './layout/TopMenu';
+import { TopMenu } from './components/TopMenu';
 
 import './custom.css'
 import { About } from './components/About';
@@ -23,7 +23,7 @@ import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { Sponsors } from './components/Sponsors';
 import { TermsOfService } from './components/TermsOfService';
 import { UserStories } from './components/UserStories';
-import { MsalAuthenticationTemplate , UnauthenticatedTemplate, MsalProvider, MsalAuthenticationResult } from '@azure/msal-react';
+import { MsalAuthenticationTemplate, UnauthenticatedTemplate, MsalProvider, MsalAuthenticationResult } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
 import { msalClient } from './store/AuthStore';
 import { initializeIcons } from '@uifabric/icons';
@@ -35,7 +35,7 @@ export default class App extends Component {
     }
 
     componentDidMount() {
-            this.setState({ loading: false });
+        this.setState({ loading: false });
     }
 
     static displayName = App.name;
@@ -59,15 +59,15 @@ export default class App extends Component {
                     <div className="container-fluid flex-grow-1 d-flex">
                         <div className="row flex-fill flex-column flex-sm-row">
 
-                            <BrowserRouter>
+                            <BrowserRouter basename = "/" >
                                 {/*<MsalAuthenticationTemplate*/}
                                 {/*    interactionType={InteractionType.Popup}*/}
                                 {/*    errorComponent={this.ErrorComponent}*/}
                                 {/*    loadingComponent={this.LoadingComponent}>*/}
                                 {/*    <Switch>*/}
-                                {/*        */}{/*<Route path="/addevent">*/}
-                                {/*        */}{/*    <AddEvent />*/}
-                                {/*        */}{/*</Route>*/}
+                                {/*        <Route path="/addevent">*/}
+                                {/*            <AddEvent />*/}
+                                {/*        </Route>*/}
                                 {/*        <Route path="/mydashboard">*/}
                                 {/*            <MyDashboard />*/}
                                 {/*        </Route>*/}
@@ -75,7 +75,7 @@ export default class App extends Component {
                                 {/*</MsalAuthenticationTemplate >*/}
                                 <UnauthenticatedTemplate>
                                     <Switch>
-                                        <Route path='/'>
+                                        <Route exact path='/'>
                                             <Home />
                                         </Route>
                                         <Route path="/about">
@@ -92,9 +92,6 @@ export default class App extends Component {
                                         </Route>
                                         <Route path="/gettingstarted">
                                             <GettingStarted />
-                                        </Route>
-                                        <Route path="/mydashboard">
-                                            <MyDashboard />
                                         </Route>
                                         <Route path="/partners">
                                             <Partners />
@@ -113,7 +110,9 @@ export default class App extends Component {
                                         </Route>
                                     </Switch>
                                 </UnauthenticatedTemplate>
-                                <Footer />
+                                <div>
+                                    <Footer />
+                                </div>
                             </BrowserRouter>
                         </div>
                     </div>

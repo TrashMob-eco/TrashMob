@@ -18,12 +18,12 @@ export class Home extends Component<PropsType, DataState> {
                 <div>
                     <MainCarousel />
                 </div>
-                <div>
-                    <FetchEvents />
-                </div>
-                <div>
-                    <NearbyEventsMap />
-                </div>
+            {/*    <div>*/}
+            {/*        <FetchEvents />*/}
+            {/*    </div>*/}
+            {/*    <div>*/}
+            {/*        <NearbyEventsMap />*/}
+            {/*    </div>*/}
             </div>
         );
     }
