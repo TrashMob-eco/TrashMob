@@ -1,12 +1,11 @@
-import { Component } from 'react';
-import * as React from 'react';
+import React from 'react';
 
 import { Route, Switch } from 'react-router';
 import { BrowserRouter } from 'react-router-dom';
 
 import { Home } from './components/Home';
 import { FetchEvents } from './components/FetchEvents';
-import { AddEvent } from './components/AddEvent';
+//import { AddEvent } from './components/AddEvent';
 
 // Layout
 import { TopMenu } from './components/TopMenu';
@@ -23,101 +22,63 @@ import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { Sponsors } from './components/Sponsors';
 import { TermsOfService } from './components/TermsOfService';
 import { UserStories } from './components/UserStories';
-import { MsalAuthenticationTemplate, UnauthenticatedTemplate, MsalProvider, MsalAuthenticationResult } from '@azure/msal-react';
-import { InteractionType } from '@azure/msal-browser';
-import { msalClient } from './store/AuthStore';
 import { initializeIcons } from '@uifabric/icons';
 
-export default class App extends Component {
-    constructor(props: any) {
-        super(props);
-        this.state = { loading: true }
-    }
-
-    componentDidMount() {
-        this.setState({ loading: false });
-    }
-
-    static displayName = App.name;
-
-    private ErrorComponent(error: MsalAuthenticationResult) {
-        return <p>An Error Occurred: {error}</p>;
-    }
-
-    private LoadingComponent() {
-        return <p>Authentication in progress...</p>;
-    }
-
-    render() {
-        initializeIcons();
-
-        return (
-            <MsalProvider instance={msalClient} >
-                <div className="d-flex flex-column h-100">
-                    <TopMenu />
-
-                    <div className="container-fluid flex-grow-1 d-flex">
-                        <div className="row flex-fill flex-column flex-sm-row">
-
-                            <BrowserRouter basename = "/" >
-                                {/*<MsalAuthenticationTemplate*/}
-                                {/*    interactionType={InteractionType.Popup}*/}
-                                {/*    errorComponent={this.ErrorComponent}*/}
-                                {/*    loadingComponent={this.LoadingComponent}>*/}
-                                {/*    <Switch>*/}
-                                {/*        <Route path="/addevent">*/}
-                                {/*            <AddEvent />*/}
-                                {/*        </Route>*/}
-                                {/*        <Route path="/mydashboard">*/}
-                                {/*            <MyDashboard />*/}
-                                {/*        </Route>*/}
-                                {/*    </Switch>*/}
-                                {/*</MsalAuthenticationTemplate >*/}
-                                <UnauthenticatedTemplate>
-                                    <Switch>
-                                        <Route exact path='/'>
-                                            <Home />
-                                        </Route>
-                                        <Route path="/about">
-                                            <About />
-                                        </Route>
-                                        <Route path="/contactus">
-                                            <ContactUs />
-                                        </Route>
-                                        <Route path="/faq">
-                                            <Faq />
-                                        </Route>
-                                        <Route path="/fetchevents">
-                                            <FetchEvents />
-                                        </Route>
-                                        <Route path="/gettingstarted">
-                                            <GettingStarted />
-                                        </Route>
-                                        <Route path="/partners">
-                                            <Partners />
-                                        </Route>
-                                        <Route path="/privacypolicy">
-                                            <PrivacyPolicy />
-                                        </Route>
-                                        <Route path="/sponsors">
-                                            <Sponsors />
-                                        </Route>
-                                        <Route path="/termsofservice">
-                                            <TermsOfService />
-                                        </Route>
-                                        <Route path="/userstories">
-                                            <UserStories />
-                                        </Route>
-                                    </Switch>
-                                </UnauthenticatedTemplate>
-                                <div>
-                                    <Footer />
-                                </div>
-                            </BrowserRouter>
+export const App = () => {
+    initializeIcons();
+    return (
+        <div className="d-flex flex-column h-100">
+            <TopMenu />
+            <div className="container-fluid flex-grow-1 d-flex">
+                <div className="row flex-fill flex-column flex-sm-row">
+                    <BrowserRouter basename="/" >
+                        <Switch>
+                            <Route exact path='/'>
+                                <Home />
+                            </Route>
+                            <Route path="/about">
+                                <About />
+                            </Route>
+                            {/*<Route path="/addevent">*/}
+                            {/*    <AddEvent />*/}
+                            {/*</Route>*/}
+                            <Route path="/contactus">
+                                <ContactUs />
+                            </Route>
+                            <Route path="/faq">
+                                <Faq />
+                            </Route>
+                            <Route path="/fetchevents">
+                                <FetchEvents />
+                            </Route>
+                            <Route path="/gettingstarted">
+                                <GettingStarted />
+                            </Route>
+                            <Route exact path="/mydashboard">
+                                <MyDashboard />
+                            </Route>
+                            <Route path="/partners">
+                                <Partners />
+                            </Route>
+                            <Route path="/privacypolicy">
+                                <PrivacyPolicy />
+                            </Route>
+                            <Route path="/sponsors">
+                                <Sponsors />
+                            </Route>
+                            <Route path="/termsofservice">
+                                <TermsOfService />
+                            </Route>
+                            <Route path="/userstories">
+                                <UserStories />
+                            </Route>
+                        </Switch>
+                        <div>
+                            <Footer />
                         </div>
-                    </div>
+                    </BrowserRouter>
                 </div>
-            </MsalProvider>
-        );
-    }
+            </div>
+        </div>
+    );
 }

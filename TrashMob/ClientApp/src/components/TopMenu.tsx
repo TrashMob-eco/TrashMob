@@ -14,6 +14,9 @@ export const TopMenu: FunctionComponent = () => {
 
                 <ul className="navbar-nav">
                     <li className="nav-item">
+                        <a className="nav-link" href="/Home">Home</a>
+                    </li>
+                    <li className="nav-item">
                         <a className="nav-link" href="/About">About</a>
                     </li>
                     <li className="nav-item">
