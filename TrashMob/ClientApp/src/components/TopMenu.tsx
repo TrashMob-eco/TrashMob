@@ -9,7 +9,8 @@ export const TopMenu: FunctionComponent = () => {
     function signOut(e : any) {
         e.preventDefault();
         const logoutRequest = {
-            account: msalClient.getActiveAccount()
+            account: msalClient.getActiveAccount(),
+            
         }
 
         msalClient.logout(logoutRequest);
