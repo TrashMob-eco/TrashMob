@@ -22,7 +22,6 @@ ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want
 ## Ship Blockers
 
 Here's what needs to be done before we can launch
-1. Fix routing for sub pages
 1. Styling
 1. When The MSALAuthenticationTemplate is added back into the App.tsx, every route on the site requires authentication, instead of just the pages inside the template
 1. Convert to Popup Authentication

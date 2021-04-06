@@ -1,7 +1,7 @@
 ﻿import { FunctionComponent } from 'react';
 import * as React from 'react'
 
-import logo from '../components/assets/Logo1.png';
+import logo from './assets/Logo1.png';
 
 export const TopMenu: FunctionComponent = () => {
     return (
