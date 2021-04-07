@@ -12,7 +12,7 @@ export async function getOption(): Promise<IAzureMapOptions> {
 async function getKey(): Promise<string> {
     var key = '';
 
-    fetch('api/maps', {
+    await fetch('api/maps', {
         method: 'GET',
         headers: {
             Allow: 'GET',
