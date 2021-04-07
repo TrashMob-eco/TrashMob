@@ -27,7 +27,7 @@ namespace TrashMob
             services.AddApplicationInsightsTelemetry();
             
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAdB2C"));
+                .AddMicrosoftIdentityWebApi(Configuration, "AzureAdB2C");
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

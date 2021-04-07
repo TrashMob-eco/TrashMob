@@ -1,6 +1,17 @@
 ﻿import * as msal from "@azure/msal-browser";
 import { Guid } from "guid-typescript";
-import { User } from "oidc-client";
+
+export const user: UserData = {
+    id: Guid.createEmpty().toString(),
+    dateAgreedToPrivacyPolicy: new Date(),
+    dateAgreedToTermsOfService: new Date(),
+    memberSince: new Date(),
+    privacyPolicyVersion: "",
+    tenantId: "",
+    termsOfServiceVersion: "",
+    uniqueId: "",
+    userName: ""
+};
 
 export function verifyAccount(result: msal.AuthenticationResult) {
 
@@ -11,17 +22,21 @@ export function verifyAccount(result: msal.AuthenticationResult) {
     headers.append("Accept", 'application/json');
     headers.append("Content-Type", 'application/json');
 
-    var userData = new UserData();
-    userData.uniqueId = result.uniqueId;
-    userData.tenantId = result.tenantId;
-    userData.userName = result.account?.username ?? "";
+    user.uniqueId = result.uniqueId;
+    user.tenantId = result.tenantId;
+    user.userName = result.account?.username ?? "";
 
     fetch('api/Users', {
         method: 'POST',
         headers: headers,
-        body: JSON.stringify(userData)
+        body: JSON.stringify(user)
     })
-        .then(response => response.json() as Promise<UserData> | null);
+        .then(response => response.json() as Promise<string> | null)
+        .then(data => {
+            if (data) {
+                user.id = data;                
+            }
+        });
 }
 
 export class UserData {

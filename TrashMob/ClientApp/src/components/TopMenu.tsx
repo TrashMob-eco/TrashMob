@@ -3,7 +3,7 @@ import * as React from 'react'
 
 import logo from './assets/Logo1.png';
 import { msalClient } from '../store/AuthStore';
-import { verifyAccount } from '../store/accountHandler'
+import { user, verifyAccount } from '../store/accountHandler'
 
 export const TopMenu: FunctionComponent = () => {
 
@@ -67,6 +67,9 @@ export const TopMenu: FunctionComponent = () => {
                     </li>
                     <li className="nav-item">
                         <a className="nav-link" href="/Profile">Profile</a>
+                    </li>
+                    <li className="nav-item">
+                        <button className="btn">{user.Id}</button>
                     </li>
                 </ul>
             </div>

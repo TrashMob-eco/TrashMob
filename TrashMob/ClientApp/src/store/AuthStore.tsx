@@ -1,4 +1,5 @@
 ﻿import * as msal from "@azure/msal-browser";
+import { MsalProvider, MsalProviderProps } from "@azure/msal-react";
 
 export const msalClient: msal.PublicClientApplication = new msal.PublicClientApplication(
     {
