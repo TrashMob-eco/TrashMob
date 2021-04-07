@@ -3,7 +3,7 @@ import * as React from 'react'
 
 import { FetchEvents } from './FetchEvents';  
 import { MainCarousel } from './MainCarousel';
-import { NearbyEventsMap } from './NearbyEventsMap';
+import NearbyEventsMap from './NearbyEventsMap';
 
 interface PropsType { };
 
@@ -21,9 +21,9 @@ export class Home extends Component<PropsType, DataState> {
             {/*    <div>*/}
             {/*        <FetchEvents />*/}
             {/*    </div>*/}
-            {/*    <div>*/}
-            {/*        <NearbyEventsMap />*/}
-            {/*    </div>*/}
+                <div>
+                    <NearbyEventsMap />
+                </div>
             </div>
         );
     }

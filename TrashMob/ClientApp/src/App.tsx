@@ -23,62 +23,85 @@ import { Sponsors } from './components/Sponsors';
 import { TermsOfService } from './components/TermsOfService';
 import { UserStories } from './components/UserStories';
 import { initializeIcons } from '@uifabric/icons';
+import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
+import { InteractionType } from '@azure/msal-browser';
+import { msalClient } from './store/AuthStore';
 
 export const App = () => {
     initializeIcons();
+
+    function ErrorComponent(error: MsalAuthenticationResult) {
+        return <p>An Error Occurred: {error}</p>;
+    }
+
+    function LoadingComponent() {
+        return <p>Authentication in progress...</p>;
+    }
+
     return (
-        <div className="d-flex flex-column h-100">
-            <TopMenu />
-            <div className="container-fluid flex-grow-1 d-flex">
-                <div className="row flex-fill flex-column flex-sm-row">
-                    <BrowserRouter basename="/" >
-                        <Switch>
-                            <Route exact path='/'>
-                                <Home />
-                            </Route>
-                            <Route path="/about">
-                                <About />
-                            </Route>
-                            {/*<Route path="/addevent">*/}
-                            {/*    <AddEvent />*/}
-                            {/*</Route>*/}
-                            <Route path="/contactus">
-                                <ContactUs />
-                            </Route>
-                            <Route path="/faq">
-                                <Faq />
-                            </Route>
-                            <Route path="/fetchevents">
-                                <FetchEvents />
-                            </Route>
-                            <Route path="/gettingstarted">
-                                <GettingStarted />
-                            </Route>
-                            <Route exact path="/mydashboard">
-                                <MyDashboard />
-                            </Route>
-                            <Route path="/partners">
-                                <Partners />
-                            </Route>
-                            <Route path="/privacypolicy">
-                                <PrivacyPolicy />
-                            </Route>
-                            <Route path="/sponsors">
-                                <Sponsors />
-                            </Route>
-                            <Route path="/termsofservice">
-                                <TermsOfService />
-                            </Route>
-                            <Route path="/userstories">
-                                <UserStories />
-                            </Route>
-                        </Switch>
-                        <div>
-                            <Footer />
-                        </div>
-                    </BrowserRouter>
+        <MsalProvider instance={msalClient} >
+            <div className="d-flex flex-column h-100">
+                <TopMenu />
+                <div className="container-fluid flex-grow-1 d-flex">
+                    <div className="row flex-fill flex-column flex-sm-row">
+
+                        <BrowserRouter basename="/" >
+                            <Switch>
+                                <Route exact path='/'>
+                                    <Home />
+                                </Route>
+                                <Route path="/about">
+                                    <About />
+                                </Route>
+                                {/*<MsalAuthenticationTemplate*/}
+                                {/*    interactionType={InteractionType.Popup}*/}
+                                {/*    errorComponent={ErrorComponent}*/}
+                                {/*    loadingComponent={LoadingComponent}>*/}
+                                {/*    <AddEvent />*/}
+                                {/*</MsalAuthenticationTemplate >*/}
+                                <Route path="/contactus">
+                                    <ContactUs />
+                                </Route>
+                                <Route path="/faq">
+                                    <Faq />
+                                </Route>
+                                <Route path="/fetchevents">
+                                    <FetchEvents />
+                                </Route>
+                                <Route path="/gettingstarted">
+                                    <GettingStarted />
+                                </Route>
+                                <Route exact path="/mydashboard">
+                                    <MsalAuthenticationTemplate
+                                        interactionType={InteractionType.Popup}
+                                        errorComponent={ErrorComponent}
+                                        loadingComponent={LoadingComponent}>                                        
+                                        <MyDashboard />
+                                    </MsalAuthenticationTemplate >
+                                </Route>
+                                <Route path="/partners">
+                                    <Partners />
+                                </Route>
+                                <Route path="/privacypolicy">
+                                    <PrivacyPolicy />
+                                </Route>
+                                <Route path="/sponsors">
+                                    <Sponsors />
+                                </Route>
+                                <Route path="/termsofservice">
+                                    <TermsOfService />
+                                </Route>
+                                <Route path="/userstories">
+                                    <UserStories />
+                                </Route>
+                            </Switch>
+                            <div>
+                                <Footer />
+                            </div>
+                        </BrowserRouter>
+                    </div>
                 </div>
             </div>
-        </div>
+        </MsalProvider>
     );
 }

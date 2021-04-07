@@ -8,6 +8,7 @@ export const msalClient: msal.PublicClientApplication = new msal.PublicClientApp
             authority: 'https://trashmob.b2clogin.com/Trashmob.onmicrosoft.com/b2c_1_signupsignin1',
             postLogoutRedirectUri: "/"
         },
+        cache: { cacheLocation: "sessionStorage", storeAuthStateInCookie: false},
         system: {
             loggerOptions: {
                 loggerCallback: (level, message, containsPii) => {

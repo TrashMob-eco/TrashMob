@@ -4,11 +4,14 @@ namespace TrashMob.Controllers
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using TrashMob.Models;
     using TrashMob.Persistence;
 
+    [Authorize]
     [ApiController]
     [Route("api/users")]
     public class UsersController : ControllerBase
@@ -68,6 +71,11 @@ namespace TrashMob.Controllers
         [HttpPost]
         public async Task<IActionResult> PostUser(User user)
         {
+            if (await UserExists(user.TenantId, user.UniqueId))
+            {
+                return Ok();
+            }
+
             var newUserId = await userRepository.AddUser(user).ConfigureAwait(false);
 
             return CreatedAtAction("GetUser", new { id = newUserId }, user);
@@ -83,6 +91,10 @@ namespace TrashMob.Controllers
         private async Task<bool> UserExists(Guid id)
         {
             return (await userRepository.GetAllUsers().ConfigureAwait(false)).Any(e => e.Id == id);
+        }
+        private async Task<bool> UserExists(string tenantId, string uniqueId)
+        {
+            return (await userRepository.GetAllUsers().ConfigureAwait(false)).Any(e => e.TenantId == tenantId && e.UniqueId == uniqueId);
         }
     }
 }
