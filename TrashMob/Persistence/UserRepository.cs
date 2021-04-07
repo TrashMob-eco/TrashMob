@@ -3,6 +3,7 @@
     using Microsoft.EntityFrameworkCore;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using TrashMob.Extensions;
     using TrashMob.Models;
@@ -79,6 +80,18 @@
                 var user = await mobDbContext.Users.FindAsync(id).ConfigureAwait(false);
                 mobDbContext.Users.Remove(user);
                 return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public Task<User> GetUserByExternalId(string tenantId, string uniqueId)
+        {
+            try
+            {
+                return mobDbContext.Users.FirstOrDefaultAsync(u => u.TenantId == tenantId && u.UniqueId == uniqueId);
             }
             catch
             {

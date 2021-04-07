@@ -5,13 +5,11 @@ namespace TrashMob.Controllers
     using System.Linq;
     using System.Threading.Tasks;
 
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using TrashMob.Models;
     using TrashMob.Persistence;
 
-    [Authorize]
     [ApiController]
     [Route("api/users")]
     public class UsersController : ControllerBase
@@ -71,14 +69,15 @@ namespace TrashMob.Controllers
         [HttpPost]
         public async Task<IActionResult> PostUser(User user)
         {
-            if (await UserExists(user.TenantId, user.UniqueId))
+            if (await UserExists(user.TenantId, user.UniqueId).ConfigureAwait(false))
             {
-                return Ok();
+                var userId = await GetUserId(user.TenantId, user.UniqueId).ConfigureAwait(false);
+                return Ok(userId);
             }
 
             var newUserId = await userRepository.AddUser(user).ConfigureAwait(false);
 
-            return CreatedAtAction("GetUser", new { id = newUserId }, user);
+            return Ok(newUserId);
         }
 
         [HttpDelete("{id}")]
@@ -92,9 +91,16 @@ namespace TrashMob.Controllers
         {
             return (await userRepository.GetAllUsers().ConfigureAwait(false)).Any(e => e.Id == id);
         }
+
         private async Task<bool> UserExists(string tenantId, string uniqueId)
         {
             return (await userRepository.GetAllUsers().ConfigureAwait(false)).Any(e => e.TenantId == tenantId && e.UniqueId == uniqueId);
+        }
+
+        private async Task<Guid> GetUserId(string tenantId, string uniqueId)
+        {
+            var user = await userRepository.GetUserByExternalId(tenantId, uniqueId).ConfigureAwait(false);
+            return user.Id;
         }
     }
 }
