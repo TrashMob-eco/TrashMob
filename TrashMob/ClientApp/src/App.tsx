@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Route, Switch } from 'react-router';
+import { Route, RouteComponentProps, Switch } from 'react-router';
 import { BrowserRouter } from 'react-router-dom';
 
 import { Home } from './components/Home';
@@ -26,6 +26,7 @@ import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
 import { msalClient } from './store/AuthStore';
+import { AddEvent, MatchParams } from './components/AddEvent';
 
 export const App = () => {
     initializeIcons();
@@ -53,12 +54,12 @@ export const App = () => {
                                 <Route path="/about">
                                     <About />
                                 </Route>
-                                {/*<MsalAuthenticationTemplate*/}
-                                {/*    interactionType={InteractionType.Popup}*/}
-                                {/*    errorComponent={ErrorComponent}*/}
-                                {/*    loadingComponent={LoadingComponent}>*/}
-                                {/*    <AddEvent />*/}
-                                {/*</MsalAuthenticationTemplate >*/}
+                                <MsalAuthenticationTemplate
+                                    interactionType={InteractionType.Popup}
+                                    errorComponent={ErrorComponent}
+                                    loadingComponent={LoadingComponent}>
+                                    <Route path="/addevent/:eventId?" component={AddEvent} />
+                                </MsalAuthenticationTemplate >
                                 <Route path="/contactus">
                                     <ContactUs />
                                 </Route>

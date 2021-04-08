@@ -51,8 +51,8 @@ export class FetchEvents extends Component<PropsType, FetchEventDataState> {
         );
     }
 
-    // Handle Delete request for an mob event  
-    private handleDelete(id: Guid) {
+    // Handle Delete request for an event  
+    private handleDelete(id: string) {
         if (!window.confirm("Do you want to delete mob event with Id: " + id))
             return;
         else {
@@ -121,7 +121,7 @@ export class FetchEvents extends Component<PropsType, FetchEventDataState> {
                                 <td>{mobEvent.lastUpdatedDate}</td>
                                 <td>{mobEvent.eventStatusId}</td>
                                 <td>
-                                <a className="action" onClick={(id) => this.handleDelete(mobEvent.id)}>Delete</a>
+                                <a className="action" onClick={() => this.handleDelete(mobEvent.id)}>Delete</a>
                                 </td>
                             </tr>
                         )}
@@ -133,7 +133,7 @@ export class FetchEvents extends Component<PropsType, FetchEventDataState> {
 }
 
 export class EventData {
-    id: Guid = Guid.createEmpty();
+    id: string = Guid.createEmpty().toString();
     name: string = "";
     description: string = "";
     eventDate: Date = new Date();

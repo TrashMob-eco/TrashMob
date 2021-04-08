@@ -130,9 +130,9 @@
 
             modelBuilder.Entity<EventHistory>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("EventHistory");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.City)
                     .IsRequired()

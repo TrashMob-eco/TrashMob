@@ -68,7 +68,7 @@ export const TopMenu: FunctionComponent = () => {
                         <a className="nav-link" href="/Profile">Profile</a>
                     </li>
                     <li className="nav-item">
-                        <button className="btn">{user.Id}</button>
+                        <button className="btn">{user.id}</button>
                     </li>
                 </ul>
             </div>
