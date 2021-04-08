@@ -4,6 +4,7 @@ import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
 import { EventData } from './FetchEvents';  
 import DatePicker from 'react-datepicker';
+import { user } from '../store/accountHandler';
 
 interface AddEventDataState {
     title: string;
@@ -14,7 +15,7 @@ interface AddEventDataState {
     eventDate: Date;
 }
 
-interface MatchParams {
+export interface MatchParams {
     eventId: string;
 }
 
@@ -99,7 +100,9 @@ export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEve
         eventData.latitude = form.get("latitude")?.toString() ?? ""; 
         eventData.longitude = form.get("longitude")?.toString() ?? ""; 
         eventData.gpscoords = form.get("gpscoords")?.toString() ?? ""; 
-        eventData.maxNumberOfParticipants = form.get("maxNumberOfParticipants")?.valueOf() as number ?? 0
+        eventData.maxNumberOfParticipants = form.get("maxNumberOfParticipants")?.valueOf() as number ?? 0;
+        eventData.createdByUserId = user.id;
+        eventData.lastUpdatedByUserId = user.id;
 
         var data = JSON.stringify(eventData);
 
