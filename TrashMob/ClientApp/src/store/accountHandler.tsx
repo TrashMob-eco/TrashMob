@@ -31,10 +31,15 @@ export function verifyAccount(result: msal.AuthenticationResult) {
         headers: headers,
         body: JSON.stringify(user)
     })
-        .then(response => response.json() as Promise<string> | null)
+        .then(response => response.json() as Promise<UserData> | null)
         .then(data => {
             if (data) {
-                user.id = data;                
+                user.id = data.id;                
+                user.dateAgreedToPrivacyPolicy = data.dateAgreedToPrivacyPolicy;
+                user.dateAgreedToTermsOfService = data.dateAgreedToTermsOfService;
+                user.memberSince = data.memberSince;
+                user.privacyPolicyVersion = data.privacyPolicyVersion;
+                user.termsOfServiceVersion = data.termsOfServiceVersion;
             }
         });
 }

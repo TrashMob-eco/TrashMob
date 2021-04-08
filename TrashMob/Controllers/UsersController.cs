@@ -71,13 +71,13 @@ namespace TrashMob.Controllers
         {
             if (await UserExists(user.TenantId, user.UniqueId).ConfigureAwait(false))
             {
-                var userId = await GetUserId(user.TenantId, user.UniqueId).ConfigureAwait(false);
-                return Ok(userId);
+                var returnedUser = await GetUser(user.TenantId, user.UniqueId).ConfigureAwait(false);
+                return Ok(returnedUser);
             }
 
-            var newUserId = await userRepository.AddUser(user).ConfigureAwait(false);
+            var newUser = await userRepository.AddUser(user).ConfigureAwait(false);
 
-            return Ok(newUserId);
+            return Ok(newUser);
         }
 
         [HttpDelete("{id}")]
@@ -97,10 +97,9 @@ namespace TrashMob.Controllers
             return (await userRepository.GetAllUsers().ConfigureAwait(false)).Any(e => e.TenantId == tenantId && e.UniqueId == uniqueId);
         }
 
-        private async Task<Guid> GetUserId(string tenantId, string uniqueId)
+        private Task<User> GetUser(string tenantId, string uniqueId)
         {
-            var user = await userRepository.GetUserByExternalId(tenantId, uniqueId).ConfigureAwait(false);
-            return user.Id;
+            return userRepository.GetUserByExternalId(tenantId, uniqueId);
         }
     }
 }
