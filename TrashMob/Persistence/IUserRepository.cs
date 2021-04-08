@@ -9,7 +9,7 @@
     {
         Task<IEnumerable<User>> GetAllUsers();
 
-        Task<Guid> AddUser(User user);
+        Task<User> AddUser(User user);
 
         Task<int> UpdateUser(User user);
 

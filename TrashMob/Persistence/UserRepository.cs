@@ -30,14 +30,19 @@
         }
 
         // Add new User record     
-        public async Task<Guid> AddUser(User user)
+        public async Task<User> AddUser(User user)
         {
             try
             {
                 user.Id = Guid.NewGuid();
+                user.MemberSince = DateTimeOffset.UtcNow;
+                user.DateAgreedToPrivacyPolicy = DateTimeOffset.MinValue;
+                user.DateAgreedToTermsOfService = DateTimeOffset.MinValue;
+                user.PrivacyPolicyVersion = string.Empty;
+                user.TermsOfServiceVersion = string.Empty;                
                 mobDbContext.Users.Add(user);
                 await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
-                return user.Id;
+                return user;
             }
             catch
             {

@@ -1,5 +1,5 @@
 ﻿import * as msal from "@azure/msal-browser";
-import { MsalProvider, MsalProviderProps } from "@azure/msal-react";
+import { verifyAccount } from "./accountHandler";
 
 export const msalClient: msal.PublicClientApplication = new msal.PublicClientApplication(
     {
@@ -36,3 +36,9 @@ export const msalClient: msal.PublicClientApplication = new msal.PublicClientApp
         }
     }
 );
+
+msalClient.addEventCallback((message: msal.EventMessage) => {
+    if (message.eventType === msal.EventType.LOGIN_SUCCESS) {
+        verifyAccount(message.payload as msal.AuthenticationResult)
+    }
+});
