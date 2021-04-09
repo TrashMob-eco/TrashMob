@@ -5,7 +5,6 @@ import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a lo
 import { Carousel } from 'react-responsive-carousel';
 import sign from "./assets/sign.jpg";
 import litter from "./assets/litter.jpg";
-import streetlitter from "./assets/streetlitter.jpg";
 import beachlitter from "./assets/beachlitter.jpg";
 import trash1000miles from "./assets/trash1000miles.jpg";
 import stoplittering from "./assets/stoplittering.jpg";
