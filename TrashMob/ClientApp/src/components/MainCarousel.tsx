@@ -23,15 +23,11 @@ export class MainCarousel extends Component {
                     <p className="legend">It's Everywhere</p>
                 </div>
                 <div>
-                    <img src={streetlitter} alt="Litter on a Street" />
-                    <p className="legend">Street Litter</p>
-                </div>
-                <div>
-                    <img src={beachlitter} alt="Litter on a beach" />
+                    <img src={trash1000miles} alt="Trash Next 1000 Miles" />
                     <p className="legend">Beach Litter</p>
                 </div>
                 <div>
-                    <img src={trash1000miles} alt="Trash Next 1000 Miles" />
+                    <img src={beachlitter} alt="Litter on a beach" />
                     <p className="legend">Beach Litter</p>
                 </div>
                 <div>

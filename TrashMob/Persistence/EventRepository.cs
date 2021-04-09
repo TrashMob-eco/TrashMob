@@ -18,80 +18,45 @@
 
         public async Task<IEnumerable<Event>> GetAllEvents()
         {
-            try
-            {
-                return await mobDbContext.Events.ToListAsync().ConfigureAwait(false);
-            }
-            catch
-            {
-                throw;
-            }
+            return await mobDbContext.Events.ToListAsync().ConfigureAwait(false);
         }
 
         // Add new Event record     
         public async Task<Guid> AddEvent(Event mobEvent)
         {
-            try
-            {
-                mobEvent.Id = Guid.NewGuid();
-                mobEvent.EventStatusId = 1;
-                mobDbContext.Events.Add(mobEvent);
+            mobEvent.Id = Guid.NewGuid();
+            mobEvent.EventStatusId = 1;
+            mobDbContext.Events.Add(mobEvent);
 
 
-                var eventHistory = mobEvent.ToEventHistory();
-                mobDbContext.EventHistories.Add(eventHistory);
+            var eventHistory = mobEvent.ToEventHistory();
+            mobDbContext.EventHistories.Add(eventHistory);
 
-                await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
-                return mobEvent.Id;
-            }
-            catch(Exception ex)
-            {
-                throw;
-            }
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+            return mobEvent.Id;
         }
 
         // Update the records of a particluar Event  
         public Task<int> UpdateEvent(Event mobEvent)
         {
-            try
-            {
-                mobDbContext.Entry(mobEvent).State = EntityState.Modified;
-                var eventHistory = mobEvent.ToEventHistory();
-                mobDbContext.EventHistories.Add(eventHistory);
-                return mobDbContext.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            mobDbContext.Entry(mobEvent).State = EntityState.Modified;
+            var eventHistory = mobEvent.ToEventHistory();
+            mobDbContext.EventHistories.Add(eventHistory);
+            return mobDbContext.SaveChangesAsync();
         }
 
         // Get the details of a particular Event    
         public async Task<Event> GetEvent(Guid id)
         {
-            try
-            {
-                return await mobDbContext.Events.FindAsync(id).ConfigureAwait(false);
-            }
-            catch
-            {
-                throw;
-            }
+            return await mobDbContext.Events.FindAsync(id).ConfigureAwait(false);
         }
 
         // Delete the record of a particular Mob Event    
         public async Task<int> DeleteEvent(Guid id)
         {
-            try
-            {
-                var mobEvent = await mobDbContext.Events.FindAsync(id).ConfigureAwait(false);
-                mobDbContext.Events.Remove(mobEvent);
-                return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
-            }
-            catch
-            {
-                throw;
-            }
+            var mobEvent = await mobDbContext.Events.FindAsync(id).ConfigureAwait(false);
+            mobDbContext.Events.Remove(mobEvent);
+            return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }
