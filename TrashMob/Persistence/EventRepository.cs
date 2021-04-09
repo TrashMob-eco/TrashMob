@@ -34,7 +34,9 @@
             try
             {
                 mobEvent.Id = Guid.NewGuid();
+                mobEvent.EventStatusId = 1;
                 mobDbContext.Events.Add(mobEvent);
+
 
                 var eventHistory = mobEvent.ToEventHistory();
                 mobDbContext.EventHistories.Add(eventHistory);
@@ -42,7 +44,7 @@
                 await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
                 return mobEvent.Id;
             }
-            catch
+            catch(Exception ex)
             {
                 throw;
             }

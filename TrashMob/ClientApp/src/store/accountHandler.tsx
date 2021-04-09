@@ -1,10 +1,9 @@
 ﻿import * as msal from "@azure/msal-browser";
 import { Guid } from "guid-typescript";
-import { AgreeToPolicies } from "../components/ConfirmTosPopup";
 import { CurrentPrivacyPolicyVersion } from "../components/PrivacyPolicy";
 import { CurrentTermsOfServiceVersion } from "../components/TermsOfService";
 
-export const user: UserData = {
+const user: UserData = {
     id: Guid.createEmpty().toString(),
     dateAgreedToPrivacyPolicy: new Date(),
     dateAgreedToTermsOfService: new Date(),
@@ -15,6 +14,21 @@ export const user: UserData = {
     uniqueId: "",
     userName: ""
 };
+
+export function cacheUser(user: UserData)
+{
+    localStorage.setItem('currentUser', JSON.stringify(user));
+}
+
+export function getUserFromCache() {
+    var userString = localStorage.getItem('currentUser');
+
+    if (userString) {
+        return JSON.parse(userString);
+    }
+
+    return null;
+}
 
 export function verifyAccount(result: msal.AuthenticationResult) {
 
@@ -43,6 +57,7 @@ export function verifyAccount(result: msal.AuthenticationResult) {
                 user.memberSince = data.memberSince;
                 user.privacyPolicyVersion = data.privacyPolicyVersion;
                 user.termsOfServiceVersion = data.termsOfServiceVersion;
+                cacheUser(user)
             }
 
             if (user.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate || user.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate || user.termsOfServiceVersion === "" || user.privacyPolicyVersion === "") {
@@ -70,7 +85,21 @@ export function updateAgreements(tosVersion: string, privacyVersion: string) {
         headers: headers,
         body: JSON.stringify(user)
     })
-        .then(response => response.json() as Promise<UserData> | null);
+        .then(response => response.json() as Promise<UserData> | null)
+        .then(data => cacheUser(data ?? new UserData()));
+}
+
+export function clearUserCache() {
+    user.id = Guid.createEmpty().toString();
+    user.uniqueId = "";
+    user.tenantId = "";
+    user.userName = "";
+    user.dateAgreedToPrivacyPolicy = new Date();
+    user.privacyPolicyVersion = "";
+    user.dateAgreedToTermsOfService = new Date();
+    user.termsOfServiceVersion = "";
+    user.memberSince = new Date();
+    cacheUser(user);
 }
 
 export class UserData {

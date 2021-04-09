@@ -4,7 +4,7 @@ import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
 import { EventData } from './FetchEvents';  
 import DatePicker from 'react-datepicker';
-import { user } from '../store/accountHandler';
+import { getUserFromCache } from '../store/accountHandler';
 
 interface AddEventDataState {
     title: string;
@@ -91,7 +91,9 @@ export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEve
             eventData.eventDate = new Date(eventDatest);
         }
 
-        eventData.eventTypeId = form.get("eventType")?.valueOf() as number ?? 0; 
+        var user = getUserFromCache();
+
+        eventData.eventTypeId = form.get("eventTypeId")?.valueOf() as number ?? 0; 
         eventData.streetAddress = form.get("streetAddress")?.toString() ?? ""; 
         eventData.city = form.get("city")?.toString() ?? ""; 
         eventData.stateProvince = form.get("stateProvince")?.toString() ?? ""; 
@@ -176,7 +178,7 @@ export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEve
                         <select className="form-control" data-val="true" name="eventTypeId" defaultValue={this.state.eventData.eventTypeId} required>
                             <option value="">-- Select Event Type --</option>
                             {typeList.map(type =>
-                                <option key={type.id} value={type.name}>{type.name}</option>
+                                <option key={type.id} value={type.id}>{type.name}</option>
                             )}
                         </select>
                     </div>
