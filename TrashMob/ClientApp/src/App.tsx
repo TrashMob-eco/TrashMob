@@ -1,11 +1,10 @@
 import React from 'react';
 
-import { Route, RouteComponentProps, Switch } from 'react-router';
+import { Route, Switch } from 'react-router';
 import { BrowserRouter } from 'react-router-dom';
 
 import { Home } from './components/Home';
 import { FetchEvents } from './components/FetchEvents';
-//import { AddEvent } from './components/AddEvent';
 
 // Layout
 import { TopMenu } from './components/TopMenu';
@@ -26,9 +25,10 @@ import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
 import { msalClient } from './store/AuthStore';
-import { AddEvent, MatchParams } from './components/AddEvent';
+import { AddEvent } from './components/AddEvent';
 
 export const App = () => {
+
     initializeIcons();
 
     function ErrorComponent(error: MsalAuthenticationResult) {
