@@ -1,7 +1,6 @@
 import { Component } from 'react';
 import * as React from 'react'
-
-import { Link } from 'react-router-dom';
+import { Link, NavLink, Redirect } from 'react-router-dom';
 import { Guid } from "guid-typescript";
 
 interface PropsType { };
@@ -52,8 +51,8 @@ export class FetchEvents extends Component<PropsType, FetchEventDataState> {
     }
 
     // Handle Delete request for an event  
-    private handleDelete(id: string) {
-        if (!window.confirm("Do you want to delete mob event with Id: " + id))
+    private handleDelete(id: string, name: string) {
+        if (!window.confirm("Do you want to delete event with name: " + name))
             return;
         else {
             fetch('api/Events/' + id, {
@@ -68,10 +67,6 @@ export class FetchEvents extends Component<PropsType, FetchEventDataState> {
             });
         }
     }
-
-    //handleEdit(id: Guid) {
-    //    this.props.history.push("/mobevent/edit/" + id);
-    //}
 
     private renderEventsTable(events: EventData[]) {
         return (
@@ -121,7 +116,8 @@ export class FetchEvents extends Component<PropsType, FetchEventDataState> {
                                 <td>{mobEvent.lastUpdatedDate}</td>
                                 <td>{mobEvent.eventStatusId}</td>
                                 <td>
-                                <a className="action" onClick={() => this.handleDelete(mobEvent.id)}>Delete</a>
+                                    <Link to={`/addevent/${mobEvent.id}`}>Edit</Link>
+                                    <a className="action" onClick={() => this.handleDelete(mobEvent.id, mobEvent.name)}>Delete</a>
                                 </td>
                             </tr>
                         )}
