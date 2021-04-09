@@ -3,10 +3,25 @@ import * as React from 'react'
 
 import logo from './assets/Logo1.png';
 import { msalClient } from '../store/AuthStore';
-import { getUserFromCache } from '../store/accountHandler'
+import { getUserFromCache, UserData } from '../store/accountHandler'
 
 export const TopMenu: FunctionComponent = () => {
+    const [userName, setUserName] = React.useState('username');
 
+    window.addEventListener('storage', () => {
+        var user = getUserFromCache() as UserData;
+        if (user == null) {
+            setUserName("Not Signed In");
+        }
+        else {
+            if (user.userName === "") {
+                setUserName("Username not set");
+            }
+            else {
+                setUserName("Welcome " + user.userName);
+            }
+        }
+    });
     function signOut(e : any) {
         e.preventDefault();
         const logoutRequest = {
@@ -68,7 +83,7 @@ export const TopMenu: FunctionComponent = () => {
                         <a className="nav-link" href="/Profile">Profile</a>
                     </li>
                     <li className="nav-item">
-                        <button className="btn">{getUserFromCache()?.id ?? "Not Signed Id"}</button>
+                        <label className="lbl">{userName}</label>
                     </li>
                 </ul>
             </div>

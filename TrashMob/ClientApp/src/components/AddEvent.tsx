@@ -169,7 +169,7 @@ export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEve
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="EventDate">EventDate</label>
                     <div className="col-md-4">
-                        <DatePicker selected={this.state.eventData.eventDate} name="eventDate" onChange={this.handleEventDateChange} value={this.state.eventData.eventDate.toDateString()} />
+                        <DatePicker selected={this.state.eventData.eventDate} name="eventDate" onChange={this.handleEventDateChange} value={this.state.eventData.eventDate?.toDateString()} />
                     </div>
                 </div >
                 <div className="form-group row">

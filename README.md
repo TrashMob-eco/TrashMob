@@ -23,15 +23,13 @@ ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want
 
 Here's what needs to be done before we can launch
 1. Styling
-1. Ensure user id is always available for saving
+1. Fix welcome user message
+1. Fix edit event rendering
 1. The Date Picker on the Add Event page needs to be replaced with a DateTime Picker that works
 1. Add begin and end times for events
 1. Get Access token and pass to web apis 
 1. Add authorization and scopes to web apis
-1. Finish save event experience
 1. Fix login failed crash
-1. Edit event
-1. Delete event
 1. Allow event location to be set by clicking on the map
 1. Need content for Privacy Policy
 1. Need content for Terms of Service
