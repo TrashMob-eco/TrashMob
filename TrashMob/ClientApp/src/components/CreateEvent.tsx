@@ -9,7 +9,7 @@ import EventTypeData from './Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import SingleEventMap from './SingleEventMap';
 
-interface AddEventDataState {
+interface CreateEventDataState {
     title: string;
     loading: boolean;
     eventData: EventData;
@@ -24,7 +24,7 @@ export interface MatchParams {
     eventId: string;
 }
 
-export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEventDataState> {
+export class CreateEvent extends Component<RouteComponentProps<MatchParams>, CreateEventDataState> {
     constructor(props: RouteComponentProps<MatchParams>) {
         super(props);
         this.state = {
@@ -55,7 +55,7 @@ export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEve
                 });
         }
 
-        // This will set state for Add Event  
+        // This will set state for Create Event  
         else {
             this.state = { title: "Create", loading: false, eventData: new EventData(), eventId: Guid.create(), typeList: [], eventDate: new Date(), country: '', region: '' };
         }
@@ -137,7 +137,7 @@ export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEve
                 })
         }
 
-        // POST request for Add Event.  
+        // POST request for Create Event.  
         else {
             fetch('api/Events', {
                 method: 'POST',
