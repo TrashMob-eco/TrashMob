@@ -68,7 +68,7 @@ export class EventsUserOwns extends Component<PropsType, FetchEventDataState> {
             <div>
                 <h1 id="tabelLabel" >Mob Events</h1>
                 <p>
-                    <Link to="/addevent">Create New</Link>
+                    <Link to="/createevent">Create Event</Link>
                 </p>
                 {contents}
             </div>
@@ -123,8 +123,8 @@ export class EventsUserOwns extends Component<PropsType, FetchEventDataState> {
                                 <td>{mobEvent.lastUpdatedDate}</td>
                                 <td>{mobEvent.eventStatusId}</td>
                                 <td>
-                                    <Link to={`/addevent/${mobEvent.id}`}>Edit</Link>
-                                    <a className="action" onClick={() => this.handleDelete(mobEvent.id, mobEvent.name)}>Delete</a>
+                                    <Link to={`/createevent/${mobEvent.id}`}>Edit Event</Link>
+                                    <a className="action" onClick={() => this.handleDelete(mobEvent.id, mobEvent.name)}>Delete Event</a>
                                 </td>
                             </tr>
                         )}

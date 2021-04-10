@@ -11,7 +11,7 @@ export class MyDashboard extends Component {
         return (
             <div>
                 <div>
-                    <Link to="/addevent">Create a New Event</Link>
+                    <Link to="/createevent">Create a New Event</Link>
                 </div>
                 <div>
                     Events I Own

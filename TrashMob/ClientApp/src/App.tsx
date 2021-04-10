@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import { Route, Switch } from 'react-router';
 import { BrowserRouter } from 'react-router-dom';
@@ -23,7 +23,7 @@ import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
 import { msalClient } from './store/AuthStore';
-import { AddEvent } from './components/AddEvent';
+import { CreateEvent } from './components/CreateEvent';
 import { EventDetails } from './components/EventDetails';
 
 export const App = () => {
@@ -54,13 +54,13 @@ export const App = () => {
                                     <About />
                                 </Route>
                                 <Route>
-                                    <MsalAuthenticationTemplate
-                                        interactionType={InteractionType.Redirect}
-                                        errorComponent={ErrorComponent}
-                                        loadingComponent={LoadingComponent}>
-                                        <Route path="/addevent/:eventId?" component={AddEvent} />
-                                    </MsalAuthenticationTemplate >
-                                </Route>
+                                <MsalAuthenticationTemplate
+                                    interactionType={InteractionType.Redirect}
+                                    errorComponent={ErrorComponent}
+                                    loadingComponent={LoadingComponent}>
+                                    <Route path="/createevent/:eventId?" component={CreateEvent} />
+                                </MsalAuthenticationTemplate >
+                                 </Route>
                                 <Route exact path="/contactus">
                                     <ContactUs />
                                 </Route>
@@ -75,7 +75,7 @@ export const App = () => {
                                     <MsalAuthenticationTemplate
                                         interactionType={InteractionType.Redirect}
                                         errorComponent={ErrorComponent}
-                                        loadingComponent={LoadingComponent}>
+                                        loadingComponent={LoadingComponent}>                                        
                                         <MyDashboard />
                                     </MsalAuthenticationTemplate >
                                 </Route>
