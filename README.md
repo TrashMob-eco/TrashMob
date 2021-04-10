@@ -23,7 +23,7 @@ ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want
 
 Here's what needs to be done before we can launch
 1. Styling
-1. Fix welcome user message
+1. Fix welcome user message (need to get username from claims)
 1. Fix issue with being able to click login button twice which crashes ui
 1. Event details page doesn't render (routing issue?)
 1. Fix edit event rendering
@@ -38,14 +38,15 @@ Here's what needs to be done before we can launch
 1. Add My Dashboard with ability to add a new event, and view / update existing ones
 1. Get proper logo
 1. Figure out how to deploy to a production versus dev environment
-1. Get production domain name
 1. Fix Terms of Service accept popup
 1. Basic field validation
 1. Add Facebook / Google / Twitter logins
 
 ## What is the domain name going to be?
 
-I'm still working on procuring the domain name(s).
+Trashmob.eco
+
+It's a little unusual, but it'll work.
 
 ## When this project is "done" will it be open sourced?
 
