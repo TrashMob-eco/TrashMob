@@ -1,5 +1,6 @@
 ﻿import * as msal from "@azure/msal-browser";
 import { Guid } from "guid-typescript";
+import UserData from "../components/Models/UserData";
 import { CurrentPrivacyPolicyVersion } from "../components/PrivacyPolicy";
 import { CurrentTermsOfServiceVersion } from "../components/TermsOfService";
 
@@ -100,16 +101,4 @@ export function clearUserCache() {
     user.termsOfServiceVersion = "";
     user.memberSince = new Date();
     cacheUser(user);
-}
-
-export class UserData {
-    id: string = Guid.createEmpty().toString();
-    uniqueId: string = "";
-    tenantId: string = "";
-    userName: string = "";
-    dateAgreedToPrivacyPolicy: Date = new Date();
-    privacyPolicyVersion: string = "";
-    dateAgreedToTermsOfService: Date = new Date();
-    termsOfServiceVersion: string = "";
-    memberSince: Date = new Date();
 }

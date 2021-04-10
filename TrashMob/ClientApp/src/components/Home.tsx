@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import * as React from 'react'
 
-import { FetchEvents } from './FetchEvents';  
+import { MainEvents } from './MainEvents';
 import { MainCarousel } from './MainCarousel';
 import NearbyEventsMap from './NearbyEventsMap';
 
@@ -19,10 +19,12 @@ export class Home extends Component<PropsType, DataState> {
                     <MainCarousel />
                 </div>
                 <div>
-                    <FetchEvents />
-                </div>
-                <div>
-                    <NearbyEventsMap />
+                    <div style={{ width: 50+'%' }}>
+                        <MainEvents />
+                    </div>
+                    <div style={{ width: 50+'%' }}>
+                        <NearbyEventsMap />
+                    </div>
                 </div>
             </div>
         );

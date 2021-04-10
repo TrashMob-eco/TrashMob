@@ -19,6 +19,7 @@
     "oidc-client": "^1.9.0",
     "react": "^16.0.0",
     "react-azure-maps": "^0.2.1",
+    "react-country-region-selector": "^3.0.2",
     "react-datepicker": "^3.7.0",
     "react-datetimepicker": "^2.0.0",
     "react-dom": "^16.0.0",

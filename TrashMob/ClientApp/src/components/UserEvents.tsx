@@ -2,7 +2,7 @@ import { Component } from 'react';
 import * as React from 'react'
 
 import { Link } from 'react-router-dom';
-import { Guid } from "guid-typescript";
+import EventData from './Models/EventData';  
 
 interface PropsType { };
 
@@ -38,7 +38,24 @@ export class FetchUserEvents extends Component<PropsType, FetchEventDataState> {
 
         // This binding is necessary to make "this" work in the callback  
         this.handleDelete = this.handleDelete.bind(this);
-        // this.handleEdit = this.handleEdit.bind(this);
+    }
+
+    // Handle Delete request for an event  
+    private handleDelete(id: string, name: string) {
+        if (!window.confirm("Do you want to delete event with name: " + name))
+            return;
+        else {
+            fetch('api/Events/' + id, {
+                method: 'delete'
+            }).then(data => {
+                this.setState(
+                    {
+                        eventList: this.state.eventList.filter((rec) => {
+                            return (rec.id !== id);
+                        })
+                    });
+            });
+        }
     }
 
     public render() {
@@ -56,28 +73,6 @@ export class FetchUserEvents extends Component<PropsType, FetchEventDataState> {
             </div>
         );
     }
-
-    // Handle Delete request for an mob event  
-    private handleDelete(id: Guid) {
-        if (!window.confirm("Do you want to delete mob event with Id: " + id))
-            return;
-        else {
-            fetch('api/Events/' + id, {
-                method: 'delete'
-            }).then(data => {
-                this.setState(
-                    {
-                        eventList: this.state.eventList.filter((rec) => {
-                            return (rec.id !== id);
-                        })
-                    });
-            });
-        }
-    }
-
-    //handleEdit(id: Guid) {
-    //    this.props.history.push("/mobevent/edit/" + id);
-    //}
 
     private renderEventsTable(events: EventData[]) {
         return (
@@ -127,7 +122,8 @@ export class FetchUserEvents extends Component<PropsType, FetchEventDataState> {
                                 <td>{mobEvent.lastUpdatedDate}</td>
                                 <td>{mobEvent.eventStatusId}</td>
                                 <td>
-                                <a className="action" onClick={(id) => this.handleDelete(mobEvent.id)}>Delete</a>
+                                    <Link to={`/addevent/${mobEvent.id}`}>Edit</Link>
+                                    <a className="action" onClick={() => this.handleDelete(mobEvent.id, mobEvent.name)}>Delete</a>
                                 </td>
                             </tr>
                         )}
@@ -136,26 +132,4 @@ export class FetchUserEvents extends Component<PropsType, FetchEventDataState> {
             </div>
         );
     }
-}
-
-export class EventData {
-    id: Guid = Guid.createEmpty();
-    name: string = "";
-    description: string = "";
-    eventDate: Date = new Date();
-    eventTypeId: number = 0;
-    eventStatusId: number = 0;
-    streetAddress: string = "";
-    city: string = "";
-    stateProvince: string = "";
-    country: string = "";
-    zipCode: string = "";
-    createdByUserId: string = "";
-    createdDate: Date = new Date();
-    latitude: string = "";
-    longitude: string = "";
-    gpscoords: string = "";
-    maxNumberOfParticipants: number = 0;
-    lastUpdatedByUserId: string = "";
-    lastUpdatedDate: Date = new Date();
 }
