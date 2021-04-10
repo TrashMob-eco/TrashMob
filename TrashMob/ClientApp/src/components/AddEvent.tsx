@@ -2,17 +2,21 @@ import { Component } from 'react';
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
-import { EventData } from './FetchEvents';  
+import EventData from './Models/EventData';  
 import DatePicker from 'react-datepicker';
 import { getUserFromCache } from '../store/accountHandler';
+import EventTypeData from './Models/EventTypeData';
+import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 
 interface AddEventDataState {
     title: string;
     loading: boolean;
     eventData: EventData;
-    typeList: TypeData[];
+    typeList: EventTypeData[];
     eventId: Guid;
     eventDate: Date;
+    country: string;
+    region: string;
 }
 
 export interface MatchParams {
@@ -23,7 +27,7 @@ export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEve
     constructor(props: RouteComponentProps<MatchParams>) {
         super(props);
         this.state = {
-            title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), typeList: [], eventDate: new Date()
+            title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), typeList: [], eventDate: new Date(), country: '', region: ''
         };
 
         fetch('api/eventtypes', {
@@ -46,18 +50,26 @@ export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEve
             fetch('api/Events/' + eventId, {})
                 .then(response => response.json() as Promise<EventData>)
                 .then(data => {
-                    this.setState({ title: "Edit", loading: false, eventData: data });
+                    this.setState({ title: "Edit", loading: false, eventData: data, country: data.country, region: data.stateProvince });
                 });
         }
 
         // This will set state for Add Event  
         else {
-            this.state = { title: "Create", loading: false, eventData: new EventData(), eventId: Guid.create(), typeList: [], eventDate: new Date() };
+            this.state = { title: "Create", loading: false, eventData: new EventData(), eventId: Guid.create(), typeList: [], eventDate: new Date(), country: '', region: '' };
         }
 
         // This binding is necessary to make "this" work in the callback  
         this.handleSave = this.handleSave.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
+    }
+
+    selectCountry(val: string) {
+        this.setState({ country: val });
+    }
+
+    selectRegion(val: string) {
+        this.setState({ region: val });
     }
 
     handleEventDateChange = (eventDate: Date) => {
@@ -96,8 +108,8 @@ export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEve
         eventData.eventTypeId = form.get("eventTypeId")?.valueOf() as number ?? 0; 
         eventData.streetAddress = form.get("streetAddress")?.toString() ?? ""; 
         eventData.city = form.get("city")?.toString() ?? ""; 
-        eventData.stateProvince = form.get("stateProvince")?.toString() ?? ""; 
-        eventData.country = form.get("country")?.toString() ?? ""; 
+        eventData.stateProvince = this.state.region ?? ""; 
+        eventData.country = this.state.country ?? ""; 
         eventData.zipCode = form.get("zipCode")?.toString() ?? ""; 
         eventData.latitude = form.get("latitude")?.toString() ?? ""; 
         eventData.longitude = form.get("longitude")?.toString() ?? ""; 
@@ -120,7 +132,7 @@ export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEve
                 },
             }).then((response) => response.json())
                 .then((responseJson) => {
-                    this.props.history.push("/fetchEvents");
+                    this.props.history.push("/mydashboard");
                 })
         }
 
@@ -136,7 +148,7 @@ export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEve
                 },
             }).then((response) => response.json())
                 .then((responseJson) => {
-                    this.props.history.push("/fetchEvents");
+                    this.props.history.push("/mydashboard");
                 })
         }
     }
@@ -144,11 +156,12 @@ export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEve
     // This will handle Cancel button click event.  
     private handleCancel(event: any) {
         event.preventDefault();
-        this.props.history.push("/fetchEvents");
+        this.props.history.push("/mydashboard");
     }
 
     // Returns the HTML Form to the render() method.  
-    private renderCreateForm(typeList: Array<TypeData>) {
+    private renderCreateForm(typeList: Array<EventTypeData>) {
+        const { country, region } = this.state;
         return (
             <form onSubmit={this.handleSave} >
                 <div className="form-group row" >
@@ -196,15 +209,18 @@ export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEve
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="stateProvince">State / Province</label>
+                    <label className="control-label col-md-12" htmlFor="Country">Country</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="stateProvince" defaultValue={this.state.eventData.stateProvince} required />
+                        <CountryDropdown name="country" value={country} onChange={(val) => this.selectCountry(val)} />
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="Country">Country</label>
+                    <label className="control-label col-md-12" htmlFor="stateProvince">State / Province</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="country" defaultValue={this.state.eventData.country} required />
+                        <RegionDropdown
+                            country={country}
+                            value={region}
+                            onChange={(val) => this.selectRegion(val)} />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -244,12 +260,4 @@ export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEve
             </form >
         )
     }
-}
-
-export class TypeData {
-    id: number = 0;
-    name: string = "";
-    description: string = "";
-    displayOrder: number = 0;
-    isActive: boolean = true;
 }

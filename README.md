@@ -24,12 +24,12 @@ ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want
 Here's what needs to be done before we can launch
 1. Styling
 1. Fix welcome user message
+1. Fix issue with being able to click login button twice which crashes ui
+1. Event details page doesn't render (routing issue?)
 1. Fix edit event rendering
 1. The Date Picker on the Add Event page needs to be replaced with a DateTime Picker that works
-1. Add begin and end times for events
 1. Get Access token and pass to web apis 
 1. Add authorization and scopes to web apis
-1. Fix login failed crash
 1. Allow event location to be set by clicking on the map
 1. Need content for Privacy Policy
 1. Need content for Terms of Service
@@ -42,7 +42,6 @@ Here's what needs to be done before we can launch
 1. Fix Terms of Service accept popup
 1. Basic field validation
 1. Add Facebook / Google / Twitter logins
-1. Add smart list of countries / states / provinces
 
 ## What is the domain name going to be?
 

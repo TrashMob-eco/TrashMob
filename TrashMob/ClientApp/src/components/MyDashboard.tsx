@@ -2,7 +2,7 @@ import { Component } from 'react';
 import * as React from 'react'
 
 import { Link } from 'react-router-dom';
-import { FetchUserEvents } from './FetchUserEvents'
+import { FetchUserEvents } from './UserEvents'
 
 export class MyDashboard extends Component {
     render() {

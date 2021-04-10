@@ -4,7 +4,6 @@ import { Route, Switch } from 'react-router';
 import { BrowserRouter } from 'react-router-dom';
 
 import { Home } from './components/Home';
-import { FetchEvents } from './components/FetchEvents';
 
 // Layout
 import { TopMenu } from './components/TopMenu';
@@ -26,6 +25,7 @@ import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } fr
 import { InteractionType } from '@azure/msal-browser';
 import { msalClient } from './store/AuthStore';
 import { AddEvent } from './components/AddEvent';
+import { EventDetails } from './components/EventDetails';
 
 export const App = () => {
 
@@ -63,11 +63,9 @@ export const App = () => {
                                 <Route path="/contactus">
                                     <ContactUs />
                                 </Route>
+                                <Route path="/eventdetails/:eventId" component={EventDetails} />
                                 <Route path="/faq">
                                     <Faq />
-                                </Route>
-                                <Route path="/fetchevents">
-                                    <FetchEvents />
                                 </Route>
                                 <Route path="/gettingstarted">
                                     <GettingStarted />
