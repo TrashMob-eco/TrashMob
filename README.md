@@ -30,8 +30,6 @@ Here's what needs to be done before we can launch
 1. Get Access token and pass to web apis 
 1. Add authorization and scopes to web apis
 1. Allow event location to be set by clicking on the map
-1. Need content for Privacy Policy
-1. Need content for Terms of Service
 1. Add Contact Us functionality
 1. Show events on the map
 1. Get proper logo
