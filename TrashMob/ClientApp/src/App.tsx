@@ -19,7 +19,6 @@ import { Partners } from './components/Partners';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { Sponsors } from './components/Sponsors';
 import { TermsOfService } from './components/TermsOfService';
-import { UserStories } from './components/UserStories';
 import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
@@ -51,47 +50,46 @@ export const App = () => {
                                 <Route exact path='/'>
                                     <Home />
                                 </Route>
-                                <Route path="/about">
+                                <Route exact path="/about">
                                     <About />
                                 </Route>
-                                <MsalAuthenticationTemplate
-                                    interactionType={InteractionType.Popup}
-                                    errorComponent={ErrorComponent}
-                                    loadingComponent={LoadingComponent}>
-                                    <Route path="/addevent/:eventId?" component={AddEvent} />
-                                </MsalAuthenticationTemplate >
-                                <Route path="/contactus">
+                                <Route>
+                                    <MsalAuthenticationTemplate
+                                        interactionType={InteractionType.Redirect}
+                                        errorComponent={ErrorComponent}
+                                        loadingComponent={LoadingComponent}>
+                                        <Route path="/addevent/:eventId?" component={AddEvent} />
+                                    </MsalAuthenticationTemplate >
+                                </Route>
+                                <Route exact path="/contactus">
                                     <ContactUs />
                                 </Route>
                                 <Route path="/eventdetails/:eventId?" component={EventDetails} />
-                                <Route path="/faq">
+                                <Route exact path="/faq">
                                     <Faq />
                                 </Route>
-                                <Route path="/gettingstarted">
+                                <Route exact path="/gettingstarted">
                                     <GettingStarted />
                                 </Route>
                                 <Route exact path="/mydashboard">
                                     <MsalAuthenticationTemplate
-                                        interactionType={InteractionType.Popup}
+                                        interactionType={InteractionType.Redirect}
                                         errorComponent={ErrorComponent}
-                                        loadingComponent={LoadingComponent}>                                        
+                                        loadingComponent={LoadingComponent}>
                                         <MyDashboard />
                                     </MsalAuthenticationTemplate >
                                 </Route>
-                                <Route path="/partners">
+                                <Route exact path="/partners">
                                     <Partners />
                                 </Route>
-                                <Route path="/privacypolicy">
+                                <Route exact path="/privacypolicy">
                                     <PrivacyPolicy />
                                 </Route>
-                                <Route path="/sponsors">
+                                <Route exact path="/sponsors">
                                     <Sponsors />
                                 </Route>
-                                <Route path="/termsofservice">
+                                <Route exact path="/termsofservice">
                                     <TermsOfService />
-                                </Route>
-                                <Route path="/userstories">
-                                    <UserStories />
                                 </Route>
                             </Switch>
                             <div>

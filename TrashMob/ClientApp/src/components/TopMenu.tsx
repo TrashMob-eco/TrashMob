@@ -35,7 +35,7 @@ export const TopMenu: FunctionComponent = () => {
 
     function signIn(e: any) {
         e.preventDefault();
-        msalClient.loginPopup();
+        msalClient.loginRedirect();
     }
 
     return (
@@ -58,9 +58,6 @@ export const TopMenu: FunctionComponent = () => {
                     </li>
                     <li className="nav-item">
                         <a className="nav-link" href="/mydashboard">My Dashboard</a>
-                    </li>
-                    <li className="nav-item">
-                        <a className="nav-link" href="/userstories">User Stories</a>
                     </li>
                     <li className="nav-item">
                         <a className="nav-link" href="/partners">Partners</a>
