@@ -2,7 +2,9 @@ import { Component } from 'react';
 import * as React from 'react'
 
 import { Link } from 'react-router-dom';
-import { FetchUserEvents } from './UserEvents'
+import { EventsUserOwns } from './EventsUserOwns'
+import { EventsUserIsAttending } from './EventsUserIsAttending';
+import NearbyEventsMap from './NearbyEventsMap';
 
 export class MyDashboard extends Component {
     render() {
@@ -12,13 +14,19 @@ export class MyDashboard extends Component {
                     <Link to="/addevent">Create a New Event</Link>
                 </div>
                 <div>
-                    My Upcoming Events
+                    Events I Own
                     <div>
-                    {/*    <FetchUserEvents />*/}
+                        <EventsUserOwns />
                     </div>
                 </div>
                 <div>
-                    My Completed Events
+                    Events I am Attending
+                    <div>
+                        <EventsUserIsAttending />
+                    </div>
+                </div>
+                <div>
+                    <NearbyEventsMap />
                 </div>
                 <div>
                     My Stats

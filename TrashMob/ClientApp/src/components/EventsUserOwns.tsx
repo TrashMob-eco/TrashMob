@@ -3,6 +3,7 @@ import * as React from 'react'
 
 import { Link } from 'react-router-dom';
 import EventData from './Models/EventData';  
+import { getUserFromCache } from '../store/accountHandler';
 
 interface PropsType { };
 
@@ -12,7 +13,7 @@ interface FetchEventDataState {
     token: string;
 }
 
-export class FetchUserEvents extends Component<PropsType, FetchEventDataState> {
+export class EventsUserOwns extends Component<PropsType, FetchEventDataState> {
 
     constructor(props: FetchEventDataState) {
         super(props);
@@ -27,7 +28,7 @@ export class FetchUserEvents extends Component<PropsType, FetchEventDataState> {
         headers.append("Accept", 'application/json');
         headers.append("Content-Type", 'application/json');
 
-        fetch('api/mydashboard', {
+        fetch('api/events/eventsowned/' + getUserFromCache().id, {
             method: 'GET',
             headers: headers
         })

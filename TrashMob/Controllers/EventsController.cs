@@ -27,6 +27,14 @@ namespace TrashMob.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        [Route("eventsowned/{userId}")]
+        public async Task<IActionResult> GetEventsUserOwns(Guid userId)
+        {
+            var result = await eventRepository.GetUserEvents(userId).ConfigureAwait(false);
+            return Ok(result);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEvent(Guid id)
         {
