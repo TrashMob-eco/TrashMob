@@ -63,7 +63,7 @@ export const App = () => {
                                 <Route path="/contactus">
                                     <ContactUs />
                                 </Route>
-                                <Route path="/eventdetails/:eventId" component={EventDetails} />
+                                <Route path="/eventdetails/:eventId?" component={EventDetails} />
                                 <Route path="/faq">
                                     <Faq />
                                 </Route>
