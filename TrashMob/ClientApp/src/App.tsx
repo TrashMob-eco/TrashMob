@@ -25,6 +25,7 @@ import { InteractionType } from '@azure/msal-browser';
 import { msalClient } from './store/AuthStore';
 import { CreateEvent } from './components/CreateEvent';
 import { EventDetails } from './components/EventDetails';
+import { EditEvent } from './components/EditEvent';
 
 export const App = () => {
 
@@ -47,37 +48,42 @@ export const App = () => {
 
                         <BrowserRouter basename="/" >
                             <Switch>
-                                <Route exact path='/'>
-                                    <Home />
-                                </Route>
-                                <Route exact path="/about">
-                                    <About />
-                                </Route>
-                                <Route>
-                                <MsalAuthenticationTemplate
-                                    interactionType={InteractionType.Redirect}
-                                    errorComponent={ErrorComponent}
-                                    loadingComponent={LoadingComponent}>
-                                    <Route path="/createevent/:eventId?" component={CreateEvent} />
-                                </MsalAuthenticationTemplate >
-                                 </Route>
-                                <Route exact path="/contactus">
-                                    <ContactUs />
-                                </Route>
+                                {/*<Route>*/}
+                                {/*    <MsalAuthenticationTemplate*/}
+                                {/*        interactionType={InteractionType.Redirect}*/}
+                                {/*        errorComponent={ErrorComponent}*/}
+                                {/*        loadingComponent={LoadingComponent}>*/}
+                                {/*        <Route path="/editevent/:eventId" component={EditEvent} />*/}
+                                {/*    </MsalAuthenticationTemplate >*/}
+                                {/*</Route>*/}
                                 <Route path="/eventdetails/:eventId?" component={EventDetails} />
-                                <Route exact path="/faq">
-                                    <Faq />
-                                </Route>
-                                <Route exact path="/gettingstarted">
-                                    <GettingStarted />
+                                <Route>
+                                    <MsalAuthenticationTemplate
+                                        interactionType={InteractionType.Redirect}
+                                        errorComponent={ErrorComponent}
+                                        loadingComponent={LoadingComponent}>
+                                        <Route path="/createevent" component={CreateEvent} />
+                                    </MsalAuthenticationTemplate >
                                 </Route>
                                 <Route exact path="/mydashboard">
                                     <MsalAuthenticationTemplate
                                         interactionType={InteractionType.Redirect}
                                         errorComponent={ErrorComponent}
-                                        loadingComponent={LoadingComponent}>                                        
+                                        loadingComponent={LoadingComponent}>
                                         <MyDashboard />
                                     </MsalAuthenticationTemplate >
+                                </Route>
+                                <Route exact path="/about">
+                                    <About />
+                                </Route>
+                                <Route exact path="/contactus">
+                                    <ContactUs />
+                                </Route>
+                                <Route exact path="/faq">
+                                    <Faq />
+                                </Route>
+                                <Route exact path="/gettingstarted">
+                                    <GettingStarted />
                                 </Route>
                                 <Route exact path="/partners">
                                     <Partners />
@@ -90,6 +96,9 @@ export const App = () => {
                                 </Route>
                                 <Route exact path="/termsofservice">
                                     <TermsOfService />
+                                </Route>
+                                <Route exact path='/'>
+                                    <Home />
                                 </Route>
                             </Switch>
                             <div>
