@@ -3,6 +3,7 @@
     using Microsoft.EntityFrameworkCore;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using TrashMob.Extensions;
     using TrashMob.Models;
@@ -21,6 +22,13 @@
             return await mobDbContext.Events.ToListAsync().ConfigureAwait(false);
         }
 
+        public async Task<IEnumerable<Event>> GetUserEvents(Guid userId)
+        {
+            return await mobDbContext.Events
+                .Where(e => e.CreatedByUserId == userId)
+                .ToListAsync().ConfigureAwait(false);
+        }
+
         // Add new Event record     
         public async Task<Guid> AddEvent(Event mobEvent)
         {
@@ -31,6 +39,15 @@
 
             var eventHistory = mobEvent.ToEventHistory();
             mobDbContext.EventHistories.Add(eventHistory);
+
+            var newAttendee = new EventAttendee
+            {
+                EventId = mobEvent.Id,
+                UserId = mobEvent.CreatedByUserId,
+                SignUpDate = DateTimeOffset.UtcNow
+            };
+            
+            mobDbContext.EventAttendees.Add(newAttendee);
 
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
             return mobEvent.Id;

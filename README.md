@@ -25,8 +25,7 @@ Here's what needs to be done before we can launch
 1. Styling
 1. Fix welcome user message (need to get username from claims)
 1. Fix issue with being able to click login button twice which crashes ui
-1. Event details page doesn't render (routing issue?)
-1. Fix edit event rendering
+1. Fix issue with AddEvents auth
 1. The Date Picker on the Add Event page needs to be replaced with a DateTime Picker that works
 1. Get Access token and pass to web apis 
 1. Add authorization and scopes to web apis
@@ -35,7 +34,6 @@ Here's what needs to be done before we can launch
 1. Need content for Terms of Service
 1. Add Contact Us functionality
 1. Show events on the map
-1. Add My Dashboard with ability to add a new event, and view / update existing ones
 1. Get proper logo
 1. Figure out how to deploy to a production versus dev environment
 1. Fix Terms of Service accept popup

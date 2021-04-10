@@ -1,7 +1,9 @@
 import { Component } from 'react';
 import * as React from 'react'
 import { Link } from 'react-router-dom';
-import EventData from './Models/EventData';  
+import EventData from './Models/EventData';
+import { getUserFromCache } from '../store/accountHandler';
+import EventAttendeeData from './Models/EventAttendeeData';
 
 interface PropsType { };
 
@@ -28,7 +30,32 @@ export class MainEvents extends Component<PropsType, FetchEventDataState> {
             .then(data => {
                 this.setState({ eventList: data, loading: false });
             });
+
+        // This binding is necessary to make "this" work in the callback  
+        this.handleAttend = this.handleAttend.bind(this);
     }
+
+    private handleAttend(eventId: string) {
+        var user = getUserFromCache();
+
+        var eventAttendee = new EventAttendeeData();
+        eventAttendee.attendeeId = user.Id;
+        eventAttendee.eventId = eventId;
+
+        var data = JSON.stringify(eventAttendee);
+
+        // POST request for Add EventAttendee.  
+        fetch('api/EventAttendees', {
+            method: 'POST',
+            body: data,
+            headers: {
+                Allow: 'POST',
+                Accept: 'application/json, text/plain',
+                'Content-Type': 'application/json'
+            },
+        }).then((response) => response.json())
+    }
+
 
     public render() {
         let contents = this.state.loading
@@ -70,6 +97,7 @@ export class MainEvents extends Component<PropsType, FetchEventDataState> {
                                 <td>{mobEvent.country}</td>
                                 <td>
                                     <Link to={`/eventdetails/${mobEvent.id}`}>Details</Link>
+                                    <button className="btn" onClick={() => this.handleAttend(mobEvent.id)}>Attend</button>
                                 </td>
                             </tr>
                         )}

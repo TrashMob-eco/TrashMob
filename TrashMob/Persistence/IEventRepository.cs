@@ -9,6 +9,8 @@
     {
         Task<IEnumerable<Event>> GetAllEvents();
 
+        Task<IEnumerable<Event>> GetUserEvents(Guid userId);
+
         Task<Guid> AddEvent(Event mobEvent);
 
         Task<int> UpdateEvent(Event mobEvent);
