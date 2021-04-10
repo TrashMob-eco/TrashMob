@@ -7,6 +7,7 @@ import DatePicker from 'react-datepicker';
 import { getUserFromCache } from '../store/accountHandler';
 import EventTypeData from './Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
+import SingleEventMap from './SingleEventMap';
 
 interface AddEventDataState {
     title: string;
@@ -257,6 +258,9 @@ export class AddEvent extends Component<RouteComponentProps<MatchParams>, AddEve
                     <button type="submit" className="btn btn-default">Save</button>
                     <button className="btn" onClick={this.handleCancel}>Cancel</button>
                 </div >
+                <div>
+                    <SingleEventMap />
+                </div>
             </form >
         )
     }

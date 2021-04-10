@@ -2,13 +2,15 @@ import { Component } from 'react';
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
-import EventData from './Models/EventData';  
+import EventData from './Models/EventData';
+import SingleEventMap from './SingleEventMap';
 
 interface EventDetailsDataState {
     title: string;
     loading: boolean;
     eventData: EventData;
     eventId: Guid;
+    eventDate: string
 }
 
 export interface MatchParams {
@@ -19,7 +21,7 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
     constructor(props: RouteComponentProps<MatchParams>) {
         super(props);
         this.state = {
-            title: "", loading: true, eventData: new EventData(), eventId: Guid.create()
+            title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), eventDate: new Date().toDateString()
         };
 
         var eventId = this.props.match.params["eventId"];
@@ -28,29 +30,24 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
             fetch('api/Events/' + eventId, {})
                 .then(response => response.json() as Promise<EventData>)
                 .then(data => {
-                    this.setState({ title: "Edit", loading: false, eventData: data });
+                    this.setState({ title: "Event Details", loading: false, eventData: data, eventDate: new Date(data.eventDate).toDateString() });
                 });
-        }
-        else {
-            this.state = { title: "Details", loading: false, eventData: new EventData(), eventId: Guid.create() };
         }
     }
 
     public render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : this.renderCreateForm();
+            : this.renderEvent();
 
         return <div>
             <h1>{this.state.title}</h1>
-            <h3>Event</h3>
             <hr />
             {contents}
         </div>;
     }
 
-    // Returns the HTML Form to the render() method.  
-    private renderCreateForm() {
+    private renderEvent() {
         return (
             <div>
                 <div className="form-group row" >
@@ -59,82 +56,86 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                 < div className="form-group row" >
                     <label className="control-label col-md-12" htmlFor="Name">Name</label>
                     <div className="col-md-4">
-                        <label className="form-control" defaultValue={this.state.eventData.name} />
+                        <label className="form-control">{this.state.eventData.name}</label>
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Description">Description</label>
                     <div className="col-md-4">
-                        <label className="form-control" defaultValue={this.state.eventData.description} />
+                        <label className="form-control">{this.state.eventData.description}</label>
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="EventDate">EventDate</label>
                     <div className="col-md-4">
-                        <label className="form-control" defaultValue={this.state.eventData.eventDate?.toDateString()} />
+                        <label className="form-control">{this.state.eventDate}</label>
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="EventType">Event Type</label>
                     <div className="col-md-4">
-                        <label className="form-control" defaultValue={this.state.eventData.eventTypeId} />
+                        <label className="form-control">{this.state.eventData.eventTypeId}</label>
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="StreetAddress">StreetAddress</label>
                     <div className="col-md-4">
-                        <label className="form-control" defaultValue={this.state.eventData.streetAddress} />
+                        <label className="form-control">{this.state.eventData.streetAddress}</label>
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="City">City</label>
                     <div className="col-md-4">
-                        <label className="form-control" defaultValue={this.state.eventData.city} />
+                        <label className="form-control">{this.state.eventData.city}</label>
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="stateProvince">State / Province</label>
                     <div className="col-md-4">
-                        <label className="form-control" defaultValue={this.state.eventData.stateProvince} />
+                        <label className="form-control">{this.state.eventData.stateProvince}</label>
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Country">Country</label>
                     <div className="col-md-4">
-                        <label className="form-control" defaultValue={this.state.eventData.country} />
+                        <label className="form-control">{this.state.eventData.country}</label>
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="ZipCode">Zip Code</label>
                     <div className="col-md-4">
-                        <label className="form-control" defaultValue={this.state.eventData.zipCode} />
+                        <label className="form-control">{this.state.eventData.zipCode}</label>
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Latitude">Latitude</label>
                     <div className="col-md-4">
-                        <label className="form-control" defaultValue={this.state.eventData.latitude} />
+                        <label className="form-control">{this.state.eventData.latitude}</label>
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Longitude">Longitude</label>
                     <div className="col-md-4">
-                        <label className="form-control" defaultValue={this.state.eventData.longitude} />
+                        <label className="form-control">{this.state.eventData.longitude}</label>
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="GPSCoords">GPS Coords</label>
                     <div className="col-md-4">
-                        <label className="form-control" defaultValue={this.state.eventData.gpscoords} />
+                        <label className="form-control">{this.state.eventData.gpscoords}</label>
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="MaxNumberOfParticipants">Max Number Of Participants</label>
                     <div className="col-md-4">
-                        <label className="form-control" defaultValue={this.state.eventData.maxNumberOfParticipants} />
+                        <label className="form-control">{this.state.eventData.maxNumberOfParticipants}</label>
                     </div>
                 </div >
+                <div>
+                    <SingleEventMap />
+                </div>
             </div >
+
         )
     }
 }
