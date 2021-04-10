@@ -9,7 +9,7 @@ import EventTypeData from './Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import SingleEventMap from './SingleEventMap';
 
-interface CreateEventDataState {
+interface EditEventDataState {
     title: string;
     loading: boolean;
     eventData: EventData;
@@ -24,7 +24,7 @@ export interface MatchParams {
     eventId: string;
 }
 
-export class CreateEvent extends Component<RouteComponentProps<MatchParams>, CreateEventDataState> {
+export class EditEvent extends Component<RouteComponentProps<MatchParams>, EditEventDataState> {
     constructor(props: RouteComponentProps<MatchParams>) {
         super(props);
         this.state = {
@@ -44,7 +44,16 @@ export class CreateEvent extends Component<RouteComponentProps<MatchParams>, Cre
                 this.setState({ typeList: data });
             });
 
-        this.state = { title: "Create", loading: false, eventData: new EventData(), eventId: Guid.create(), typeList: [], eventDate: new Date(), country: '', region: '' };
+        var eventId = this.props.match.params["eventId"];
+
+        // This will set state for Edit Event  
+        if (eventId != null) {
+            fetch('api/Events/' + eventId, {})
+                .then(response => response.json() as Promise<EventData>)
+                .then(data => {
+                    this.setState({ title: "Edit", loading: false, eventData: data, country: data.country, region: data.stateProvince });
+                });
+        }
 
         // This binding is necessary to make "this" work in the callback  
         this.handleSave = this.handleSave.bind(this);
@@ -107,13 +116,14 @@ export class CreateEvent extends Component<RouteComponentProps<MatchParams>, Cre
 
         var data = JSON.stringify(eventData);
 
+        // PUT request for Edit Event.  
         fetch('api/Events', {
-            method: 'POST',
+            method: 'PUT',
             body: data,
             headers: {
-                Allow: 'POST',
-                Accept: 'application/json, text/plain',
-                'Content-Type': 'application/json'
+                Allow: 'POST, PUT',
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
             },
         }).then((response) => response.json())
             .then((responseJson) => {
