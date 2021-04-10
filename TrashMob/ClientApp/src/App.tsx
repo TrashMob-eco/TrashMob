@@ -26,6 +26,7 @@ import { msalClient } from './store/AuthStore';
 import { CreateEvent } from './components/CreateEvent';
 import { EventDetails } from './components/EventDetails';
 import { EditEvent } from './components/EditEvent';
+import { NoMatch } from './components/NoMatch';
 
 export const App = () => {
 
@@ -57,14 +58,14 @@ export const App = () => {
                                 {/*    </MsalAuthenticationTemplate >*/}
                                 {/*</Route>*/}
                                 <Route path="/eventdetails/:eventId?" component={EventDetails} />
-                                <Route>
-                                    <MsalAuthenticationTemplate
-                                        interactionType={InteractionType.Redirect}
-                                        errorComponent={ErrorComponent}
-                                        loadingComponent={LoadingComponent}>
-                                        <Route path="/createevent" component={CreateEvent} />
-                                    </MsalAuthenticationTemplate >
-                                </Route>
+                                {/*<Route>*/}
+                                {/*    <MsalAuthenticationTemplate*/}
+                                {/*        interactionType={InteractionType.Redirect}*/}
+                                {/*        errorComponent={ErrorComponent}*/}
+                                {/*        loadingComponent={LoadingComponent}>*/}
+                                {/*        <Route path="/createevent" component={CreateEvent} />*/}
+                                {/*    </MsalAuthenticationTemplate >*/}
+                                {/*</Route>*/}
                                 <Route exact path="/mydashboard">
                                     <MsalAuthenticationTemplate
                                         interactionType={InteractionType.Redirect}
@@ -99,6 +100,9 @@ export const App = () => {
                                 </Route>
                                 <Route exact path='/'>
                                     <Home />
+                                </Route>
+                                <Route>
+                                    <NoMatch />
                                 </Route>
                             </Switch>
                             <div>
