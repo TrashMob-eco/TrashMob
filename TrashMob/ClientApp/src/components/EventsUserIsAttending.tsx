@@ -28,7 +28,7 @@ export class EventsUserIsAttending extends Component<PropsType, FetchEventDataSt
         headers.append("Accept", 'application/json');
         headers.append("Content-Type", 'application/json');
 
-        fetch('api/events/eventsuserIsAttending/' + getUserFromCache().id, {
+        fetch('api/events/eventsuserisattending/' + getUserFromCache().id, {
             method: 'GET',
             headers: headers
         })
