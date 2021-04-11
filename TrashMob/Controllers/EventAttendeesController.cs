@@ -20,10 +20,10 @@ namespace TrashMob.Controllers
             this.eventAttendeeRepository = eventAttendeeRepository;
         }
 
-        [HttpGet]
+        [HttpGet("{eventId}")]
         public async Task<IActionResult> GetEventAttendees(Guid eventId)
         {
-            var result = await eventAttendeeRepository.GetAllEventAttendees(eventId).ConfigureAwait(false);
+            var result = await eventAttendeeRepository.GetEventAttendees(eventId).ConfigureAwait(false);
             return Ok(result);
         }
 
@@ -65,7 +65,7 @@ namespace TrashMob.Controllers
 
         private async Task<bool> EventAttendeeExists(Guid eventId, Guid userId)
         {
-            return (await eventAttendeeRepository.GetAllEventAttendees(eventId).ConfigureAwait(false)).Any(e => e.UserId == userId);
+            return (await eventAttendeeRepository.GetEventAttendees(eventId).ConfigureAwait(false)).Any(e => e.Id == userId);
         }
     }
 }

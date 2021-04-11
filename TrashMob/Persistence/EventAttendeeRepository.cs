@@ -16,9 +16,13 @@
             this.mobDbContext = mobDbContext;
         }
 
-        public async Task<IEnumerable<EventAttendee>> GetAllEventAttendees(Guid eventId)
+        public async Task<IEnumerable<User>> GetEventAttendees(Guid eventId)
         {
-            return await mobDbContext.EventAttendees.Where(ea => ea.EventId == eventId).ToListAsync().ConfigureAwait(false);
+            // TODO: There are better ways to do this.
+            var eventAttendees = await mobDbContext.EventAttendees.Where(ea => ea.EventId == eventId).ToListAsync().ConfigureAwait(false);
+
+            var users = await mobDbContext.Users.Where(u => eventAttendees.Select(ea => ea.UserId).Contains(u.Id)).ToListAsync().ConfigureAwait(false);
+            return users;
         }
 
         public Task<int> AddEventAttendee(Guid eventId, Guid attendeeId)

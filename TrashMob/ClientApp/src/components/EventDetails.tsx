@@ -4,11 +4,13 @@ import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
 import EventData from './Models/EventData';
 import SingleEventMap from './SingleEventMap';
+import UserData from './Models/UserData';
 
 interface EventDetailsDataState {
     title: string;
     loading: boolean;
     eventData: EventData;
+    userList: UserData[];
     eventId: Guid;
     eventDate: string
 }
@@ -21,7 +23,7 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
     constructor(props: RouteComponentProps<MatchParams>) {
         super(props);
         this.state = {
-            title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), eventDate: new Date().toDateString()
+            title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), eventDate: new Date().toDateString(), userList: []
         };
 
         var eventId = this.props.match.params["eventId"];
@@ -32,7 +34,40 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                 .then(data => {
                     this.setState({ title: "Event Details", loading: false, eventData: data, eventDate: new Date(data.eventDate).toDateString() });
                 });
+
+            fetch('api/eventattendees/' + eventId, {
+                method: 'GET',
+            })
+                .then(response => response.json() as Promise<UserData[]>)
+                .then(data => {
+                    this.setState({ userList: data, loading: false });
+                });
         }
+    }
+
+    private renderUsersTable(users: UserData[]) {
+        return (
+            <div>
+                <table className='table table-striped' aria-labelledby="tabelLabel">
+                    <thead>
+                        <tr>
+                            <th>User Name</th>
+                            <th>Id</th>
+                            <th>Member Since</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {users.map(user =>
+                            <tr>
+                                <td>{user.userName}</td>
+                                <td>{user.id}</td>
+                                <td>{user.memberSince}</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+        );
     }
 
     public render() {
@@ -132,10 +167,12 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                     </div>
                 </div >
                 <div>
+                    { this.renderUsersTable(this.state.userList) }
+                </div>
+                <div>
                     <SingleEventMap />
                 </div>
             </div >
-
         )
     }
 }

@@ -7,7 +7,7 @@
 
     public interface IEventAttendeeRepository
     {
-        Task<IEnumerable<EventAttendee>> GetAllEventAttendees(Guid eventId);
+        Task<IEnumerable<User>> GetEventAttendees(Guid eventId);
 
         Task<int> AddEventAttendee(Guid eventId, Guid attendeeId);
 
