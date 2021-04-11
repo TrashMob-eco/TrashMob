@@ -23,22 +23,22 @@ ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want
 
 Here's what needs to be done before we can launch
 1. Styling
+1. Get proper logo
+1. Allow event location to be set by clicking on the map
 1. Show events on the maps
-1. Fix welcome user message (need to get username from claims). Do we need other claims copied to our db? Do we allow them to set a custom user name
+1. Get username from claims
+1. Fix welcome user message
+1. Remove userId from EventDetails User list (there for convenience only)
+1. Figure out how to deploy to a production versus dev environment
+1. Add Contact Us functionality
 1. Fix issue with being able to click login button twice which crashes ui.
 1. Logout button should not be available if not logged in
 1. Login button should not be available if already logged in
+1. Fix Terms of Service accept popup
 1. Get Access token and pass to web apis 
 1. Add authorization and scopes to web apis
-1. Allow event location to be set by clicking on the map
-1. Add Contact Us functionality
-1. Show list of attendees on event details page
-1. Get proper logo
-1. Figure out how to deploy to a production versus dev environment
-1. Fix Terms of Service accept popup
 1. Basic field validation
 1. Add Facebook / Google / Twitter logins
-1. Add robots.txt file
 
 ## What is the domain name going to be?
 
