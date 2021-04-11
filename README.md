@@ -23,20 +23,23 @@ ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want
 
 Here's what needs to be done before we can launch
 1. Styling
-1. Fix welcome user message (need to get username from claims)
-1. Fix issue with being able to click login button twice which crashes ui
-1. Fix issue with AddEvents auth
+1. Show events on the maps
+1. Fix welcome user message (need to get username from claims). Do we need other claims copied to our db? Do we allow them to set a custom user name
+1. Fix issue with being able to click login button twice which crashes ui.
+1. Logout button should not be available if not logged in
+1. Login button should not be available if already logged in
 1. The Date Picker on the Add Event page needs to be replaced with a DateTime Picker that works
 1. Get Access token and pass to web apis 
 1. Add authorization and scopes to web apis
 1. Allow event location to be set by clicking on the map
 1. Add Contact Us functionality
-1. Show events on the map
+1. Show list of attendees on event details page
 1. Get proper logo
 1. Figure out how to deploy to a production versus dev environment
 1. Fix Terms of Service accept popup
 1. Basic field validation
 1. Add Facebook / Google / Twitter logins
+1. Add robots.txt file
 
 ## What is the domain name going to be?
 
@@ -80,6 +83,35 @@ dotnet user-secrets set "TMDBServerConnectionString" "<insert secret here from k
 ```
 ## How do I deploy to the Azure Web App?
 I currently use Visual Studio Publish to publish the site to the dev server. Eventually I want this to happen via GitHub.
+
+## Test Cases
+1. Verify that the following pages/actions require the user to be signed in:
+    1. Create Event
+    1. User Dashboard
+    1. Edit Event
+    1. Delete Event
+1. Verify that a user is default added as an attendee to an event they created
+1. Verify that a user cannot be added as an attendee to an event they are already attending
+1. Verify that a user cannot edit or delete an event create by someone else
+1. Verify that a user cannot see someone else's dashboard
+1. Verify that the backend APIs can only be called by the app, not by other sites (at least for now)
+1. Verify that a user cannot remove themselves from an event they created
+1. Verify that a user cannot manipulate the payload sent to the back end and change owners on events or update other values
+1. Verify that events created with invalid coordinates / city do not break the app
+1. Verify that events are default sorted by date ascending and the main list does not show events which are in the past
+1. Verify that changing event dates once people are signed up is not allowed (at least until notifications are ready. User should add a note that they will not be attending for reasons)
+1. Verify that SQL injection attacks are not possible
+1. Verify that UTF16 input does not break site
+
+## Validations
+1. Required fields for an event are
+    1. Name
+    1. Event Date
+    1. Description
+    1. Country
+    1. Region
+    1. City or Lat/Long or GPS Coords
+1. Profanity/malicious entry filters
 
 
 
