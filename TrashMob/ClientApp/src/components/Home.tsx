@@ -4,6 +4,7 @@ import * as React from 'react'
 import { MainEvents } from './MainEvents';
 import { MainCarousel } from './MainCarousel';
 import NearbyEventsMap from './NearbyEventsMap';
+import { Link } from 'react-router-dom';
 
 interface PropsType { };
 
@@ -19,6 +20,9 @@ export class Home extends Component<PropsType, DataState> {
                     <MainCarousel />
                 </div>
                 <div>
+                    <div>
+                        <Link to="/createevent">Create a New Event</Link>
+                    </div>
                     <div style={{ width: 50+'%' }}>
                         <MainEvents />
                     </div>
