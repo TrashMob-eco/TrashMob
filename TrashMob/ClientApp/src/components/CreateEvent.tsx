@@ -3,11 +3,12 @@ import * as React from 'react'
 import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
 import EventData from './Models/EventData';
-import DatePicker from 'react-datepicker';
+import DateTimePicker from 'react-datetime-picker';
 import { getUserFromCache } from '../store/accountHandler';
 import EventTypeData from './Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import SingleEventMap from './SingleEventMap';
+import { withRouter } from 'react-router-dom';
 
 interface CreateEventDataState {
     title: string;
@@ -20,8 +21,11 @@ interface CreateEventDataState {
     region: string;
 }
 
-export class CreateEvent extends Component<RouteComponentProps<any>, CreateEventDataState> {
-    constructor(props: RouteComponentProps<any>) {
+interface Props extends RouteComponentProps<any> {
+}
+
+class CreateEvent extends Component<Props, CreateEventDataState> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), typeList: [], eventDate: new Date(), country: '', region: ''
@@ -55,10 +59,6 @@ export class CreateEvent extends Component<RouteComponentProps<any>, CreateEvent
         this.setState({ region: val });
     }
 
-    handleEventDateChange = (eventDate: Date) => {
-        this.setState(prevState => ({ eventData: { ...prevState.eventData, eventDate: eventDate } }));
-    }
-
     public render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
@@ -81,11 +81,7 @@ export class CreateEvent extends Component<RouteComponentProps<any>, CreateEvent
         var eventData = new EventData();
         eventData.name = form.get("name")?.toString() ?? "";
         eventData.description = form.get("description")?.toString() ?? "";
-        var eventDatest = form.get("eventDate")?.toString() ?? "";
-        if (eventDatest) {
-            eventData.eventDate = new Date(eventDatest);
-        }
-
+        eventData.eventDate = new Date(this.state.eventDate);
         var user = getUserFromCache();
 
         eventData.eventTypeId = form.get("eventTypeId")?.valueOf() as number ?? 0;
@@ -123,6 +119,10 @@ export class CreateEvent extends Component<RouteComponentProps<any>, CreateEvent
         this.props.history.push("/mydashboard");
     }
 
+    handleEventDateChange = (passedDate: Date) => {
+        this.setState({ eventDate: passedDate });
+    }
+
     // Returns the HTML Form to the render() method.  
     private renderCreateForm(typeList: Array<EventTypeData>) {
         const { country, region } = this.state;
@@ -146,7 +146,7 @@ export class CreateEvent extends Component<RouteComponentProps<any>, CreateEvent
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="EventDate">EventDate</label>
                     <div className="col-md-4">
-                        <DatePicker selected={this.state.eventData.eventDate} name="eventDate" onChange={this.handleEventDateChange} value={this.state.eventData.eventDate?.toDateString()} />
+                        <DateTimePicker name="eventDate" onChange={this.handleEventDateChange} value={this.state.eventDate} />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -163,7 +163,7 @@ export class CreateEvent extends Component<RouteComponentProps<any>, CreateEvent
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="StreetAddress">StreetAddress</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="streetAddress" defaultValue={this.state.eventData.streetAddress} required />
+                        <input className="form-control" type="text" name="streetAddress" defaultValue={this.state.eventData.streetAddress} />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -190,31 +190,31 @@ export class CreateEvent extends Component<RouteComponentProps<any>, CreateEvent
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="ZipCode">Zip Code</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="zipCode" defaultValue={this.state.eventData.zipCode} required />
+                        <input className="form-control" type="text" name="zipCode" defaultValue={this.state.eventData.zipCode} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Latitude">Latitude</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="latitude" defaultValue={this.state.eventData.latitude} required />
+                        <input className="form-control" type="text" name="latitude" defaultValue={this.state.eventData.latitude} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Longitude">Longitude</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="longitude" defaultValue={this.state.eventData.longitude} required />
+                        <input className="form-control" type="text" name="longitude" defaultValue={this.state.eventData.longitude} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="GPSCoords">GPS Coords</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="gpsCoords" defaultValue={this.state.eventData.gpscoords} required />
+                        <input className="form-control" type="text" name="gpsCoords" defaultValue={this.state.eventData.gpscoords} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="MaxNumberOfParticipants">Max Number Of Participants</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="maxNumberOfParticipants" defaultValue={this.state.eventData.maxNumberOfParticipants} required />
+                        <input className="form-control" type="text" name="maxNumberOfParticipants" defaultValue={this.state.eventData.maxNumberOfParticipants} />
                     </div>
                 </div >
                 <div className="form-group">
@@ -228,3 +228,5 @@ export class CreateEvent extends Component<RouteComponentProps<any>, CreateEvent
         )
     }
 }
+
+export default withRouter(CreateEvent);

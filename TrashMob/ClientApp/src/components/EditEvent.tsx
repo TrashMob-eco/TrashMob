@@ -3,7 +3,7 @@ import * as React from 'react'
 import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
 import EventData from './Models/EventData';
-import DatePicker from 'react-datepicker';
+import DateTimePicker from 'react-datetime-picker';
 import { getUserFromCache } from '../store/accountHandler';
 import EventTypeData from './Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
@@ -12,9 +12,9 @@ import SingleEventMap from './SingleEventMap';
 interface EditEventDataState {
     title: string;
     loading: boolean;
+    eventId: string;
     eventData: EventData;
     typeList: EventTypeData[];
-    eventId: Guid;
     eventDate: Date;
     country: string;
     region: string;
@@ -31,7 +31,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
     constructor(props: EditEventProps) {
         super(props);
         this.state = {
-            title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), typeList: [], eventDate: new Date(), country: '', region: ''
+            title: "", loading: true, eventData: new EventData(), eventId: Guid.create().toString(), typeList: [], eventDate: new Date(), country: '', region: ''
         };
 
         fetch('api/eventtypes', {
@@ -54,7 +54,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
             fetch('api/Events/' + eventId, {})
                 .then(response => response.json() as Promise<EventData>)
                 .then(data => {
-                    this.setState({ title: "Edit", loading: false, eventData: data, country: data.country, region: data.stateProvince, eventDate: new Date(data.eventDate) });
+                    this.setState({ title: "Edit", loading: false, eventData: data, country: data.country, region: data.stateProvince, eventDate: new Date(data.eventDate), eventId: data.id });
                 });
         }
 
@@ -95,9 +95,10 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
         const form = new FormData(event.target);
 
         var eventData = new EventData();
+        eventData.id = this.state.eventId;
         eventData.name = form.get("name")?.toString() ?? "";
         eventData.description = form.get("description")?.toString() ?? "";
-        eventData.eventDate = this.state.eventDate;
+        eventData.eventDate = new Date(this.state.eventDate);
  
         var user = getUserFromCache();
 
@@ -117,7 +118,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
         var data = JSON.stringify(eventData);
 
         // PUT request for Edit Event.  
-        fetch('api/Events', {
+        fetch('api/Events/' + eventData.id, {
             method: 'PUT',
             body: data,
             headers: {
@@ -160,7 +161,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="EventDate">EventDate</label>
                     <div className="col-md-4">
-                        <DatePicker selected={this.state.eventDate} name="eventDate" onChange={this.handleEventDateChange} value={this.state.eventDate.toISOString()} />
+                        <DateTimePicker name="eventDate" onChange={this.handleEventDateChange} value={this.state.eventDate} />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -177,7 +178,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="StreetAddress">StreetAddress</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="streetAddress" defaultValue={this.state.eventData.streetAddress} required />
+                        <input className="form-control" type="text" name="streetAddress" defaultValue={this.state.eventData.streetAddress} />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -204,31 +205,31 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="ZipCode">Zip Code</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="zipCode" defaultValue={this.state.eventData.zipCode} required />
+                        <input className="form-control" type="text" name="zipCode" defaultValue={this.state.eventData.zipCode} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Latitude">Latitude</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="latitude" defaultValue={this.state.eventData.latitude} required />
+                        <input className="form-control" type="text" name="latitude" defaultValue={this.state.eventData.latitude} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Longitude">Longitude</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="longitude" defaultValue={this.state.eventData.longitude} required />
+                        <input className="form-control" type="text" name="longitude" defaultValue={this.state.eventData.longitude} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="GPSCoords">GPS Coords</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="gpsCoords" defaultValue={this.state.eventData.gpscoords} required />
+                        <input className="form-control" type="text" name="gpsCoords" defaultValue={this.state.eventData.gpscoords} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="MaxNumberOfParticipants">Max Number Of Participants</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="maxNumberOfParticipants" defaultValue={this.state.eventData.maxNumberOfParticipants} required />
+                        <input className="form-control" type="text" name="maxNumberOfParticipants" defaultValue={this.state.eventData.maxNumberOfParticipants} />
                     </div>
                 </div >
                 <div className="form-group">

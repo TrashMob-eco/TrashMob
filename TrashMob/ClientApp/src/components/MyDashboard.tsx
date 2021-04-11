@@ -1,12 +1,28 @@
 import { Component } from 'react';
 import * as React from 'react'
 
-import { Link } from 'react-router-dom';
+import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { EventsUserOwns } from './EventsUserOwns'
 import { EventsUserIsAttending } from './EventsUserIsAttending';
 import NearbyEventsMap from './NearbyEventsMap';
 
-export class MyDashboard extends Component {
+interface Props extends RouteComponentProps<any> {
+}
+
+interface MyDashboardDataState {
+    title: string;
+    loading: boolean;
+}
+
+class MyDashboard extends Component<Props, MyDashboardDataState> {
+    constructor(props: Props) {
+        super(props);
+
+        this.state = {
+            title: "My Dashboard", loading: false
+        };
+    }
+
     render() {
         return (
             <div>
@@ -35,3 +51,5 @@ export class MyDashboard extends Component {
         );
     }
 }
+
+export default withRouter(MyDashboard);

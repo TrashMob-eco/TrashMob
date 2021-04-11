@@ -1,5 +1,6 @@
 ﻿namespace TrashMob.Extensions
 {
+    using System;
     using TrashMob.Models;
 
     public static class EventExtensions
@@ -8,7 +9,8 @@
         {
             return new EventHistory
             {
-                Id = originalEvent.Id,
+                Id = Guid.NewGuid(),
+                EventId = originalEvent.Id,
                 Name = originalEvent.Name,
                 Description = originalEvent.Description,
                 EventDate = originalEvent.EventDate,
