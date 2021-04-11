@@ -18,62 +18,42 @@
 
         public async Task<IEnumerable<EventAttendee>> GetAllEventAttendees(Guid eventId)
         {
-            try
-            {
-                return await mobDbContext.EventAttendees.Where(ea => ea.EventId == eventId).ToListAsync().ConfigureAwait(false);
-            }
-            catch
-            {
-                throw;
-            }
+            return await mobDbContext.EventAttendees.Where(ea => ea.EventId == eventId).ToListAsync().ConfigureAwait(false);
         }
 
         public Task<int> AddEventAttendee(Guid eventId, Guid attendeeId)
         {
-            try
+            var eventAttendee = new EventAttendee
             {
-                var eventAttendee = new EventAttendee
-                {
-                    EventId = eventId,
-                    UserId = attendeeId,
-                    SignUpDate = DateTimeOffset.UtcNow,
-                };
+                EventId = eventId,
+                UserId = attendeeId,
+                SignUpDate = DateTimeOffset.UtcNow,
+            };
 
-                mobDbContext.EventAttendees.Add(eventAttendee);
-                return mobDbContext.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            mobDbContext.EventAttendees.Add(eventAttendee);
+            return mobDbContext.SaveChangesAsync();
         }
 
         public Task<int> UpdateEventAttendee(EventAttendee eventAttendee)
         {
-            try
-            {
-                mobDbContext.Entry(eventAttendee).State = EntityState.Modified;
-                return mobDbContext.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            mobDbContext.Entry(eventAttendee).State = EntityState.Modified;
+            return mobDbContext.SaveChangesAsync();
         }
 
         public async Task<int> DeleteEventAttendee(Guid eventId, Guid userId)
         {
-            try
-            {
-                var eventAttendee = await mobDbContext.EventAttendees.FindAsync(eventId, userId).ConfigureAwait(false);
-                mobDbContext.EventAttendees.Remove(eventAttendee);
-                return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
-            }
-            catch
-            {
-                throw;
-            }
+            var eventAttendee = await mobDbContext.EventAttendees.FindAsync(eventId, userId).ConfigureAwait(false);
+            mobDbContext.EventAttendees.Remove(eventAttendee);
+            return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
+        public async Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid attendeeId)
+        {
+            // TODO: There are better ways to do this.
+            var eventAttendees = await mobDbContext.EventAttendees.Where(ea => ea.UserId == attendeeId).ToListAsync().ConfigureAwait(false);
+
+            var events = await mobDbContext.Events.Where(e => eventAttendees.Select(ea => ea.EventId).Contains(e.Id)).ToListAsync().ConfigureAwait(false);
+            return events;
+        }
     }
 }

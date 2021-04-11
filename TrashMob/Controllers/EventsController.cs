@@ -14,10 +14,12 @@ namespace TrashMob.Controllers
     public class EventsController : ControllerBase
     {
         private readonly IEventRepository eventRepository;
+        private readonly IEventAttendeeRepository eventAttendeeRepository;
 
-        public EventsController(IEventRepository eventRepository)
+        public EventsController(IEventRepository eventRepository, IEventAttendeeRepository eventAttendeeRepository)
         {
             this.eventRepository = eventRepository;
+            this.eventAttendeeRepository = eventAttendeeRepository;
         }
 
         [HttpGet]
@@ -32,6 +34,14 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetEventsUserOwns(Guid userId)
         {
             var result = await eventRepository.GetUserEvents(userId).ConfigureAwait(false);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("eventsuserisattending/{userId}")]
+        public async Task<IActionResult> GetEventsUserIsAttending(Guid userId)
+        {
+            var result = await eventAttendeeRepository.GetEventsUserIsAttending(userId).ConfigureAwait(false);
             return Ok(result);
         }
 

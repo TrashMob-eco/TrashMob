@@ -28,7 +28,6 @@ Here's what needs to be done before we can launch
 1. Fix issue with being able to click login button twice which crashes ui.
 1. Logout button should not be available if not logged in
 1. Login button should not be available if already logged in
-1. The Date Picker on the Add Event page needs to be replaced with a DateTime Picker that works
 1. Get Access token and pass to web apis 
 1. Add authorization and scopes to web apis
 1. Allow event location to be set by clicking on the map
@@ -57,19 +56,13 @@ Quite possibly. We'll see how fast the site gains momentum
 
 # Development Notes
 
-## Database generation
-The project is now using Entity Framework Core V6 Model-First database updates.
+## Getting Started
 
-1. Update the models / MobDbContext as needed.
-2. In VS Code, run the following commands from the TrashMob folder
-
-```
-dotnet ef migrations add <YourMigrationName>
-dotnet ef database update
-```
-
-## Where do I get the connection for the database?
-The connection to the dev database is stored in an Azure KeyVault, and can be stored as a User Secret locally. At some point, I need to figure out how to make this work for multiple devs.
+1. You must install the .net 5 SDK
+1. Install visual studio code
+1. Connect to github and clone the repo
+1. Contact joe beernink to be added to the dev subscription (unless you want to set all the dependencies up yourself (scripting opportunity?))
+1. Get added to the dev keyvault to be allowed to get the secrets
 
 ## The secrets you will need to run locally
 
@@ -81,8 +74,77 @@ dotnet user-secrets set "AzureMapsDev" "<insert secret here from keyvault>"
 dotnet user-secrets set "TMDBServerConnectionString" "<insert secret here from keyvault>"
 
 ```
+
+## Setting up your launchsettings.json
+
+Because of RedirectUrls, life is a lot easier if you stick with the same ports as everyone else. In the trashmobfolder, under Properties, add the following launchsettings.json file: 
+
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:50422/",
+      "sslPort": 44332
+    }
+  },
+  "profiles": {
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "TrashMob": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:44332;http://localhost:5000"
+    }
+  }
+}
+
+## To Build the app:
+
+In the Trashmob project folder, run the following command:
+```
+dotnet build
+```
+
+## To Run the app:
+
+In the Trashmob project folder, run the following command:
+```
+dotnet run
+```
+
+If a browser does not open, open one for yourself and go to https://localhost:44332
+
+## Database generation
+The project is now using Entity Framework Core V6 Model-First database updates.
+
+1. Update the models / MobDbContext as needed.
+2. In VS Code, run the following commands from the TrashMob folder
+
+```
+dotnet ef migrations add <YourMigrationName>
+dotnet ef database update
+```
+
 ## How do I deploy to the Azure Web App?
-I currently use Visual Studio Publish to publish the site to the dev server. Eventually I want this to happen via GitHub.
+Use Visual Studio Publish to publish the site to the dev server. Production publish not yet set up
+
+To see what is currently deployed to the dev environment, go to:
+https://trashmobdev.azurewebsites.net
+
+
+## The site is asking me to login
+If you try to access a secure page, you will need a user id on the site. Currently, the site only allows user ids created in the development tenant we are using. This means that to log in the first time, you must first create a new account in the tenant.
+
+When you hit a secured page, the site will redirect you to a sign in page. Click the Sign up now link on the bottom of the login box.
 
 ## Test Cases
 1. Verify that the following pages/actions require the user to be signed in:

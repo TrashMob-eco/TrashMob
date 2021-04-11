@@ -14,5 +14,7 @@
         Task<int> UpdateEventAttendee(EventAttendee eventAttendee);
 
         Task<int> DeleteEventAttendee(Guid eventId, Guid attendeeId);
+
+        Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid attendeeId);
     }
 }
