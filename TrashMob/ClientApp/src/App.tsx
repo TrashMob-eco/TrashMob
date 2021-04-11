@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Route, Switch } from 'react-router';
+import { Route, RouteComponentProps, Switch } from 'react-router';
 import { BrowserRouter } from 'react-router-dom';
 
 import { Home } from './components/Home';
@@ -25,8 +25,9 @@ import { InteractionType } from '@azure/msal-browser';
 import { msalClient } from './store/AuthStore';
 import { CreateEvent } from './components/CreateEvent';
 import { EventDetails } from './components/EventDetails';
-import { EditEvent } from './components/EditEvent';
+import { EditEvent, EditEventProps } from './components/EditEvent';
 import { NoMatch } from './components/NoMatch';
+import { render } from 'react-dom';
 
 export const App = () => {
 
@@ -40,6 +41,16 @@ export const App = () => {
         return <p>Authentication in progress...</p>;
     }
 
+    function renderEditEvent(inp: EditEventProps ) {
+        return (
+            <MsalAuthenticationTemplate
+                interactionType={InteractionType.Redirect}
+                errorComponent={ErrorComponent}
+                loadingComponent={LoadingComponent}>
+                <EditEvent {...inp} />
+            </MsalAuthenticationTemplate >);
+    }
+
     return (
         <MsalProvider instance={msalClient} >
             <div className="d-flex flex-column h-100">
@@ -47,25 +58,18 @@ export const App = () => {
                 <div className="container-fluid flex-grow-1 d-flex">
                     <div className="row flex-fill flex-column flex-sm-row">
 
-                        <BrowserRouter basename="/" >
+                        <BrowserRouter>
                             <Switch>
-                                {/*<Route>*/}
-                                {/*    <MsalAuthenticationTemplate*/}
-                                {/*        interactionType={InteractionType.Redirect}*/}
-                                {/*        errorComponent={ErrorComponent}*/}
-                                {/*        loadingComponent={LoadingComponent}>*/}
-                                {/*        <Route path="/editevent/:eventId" component={EditEvent} />*/}
-                                {/*    </MsalAuthenticationTemplate >*/}
-                                {/*</Route>*/}
-                                <Route path="/eventdetails/:eventId?" component={EventDetails} />
-                                {/*<Route>*/}
-                                {/*    <MsalAuthenticationTemplate*/}
-                                {/*        interactionType={InteractionType.Redirect}*/}
-                                {/*        errorComponent={ErrorComponent}*/}
-                                {/*        loadingComponent={LoadingComponent}>*/}
-                                {/*        <Route path="/createevent" component={CreateEvent} />*/}
-                                {/*    </MsalAuthenticationTemplate >*/}
-                                {/*</Route>*/}
+                                <Route path="/editevent/:eventId" render={(props) => renderEditEvent(props)} />
+                                <Route path="/eventdetails/:eventId" component={EventDetails} />
+                                <Route path="/createevent">
+                                    <MsalAuthenticationTemplate
+                                        interactionType={InteractionType.Redirect}
+                                        errorComponent={ErrorComponent}
+                                        loadingComponent={LoadingComponent}>
+                                        {(inp: RouteComponentProps<any>) => <CreateEvent {...inp} />}
+                                    </MsalAuthenticationTemplate >
+                                </Route>
                                 <Route exact path="/mydashboard">
                                     <MsalAuthenticationTemplate
                                         interactionType={InteractionType.Redirect}
