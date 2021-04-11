@@ -112,8 +112,9 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
         eventData.longitude = form.get("longitude")?.toString() ?? "";
         eventData.gpscoords = form.get("gpscoords")?.toString() ?? "";
         eventData.maxNumberOfParticipants = form.get("maxNumberOfParticipants")?.valueOf() as number ?? 0;
-        eventData.createdByUserId = user.id;
+        eventData.createdByUserId = this.state.eventData.createdByUserId;
         eventData.lastUpdatedByUserId = user.id;
+        eventData.eventStatusId = this.state.eventData.eventStatusId;
 
         var data = JSON.stringify(eventData);
 
@@ -126,10 +127,8 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
-        }).then((response) => response.json())
-            .then((responseJson) => {
-                this.props.history.push("/mydashboard");
-            })
+        }).then((response) => response.json() as Promise<number>)
+            .then(() => { this.props.history.push("/mydashboard"); })
     }
 
     // This will handle Cancel button click event.  
