@@ -20,12 +20,8 @@ interface CreateEventDataState {
     region: string;
 }
 
-export interface MatchParams {
-    eventId: string;
-}
-
-export class CreateEvent extends Component<RouteComponentProps<MatchParams>, CreateEventDataState> {
-    constructor(props: RouteComponentProps<MatchParams>) {
+export class CreateEvent extends Component<RouteComponentProps<any>, CreateEventDataState> {
+    constructor(props: RouteComponentProps<any>) {
         super(props);
         this.state = {
             title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), typeList: [], eventDate: new Date(), country: '', region: ''

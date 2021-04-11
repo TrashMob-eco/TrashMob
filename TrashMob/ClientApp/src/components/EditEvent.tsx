@@ -20,12 +20,15 @@ interface EditEventDataState {
     region: string;
 }
 
-export interface MatchParams {
+interface MatchParams {
     eventId: string;
 }
 
-export class EditEvent extends Component<RouteComponentProps<MatchParams>, EditEventDataState> {
-    constructor(props: RouteComponentProps<MatchParams>) {
+export interface EditEventProps extends RouteComponentProps<MatchParams> {
+}
+
+export class EditEvent extends Component<EditEventProps, EditEventDataState> {
+    constructor(props: EditEventProps) {
         super(props);
         this.state = {
             title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), typeList: [], eventDate: new Date(), country: '', region: ''
@@ -51,7 +54,7 @@ export class EditEvent extends Component<RouteComponentProps<MatchParams>, EditE
             fetch('api/Events/' + eventId, {})
                 .then(response => response.json() as Promise<EventData>)
                 .then(data => {
-                    this.setState({ title: "Edit", loading: false, eventData: data, country: data.country, region: data.stateProvince });
+                    this.setState({ title: "Edit", loading: false, eventData: data, country: data.country, region: data.stateProvince, eventDate: new Date(data.eventDate) });
                 });
         }
 
@@ -68,8 +71,8 @@ export class EditEvent extends Component<RouteComponentProps<MatchParams>, EditE
         this.setState({ region: val });
     }
 
-    handleEventDateChange = (eventDate: Date) => {
-        this.setState(prevState => ({ eventData: { ...prevState.eventData, eventDate: eventDate } }));
+    handleEventDateChange = (passedDate: Date) => {
+        this.setState({ eventDate: passedDate });
     }
 
     public render() {
@@ -94,11 +97,8 @@ export class EditEvent extends Component<RouteComponentProps<MatchParams>, EditE
         var eventData = new EventData();
         eventData.name = form.get("name")?.toString() ?? "";
         eventData.description = form.get("description")?.toString() ?? "";
-        var eventDatest = form.get("eventDate")?.toString() ?? "";
-        if (eventDatest) {
-            eventData.eventDate = new Date(eventDatest);
-        }
-
+        eventData.eventDate = this.state.eventDate;
+ 
         var user = getUserFromCache();
 
         eventData.eventTypeId = form.get("eventTypeId")?.valueOf() as number ?? 0;
@@ -160,7 +160,7 @@ export class EditEvent extends Component<RouteComponentProps<MatchParams>, EditE
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="EventDate">EventDate</label>
                     <div className="col-md-4">
-                        <DatePicker selected={this.state.eventData.eventDate} name="eventDate" onChange={this.handleEventDateChange} value={this.state.eventData.eventDate?.toDateString()} />
+                        <DatePicker selected={this.state.eventDate} name="eventDate" onChange={this.handleEventDateChange} value={this.state.eventDate.toISOString()} />
                     </div>
                 </div >
                 <div className="form-group row">
