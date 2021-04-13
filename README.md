@@ -22,29 +22,32 @@ ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want
 ## Ship Blockers
 
 Here's what needs to be done before we can launch
-1. Styling
-1. Get proper logo
-1. Allow event location to be set by clicking on the map
-1. Show events on the maps
-1. Fix welcome user message on main header
-1. Configure Prod AD B2C  
-1. Figure out how to deploy to a production versus dev environment
-  1. Fix issue with IP Address for App Server not allowed by default to Database 
-1. Get AI Logs working
-  1. Logs to blobs are working (is this redundant)
-  1. AI query not working yet
-1. Add Contact Us functionality
-1. Fix issue with being able to click login button twice which crashes ui.
-1. Logout button should not be available if not logged in
-1. Login button should not be available if already logged in
-1. Fix Terms of Service accept popup
-1. Get Access token and pass to web apis 
-1. Add authorization and scopes to web apis
-1. Basic field validation
-1. Add Facebook / Google / Twitter logins
-1. Security analysis
-  1. Look for exposed secrets
+1. UI
+  1. Styling
+  1. Get proper logo
+  1. Allow event location to be set by clicking on the map
+  1. Show events on the maps
+  1. Fix welcome user message on main header
+  1. Add Contact Us Form / Controller
+  1. Fix issue with being able to click login button twice which crashes ui.
+  1. Logout button should not be available if not logged in
+  1. Login button should not be available if already logged in
+  1. Fix Terms of Service accept popup
+  1. Basic field validation
+1. Deployments
+  1. Figure out how to deploy to a production versus dev environment
+    1. Fix issue with IP Address for App Server not allowed by default to Database 
+  1. Get AI Logs working
+    1. Logs to blobs are working (is this redundant)
+    1. AI query not working yet
+  1. Set up SendMail for Contact Us
+1. Security
+  1. Configure Prod AD B2C  
+  1. Get Access token and pass to web apis 
+  1. Add authorization and scopes to web apis
+  1. Look for exposed secrets (AzureMapsKey)
   1. Ensure only owner can update their events
+  1. Add Facebook / Google / Twitter logins
 
 ## What is the domain name going to be?
 
