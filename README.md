@@ -27,7 +27,9 @@ Here's what needs to be done before we can launch
 1. Allow event location to be set by clicking on the map
 1. Show events on the maps
 1. Fix welcome user message on main header
+1. Configure Prod AD B2C  
 1. Figure out how to deploy to a production versus dev environment
+  1, App Crashing on Startup
 1. Add Contact Us functionality
 1. Fix issue with being able to click login button twice which crashes ui.
 1. Logout button should not be available if not logged in
