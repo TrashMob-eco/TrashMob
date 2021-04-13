@@ -1,8 +1,10 @@
 ﻿import * as msal from "@azure/msal-browser";
+import { MsalAuthenticationResult } from "@azure/msal-react";
 import { Guid } from "guid-typescript";
 import UserData from "../components/Models/UserData";
 import { CurrentPrivacyPolicyVersion } from "../components/PrivacyPolicy";
 import { CurrentTermsOfServiceVersion } from "../components/TermsOfService";
+import { msalClient } from "./AuthStore";
 
 const user: UserData = {
     id: Guid.createEmpty().toString(),
@@ -13,11 +15,17 @@ const user: UserData = {
     tenantId: "",
     termsOfServiceVersion: "",
     uniqueId: "",
-    userName: ""
+    userName: "",
+    city: "",
+    country: "",
+    email: "",
+    givenName: "",
+    postalCode: "",
+    region: "",
+    surname: "",
 };
 
-export function cacheUser(user: UserData)
-{
+export function cacheUser(user: UserData) {
     localStorage.setItem('currentUser', JSON.stringify(user));
 }
 
@@ -31,6 +39,25 @@ export function getUserFromCache() {
     return null;
 }
 
+export function getAccessToken(): Promise<MsalAuthenticationResult> {
+    var request = {
+        scopes: ["TrashMob.Read", "TrashMob.Write"]
+    };
+
+    msalClient.acquireTokenSilent(request).then(tokenResponse => {
+        return tokenResponse;
+
+    }).catch(error => {
+        if (error instanceof msal.InteractionRequiredAuthError) {
+            // fallback to interaction when silent call fails
+            return msalClient.acquireTokenRedirect(request)
+        }
+    });
+
+    return null;
+}
+
+
 export function verifyAccount(result: msal.AuthenticationResult) {
 
     const headers = new Headers();
@@ -43,6 +70,12 @@ export function verifyAccount(result: msal.AuthenticationResult) {
     user.uniqueId = result.uniqueId;
     user.tenantId = result.tenantId;
     user.userName = result.account?.username ?? "";
+    user.city = result.account?.idTokenClaims["city"] ?? "";
+    user.country = result.account?.idTokenClaims["country"] ?? "";
+    user.postalCode = result.account?.idTokenClaims["postalCode"] ?? "";
+    user.givenName = result.account?.idTokenClaims["given_name"] ?? "";
+    user.surname = result.account?.idTokenClaims["family_name"] ?? "";
+    user.email = result.account?.idTokenClaims["emails"][0] ?? "";
 
     fetch('api/Users', {
         method: 'POST',
@@ -63,10 +96,9 @@ export function verifyAccount(result: msal.AuthenticationResult) {
 
             if (user.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate || user.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate || user.termsOfServiceVersion === "" || user.privacyPolicyVersion === "") {
                 // todo: fix this so this popup works.
-               // return AgreeToPolicies;
+                // return AgreeToPolicies;
             }
         });
-
 }
 
 export function updateAgreements(tosVersion: string, privacyVersion: string) {

@@ -54,7 +54,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
             fetch('api/Events/' + eventId, {})
                 .then(response => response.json() as Promise<EventData>)
                 .then(data => {
-                    this.setState({ title: "Edit", loading: false, eventData: data, country: data.country, region: data.stateProvince, eventDate: new Date(data.eventDate), eventId: data.id });
+                    this.setState({ title: "Edit", loading: false, eventData: data, country: data.country, region: data.region, eventDate: new Date(data.eventDate), eventId: data.id });
                 });
         }
 
@@ -105,9 +105,9 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
         eventData.eventTypeId = form.get("eventTypeId")?.valueOf() as number ?? 0;
         eventData.streetAddress = form.get("streetAddress")?.toString() ?? "";
         eventData.city = form.get("city")?.toString() ?? "";
-        eventData.stateProvince = this.state.region ?? "";
+        eventData.region = this.state.region ?? "";
         eventData.country = this.state.country ?? "";
-        eventData.zipCode = form.get("zipCode")?.toString() ?? "";
+        eventData.postalCode = form.get("postalCode")?.toString() ?? "";
         eventData.latitude = form.get("latitude")?.toString() ?? "";
         eventData.longitude = form.get("longitude")?.toString() ?? "";
         eventData.gpscoords = form.get("gpscoords")?.toString() ?? "";
@@ -193,7 +193,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="stateProvince">State / Province</label>
+                    <label className="control-label col-md-12" htmlFor="Region">Region</label>
                     <div className="col-md-4">
                         <RegionDropdown
                             country={country}
@@ -202,9 +202,9 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="ZipCode">Zip Code</label>
+                    <label className="control-label col-md-12" htmlFor="PostalCode">Postal Code</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="zipCode" defaultValue={this.state.eventData.zipCode} />
+                        <input className="form-control" type="text" name="postalCode" defaultValue={this.state.eventData.postalCode} />
                     </div>
                 </div >
                 <div className="form-group row">

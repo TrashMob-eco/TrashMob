@@ -72,7 +72,7 @@
                     .IsRequired()
                     .HasMaxLength(64);
 
-                entity.Property(e => e.StateProvince)
+                entity.Property(e => e.Region)
                     .IsRequired()
                     .HasMaxLength(256);
 
@@ -80,7 +80,7 @@
                     .IsRequired()
                     .HasMaxLength(256);
 
-                entity.Property(e => e.ZipCode)
+                entity.Property(e => e.PostalCode)
                     .IsRequired()
                     .HasMaxLength(25);
 
@@ -158,7 +158,7 @@
                     .IsRequired()
                     .HasMaxLength(64);
 
-                entity.Property(e => e.StateProvince)
+                entity.Property(e => e.Region)
                     .IsRequired()
                     .HasMaxLength(256);
 
@@ -166,7 +166,7 @@
                     .IsRequired()
                     .HasMaxLength(256);
 
-                entity.Property(e => e.ZipCode)
+                entity.Property(e => e.PostalCode)
                     .IsRequired()
                     .HasMaxLength(25);
             });

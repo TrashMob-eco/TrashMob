@@ -69,8 +69,18 @@ namespace TrashMob.Controllers
         [HttpPost]
         public async Task<IActionResult> PostUser(User user)
         {
-            if (await UserExists(user.TenantId, user.UniqueId).ConfigureAwait(false))
+            User originalUser;
+            if ((originalUser = await UserExists(user.TenantId, user.UniqueId).ConfigureAwait(false)) != null)
             {
+                originalUser.City = user.City;
+                originalUser.Country = user.Country;
+                originalUser.Email = user.Email;
+                originalUser.GivenName = user.GivenName;
+                originalUser.PostalCode = user.PostalCode;
+                originalUser.Region = user.Region;
+                originalUser.SurName = user.SurName;
+                originalUser.UserName = user.UserName;
+                await userRepository.UpdateUser(originalUser);
                 var returnedUser = await GetUser(user.TenantId, user.UniqueId).ConfigureAwait(false);
                 return Ok(returnedUser);
             }
@@ -92,9 +102,9 @@ namespace TrashMob.Controllers
             return (await userRepository.GetAllUsers().ConfigureAwait(false)).Any(e => e.Id == id);
         }
 
-        private async Task<bool> UserExists(string tenantId, string uniqueId)
+        private async Task<User> UserExists(string tenantId, string uniqueId)
         {
-            return (await userRepository.GetAllUsers().ConfigureAwait(false)).Any(e => e.TenantId == tenantId && e.UniqueId == uniqueId);
+            return (await userRepository.GetAllUsers().ConfigureAwait(false)).FirstOrDefault(e => e.TenantId == tenantId && e.UniqueId == uniqueId);
         }
 
         private Task<User> GetUser(string tenantId, string uniqueId)
