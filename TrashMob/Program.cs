@@ -23,7 +23,7 @@ namespace TrashMob
                     if (context.HostingEnvironment.IsProduction())
                     {
                         var builtConfig = config.Build();
-                        var secretClient = new SecretClient(new Uri($"https://{builtConfig["KeyVaultName"]}.vault.azure.net/"),
+                        var secretClient = new SecretClient(new Uri(builtConfig["VaultUri"]),
                                                                 new DefaultAzureCredential());
                         config.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
                     }
