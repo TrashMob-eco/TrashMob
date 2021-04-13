@@ -8,7 +8,6 @@ import { Home } from './components/Home';
 // Layout
 import { TopMenu } from './components/TopMenu';
 
-import './custom.css'
 import { About } from './components/About';
 import { ContactUs } from './components/ContactUs';
 import { Faq } from './components/Faq';
