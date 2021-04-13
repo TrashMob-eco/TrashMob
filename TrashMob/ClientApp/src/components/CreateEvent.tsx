@@ -87,9 +87,9 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
         eventData.eventTypeId = form.get("eventTypeId")?.valueOf() as number ?? 0;
         eventData.streetAddress = form.get("streetAddress")?.toString() ?? "";
         eventData.city = form.get("city")?.toString() ?? "";
-        eventData.stateProvince = this.state.region ?? "";
+        eventData.region = this.state.region ?? "";
         eventData.country = this.state.country ?? "";
-        eventData.zipCode = form.get("zipCode")?.toString() ?? "";
+        eventData.postalCode = form.get("postalCode")?.toString() ?? "";
         eventData.latitude = form.get("latitude")?.toString() ?? "";
         eventData.longitude = form.get("longitude")?.toString() ?? "";
         eventData.gpscoords = form.get("gpscoords")?.toString() ?? "";
@@ -179,7 +179,7 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="stateProvince">State / Province</label>
+                    <label className="control-label col-md-12" htmlFor="region">Region</label>
                     <div className="col-md-4">
                         <RegionDropdown
                             country={country}
@@ -188,9 +188,9 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="ZipCode">Zip Code</label>
+                    <label className="control-label col-md-12" htmlFor="PostalCode">Postal Code</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="zipCode" defaultValue={this.state.eventData.zipCode} />
+                        <input className="form-control" type="text" name="postalCode" defaultValue={this.state.eventData.postalCode} />
                     </div>
                 </div >
                 <div className="form-group row">

@@ -87,9 +87,9 @@ export class EventsUserOwns extends Component<PropsType, FetchEventDataState> {
                             <th>Event Type</th>
                             <th>Address</th>
                             <th>City</th>
-                            <th>State / Province</th>
+                            <th>Region</th>
                             <th>Country</th>
-                            <th>ZipCode</th>
+                            <th>Postal Code</th>
                             <th>Created By</th>
                             <th>Created Date</th>
                             <th>Latitude</th>
@@ -110,9 +110,9 @@ export class EventsUserOwns extends Component<PropsType, FetchEventDataState> {
                                 <td>{mobEvent.eventTypeId}</td>
                                 <td>{mobEvent.streetAddress}</td>
                                 <td>{mobEvent.city}</td>
-                                <td>{mobEvent.stateProvince}</td>
+                                <td>{mobEvent.region}</td>
                                 <td>{mobEvent.country}</td>
-                                <td>{mobEvent.zipCode}</td>
+                                <td>{mobEvent.postalCode}</td>
                                 <td>{mobEvent.createdByUserId}</td>
                                 <td>{mobEvent.createdDate}</td>
                                 <td>{mobEvent.latitude}</td>

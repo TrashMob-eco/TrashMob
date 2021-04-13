@@ -51,16 +51,18 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                 <table className='table table-striped' aria-labelledby="tabelLabel">
                     <thead>
                         <tr>
-                            <th>User Name</th>
-                            <th>Id</th>
+                            <th>First Name</th>
+                            <th>City</th>
+                            <th>Country</th>
                             <th>Member Since</th>
                         </tr>
                     </thead>
                     <tbody>
                         {users.map(user =>
                             <tr>
-                                <td>{user.userName}</td>
-                                <td>{user.id}</td>
+                                <td>{user.givenName}</td>
+                                <td>{user.city}</td>
+                                <td>{user.country}</td>
                                 <td>{user.memberSince}</td>
                             </tr>
                         )}
@@ -127,7 +129,7 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="stateProvince">State / Province</label>
                     <div className="col-md-4">
-                        <label className="form-control">{this.state.eventData.stateProvince}</label>
+                        <label className="form-control">{this.state.eventData.region}</label>
                     </div>
                 </div >
                 <div className="form-group row">
@@ -137,9 +139,9 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="ZipCode">Zip Code</label>
+                    <label className="control-label col-md-12" htmlFor="postalCode">Postal Code</label>
                     <div className="col-md-4">
-                        <label className="form-control">{this.state.eventData.zipCode}</label>
+                        <label className="form-control">{this.state.eventData.postalCode}</label>
                     </div>
                 </div >
                 <div className="form-group row">

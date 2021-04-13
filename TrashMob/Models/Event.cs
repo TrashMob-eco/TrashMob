@@ -27,11 +27,11 @@ namespace TrashMob.Models
 
         public string City { get; set; }
 
-        public string StateProvince { get; set; }
+        public string Region { get; set; }
 
         public string Country { get; set; }
 
-        public string ZipCode { get; set; }
+        public string PostalCode { get; set; }
 
         public double? Latitude { get; set; }
 

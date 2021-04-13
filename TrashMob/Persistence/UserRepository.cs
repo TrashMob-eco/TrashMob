@@ -58,7 +58,7 @@
                 mobDbContext.Entry(user).State = EntityState.Modified;
                 return mobDbContext.SaveChangesAsync();
             }
-            catch
+            catch(Exception ex)
             {
                 throw;
             }

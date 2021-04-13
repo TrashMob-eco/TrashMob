@@ -5,6 +5,13 @@ class UserData {
     uniqueId: string = "";
     tenantId: string = "";
     userName: string = "";
+    givenName: string = "";
+    surname: string = "";
+    city: string = "";
+    region: string = "";
+    country: string = "";
+    postalCode: string = "";
+    email: string = "";
     dateAgreedToPrivacyPolicy: Date = new Date();
     privacyPolicyVersion: string = "";
     dateAgreedToTermsOfService: Date = new Date();

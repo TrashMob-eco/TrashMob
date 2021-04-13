@@ -9,9 +9,9 @@ class EventData {
     eventStatusId: number = 0;
     streetAddress: string = "";
     city: string = "";
-    stateProvince: string = "";
+    region: string = "";
     country: string = "";
-    zipCode: string = "";
+    postalCode: string = "";
     createdByUserId: string = "";
     createdDate: Date = new Date();
     latitude: string = "";

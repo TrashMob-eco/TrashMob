@@ -81,7 +81,7 @@ export class MainEvents extends Component<PropsType, FetchEventDataState> {
                             <th>Date</th>
                             <th>Event Type</th>
                             <th>City</th>
-                            <th>State / Province</th>
+                            <th>Region</th>
                             <th>Country</th>
                         </tr>
                     </thead>
@@ -93,7 +93,7 @@ export class MainEvents extends Component<PropsType, FetchEventDataState> {
                                 <td>{mobEvent.eventDate}</td>
                                 <td>{mobEvent.eventTypeId}</td>
                                 <td>{mobEvent.city}</td>
-                                <td>{mobEvent.stateProvince}</td>
+                                <td>{mobEvent.region}</td>
                                 <td>{mobEvent.country}</td>
                                 <td>
                                     <Link to={`/eventdetails/${mobEvent.id}`}>Details</Link>
