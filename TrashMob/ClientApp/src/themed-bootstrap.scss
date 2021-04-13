@@ -11,3 +11,8 @@
 // Has to go below the new variables in order to take effect.
 // =================
 @import "bootstrap/scss/bootstrap.scss";
+
+// =================
+// Importing app styles here so we can reuse bootstrap variables
+// =================
+@import "./app.scss";
