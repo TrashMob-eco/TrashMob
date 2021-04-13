@@ -53,8 +53,8 @@ export const App = () => {
         <MsalProvider instance={msalClient} >
             <div className="d-flex flex-column h-100">
                 <TopMenu />
-                <div className="container flex-grow-1 d-flex">
-                    <div className="row flex-fill flex-column flex-sm-row">
+                <div className="container">
+                    <div className="">
 
                         <BrowserRouter>
                             <Switch>

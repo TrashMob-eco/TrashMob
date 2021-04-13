@@ -40,3 +40,21 @@
         }
     }
 }
+
+.carousel {
+    margin: 30px 0;
+}
+
+.carousel-item {
+    height: 500px;
+    background-size: cover;
+}
+
+.carousel-caption {
+    background: rgba(0,0,0, .7);
+}
+
+.navbar-brand {
+    text-transform: uppercase;
+    font-weight: 900;
+}

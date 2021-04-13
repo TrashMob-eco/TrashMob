@@ -10,17 +10,17 @@ export const TopMenu: FunctionComponent = () => {
 
     const mainNavItems = [
       { name: "Home", url: "/" },
-      { name: "About Us", url: "/about" },
-      { name: "Contact Us", url: "/contactus" },
+      // { name: "About Us", url: "/about" },
+      // { name: "Contact Us", url: "/contactus" },
       { name: "Getting Started", url: "/gettingstarted" },
       { name: "My Dashboard", url: "/mydashboard" }
     ];
 
-    const secondaryNavItems = [
-      { name: "Partners", url: "/partners" },
-      { name: "Sponsors", url: "/sponsors" },
-      { name: "FAQ", url: "/faq" }
-    ];
+    // const secondaryNavItems = [
+    //   { name: "Partners", url: "/partners" },
+    //   { name: "Sponsors", url: "/sponsors" },
+    //   { name: "FAQ", url: "/faq" }
+    // ];
     //const [userName, setUserName] = React.useState('username');
 
     //window.addEventListener('storage', () => {
@@ -104,7 +104,7 @@ export const TopMenu: FunctionComponent = () => {
 
     return (
     <header className="tm-header">
-      <div className="container-fluid tm-secondaryNav">
+      {/* <div className="container-fluid tm-secondaryNav">
         <div className="container">
           <ul className="tm-secondaryNav-list">
               {secondaryNavItems.map(item => (
@@ -114,7 +114,7 @@ export const TopMenu: FunctionComponent = () => {
               ))}
           </ul>
         </div>
-      </div>
+      </div> */}
       <div className="container-fluid bg-light tm-mainNav">
         <nav className="container navbar navbar-expand-lg navbar-light">
           <a className="navbar-brand" href="/">TrashMob</a>
@@ -129,6 +129,15 @@ export const TopMenu: FunctionComponent = () => {
                   <a className="nav-link" href={item.url}>{item.name}</a>
                 </li>
               ))}
+              <li className="nav-item dropdown">
+                <a className="nav-link dropdown-toggle" href="#" id="dropdown09" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About Us</a>
+                <div className="dropdown-menu" aria-labelledby="dropdown09">
+                  <a className="dropdown-item" href="/aboutus">Our Team</a>
+                  <a className="dropdown-item" href="/partners">Partners</a>
+                  <a className="dropdown-item" href="/sponsors">Sponsors</a>
+                  <a className="dropdown-item" href="/faq">FAQ</a>
+                </div>
+              </li>
             </ul>
             <a href="" className="btn btn-primary">Sign Up</a>
             <a href="" className="btn btn-outline-primary">Log In</a>
