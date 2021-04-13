@@ -29,7 +29,10 @@ Here's what needs to be done before we can launch
 1. Fix welcome user message on main header
 1. Configure Prod AD B2C  
 1. Figure out how to deploy to a production versus dev environment
-  1, App Crashing on Startup
+  1. Fix issue with IP Address for App Server not allowed by default to Database 
+1. Get AI Logs working
+  1. Logs to blobs are working (is this redundant)
+  1. AI query not working yet
 1. Add Contact Us functionality
 1. Fix issue with being able to click login button twice which crashes ui.
 1. Logout button should not be available if not logged in
@@ -39,6 +42,9 @@ Here's what needs to be done before we can launch
 1. Add authorization and scopes to web apis
 1. Basic field validation
 1. Add Facebook / Google / Twitter logins
+1. Security analysis
+  1. Look for exposed secrets
+  1. Ensure only owner can update their events
 
 ## What is the domain name going to be?
 
@@ -134,12 +140,16 @@ dotnet ef migrations add <YourMigrationName>
 dotnet ef database update
 ```
 
-## How do I deploy to the Azure Web App?
-Use Visual Studio Publish to publish the site to the dev server. Production publish not yet set up
+## How do I deploy the Azure Web App?
+Use Visual Studio Publish to publish the site to the dev server.
 
 To see what is currently deployed to the dev environment, go to:
 https://trashmobdev.azurewebsites.net
 
+To see what is currently deployed to the prod environment, go to:
+https://trashmobprod.azurewebsites.net
+
+If setting up a new environment, you will need to add the IP Address of the App Service to the list of IP Addresses accessible in the SQL Server. This needs to me automated in the future to make sure that a change to an IP address doesn't break the site.
 
 ## The site is asking me to login
 If you try to access a secure page, you will need a user id on the site. Currently, the site only allows user ids created in the development tenant we are using. This means that to log in the first time, you must first create a new account in the tenant.

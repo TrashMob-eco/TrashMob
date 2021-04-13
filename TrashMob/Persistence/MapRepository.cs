@@ -5,7 +5,7 @@
     public class MapRepository : IMapRepository
     {
         private readonly IConfiguration configuration;
-        private const string AzureMapKeyName = "AzureMapsDev";
+        private const string AzureMapKeyName = "AzureMapsKey";
 
         public MapRepository(IConfiguration configuration)
         {
