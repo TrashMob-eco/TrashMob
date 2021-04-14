@@ -25,6 +25,7 @@ Here's what needs to be done before we can launch
 1. UI
   1. Styling
   1. Get proper logo
+  1. Fix display of event types on grids
   1. Allow event location to be set by clicking on the map
   1. Show events on the maps
   1. Fix welcome user message on main header
@@ -81,7 +82,7 @@ Quite possibly. We'll see how fast the site gains momentum
 
 cd Trashmob
 dotnet user-secrets init
-dotnet user-secrets set "AzureMapsDev" "<insert secret here from keyvault>"
+dotnet user-secrets set "AzureMapsKey" "<insert secret here from keyvault>"
 dotnet user-secrets set "TMDBServerConnectionString" "<insert secret here from keyvault>"
 
 ```

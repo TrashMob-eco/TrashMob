@@ -130,17 +130,18 @@ export const TopMenu: FunctionComponent = () => {
                 </li>
               ))}
               <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" href="#" id="dropdown09" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About Us</a>
+                <a className="nav-link dropdown-toggle" href="#" id="dropdown09" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Learn More</a>
                 <div className="dropdown-menu" aria-labelledby="dropdown09">
-                  <a className="dropdown-item" href="/aboutus">Our Team</a>
+                  <a className="dropdown-item" href="/aboutus">About TrashMob</a>
                   <a className="dropdown-item" href="/partners">Partners</a>
                   <a className="dropdown-item" href="/sponsors">Sponsors</a>
+                  <a className="dropdown-item" href="/contactus">Contact Us</a>
                   <a className="dropdown-item" href="/faq">FAQ</a>
                 </div>
               </li>
             </ul>
-            <a href="" className="btn btn-primary">Sign Up</a>
-            <a href="" className="btn btn-outline-primary">Log In</a>
+            <button className="btn btn-primary" onClick={(e) => signIn(e)}>Sign Up/Log In</button>
+            <button className="btn btn-outline-primary" onClick={(e) => signOut(e)}>Log Out</button>
           </div>
         </nav>
     </div>
