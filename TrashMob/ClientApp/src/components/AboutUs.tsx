@@ -1,7 +1,7 @@
 ﻿import { Component } from 'react';
 import * as React from 'react'
 
-export class About extends Component {
+export class AboutUs extends Component {
     render() {
         return (
             <div>

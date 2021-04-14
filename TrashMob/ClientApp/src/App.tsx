@@ -8,7 +8,7 @@ import { Home } from './components/Home';
 // Layout
 import { TopMenu } from './components/TopMenu';
 
-import { About } from './components/About';
+import { AboutUs } from './components/AboutUs';
 import { ContactUs } from './components/ContactUs';
 import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
@@ -77,7 +77,7 @@ export const App = () => {
                                     </MsalAuthenticationTemplate >
                                 </Route>
                                 <Route exact path="/about">
-                                    <About />
+                                    <AboutUs />
                                 </Route>
                                 <Route exact path="/contactus">
                                     <ContactUs />
