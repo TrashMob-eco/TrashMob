@@ -8,7 +8,6 @@ import { Home } from './components/Home';
 // Layout
 import { TopMenu } from './components/TopMenu';
 
-import './custom.css'
 import { About } from './components/About';
 import { ContactUs } from './components/ContactUs';
 import { Faq } from './components/Faq';
@@ -54,8 +53,8 @@ export const App = () => {
         <MsalProvider instance={msalClient} >
             <div className="d-flex flex-column h-100">
                 <TopMenu />
-                <div className="container-fluid flex-grow-1 d-flex">
-                    <div className="row flex-fill flex-column flex-sm-row">
+                <div className="container">
+                    <div className="">
 
                         <BrowserRouter>
                             <Switch>

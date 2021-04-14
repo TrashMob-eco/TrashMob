@@ -12,7 +12,52 @@ import stoplittering from "./assets/stoplittering.jpg";
 export class MainCarousel extends Component {
     render() {
         return (
-            <Carousel>
+            <div>
+            <div id="carouselExampleCaptions" className="carousel slide" data-ride="carousel">
+  <ol className="carousel-indicators">
+    <li data-target="#carouselExampleCaptions" data-slide-to="0" className="active"></li>
+    <li data-target="#carouselExampleCaptions" data-slide-to="1"></li>
+    <li data-target="#carouselExampleCaptions" data-slide-to="2"></li>
+  </ol>
+  <div className="carousel-inner">
+    <div className="carousel-item active" style={{
+          backgroundImage: 'url(https://www.salesforce.org/wp-content/uploads/2019/06/Clean-up.jpg)'
+        }}
+    >
+      <div className="carousel-caption d-none d-md-block">
+        <h5>Using the power of the Flash Mob to clean up the planet</h5>
+        <a href="" className="btn btn-primary">Join today</a>
+      </div>
+    </div>
+    <div className="carousel-item" style={{
+          backgroundImage: 'url('+litter+')'
+        }}
+    >
+      <div className="carousel-caption d-none d-md-block">
+        <h5>It's Everywhere</h5>
+        <p>Some representative placeholder content for the second slide.</p>
+      </div>
+    </div>
+    <div className="carousel-item" style={{
+          backgroundImage: 'url('+beachlitter+')'
+        }}
+    >
+      <div className="carousel-caption d-none d-md-block">
+        <h5>Beach Litter</h5>
+        <p>Some representative placeholder content for the third slide.</p>
+      </div>
+    </div>
+  </div>
+  <a className="carousel-control-prev" href="#carouselExampleCaptions" role="button" data-slide="prev">
+    <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span className="sr-only">Previous</span>
+  </a>
+  <a className="carousel-control-next" href="#carouselExampleCaptions" role="button" data-slide="next">
+    <span className="carousel-control-next-icon" aria-hidden="true"></span>
+    <span className="sr-only">Next</span>
+  </a>
+</div>
+            {/* <Carousel>
                 <div>
                     <img src={sign} alt="Litter pickup ahead" />
                     <p className="legend">Trash Mob At Work</p>
@@ -33,7 +78,8 @@ export class MainCarousel extends Component {
                     <img src={stoplittering} alt="Stop Littering" />
                     <p className="legend">Stop Littering</p>
                 </div>
-            </Carousel>
+            </Carousel> */}
+            </div>
         );
     }
 }
