@@ -4,11 +4,13 @@ import { Link } from 'react-router-dom';
 import EventData from './Models/EventData';
 import { getUserFromCache } from '../store/accountHandler';
 import EventAttendeeData from './Models/EventAttendeeData';
+import EventTypeData from './Models/EventTypeData';
 
 interface PropsType { };
 
 interface FetchEventDataState {
     eventList: EventData[];
+    eventTypeList: EventTypeData[];
     loading: boolean;
 }
 
@@ -16,7 +18,21 @@ export class MainEvents extends Component<PropsType, FetchEventDataState> {
 
     constructor(props: FetchEventDataState) {
         super(props);
-        this.state = { eventList: [], loading: true };
+        this.state = { eventList: [], eventTypeList: [], loading: true };
+
+
+        fetch('api/eventtypes', {
+            method: 'GET',
+            headers: {
+                Allow: 'GET',
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(response => response.json() as Promise<Array<any>>)
+            .then(data => {
+                this.setState({ eventTypeList: data });
+            });
 
         fetch('api/Events', {
             method: 'GET',
@@ -56,6 +72,10 @@ export class MainEvents extends Component<PropsType, FetchEventDataState> {
         }).then((response) => response.json())
     }
 
+    private getEventType(eventTypeId: any): string {
+        return this.state.eventTypeList.find(et => et.id === eventTypeId).name;
+    }
+
 
     public render() {
         let contents = this.state.loading
@@ -77,7 +97,6 @@ export class MainEvents extends Component<PropsType, FetchEventDataState> {
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Description</th>
                             <th>Date</th>
                             <th>Event Type</th>
                             <th>City</th>
@@ -89,9 +108,8 @@ export class MainEvents extends Component<PropsType, FetchEventDataState> {
                         {events.map(mobEvent =>
                             <tr key={mobEvent.id.toString()}>
                                 <td>{mobEvent.name}</td>
-                                <td>{mobEvent.description}</td>
                                 <td>{mobEvent.eventDate}</td>
-                                <td>{mobEvent.eventTypeId}</td>
+                                <td>{this.getEventType(mobEvent.eventTypeId)}</td>
                                 <td>{mobEvent.city}</td>
                                 <td>{mobEvent.region}</td>
                                 <td>{mobEvent.country}</td>

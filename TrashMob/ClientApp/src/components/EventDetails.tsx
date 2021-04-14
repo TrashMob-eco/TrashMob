@@ -5,11 +5,13 @@ import { Guid } from "guid-typescript";
 import EventData from './Models/EventData';
 import SingleEventMap from './SingleEventMap';
 import UserData from './Models/UserData';
+import EventTypeData from './Models/EventTypeData';
 
 interface EventDetailsDataState {
     title: string;
     loading: boolean;
     eventData: EventData;
+    eventTypeList: EventTypeData[];
     userList: UserData[];
     eventId: Guid;
     eventDate: string
@@ -23,8 +25,21 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
     constructor(props: RouteComponentProps<MatchParams>) {
         super(props);
         this.state = {
-            title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), eventDate: new Date().toDateString(), userList: []
+            title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), eventDate: new Date().toDateString(), userList: [], eventTypeList: []
         };
+
+        fetch('api/eventtypes', {
+            method: 'GET',
+            headers: {
+                Allow: 'GET',
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(response => response.json() as Promise<Array<any>>)
+            .then(data => {
+                this.setState({ eventTypeList: data });
+            });
 
         var eventId = this.props.match.params["eventId"];
 
@@ -72,6 +87,10 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
         );
     }
 
+    private getEventType(eventTypeId: any): string {
+        return this.state.eventTypeList.find(et => et.id === eventTypeId).name;
+    }
+
     public render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
@@ -111,7 +130,7 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="EventType">Event Type</label>
                     <div className="col-md-4">
-                        <label className="form-control">{this.state.eventData.eventTypeId}</label>
+                        <label className="form-control">{this.getEventType(this.state.eventData.eventTypeId)}</label>
                     </div>
                 </div >
                 <div className="form-group row">
