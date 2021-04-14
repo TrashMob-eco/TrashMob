@@ -32,6 +32,7 @@
     "react-router-dom": "^5.1.2",
     "react-script-tag": "^1.1.2",
     "react-scripts": "^3.4.4",
+    "react-simple-captcha": "^6.1.6",
     "reactjs-popup": "^2.0.4",
     "reactstrap": "^8.4.1",
     "rimraf": "^2.6.2"

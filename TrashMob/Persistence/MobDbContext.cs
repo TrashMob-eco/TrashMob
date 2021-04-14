@@ -13,6 +13,8 @@
             this.configuration = configuration;
         }
 
+        public virtual DbSet<ContactRequest> ContactRequests { get; set; }
+
         public virtual DbSet<User> Users { get; set; }
 
         public virtual DbSet<Event> Events { get; set; }

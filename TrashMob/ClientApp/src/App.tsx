@@ -9,7 +9,7 @@ import { Home } from './components/Home';
 import { TopMenu } from './components/TopMenu';
 
 import { AboutUs } from './components/AboutUs';
-import { ContactUs } from './components/ContactUs';
+import ContactUs from './components/ContactUs';
 import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
 import { GettingStarted } from './components/GettingStarted';
