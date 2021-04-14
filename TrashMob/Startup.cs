@@ -36,6 +36,7 @@ namespace TrashMob
             });
 
             services.AddDbContext<MobDbContext>();
+            services.AddScoped<IContactRequestRepository, ContactRequestRepository>();
             services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
             services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IEventStatusRepository, EventStatusRepository>();
