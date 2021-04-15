@@ -1,10 +1,10 @@
 ﻿import * as msal from "@azure/msal-browser";
-import { MsalAuthenticationResult } from "@azure/msal-react";
+import { MsalAuthenticationResult, MsalAuthenticationTemplate } from "@azure/msal-react";
 import { Guid } from "guid-typescript";
 import UserData from "../components/Models/UserData";
 import { CurrentPrivacyPolicyVersion } from "../components/PrivacyPolicy";
 import { CurrentTermsOfServiceVersion } from "../components/TermsOfService";
-import { msalClient } from "./AuthStore";
+import { apiConfig, msalClient } from "./AuthStore";
 
 const user: UserData = {
     id: Guid.createEmpty().toString(),
@@ -38,25 +38,6 @@ export function getUserFromCache() {
 
     return null;
 }
-
-export function getAccessToken(): Promise<MsalAuthenticationResult> {
-    var request = {
-        scopes: ["TrashMob.Read", "TrashMob.Write"]
-    };
-
-    msalClient.acquireTokenSilent(request).then(tokenResponse => {
-        return tokenResponse;
-
-    }).catch(error => {
-        if (error instanceof msal.InteractionRequiredAuthError) {
-            // fallback to interaction when silent call fails
-            return msalClient.acquireTokenRedirect(request)
-        }
-    });
-
-    return null;
-}
-
 
 export function verifyAccount(result: msal.AuthenticationResult) {
 

@@ -1,4 +1,5 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
+import * as React from 'react';
 import { AzureMap, AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps'
 import { getOption } from '../store/MapStore';
 

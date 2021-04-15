@@ -9,6 +9,7 @@ import EventTypeData from './Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import SingleEventMap from './SingleEventMap';
 import { withRouter } from 'react-router-dom';
+import { apiConfig, msalClient } from '../store/AuthStore';
 
 interface CreateEventDataState {
     title: string;
@@ -99,17 +100,29 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
 
         var data = JSON.stringify(eventData);
 
-        fetch('api/Events', {
-            method: 'POST',
-            body: data,
-            headers: {
-                Allow: 'POST',
-                Accept: 'application/json, text/plain',
-                'Content-Type': 'application/json'
-            },
-        }).then((response) => response.json())
-            .then((responseJson) => {
-                this.props.history.push("/mydashboard");
+        // PUT request for Edit Event.  
+        const account = msalClient.getAllAccounts()[0];
+
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = new Headers();
+            headers.append('Allow', 'POST');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+            headers.append('Accept', 'application/json, text/plain');
+            headers.append('Content-Type', 'application/json');
+
+                fetch('api/Events', {
+                    method: 'POST',
+                    headers: headers,
+                    body: data,
+                }).then((response) => response.json())
+                    .then((responseJson) => {
+                        this.props.history.push("/mydashboard");
+                    })
             })
     }
 

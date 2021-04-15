@@ -8,6 +8,7 @@ import { getUserFromCache } from '../store/accountHandler';
 import EventTypeData from './Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import SingleEventMap from './SingleEventMap';
+import { apiConfig, msalClient } from '../store/AuthStore';
 
 interface EditEventDataState {
     title: string;
@@ -99,7 +100,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
         eventData.name = form.get("name")?.toString() ?? "";
         eventData.description = form.get("description")?.toString() ?? "";
         eventData.eventDate = new Date(this.state.eventDate);
- 
+
         var user = getUserFromCache();
 
         eventData.eventTypeId = form.get("eventTypeId")?.valueOf() as number ?? 0;
@@ -119,16 +120,31 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
         var data = JSON.stringify(eventData);
 
         // PUT request for Edit Event.  
-        fetch('api/Events/' + eventData.id, {
-            method: 'PUT',
-            body: data,
-            headers: {
-                Allow: 'POST, PUT',
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-        }).then((response) => response.json() as Promise<number>)
-            .then(() => { this.props.history.push("/mydashboard"); })
+        const account = msalClient.getAllAccounts()[0];
+
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = new Headers();
+                headers.append('Allow', 'POST');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+                headers.append('Accept', 'application/json, text/plain');
+                headers.append('Content-Type', 'application/json');
+
+                fetch('api/Events/' + eventData.id, {
+                    method: 'PUT',
+                    body: data,
+                    headers: {
+                        Allow: 'POST, PUT',
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                }).then((response) => response.json() as Promise<number>)
+                    .then(() => { this.props.history.push("/mydashboard"); })
+            })
     }
 
     // This will handle Cancel button click event.  

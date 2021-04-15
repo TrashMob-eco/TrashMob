@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import EventData from './Models/EventData';  
 import { getUserFromCache } from '../store/accountHandler';
 import EventTypeData from './Models/EventTypeData';
+import { apiConfig, msalClient } from '../store/AuthStore';
 
 interface PropsType { };
 
@@ -21,36 +22,42 @@ export class EventsUserIsAttending extends Component<PropsType, FetchEventDataSt
         super(props);
         this.state = { eventList: [], eventTypeList: [], loading: true, token: "" };
 
-        var token = "";
-        const headers = new Headers();
-        const bearer = `Bearer ${token}`;
+        const account = msalClient.getAllAccounts()[0];
 
-        headers.append("Authorization", bearer);
-        headers.append("Allow", 'GET');
-        headers.append("Accept", 'application/json');
-        headers.append("Content-Type", 'application/json');
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
 
-        fetch('api/eventtypes', {
-            method: 'GET',
-            headers: {
-                Allow: 'GET',
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
-        })
-            .then(response => response.json() as Promise<Array<any>>)
-            .then(data => {
-                this.setState({ eventTypeList: data });
-            });
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = new Headers();
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+            headers.append('Accept', 'application/json, text/plain');
+            headers.append('Content-Type', 'application/json');
+            headers.append("Allow", 'GET');
 
-        fetch('api/events/eventsuserisattending/' + getUserFromCache().id, {
-            method: 'GET',
-            headers: headers
-        })
-            .then(response => response.json() as Promise<EventData[]>)
-            .then(data => {
-                this.setState({ eventList: data, loading: false });
-            });
+            fetch('api/eventtypes', {
+                method: 'GET',
+                headers: {
+                    Allow: 'GET',
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            })
+                .then(response => response.json() as Promise<Array<any>>)
+                .then(data => {
+                    this.setState({ eventTypeList: data });
+                });
+
+            fetch('api/events/eventsuserisattending/' + getUserFromCache().id, {
+                method: 'GET',
+                headers: headers
+            })
+                .then(response => response.json() as Promise<EventData[]>)
+                .then(data => {
+                    this.setState({ eventList: data, loading: false });
+                })
+        });
 
         // This binding is necessary to make "this" work in the callback  
         this.handleRemove = this.handleRemove.bind(this);
@@ -61,16 +68,31 @@ export class EventsUserIsAttending extends Component<PropsType, FetchEventDataSt
         if (!window.confirm("Do you want to remove yourself from this event: " + name))
             return;
         else {
-            fetch('api/EventAttendees/' + id + '/' + getUserFromCache().id , {
-                method: 'delete'
-            }).then(data => {
-                this.setState(
-                    {
-                        eventList: this.state.eventList.filter((rec) => {
-                            return (rec.id !== id);
-                        })
-                    });
-            });
+            const account = msalClient.getAllAccounts()[0];
+
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = new Headers();
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+                headers.append('Accept', 'application/json, text/plain');
+                headers.append('Content-Type', 'application/json');
+                headers.append("Allow", 'GET');
+
+                fetch('api/EventAttendees/' + id + '/' + getUserFromCache().id, {
+                    method: 'delete'
+                }).then(data => {
+                    this.setState(
+                        {
+                            eventList: this.state.eventList.filter((rec) => {
+                                return (rec.id !== id);
+                            })
+                        });
+                });
+            })
         }
     }
 
