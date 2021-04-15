@@ -23,11 +23,13 @@ ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want
 
 Here's what needs to be done before we can launch
 1. UI
-  1. Styling
+  1. Styling (in progress)
   1. Get proper logo
-  1. Fix display of event types on grids
   1. Allow event location to be set by clicking on the map
   1. Show events on the maps
+  1. Deleted events should be marked deleted, not actually deleted
+  1. Event displays should not show deleted events
+  1. Event displays should not show events that are already past their event date
   1. Fix welcome user message on main header
   1. Fix issue with being able to click login button twice which crashes ui.
   1. Logout button should not be available if not logged in
@@ -35,18 +37,20 @@ Here's what needs to be done before we can launch
   1. Fix Terms of Service accept popup
   1. Basic field validation
 1. Deployment
-  1. Configure Prod AD B2C  
-  1. Figure out how to deploy to a production versus dev environment
-    1. Fix issue with IP Address for App Server not allowed by default to Database 
-  1. Set up SendMail for Contact Us
-  1. Redeploy test environment with standardized names
   1. Set up CName and Https Cert
 1. Security
   1. Get Access token and pass to web apis 
   1. Add authorization and scopes to web apis
   1. Look for exposed secrets (AzureMapsKey)
   1. Ensure only owner can update their events
+  1. Ensure apis can only be called by web app (CORS?)
+
+## Post Launch Items
+These items are wish list items:
   1. Add Facebook / Google / Twitter logins
+  1. Set up SendMail for Contact Us
+  1. Redeploy test environment with standardized names
+
 
 ## What is the domain name going to be?
 

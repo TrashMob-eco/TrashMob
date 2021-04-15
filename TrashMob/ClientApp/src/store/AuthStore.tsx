@@ -45,3 +45,11 @@ msalClient.addEventCallback((message: msal.EventMessage) => {
         clearUserCache()
     }
 });
+
+export const apiConfig = {
+    b2cScopes: ["https://Trashmob.onmicrosoft.com/api/TrashMob.Read", "https://Trashmob.onmicrosoft.com/api/Trashmob.Write" ],
+};
+
+export const tokenRequest = {
+    scopes: apiConfig.b2cScopes
+}
