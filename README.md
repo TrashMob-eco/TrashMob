@@ -27,6 +27,7 @@ Here's what needs to be done before we can launch
   1. Get proper logo
   1. Allow event location to be set by clicking on the map
   1. Show events on the maps
+  1. Add indicator on main page that user is attending an event in the grid
   1. Fix Terms of Service accept popup
   1. Fix welcome user message on main header
   1. Logout button should not be available if not logged in
@@ -37,7 +38,6 @@ Here's what needs to be done before we can launch
   1. Set up CName and Https Cert
 1. Security
   1. Look for exposed secrets (AzureMapsKey) - Use AAD?
-  1. Ensure only owner can update their events
   1. Ensure apis can only be called by web app (CORS?)
 
 ## Post Launch Items

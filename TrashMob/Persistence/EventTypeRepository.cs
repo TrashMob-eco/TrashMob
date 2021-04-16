@@ -16,14 +16,9 @@
 
         public async Task<IEnumerable<EventType>> GetAllEventTypes()
         {
-            try
-            {
-                return await mobDbContext.EventTypes.ToListAsync().ConfigureAwait(false);
-            }
-            catch
-            {
-                throw;
-            }
+            return await mobDbContext.EventTypes
+                .AsNoTracking()
+                .ToListAsync().ConfigureAwait(false);
         }
     }
 }

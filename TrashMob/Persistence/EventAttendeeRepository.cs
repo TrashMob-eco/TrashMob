@@ -20,9 +20,15 @@
         public async Task<IEnumerable<User>> GetEventAttendees(Guid eventId)
         {
             // TODO: There are better ways to do this.
-            var eventAttendees = await mobDbContext.EventAttendees.Where(ea => ea.EventId == eventId).ToListAsync().ConfigureAwait(false);
+            var eventAttendees = await mobDbContext.EventAttendees
+                .Where(ea => ea.EventId == eventId)
+                .AsNoTracking()
+                .ToListAsync().ConfigureAwait(false);
 
-            var users = await mobDbContext.Users.Where(u => eventAttendees.Select(ea => ea.UserId).Contains(u.Id)).ToListAsync().ConfigureAwait(false);
+            var users = await mobDbContext.Users
+                .Where(u => eventAttendees.Select(ea => ea.UserId).Contains(u.Id))
+                .AsNoTracking()
+                .ToListAsync().ConfigureAwait(false);
             return users;
         }
 
@@ -69,9 +75,15 @@
         public async Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid attendeeId)
         {
             // TODO: There are better ways to do this.
-            var eventAttendees = await mobDbContext.EventAttendees.Where(ea => ea.UserId == attendeeId).ToListAsync().ConfigureAwait(false);
+            var eventAttendees = await mobDbContext.EventAttendees
+                .Where(ea => ea.UserId == attendeeId)                
+                .AsNoTracking()
+                .ToListAsync().ConfigureAwait(false);
 
-            var events = await mobDbContext.Events.Where(e => eventAttendees.Select(ea => ea.EventId).Contains(e.Id)).ToListAsync().ConfigureAwait(false);
+            var events = await mobDbContext.Events
+                .Where(e => eventAttendees.Select(ea => ea.EventId).Contains(e.Id))
+                .AsNoTracking()
+                .ToListAsync().ConfigureAwait(false);
             return events;
         }
     }

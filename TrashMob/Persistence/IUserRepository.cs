@@ -15,7 +15,7 @@
 
         Task<User> GetUserByInternalId(Guid id);
 
-        Task<User> GetUserByExternalId(string tenantId, string uniqueId);
+        Task<User> GetUserByNameIdentifier(string nameIdentifier);
 
         Task<int> DeleteUserByInternalId(Guid id);
     }

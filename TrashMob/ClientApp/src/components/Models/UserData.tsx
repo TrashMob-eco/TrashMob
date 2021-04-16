@@ -2,8 +2,7 @@
 
 class UserData {
     id: string = Guid.createEmpty().toString();
-    uniqueId: string = "";
-    tenantId: string = "";
+    nameIdentifier: string = "";
     userName: string = "";
     givenName: string = "";
     surname: string = "";

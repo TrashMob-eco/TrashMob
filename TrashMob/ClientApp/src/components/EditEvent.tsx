@@ -132,7 +132,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
             const headers = defaultHeaders('PUT');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('api/Events/' + eventData.id, {
+            fetch('api/Events', {
                 method: 'PUT',
                 body: data,
                 headers: headers

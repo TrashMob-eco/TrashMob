@@ -16,14 +16,9 @@
 
         public async Task<IEnumerable<EventStatus>> GetAllEventStatuses()
         {
-            try
-            {
-                return await mobDbContext.EventStatuses.ToListAsync().ConfigureAwait(false);
-            }
-            catch
-            {
-                throw;
-            }
+            return await mobDbContext.EventStatuses
+                .AsNoTracking()
+                .ToListAsync().ConfigureAwait(false);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿import * as msal from "@azure/msal-browser";
-import { MsalAuthenticationResult, MsalAuthenticationTemplate } from "@azure/msal-react";
 import { Guid } from "guid-typescript";
 import UserData from "../components/Models/UserData";
 import { CurrentPrivacyPolicyVersion } from "../components/PrivacyPolicy";
@@ -12,9 +11,8 @@ const user: UserData = {
     dateAgreedToTermsOfService: new Date(),
     memberSince: new Date(),
     privacyPolicyVersion: "",
-    tenantId: "",
     termsOfServiceVersion: "",
-    uniqueId: "",
+    nameIdentifier: "",
     userName: "",
     city: "",
     country: "",
@@ -52,10 +50,11 @@ export function verifyAccount(result: msal.AuthenticationResult) {
         const headers = defaultHeaders('PUT');
         headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-        user.uniqueId = result.uniqueId;
-        user.tenantId = result.tenantId;
+        user.nameIdentifier = result.idTokenClaims["sub"];
+        user.nameIdentifier = result.idTokenClaims["sub"];
         user.userName = result.account?.username ?? "";
         user.city = result.account?.idTokenClaims["city"] ?? "";
+        user.region = result.account?.idTokenClaims["region"] ?? "";
         user.country = result.account?.idTokenClaims["country"] ?? "";
         user.postalCode = result.account?.idTokenClaims["postalCode"] ?? "";
         user.givenName = result.account?.idTokenClaims["given_name"] ?? "";
@@ -110,8 +109,7 @@ export function updateAgreements(tosVersion: string, privacyVersion: string) {
 
 export function clearUserCache() {
     user.id = Guid.createEmpty().toString();
-    user.uniqueId = "";
-    user.tenantId = "";
+    user.nameIdentifier = "";
     user.userName = "";
     user.dateAgreedToPrivacyPolicy = new Date();
     user.privacyPolicyVersion = "";
