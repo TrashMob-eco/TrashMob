@@ -27,22 +27,16 @@ Here's what needs to be done before we can launch
   1. Get proper logo
   1. Allow event location to be set by clicking on the map
   1. Show events on the maps
-  1. Deleted events should be marked deleted, not actually deleted
-  1. Fix issue with eventtypes null sometimes
-  1. Close button on Event Details should go back to home.
-  1. Event displays should not show deleted events
-  1. Event displays should not show events that are already past their event date
+  1. Fix Terms of Service accept popup
   1. Fix welcome user message on main header
-  1. Fix issue with being able to click login button twice which crashes ui.
   1. Logout button should not be available if not logged in
   1. Login button should not be available if already logged in
-  1. Fix Terms of Service accept popup
   1. Basic field validation
+  1. Ensure user can't multi-click buttons
 1. Deployment
   1. Set up CName and Https Cert
 1. Security
-  1. Add authorization and scopes to web apis
-  1. Look for exposed secrets (AzureMapsKey)
+  1. Look for exposed secrets (AzureMapsKey) - Use AAD?
   1. Ensure only owner can update their events
   1. Ensure apis can only be called by web app (CORS?)
 
@@ -51,6 +45,10 @@ These items are wish list items:
   1. Add Facebook / Google / Twitter logins
   1. Set up SendMail for Contact Us
   1. Redeploy test environment with standardized names
+  1. Register a Sponsor
+  1. Register a Partner
+  1. Add a Partner to an Event
+  1. Add a Sponsor to an Event
 
 
 ## What is the domain name going to be?

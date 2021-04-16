@@ -5,12 +5,14 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using TrashMob.Common;
     using TrashMob.Extensions;
     using TrashMob.Models;
 
     public class EventRepository : IEventRepository
     {
         private readonly MobDbContext mobDbContext;
+        private const int StandardEventWindowInMinutes = 120;
 
         public EventRepository(MobDbContext mobDbContext)
         {
@@ -20,6 +22,11 @@
         public async Task<IEnumerable<Event>> GetAllEvents()
         {
             return await mobDbContext.Events.ToListAsync().ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<Event>> GetActiveEvents()
+        {
+            return await mobDbContext.Events.Where(e => (e.EventStatusId == (int)EventStatusEnum.Active || e.EventStatusId == (int)EventStatusEnum.Full) && e.EventDate >= DateTimeOffset.UtcNow.AddMinutes(-1 * StandardEventWindowInMinutes)).ToListAsync().ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<Event>> GetUserEvents(Guid userId)
@@ -33,7 +40,7 @@
         public async Task<Guid> AddEvent(Event mobEvent)
         {
             mobEvent.Id = Guid.NewGuid();
-            mobEvent.EventStatusId = 1;
+            mobEvent.EventStatusId = (int)EventStatusEnum.Active;
             mobDbContext.Events.Add(mobEvent);
 
 
@@ -72,7 +79,8 @@
         public async Task<int> DeleteEvent(Guid id)
         {
             var mobEvent = await mobDbContext.Events.FindAsync(id).ConfigureAwait(false);
-            mobDbContext.Events.Remove(mobEvent);
+            mobEvent.EventStatusId = (int)EventStatusEnum.Canceled;
+            mobDbContext.Entry(mobEvent).State = EntityState.Modified;
             return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
         }
     }

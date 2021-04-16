@@ -26,7 +26,7 @@ export class MainEvents extends Component<PropsType, FetchEventDataState> {
 
         this.getEventTypes();
 
-        fetch('api/Events', {
+        fetch('api/Events/active', {
             method: 'GET',
             headers: headers
         })

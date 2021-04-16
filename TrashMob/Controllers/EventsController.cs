@@ -33,6 +33,14 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
+        [Route("active")]
+        public async Task<IActionResult> GetActiveEvents()
+        {
+            var result = await eventRepository.GetActiveEvents().ConfigureAwait(false);
+            return Ok(result);
+        }
+
+        [HttpGet]
         [Authorize]
         [RequiredScope(Constants.TrashMobReadScope)]
         [Route("eventsowned/{userId}")]

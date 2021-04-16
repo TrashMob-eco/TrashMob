@@ -8,6 +8,8 @@
     public interface IEventRepository
     {
         Task<IEnumerable<Event>> GetAllEvents();
+ 
+        Task<IEnumerable<Event>> GetActiveEvents();
 
         Task<IEnumerable<Event>> GetUserEvents(Guid userId);
 

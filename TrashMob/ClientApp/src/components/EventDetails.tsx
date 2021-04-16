@@ -105,6 +105,9 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
     private renderEvent() {
         return (
             <div>
+                <div>
+                    <button onClick={this.props.history.goBack}>Go Back</button>
+                </div>
                 <div className="form-group row" >
                     <input type="hidden" name="Id" value={this.state.eventData.id.toString()} />
                 </div>
@@ -188,6 +191,9 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                 </div >
                 <div>
                     {this.renderUsersTable(this.state.userList)}
+                </div>
+                <div>
+                    <button onClick={this.props.history.goBack}>Go Back</button>
                 </div>
                 <div>
                     <SingleEventMap />
