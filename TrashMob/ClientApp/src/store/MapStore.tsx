@@ -1,5 +1,6 @@
 ﻿import { IAzureMapOptions } from 'react-azure-maps'
 import { AuthenticationType } from 'azure-maps-control'
+import { defaultHeaders } from './AuthStore';
 
 export async function getOption(): Promise<IAzureMapOptions> {
     var authOptions = {
@@ -12,13 +13,11 @@ export async function getOption(): Promise<IAzureMapOptions> {
 async function getKey(): Promise<string> {
     var key = '';
 
+    const headers = defaultHeaders('GET');
+
     await fetch('api/maps', {
         method: 'GET',
-        headers: {
-            Allow: 'GET',
-            Accept: 'application/json',
-            'Content-Type': 'application/json'
-        },
+        headers: headers,
     })
         .then(response => response.json() as Promise<string>)
         .then(data => {

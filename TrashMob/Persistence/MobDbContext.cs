@@ -2,6 +2,7 @@
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
+    using TrashMob.Common;
     using TrashMob.Models;
 
     public class MobDbContext : DbContext
@@ -184,10 +185,10 @@
                     .HasMaxLength(50);
 
                 entity.HasData(
-                    new EventStatus { Id = 1, Name = "Active", Description = "Event is actively recruiting new members", DisplayOrder = 1 },
-                    new EventStatus { Id = 2, Name = "Full", Description = "Event is full", DisplayOrder = 2 },
-                    new EventStatus { Id = 3, Name = "Canceled", Description = "Event has been canceled", DisplayOrder = 3 },
-                    new EventStatus { Id = 4, Name = "Completed", Description = "Event has completed", DisplayOrder = 4 });
+                    new EventStatus { Id = (int)EventStatusEnum.Active, Name = "Active", Description = "Event is actively recruiting new members", DisplayOrder = 1 },
+                    new EventStatus { Id = (int)EventStatusEnum.Full, Name = "Full", Description = "Event is full", DisplayOrder = 2 },
+                    new EventStatus { Id = (int)EventStatusEnum.Canceled, Name = "Canceled", Description = "Event has been canceled", DisplayOrder = 3 },
+                    new EventStatus { Id = (int)EventStatusEnum.Complete, Name = "Completed", Description = "Event has completed", DisplayOrder = 4 });
             });
 
             modelBuilder.Entity<EventType>(entity =>

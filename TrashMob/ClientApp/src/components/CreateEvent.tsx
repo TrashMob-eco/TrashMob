@@ -9,7 +9,7 @@ import EventTypeData from './Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import SingleEventMap from './SingleEventMap';
 import { withRouter } from 'react-router-dom';
-import { apiConfig, msalClient } from '../store/AuthStore';
+import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
 
 interface CreateEventDataState {
     title: string;
@@ -32,13 +32,11 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
             title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), typeList: [], eventDate: new Date(), country: '', region: ''
         };
 
+        const headers = defaultHeaders('GET');
+
         fetch('api/eventtypes', {
             method: 'GET',
-            headers: {
-                Allow: 'GET',
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
+            headers: headers,
         })
             .then(response => response.json() as Promise<Array<any>>)
             .then(data => {
@@ -109,21 +107,19 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
         };
 
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = new Headers();
-            headers.append('Allow', 'POST');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-            headers.append('Accept', 'application/json, text/plain');
-            headers.append('Content-Type', 'application/json');
 
-                fetch('api/Events', {
-                    method: 'POST',
-                    headers: headers,
-                    body: data,
-                }).then((response) => response.json())
-                    .then((responseJson) => {
-                        this.props.history.push("/mydashboard");
-                    })
-            })
+            const headers = defaultHeaders('POST');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+            fetch('api/Events', {
+                method: 'POST',
+                headers: headers,
+                body: data,
+            }).then((response) => response.json())
+                .then(() => {
+                    this.props.history.push("/mydashboard");
+                })
+        })
     }
 
     // This will handle Cancel button click event.  

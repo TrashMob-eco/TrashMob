@@ -4,7 +4,7 @@ import { Guid } from "guid-typescript";
 import UserData from "../components/Models/UserData";
 import { CurrentPrivacyPolicyVersion } from "../components/PrivacyPolicy";
 import { CurrentTermsOfServiceVersion } from "../components/TermsOfService";
-import { apiConfig, msalClient } from "./AuthStore";
+import { apiConfig, defaultHeaders, msalClient } from "./AuthStore";
 
 const user: UserData = {
     id: Guid.createEmpty().toString(),
@@ -41,45 +41,50 @@ export function getUserFromCache() {
 
 export function verifyAccount(result: msal.AuthenticationResult) {
 
-    const headers = new Headers();
-    const bearer = `Bearer ${result.accessToken}`;
-    headers.append("Authorization", bearer);
-    headers.append("Allow", 'GET');
-    headers.append("Accept", 'application/json');
-    headers.append("Content-Type", 'application/json');
+    const account = msalClient.getAllAccounts()[0];
 
-    user.uniqueId = result.uniqueId;
-    user.tenantId = result.tenantId;
-    user.userName = result.account?.username ?? "";
-    user.city = result.account?.idTokenClaims["city"] ?? "";
-    user.country = result.account?.idTokenClaims["country"] ?? "";
-    user.postalCode = result.account?.idTokenClaims["postalCode"] ?? "";
-    user.givenName = result.account?.idTokenClaims["given_name"] ?? "";
-    user.surname = result.account?.idTokenClaims["family_name"] ?? "";
-    user.email = result.account?.idTokenClaims["emails"][0] ?? "";
+    var request = {
+        scopes: apiConfig.b2cScopes,
+        account: account
+    };
 
-    fetch('api/Users', {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(user)
-    })
-        .then(response => response.json() as Promise<UserData> | null)
-        .then(data => {
-            if (data) {
-                user.id = data.id;
-                user.dateAgreedToPrivacyPolicy = data.dateAgreedToPrivacyPolicy;
-                user.dateAgreedToTermsOfService = data.dateAgreedToTermsOfService;
-                user.memberSince = data.memberSince;
-                user.privacyPolicyVersion = data.privacyPolicyVersion;
-                user.termsOfServiceVersion = data.termsOfServiceVersion;
-                cacheUser(user)
-            }
+    msalClient.acquireTokenSilent(request).then(tokenResponse => {
+        const headers = defaultHeaders('PUT');
+        headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            if (user.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate || user.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate || user.termsOfServiceVersion === "" || user.privacyPolicyVersion === "") {
-                // todo: fix this so this popup works.
-                // return AgreeToPolicies;
-            }
-        });
+        user.uniqueId = result.uniqueId;
+        user.tenantId = result.tenantId;
+        user.userName = result.account?.username ?? "";
+        user.city = result.account?.idTokenClaims["city"] ?? "";
+        user.country = result.account?.idTokenClaims["country"] ?? "";
+        user.postalCode = result.account?.idTokenClaims["postalCode"] ?? "";
+        user.givenName = result.account?.idTokenClaims["given_name"] ?? "";
+        user.surname = result.account?.idTokenClaims["family_name"] ?? "";
+        user.email = result.account?.idTokenClaims["emails"][0] ?? "";
+
+        fetch('api/Users', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(user)
+        })
+            .then(response => response.json() as Promise<UserData> | null)
+            .then(data => {
+                if (data) {
+                    user.id = data.id;
+                    user.dateAgreedToPrivacyPolicy = data.dateAgreedToPrivacyPolicy;
+                    user.dateAgreedToTermsOfService = data.dateAgreedToTermsOfService;
+                    user.memberSince = data.memberSince;
+                    user.privacyPolicyVersion = data.privacyPolicyVersion;
+                    user.termsOfServiceVersion = data.termsOfServiceVersion;
+                    cacheUser(user)
+                }
+
+                if (user.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate || user.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate || user.termsOfServiceVersion === "" || user.privacyPolicyVersion === "") {
+                    // todo: fix this so this popup works.
+                    // return AgreeToPolicies;
+                }
+            });
+    });
 }
 
 export function updateAgreements(tosVersion: string, privacyVersion: string) {

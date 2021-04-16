@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom';
 import EventData from './Models/EventData';  
 import { getUserFromCache } from '../store/accountHandler';
 import EventTypeData from './Models/EventTypeData';
-import { apiConfig, msalClient } from '../store/AuthStore';
+import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
+import { getEventType } from '../store/eventTypeHelper';
 
 interface PropsType { };
 
@@ -30,19 +31,12 @@ export class EventsUserOwns extends Component<PropsType, FetchEventDataState> {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = new Headers();
+            const headers = defaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-            headers.append('Accept', 'application/json, text/plain');
-            headers.append('Content-Type', 'application/json');
-            headers.append("Allow", 'GET');
 
             fetch('api/eventtypes', {
                 method: 'GET',
-                headers: {
-                    Allow: 'GET',
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json'
-                },
+                headers: headers,
             })
                 .then(response => response.json() as Promise<Array<any>>)
                 .then(data => {
@@ -76,11 +70,8 @@ export class EventsUserOwns extends Component<PropsType, FetchEventDataState> {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = new Headers();
+                const headers = defaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-                headers.append('Accept', 'application/json, text/plain');
-                headers.append('Content-Type', 'application/json');
-                headers.append("Allow", 'DELETE');
 
                 fetch('api/Events/' + id, {
                     method: 'delete'
@@ -94,10 +85,6 @@ export class EventsUserOwns extends Component<PropsType, FetchEventDataState> {
                 });
             });
         }
-    }
-
-    private getEventType(eventTypeId: any): string {
-        return this.state.eventTypeList.find(et => et.id === eventTypeId).name;
     }
 
     public render() {
@@ -136,7 +123,7 @@ export class EventsUserOwns extends Component<PropsType, FetchEventDataState> {
                             <tr key={mobEvent.id.toString()}>
                                 <td>{mobEvent.name}</td>
                                 <td>{mobEvent.eventDate}</td>
-                                <td>{this.getEventType(mobEvent.eventTypeId)}</td>
+                                <td>{getEventType(this.state.eventTypeList, mobEvent.eventTypeId)}</td>
                                 <td>{mobEvent.city}</td>
                                 <td>{mobEvent.region}</td>
                                 <td>{mobEvent.country}</td>

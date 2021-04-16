@@ -8,7 +8,7 @@ import { getUserFromCache } from '../store/accountHandler';
 import EventTypeData from './Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import SingleEventMap from './SingleEventMap';
-import { apiConfig, msalClient } from '../store/AuthStore';
+import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
 
 interface EditEventDataState {
     title: string;
@@ -35,13 +35,11 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
             title: "", loading: true, eventData: new EventData(), eventId: Guid.create().toString(), typeList: [], eventDate: new Date(), country: '', region: ''
         };
 
+        const headers = defaultHeaders('GET');
+
         fetch('api/eventtypes', {
             method: 'GET',
-            headers: {
-                Allow: 'GET',
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
+            headers: headers
         })
             .then(response => response.json() as Promise<Array<any>>)
             .then(data => {
@@ -52,7 +50,10 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
 
         // This will set state for Edit Event  
         if (eventId != null) {
-            fetch('api/Events/' + eventId, {})
+            fetch('api/Events/' + eventId, {
+                method: 'GET',
+                headers: headers
+            })
                 .then(response => response.json() as Promise<EventData>)
                 .then(data => {
                     this.setState({ title: "Edit", loading: false, eventData: data, country: data.country, region: data.region, eventDate: new Date(data.eventDate), eventId: data.id });
@@ -128,23 +129,16 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
         };
 
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = new Headers();
-                headers.append('Allow', 'POST');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-                headers.append('Accept', 'application/json, text/plain');
-                headers.append('Content-Type', 'application/json');
+            const headers = defaultHeaders('PUT');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('api/Events/' + eventData.id, {
-                    method: 'PUT',
-                    body: data,
-                    headers: {
-                        Allow: 'POST, PUT',
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                }).then((response) => response.json() as Promise<number>)
-                    .then(() => { this.props.history.push("/mydashboard"); })
-            })
+            fetch('api/Events/' + eventData.id, {
+                method: 'PUT',
+                body: data,
+                headers: headers
+            }).then((response) => response.json() as Promise<number>)
+                .then(() => { this.props.history.push("/mydashboard"); })
+        })
     }
 
     // This will handle Cancel button click event.  

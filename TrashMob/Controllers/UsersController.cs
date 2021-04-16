@@ -4,9 +4,11 @@ namespace TrashMob.Controllers
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Identity.Web.Resource;
+    using TrashMob.Common;
     using TrashMob.Models;
     using TrashMob.Persistence;
 
@@ -67,6 +69,8 @@ namespace TrashMob.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> PostUser(User user)
         {
             User originalUser;
@@ -91,6 +95,8 @@ namespace TrashMob.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
             await userRepository.DeleteUserByInternalId(id).ConfigureAwait(false);

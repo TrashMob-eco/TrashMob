@@ -4,6 +4,7 @@ import { RouteComponentProps } from 'react-router';
 import ContactRequestData from './Models/ContactRequestData';
 import { withRouter } from 'react-router-dom';
 import { loadCaptchaEnginge, LoadCanvasTemplateNoReload, validateCaptcha } from 'react-simple-captcha';
+import { defaultHeaders } from '../store/AuthStore';
 
 interface ContactRequestDataState {
     title: string;
@@ -43,14 +44,12 @@ class ContactUs extends Component<Props, ContactRequestDataState> {
 
             var data = JSON.stringify(contactRequestData);
 
+            const headers = defaultHeaders('POST');
+
             fetch('api/ContactRequest', {
                 method: 'POST',
                 body: data,
-                headers: {
-                    Allow: 'POST',
-                    Accept: 'application/json, text/plain',
-                    'Content-Type': 'application/json'
-                },
+                headers: headers,
             }).then((response) => response.json())
                 .then((responseJson) => {
                     this.props.history.push("/");

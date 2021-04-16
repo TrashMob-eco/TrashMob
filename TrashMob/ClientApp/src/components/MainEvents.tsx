@@ -5,6 +5,8 @@ import EventData from './Models/EventData';
 import { getUserFromCache } from '../store/accountHandler';
 import EventAttendeeData from './Models/EventAttendeeData';
 import EventTypeData from './Models/EventTypeData';
+import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
+import { getEventType } from '../store/eventTypeHelper';
 
 interface PropsType { };
 
@@ -20,27 +22,13 @@ export class MainEvents extends Component<PropsType, FetchEventDataState> {
         super(props);
         this.state = { eventList: [], eventTypeList: [], loading: true };
 
+        const headers = defaultHeaders('GET');
 
-        fetch('api/eventtypes', {
-            method: 'GET',
-            headers: {
-                Allow: 'GET',
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
-        })
-            .then(response => response.json() as Promise<Array<any>>)
-            .then(data => {
-                this.setState({ eventTypeList: data });
-            });
+        this.getEventTypes();
 
-        fetch('api/Events', {
+        fetch('api/Events/active', {
             method: 'GET',
-            headers: {
-                Allow: 'GET',
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
+            headers: headers
         })
             .then(response => response.json() as Promise<EventData[]>)
             .then(data => {
@@ -51,31 +39,63 @@ export class MainEvents extends Component<PropsType, FetchEventDataState> {
         this.handleAttend = this.handleAttend.bind(this);
     }
 
-    private handleAttend(eventId: string) {
+    private getEventTypes() {
+        const headers = defaultHeaders('GET');
+
+        fetch('api/eventtypes', {
+            method: 'GET',
+            headers: headers
+        })
+            .then(response => response.json() as Promise<Array<any>>)
+            .then(data => {
+                this.setState({ eventTypeList: data });
+            });
+    }
+
+    private addAttendee(eventId: string) {
         var user = getUserFromCache();
 
-        var eventAttendee = new EventAttendeeData();
-        eventAttendee.attendeeId = user.Id;
-        eventAttendee.eventId = eventId;
+        const account = msalClient.getAllAccounts()[0];
 
-        var data = JSON.stringify(eventAttendee);
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
 
-        // POST request for Add EventAttendee.  
-        fetch('api/EventAttendees', {
-            method: 'POST',
-            body: data,
-            headers: {
-                Allow: 'POST',
-                Accept: 'application/json, text/plain',
-                'Content-Type': 'application/json'
-            },
-        }).then((response) => response.json())
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            var eventAttendee = new EventAttendeeData();
+            eventAttendee.attendeeId = user.Id;
+            eventAttendee.eventId = eventId;
+
+            var data = JSON.stringify(eventAttendee);
+
+            const headers = defaultHeaders('POST');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+            // POST request for Add EventAttendee.  
+            fetch('api/EventAttendees', {
+                method: 'POST',
+                body: data,
+                headers: headers,
+            }).then((response) => response.json())
+        })
+
     }
 
-    private getEventType(eventTypeId: any): string {
-        return this.state.eventTypeList.find(et => et.id === eventTypeId).name;
-    }
+    private handleAttend(eventId: string) {
 
+        var accounts = msalClient.getAllAccounts();
+
+        if (accounts === null || accounts.length === 0) {
+            msalClient.loginRedirect().then(() => {
+                this.addAttendee(eventId);
+            })
+        }
+        else {
+            this.addAttendee(eventId);
+        }
+    }
 
     public render() {
         let contents = this.state.loading
@@ -109,7 +129,7 @@ export class MainEvents extends Component<PropsType, FetchEventDataState> {
                             <tr key={mobEvent.id.toString()}>
                                 <td>{mobEvent.name}</td>
                                 <td>{mobEvent.eventDate}</td>
-                                <td>{this.getEventType(mobEvent.eventTypeId)}</td>
+                                <td>{getEventType(this.state.eventTypeList, mobEvent.eventTypeId)}</td>
                                 <td>{mobEvent.city}</td>
                                 <td>{mobEvent.region}</td>
                                 <td>{mobEvent.country}</td>

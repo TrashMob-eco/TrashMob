@@ -5,6 +5,7 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
+    using TrashMob.Common;
     using TrashMob.Persistence;
 
     [Authorize]
@@ -21,6 +22,8 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
+        [Authorize]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> GetMyEvents()
         {
             var result = await eventRepository.GetAllEvents().ConfigureAwait(false);

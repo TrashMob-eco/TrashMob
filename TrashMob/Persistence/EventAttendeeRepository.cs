@@ -1,5 +1,6 @@
 ﻿namespace TrashMob.Persistence
 {
+    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using System;
     using System.Collections.Generic;
@@ -34,8 +35,22 @@
                 SignUpDate = DateTimeOffset.UtcNow,
             };
 
-            mobDbContext.EventAttendees.Add(eventAttendee);
-            return mobDbContext.SaveChangesAsync();
+            try
+            {
+                mobDbContext.EventAttendees.Add(eventAttendee);
+                return mobDbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                if ((ex.InnerException.InnerException is SqlException innerException) && (innerException.Number == 2627 || innerException.Number == 2601))
+                { 
+                    return Task.FromResult(0);
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         public Task<int> UpdateEventAttendee(EventAttendee eventAttendee)
