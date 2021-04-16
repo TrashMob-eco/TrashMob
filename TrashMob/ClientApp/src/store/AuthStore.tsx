@@ -53,3 +53,11 @@ export const apiConfig = {
 export const tokenRequest = {
     scopes: apiConfig.b2cScopes
 }
+
+export function defaultHeaders(method: string) : Headers {
+    var headers = new Headers();
+    headers.append('Allow', method);
+    headers.append('Accept', 'application/json, text/plain');
+    headers.append('Content-Type', 'application/json');
+    return headers;
+}

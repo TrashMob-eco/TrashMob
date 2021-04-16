@@ -4,8 +4,11 @@ namespace TrashMob.Controllers
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Identity.Web.Resource;
+    using TrashMob.Common;
     using TrashMob.Models;
     using TrashMob.Persistence;
 
@@ -28,6 +31,8 @@ namespace TrashMob.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> PutEventAttendee(EventAttendee eventAttendee)
         {
             try
@@ -49,6 +54,8 @@ namespace TrashMob.Controllers
         }
 
         [HttpPost]
+        [Authorize]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> PostEventAttendee(EventAttendee eventAttendee)
         {
             await eventAttendeeRepository.AddEventAttendee(eventAttendee.EventId, eventAttendee.UserId).ConfigureAwait(false);
@@ -57,6 +64,8 @@ namespace TrashMob.Controllers
         }
 
         [HttpDelete("{eventId}/{userId}")]
+        [Authorize]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteEventAttendee(Guid eventId, Guid userId)
         {
             await eventAttendeeRepository.DeleteEventAttendee(eventId, userId).ConfigureAwait(false);

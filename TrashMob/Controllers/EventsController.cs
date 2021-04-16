@@ -4,8 +4,11 @@ namespace TrashMob.Controllers
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Identity.Web.Resource;
+    using TrashMob.Common;
     using TrashMob.Models;
     using TrashMob.Persistence;
 
@@ -30,6 +33,8 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
+        [Authorize]
+        [RequiredScope(Constants.TrashMobReadScope)]
         [Route("eventsowned/{userId}")]
         public async Task<IActionResult> GetEventsUserOwns(Guid userId)
         {
@@ -39,6 +44,8 @@ namespace TrashMob.Controllers
 
         [HttpGet]
         [Route("eventsuserisattending/{userId}")]
+        [Authorize]
+        [RequiredScope(Constants.TrashMobReadScope)]
         public async Task<IActionResult> GetEventsUserIsAttending(Guid userId)
         {
             var result = await eventAttendeeRepository.GetEventsUserIsAttending(userId).ConfigureAwait(false);
@@ -62,6 +69,8 @@ namespace TrashMob.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> PutEvent(Guid id, Event mobEvent)
         {
             try
@@ -86,6 +95,8 @@ namespace TrashMob.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> PostEvent(Event mobEvent)
         {
             var newEventId = await eventRepository.AddEvent(mobEvent).ConfigureAwait(false);
@@ -95,6 +106,8 @@ namespace TrashMob.Controllers
 
         // DELETE: api/Events/5
         [HttpDelete("{id}")]
+        [Authorize]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteEvent(Guid id)
         {
             await eventRepository.DeleteEvent(id).ConfigureAwait(false);

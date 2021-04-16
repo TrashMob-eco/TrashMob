@@ -28,6 +28,8 @@ Here's what needs to be done before we can launch
   1. Allow event location to be set by clicking on the map
   1. Show events on the maps
   1. Deleted events should be marked deleted, not actually deleted
+  1. Fix issue with eventtypes null sometimes
+  1. Close button on Event Details should go back to home.
   1. Event displays should not show deleted events
   1. Event displays should not show events that are already past their event date
   1. Fix welcome user message on main header
@@ -39,7 +41,6 @@ Here's what needs to be done before we can launch
 1. Deployment
   1. Set up CName and Https Cert
 1. Security
-  1. Get Access token and pass to web apis 
   1. Add authorization and scopes to web apis
   1. Look for exposed secrets (AzureMapsKey)
   1. Ensure only owner can update their events

@@ -6,6 +6,8 @@ import EventData from './Models/EventData';
 import SingleEventMap from './SingleEventMap';
 import UserData from './Models/UserData';
 import EventTypeData from './Models/EventTypeData';
+import { defaultHeaders } from '../store/AuthStore';
+import { getEventType } from '../store/eventTypeHelper';
 
 interface EventDetailsDataState {
     title: string;
@@ -28,13 +30,11 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
             title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), eventDate: new Date().toDateString(), userList: [], eventTypeList: []
         };
 
+        const headers = defaultHeaders('GET');
+
         fetch('api/eventtypes', {
             method: 'GET',
-            headers: {
-                Allow: 'GET',
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
+            headers: headers,
         })
             .then(response => response.json() as Promise<Array<any>>)
             .then(data => {
@@ -44,7 +44,10 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
         var eventId = this.props.match.params["eventId"];
 
         if (eventId != null) {
-            fetch('api/Events/' + eventId, {})
+            fetch('api/Events/' + eventId, {
+                method: 'GET',
+                headers: headers
+            })
                 .then(response => response.json() as Promise<EventData>)
                 .then(data => {
                     this.setState({ title: "Event Details", loading: false, eventData: data, eventDate: new Date(data.eventDate).toDateString() });
@@ -87,10 +90,6 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
         );
     }
 
-    private getEventType(eventTypeId: any): string {
-        return this.state.eventTypeList.find(et => et.id === eventTypeId).name;
-    }
-
     public render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
@@ -130,7 +129,7 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="EventType">Event Type</label>
                     <div className="col-md-4">
-                        <label className="form-control">{this.getEventType(this.state.eventData.eventTypeId)}</label>
+                        <label className="form-control">{getEventType(this.state.eventTypeList, this.state.eventData.eventTypeId)}</label>
                     </div>
                 </div >
                 <div className="form-group row">
@@ -188,7 +187,7 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                     </div>
                 </div >
                 <div>
-                    { this.renderUsersTable(this.state.userList) }
+                    {this.renderUsersTable(this.state.userList)}
                 </div>
                 <div>
                     <SingleEventMap />
