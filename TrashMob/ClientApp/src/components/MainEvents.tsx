@@ -53,7 +53,6 @@ export class MainEvents extends Component<PropsType, FetchEventDataState> {
     }
 
     private addAttendee(eventId: string) {
-        var user = getUserFromCache();
 
         const account = msalClient.getAllAccounts()[0];
 
@@ -64,8 +63,9 @@ export class MainEvents extends Component<PropsType, FetchEventDataState> {
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
 
+            var user = getUserFromCache();
             var eventAttendee = new EventAttendeeData();
-            eventAttendee.attendeeId = user.Id;
+            eventAttendee.userId = user.id;
             eventAttendee.eventId = eventId;
 
             var data = JSON.stringify(eventAttendee);

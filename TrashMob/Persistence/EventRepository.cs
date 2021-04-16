@@ -21,18 +21,24 @@
 
         public async Task<IEnumerable<Event>> GetAllEvents()
         {
-            return await mobDbContext.Events.ToListAsync().ConfigureAwait(false);
+            return await mobDbContext.Events
+                .AsNoTracking()
+                .ToListAsync().ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<Event>> GetActiveEvents()
         {
-            return await mobDbContext.Events.Where(e => (e.EventStatusId == (int)EventStatusEnum.Active || e.EventStatusId == (int)EventStatusEnum.Full) && e.EventDate >= DateTimeOffset.UtcNow.AddMinutes(-1 * StandardEventWindowInMinutes)).ToListAsync().ConfigureAwait(false);
+            return await mobDbContext.Events
+                .Where(e => (e.EventStatusId == (int)EventStatusEnum.Active || e.EventStatusId == (int)EventStatusEnum.Full) && e.EventDate >= DateTimeOffset.UtcNow.AddMinutes(-1 * StandardEventWindowInMinutes))
+                .AsNoTracking()
+                .ToListAsync().ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<Event>> GetUserEvents(Guid userId)
         {
             return await mobDbContext.Events
                 .Where(e => e.CreatedByUserId == userId)
+                .AsNoTracking()
                 .ToListAsync().ConfigureAwait(false);
         }
 

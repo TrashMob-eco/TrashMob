@@ -3,6 +3,7 @@ namespace TrashMob.Controllers
 {
     using System;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -17,10 +18,12 @@ namespace TrashMob.Controllers
     public class EventAttendeesController : ControllerBase
     {
         private readonly IEventAttendeeRepository eventAttendeeRepository;
+        private readonly IUserRepository userRepository;
 
-        public EventAttendeesController(IEventAttendeeRepository eventAttendeeRepository)
+        public EventAttendeesController(IEventAttendeeRepository eventAttendeeRepository, IUserRepository userRepository)
         {
             this.eventAttendeeRepository = eventAttendeeRepository;
+            this.userRepository = userRepository;
         }
 
         [HttpGet("{eventId}")]
@@ -35,6 +38,12 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> PutEventAttendee(EventAttendee eventAttendee)
         {
+            var user = await userRepository.GetUserByInternalId(eventAttendee.UserId).ConfigureAwait(false);
+            if (!ValidateUser(user.NameIdentifier))
+            {
+                return Forbid();
+            }
+
             try
             {
                 var updatedEventAttendee = await eventAttendeeRepository.UpdateEventAttendee(eventAttendee).ConfigureAwait(false);
@@ -58,6 +67,12 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> PostEventAttendee(EventAttendee eventAttendee)
         {
+            var user = await userRepository.GetUserByInternalId(eventAttendee.UserId).ConfigureAwait(false);
+            if (!ValidateUser(user.NameIdentifier))
+            {
+                return Forbid();
+            }
+
             await eventAttendeeRepository.AddEventAttendee(eventAttendee.EventId, eventAttendee.UserId).ConfigureAwait(false);
 
             return CreatedAtAction("GetEventAttendees", new { eventId = eventAttendee.EventId });
@@ -68,6 +83,12 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteEventAttendee(Guid eventId, Guid userId)
         {
+            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
+            if (!ValidateUser(user.NameIdentifier))
+            {
+                return Forbid();
+            }
+
             await eventAttendeeRepository.DeleteEventAttendee(eventId, userId).ConfigureAwait(false);
             return NoContent();
         }
@@ -75,6 +96,13 @@ namespace TrashMob.Controllers
         private async Task<bool> EventAttendeeExists(Guid eventId, Guid userId)
         {
             return (await eventAttendeeRepository.GetEventAttendees(eventId).ConfigureAwait(false)).Any(e => e.Id == userId);
+        }
+
+        // Ensure the user calling in is the owner of the record
+        private bool ValidateUser(string userId)
+        {
+            var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            return userId == nameIdentifier;
         }
     }
 }

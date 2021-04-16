@@ -19,89 +19,49 @@
 
         public async Task<IEnumerable<User>> GetAllUsers()
         {
-            try
-            {
-                return await mobDbContext.Users.ToListAsync().ConfigureAwait(false);
-            }
-            catch
-            {
-                throw;
-            }
+            return await mobDbContext.Users
+                .AsNoTracking()
+                .ToListAsync().ConfigureAwait(false);
         }
 
         // Add new User record     
         public async Task<User> AddUser(User user)
         {
-            try
-            {
-                user.Id = Guid.NewGuid();
-                user.MemberSince = DateTimeOffset.UtcNow;
-                user.DateAgreedToPrivacyPolicy = DateTimeOffset.MinValue;
-                user.DateAgreedToTermsOfService = DateTimeOffset.MinValue;
-                user.PrivacyPolicyVersion = string.Empty;
-                user.TermsOfServiceVersion = string.Empty;                
-                mobDbContext.Users.Add(user);
-                await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
-                return user;
-            }
-            catch
-            {
-                throw;
-            }
+            user.Id = Guid.NewGuid();
+            user.MemberSince = DateTimeOffset.UtcNow;
+            user.DateAgreedToPrivacyPolicy = DateTimeOffset.MinValue;
+            user.DateAgreedToTermsOfService = DateTimeOffset.MinValue;
+            user.PrivacyPolicyVersion = string.Empty;
+            user.TermsOfServiceVersion = string.Empty;
+            mobDbContext.Users.Add(user);
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+            return user;
         }
 
         // Update the records of a particluar user
         public Task<int> UpdateUser(User user)
         {
-            try
-            {
-                mobDbContext.Entry(user).State = EntityState.Modified;
-                return mobDbContext.SaveChangesAsync();
-            }
-            catch(Exception ex)
-            {
-                throw;
-            }
+            mobDbContext.Entry(user).State = EntityState.Modified;
+            return mobDbContext.SaveChangesAsync();
         }
 
         // Get the details of a particular User
         public async Task<User> GetUserByInternalId(Guid id)
         {
-            try
-            {
-                return await mobDbContext.Users.FindAsync(id).ConfigureAwait(false);
-            }
-            catch
-            {
-                throw;
-            }
+            return await mobDbContext.Users.FindAsync(id).ConfigureAwait(false);
         }
 
         // Delete the record of a particular User
         public async Task<int> DeleteUserByInternalId(Guid id)
         {
-            try
-            {
-                var user = await mobDbContext.Users.FindAsync(id).ConfigureAwait(false);
-                mobDbContext.Users.Remove(user);
-                return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
-            }
-            catch
-            {
-                throw;
-            }
+            var user = await mobDbContext.Users.FindAsync(id).ConfigureAwait(false);
+            mobDbContext.Users.Remove(user);
+            return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public Task<User> GetUserByExternalId(string tenantId, string uniqueId)
+        public Task<User> GetUserByNameIdentifier(string nameIdentifier)
         {
-            try
-            {
-                return mobDbContext.Users.FirstOrDefaultAsync(u => u.TenantId == tenantId && u.UniqueId == uniqueId);
-            }
-            catch
-            {
-                throw;
-            }
+            return mobDbContext.Users.FirstOrDefaultAsync(u => u.NameIdentifier == nameIdentifier);
         }
     }
 }

@@ -15,9 +15,7 @@ namespace TrashMob.Models
 
         public Guid Id { get; set; }
 
-        public string UniqueId { get; set; }
-
-        public string TenantId { get; set; }
+        public string NameIdentifier { get; set; }
 
         public string UserName { get; set; }
 
