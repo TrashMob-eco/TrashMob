@@ -68,7 +68,7 @@ export class Home extends Component<HomeProps, FetchEventDataState> {
                         <MainEvents eventList={data.eventList} eventTypeList={data.eventTypeList} loading={data.loading} />
                     </div>
                     <div style={{ width: 50+'%' }}>
-                        <NearbyEventsMap eventList={data.eventList} />
+                        <NearbyEventsMap eventList={this.state.eventList} loading={this.state.loading} />
                     </div>
                 </div>
             </div>

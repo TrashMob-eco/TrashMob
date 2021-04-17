@@ -85,7 +85,7 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
                     </div>
                 </div>
                 <div>
-                    <NearbyEventsMap eventList={data.myEventList} />
+                    <NearbyEventsMap eventList={data.myEventList} loading={data.loading} />
                 </div>
                 <div>
                     Events I am Attending
@@ -94,7 +94,7 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
                     </div>
                 </div>
                 <div>
-                    <NearbyEventsMap eventList={data.myAttendanceList} />
+                    <NearbyEventsMap eventList={data.myAttendanceList} loading={data.loading} />
                 </div>
                 <div>
                     My Stats

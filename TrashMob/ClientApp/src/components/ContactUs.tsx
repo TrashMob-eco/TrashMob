@@ -107,7 +107,7 @@ class ContactUs extends Component<Props, ContactRequestDataState> {
                 </div >
                 <div className="form-group">
                     <button type="submit" className="btn btn-default">Save</button>
-                    <button className="btn" onClick={this.handleCancel}>Cancel</button>
+                    <button className="btn" onClick={(e) => this.handleCancel(e)}>Cancel</button>
                 </div >
             </form >
         )

@@ -12,7 +12,6 @@ import {
     IAzureMapLayerType,
 } from 'react-azure-maps';
 import { data, SymbolLayerOptions } from 'azure-maps-control';
-import { FetchEventDataState } from './Home';
 import EventData from './Models/EventData';
 
 const renderPoint = (coordinates: data.Position): IAzureMapFeature => {
@@ -38,10 +37,11 @@ const addMarkers = (eventList: EventData[]): data.Position[] => {
 
 export interface MultipleEventMapDataState {
     eventList: EventData[];
+    loading: boolean;
 }
 
 const NearbyEventsMap: React.FC<MultipleEventMapDataState> = (props) => {
-    const [markers, setMarkers] = useState(addMarkers(props.eventList));
+    const [markers, setMarkers] = useState([]);
     const [markersLayer] = useState<IAzureMapLayerType>('SymbolLayer');
     const [layerOptions, setLayerOptions] = useState<SymbolLayerOptions>(MapStore.memoizedOptions);
     const [isKeyLoaded, setIsKeyLoaded] = useState(false);
@@ -53,6 +53,13 @@ const NearbyEventsMap: React.FC<MultipleEventMapDataState> = (props) => {
         }
         getOpt();
     }, [])
+
+    useEffect(() => {
+       if (!props.loading) {
+            const markerList = addMarkers(props.eventList)
+            setMarkers(markerList);
+        }
+    }, [props.loading, props.eventList])
 
     const memoizedMarkerRender: IAzureDataSourceChildren = React.useMemo(
         (): any => markers.map((marker) => { return renderPoint(marker); }),

@@ -24,6 +24,7 @@ const renderPoint = (coordinates: data.Position): IAzureMapFeature => {
 
 export interface SingleEventMapDataState {
     eventData: EventData;
+    loading: boolean;
 }
 
 const addMarker = (event: EventData): data.Position => {
@@ -31,7 +32,7 @@ const addMarker = (event: EventData): data.Position => {
 };
 
 const SingleEventMap: React.FC<SingleEventMapDataState> = (props) => {
-    const [marker, setMarker] = useState(addMarker(props.eventData));
+    const [marker, setMarker] = useState<data.Position>();
     const [markersLayer] = useState<IAzureMapLayerType>('SymbolLayer');
     const [layerOptions, setLayerOptions] = useState<SymbolLayerOptions>(MapStore.memoizedOptions);
     const [isKeyLoaded, setIsKeyLoaded] = useState(false);
@@ -46,6 +47,13 @@ const SingleEventMap: React.FC<SingleEventMapDataState> = (props) => {
 
         GetMap();
     }, []);
+
+    useEffect(() => {
+        if (!props.loading) {
+            const mark = addMarker(props.eventData)
+            setMarker(mark);
+        }
+    }, [props.loading, props.eventData])
 
 
     const memoizedMarkerRender: IAzureDataSourceChildren = React.useMemo(
