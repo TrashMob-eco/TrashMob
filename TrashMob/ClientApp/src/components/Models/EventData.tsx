@@ -14,9 +14,8 @@ class EventData {
     postalCode: string = "";
     createdByUserId: string = "";
     createdDate: Date = new Date();
-    latitude: string = "";
-    longitude: string = "";
-    gpscoords: string = "";
+    latitude: number = 0;
+    longitude: number = 0;
     maxNumberOfParticipants: number = 0;
     lastUpdatedByUserId: string = "";
     lastUpdatedDate: Date = new Date();

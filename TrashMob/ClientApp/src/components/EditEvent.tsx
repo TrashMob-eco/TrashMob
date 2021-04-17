@@ -110,9 +110,8 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
         eventData.region = this.state.region ?? "";
         eventData.country = this.state.country ?? "";
         eventData.postalCode = form.get("postalCode")?.toString() ?? "";
-        eventData.latitude = form.get("latitude")?.toString() ?? "";
-        eventData.longitude = form.get("longitude")?.toString() ?? "";
-        eventData.gpscoords = form.get("gpscoords")?.toString() ?? "";
+        eventData.latitude = form.get("latitude") != null ? parseFloat(form.get("latitude")?.toString()) : 0;
+        eventData.longitude = form.get("longitude") != null ? parseFloat(form.get("longitude")?.toString()) : 0;
         eventData.maxNumberOfParticipants = form.get("maxNumberOfParticipants")?.valueOf() as number ?? 0;
         eventData.createdByUserId = this.state.eventData.createdByUserId;
         eventData.lastUpdatedByUserId = user.id;
@@ -150,6 +149,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
     // Returns the HTML Form to the render() method.  
     private renderCreateForm(typeList: Array<EventTypeData>) {
         const { country, region } = this.state;
+        const data = this.state;
         return (
             <form onSubmit={this.handleSave} >
                 <div className="form-group row" >
@@ -230,12 +230,6 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="GPSCoords">GPS Coords</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="gpsCoords" defaultValue={this.state.eventData.gpscoords} />
-                    </div>
-                </div >
-                <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="MaxNumberOfParticipants">Max Number Of Participants</label>
                     <div className="col-md-4">
                         <input className="form-control" type="text" name="maxNumberOfParticipants" defaultValue={this.state.eventData.maxNumberOfParticipants} />
@@ -246,7 +240,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                     <button className="btn" onClick={this.handleCancel}>Cancel</button>
                 </div >
                 <div>
-                    <SingleEventMap />
+                    <SingleEventMap eventData={data.eventData} />
                 </div>
             </form >
         )

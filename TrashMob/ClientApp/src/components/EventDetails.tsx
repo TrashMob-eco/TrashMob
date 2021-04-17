@@ -9,7 +9,7 @@ import EventTypeData from './Models/EventTypeData';
 import { defaultHeaders } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
 
-interface EventDetailsDataState {
+export interface EventDetailsDataState {
     title: string;
     loading: boolean;
     eventData: EventData;
@@ -103,6 +103,8 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
     }
 
     private renderEvent() {
+        const data = this.state;
+
         return (
             <div>
                 <div>
@@ -178,12 +180,6 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="GPSCoords">GPS Coords</label>
-                    <div className="col-md-4">
-                        <label className="form-control">{this.state.eventData.gpscoords}</label>
-                    </div>
-                </div >
-                <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="MaxNumberOfParticipants">Max Number Of Participants</label>
                     <div className="col-md-4">
                         <label className="form-control">{this.state.eventData.maxNumberOfParticipants}</label>
@@ -196,7 +192,7 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                     <button onClick={this.props.history.goBack}>Go Back</button>
                 </div>
                 <div>
-                    <SingleEventMap />
+                    <SingleEventMap eventData={data.eventData} />
                 </div>
             </div >
         )

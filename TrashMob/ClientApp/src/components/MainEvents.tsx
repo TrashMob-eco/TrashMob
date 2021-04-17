@@ -4,52 +4,19 @@ import { Link } from 'react-router-dom';
 import EventData from './Models/EventData';
 import { getUserFromCache } from '../store/accountHandler';
 import EventAttendeeData from './Models/EventAttendeeData';
-import EventTypeData from './Models/EventTypeData';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
+import { FetchEventDataState } from './Home';
 
-interface PropsType { };
 
-interface FetchEventDataState {
-    eventList: EventData[];
-    eventTypeList: EventTypeData[];
-    loading: boolean;
-}
-
-export class MainEvents extends Component<PropsType, FetchEventDataState> {
+export class MainEvents extends Component<FetchEventDataState> {
 
     constructor(props: FetchEventDataState) {
         super(props);
-        this.state = { eventList: [], eventTypeList: [], loading: true };
-
-        const headers = defaultHeaders('GET');
-
-        this.getEventTypes();
-
-        fetch('api/Events/active', {
-            method: 'GET',
-            headers: headers
-        })
-            .then(response => response.json() as Promise<EventData[]>)
-            .then(data => {
-                this.setState({ eventList: data, loading: false });
-            });
+        this.state = { eventList: this.props.eventList, eventTypeList: this.props.eventTypeList, loading: this.props.loading };
 
         // This binding is necessary to make "this" work in the callback  
         this.handleAttend = this.handleAttend.bind(this);
-    }
-
-    private getEventTypes() {
-        const headers = defaultHeaders('GET');
-
-        fetch('api/eventtypes', {
-            method: 'GET',
-            headers: headers
-        })
-            .then(response => response.json() as Promise<Array<any>>)
-            .then(data => {
-                this.setState({ eventTypeList: data });
-            });
     }
 
     private addAttendee(eventId: string) {
@@ -98,9 +65,9 @@ export class MainEvents extends Component<PropsType, FetchEventDataState> {
     }
 
     public render() {
-        let contents = this.state.loading
+        let contents = this.props.loading
             ? <p><em>Loading...</em></p>
-            : this.renderEventsTable(this.state.eventList);
+            : this.renderEventsTable(this.props.eventList);
 
         return (
             <div>
@@ -129,7 +96,7 @@ export class MainEvents extends Component<PropsType, FetchEventDataState> {
                             <tr key={mobEvent.id.toString()}>
                                 <td>{mobEvent.name}</td>
                                 <td>{mobEvent.eventDate}</td>
-                                <td>{getEventType(this.state.eventTypeList, mobEvent.eventTypeId)}</td>
+                                <td>{getEventType(this.props.eventTypeList, mobEvent.eventTypeId)}</td>
                                 <td>{mobEvent.city}</td>
                                 <td>{mobEvent.region}</td>
                                 <td>{mobEvent.country}</td>
