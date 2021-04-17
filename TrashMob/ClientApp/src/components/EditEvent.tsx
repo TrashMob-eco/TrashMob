@@ -148,8 +148,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
 
     // Returns the HTML Form to the render() method.  
     private renderCreateForm(typeList: Array<EventTypeData>) {
-        const { country, region } = this.state;
-        const data = this.state;
+        const { country, region, eventData, loading } = this.state;
         return (
             <form onSubmit={this.handleSave} >
                 <div className="form-group row" >
@@ -237,10 +236,10 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                 </div >
                 <div className="form-group">
                     <button type="submit" className="btn btn-default">Save</button>
-                    <button className="btn" onClick={this.handleCancel}>Cancel</button>
+                    <button className="btn" onClick={(e) => this.handleCancel(e)}>Cancel</button>
                 </div >
                 <div>
-                    <SingleEventMap eventData={data.eventData} />
+                    <SingleEventMap eventData={eventData} loading={loading} />
                 </div>
             </form >
         )

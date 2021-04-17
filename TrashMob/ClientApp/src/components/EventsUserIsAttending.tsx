@@ -99,7 +99,7 @@ export class EventsUserIsAttending extends Component<PropsType, FetchEventDataSt
                                 <td>{mobEvent.postalCode}</td>
                                 <td>
                                     <Link to={`/eventdetails/${mobEvent.id}`}>Details</Link>
-                                    <a className="action" onClick={() => this.handleRemove(mobEvent.id, mobEvent.name)}>Remove</a>
+                                    <button className="action" onClick={() => this.handleRemove(mobEvent.id, mobEvent.name)}>Remove</button>
                                 </td>
                             </tr>
                         )}

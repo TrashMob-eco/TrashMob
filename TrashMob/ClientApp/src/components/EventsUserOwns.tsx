@@ -102,7 +102,7 @@ export class EventsUserOwns extends Component<PropsType, FetchEventDataState> {
                                 <td>{mobEvent.postalCode}</td>
                                 <td>
                                     <Link to={`/editevent/${mobEvent.id}`}>Edit Event</Link>
-                                    <a className="action" onClick={() => this.handleDelete(mobEvent.id, mobEvent.name)}>Delete Event</a>
+                                    <button className="action" onClick={() => this.handleDelete(mobEvent.id, mobEvent.name)}>Delete Event</button>
                                 </td>
                             </tr>
                         )}
