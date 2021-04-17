@@ -8,50 +8,22 @@ import EventTypeData from './Models/EventTypeData';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
 
-interface PropsType { };
+interface PropsType {
+    eventList: EventData[];
+    eventTypeList: EventTypeData[];
+    loading: boolean; };
 
 interface FetchEventDataState {
     eventList: EventData[];
     eventTypeList: EventTypeData[];
     loading: boolean;
-    token: string;
 }
 
 export class EventsUserIsAttending extends Component<PropsType, FetchEventDataState> {
 
-    constructor(props: FetchEventDataState) {
+    constructor(props: PropsType) {
         super(props);
-        this.state = { eventList: [], eventTypeList: [], loading: true, token: "" };
-
-        const account = msalClient.getAllAccounts()[0];
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = defaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('api/eventtypes', {
-                method: 'GET',
-                headers: headers
-            })
-                .then(response => response.json() as Promise<Array<any>>)
-                .then(data => {
-                    this.setState({ eventTypeList: data });
-                });
-
-            fetch('api/events/eventsuserisattending/' + getUserFromCache().id, {
-                method: 'GET',
-                headers: headers
-            })
-                .then(response => response.json() as Promise<EventData[]>)
-                .then(data => {
-                    this.setState({ eventList: data, loading: false });
-                })
-        });
+        this.state = { eventList: this.props.eventList, eventTypeList: this.props.eventTypeList, loading: this.props.loading };
 
         // This binding is necessary to make "this" work in the callback  
         this.handleRemove = this.handleRemove.bind(this);
@@ -88,9 +60,9 @@ export class EventsUserIsAttending extends Component<PropsType, FetchEventDataSt
     }
 
     public render() {
-        let contents = this.state.loading
+        let contents = this.props.loading
             ? <p><em>Loading...</em></p>
-            : this.renderEventsTable(this.state.eventList);
+            : this.renderEventsTable(this.props.eventList);
 
         return (
             <div>

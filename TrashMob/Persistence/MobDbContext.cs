@@ -65,10 +65,6 @@
                     .IsRequired()
                     .HasMaxLength(2048);
 
-                entity.Property(e => e.Gpscoords)
-                    .HasMaxLength(50)
-                    .HasColumnName("GPSCoords");
-
                 entity.Property(e => e.LastUpdatedByUserId);
 
                 entity.Property(e => e.Name)
@@ -150,10 +146,6 @@
                 entity.Property(e => e.Description)
                     .IsRequired()
                     .HasMaxLength(2048);
-
-                entity.Property(e => e.Gpscoords)
-                    .HasMaxLength(50)
-                    .HasColumnName("GPSCoords");
 
                 entity.Property(e => e.LastUpdatedByUserId);
 

@@ -34,8 +34,6 @@ namespace TrashMob.Models
 
         public double? Longitude { get; set; }
 
-        public string Gpscoords { get; set; }
-
         public int? MaxNumberOfParticipants { get; set; }
 
         public int? ActualNumberOfParticipants { get; set; }

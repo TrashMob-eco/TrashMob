@@ -23,7 +23,6 @@
                 PostalCode = originalEvent.PostalCode,
                 Latitude = originalEvent.Latitude,
                 Longitude = originalEvent.Longitude,
-                Gpscoords = originalEvent.Gpscoords,
                 MaxNumberOfParticipants = originalEvent.MaxNumberOfParticipants,
                 ActualNumberOfParticipants = originalEvent.ActualNumberOfParticipants,
                 CreatedByUserId = originalEvent.CreatedByUserId,
