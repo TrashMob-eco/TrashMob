@@ -7,7 +7,8 @@ import NearbyEventsMap from './NearbyEventsMap';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
-import { defaultHeaders } from '../store/AuthStore';
+import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
+import { getUserFromCache } from '../store/accountHandler';
 
 export interface HomeProps extends RouteComponentProps {
 }
@@ -15,6 +16,8 @@ export interface HomeProps extends RouteComponentProps {
 export interface FetchEventDataState {
     eventList: EventData[];
     eventTypeList: EventTypeData[];
+    myAttendanceList: EventData[];
+    isLoggedIn: boolean;
     loading: boolean;
 }
 
@@ -23,7 +26,7 @@ export class Home extends Component<HomeProps, FetchEventDataState> {
 
     constructor(props: HomeProps) {
         super(props);
-        this.state = { eventList: [], eventTypeList: [], loading: true };
+        this.state = { eventList: [], eventTypeList: [], myAttendanceList: [], loading: true, isLoggedIn: false };
 
         const headers = defaultHeaders('GET');
 
@@ -37,6 +40,30 @@ export class Home extends Component<HomeProps, FetchEventDataState> {
             .then(data => {
                 this.setState({ eventList: data, loading: false });
             });
+
+        // If the user is logged in, get the events they are attending
+        var accounts = msalClient.getAllAccounts();
+
+        if (accounts !== null && accounts.length > 0) {
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: accounts[0]
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = defaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                fetch('api/events/eventsuserisattending/' + getUserFromCache().id, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<EventData[]>)
+                    .then(data => {
+                        this.setState({ myAttendanceList: data, loading: false, isLoggedIn: true });
+                    })
+            });
+        }
     }
 
     private getEventTypes() {
@@ -64,10 +91,10 @@ export class Home extends Component<HomeProps, FetchEventDataState> {
                     <div>
                         <Link to="/createevent">Create a New Event</Link>
                     </div>
-                    <div style={{ width: 50+'%' }}>
-                        <MainEvents eventList={data.eventList} eventTypeList={data.eventTypeList} loading={data.loading} />
+                    <div style={{ width: 50 + '%' }}>
+                        <MainEvents eventList={data.eventList} eventTypeList={data.eventTypeList} myAttendanceList={data.myAttendanceList} loading={data.loading} isLoggedIn={data.isLoggedIn} />
                     </div>
-                    <div style={{ width: 50+'%' }}>
+                    <div style={{ width: 50 + '%' }}>
                         <NearbyEventsMap eventList={this.state.eventList} loading={this.state.loading} />
                     </div>
                 </div>
