@@ -2,10 +2,9 @@
 import * as React from 'react';
 import { AzureMap, AzureMapDataSourceProvider, AzureMapFeature, AzureMapLayerProvider, AzureMapsProvider, IAzureDataSourceChildren, IAzureMapFeature, IAzureMapLayerType, IAzureMapOptions } from 'react-azure-maps'
 import { data, SymbolLayerOptions } from 'azure-maps-control';
-import EventData from './Models/EventData';
 import * as MapStore from '../store/MapStore'
 
-const renderPoint = (coordinates: data.Position): IAzureMapFeature => {
+const renderPoint = (coordinates: data.Position, eventName: string): IAzureMapFeature => {
     const rendId = Math.random();
 
     return (
@@ -17,7 +16,6 @@ const renderPoint = (coordinates: data.Position): IAzureMapFeature => {
             properties={{
                 title: 'Pin',
                 icon: 'pin-round-blue',
-                
             }}
         />
     );
@@ -32,7 +30,7 @@ export interface SingleEventMapDataState {
 }
 
 const SingleEventMap: React.FC<SingleEventMapDataState> = (props) => {
-    const [marker, setMarker] = useState<data.Position>();
+    const [marker, setMarker] = useState<MapStore.pinPoint>();
     const [markersLayer] = useState<IAzureMapLayerType>('SymbolLayer');
     const [layerOptions, setLayerOptions] = useState<SymbolLayerOptions>(MapStore.memoizedOptions);
     const [isKeyLoaded, setIsKeyLoaded] = useState(false);
@@ -49,15 +47,17 @@ const SingleEventMap: React.FC<SingleEventMapDataState> = (props) => {
     }, []);
 
     useEffect(() => {
-        if (!props.loading) {
-            const mark = new data.Position(props.latitude, props.longitude);
-            setMarker(mark);
+        if (!props.loading && props.eventName !== '') {
+            var pin = new MapStore.pinPoint();
+            pin.position = new data.Position(props.latitude, props.longitude);
+            pin.eventName = props.eventName
+            setMarker(pin);
         }
-    }, [props.loading, props.latitude, props.longitude])
+    }, [props.loading, props.latitude, props.longitude, props.eventName])
 
 
     const memoizedMarkerRender: IAzureDataSourceChildren = React.useMemo(
-        (): any => renderPoint(marker),
+        (): any => {renderPoint(marker?.position, marker?.eventName)},
         [marker],
     );
 
@@ -74,22 +74,12 @@ const SingleEventMap: React.FC<SingleEventMapDataState> = (props) => {
                     {!isKeyLoaded && <div>Map is loading.</div>}
                     {isKeyLoaded && <AzureMap options={MapStore.option} events={{ click: getCoordinates }}>
                         <AzureMapDataSourceProvider
-                            events={{
-                                dataadded: (e: any) => {
-                                    console.log('Data on source added', e);
-                                },
-                            }}
-                            id={'markersExample AzureMapDataSourceProvider'}
+                            id={'trashMob AzureMapDataSourceProvider'}
                             options={{ cluster: true, clusterRadius: 2 }}
                         >
                             <AzureMapLayerProvider
-                                id={'markersExample AzureMapLayerProvider'}
+                                id={'trashMob AzureMapLayerProvider'}
                                 options={layerOptions}
-                                lifecycleEvents={{
-                                    layeradded: () => {
-                                        console.log('LAYER ADDED TO MAP');
-                                    },
-                                }}
                                 type={markersLayer}                               
                             />
                             {memoizedMarkerRender}

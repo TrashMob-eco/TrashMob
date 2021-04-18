@@ -151,13 +151,13 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                 < div className="form-group row" >
                     <label className=" control-label col-md-12" htmlFor="Name">Name</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="name" value={this.state.eventName} required />
+                        <input className="form-control" type="text" name="name" defaultValue={this.state.eventName} required />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Description">Description</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="description" value={this.state.eventData.description} required />
+                        <input className="form-control" type="text" name="description" defaultValue={this.state.eventData.description} required />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -180,13 +180,13 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="StreetAddress">StreetAddress</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="streetAddress" value={this.state.eventData.streetAddress} />
+                        <input className="form-control" type="text" name="streetAddress" defaultValue={this.state.eventData.streetAddress} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="City">City</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="city" value={this.state.eventData.city} required />
+                        <input className="form-control" type="text" name="city" defaultValue={this.state.eventData.city} required />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -207,25 +207,25 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="PostalCode">Postal Code</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="postalCode" value={this.state.eventData.postalCode} />
+                        <input className="form-control" type="text" name="postalCode" defaultValue={this.state.eventData.postalCode} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Latitude">Latitude</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="latitude" value={this.state.latitude} />
+                        <input className="form-control" type="text" name="latitude" defaultValue={this.state.latitude} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Longitude">Longitude</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="longitude" value={this.state.longitude} />
+                        <input className="form-control" type="text" name="longitude" defaultValue={this.state.longitude} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="MaxNumberOfParticipants">Max Number Of Participants</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="maxNumberOfParticipants" value={this.state.eventData.maxNumberOfParticipants} />
+                        <input className="form-control" type="text" name="maxNumberOfParticipants" defaultValue={this.state.eventData.maxNumberOfParticipants} />
                     </div>
                 </div >
                 <div className="form-group">

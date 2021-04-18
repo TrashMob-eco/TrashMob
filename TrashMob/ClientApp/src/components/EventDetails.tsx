@@ -81,7 +81,7 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                     </thead>
                     <tbody>
                         {users.map(user =>
-                            <tr>
+                            <tr key={user.id.toString()}>
                                 <td>{user.givenName}</td>
                                 <td>{user.city}</td>
                                 <td>{user.country}</td>
