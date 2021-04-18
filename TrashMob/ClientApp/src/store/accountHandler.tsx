@@ -1,5 +1,6 @@
 ﻿import * as msal from "@azure/msal-browser";
 import { Guid } from "guid-typescript";
+import AgreeToPolicies from "../components/AgreeToPolicies";
 import UserData from "../components/Models/UserData";
 import { CurrentPrivacyPolicyVersion } from "../components/PrivacyPolicy";
 import { CurrentTermsOfServiceVersion } from "../components/TermsOfService";
@@ -78,33 +79,46 @@ export function verifyAccount(result: msal.AuthenticationResult) {
                     cacheUser(user)
                 }
 
-                if (user.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate || user.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate || user.termsOfServiceVersion === "" || user.privacyPolicyVersion === "") {
-                    // todo: fix this so this popup works.
-                    // return AgreeToPolicies;
-                }
+                //if (user.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate || user.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate || user.termsOfServiceVersion === "" || user.privacyPolicyVersion === "") {
+                //    return AgreeToPolicies;
+                // }
             });
     });
 }
 
 export function updateAgreements(tosVersion: string, privacyVersion: string) {
 
-    const headers = new Headers();
-    headers.append("Allow", 'GET');
-    headers.append("Accept", 'application/json');
-    headers.append("Content-Type", 'application/json');
+    const account = msalClient.getAllAccounts()[0];
 
-    user.dateAgreedToPrivacyPolicy = new Date();
-    user.dateAgreedToTermsOfService = new Date();
-    user.termsOfServiceVersion = tosVersion;
-    user.privacyPolicyVersion = privacyVersion;
+    var request = {
+        scopes: apiConfig.b2cScopes,
+        account: account
+    };
 
-    fetch('api/Users', {
-        method: 'PUT',
-        headers: headers,
-        body: JSON.stringify(user)
+    msalClient.acquireTokenSilent(request).then(tokenResponse => {
+        const headers = defaultHeaders('GET');
+        headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+        fetch('api/Users/' + getUserFromCache().id, {
+            method: 'GET',
+            headers: headers,
+            body: JSON.stringify(user)
+        })
+            .then(response => response.json() as Promise<UserData> | null)
+            .then(user => {
+                user.dateAgreedToPrivacyPolicy = new Date();
+                user.dateAgreedToTermsOfService = new Date();
+                user.termsOfServiceVersion = tosVersion;
+                user.privacyPolicyVersion = privacyVersion;
+                fetch('api/Users', {
+                    method: 'PUT',
+                    headers: headers,
+                    body: JSON.stringify(user)
+                })
+                    .then(response => response.json() as Promise<UserData> | null)
+                    .then(data => cacheUser(data ?? new UserData()));
+            })
     })
-        .then(response => response.json() as Promise<UserData> | null)
-        .then(data => cacheUser(data ?? new UserData()));
 }
 
 export function clearUserCache() {

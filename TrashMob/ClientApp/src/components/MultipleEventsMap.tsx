@@ -45,7 +45,7 @@ export interface MultipleEventMapDataState {
     loading: boolean;
 }
 
-const NearbyEventsMap: React.FC<MultipleEventMapDataState> = (props) => {
+const MultipleEventsMap: React.FC<MultipleEventMapDataState> = (props) => {
     const [markers, setMarkers] = useState([]);
     const [markersLayer] = useState<IAzureMapLayerType>('SymbolLayer');
     const [layerOptions, setLayerOptions] = useState<SymbolLayerOptions>(MapStore.memoizedOptions);
@@ -117,4 +117,4 @@ const styles = {
     },
 };
 
-export default NearbyEventsMap
+export default MultipleEventsMap

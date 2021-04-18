@@ -74,42 +74,48 @@ class ContactUs extends Component<Props, ContactRequestDataState> {
     // Returns the HTML Form to the render() method.  
     render() {
         return (
-            <form onSubmit={this.handleSave} >
-                <div className="form-group row" >
-                    <input type="hidden" name="Id" value={this.state.contactRequestData.id.toString()} />
-                </div>
-                < div className="form-group row" >
-                    <label className=" control-label col-md-12" htmlFor="Name">Name</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="name" defaultValue={this.state.contactRequestData.name} required />
-                    </div>
-                </div >
-                < div className="form-group row" >
-                    <label className=" control-label col-md-12" htmlFor="Email">Email</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="email" defaultValue={this.state.contactRequestData.email} required />
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="Message">Message</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="message" defaultValue={this.state.contactRequestData.message} required />
-                    </div>
-                </div >
+            <div>
+                <h1>Contact Us</h1>
                 <div>
-                    <LoadCanvasTemplateNoReload />
+                    Have a question for the TrashMob team? Or an idea to make this site better? Or just want to tell us you love us? Drop us a note!
                 </div>
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="Captcha">CAPTCHA Value</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="user_captcha_input" required />
+                <form onSubmit={this.handleSave} >
+                    <div className="form-group row" >
+                        <input type="hidden" name="Id" value={this.state.contactRequestData.id.toString()} />
                     </div>
-                </div >
-                <div className="form-group">
-                    <button type="submit" className="btn btn-default">Save</button>
-                    <button className="btn" onClick={(e) => this.handleCancel(e)}>Cancel</button>
-                </div >
-            </form >
+                    < div className="form-group row" >
+                        <label className=" control-label col-md-12" htmlFor="Name">Name</label>
+                        <div className="col-md-4">
+                            <input className="form-control" type="text" name="name" defaultValue={this.state.contactRequestData.name} required />
+                        </div>
+                    </div >
+                    < div className="form-group row" >
+                        <label className=" control-label col-md-12" htmlFor="Email">Email</label>
+                        <div className="col-md-4">
+                            <input className="form-control" type="text" name="email" defaultValue={this.state.contactRequestData.email} required />
+                        </div>
+                    </div >
+                    <div className="form-group row">
+                        <label className="control-label col-md-12" htmlFor="Message">Message</label>
+                        <div className="col-md-4">
+                            <input className="form-control" type="text" name="message" defaultValue={this.state.contactRequestData.message} required />
+                        </div>
+                    </div >
+                    <div>
+                        <LoadCanvasTemplateNoReload />
+                    </div>
+                    <div className="form-group row">
+                        <label className="control-label col-md-12" htmlFor="Captcha">CAPTCHA Value</label>
+                        <div className="col-md-4">
+                            <input className="form-control" type="text" name="user_captcha_input" required />
+                        </div>
+                    </div >
+                    <div className="form-group">
+                        <button type="submit" className="btn btn-default">Save</button>
+                        <button className="btn" onClick={(e) => this.handleCancel(e)}>Cancel</button>
+                    </div >
+                </form >
+            </div>
         )
     }
 }

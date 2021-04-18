@@ -76,7 +76,7 @@ export const App = (props) => {
                                         <MyDashboard />
                                     </MsalAuthenticationTemplate >
                                 </Route>
-                                <Route exact path="/about">
+                                <Route exact path="/aboutus">
                                     <AboutUs />
                                 </Route>
                                 <Route exact path="/contactus">
