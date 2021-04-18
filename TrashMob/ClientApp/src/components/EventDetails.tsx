@@ -8,6 +8,7 @@ import UserData from './Models/UserData';
 import EventTypeData from './Models/EventTypeData';
 import { defaultHeaders } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
+import { data } from 'azure-maps-control';
 
 export interface EventDetailsDataState {
     title: string;
@@ -61,6 +62,9 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                     this.setState({ userList: data, loading: false });
                 });
         }
+    }
+
+    handleLocationChange = (point: data.Position) => {
     }
 
     private renderUsersTable(users: UserData[]) {
@@ -192,7 +196,7 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                     <button onClick={() => this.props.history.goBack}>Go Back</button>
                 </div>
                 <div>
-                    <SingleEventMap eventData={data.eventData} loading={data.loading} />
+                    <SingleEventMap eventName={data.eventData.name} latitude={data.eventData.latitude} longitude={data.eventData.longitude} loading={data.loading} onLocationChange={this.handleLocationChange} />
                 </div>
             </div >
         )

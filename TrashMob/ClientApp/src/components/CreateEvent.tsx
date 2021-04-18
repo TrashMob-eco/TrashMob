@@ -10,6 +10,7 @@ import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import SingleEventMap from './SingleEventMap';
 import { withRouter } from 'react-router-dom';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
+import { data } from 'azure-maps-control';
 
 interface CreateEventDataState {
     title: string;
@@ -17,9 +18,12 @@ interface CreateEventDataState {
     eventData: EventData;
     typeList: EventTypeData[];
     eventId: Guid;
+    eventName: string;
     eventDate: Date;
     country: string;
     region: string;
+    latitude: number;
+    longitude: number;
 }
 
 interface Props extends RouteComponentProps<any> {
@@ -29,7 +33,7 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), typeList: [], eventDate: new Date(), country: '', region: ''
+            title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), eventName: "New Event", typeList: [], eventDate: new Date(), country: '', region: '', latitude: 0, longitude: 0
         };
 
         const headers = defaultHeaders('GET');
@@ -43,7 +47,7 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                 this.setState({ typeList: data });
             });
 
-        this.state = { title: "Create", loading: false, eventData: new EventData(), eventId: Guid.create(), typeList: [], eventDate: new Date(), country: '', region: '' };
+        this.state = { title: "Create", loading: false, eventData: new EventData(), eventId: Guid.create(), eventName: "New Event", typeList: [], eventDate: new Date(), country: '', region: '', latitude: 0, longitude: 0 };
 
         // This binding is necessary to make "this" work in the callback  
         this.handleSave = this.handleSave.bind(this);
@@ -56,6 +60,11 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
 
     selectRegion(val: string) {
         this.setState({ region: val });
+    }
+
+    handleLocationChange = (point: data.Position) => {
+        this.setState({ latitude: point[0] });
+        this.setState({ longitude: point[1] });
     }
 
     public render() {
@@ -78,7 +87,7 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
         const form = new FormData(event.target);
 
         var eventData = new EventData();
-        eventData.name = form.get("name")?.toString() ?? "";
+        eventData.name = this.state.eventName ?? "";
         eventData.description = form.get("description")?.toString() ?? "";
         eventData.eventDate = new Date(this.state.eventDate);
         var user = getUserFromCache();
@@ -89,8 +98,8 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
         eventData.region = this.state.region ?? "";
         eventData.country = this.state.country ?? "";
         eventData.postalCode = form.get("postalCode")?.toString() ?? "";
-        eventData.latitude = form.get("latitude") != null ? parseFloat(form.get("latitude")?.toString()) : 0;
-        eventData.longitude = form.get("longitude") != null ? parseFloat(form.get("longitude")?.toString()) : 0;
+        eventData.latitude = this.state.latitude ?? 0;
+        eventData.longitude = this.state.longitude ?? 0;
         eventData.maxNumberOfParticipants = form.get("maxNumberOfParticipants")?.valueOf() as number ?? 0;
         eventData.createdByUserId = user.id;
         eventData.lastUpdatedByUserId = user.id;
@@ -133,7 +142,7 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
 
     // Returns the HTML Form to the render() method.  
     private renderCreateForm(typeList: Array<EventTypeData>) {
-        const { country, region, loading, eventData } = this.state;
+        const { country, region, loading, eventName, latitude, longitude } = this.state;
         return (
             <form onSubmit={this.handleSave} >
                 <div className="form-group row" >
@@ -142,13 +151,13 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                 < div className="form-group row" >
                     <label className=" control-label col-md-12" htmlFor="Name">Name</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="name" defaultValue={this.state.eventData.name} required />
+                        <input className="form-control" type="text" name="name" value={this.state.eventName} required />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Description">Description</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="description" defaultValue={this.state.eventData.description} required />
+                        <input className="form-control" type="text" name="description" value={this.state.eventData.description} required />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -160,7 +169,7 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="EventType">Event Type</label>
                     <div className="col-md-4">
-                        <select className="form-control" data-val="true" name="eventTypeId" defaultValue={this.state.eventData.eventTypeId} required>
+                        <select className="form-control" data-val="true" name="eventTypeId" value={this.state.eventData.eventTypeId} required>
                             <option value="">-- Select Event Type --</option>
                             {typeList.map(type =>
                                 <option key={type.id} value={type.id}>{type.name}</option>
@@ -171,13 +180,13 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="StreetAddress">StreetAddress</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="streetAddress" defaultValue={this.state.eventData.streetAddress} />
+                        <input className="form-control" type="text" name="streetAddress" value={this.state.eventData.streetAddress} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="City">City</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="city" defaultValue={this.state.eventData.city} required />
+                        <input className="form-control" type="text" name="city" value={this.state.eventData.city} required />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -198,25 +207,25 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="PostalCode">Postal Code</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="postalCode" defaultValue={this.state.eventData.postalCode} />
+                        <input className="form-control" type="text" name="postalCode" value={this.state.eventData.postalCode} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Latitude">Latitude</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="latitude" defaultValue={this.state.eventData.latitude} />
+                        <input className="form-control" type="text" name="latitude" value={this.state.latitude} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Longitude">Longitude</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="longitude" defaultValue={this.state.eventData.longitude} />
+                        <input className="form-control" type="text" name="longitude" value={this.state.longitude} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="MaxNumberOfParticipants">Max Number Of Participants</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="maxNumberOfParticipants" defaultValue={this.state.eventData.maxNumberOfParticipants} />
+                        <input className="form-control" type="text" name="maxNumberOfParticipants" value={this.state.eventData.maxNumberOfParticipants} />
                     </div>
                 </div >
                 <div className="form-group">
@@ -224,7 +233,7 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                     <button className="btn" onClick={(e) => this.handleCancel(e)}>Cancel</button>
                 </div >
                 <div>
-                    <SingleEventMap eventData={eventData} loading={loading} />
+                    <SingleEventMap eventName={eventName} latitude={latitude} longitude={longitude} loading={loading} onLocationChange={this.handleLocationChange} />
                 </div>
             </form >
         )

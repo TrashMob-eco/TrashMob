@@ -15,6 +15,7 @@ interface EditEventDataState {
     title: string;
     loading: boolean;
     eventId: string;
+    eventName: string;
     eventData: EventData;
     typeList: EventTypeData[];
     eventDate: Date;
@@ -35,7 +36,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
     constructor(props: EditEventProps) {
         super(props);
         this.state = {
-            title: "", loading: true, eventData: new EventData(), eventId: Guid.create().toString(), typeList: [], eventDate: new Date(), country: '', region: '', latitude: 0, longitude: 0
+            title: "", loading: true, eventData: new EventData(), eventId: Guid.create().toString(), eventName: '', typeList: [], eventDate: new Date(), country: '', region: '', latitude: 0, longitude: 0
         };
 
         const headers = defaultHeaders('GET');
@@ -59,7 +60,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
             })
                 .then(response => response.json() as Promise<EventData>)
                 .then(data => {
-                    this.setState({ title: "Edit", loading: false, eventData: data, country: data.country, region: data.region, eventDate: new Date(data.eventDate), eventId: data.id, latitude: data.latitude, longitude: data.longitude });
+                    this.setState({ title: "Edit", loading: false, eventData: data, eventName: data.name, country: data.country, region: data.region, eventDate: new Date(data.eventDate), eventId: data.id, latitude: data.latitude, longitude: data.longitude });
                 });
         }
 
@@ -81,7 +82,6 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
     }
 
     handleLocationChange = (point: data.Position) => {
-        console.log('Point received:', point);
         this.setState({ latitude: point[0] });
         this.setState({ longitude: point[1] });
     }
@@ -107,7 +107,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
 
         var eventData = new EventData();
         eventData.id = this.state.eventId;
-        eventData.name = form.get("name")?.toString() ?? "";
+        eventData.name = this.state.eventName ?? "";
         eventData.description = form.get("description")?.toString() ?? "";
         eventData.eventDate = new Date(this.state.eventDate);
 
@@ -157,7 +157,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
 
     // Returns the HTML Form to the render() method.  
     private renderCreateForm(typeList: Array<EventTypeData>) {
-        const { country, region, eventData, loading, longitude, latitude } = this.state;
+        const { country, region, eventName, loading, longitude, latitude } = this.state;
         return (
             <form onSubmit={this.handleSave} >
                 <div className="form-group row" >
@@ -166,13 +166,13 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                 < div className="form-group row" >
                     <label className=" control-label col-md-12" htmlFor="Name">Name</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="name" defaultValue={this.state.eventData.name} required />
+                        <input className="form-control" type="text" name="name" value={this.state.eventName} required />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Description">Description</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="description" defaultValue={this.state.eventData.description} required />
+                        <input className="form-control" type="text" name="description" value={this.state.eventData.description} required />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -195,13 +195,13 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="StreetAddress">StreetAddress</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="streetAddress" defaultValue={this.state.eventData.streetAddress} />
+                        <input className="form-control" type="text" name="streetAddress" value={this.state.eventData.streetAddress} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="City">City</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="city" defaultValue={this.state.eventData.city} required />
+                        <input className="form-control" type="text" name="city" value={this.state.eventData.city} required />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -222,7 +222,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="PostalCode">Postal Code</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="postalCode" defaultValue={this.state.eventData.postalCode} />
+                        <input className="form-control" type="text" name="postalCode" value={this.state.eventData.postalCode} />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -240,7 +240,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="MaxNumberOfParticipants">Max Number Of Participants</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="maxNumberOfParticipants" defaultValue={this.state.eventData.maxNumberOfParticipants} />
+                        <input className="form-control" type="text" name="maxNumberOfParticipants" value={this.state.eventData.maxNumberOfParticipants} />
                     </div>
                 </div >
                 <div className="form-group">
@@ -248,7 +248,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                     <button className="btn" onClick={(e) => this.handleCancel(e)}>Cancel</button>
                 </div >
                 <div>
-                    <SingleEventMap eventData={eventData} loading={loading} latitude={latitude} longitude={longitude} onLocationChange={this.handleLocationChange} />
+                    <SingleEventMap eventName={eventName} loading={loading} latitude={latitude} longitude={longitude} onLocationChange={this.handleLocationChange} />
                 </div>
             </form >
         )

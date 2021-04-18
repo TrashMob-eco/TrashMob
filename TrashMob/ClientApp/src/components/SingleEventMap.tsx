@@ -24,17 +24,12 @@ const renderPoint = (coordinates: data.Position): IAzureMapFeature => {
 };
 
 export interface SingleEventMapDataState {
-    eventData: EventData;
+    eventName: string;
     latitude: number;
     longitude: number;
     loading: boolean;
     onLocationChange: any;
 }
-
-const addMarker = (event: EventData): data.Position => {
-    return new data.Position(event.latitude, event.longitude);
-};
-
 
 const SingleEventMap: React.FC<SingleEventMapDataState> = (props) => {
     const [marker, setMarker] = useState<data.Position>();
@@ -55,10 +50,10 @@ const SingleEventMap: React.FC<SingleEventMapDataState> = (props) => {
 
     useEffect(() => {
         if (!props.loading) {
-            const mark = addMarker(props.eventData)
+            const mark = new data.Position(props.latitude, props.longitude);
             setMarker(mark);
         }
-    }, [props.loading, props.eventData])
+    }, [props.loading, props.latitude, props.longitude])
 
 
     const memoizedMarkerRender: IAzureDataSourceChildren = React.useMemo(
