@@ -25,7 +25,6 @@ Here's what needs to be done before we can launch
 1. UI
   1. Styling (in progress)
   1. Get proper logo
-  1. Fix render of event name on single map
   1. Add indicator on main page that user is attending an event in the grid
   1. Fix Terms of Service accept popup
   1. Fix welcome user message on main header
