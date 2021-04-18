@@ -27,7 +27,7 @@ import { EventDetails } from './components/EventDetails';
 import { EditEvent, EditEventProps } from './components/EditEvent';
 import { NoMatch } from './components/NoMatch';
 
-export const App = () => {
+export const App = (props) => {
 
     initializeIcons();
 
@@ -101,7 +101,7 @@ export const App = () => {
                                     <TermsOfService />
                                 </Route>
                                 <Route exact path='/'>
-                                    <Home />
+                                    <Home {...props}  />
                                 </Route>
                                 <Route>
                                     <NoMatch />

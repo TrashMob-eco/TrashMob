@@ -125,7 +125,7 @@ export const TopMenu: FunctionComponent = () => {
           <div className="collapse navbar-collapse" id="navbarsExample09">
             <ul className="navbar-nav mr-auto">
               {mainNavItems.map(item => (
-                <li className="nav-item">
+                  <li className="nav-item" key={item.name}>
                   <a className="nav-link" href={item.url}>{item.name}</a>
                 </li>
               ))}

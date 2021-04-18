@@ -14,7 +14,7 @@ import {
 import { data, SymbolLayerOptions } from 'azure-maps-control';
 import EventData from './Models/EventData';
 
-const renderPoint = (coordinates: data.Position): IAzureMapFeature => {
+const renderPoint = (coordinates: data.Position, eventName: string): IAzureMapFeature => {
     const rendId = Math.random();
 
     return (
@@ -24,16 +24,21 @@ const renderPoint = (coordinates: data.Position): IAzureMapFeature => {
             type="Point"
             coordinate={coordinates}
             properties={{
-                title: 'Pin',
+                title: eventName,
                 icon: 'pin-round-blue',
             }}
         />
     );
 };
 
-const addMarkers = (eventList: EventData[]): data.Position[] => {
-    return eventList.map((event) => { return new data.Position(event.latitude, event.longitude) } );
-};
+const addMarkers = (eventList: EventData[]): MapStore.pinPoint[] => {
+    return eventList.map((mobEvent) => {
+        var pin = new MapStore.pinPoint();
+        pin.position = new data.Position(mobEvent.latitude, mobEvent.longitude);
+        pin.eventName = mobEvent.name;
+        return pin;
+    })
+}
 
 export interface MultipleEventMapDataState {
     eventList: EventData[];
@@ -62,7 +67,9 @@ const NearbyEventsMap: React.FC<MultipleEventMapDataState> = (props) => {
     }, [props.loading, props.eventList])
 
     const memoizedMarkerRender: IAzureDataSourceChildren = React.useMemo(
-        (): any => markers.map((marker) => { return renderPoint(marker); }),
+        (): any => markers.map((marker) => {
+            return renderPoint(marker.position, marker.eventName);
+        }),
         [markers],
     );
 
@@ -73,26 +80,12 @@ const NearbyEventsMap: React.FC<MultipleEventMapDataState> = (props) => {
                     {!isKeyLoaded && <div>Map is loading.</div>}
                     {isKeyLoaded && <AzureMap options={MapStore.option}>
                         <AzureMapDataSourceProvider
-                            events={{
-                                dataadded: (e: any) => {
-                                    console.log('Data on source added', e);
-                                },
-                            }}
-                            id={'markersExample AzureMapDataSourceProvider'}
+                            id={'trashMob AzureMapDataSourceProvider'}
                             options={{ cluster: true, clusterRadius: 2 }}
                         >
                             <AzureMapLayerProvider
-                                id={'markersExample AzureMapLayerProvider'}
+                                id={'trashMob AzureMapLayerProvider'}
                                 options={layerOptions}
-                                events={{
-                                    click: MapStore.clusterClicked,
-                                    dbclick: MapStore.clusterClicked,
-                                }}
-                                lifecycleEvents={{
-                                    layeradded: () => {
-                                        console.log('LAYER ADDED TO MAP');
-                                    },
-                                }}
                                 type={markersLayer}
                             />
                             {memoizedMarkerRender}

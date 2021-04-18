@@ -9,16 +9,20 @@ import EventTypeData from './Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import SingleEventMap from './SingleEventMap';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
+import { data } from 'azure-maps-control';
 
 interface EditEventDataState {
     title: string;
     loading: boolean;
     eventId: string;
+    eventName: string;
     eventData: EventData;
     typeList: EventTypeData[];
     eventDate: Date;
     country: string;
     region: string;
+    latitude: number;
+    longitude: number;
 }
 
 interface MatchParams {
@@ -32,7 +36,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
     constructor(props: EditEventProps) {
         super(props);
         this.state = {
-            title: "", loading: true, eventData: new EventData(), eventId: Guid.create().toString(), typeList: [], eventDate: new Date(), country: '', region: ''
+            title: "", loading: true, eventData: new EventData(), eventId: Guid.create().toString(), eventName: '', typeList: [], eventDate: new Date(), country: '', region: '', latitude: 0, longitude: 0
         };
 
         const headers = defaultHeaders('GET');
@@ -56,7 +60,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
             })
                 .then(response => response.json() as Promise<EventData>)
                 .then(data => {
-                    this.setState({ title: "Edit", loading: false, eventData: data, country: data.country, region: data.region, eventDate: new Date(data.eventDate), eventId: data.id });
+                    this.setState({ title: "Edit", loading: false, eventData: data, eventName: data.name, country: data.country, region: data.region, eventDate: new Date(data.eventDate), eventId: data.id, latitude: data.latitude, longitude: data.longitude });
                 });
         }
 
@@ -75,6 +79,11 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
 
     handleEventDateChange = (passedDate: Date) => {
         this.setState({ eventDate: passedDate });
+    }
+
+    handleLocationChange = (point: data.Position) => {
+        this.setState({ latitude: point[0] });
+        this.setState({ longitude: point[1] });
     }
 
     public render() {
@@ -98,7 +107,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
 
         var eventData = new EventData();
         eventData.id = this.state.eventId;
-        eventData.name = form.get("name")?.toString() ?? "";
+        eventData.name = this.state.eventName ?? "";
         eventData.description = form.get("description")?.toString() ?? "";
         eventData.eventDate = new Date(this.state.eventDate);
 
@@ -110,8 +119,8 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
         eventData.region = this.state.region ?? "";
         eventData.country = this.state.country ?? "";
         eventData.postalCode = form.get("postalCode")?.toString() ?? "";
-        eventData.latitude = form.get("latitude") != null ? parseFloat(form.get("latitude")?.toString()) : 0;
-        eventData.longitude = form.get("longitude") != null ? parseFloat(form.get("longitude")?.toString()) : 0;
+        eventData.latitude = this.state.latitude ?? 0;
+        eventData.longitude = this.state.longitude ?? 0;
         eventData.maxNumberOfParticipants = form.get("maxNumberOfParticipants")?.valueOf() as number ?? 0;
         eventData.createdByUserId = this.state.eventData.createdByUserId;
         eventData.lastUpdatedByUserId = user.id;
@@ -148,7 +157,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
 
     // Returns the HTML Form to the render() method.  
     private renderCreateForm(typeList: Array<EventTypeData>) {
-        const { country, region, eventData, loading } = this.state;
+        const { country, region, eventName, loading, longitude, latitude } = this.state;
         return (
             <form onSubmit={this.handleSave} >
                 <div className="form-group row" >
@@ -157,7 +166,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                 < div className="form-group row" >
                     <label className=" control-label col-md-12" htmlFor="Name">Name</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="name" defaultValue={this.state.eventData.name} required />
+                        <input className="form-control" type="text" name="name" defaultValue={this.state.eventName} required />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -219,13 +228,13 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Latitude">Latitude</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="latitude" defaultValue={this.state.eventData.latitude} />
+                        <input className="form-control" type="text" name="latitude" defaultValue={this.state.latitude} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Longitude">Longitude</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="longitude" defaultValue={this.state.eventData.longitude} />
+                        <input className="form-control" type="text" name="longitude" defaultValue={this.state.longitude} />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -239,7 +248,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                     <button className="btn" onClick={(e) => this.handleCancel(e)}>Cancel</button>
                 </div >
                 <div>
-                    <SingleEventMap eventData={eventData} loading={loading} />
+                    <SingleEventMap eventName={eventName} loading={loading} latitude={latitude} longitude={longitude} onLocationChange={this.handleLocationChange} />
                 </div>
             </form >
         )
