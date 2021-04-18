@@ -43,6 +43,8 @@ export const memoizedOptions: SymbolLayerOptions = {
         offset: [0, 1.2],
         color: '#6642f5',
         size: 16,
+        ignorePlacement: true, //To skip label collision detection for better performance.
+        allowOverlap: true    //To ensure smooth rendering when dragging, allow symbol to overlap all other symbols on the map.
     },
 };
 

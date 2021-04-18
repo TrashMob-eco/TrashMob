@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from 'react';
 import * as React from 'react';
-import { AzureMap, AzureMapDataSourceProvider, AzureMapFeature, AzureMapLayerProvider, AzureMapsProvider, IAzureDataSourceChildren, IAzureMapFeature, IAzureMapHtmlMarkerEvent, IAzureMapLayerType, IAzureMapOptions } from 'react-azure-maps'
+import { AzureMap, AzureMapDataSourceProvider, AzureMapFeature, AzureMapLayerProvider, AzureMapsProvider, IAzureDataSourceChildren, IAzureMapFeature, IAzureMapLayerType, IAzureMapOptions } from 'react-azure-maps'
 import { data, SymbolLayerOptions } from 'azure-maps-control';
 import EventData from './Models/EventData';
 import * as MapStore from '../store/MapStore'
@@ -17,6 +17,7 @@ const renderPoint = (coordinates: data.Position): IAzureMapFeature => {
             properties={{
                 title: 'Pin',
                 icon: 'pin-round-blue',
+                
             }}
         />
     );
@@ -24,12 +25,16 @@ const renderPoint = (coordinates: data.Position): IAzureMapFeature => {
 
 export interface SingleEventMapDataState {
     eventData: EventData;
+    latitude: number;
+    longitude: number;
     loading: boolean;
+    onLocationChange: any;
 }
 
 const addMarker = (event: EventData): data.Position => {
     return new data.Position(event.latitude, event.longitude);
 };
+
 
 const SingleEventMap: React.FC<SingleEventMapDataState> = (props) => {
     const [marker, setMarker] = useState<data.Position>();
@@ -61,13 +66,18 @@ const SingleEventMap: React.FC<SingleEventMapDataState> = (props) => {
         [marker],
     );
 
+    function getCoordinates(e: any) {
+        console.log('Clicked on:', e.position);
+        props.onLocationChange(e.position);
+    }
+
     // render()
     return (
         <>
             <AzureMapsProvider>
                 <div style={styles.map}>
                     {!isKeyLoaded && <div>Map is loading.</div>}
-                    {isKeyLoaded && <AzureMap options={MapStore.option}>
+                    {isKeyLoaded && <AzureMap options={MapStore.option} events={{ click: getCoordinates }}>
                         <AzureMapDataSourceProvider
                             events={{
                                 dataadded: (e: any) => {
@@ -85,7 +95,7 @@ const SingleEventMap: React.FC<SingleEventMapDataState> = (props) => {
                                         console.log('LAYER ADDED TO MAP');
                                     },
                                 }}
-                                type={markersLayer}
+                                type={markersLayer}                               
                             />
                             {memoizedMarkerRender}
                         </AzureMapDataSourceProvider>
