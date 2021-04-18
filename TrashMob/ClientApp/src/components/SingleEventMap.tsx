@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from 'react';
 import * as React from 'react';
-import { AzureMap, AzureMapDataSourceProvider, AzureMapFeature, AzureMapLayerProvider, AzureMapsProvider, IAzureDataSourceChildren, IAzureMapFeature, IAzureMapLayerType, IAzureMapOptions } from 'react-azure-maps'
+import { AzureMap, AzureMapDataSourceProvider, AzureMapFeature, AzureMapLayerProvider, AzureMapsProvider, IAzureDataSourceChildren, IAzureMapFeature, IAzureMapLayerType } from 'react-azure-maps'
 import { data, SymbolLayerOptions } from 'azure-maps-control';
 import * as MapStore from '../store/MapStore'
 
@@ -14,7 +14,7 @@ const renderPoint = (coordinates: data.Position, eventName: string): IAzureMapFe
             type="Point"
             coordinate={coordinates}
             properties={{
-                title: 'Pin',
+                title: eventName,
                 icon: 'pin-round-blue',
             }}
         />
@@ -57,8 +57,12 @@ const SingleEventMap: React.FC<SingleEventMapDataState> = (props) => {
 
 
     const memoizedMarkerRender: IAzureDataSourceChildren = React.useMemo(
-        (): any => {renderPoint(marker?.position, marker?.eventName)},
-        [marker],
+        (): any => {
+            if (!props.loading && marker) {
+                return renderPoint(marker.position, marker.eventName)
+            }
+        },
+        [marker, props.loading],
     );
 
     function getCoordinates(e: any) {
