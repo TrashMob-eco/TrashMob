@@ -1,25 +1,45 @@
-import { Component } from 'react';
 import * as React from 'react'
 import { Link } from 'react-router-dom';
-import EventData from './Models/EventData';
 import { getUserFromCache } from '../store/accountHandler';
 import EventAttendeeData from './Models/EventAttendeeData';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
 import { FetchEventDataState } from './Home';
 
+class DisplayEvent {
+    id: string;
+    name: string;
+    eventDate: Date;
+    eventTypeId: number;
+    city: string;
+    region: string;
+    country: string;
+    isAttending: string;
+}
 
-export class MainEvents extends Component<FetchEventDataState> {
+export const MainEvents: React.FC<FetchEventDataState> = (props) => {
+    const [displayEvents, setDisplayEvents] = React.useState([]);
 
-    constructor(props: FetchEventDataState) {
-        super(props);
-        this.state = { eventList: this.props.eventList, eventTypeList: this.props.eventTypeList, loading: this.props.loading };
+    React.useEffect(() => {
+        if (!props.loading && props.eventList && props.myAttendanceList) {
+            const list = props.eventList.map((mobEvent) => {
+                var dispEvent = new DisplayEvent()
+                dispEvent.id = mobEvent.id;
+                dispEvent.city = mobEvent.city;
+                dispEvent.region = mobEvent.region;
+                dispEvent.country = mobEvent.country;
+                dispEvent.eventDate = mobEvent.eventDate;
+                dispEvent.eventTypeId = mobEvent.eventTypeId;
+                dispEvent.name = mobEvent.name;
+                var isAttending = props.myAttendanceList.findIndex((e) => e.id === mobEvent.id) >= 0;
+                dispEvent.isAttending = !props.isLoggedIn ? 'Log in to see your status' : (isAttending ? 'Yes' : 'No');
+                return dispEvent;
+            });
+            setDisplayEvents(list);
+        }
+    }, [props.loading, props.eventList, props.myAttendanceList, props.isLoggedIn])
 
-        // This binding is necessary to make "this" work in the callback  
-        this.handleAttend = this.handleAttend.bind(this);
-    }
-
-    private addAttendee(eventId: string) {
+    function addAttendee(eventId: string) {
 
         const account = msalClient.getAllAccounts()[0];
 
@@ -47,37 +67,23 @@ export class MainEvents extends Component<FetchEventDataState> {
                 headers: headers,
             }).then((response) => response.json())
         })
-
     }
 
-    private handleAttend(eventId: string) {
+    function handleAttend(eventId: string) {
 
         var accounts = msalClient.getAllAccounts();
 
         if (accounts === null || accounts.length === 0) {
             msalClient.loginRedirect().then(() => {
-                this.addAttendee(eventId);
+                addAttendee(eventId);
             })
         }
         else {
-            this.addAttendee(eventId);
+            addAttendee(eventId);
         }
     }
 
-    public render() {
-        let contents = this.props.loading
-            ? <p><em>Loading...</em></p>
-            : this.renderEventsTable(this.props.eventList);
-
-        return (
-            <div>
-                <h1 id="tabelLabel" >Upcoming Events</h1>
-                {contents}
-            </div>
-        );
-    }
-
-    private renderEventsTable(events: EventData[]) {
+    function renderEventsTable(events: DisplayEvent[]) {
         return (
             <div>
                 <table className='table table-striped' aria-labelledby="tabelLabel">
@@ -89,6 +95,7 @@ export class MainEvents extends Component<FetchEventDataState> {
                             <th>City</th>
                             <th>Region</th>
                             <th>Country</th>
+                            <th>Am I Attending?</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -96,13 +103,14 @@ export class MainEvents extends Component<FetchEventDataState> {
                             <tr key={mobEvent.id.toString()}>
                                 <td>{mobEvent.name}</td>
                                 <td>{mobEvent.eventDate}</td>
-                                <td>{getEventType(this.props.eventTypeList, mobEvent.eventTypeId)}</td>
+                                <td>{getEventType(props.eventTypeList, mobEvent.eventTypeId)}</td>
                                 <td>{mobEvent.city}</td>
                                 <td>{mobEvent.region}</td>
                                 <td>{mobEvent.country}</td>
+                                <td>{mobEvent.isAttending}</td>
                                 <td>
                                     <Link to={`/eventdetails/${mobEvent.id}`}>Details</Link>
-                                    <button className="btn" onClick={() => this.handleAttend(mobEvent.id)}>Attend</button>
+                                    <button className="btn" onClick={() => handleAttend(mobEvent.id)}>Attend</button>
                                 </td>
                             </tr>
                         )}
@@ -111,4 +119,13 @@ export class MainEvents extends Component<FetchEventDataState> {
             </div>
         );
     }
+
+    return (
+        <>
+            <div>
+                {props.loading && <p><em>Loading...</em></p>}
+                {!props.loading && renderEventsTable(displayEvents)}
+            </div>
+        </>
+    );
 }
