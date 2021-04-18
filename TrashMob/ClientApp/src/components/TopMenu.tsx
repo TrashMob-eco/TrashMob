@@ -1,12 +1,11 @@
-﻿import { FunctionComponent } from 'react';
-import * as React from 'react'
+﻿import * as React from 'react'
 
 import logo from './assets/Logo1.png';
 import { msalClient } from '../store/AuthStore';
 import { getUserFromCache } from '../store/accountHandler'
 import UserData from './Models/UserData';
 
-export const TopMenu: FunctionComponent = () => {
+export const TopMenu: React.FC = () => {
 
     const mainNavItems = [
       { name: "Home", url: "/" },

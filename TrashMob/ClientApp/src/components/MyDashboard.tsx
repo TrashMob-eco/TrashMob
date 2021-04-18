@@ -4,7 +4,7 @@ import * as React from 'react'
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { EventsUserOwns } from './EventsUserOwns'
 import { EventsUserIsAttending } from './EventsUserIsAttending';
-import NearbyEventsMap from './NearbyEventsMap';
+import MultipleEventsMap from './MultipleEventsMap';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
@@ -85,7 +85,7 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
                     </div>
                 </div>
                 <div>
-                    <NearbyEventsMap eventList={data.myEventList} loading={data.loading} />
+                    <MultipleEventsMap eventList={data.myEventList} loading={data.loading} />
                 </div>
                 <div>
                     Events I am Attending
@@ -94,7 +94,7 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
                     </div>
                 </div>
                 <div>
-                    <NearbyEventsMap eventList={data.myAttendanceList} loading={data.loading} />
+                    <MultipleEventsMap eventList={data.myAttendanceList} loading={data.loading} />
                 </div>
                 <div>
                     My Stats

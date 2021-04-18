@@ -3,7 +3,7 @@ import * as React from 'react'
 
 import { MainEvents } from './MainEvents';
 import { MainCarousel } from './MainCarousel';
-import NearbyEventsMap from './NearbyEventsMap';
+import MultipleEventsMap from './MultipleEventsMap';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
@@ -95,7 +95,7 @@ export class Home extends Component<HomeProps, FetchEventDataState> {
                         <MainEvents eventList={data.eventList} eventTypeList={data.eventTypeList} myAttendanceList={data.myAttendanceList} loading={data.loading} isLoggedIn={data.isLoggedIn} />
                     </div>
                     <div style={{ width: 50 + '%' }}>
-                        <NearbyEventsMap eventList={this.state.eventList} loading={this.state.loading} />
+                        <MultipleEventsMap eventList={this.state.eventList} loading={this.state.loading} />
                     </div>
                 </div>
             </div>

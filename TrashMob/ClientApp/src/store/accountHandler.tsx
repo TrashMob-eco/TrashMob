@@ -81,7 +81,7 @@ export function verifyAccount(result: msal.AuthenticationResult) {
 
                 //if (user.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate || user.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate || user.termsOfServiceVersion === "" || user.privacyPolicyVersion === "") {
                 //    return AgreeToPolicies;
-                }
+                // }
             });
     });
 }
