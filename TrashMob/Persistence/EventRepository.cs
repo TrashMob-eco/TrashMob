@@ -78,7 +78,7 @@
         // Get the details of a particular Event    
         public async Task<Event> GetEvent(Guid id)
         {
-            return await mobDbContext.Events.FindAsync(id).ConfigureAwait(false);
+            return await mobDbContext.Events.AsNoTracking().SingleOrDefaultAsync(e => e.Id == id).ConfigureAwait(false);
         }
 
         // Delete the record of a particular Mob Event    
