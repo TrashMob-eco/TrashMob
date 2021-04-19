@@ -25,30 +25,67 @@ Here's what needs to be done before we can launch
 1. UI
   1. Styling (in progress)
   1. Get proper logo
-  1. Fix Terms of Service accept popup
-  1. Fix welcome user message on main header
-  1. Logout button should not be available if not logged in
-  1. Login button should not be available if already logged in
   1. Basic field validation
-  1. Ensure user can't multi-click buttons
 1. Deployment
   1. Set up CName and Https Cert
 1. Security
   1. Look for exposed secrets (AzureMapsKey) - Use AAD?
   1. Ensure apis can only be called by web app (CORS?)
 
-## Post Launch Items
-These items are wish list items:
+## High Priority Post Launch Items
+These items did not make the cut for launch but need to be done
+  1. Ensure user can't multi-click buttons
+  1. Fix Terms of Service accept popup
+  1. Fix welcome user message on main header
+  1. Logout button should not be available if not logged in
+  1. Login button should not be available if already logged in
   1. Allow event location to be dragged with visual indicator
   1. Add Facebook / Google / Twitter logins
   1. Add Patreon
-  1. Set up SendMail for Contact Us
+  1. Convert classes to Functional Components
   1. Redeploy test environment with standardized names
+  
+## Upcoming Feature List (not ordered)
+  1. Add search / filter of events on main page
+  1. Request Mob help
+  1. Allow user to update their profile
+  1. Set up SendMail for Contact Us
   1. Register a Sponsor
   1. Register a Partner
   1. Add a Partner to an Event
   1. Add a Sponsor to an Event
-
+  1. Add stats to carousel
+    1. Number of Registered Users
+    1. Number of Upcoming Events
+    1. Number of Users registered for upcoming events
+    1. Number of Completed events
+    1. Number of Users who have attended at least 1 event
+    1. Number of Users who have attended at least 5 events
+    1. Number of Users who have attended at least 10 events
+  1. Allow browser to detect location
+  1. Allow user to be notified when a new event is added within x distance of their location
+  1. Allow event lead to email all registered attendees
+  1. Create mobile version of the app
+  1. Allow event lead to send messages to all registered attendees
+  1. Allow event lead to upload photos / videos of the event and add after event notes
+  1. Allow registered users to share info about an upcoming event on Twitter and Facebook
+  1. Allow users to post stories to the site
+  1. Allow users to send kudos to another registered user
+  1. Allow users to become friends with other users
+  1. Allow users to be notified when one of their friends creates a new event
+  1. Allow users to be notified of changes to events they are scheduled to attend
+  1. Add ability for users to add location notes
+    1. Region / City guides
+    1. Park Guides
+  1. Add ability to see where events have been previously and how long before
+  1. Add profanity filter for text fields
+  1. Allow user to delete accounts
+  1. GDPR handling
+  1. Admin Site
+    1. Delete an Event
+    1. Executive Dashboard
+    1. Ban User
+  1. Merchandise Sales
 
 ## What is the domain name going to be?
 
