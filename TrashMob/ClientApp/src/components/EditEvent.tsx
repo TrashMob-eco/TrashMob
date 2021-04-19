@@ -30,6 +30,7 @@ interface EditEventDataState {
     createdByUserId: string;
     eventStatusId: number;
     typeList: EventTypeData[];
+    eventDateErrors: string;
 }
 
 interface MatchParams {
@@ -61,6 +62,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
             createdByUserId: '',
             eventStatusId: 0,
             typeList: [],
+            eventDateErrors: ''
         };
 
         const headers = defaultHeaders('GET');
@@ -111,6 +113,22 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
         this.handleCancel = this.handleCancel.bind(this);
     }
 
+    handleEventNameChanged = (val: string) => {
+        this.setState({ eventName: val });
+    }
+
+    handleDescriptionChanged = (val: string) => {
+        this.setState({ description: val });
+    }
+
+    handleStreetAddressChanged = (val: string) => {
+        this.setState({ streetAddress: val });
+    }
+
+    handleCityChanged = (val: string) => {
+        this.setState({ city: val });
+    }
+
     selectCountry(val: string) {
         this.setState({ country: val });
     }
@@ -119,13 +137,40 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
         this.setState({ region: val });
     }
 
-    handleEventDateChange = (passedDate: Date) => {
-        this.setState({ eventDate: passedDate });
+    handlePostalCodeChanged = (val: string) => {
+        this.setState({ postalCode: val });
+    }
+
+    handleMaxNumberOfParticipantsChanged = (val: string) => {
+        this.setState({ maxNumberOfParticipants: parseInt(val) });
+    }
+
+    handleLatitudeChanged = (val: string) => {
+        this.setState({ latitude: parseInt(val) });
+    }
+
+    handleLongitudeChanged = (val: string) => {
+        this.setState({ longitude: parseInt(val) });
+    }
+
+    selectEventType(val: string) {
+        this.setState({ eventTypeId: parseInt(val) });
     }
 
     handleLocationChange = (point: data.Position) => {
         this.setState({ latitude: point[0] });
         this.setState({ longitude: point[1] });
+    }
+
+    handleEventDateChange = (passedDate: Date) => {
+        if (passedDate < new Date()) {
+            this.setState({ eventDateErrors: "Event cannot be in the past" });
+        }
+        else {
+            this.setState({ eventDateErrors: "" });
+        }
+
+        this.setState({ eventDate: passedDate });
     }
 
     public render() {
@@ -144,6 +189,10 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
     // This will handle the submit form event.  
     private handleSave(event: any) {
         event.preventDefault();
+
+        if (this.state.eventDateErrors !== "") {
+            return;
+        }
 
         var eventData = new EventData();
         eventData.id = this.state.eventId;
@@ -205,19 +254,20 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                 < div className="form-group row" >
                     <label className=" control-label col-md-12" htmlFor="Name">Name</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="name" defaultValue={this.state.eventName} required />
+                        <input className="form-control" type="text" name="name" defaultValue={this.state.eventName} onChange={(val) => this.handleEventNameChanged(val.target.value)} required />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Description">Description</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="description" defaultValue={this.state.description} required />
+                        <input className="form-control" type="text" name="description" defaultValue={this.state.description} onChange={(val) => this.handleDescriptionChanged(val.target.value)} required />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="EventDate">EventDate</label>
                     <div className="col-md-4">
                         <DateTimePicker name="eventDate" onChange={this.handleEventDateChange} value={this.state.eventDate} />
+                        <span style={{ color: "red" }}>{this.state.eventDateErrors}</span>
                     </div>
                 </div >
                 <div className="form-group row">
@@ -234,13 +284,13 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="StreetAddress">StreetAddress</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="streetAddress" defaultValue={this.state.streetAddress} />
+                        <input className="form-control" type="text" name="streetAddress" defaultValue={this.state.streetAddress} onChange={(val) => this.handleStreetAddressChanged(val.target.value)} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="City">City</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="city" defaultValue={this.state.city} required />
+                        <input className="form-control" type="text" name="city" defaultValue={this.state.city} onChange={(val) => this.handleCityChanged(val.target.value)} required />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -261,25 +311,25 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="PostalCode">Postal Code</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="postalCode" defaultValue={this.state.postalCode} />
+                        <input className="form-control" type="text" name="postalCode" defaultValue={this.state.postalCode} onChange={(val) => this.handlePostalCodeChanged(val.target.value)} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Latitude">Latitude</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="latitude" defaultValue={this.state.latitude} />
+                        <input className="form-control" type="text" name="latitude" defaultValue={this.state.latitude} onChange={(val) => this.handleLatitudeChanged(val.target.value)} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Longitude">Longitude</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="longitude" defaultValue={this.state.longitude} />
+                        <input className="form-control" type="text" name="longitude" defaultValue={this.state.longitude} onChange={(val) => this.handleLongitudeChanged(val.target.value)} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="MaxNumberOfParticipants">Max Number Of Participants</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="maxNumberOfParticipants" defaultValue={this.state.maxNumberOfParticipants} />
+                        <input className="form-control" type="text" name="maxNumberOfParticipants" defaultValue={this.state.maxNumberOfParticipants} onChange={(val) => this.handleMaxNumberOfParticipantsChanged(val.target.value)} />
                     </div>
                 </div >
                 <div className="form-group">

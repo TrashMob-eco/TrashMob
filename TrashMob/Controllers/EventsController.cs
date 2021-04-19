@@ -134,9 +134,9 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var newEventId = await eventRepository.AddEvent(mobEvent).ConfigureAwait(false);
+            await eventRepository.AddEvent(mobEvent).ConfigureAwait(false);
 
-            return CreatedAtAction("GetEvent", new { id = newEventId }, mobEvent);
+            return Ok();
         }
 
         // DELETE: api/Events/5

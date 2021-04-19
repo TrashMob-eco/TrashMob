@@ -34,7 +34,10 @@ Here's what needs to be done before we can launch
 
 ## High Priority Post Launch Items
 These items did not make the cut for launch but need to be done
+  1. Disable editing events in the past
+  1. Populate City, Street Address, State, Country, Postal code on map click
   1. Ensure user can't multi-click buttons
+  1. Check response codes from APIs are correct
   1. Fix Terms of Service accept popup
   1. Fix welcome user message on main header
   1. Logout button should not be available if not logged in
