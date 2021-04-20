@@ -12,6 +12,7 @@ namespace TrashMob.Controllers
     using TrashMob.Common;
     using TrashMob.Models;
     using TrashMob.Persistence;
+    using TrashMob.Poco;
 
     [ApiController]
     [Route("api/eventattendees")]
@@ -29,7 +30,7 @@ namespace TrashMob.Controllers
         [HttpGet("{eventId}")]
         public async Task<IActionResult> GetEventAttendees(Guid eventId)
         {
-            var result = await eventAttendeeRepository.GetEventAttendees(eventId).ConfigureAwait(false);
+            var result = (await eventAttendeeRepository.GetEventAttendees(eventId).ConfigureAwait(false)).Select(u => u.ToDisplayUser());
             return Ok(result);
         }
 

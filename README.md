@@ -26,11 +26,8 @@ Here's what needs to be done before we can launch
   1. Styling (in progress)
   1. Get proper logo
   1. Basic field validation
-1. Deployment
-  1. Set up CName and Https Cert
 1. Security
-  1. Look for exposed secrets (AzureMapsKey) - Use AAD?
-  1. Ensure apis can only be called by web app (CORS?)
+  1. Hide data not needed in return from APIs
 
 ## High Priority Post Launch Items
 These items did not make the cut for launch but need to be done
@@ -47,11 +44,13 @@ These items did not make the cut for launch but need to be done
   1. Add Patreon
   1. Convert classes to Functional Components
   1. Redeploy test environment with standardized names
+  1. Find a way to secure the Azure Maps Key (referral restriction?)
+  1. Set up rotation of Azure Maps Keys every 24 hours
   
 ## Upcoming Feature List (not ordered)
   1. Add search / filter of events on main page
-  1. Request Mob help
-  1. Allow user to update their profile
+  1. Allow user / sponsor / partner to request an event
+  1. Allow user to view and update their profile
   1. Set up SendMail for Contact Us
   1. Register a Sponsor
   1. Register a Partner
@@ -83,6 +82,7 @@ These items did not make the cut for launch but need to be done
   1. Add ability to see where events have been previously and how long before
   1. Add profanity filter for text fields
   1. Allow user to delete accounts
+  1. Allow event leads to specify specialized skills/tools needed (i.e. chainsaws, skidsteer, safety truck, metal detector, sharps containers)
   1. GDPR handling
   1. Admin Site
     1. Delete an Event
