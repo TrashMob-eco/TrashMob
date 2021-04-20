@@ -25,9 +25,6 @@ Here's what needs to be done before we can launch
 1. UI
   1. Styling (in progress)
   1. Get proper logo
-  1. Basic field validation
-1. Security
-  1. Hide data not needed in return from APIs
 
 ## High Priority Post Launch Items
 These items did not make the cut for launch but need to be done

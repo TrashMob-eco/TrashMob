@@ -9,7 +9,11 @@ import { defaultHeaders } from '../store/AuthStore';
 interface ContactRequestDataState {
     title: string;
     loading: boolean;
-    contactRequestData: ContactRequestData;
+    name: string;
+    email: string;
+    emailErrors: string;
+    message: string;
+    messageErrors: string;
 }
 
 interface Props extends RouteComponentProps<any> {
@@ -18,9 +22,7 @@ interface Props extends RouteComponentProps<any> {
 class ContactUs extends Component<Props, ContactRequestDataState> {
     constructor(props: Props) {
         super(props);
-        this.state = {
-            title: "", loading: true, contactRequestData: new ContactRequestData()
-        };
+        this.state = { title: "", loading: true, name: '', email: '', emailErrors: '', message: '', messageErrors: '' };
 
         // This binding is necessary to make "this" work in the callback  
         this.handleSave = this.handleSave.bind(this);
@@ -38,9 +40,9 @@ class ContactUs extends Component<Props, ContactRequestDataState> {
         if (validateCaptcha(user_captcha_value) === true) {
 
             var contactRequestData = new ContactRequestData();
-            contactRequestData.name = form.get("name")?.toString() ?? "";
-            contactRequestData.email = form.get("email")?.toString() ?? "";
-            contactRequestData.message = form.get("message")?.toString() ?? "";
+            contactRequestData.name = this.state.name ?? "";
+            contactRequestData.email = this.state.email ?? "";
+            contactRequestData.message = this.state.message ?? "";
 
             var data = JSON.stringify(contactRequestData);
 
@@ -50,10 +52,9 @@ class ContactUs extends Component<Props, ContactRequestDataState> {
                 method: 'POST',
                 body: data,
                 headers: headers,
-            }).then((response) => response.json())
-                .then((responseJson) => {
-                    this.props.history.push("/");
-                })
+            }).then((response) => {
+                this.props.history.push("/");
+            })
         }
 
         else {
@@ -65,6 +66,32 @@ class ContactUs extends Component<Props, ContactRequestDataState> {
     private handleCancel(event: any) {
         event.preventDefault();
         this.props.history.push("/");
+    }
+
+    handleNameChanged = (val: string) => {
+        this.setState({ name: val });
+    }
+
+    handleEmailChanged = (val: string) => {
+        var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+
+        if (!pattern.test(val)) {
+            this.setState({ emailErrors: "Please enter valid email address." });
+        }
+        else {
+            this.setState({ emailErrors: "" });
+            this.setState({ email: val });
+        }
+    }
+
+    handleMessageChanged = (val: string) => {
+        if (val.length < 0 || val.length > 1000) {
+            this.setState({ messageErrors: "Message cannot be empty and cannot be more than 1000 characters long." });
+        }
+        else {
+            this.setState({ messageErrors: "" });
+            this.setState({ message: val });
+        }
     }
 
     componentDidMount() {
@@ -80,25 +107,24 @@ class ContactUs extends Component<Props, ContactRequestDataState> {
                     Have a question for the TrashMob team? Or an idea to make this site better? Or just want to tell us you love us? Drop us a note!
                 </div>
                 <form onSubmit={this.handleSave} >
-                    <div className="form-group row" >
-                        <input type="hidden" name="Id" value={this.state.contactRequestData.id.toString()} />
-                    </div>
                     < div className="form-group row" >
                         <label className=" control-label col-md-12" htmlFor="Name">Name</label>
                         <div className="col-md-4">
-                            <input className="form-control" type="text" name="name" defaultValue={this.state.contactRequestData.name} required />
+                            <input className="form-control" type="text" name="name" defaultValue={this.state.name} required />
                         </div>
                     </div >
                     < div className="form-group row" >
                         <label className=" control-label col-md-12" htmlFor="Email">Email</label>
                         <div className="col-md-4">
-                            <input className="form-control" type="text" name="email" defaultValue={this.state.contactRequestData.email} required />
+                            <input className="form-control" type="text" name="email" defaultValue={this.state.email} required />
+                            <span style={{ color: "red" }}>{this.state.emailErrors}</span>
                         </div>
                     </div >
                     <div className="form-group row">
                         <label className="control-label col-md-12" htmlFor="Message">Message</label>
                         <div className="col-md-4">
-                            <input className="form-control" type="text" name="message" defaultValue={this.state.contactRequestData.message} required />
+                            <input className="form-control" type="text" name="message" defaultValue={this.state.message} required />
+                            <span style={{ color: "red" }}>{this.state.messageErrors}</span>
                         </div>
                     </div >
                     <div>

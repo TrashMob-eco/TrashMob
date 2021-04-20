@@ -30,6 +30,8 @@ interface CreateEventDataState {
     maxNumberOfParticipants: number;
     typeList: EventTypeData[];
     eventDateErrors: string;
+    latitudeErrors: string;
+    longitudeErrors: string;
 }
 
 interface Props extends RouteComponentProps<any> {
@@ -55,7 +57,9 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
             longitude: 0,
             maxNumberOfParticipants: 0,
             typeList: [],
-            eventDateErrors: ''
+            eventDateErrors: '',
+            latitudeErrors: '',
+            longitudeErrors: ''
         };
 
         const headers = defaultHeaders('GET');
@@ -107,11 +111,27 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
     }
 
     handleLatitudeChanged = (val: string) => {
-        this.setState({ latitude: parseInt(val) });
+        var floatVal = parseFloat(val);
+
+        if (floatVal < -90 || floatVal > 90) {
+            this.setState({ latitudeErrors: "Latitude must be => -90 and <= 90" });
+        }
+        else {
+            this.setState({ latitude: floatVal });
+            this.setState({ latitudeErrors: "" });
+        }
     }
 
     handleLongitudeChanged = (val: string) => {
-        this.setState({ longitude: parseInt(val) });
+        var floatVal = parseFloat(val);
+
+        if (floatVal < -180 || floatVal > 180) {
+            this.setState({ longitudeErrors: "Longitude must be >= -180 and <= 180" });
+        }
+        else {
+            this.setState({ longitude: floatVal });
+            this.setState({ longitudeErrors: "" });
+        }
     }
 
     selectEventType(val: string) {
@@ -216,13 +236,13 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                 < div className="form-group row" >
                     <label className=" control-label col-md-12" htmlFor="Name">Name</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="name" defaultValue={this.state.eventName} onChange={(val) => this.handleEventNameChanged(val.target.value)} required />
+                        <input className="form-control" type="text" name="name" defaultValue={this.state.eventName} onChange={(val) => this.handleEventNameChanged(val.target.value)} maxLength={parseInt('64')} required />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Description">Description</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="description" defaultValue={this.state.description} onChange={(val) => this.handleDescriptionChanged(val.target.value)} required />
+                        <input className="form-control" type="text" name="description" defaultValue={this.state.description} onChange={(val) => this.handleDescriptionChanged(val.target.value)} maxLength={parseInt('2048')} required />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -246,13 +266,13 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="StreetAddress">StreetAddress</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="streetAddress" defaultValue={this.state.streetAddress} onChange={(val) => this.handleStreetAddressChanged(val.target.value)} />
+                        <input className="form-control" type="text" name="streetAddress" defaultValue={this.state.streetAddress} onChange={(val) => this.handleStreetAddressChanged(val.target.value)} maxLength={parseInt('256')} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="City">City</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="city" defaultValue={this.state.city} onChange={(val) => this.handleCityChanged(val.target.value)} required />
+                        <input className="form-control" type="text" name="city" defaultValue={this.state.city} onChange={(val) => this.handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -273,19 +293,21 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="PostalCode">Postal Code</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="postalCode" defaultValue={this.state.postalCode} onChange={(val) => this.handlePostalCodeChanged(val.target.value)} />
+                        <input className="form-control" type="text" name="postalCode" defaultValue={this.state.postalCode} onChange={(val) => this.handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Latitude">Latitude</label>
                     <div className="col-md-4">
                         <input className="form-control" type="text" name="latitude" value={this.state.latitude} onChange={(val) => this.handleLatitudeChanged(val.target.value)} />
+                        <span style={{ color: "red" }}>{this.state.latitudeErrors}</span>
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Longitude">Longitude</label>
                     <div className="col-md-4">
                         <input className="form-control" type="text" name="longitude" value={this.state.longitude} onChange={(val) => this.handleLongitudeChanged(val.target.value)} />
+                        <span style={{ color: "red" }}>{this.state.longitudeErrors}</span>
                     </div>
                 </div >
                 <div className="form-group row">
