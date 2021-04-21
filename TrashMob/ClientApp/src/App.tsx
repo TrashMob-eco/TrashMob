@@ -24,7 +24,7 @@ import { InteractionType } from '@azure/msal-browser';
 import { msalClient } from './store/AuthStore';
 import CreateEvent from './components/CreateEvent';
 import { EventDetails } from './components/EventDetails';
-import { EditEvent, EditEventProps } from './components/EditEvent';
+import EditEvent, { EditEventProps } from './components/EditEvent';
 import { NoMatch } from './components/NoMatch';
 
 export const App = (props) => {

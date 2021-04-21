@@ -10,7 +10,7 @@ export async function getOption(): Promise<IAzureMapOptions> {
     return authOptions;
 }
 
-async function getKey(): Promise<string> {
+export async function getKey(): Promise<string> {
     var key = '';
 
     const headers = defaultHeaders('GET');
