@@ -7,6 +7,7 @@
         {
             "address": {
                 "streetName": "",
+                "streetNameAndNumber": "",
                 "routeNumbers": [],
                 "countryCode": string,
                 "countrySubdivision": string,
