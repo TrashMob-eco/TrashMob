@@ -34,14 +34,15 @@ const SingleEventMap: React.FC<SingleEventMapDataState> = (props) => {
     const [markersLayer] = useState<IAzureMapLayerType>('SymbolLayer');
     const [layerOptions, setLayerOptions] = useState<SymbolLayerOptions>(MapStore.memoizedOptions);
     const [isKeyLoaded, setIsKeyLoaded] = useState(false);
+    const [markerRender, setMarkerRender] = useState<IAzureMapFeature[]>();
 
     // componentDidMount()
     useEffect(() => {
         // simulate fetching subscriptionKey from Key Vault
         async function GetMap() {
             MapStore.option.authOptions = await MapStore.getOption()
-            setIsKeyLoaded(true);            
-        } 
+            setIsKeyLoaded(true);
+        }
 
         GetMap();
     }, []);
@@ -56,12 +57,22 @@ const SingleEventMap: React.FC<SingleEventMapDataState> = (props) => {
     }, [props.loading, props.latitude, props.longitude, props.eventName])
 
 
-    const memoizedMarkerRender: IAzureDataSourceChildren = React.useMemo(
-        (): any => {
-            if (!props.loading && marker) {
-                return renderPoint(marker.position, marker.eventName)
+    useEffect((): any => {
+        var isCancelled = false;
+
+        const renderP = () => {
+            if (!isCancelled && !props.loading && marker) {
+                var point = renderPoint(marker.position, marker.eventName);
+                var points: IAzureMapFeature[] = [];
+                points.push(point);
+                setMarkerRender(points)
             }
-        },
+        }
+
+        renderP();
+
+        return () => { isCancelled = true; };
+    },
         [marker, props.loading],
     );
 
@@ -70,7 +81,6 @@ const SingleEventMap: React.FC<SingleEventMapDataState> = (props) => {
         props.onLocationChange(e.position);
     }
 
-    // render()
     return (
         <>
             <AzureMapsProvider>
@@ -84,9 +94,9 @@ const SingleEventMap: React.FC<SingleEventMapDataState> = (props) => {
                             <AzureMapLayerProvider
                                 id={'trashMob AzureMapLayerProvider'}
                                 options={layerOptions}
-                                type={markersLayer}                               
+                                type={markersLayer}
                             />
-                            {memoizedMarkerRender}
+                            {markerRender}
                         </AzureMapDataSourceProvider>
                     </AzureMap>}
                 </div>

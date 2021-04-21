@@ -5,11 +5,14 @@ import { Guid } from "guid-typescript";
 import EventData from './Models/EventData';
 import DateTimePicker from 'react-datetime-picker';
 import { getUserFromCache } from '../store/accountHandler';
+import { getKey } from '../store/MapStore';
 import EventTypeData from './Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import SingleEventMap from './SingleEventMap';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
 import { data } from 'azure-maps-control';
+import AddressData from './Models/AddressData';
+import { withRouter } from 'react-router-dom';
 
 interface EditEventDataState {
     title: string;
@@ -43,7 +46,7 @@ interface MatchParams {
 export interface EditEventProps extends RouteComponentProps<MatchParams> {
 }
 
-export class EditEvent extends Component<EditEventProps, EditEventDataState> {
+class EditEvent extends Component<EditEventProps, EditEventDataState> {
     constructor(props: EditEventProps) {
         super(props);
         this.state = {
@@ -180,8 +183,27 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
     }
 
     handleLocationChange = (point: data.Position) => {
-        this.setState({ latitude: point[0] });
-        this.setState({ longitude: point[1] });
+        // In an Azure Map point, the longitude is the first position, and latitude is second
+        this.setState({ latitude: point[1] });
+        this.setState({ longitude: point[0] });
+        var locationString = point[1] + ',' + point[0]
+        var headers = defaultHeaders('GET');
+
+        getKey()
+            .then(key => {
+                fetch('https://atlas.microsoft.com/search/address/reverse/crossStreet/json?subscription-key=' + key + '&api-version=1.0&query=' + locationString + '&entityType=PostalCodeArea', {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<AddressData>)
+                    .then(data => {
+                        this.setState({ streetAddress: data.addresses[0].address.streetName });
+                        this.setState({ city: data.addresses[0].address.municipality });
+                        this.setState({ country: data.addresses[0].address.country });
+                        this.setState({ region: data.addresses[0].address.countrySubdivisionName });
+                        this.setState({ postalCode: data.addresses[0].address.postalCode });
+                    })
+            })
     }
 
     handleEventDateChange = (passedDate: Date) => {
@@ -306,19 +328,13 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="StreetAddress">StreetAddress</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="streetAddress" defaultValue={this.state.streetAddress} onChange={(val) => this.handleStreetAddressChanged(val.target.value)} maxLength={parseInt('256')} />
+                        <input className="form-control" type="text" name="streetAddress" value={this.state.streetAddress} onChange={(val) => this.handleStreetAddressChanged(val.target.value)} maxLength={parseInt('256')} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="City">City</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="city" defaultValue={this.state.city} onChange={(val) => this.handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="Country">Country</label>
-                    <div className="col-md-4">
-                        <CountryDropdown name="country" value={country} onChange={(val) => this.selectCountry(val)} />
+                        <input className="form-control" type="text" name="city" value={this.state.city} onChange={(val) => this.handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
                     </div>
                 </div >
                 <div className="form-group row">
@@ -331,22 +347,28 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                     </div>
                 </div >
                 <div className="form-group row">
+                    <label className="control-label col-md-12" htmlFor="Country">Country</label>
+                    <div className="col-md-4">
+                        <CountryDropdown name="country" value={country} onChange={(val) => this.selectCountry(val)} />
+                    </div>
+                </div >
+                <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="PostalCode">Postal Code</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="postalCode" defaultValue={this.state.postalCode} onChange={(val) => this.handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
+                        <input className="form-control" type="text" name="postalCode" value={this.state.postalCode} onChange={(val) => this.handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Latitude">Latitude</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="latitude" defaultValue={this.state.latitude} onChange={(val) => this.handleLatitudeChanged(val.target.value)} />
+                        <input className="form-control" type="text" name="latitude" value={this.state.latitude} onChange={(val) => this.handleLatitudeChanged(val.target.value)} />
                         <span style={{ color: "red" }}>{this.state.latitudeErrors}</span>
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Longitude">Longitude</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="longitude" defaultValue={this.state.longitude} onChange={(val) => this.handleLongitudeChanged(val.target.value)} />
+                        <input className="form-control" type="text" name="longitude" value={this.state.longitude} onChange={(val) => this.handleLongitudeChanged(val.target.value)} />
                         <span style={{ color: "red" }}>{this.state.longitudeErrors}</span>
                     </div>
                 </div >
@@ -370,3 +392,5 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
         )
     }
 }
+
+export default withRouter(EditEvent);

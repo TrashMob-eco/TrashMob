@@ -11,6 +11,8 @@ import SingleEventMap from './SingleEventMap';
 import { withRouter } from 'react-router-dom';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
 import { data } from 'azure-maps-control';
+import { getKey } from '../store/MapStore';
+import AddressData from './Models/AddressData';
 
 interface CreateEventDataState {
     title: string;
@@ -139,8 +141,30 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
     }
 
     handleLocationChange = (point: data.Position) => {
-        this.setState({ latitude: point[0] });
-        this.setState({ longitude: point[1] });
+        // In an Azure Map point, the longitude is the first position, and latitude is second
+        this.setState({ latitude: point[1] });
+        this.setState({ longitude: point[0] });
+        var locationString = point[1] + ',' + point[0]
+        var headers = defaultHeaders('GET');
+
+        getKey()
+            .then(key => {
+                fetch('https://atlas.microsoft.com/search/address/reverse/crossStreet/json?subscription-key=' + key + '&api-version=1.0&query=' + locationString + '&entityType=PostalCodeArea', {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<AddressData>)
+                    .then(data => {
+                        this.setState({
+                            streetAddress: data.addresses[0].address.streetName, 
+                            city: data.addresses[0].address.municipality,
+                            country: data.addresses[0].address.country,
+                            region: data.addresses[0].address.countrySubdivisionName,
+                            postalCode: data.addresses[0].address.postalCode
+                        })
+                    }
+                    )
+            })
     }
 
     handleEventDateChange = (passedDate: Date) => {
@@ -276,18 +300,18 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="Country">Country</label>
-                    <div className="col-md-4">
-                        <CountryDropdown name="country" value={country} onChange={(val) => this.selectCountry(val)} />
-                    </div>
-                </div >
-                <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="region">Region</label>
                     <div className="col-md-4">
                         <RegionDropdown
                             country={country}
                             value={region}
                             onChange={(val) => this.selectRegion(val)} />
+                    </div>
+                </div >
+                <div className="form-group row">
+                    <label className="control-label col-md-12" htmlFor="Country">Country</label>
+                    <div className="col-md-4">
+                        <CountryDropdown name="country" value={country} onChange={(val) => this.selectCountry(val)} />
                     </div>
                 </div >
                 <div className="form-group row">
