@@ -149,14 +149,14 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
 
         getKey()
             .then(key => {
-                fetch('https://atlas.microsoft.com/search/address/reverse/crossStreet/json?subscription-key=' + key + '&api-version=1.0&query=' + locationString + '&entityType=PostalCodeArea', {
+                fetch('https://atlas.microsoft.com/search/address/reverse/json?subscription-key=' + key + '&api-version=1.0&query=' + locationString, {
                     method: 'GET',
                     headers: headers
                 })
                     .then(response => response.json() as Promise<AddressData>)
                     .then(data => {
                         this.setState({
-                            streetAddress: data.addresses[0].address.streetName, 
+                            streetAddress: data.addresses[0].address.streetNameAndNumber, 
                             city: data.addresses[0].address.municipality,
                             country: data.addresses[0].address.country,
                             region: data.addresses[0].address.countrySubdivisionName,

@@ -29,7 +29,7 @@ Here's what needs to be done before we can launch
 ## High Priority Post Launch Items
 These items did not make the cut for launch but need to be done
   1. Disable editing events in the past
-  1. Populate City, Street Address, State, Country, Postal code on map click
+  1. Fix pin on map issue when adding pin.
   1. Ensure user can't multi-click buttons
   1. Check response codes from APIs are correct
   1. Fix Terms of Service accept popup
