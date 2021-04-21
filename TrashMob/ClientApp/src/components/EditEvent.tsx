@@ -12,7 +12,6 @@ import SingleEventMap from './SingleEventMap';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
 import { data } from 'azure-maps-control';
 import AddressData from './Models/AddressData';
-import { withRouter } from 'react-router-dom';
 
 interface EditEventDataState {
     title: string;
@@ -46,7 +45,7 @@ interface MatchParams {
 export interface EditEventProps extends RouteComponentProps<MatchParams> {
 }
 
-class EditEvent extends Component<EditEventProps, EditEventDataState> {
+export class EditEvent extends Component<EditEventProps, EditEventDataState> {
     constructor(props: EditEventProps) {
         super(props);
         this.state = {
@@ -392,5 +391,3 @@ class EditEvent extends Component<EditEventProps, EditEventDataState> {
         )
     }
 }
-
-export default withRouter(EditEvent);
