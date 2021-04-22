@@ -34,7 +34,7 @@ const renderPoint = (coordinates: data.Position, eventName: string): IAzureMapFe
 const addMarkers = (eventList: EventData[]): MapStore.pinPoint[] => {
     return eventList.map((mobEvent) => {
         var pin = new MapStore.pinPoint();
-        pin.position = new data.Position(mobEvent.latitude, mobEvent.longitude);
+        pin.position = new data.Position(mobEvent.longitude, mobEvent.latitude);
         pin.eventName = mobEvent.name;
         return pin;
     })

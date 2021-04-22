@@ -50,7 +50,7 @@ const SingleEventMap: React.FC<SingleEventMapDataState> = (props) => {
     useEffect(() => {
         if (!props.loading && props.eventName !== '') {
             var pin = new MapStore.pinPoint();
-            pin.position = new data.Position(props.latitude, props.longitude);
+            pin.position = new data.Position(props.longitude, props.latitude);
             pin.eventName = props.eventName
             setMarker(pin);
         }
