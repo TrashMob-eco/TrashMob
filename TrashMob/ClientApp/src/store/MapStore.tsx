@@ -37,14 +37,27 @@ export const memoizedOptions: SymbolLayerOptions = {
     },
 };
 
+export const defaultLongitude: number = -100.01;
+export const defaultLatitude: number = 45.01;
+export const defaultUserLocationZoom: number = 9;
+
 export const option: IAzureMapOptions = {
     authOptions: {},
-    center: [-100.01, 45.01],
-    zoom: 2,
+    center: [defaultLongitude, defaultLatitude],
+    zoom: defaultUserLocationZoom,
     view: 'Auto',
 }
 
 export class pinPoint {
     position: data.Position;
     eventName: string;
+}
+
+export class markerPoint {
+    position: data.Point;
+    properties: {
+        title: string,
+        icon: string,
+        type: string,
+    }
 }

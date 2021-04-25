@@ -29,13 +29,15 @@ Here's what needs to be done before we can launch
 ## High Priority Post Launch Items
 These items did not make the cut for launch but need to be done
   1. Ensure user can't multi-click buttons
+  1. Allow site to access user's location for better map zoom
+  1. Allow map to respond to changes in country, region, city or postal code
   1. Check response codes from APIs are correct
   1. Fix Terms of Service accept popup
   1. Fix welcome user message on main header
   1. Logout button should not be available if not logged in
   1. Login button should not be available if already logged in
   1. Allow event location to be dragged with visual indicator
-  1. Add Facebook / Google / Twitter logins
+  1. Add Google / Twitter / Instagram / Apple logins
   1. Add Patreon
   1. Convert classes to Functional Components
   1. Redeploy test environment with standardized names
@@ -46,6 +48,7 @@ These items did not make the cut for launch but need to be done
   1. Add search / filter of events on main page
   1. Allow user / sponsor / partner to request an event
   1. Allow user to view and update their profile
+  1. Test on Mobile device
   1. Set up SendMail for Contact Us
   1. Register a Sponsor
   1. Register a Partner

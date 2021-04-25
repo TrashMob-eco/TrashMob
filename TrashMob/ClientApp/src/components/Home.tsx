@@ -9,6 +9,8 @@ import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
 import { getUserFromCache } from '../store/accountHandler';
+import { data } from 'azure-maps-control';
+import * as MapStore from '../store/MapStore';
 
 export interface HomeProps extends RouteComponentProps {
 }
@@ -19,6 +21,7 @@ export interface FetchEventDataState {
     myAttendanceList: EventData[];
     isLoggedIn: boolean;
     loading: boolean;
+    center: data.Position;
 }
 
 export class Home extends Component<HomeProps, FetchEventDataState> {
@@ -26,10 +29,9 @@ export class Home extends Component<HomeProps, FetchEventDataState> {
 
     constructor(props: HomeProps) {
         super(props);
-        this.state = { eventList: [], eventTypeList: [], myAttendanceList: [], loading: true, isLoggedIn: false };
+        this.state = { eventList: [], eventTypeList: [], myAttendanceList: [], loading: true, isLoggedIn: false, center: new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude) };
 
         const headers = defaultHeaders('GET');
-
         this.getEventTypes();
 
         fetch('api/Events/active', {
@@ -66,6 +68,17 @@ export class Home extends Component<HomeProps, FetchEventDataState> {
         }
     }
 
+    componentDidMount() {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(position => {
+                var point = new data.Position(position.coords.longitude, position.coords.latitude);
+                this.setState({center: point})
+            });
+        } else {
+            console.log("Not Available");
+        }
+    }
+
     private getEventTypes() {
         const headers = defaultHeaders('GET');
 
@@ -92,10 +105,10 @@ export class Home extends Component<HomeProps, FetchEventDataState> {
                         <Link to="/createevent">Create a New Event</Link>
                     </div>
                     <div style={{ width: 50 + '%' }}>
-                        <MainEvents eventList={data.eventList} eventTypeList={data.eventTypeList} myAttendanceList={data.myAttendanceList} loading={data.loading} isLoggedIn={data.isLoggedIn} />
+                        <MainEvents eventList={data.eventList} eventTypeList={data.eventTypeList} myAttendanceList={data.myAttendanceList} loading={data.loading} isLoggedIn={data.isLoggedIn} center={this.state.center} />
                     </div>
                     <div style={{ width: 50 + '%' }}>
-                        <MultipleEventsMap eventList={this.state.eventList} loading={this.state.loading} />
+                        <MultipleEventsMap eventList={this.state.eventList} loading={this.state.loading} center={this.state.center} />
                     </div>
                 </div>
             </div>
