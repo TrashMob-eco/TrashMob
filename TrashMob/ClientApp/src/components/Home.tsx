@@ -3,7 +3,6 @@ import * as React from 'react'
 
 import { MainEvents } from './MainEvents';
 import { MainCarousel } from './MainCarousel';
-import MultipleEventsMap from './MultipleEventsMap';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
@@ -11,6 +10,8 @@ import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
 import { getUserFromCache } from '../store/accountHandler';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../store/MapStore';
+import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
+import MapController from './MapController';
 
 export interface HomeProps extends RouteComponentProps {
 }
@@ -21,7 +22,9 @@ export interface FetchEventDataState {
     myAttendanceList: EventData[];
     isLoggedIn: boolean;
     loading: boolean;
+    isKeyLoaded: boolean;
     center: data.Position;
+    mapOptions: IAzureMapOptions;
 }
 
 export class Home extends Component<HomeProps, FetchEventDataState> {
@@ -29,7 +32,7 @@ export class Home extends Component<HomeProps, FetchEventDataState> {
 
     constructor(props: HomeProps) {
         super(props);
-        this.state = { eventList: [], eventTypeList: [], myAttendanceList: [], loading: true, isLoggedIn: false, center: new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude) };
+        this.state = { eventList: [], eventTypeList: [], myAttendanceList: [], loading: true, isLoggedIn: false, center: new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude), isKeyLoaded: false, mapOptions: null };
 
         const headers = defaultHeaders('GET');
         this.getEventTypes();
@@ -66,13 +69,18 @@ export class Home extends Component<HomeProps, FetchEventDataState> {
                     })
             });
         }
+
+        MapStore.getOption().then(opts => {
+            this.setState({ mapOptions: opts });
+            this.setState({ isKeyLoaded: true });
+        })
     }
 
     componentDidMount() {
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(position => {
                 var point = new data.Position(position.coords.longitude, position.coords.latitude);
-                this.setState({center: point})
+                this.setState({ center: point })
             });
         } else {
             console.log("Not Available");
@@ -92,6 +100,10 @@ export class Home extends Component<HomeProps, FetchEventDataState> {
             });
     }
 
+    handleLocationChange = (point: data.Position) => {
+        // do nothing
+    }
+
     render() {
         const data = this.state;
         return (
@@ -105,10 +117,14 @@ export class Home extends Component<HomeProps, FetchEventDataState> {
                         <Link to="/createevent">Create a New Event</Link>
                     </div>
                     <div style={{ width: 50 + '%' }}>
-                        <MainEvents eventList={data.eventList} eventTypeList={data.eventTypeList} myAttendanceList={data.myAttendanceList} loading={data.loading} isLoggedIn={data.isLoggedIn} center={this.state.center} />
+                        <MainEvents eventList={data.eventList} eventTypeList={data.eventTypeList} myAttendanceList={data.myAttendanceList} loading={data.loading} isLoggedIn={data.isLoggedIn} />
                     </div>
                     <div style={{ width: 50 + '%' }}>
-                        <MultipleEventsMap eventList={this.state.eventList} loading={this.state.loading} center={this.state.center} />
+                        <AzureMapsProvider>
+                            <>
+                                <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={this.handleLocationChange}  />
+                            </>
+                        </AzureMapsProvider>
                     </div>
                 </div>
             </div>

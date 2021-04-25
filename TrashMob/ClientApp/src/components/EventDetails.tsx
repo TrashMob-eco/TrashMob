@@ -3,12 +3,14 @@ import * as React from 'react'
 import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
 import EventData from './Models/EventData';
-import SingleEventMap from './SingleEventMap';
 import UserData from './Models/UserData';
 import EventTypeData from './Models/EventTypeData';
 import { defaultHeaders } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
 import { data } from 'azure-maps-control';
+import * as MapStore from '../store/MapStore';
+import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
+import MapController from './MapController';
 
 export interface EventDetailsDataState {
     title: string;
@@ -18,6 +20,10 @@ export interface EventDetailsDataState {
     userList: UserData[];
     eventId: Guid;
     eventDate: string
+    center: data.Position;
+    isKeyLoaded: boolean;
+    mapOptions: IAzureMapOptions;
+    eventList: EventData[];
 }
 
 export interface MatchParams {
@@ -28,7 +34,17 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
     constructor(props: RouteComponentProps<MatchParams>) {
         super(props);
         this.state = {
-            title: "", loading: true, eventData: new EventData(), eventId: Guid.create(), eventDate: new Date().toDateString(), userList: [], eventTypeList: []
+            title: "",
+            loading: true,
+            eventData: new EventData(),
+            eventId: Guid.create(),
+            eventDate: new Date().toDateString(),
+            userList: [],
+            eventTypeList: [],
+            center: new data.Position(MapStore.defaultLatitude, MapStore.defaultLongitude),
+            isKeyLoaded: false,
+            mapOptions: null,
+            eventList: []
         };
 
         const headers = defaultHeaders('GET');
@@ -50,8 +66,8 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                 headers: headers
             })
                 .then(response => response.json() as Promise<EventData>)
-                .then(data => {
-                    this.setState({ title: "Event Details", loading: false, eventData: data, eventDate: new Date(data.eventDate).toDateString() });
+                .then(eventData => {
+                    this.setState({ title: "Event Details", loading: false, eventData: eventData, eventDate: new Date(eventData.eventDate).toDateString(), center: new data.Position(eventData.longitude, eventData.latitude)});
                 });
 
             fetch('api/eventattendees/' + eventId, {
@@ -62,6 +78,11 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                     this.setState({ userList: data, loading: false });
                 });
         }
+
+        MapStore.getOption().then(opts => {
+            this.setState({ mapOptions: opts });
+            this.setState({ isKeyLoaded: true });
+        })
     }
 
     handleLocationChange = (point: data.Position) => {
@@ -107,7 +128,6 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
     }
 
     private renderEvent() {
-        const data = this.state;
 
         return (
             <div>
@@ -196,7 +216,11 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                     <button onClick={() => this.props.history.goBack}>Go Back</button>
                 </div>
                 <div>
-                    <SingleEventMap eventName={data.eventData.name} latitude={data.eventData.latitude} longitude={data.eventData.longitude} loading={data.loading} onLocationChange={this.handleLocationChange} />
+                    <AzureMapsProvider>
+                        <>
+                            <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={this.state.eventData.name} latitude={this.state.eventData.latitude} longitude={this.state.eventData.longitude} onLocationChange={this.handleLocationChange} />
+                        </>
+                    </AzureMapsProvider>
                 </div>
             </div >
         )

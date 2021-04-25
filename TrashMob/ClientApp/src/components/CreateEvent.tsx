@@ -7,12 +7,14 @@ import DateTimePicker from 'react-datetime-picker';
 import { getUserFromCache } from '../store/accountHandler';
 import EventTypeData from './Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import SingleEventMap from './SingleEventMap';
 import { withRouter } from 'react-router-dom';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
 import { data } from 'azure-maps-control';
 import { getKey } from '../store/MapStore';
 import AddressData from './Models/AddressData';
+import * as MapStore from '../store/MapStore';
+import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
+import MapController from './MapController';
 
 interface CreateEventDataState {
     title: string;
@@ -34,6 +36,10 @@ interface CreateEventDataState {
     eventDateErrors: string;
     latitudeErrors: string;
     longitudeErrors: string;
+    center: data.Position;
+    isKeyLoaded: boolean;
+    mapOptions: IAzureMapOptions;
+    eventList: EventData[];
 }
 
 interface Props extends RouteComponentProps<any> {
@@ -61,7 +67,11 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
             typeList: [],
             eventDateErrors: '',
             latitudeErrors: '',
-            longitudeErrors: ''
+            longitudeErrors: '',
+            center: new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude),
+            isKeyLoaded: false,
+            mapOptions: null,
+            eventList: []
         };
 
         const headers = defaultHeaders('GET');
@@ -78,6 +88,22 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
         // This binding is necessary to make "this" work in the callback  
         this.handleSave = this.handleSave.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
+
+        MapStore.getOption().then(opts => {
+            this.setState({ mapOptions: opts });
+            this.setState({ isKeyLoaded: true });
+        })
+    }
+
+    componentDidMount() {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(position => {
+                var point = new data.Position(position.coords.longitude, position.coords.latitude);
+                this.setState({ center: point })
+            });
+        } else {
+            console.log("Not Available");
+        }
     }
 
     handleEventNameChanged = (val: string) => {
@@ -251,7 +277,7 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
 
     // Returns the HTML Form to the render() method.  
     private renderCreateForm(typeList: Array<EventTypeData>) {
-        const { country, region, loading, eventName, latitude, longitude } = this.state;
+        const { country, region, eventName, latitude, longitude } = this.state;
         return (
             <form onSubmit={this.handleSave} >
                 <div className="form-group row" >
@@ -348,7 +374,11 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                     To set or change the latitude and longitude of an event, click the location on the map where you want attendees to meet, and the values will be updated. Don't foget to save your changes before leaving the page!
                 </div>
                 <div>
-                    <SingleEventMap eventName={eventName} latitude={latitude} longitude={longitude} loading={loading} onLocationChange={this.handleLocationChange} />
+                    <AzureMapsProvider>
+                        <>
+                            <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={this.handleLocationChange} />
+                        </>
+                    </AzureMapsProvider>
                 </div>
             </form >
         )

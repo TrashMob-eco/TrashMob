@@ -4,7 +4,8 @@ import { getUserFromCache } from '../store/accountHandler';
 import EventAttendeeData from './Models/EventAttendeeData';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
-import { FetchEventDataState } from './Home';
+import EventData from './Models/EventData';
+import EventTypeData from './Models/EventTypeData';
 
 class DisplayEvent {
     id: string;
@@ -17,7 +18,15 @@ class DisplayEvent {
     isAttending: string;
 }
 
-export const MainEvents: React.FC<FetchEventDataState> = (props) => {
+export interface MainEventsDataState {
+    eventList: EventData[];
+    eventTypeList: EventTypeData[];
+    myAttendanceList: EventData[];
+    isLoggedIn: boolean;
+    loading: boolean;
+};
+
+export const MainEvents: React.FC<MainEventsDataState> = (props) => {
     const [displayEvents, setDisplayEvents] = React.useState([]);
 
     React.useEffect(() => {

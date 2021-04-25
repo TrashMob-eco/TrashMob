@@ -29,6 +29,8 @@ Here's what needs to be done before we can launch
 ## High Priority Post Launch Items
 These items did not make the cut for launch but need to be done
   1. Ensure user can't multi-click buttons
+  1. Event Type showing up as unknown
+  1. Fix issue with pins not showing up on fix map of dashboard
   1. Allow site to access user's location for better map zoom
   1. Allow map to respond to changes in country, region, city or postal code
   1. Check response codes from APIs are correct
