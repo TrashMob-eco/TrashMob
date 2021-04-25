@@ -4,11 +4,14 @@ import * as React from 'react'
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { EventsUserOwns } from './EventsUserOwns'
 import { EventsUserIsAttending } from './EventsUserIsAttending';
-import MultipleEventsMap from './MultipleEventsMap';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
 import { getUserFromCache } from '../store/accountHandler';
+import { data } from 'azure-maps-control';
+import * as MapStore from '../store/MapStore';
+import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
+import MapController from './MapController';
 
 interface Props extends RouteComponentProps<any> {
 }
@@ -19,6 +22,9 @@ interface MyDashboardDataState {
     myAttendanceList: EventData[];
     eventTypeList: EventTypeData[];
     loading: boolean;
+    center: data.Position;
+    isKeyLoaded: boolean;
+    mapOptions: IAzureMapOptions;
 }
 
 class MyDashboard extends Component<Props, MyDashboardDataState> {
@@ -26,7 +32,7 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
         super(props);
 
         this.state = {
-            title: "My Dashboard", loading: false, myEventList: [], myAttendanceList: [], eventTypeList: [],
+            title: "My Dashboard", loading: false, myEventList: [], myAttendanceList: [], eventTypeList: [], center: new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude), isKeyLoaded: false, mapOptions: null
         };
 
         const account = msalClient.getAllAccounts()[0];
@@ -69,6 +75,25 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
 
         });
 
+        MapStore.getOption().then(opts => {
+            this.setState({ mapOptions: opts });
+            this.setState({ isKeyLoaded: true });
+        })
+    }
+
+    componentDidMount() {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(position => {
+                var point = new data.Position(position.coords.longitude, position.coords.latitude);
+                this.setState({ center: point })
+            });
+        } else {
+            console.log("Not Available");
+        }
+    }
+
+    handleLocationChange = (point: data.Position) => {
+        // do nothing
     }
 
     render() {
@@ -81,21 +106,27 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
                 <div>
                     Events I Own
                     <div>
-                        <EventsUserOwns eventList={data.myEventList} eventTypeList={data.eventTypeList} loading={data.loading} />
+                        <EventsUserOwns eventList={data.myEventList} eventTypeList={this.state.eventTypeList} loading={data.loading} />
                     </div>
                 </div>
                 <div>
-                    <MultipleEventsMap eventList={data.myEventList} loading={data.loading} />
+                    <AzureMapsProvider>
+                        <>
+                            <MapController center={this.state.center} multipleEvents={data.myEventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={this.handleLocationChange} />
+                        </>
+                    </AzureMapsProvider>
                 </div>
                 <div>
                     Events I am Attending
                     <div>
-                        <EventsUserIsAttending eventList={data.myAttendanceList} eventTypeList={data.eventTypeList} loading={data.loading} />
+                        <EventsUserIsAttending eventList={data.myAttendanceList} eventTypeList={this.state.eventTypeList} loading={data.loading} />
                     </div>
                 </div>
-                <div>
-                    <MultipleEventsMap eventList={data.myAttendanceList} loading={data.loading} />
-                </div>
+                <AzureMapsProvider>
+                    <>
+                        <MapController center={this.state.center} multipleEvents={data.myAttendanceList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={this.handleLocationChange} />
+                    </>
+                </AzureMapsProvider>
                 <div>
                     My Stats
                 </div>

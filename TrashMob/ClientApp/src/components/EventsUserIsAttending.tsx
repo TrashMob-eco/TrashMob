@@ -92,7 +92,7 @@ export class EventsUserIsAttending extends Component<PropsType, FetchEventDataSt
                             <tr key={mobEvent.id.toString()}>
                                 <td>{mobEvent.name}</td>
                                 <td>{mobEvent.eventDate}</td>
-                                <td>{getEventType(this.state.eventTypeList, mobEvent.eventTypeId)}</td>
+                                <td>{getEventType(this.props.eventTypeList, mobEvent.eventTypeId)}</td>
                                 <td>{mobEvent.city}</td>
                                 <td>{mobEvent.region}</td>
                                 <td>{mobEvent.country}</td>

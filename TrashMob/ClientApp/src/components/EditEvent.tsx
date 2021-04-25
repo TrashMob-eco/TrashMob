@@ -8,10 +8,12 @@ import { getUserFromCache } from '../store/accountHandler';
 import { getKey } from '../store/MapStore';
 import EventTypeData from './Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import SingleEventMap from './SingleEventMap';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
 import { data } from 'azure-maps-control';
 import AddressData from './Models/AddressData';
+import * as MapStore from '../store/MapStore';
+import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
+import MapController from './MapController';
 
 interface EditEventDataState {
     title: string;
@@ -35,7 +37,10 @@ interface EditEventDataState {
     eventDateErrors: string;
     latitudeErrors: string;
     longitudeErrors: string;
-
+    center: data.Position;
+    isKeyLoaded: boolean;
+    mapOptions: IAzureMapOptions;
+    eventList: EventData[];
 }
 
 interface MatchParams {
@@ -69,8 +74,11 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
             typeList: [],
             eventDateErrors: '',
             latitudeErrors: '',
-            longitudeErrors: ''
-
+            longitudeErrors: '',
+            center: new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude),
+            isKeyLoaded: false,
+            mapOptions: null,
+            eventList: []
         };
 
         const headers = defaultHeaders('GET');
@@ -93,25 +101,26 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                 headers: headers
             })
                 .then(response => response.json() as Promise<EventData>)
-                .then(data => {
+                .then(eventData => {
                     this.setState({
                         title: "Edit",
                         loading: false,
-                        eventId: data.id,
-                        eventName: data.name,
-                        description: data.description,
-                        eventDate: new Date(data.eventDate),
-                        eventTypeId: data.eventTypeId,
-                        streetAddress: data.streetAddress,
-                        city: data.city,
-                        country: data.country,
-                        region: data.region,
-                        postalCode: data.postalCode,
-                        latitude: data.latitude,
-                        longitude: data.longitude,
-                        maxNumberOfParticipants: data.maxNumberOfParticipants,
-                        createdByUserId: data.createdByUserId,
-                        eventStatusId: data.eventStatusId,
+                        eventId: eventData.id,
+                        eventName: eventData.name,
+                        description: eventData.description,
+                        eventDate: new Date(eventData.eventDate),
+                        eventTypeId: eventData.eventTypeId,
+                        streetAddress: eventData.streetAddress,
+                        city: eventData.city,
+                        country: eventData.country,
+                        region: eventData.region,
+                        postalCode: eventData.postalCode,
+                        latitude: eventData.latitude,
+                        longitude: eventData.longitude,
+                        maxNumberOfParticipants: eventData.maxNumberOfParticipants,
+                        createdByUserId: eventData.createdByUserId,
+                        eventStatusId: eventData.eventStatusId,
+                        center: new data.Position(eventData.longitude, eventData.latitude)
                     });
                 });
         }
@@ -119,6 +128,22 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
         // This binding is necessary to make "this" work in the callback  
         this.handleSave = this.handleSave.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
+
+        MapStore.getOption().then(opts => {
+            this.setState({ mapOptions: opts });
+            this.setState({ isKeyLoaded: true });
+        })
+    }
+
+    componentDidMount() {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(position => {
+                var point = new data.Position(position.coords.longitude, position.coords.latitude);
+                this.setState({ center: point })
+            });
+        } else {
+            console.log("Not Available");
+        }
     }
 
     handleEventNameChanged = (val: string) => {
@@ -288,7 +313,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
 
     // Returns the HTML Form to the render() method.  
     private renderCreateForm(typeList: Array<EventTypeData>) {
-        const { country, region, eventName, loading, longitude, latitude } = this.state;
+        const { country, region, eventName, longitude, latitude } = this.state;
         return (
             <form onSubmit={this.handleSave} >
                 <div className="form-group row" >
@@ -385,7 +410,11 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                     To set or change the latitude and longitude of an event, click the location on the map where you want attendees to meet, and the values will be updated. Don't foget to save your changes before leaving the page!
                 </div>
                 <div>
-                    <SingleEventMap eventName={eventName} loading={loading} latitude={latitude} longitude={longitude} onLocationChange={this.handleLocationChange} />
+                    <AzureMapsProvider>
+                        <>
+                            <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={this.handleLocationChange} />
+                        </>
+                    </AzureMapsProvider>
                 </div>
             </form >
         )
