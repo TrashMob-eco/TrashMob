@@ -401,8 +401,8 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                         </div>
                     </div >
                     <div className="form-group">
-                        <button type="submit" className="btn btn-default">Save</button>
-                        <button className="btn" onClick={(e) => this.handleCancel(e)}>Cancel</button>
+                        <button type="submit" className="action btn-default">Save</button>
+                        <button className="action" onClick={(e) => this.handleCancel(e)}>Cancel</button>
                     </div >
                     <div>
                         <AzureMapsProvider>

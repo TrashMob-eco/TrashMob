@@ -1,14 +1,13 @@
 import { Component } from 'react';
 import * as React from 'react'
-
-import { Link } from 'react-router-dom';
 import EventData from './Models/EventData';  
 import { getUserFromCache } from '../store/accountHandler';
 import EventTypeData from './Models/EventTypeData';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
+import { RouteComponentProps } from 'react-router-dom';
 
-interface PropsType {
+interface PropsType extends RouteComponentProps {
     eventList: EventData[];
     eventTypeList: EventTypeData[];
     loading: boolean; };
@@ -66,7 +65,7 @@ export class EventsUserIsAttending extends Component<PropsType, FetchEventDataSt
 
         return (
             <div>
-                <h1 id="tabelLabel" >Events</h1>
+                <h1 id="tabelLabel" >Events I am Attending</h1>
                 {contents}
             </div>
         );
@@ -91,14 +90,14 @@ export class EventsUserIsAttending extends Component<PropsType, FetchEventDataSt
                         {events.map(mobEvent =>
                             <tr key={mobEvent.id.toString()}>
                                 <td>{mobEvent.name}</td>
-                                <td>{mobEvent.eventDate}</td>
+                                <td>{new Date(mobEvent.eventDate).toLocaleString()}</td>
                                 <td>{getEventType(this.props.eventTypeList, mobEvent.eventTypeId)}</td>
                                 <td>{mobEvent.city}</td>
                                 <td>{mobEvent.region}</td>
                                 <td>{mobEvent.country}</td>
                                 <td>{mobEvent.postalCode}</td>
                                 <td>
-                                    <Link to={`/eventdetails/${mobEvent.id}`}>Details</Link>
+                                    <button className="action" onClick={() => this.props.history.push('/eventdetails/' + mobEvent.id)}>View Details</button>
                                     <button className="action" onClick={() => this.handleRemove(mobEvent.id, mobEvent.name)}>Remove</button>
                                 </td>
                             </tr>

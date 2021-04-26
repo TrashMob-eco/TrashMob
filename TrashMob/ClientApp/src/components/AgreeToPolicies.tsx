@@ -28,7 +28,7 @@ const AgreeToPolicies: React.FC = () => {
                 </div>
 
                 <div>
-                    <button disabled={!agree} className="btn" onClick={() => {
+                    <button disabled={!agree} className="action" onClick={() => {
                         updateAgreements(CurrentTermsOfServiceVersion.versionId, CurrentPrivacyPolicyVersion.versionId);
                         togglemodal();
                         }
