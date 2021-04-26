@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { getUserFromCache } from '../store/accountHandler';
 import EventAttendeeData from './Models/EventAttendeeData';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
@@ -28,6 +28,7 @@ export interface MainEventsDataState {
 
 export const MainEvents: React.FC<MainEventsDataState> = (props) => {
     const [displayEvents, setDisplayEvents] = React.useState([]);
+    const history = useHistory();
 
     React.useEffect(() => {
         if (!props.loading && props.eventList && props.myAttendanceList) {
@@ -95,7 +96,7 @@ export const MainEvents: React.FC<MainEventsDataState> = (props) => {
     function renderEventsTable(events: DisplayEvent[]) {
         return (
             <div>
-                <table className='table table-striped' aria-labelledby="tabelLabel">
+                <table className='table table-striped' aria-labelledby="tabelLabel" width='100%'>
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -105,6 +106,7 @@ export const MainEvents: React.FC<MainEventsDataState> = (props) => {
                             <th>Region</th>
                             <th>Country</th>
                             <th>Am I Attending?</th>
+                            <th />
                         </tr>
                     </thead>
                     <tbody>
@@ -118,8 +120,8 @@ export const MainEvents: React.FC<MainEventsDataState> = (props) => {
                                 <td>{mobEvent.country}</td>
                                 <td>{mobEvent.isAttending}</td>
                                 <td>
-                                    <Link to={`/eventdetails/${mobEvent.id}`}>Details</Link>
-                                    <button className="btn" onClick={() => handleAttend(mobEvent.id)}>Attend</button>
+                                    <button className="action" onClick={() => history.push('/eventdetails/' + mobEvent.id)}>View Details</button>
+                                    <button className="action" onClick={() => handleAttend(mobEvent.id)}>Register to Attend Event</button>
                                 </td>
                             </tr>
                         )}

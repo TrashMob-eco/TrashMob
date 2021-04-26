@@ -104,9 +104,8 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
                     <Link to="/createevent">Create a New Event</Link>
                 </div>
                 <div>
-                    Events I Own
                     <div>
-                        <EventsUserOwns eventList={data.myEventList} eventTypeList={this.state.eventTypeList} loading={data.loading} />
+                        <EventsUserOwns history={this.props.history} location={this.props.location} match={this.props.match}  eventList={data.myEventList} eventTypeList={this.state.eventTypeList} loading={data.loading} />
                     </div>
                 </div>
                 <div>
@@ -117,9 +116,8 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
                     </AzureMapsProvider>
                 </div>
                 <div>
-                    Events I am Attending
                     <div>
-                        <EventsUserIsAttending eventList={data.myAttendanceList} eventTypeList={this.state.eventTypeList} loading={data.loading} />
+                        <EventsUserIsAttending history={this.props.history} location={this.props.location} match={this.props.match} eventList={data.myAttendanceList} eventTypeList={this.state.eventTypeList} loading={data.loading} />
                     </div>
                 </div>
                 <AzureMapsProvider>

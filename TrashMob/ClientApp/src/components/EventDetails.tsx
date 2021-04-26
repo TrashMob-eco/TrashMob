@@ -100,7 +100,7 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                 .then(response => response.json() as Promise<EventData>)
                 .then(eventData => {
                     this.setState({
-                        title: "Edit",
+                        title: "Event Details",
                         loading: false,
                         eventId: eventData.id,
                         eventName: eventData.name,
@@ -182,9 +182,6 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
 
         return (
             <div>
-                <div>
-                    <button onClick={() => this.props.history.goBack}>Go Back</button>
-                </div>
                 <div className="form-group row" >
                     <input type="hidden" name="Id" value={this.state.eventId.toString()} />
                 </div>
@@ -248,9 +245,6 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                 </div >
                 <div>
                     {this.renderUsersTable(this.state.userList)}
-                </div>
-                <div>
-                    <button onClick={() => this.props.history.goBack}>Go Back</button>
                 </div>
                 <div>
                     <AzureMapsProvider>

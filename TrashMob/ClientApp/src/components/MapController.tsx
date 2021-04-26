@@ -54,7 +54,7 @@ const MapController = (props: MapControllerState) => {
 
     // This is only used for maps with a single event
     useEffect(() => {
-        if (!props.loading && props.eventName !== '') {
+        if (!props.loading && props.eventName !== '' && props.isKeyLoaded && mapRef && isMapReady) {
             var pin = new MapStore.markerPoint();
             pin.position = new data.Point(new data.Position(props.longitude, props.latitude));
             pin.properties = {
@@ -63,7 +63,7 @@ const MapController = (props: MapControllerState) => {
             clearMarkers();
             addMarker(pin);
         }
-    }, [props.loading, props.latitude, props.longitude, props.eventName])
+    }, [props.loading, props.latitude, props.longitude, props.eventName, props.isKeyLoaded, mapRef, isMapReady])
 
 
     useEffect(() => {
