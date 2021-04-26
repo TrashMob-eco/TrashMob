@@ -15,15 +15,31 @@ import MapController from './MapController';
 export interface EventDetailsDataState {
     title: string;
     loading: boolean;
-    eventData: EventData;
-    eventTypeList: EventTypeData[];
-    userList: UserData[];
-    eventId: Guid;
-    eventDate: string
+    eventId: string;
+    eventName: string;
+    description: string;
+    eventDate: Date;
+    eventTypeId: number;
+    streetAddress: string;
+    city: string;
+    country: string;
+    region: string;
+    postalCode: string;
+    latitude: number;
+    longitude: number;
+    maxNumberOfParticipants: number;
+    createdByUserId: string;
+    eventStatusId: number;
+    typeList: EventTypeData[];
+    eventDateErrors: string;
+    latitudeErrors: string;
+    longitudeErrors: string;
     center: data.Position;
     isKeyLoaded: boolean;
     mapOptions: IAzureMapOptions;
     eventList: EventData[];
+    eventTypeList: EventTypeData[];
+    userList: UserData[];
 }
 
 export interface MatchParams {
@@ -36,15 +52,31 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
         this.state = {
             title: "",
             loading: true,
-            eventData: new EventData(),
-            eventId: Guid.create(),
-            eventDate: new Date().toDateString(),
-            userList: [],
-            eventTypeList: [],
-            center: new data.Position(MapStore.defaultLatitude, MapStore.defaultLongitude),
+            eventId: Guid.create().toString(),
+            eventName: "",
+            description: "",
+            eventDate: new Date(),
+            eventTypeId: 0,
+            streetAddress: '',
+            city: '',
+            country: '',
+            region: '',
+            postalCode: '',
+            latitude: 0,
+            longitude: 0,
+            maxNumberOfParticipants: 0,
+            createdByUserId: '',
+            eventStatusId: 0,
+            typeList: [],
+            eventDateErrors: '',
+            latitudeErrors: '',
+            longitudeErrors: '',
+            center: new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude),
             isKeyLoaded: false,
             mapOptions: null,
-            eventList: []
+            eventList: [],
+            eventTypeList: [],
+            userList: []
         };
 
         const headers = defaultHeaders('GET');
@@ -67,7 +99,26 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
             })
                 .then(response => response.json() as Promise<EventData>)
                 .then(eventData => {
-                    this.setState({ title: "Event Details", loading: false, eventData: eventData, eventDate: new Date(eventData.eventDate).toDateString(), center: new data.Position(eventData.longitude, eventData.latitude)});
+                    this.setState({
+                        title: "Edit",
+                        loading: false,
+                        eventId: eventData.id,
+                        eventName: eventData.name,
+                        description: eventData.description,
+                        eventDate: new Date(eventData.eventDate),
+                        eventTypeId: eventData.eventTypeId,
+                        streetAddress: eventData.streetAddress,
+                        city: eventData.city,
+                        country: eventData.country,
+                        region: eventData.region,
+                        postalCode: eventData.postalCode,
+                        latitude: eventData.latitude,
+                        longitude: eventData.longitude,
+                        maxNumberOfParticipants: eventData.maxNumberOfParticipants,
+                        createdByUserId: eventData.createdByUserId,
+                        eventStatusId: eventData.eventStatusId,
+                        center: new data.Position(eventData.longitude, eventData.latitude)
+                    });
                 });
 
             fetch('api/eventattendees/' + eventId, {
@@ -106,7 +157,7 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                                 <td>{user.givenName}</td>
                                 <td>{user.city}</td>
                                 <td>{user.country}</td>
-                                <td>{user.memberSince}</td>
+                                <td>{new Date(user.memberSince).toLocaleDateString()}</td>
                             </tr>
                         )}
                     </tbody>
@@ -135,78 +186,64 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                     <button onClick={() => this.props.history.goBack}>Go Back</button>
                 </div>
                 <div className="form-group row" >
-                    <input type="hidden" name="Id" value={this.state.eventData.id.toString()} />
+                    <input type="hidden" name="Id" value={this.state.eventId.toString()} />
                 </div>
                 < div className="form-group row" >
-                    <label className="control-label col-md-12" htmlFor="Name">Name</label>
-                    <div className="col-md-4">
-                        <label className="form-control">{this.state.eventData.name}</label>
+                    <label className="control-label col-xs-2" htmlFor="Name">Name:</label>
+                    <div className="col-xs-2">
+                        <label className="form-control">{this.state.eventName}</label>
+                    </div>
+                    <label className="control-label col-xs-2" htmlFor="EventDate">EventDate:</label>
+                    <div className="col-xs-2">
+                        <label className="form-control">{this.state.eventDate.toLocaleString()}</label>
+                    </div>
+                    <label className="control-label col-xs-2" htmlFor="EventType">Event Type:</label>
+                    <div className="col-xs-2">
+                        <label className="form-control">{getEventType(this.state.eventTypeList, this.state.eventTypeId)}</label>
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="Description">Description</label>
-                    <div className="col-md-4">
-                        <label className="form-control">{this.state.eventData.description}</label>
+                    <label className="control-label col-xs-2" htmlFor="Description">Description:</label>
+                    <div className="col-md-10">
+                        <textarea className="form-control" name="description" defaultValue={this.state.description} rows={5} cols={5} readOnly />
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="EventDate">EventDate</label>
-                    <div className="col-md-4">
-                        <label className="form-control">{this.state.eventDate}</label>
+                    <label className="control-label col-xs-2" htmlFor="StreetAddress">Street Address:</label>
+                    <div className="col-xs-2">
+                        <label className="form-control">{this.state.streetAddress}</label>
+                    </div>
+                    <label className="control-label col-xs-2" htmlFor="City">City:</label>
+                    <div className="col-xs-2">
+                        <label className="form-control">{this.state.city}</label>
+                    </div>
+                    <label className="control-label col-xs-2" htmlFor="postalCode">Postal Code:</label>
+                    <div className="col-xs-2">
+                        <label className="form-control">{this.state.postalCode}</label>
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="EventType">Event Type</label>
-                    <div className="col-md-4">
-                        <label className="form-control">{getEventType(this.state.eventTypeList, this.state.eventData.eventTypeId)}</label>
+                    <label className="control-label col-xs-2" htmlFor="stateProvince">Region:</label>
+                    <div className="col-xs-2">
+                        <label className="form-control">{this.state.region}</label>
+                    </div>
+                    <label className="control-label col-xs-2" htmlFor="Country">Country:</label>
+                    <div className="col-xs-2">
+                        <label className="form-control">{this.state.country}</label>
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="StreetAddress">StreetAddress</label>
-                    <div className="col-md-4">
-                        <label className="form-control">{this.state.eventData.streetAddress}</label>
+                    <label className="control-label col-xs-2" htmlFor="Latitude">Latitude:</label>
+                    <div className="col-xs-2">
+                        <label className="form-control">{this.state.latitude}</label>
                     </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="City">City</label>
-                    <div className="col-md-4">
-                        <label className="form-control">{this.state.eventData.city}</label>
+                    <label className="control-label col-xs-2" htmlFor="Longitude">Longitude:</label>
+                    <div className="col-xs-2">
+                        <label className="form-control">{this.state.longitude}</label>
                     </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="stateProvince">State / Province</label>
-                    <div className="col-md-4">
-                        <label className="form-control">{this.state.eventData.region}</label>
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="Country">Country</label>
-                    <div className="col-md-4">
-                        <label className="form-control">{this.state.eventData.country}</label>
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="postalCode">Postal Code</label>
-                    <div className="col-md-4">
-                        <label className="form-control">{this.state.eventData.postalCode}</label>
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="Latitude">Latitude</label>
-                    <div className="col-md-4">
-                        <label className="form-control">{this.state.eventData.latitude}</label>
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="Longitude">Longitude</label>
-                    <div className="col-md-4">
-                        <label className="form-control">{this.state.eventData.longitude}</label>
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="MaxNumberOfParticipants">Max Number Of Participants</label>
-                    <div className="col-md-4">
-                        <label className="form-control">{this.state.eventData.maxNumberOfParticipants}</label>
+                    <label className="control-label col-xs-2" htmlFor="MaxNumberOfParticipants">Max Number Of Participants:</label>
+                    <div className="col-xs-2">
+                        <label className="form-control">{this.state.maxNumberOfParticipants}</label>
                     </div>
                 </div >
                 <div>
@@ -218,7 +255,7 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                 <div>
                     <AzureMapsProvider>
                         <>
-                            <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={this.state.eventData.name} latitude={this.state.eventData.latitude} longitude={this.state.eventData.longitude} onLocationChange={this.handleLocationChange} />
+                            <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={this.state.eventName} latitude={this.state.latitude} longitude={this.state.longitude} onLocationChange={this.handleLocationChange} />
                         </>
                     </AzureMapsProvider>
                 </div>

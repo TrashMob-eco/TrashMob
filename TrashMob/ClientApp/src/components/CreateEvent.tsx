@@ -135,31 +135,37 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
     }
 
     handleMaxNumberOfParticipantsChanged = (val: string) => {
-        this.setState({ maxNumberOfParticipants: parseInt(val)});
+        this.setState({ maxNumberOfParticipants: parseInt(val) });
     }
 
     handleLatitudeChanged = (val: string) => {
-        var floatVal = parseFloat(val);
+        try {
+            var floatVal = parseFloat(val);
 
-        if (floatVal < -90 || floatVal > 90) {
-            this.setState({ latitudeErrors: "Latitude must be => -90 and <= 90" });
+            if (floatVal < -90 || floatVal > 90) {
+                this.setState({ latitudeErrors: "Latitude must be => -90 and <= 90" });
+            }
+            else {
+                this.setState({ latitude: floatVal });
+                this.setState({ latitudeErrors: "" });
+            }
         }
-        else {
-            this.setState({ latitude: floatVal });
-            this.setState({ latitudeErrors: "" });
-        }
+        catch { }
     }
 
     handleLongitudeChanged = (val: string) => {
-        var floatVal = parseFloat(val);
+        try {
+            var floatVal = parseFloat(val);
 
-        if (floatVal < -180 || floatVal > 180) {
-            this.setState({ longitudeErrors: "Longitude must be >= -180 and <= 180" });
+            if (floatVal < -180 || floatVal > 180) {
+                this.setState({ longitudeErrors: "Longitude must be >= -180 and <= 180" });
+            }
+            else {
+                this.setState({ longitude: floatVal });
+                this.setState({ longitudeErrors: "" });
+            }
         }
-        else {
-            this.setState({ longitude: floatVal });
-            this.setState({ longitudeErrors: "" });
-        }
+        catch { }
     }
 
     selectEventType(val: string) {
@@ -182,7 +188,7 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                     .then(response => response.json() as Promise<AddressData>)
                     .then(data => {
                         this.setState({
-                            streetAddress: data.addresses[0].address.streetNameAndNumber, 
+                            streetAddress: data.addresses[0].address.streetNameAndNumber,
                             city: data.addresses[0].address.municipality,
                             country: data.addresses[0].address.country,
                             region: data.addresses[0].address.countrySubdivisionName,
@@ -270,8 +276,8 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                 headers: headers,
                 body: data,
             }).then(() => {
-                    this.props.history.push("/mydashboard");
-                })
+                this.props.history.push("/mydashboard");
+            })
         })
     }
 
@@ -279,108 +285,98 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
     private renderCreateForm(typeList: Array<EventTypeData>) {
         const { country, region, eventName, latitude, longitude } = this.state;
         return (
-            <form onSubmit={this.handleSave} >
-                <div className="form-group row" >
-                    <input type="hidden" name="Id" value={this.state.eventId.toString()} />
-                </div>
-                < div className="form-group row" >
-                    <label className=" control-label col-md-12" htmlFor="Name">Name</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="name" defaultValue={this.state.eventName} onChange={(val) => this.handleEventNameChanged(val.target.value)} maxLength={parseInt('64')} required />
+            <div className="container-fluid">
+                <form onSubmit={this.handleSave} >
+                    <div className="form-group row" >
+                        <input type="hidden" name="Id" value={this.state.eventId.toString()} />
                     </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="Description">Description</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="description" defaultValue={this.state.description} onChange={(val) => this.handleDescriptionChanged(val.target.value)} maxLength={parseInt('2048')} required />
+                    < div className="form-group row" >
+                        <label className=" control-label col-xs-2" htmlFor="Name">Name:</label>
+                        <div className="col-md-4">
+                            <input className="form-control" type="text" name="name" defaultValue={this.state.eventName} onChange={(val) => this.handleEventNameChanged(val.target.value)} maxLength={parseInt('64')} required />
+                        </div>
+                        <label className="control-label col-xs-2" htmlFor="EventDate">EventDate:</label>
+                        <div className="col-xs-2">
+                            <DateTimePicker name="eventDate" onChange={this.handleEventDateChange} value={this.state.eventDate} />
+                            <span style={{ color: "red" }}>{this.state.eventDateErrors}</span>
+                        </div>
+                        <label className="control-label col-xs-2" htmlFor="EventType">Event Type:</label>
+                        <div className="col-xs-2">
+                            <select className="form-control" data-val="true" name="eventTypeId" defaultValue={this.state.eventTypeId} onChange={(val) => this.selectEventType(val.target.value)} required>
+                                <option value="">-- Select Event Type --</option>
+                                {typeList.map(type =>
+                                    <option key={type.id} value={type.id}>{type.name}</option>
+                                )}
+                            </select>
+                        </div>
+                    </div >
+                    <div className="form-group row">
+                        <label className="control-label col-md-12">Describe the event so attendees know what kind of gear to bring and where exactly to meet up.</label>
+                        <label className="control-label col-xs-2" htmlFor="Description">Description:</label>
+                        <div className="col-md-10">
+                            <textarea className="form-control" name="description" defaultValue={this.state.description} onChange={(val) => this.handleDescriptionChanged(val.target.value)} maxLength={parseInt('2048')} rows={5} cols={5} required />
+                        </div>
+                    </div >
+                    <div className="form-group row">
+                        <label className="control-label col-xs-2" htmlFor="StreetAddress">Street Address:</label>
+                        <div className="col-md-4">
+                            <input className="form-control" type="text" name="streetAddress" defaultValue={this.state.streetAddress} onChange={(val) => this.handleStreetAddressChanged(val.target.value)} maxLength={parseInt('256')} />
+                        </div>
+                        <label className="control-label col-xs-2" htmlFor="City">City:</label>
+                        <div className="col-xs-2">
+                            <input className="form-control" type="text" name="city" defaultValue={this.state.city} onChange={(val) => this.handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
+                        </div>
+                        <label className="control-label col-xs-2" htmlFor="PostalCode">Postal Code:</label>
+                        <div className="col-xs-2">
+                            <input className="form-control" type="text" name="postalCode" defaultValue={this.state.postalCode} onChange={(val) => this.handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
+                        </div>
+                    </div >
+                    <div className="form-group row">
+                        <label className="control-label col-md-12">Choose a country, and the list of states/provinces/regions will auto-fill</label>
+                        <label className="control-label col-xs-2" htmlFor="Country">Country:</label>
+                        <div className="col-xs-4">
+                            <CountryDropdown name="country" value={country} onChange={(val) => this.selectCountry(val)} />
+                        </div>
+                        <label className="control-label col-xs-2" htmlFor="region">Region:</label>
+                        <div className="col-xs-4">
+                            <RegionDropdown
+                                country={country}
+                                value={region}
+                                onChange={(val) => this.selectRegion(val)} />
+                        </div>
+                    </div >
+                    <div className="form-group row">
+                        <div>
+                            <label className="control-label col-md-12">To set or change the latitude and longitude of an event, click the location on the map where you want attendees to meet, and the values will be updated. Don't foget to save your changes before leaving the page!</label>
+                        </div>
+                        <label className="control-label col-xs-2" htmlFor="Latitude">Latitude:</label>
+                        <div className="col-xs-2">
+                            <input className="form-control" type="text" name="latitude" value={this.state.latitude} onChange={(val) => this.handleLatitudeChanged(val.target.value)} />
+                            <span style={{ color: "red" }}>{this.state.latitudeErrors}</span>
+                        </div>
+                        <label className="control-label col-xs-2" htmlFor="Longitude">Longitude:</label>
+                        <div className="col-xs-2">
+                            <input className="form-control" type="text" name="longitude" value={this.state.longitude} onChange={(val) => this.handleLongitudeChanged(val.target.value)} />
+                            <span style={{ color: "red" }}>{this.state.longitudeErrors}</span>
+                        </div>
+                        <label className="control-label col-xs-2" htmlFor="MaxNumberOfParticipants">Max Number Of Participants:</label>
+                        <div className="col-xs-2">
+                            <input className="form-control" type="text" name="maxNumberOfParticipants" defaultValue={this.state.maxNumberOfParticipants} onChange={(val) => this.handleMaxNumberOfParticipantsChanged(val.target.value)} />
+                        </div>
+                    </div >
+                    <div className="form-group">
+                        <button type="submit" className="btn btn-default">Save</button>
+                        <button className="btn" onClick={(e) => this.handleCancel(e)}>Cancel</button>
+                    </div >
+                    <div>
+                        <AzureMapsProvider>
+                            <>
+                                <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={this.handleLocationChange} />
+                            </>
+                        </AzureMapsProvider>
                     </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="EventDate">EventDate</label>
-                    <div className="col-md-4">
-                        <DateTimePicker name="eventDate" onChange={this.handleEventDateChange} value={this.state.eventDate} />
-                        <span style={{ color: "red" }}>{this.state.eventDateErrors}</span>
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="EventType">Event Type</label>
-                    <div className="col-md-4">
-                        <select className="form-control" data-val="true" name="eventTypeId" defaultValue={this.state.eventTypeId} onChange={(val) => this.selectEventType(val.target.value)} required>
-                            <option value="">-- Select Event Type --</option>
-                            {typeList.map(type =>
-                                <option key={type.id} value={type.id}>{type.name}</option>
-                            )}
-                        </select>
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="StreetAddress">StreetAddress</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="streetAddress" defaultValue={this.state.streetAddress} onChange={(val) => this.handleStreetAddressChanged(val.target.value)} maxLength={parseInt('256')} />
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="City">City</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="city" defaultValue={this.state.city} onChange={(val) => this.handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="region">Region</label>
-                    <div className="col-md-4">
-                        <RegionDropdown
-                            country={country}
-                            value={region}
-                            onChange={(val) => this.selectRegion(val)} />
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="Country">Country</label>
-                    <div className="col-md-4">
-                        <CountryDropdown name="country" value={country} onChange={(val) => this.selectCountry(val)} />
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="PostalCode">Postal Code</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="postalCode" defaultValue={this.state.postalCode} onChange={(val) => this.handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="Latitude">Latitude</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="latitude" value={this.state.latitude} onChange={(val) => this.handleLatitudeChanged(val.target.value)} />
-                        <span style={{ color: "red" }}>{this.state.latitudeErrors}</span>
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="Longitude">Longitude</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="longitude" value={this.state.longitude} onChange={(val) => this.handleLongitudeChanged(val.target.value)} />
-                        <span style={{ color: "red" }}>{this.state.longitudeErrors}</span>
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="MaxNumberOfParticipants">Max Number Of Participants</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="maxNumberOfParticipants" defaultValue={this.state.maxNumberOfParticipants} onChange={(val) => this.handleMaxNumberOfParticipantsChanged(val.target.value)} />
-                    </div>
-                </div >
-                <div className="form-group">
-                    <button type="submit" className="btn btn-default">Save</button>
-                    <button className="btn" onClick={(e) => this.handleCancel(e)}>Cancel</button>
-                </div >
-                <div>
-                    To set or change the latitude and longitude of an event, click the location on the map where you want attendees to meet, and the values will be updated. Don't foget to save your changes before leaving the page!
-                </div>
-                <div>
-                    <AzureMapsProvider>
-                        <>
-                            <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={this.handleLocationChange} />
-                        </>
-                    </AzureMapsProvider>
-                </div>
-            </form >
+                </form >
+            </div>
         )
     }
 }
