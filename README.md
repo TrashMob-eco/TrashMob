@@ -23,15 +23,21 @@ ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want
 
 Here's what needs to be done before we can launch
 1. UI
-  1. Styling (in progress)
+  1. Styling
+    1. Required field indicators
+    1. Number of characters remaining
+    1. Tool tips
+    1. Carousel Content
+    1. Bold field names
+    1. Bootstrap theme?
   1. Get proper logo
+  1. Set sizes on ContactUs tables columns
+  1. Fix issue with pins not showing up on first map of dashboard
+  1. Fix email account issue
 
 ## High Priority Post Launch Items
 These items did not make the cut for launch but need to be done
   1. Ensure user can't multi-click buttons
-  1. Event Type showing up as unknown
-  1. Fix issue with pins not showing up on fix map of dashboard
-  1. Allow site to access user's location for better map zoom
   1. Allow map to respond to changes in country, region, city or postal code
   1. Check response codes from APIs are correct
   1. Fix Terms of Service accept popup
