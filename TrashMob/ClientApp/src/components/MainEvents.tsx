@@ -111,7 +111,7 @@ export const MainEvents: React.FC<MainEventsDataState> = (props) => {
                         {events.map(mobEvent =>
                             <tr key={mobEvent.id.toString()}>
                                 <td>{mobEvent.name}</td>
-                                <td>{mobEvent.eventDate}</td>
+                                <td>{new Date(mobEvent.eventDate).toLocaleString()}</td>
                                 <td>{getEventType(props.eventTypeList, mobEvent.eventTypeId)}</td>
                                 <td>{mobEvent.city}</td>
                                 <td>{mobEvent.region}</td>

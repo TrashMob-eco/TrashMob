@@ -101,29 +101,27 @@ class ContactUs extends Component<Props, ContactRequestDataState> {
     // Returns the HTML Form to the render() method.  
     render() {
         return (
-            <div>
+            <div className="container-fluid">
                 <h1>Contact Us</h1>
                 <div>
                     Have a question for the TrashMob team? Or an idea to make this site better? Or just want to tell us you love us? Drop us a note!
                 </div>
                 <form onSubmit={this.handleSave} >
                     < div className="form-group row" >
-                        <label className=" control-label col-md-12" htmlFor="Name">Name</label>
+                        <label className=" control-label col-xs-1" htmlFor="Name">Name:</label>
                         <div className="col-md-4">
-                            <input className="form-control" type="text" name="name" defaultValue={this.state.name} required />
+                            <input className="form-control" type="text" name="name" defaultValue={this.state.name} maxLength={parseInt('64')} required />
                         </div>
-                    </div >
-                    < div className="form-group row" >
-                        <label className=" control-label col-md-12" htmlFor="Email">Email</label>
+                        <label className=" control-label col-xs-1" htmlFor="Email">Email:</label>
                         <div className="col-md-4">
-                            <input className="form-control" type="text" name="email" defaultValue={this.state.email} required />
-                            <span style={{ color: "red" }}>{this.state.emailErrors}</span>
+                            <input className="form-control" type="text" name="email" defaultValue={this.state.email} maxLength={parseInt('64')} required />
+                            <span style={{ color: "red" }}>{this.state.emailErrors}</span> 
                         </div>
                     </div >
                     <div className="form-group row">
-                        <label className="control-label col-md-12" htmlFor="Message">Message</label>
-                        <div className="col-md-4">
-                            <input className="form-control" type="text" name="message" defaultValue={this.state.message} required />
+                        <label className="control-label col-md-12" htmlFor="Message">Message:</label>
+                        <div className="col-md-12">
+                            <textarea className="form-control" name="message" defaultValue={this.state.message} maxLength={parseInt('2048')} rows={5} cols={5} required />
                             <span style={{ color: "red" }}>{this.state.messageErrors}</span>
                         </div>
                     </div >
@@ -131,8 +129,8 @@ class ContactUs extends Component<Props, ContactRequestDataState> {
                         <LoadCanvasTemplateNoReload />
                     </div>
                     <div className="form-group row">
-                        <label className="control-label col-md-12" htmlFor="Captcha">CAPTCHA Value</label>
-                        <div className="col-md-4">
+                        <label className="control-label col-xs-2" htmlFor="Captcha">CAPTCHA Value:</label>
+                        <div className="col-xs-2">
                             <input className="form-control" type="text" name="user_captcha_input" required />
                         </div>
                     </div >
