@@ -31,7 +31,6 @@ Here's what needs to be done before we can launch
     1. Bold field names
     1. Bootstrap theme?
   1. Get proper logo
-  1. Set sizes on ContactUs tables columns
   1. Fix issue with MyDashboard not reloading after delete (set to home for now to force reload)
   
 
@@ -51,6 +50,7 @@ These items did not make the cut for launch but need to be done
   1. Redeploy test environment with standardized names
   1. Find a way to secure the Azure Maps Key (referral restriction?)
   1. Set up rotation of Azure Maps Keys every 24 hours
+  1. Set up bicep deployment of all resources needed by devs to run the site.
   
 ## Upcoming Feature List (not ordered)
   1. Add search / filter of events on main page
