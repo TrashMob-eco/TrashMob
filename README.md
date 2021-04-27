@@ -31,7 +31,6 @@ Here's what needs to be done before we can launch
     1. Bold field names
     1. Bootstrap theme?
   1. Get proper logo
-  1. Set sizes on ContactUs tables columns
   1. Fix issue with MyDashboard not reloading after delete (set to home for now to force reload)
   
 

@@ -38,6 +38,15 @@
             base.OnModelCreating(modelBuilder);
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
+            modelBuilder.Entity<ContactRequest>(entity =>
+            {
+                entity.Property(e => e.Name).HasMaxLength(64);
+
+                entity.Property(e => e.Email).HasMaxLength(64);
+
+                entity.Property(e => e.Message).HasMaxLength(2048);
+            });
+
             modelBuilder.Entity<User>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
