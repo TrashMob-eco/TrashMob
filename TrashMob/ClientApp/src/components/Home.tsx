@@ -16,7 +16,7 @@ import MapController from './MapController';
 export interface HomeProps extends RouteComponentProps {
 }
 
-export interface FetchEventDataState {
+export interface HomeDataState {
     eventList: EventData[];
     eventTypeList: EventTypeData[];
     myAttendanceList: EventData[];
@@ -25,14 +25,15 @@ export interface FetchEventDataState {
     isKeyLoaded: boolean;
     center: data.Position;
     mapOptions: IAzureMapOptions;
+    currentUserId: string;
 }
 
-export class Home extends Component<HomeProps, FetchEventDataState> {
+export class Home extends Component<HomeProps, HomeDataState> {
     static displayName = Home.name;
 
     constructor(props: HomeProps) {
         super(props);
-        this.state = { eventList: [], eventTypeList: [], myAttendanceList: [], loading: true, isLoggedIn: false, center: new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude), isKeyLoaded: false, mapOptions: null };
+        this.state = { eventList: [], eventTypeList: [], myAttendanceList: [], loading: true, isLoggedIn: false, center: new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude), isKeyLoaded: false, mapOptions: null, currentUserId: ""};
 
         const headers = defaultHeaders('GET');
         this.getEventTypes();
@@ -50,6 +51,8 @@ export class Home extends Component<HomeProps, FetchEventDataState> {
         var accounts = msalClient.getAllAccounts();
 
         if (accounts !== null && accounts.length > 0) {
+            var userId = getUserFromCache().id;
+            this.setState({ currentUserId: userId })
             var request = {
                 scopes: apiConfig.b2cScopes,
                 account: accounts[0]
@@ -122,7 +125,7 @@ export class Home extends Component<HomeProps, FetchEventDataState> {
                     <div style={{ width: 50 + '%' }}>
                         <AzureMapsProvider>
                             <>
-                                <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={this.handleLocationChange}  />
+                                <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={this.handleLocationChange} currentUserId={this.state.currentUserId}  />
                             </>
                         </AzureMapsProvider>
                     </div>
