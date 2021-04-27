@@ -75,6 +75,25 @@ namespace TrashMob.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        [Authorize]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [Route("userevents/{userId}")]
+        public async Task<IActionResult> GetUserEvents(Guid userId)
+        {
+            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
+            if (!ValidateUser(user.NameIdentifier))
+            {
+                return Forbid();
+            }
+
+            var result1 = await eventRepository.GetUserEvents(userId).ConfigureAwait(false);
+            var result2 = await eventAttendeeRepository.GetEventsUserIsAttending(userId).ConfigureAwait(false);
+
+            var allResults = result1.Union(result2, new EventComparer());
+            return Ok(allResults);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEvent(Guid id)
         {
@@ -154,7 +173,7 @@ namespace TrashMob.Controllers
             }
 
             await eventRepository.DeleteEvent(id).ConfigureAwait(false);
-            return NoContent();
+            return Ok(id);
         }
 
         private async Task<bool> EventExists(Guid id)

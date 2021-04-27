@@ -41,6 +41,7 @@ interface EditEventDataState {
     isKeyLoaded: boolean;
     mapOptions: IAzureMapOptions;
     eventList: EventData[];
+    currentUserId: string;
 }
 
 interface MatchParams {
@@ -78,7 +79,8 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
             center: new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude),
             isKeyLoaded: false,
             mapOptions: null,
-            eventList: []
+            eventList: [],
+            currentUserId: getUserFromCache().id
         };
 
         const headers = defaultHeaders('GET');
@@ -407,7 +409,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                     <div>
                         <AzureMapsProvider>
                             <>
-                                <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={this.handleLocationChange} />
+                                <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={this.handleLocationChange} currentUserId={this.state.currentUserId} />
                             </>
                         </AzureMapsProvider>
                     </div>

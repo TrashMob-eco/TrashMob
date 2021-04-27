@@ -1,4 +1,5 @@
-﻿import React, { useState } from 'react';
+﻿import { useState } from 'react';
+import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { Modal } from 'reactstrap';
 import { updateAgreements } from '../store/accountHandler';
