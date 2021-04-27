@@ -37,7 +37,7 @@
         public async Task<IEnumerable<Event>> GetUserEvents(Guid userId)
         {
             return await mobDbContext.Events
-                .Where(e => e.CreatedByUserId == userId)
+                .Where(e => e.CreatedByUserId == userId && e.EventStatusId != (int)EventStatusEnum.Canceled)
                 .AsNoTracking()
                 .ToListAsync().ConfigureAwait(false);
         }

@@ -40,6 +40,7 @@ interface CreateEventDataState {
     isKeyLoaded: boolean;
     mapOptions: IAzureMapOptions;
     eventList: EventData[];
+    currentUserId: string;
 }
 
 interface Props extends RouteComponentProps<any> {
@@ -71,7 +72,8 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
             center: new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude),
             isKeyLoaded: false,
             mapOptions: null,
-            eventList: []
+            eventList: [],
+            currentUserId: getUserFromCache().id
         };
 
         const headers = defaultHeaders('GET');
@@ -371,7 +373,7 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                     <div>
                         <AzureMapsProvider>
                             <>
-                                <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={this.handleLocationChange} />
+                                <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={this.handleLocationChange} currentUserId={this.state.currentUserId} />
                             </>
                         </AzureMapsProvider>
                     </div>

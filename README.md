@@ -32,8 +32,8 @@ Here's what needs to be done before we can launch
     1. Bootstrap theme?
   1. Get proper logo
   1. Set sizes on ContactUs tables columns
-  1. Fix issue with pins not showing up on first map of dashboard
-  1. Fix email account issue
+  1. Fix issue with MyDashboard not reloading after delete (set to home for now to force reload)
+  
 
 ## High Priority Post Launch Items
 These items did not make the cut for launch but need to be done

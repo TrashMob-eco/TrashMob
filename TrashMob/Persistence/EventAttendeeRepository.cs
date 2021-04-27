@@ -6,6 +6,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using TrashMob.Common;
     using TrashMob.Models;
 
     public class EventAttendeeRepository : IEventAttendeeRepository
@@ -81,7 +82,7 @@
                 .ToListAsync().ConfigureAwait(false);
 
             var events = await mobDbContext.Events
-                .Where(e => eventAttendees.Select(ea => ea.EventId).Contains(e.Id))
+                .Where(e => e.EventStatusId != (int)EventStatusEnum.Canceled && eventAttendees.Select(ea => ea.EventId).Contains(e.Id))
                 .AsNoTracking()
                 .ToListAsync().ConfigureAwait(false);
             return events;

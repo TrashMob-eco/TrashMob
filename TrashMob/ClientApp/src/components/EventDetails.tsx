@@ -11,6 +11,7 @@ import { data } from 'azure-maps-control';
 import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapController from './MapController';
+import { getUserFromCache } from '../store/accountHandler';
 
 export interface EventDetailsDataState {
     title: string;
@@ -40,6 +41,7 @@ export interface EventDetailsDataState {
     eventList: EventData[];
     eventTypeList: EventTypeData[];
     userList: UserData[];
+    currentUserId: string;
 }
 
 export interface MatchParams {
@@ -76,7 +78,8 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
             mapOptions: null,
             eventList: [],
             eventTypeList: [],
-            userList: []
+            userList: [],
+            currentUserId: ""
         };
 
         const headers = defaultHeaders('GET');
@@ -89,6 +92,11 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
             .then(data => {
                 this.setState({ eventTypeList: data });
             });
+
+        var user = getUserFromCache();
+        if (user) {
+            this.setState({currentUserId: user.Id})
+        }
 
         var eventId = this.props.match.params["eventId"];
 
@@ -249,7 +257,7 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
                 <div>
                     <AzureMapsProvider>
                         <>
-                            <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={this.state.eventName} latitude={this.state.latitude} longitude={this.state.longitude} onLocationChange={this.handleLocationChange} />
+                            <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={this.state.eventName} latitude={this.state.latitude} longitude={this.state.longitude} onLocationChange={this.handleLocationChange} currentUserId={this.state.currentUserId} />
                         </>
                     </AzureMapsProvider>
                 </div>

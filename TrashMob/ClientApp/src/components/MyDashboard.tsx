@@ -2,8 +2,7 @@ import { Component } from 'react';
 import * as React from 'react'
 
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
-import { EventsUserOwns } from './EventsUserOwns'
-import { EventsUserIsAttending } from './EventsUserIsAttending';
+import { UserEvents } from './UserEvents'
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
@@ -25,6 +24,7 @@ interface MyDashboardDataState {
     center: data.Position;
     isKeyLoaded: boolean;
     mapOptions: IAzureMapOptions;
+    currentUserId: string;
 }
 
 class MyDashboard extends Component<Props, MyDashboardDataState> {
@@ -32,7 +32,7 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
         super(props);
 
         this.state = {
-            title: "My Dashboard", loading: false, myEventList: [], myAttendanceList: [], eventTypeList: [], center: new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude), isKeyLoaded: false, mapOptions: null
+            title: "My Dashboard", loading: false, myEventList: [], myAttendanceList: [], eventTypeList: [], center: new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude), isKeyLoaded: false, mapOptions: null, currentUserId: getUserFromCache().id
         };
 
         const account = msalClient.getAllAccounts()[0];
@@ -55,7 +55,7 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
                     this.setState({ eventTypeList: data });
                 });
 
-            fetch('api/events/eventsowned/' + getUserFromCache().id, {
+            fetch('api/events/userevents/' + getUserFromCache().id, {
                 method: 'GET',
                 headers: headers
             })
@@ -63,16 +63,6 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
                 .then(data => {
                     this.setState({ myEventList: data, loading: false });
                 });
-
-            fetch('api/events/eventsuserisattending/' + getUserFromCache().id, {
-                method: 'GET',
-                headers: headers
-            })
-                .then(response => response.json() as Promise<EventData[]>)
-                .then(data => {
-                    this.setState({ myAttendanceList: data, loading: false });
-                })
-
         });
 
         MapStore.getOption().then(opts => {
@@ -105,26 +95,16 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
                 </div>
                 <div>
                     <div>
-                        <EventsUserOwns history={this.props.history} location={this.props.location} match={this.props.match}  eventList={data.myEventList} eventTypeList={this.state.eventTypeList} loading={data.loading} />
+                        <UserEvents history={this.props.history} location={this.props.location} match={this.props.match}  eventList={data.myEventList} eventTypeList={this.state.eventTypeList} loading={data.loading} />
                     </div>
                 </div>
                 <div>
                     <AzureMapsProvider>
                         <>
-                            <MapController center={this.state.center} multipleEvents={data.myEventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={this.handleLocationChange} />
+                            <MapController center={this.state.center} multipleEvents={data.myEventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={this.handleLocationChange} currentUserId={this.state.currentUserId} />
                         </>
                     </AzureMapsProvider>
                 </div>
-                <div>
-                    <div>
-                        <EventsUserIsAttending history={this.props.history} location={this.props.location} match={this.props.match} eventList={data.myAttendanceList} eventTypeList={this.state.eventTypeList} loading={data.loading} />
-                    </div>
-                </div>
-                <AzureMapsProvider>
-                    <>
-                        <MapController center={this.state.center} multipleEvents={data.myAttendanceList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={this.handleLocationChange} />
-                    </>
-                </AzureMapsProvider>
                 <div>
                     My Stats
                 </div>

@@ -19,12 +19,13 @@ interface MapControllerState {
     latitude: number;
     longitude: number;
     onLocationChange: any;
+    currentUserId: string;
 }
 
 const MapController = (props: MapControllerState) => {
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
-
+    
     useEffect(() => {
         if (mapRef && !props.loading && props.isKeyLoaded) {
             // Simple Camera options modification
@@ -34,9 +35,10 @@ const MapController = (props: MapControllerState) => {
 
     function createPin(eventData: EventData): MapStore.markerPoint {
         var pin = new MapStore.markerPoint();
+        var pinColor = eventData.createdByUserId === props.currentUserId ? 'pin-round-blue' : 'pin-round-green';
         pin.position = new data.Point(new data.Position(eventData.longitude, eventData.latitude));
         pin.properties = {
-            title: eventData.name, icon: 'pin-round-blue', type: 'Point'
+            title: eventData.name, icon: pinColor, type: 'Point'
         } 
         return pin;
     }
