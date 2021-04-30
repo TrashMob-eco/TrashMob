@@ -6,19 +6,20 @@ import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
-import { getUserFromCache } from '../store/accountHandler';
+import UserData from './Models/UserData';
 
 interface PropsType extends RouteComponentProps {
     eventList: EventData[];
     eventTypeList: EventTypeData[];
     loading: boolean;
     onEventListChanged: any;
+    isUserLoaded: boolean;
+    currentUser: UserData;
 };
 
 interface FetchEventDataState {
     eventList: EventData[];
     eventTypeList: EventTypeData[];
-    currentUserId: string;
     loading: boolean;
 }
 
@@ -26,7 +27,7 @@ export class UserEvents extends Component<PropsType, FetchEventDataState> {
 
     constructor(props: PropsType) {
         super(props);
-        this.state = { eventList: this.props.eventList, eventTypeList: this.props.eventTypeList, loading: this.props.loading, currentUserId: getUserFromCache().id };
+        this.state = { eventList: this.props.eventList, eventTypeList: this.props.eventTypeList, loading: this.props.loading };
 
         // This binding is necessary to make "this" work in the callback  
         this.handleDelete = this.handleDelete.bind(this);
@@ -49,7 +50,7 @@ export class UserEvents extends Component<PropsType, FetchEventDataState> {
                 const headers = defaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('api/EventAttendees/' + id + '/' + this.state.currentUserId, {
+                fetch('api/EventAttendees/' + id + '/' + this.props.currentUser.id, {
                     method: 'delete',
                     headers: headers
                 }).then(() => { this.props.onEventListChanged(); })
@@ -111,7 +112,7 @@ export class UserEvents extends Component<PropsType, FetchEventDataState> {
                     </thead>
                     <tbody>
                         {events.map(mobEvent => {
-                            var isOwner = mobEvent.createdByUserId === this.state.currentUserId;
+                            var isOwner = mobEvent.createdByUserId === this.props.currentUser.id;
 
                             return (
                                 <tr key={mobEvent.id.toString()}>

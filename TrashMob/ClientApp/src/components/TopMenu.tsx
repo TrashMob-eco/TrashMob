@@ -1,7 +1,14 @@
 ﻿import * as React from 'react'
+import { RouteComponentProps } from 'react-router-dom';
 import { msalClient } from '../store/AuthStore';
+import UserData from './Models/UserData';
 
-export const TopMenu: React.FC = () => {
+interface topMenuProps extends RouteComponentProps {
+    isUserLoaded: boolean;
+    currentUser: UserData;
+}
+
+export const TopMenu: React.FC<topMenuProps> = (props) => {
 
     const mainNavItems = [
         { name: "Home", url: "/" },
@@ -51,8 +58,8 @@ export const TopMenu: React.FC = () => {
                                 </div>
                             </li>
                         </ul>
-                        <button className="btn btn-primary" onClick={(e) => signIn(e)}>Sign Up/Log In</button>
-                        <button className="btn btn-outline-primary" onClick={(e) => signOut(e)}>Log Out</button>
+                        <button hidden={props.isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)}>Sign Up/Log In</button>
+                        <button hidden={!props.isUserLoaded}className="btn btn-outline-primary" onClick={(e) => signOut(e)}>Log Out</button>
                     </div>
                 </nav>
             </div>

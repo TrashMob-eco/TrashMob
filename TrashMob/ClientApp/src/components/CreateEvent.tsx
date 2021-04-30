@@ -4,7 +4,6 @@ import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
 import EventData from './Models/EventData';
 import DateTimePicker from 'react-datetime-picker';
-import { getUserFromCache } from '../store/accountHandler';
 import EventTypeData from './Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import { withRouter } from 'react-router-dom';
@@ -15,6 +14,7 @@ import AddressData from './Models/AddressData';
 import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapController from './MapController';
+import UserData from './Models/UserData';
 
 interface CreateEventDataState {
     title: string;
@@ -40,10 +40,11 @@ interface CreateEventDataState {
     isKeyLoaded: boolean;
     mapOptions: IAzureMapOptions;
     eventList: EventData[];
-    currentUserId: string;
 }
 
 interface Props extends RouteComponentProps<any> {
+    isUserLoaded: boolean;
+    currentUser: UserData;
 }
 
 class CreateEvent extends Component<Props, CreateEventDataState> {
@@ -73,7 +74,6 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
             isKeyLoaded: false,
             mapOptions: null,
             eventList: [],
-            currentUserId: getUserFromCache().id
         };
 
         const headers = defaultHeaders('GET');
@@ -254,9 +254,8 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
         eventData.longitude = this.state.longitude ?? 0;
         eventData.maxNumberOfParticipants = this.state.maxNumberOfParticipants ?? 0;
 
-        var user = getUserFromCache();
-        eventData.createdByUserId = user.id;
-        eventData.lastUpdatedByUserId = user.id;
+        eventData.createdByUserId = this.props.currentUser.id;
+        eventData.lastUpdatedByUserId = this.props.currentUser.id;
 
         var data = JSON.stringify(eventData);
 
@@ -373,7 +372,7 @@ class CreateEvent extends Component<Props, CreateEventDataState> {
                     <div>
                         <AzureMapsProvider>
                             <>
-                                <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={this.handleLocationChange} currentUserId={this.state.currentUserId} />
+                                <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={this.handleLocationChange} currentUserId={this.props.currentUser.id} />
                             </>
                         </AzureMapsProvider>
                     </div>

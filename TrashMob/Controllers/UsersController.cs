@@ -44,19 +44,6 @@ namespace TrashMob.Controllers
             return Ok(user);
         }
 
-        [HttpGet("{nameIdentifier}")]
-        public async Task<IActionResult> GetUserByNamerIdentifier(string id)
-        {
-            var user = await userRepository.GetUserByInternalId(id).ConfigureAwait(false);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(user);
-        }
-
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]

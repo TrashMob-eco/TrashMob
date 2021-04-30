@@ -6,13 +6,15 @@ import { UserEvents } from './UserEvents'
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
-import { getUserFromCache, verifyAccount } from '../store/accountHandler';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapController from './MapController';
+import UserData from './Models/UserData';
 
 interface Props extends RouteComponentProps<any> {
+    isUserLoaded: boolean;
+    currentUser: UserData;
 }
 
 interface MyDashboardDataState {
@@ -24,7 +26,6 @@ interface MyDashboardDataState {
     center: data.Position;
     isKeyLoaded: boolean;
     mapOptions: IAzureMapOptions;
-    currentUserId: string;
 }
 
 class MyDashboard extends Component<Props, MyDashboardDataState> {
@@ -32,7 +33,7 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
         super(props);
 
         this.state = {
-            title: "My Dashboard", loading: false, myEventList: [], myAttendanceList: [], eventTypeList: [], center: new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude), isKeyLoaded: false, mapOptions: null, currentUserId: getUserFromCache().id
+            title: "My Dashboard", loading: false, myEventList: [], myAttendanceList: [], eventTypeList: [], center: new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude), isKeyLoaded: false, mapOptions: null
         };
 
         const account = msalClient.getAllAccounts()[0];
@@ -55,9 +56,7 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
                     this.setState({ eventTypeList: data });
                 });
 
-            var user = getUserFromCache();
-
-            fetch('api/events/userevents/' + user.id, {
+            fetch('api/events/userevents/' + this.props.currentUser.id, {
                 method: 'GET',
                 headers: headers
             })
@@ -95,9 +94,8 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
             const headers = defaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-            var user = getUserFromCache();
 
-            fetch('api/events/userevents/' + user.id, {
+            fetch('api/events/userevents/' + this.props.currentUser.id, {
                 method: 'GET',
                 headers: headers
             })
@@ -121,13 +119,13 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
                 </div>
                 <div>
                     <div>
-                        <UserEvents history={this.props.history} location={this.props.location} match={this.props.match} eventList={data.myEventList} eventTypeList={this.state.eventTypeList} loading={data.loading} onEventListChanged={this.loadEvents} />
+                        <UserEvents history={this.props.history} location={this.props.location} match={this.props.match} eventList={data.myEventList} eventTypeList={this.state.eventTypeList} loading={data.loading} onEventListChanged={this.loadEvents} currentUser={this.props.currentUser} isUserLoaded={this.props.isUserLoaded} />
                     </div>
                 </div>
                 <div>
                     <AzureMapsProvider>
                         <>
-                            <MapController center={this.state.center} multipleEvents={data.myEventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={this.handleLocationChange} currentUserId={this.state.currentUserId} />
+                            <MapController center={this.state.center} multipleEvents={data.myEventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={this.handleLocationChange} currentUserId={this.props.currentUser.id} />
                         </>
                     </AzureMapsProvider>
                 </div>

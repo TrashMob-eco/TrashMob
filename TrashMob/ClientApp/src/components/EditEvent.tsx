@@ -4,7 +4,6 @@ import { RouteComponentProps } from 'react-router';
 import { Guid } from "guid-typescript";
 import EventData from './Models/EventData';
 import DateTimePicker from 'react-datetime-picker';
-import { getUserFromCache } from '../store/accountHandler';
 import { getKey } from '../store/MapStore';
 import EventTypeData from './Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
@@ -14,6 +13,7 @@ import AddressData from './Models/AddressData';
 import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapController from './MapController';
+import UserData from './Models/UserData';
 
 interface EditEventDataState {
     title: string;
@@ -41,14 +41,15 @@ interface EditEventDataState {
     isKeyLoaded: boolean;
     mapOptions: IAzureMapOptions;
     eventList: EventData[];
-    currentUserId: string;
 }
 
-interface MatchParams {
+export interface MatchParams {
     eventId: string;
 }
 
 export interface EditEventProps extends RouteComponentProps<MatchParams> {
+    isUserLoaded: boolean;
+    currentUser: UserData;
 }
 
 export class EditEvent extends Component<EditEventProps, EditEventDataState> {
@@ -80,7 +81,6 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
             isKeyLoaded: false,
             mapOptions: null,
             eventList: [],
-            currentUserId: getUserFromCache().id
         };
 
         const headers = defaultHeaders('GET');
@@ -287,8 +287,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
         eventData.createdByUserId = this.state.createdByUserId;
         eventData.eventStatusId = this.state.eventStatusId;
 
-        var user = getUserFromCache();
-        eventData.lastUpdatedByUserId = user.id;
+        eventData.lastUpdatedByUserId = this.props.currentUser.id;
 
         var data = JSON.stringify(eventData);
 
@@ -409,7 +408,7 @@ export class EditEvent extends Component<EditEventProps, EditEventDataState> {
                     <div>
                         <AzureMapsProvider>
                             <>
-                                <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={this.handleLocationChange} currentUserId={this.state.currentUserId} />
+                                <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={this.handleLocationChange} currentUserId={this.props.currentUser.id} />
                             </>
                         </AzureMapsProvider>
                     </div>

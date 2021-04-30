@@ -1,5 +1,4 @@
 ﻿import * as msal from "@azure/msal-browser";
-import { clearUserCache, verifyAccount } from "./accountHandler";
 
 export const msalClient: msal.PublicClientApplication = new msal.PublicClientApplication(
     {
@@ -36,15 +35,6 @@ export const msalClient: msal.PublicClientApplication = new msal.PublicClientApp
         }
     }
 );
-
-msalClient.addEventCallback((message: msal.EventMessage) => {
-    if (message.eventType === msal.EventType.LOGIN_SUCCESS) {
-        verifyAccount(message.payload as msal.AuthenticationResult)
-    }
-    if (message.eventType === msal.EventType.LOGOUT_SUCCESS) {
-        clearUserCache()
-    }
-});
 
 export const apiConfig = {
     b2cScopes: ["https://Trashmob.onmicrosoft.com/api/TrashMob.Read", "https://Trashmob.onmicrosoft.com/api/Trashmob.Writes" ],

@@ -1,11 +1,11 @@
 import * as React from 'react'
-import { Link, useHistory } from 'react-router-dom';
-import { getUserFromCache } from '../store/accountHandler';
+import { useHistory } from 'react-router-dom';
 import EventAttendeeData from './Models/EventAttendeeData';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
+import UserData from './Models/UserData';
 
 class DisplayEvent {
     id: string;
@@ -24,6 +24,7 @@ export interface MainEventsDataState {
     myAttendanceList: EventData[];
     isLoggedIn: boolean;
     loading: boolean;
+    currentUser: UserData;
 };
 
 export const MainEvents: React.FC<MainEventsDataState> = (props) => {
@@ -60,9 +61,8 @@ export const MainEvents: React.FC<MainEventsDataState> = (props) => {
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
 
-            var user = getUserFromCache();
             var eventAttendee = new EventAttendeeData();
-            eventAttendee.userId = user.id;
+            eventAttendee.userId = props.currentUser.id;
             eventAttendee.eventId = eventId;
 
             var data = JSON.stringify(eventAttendee);
