@@ -6,7 +6,7 @@ import { UserEvents } from './UserEvents'
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
 import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
-import { getUserFromCache } from '../store/accountHandler';
+import { getUserFromCache, verifyAccount } from '../store/accountHandler';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
@@ -55,7 +55,9 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
                     this.setState({ eventTypeList: data });
                 });
 
-            fetch('api/events/userevents/' + getUserFromCache().id, {
+            var user = getUserFromCache();
+
+            fetch('api/events/userevents/' + user.id, {
                 method: 'GET',
                 headers: headers
             })
@@ -82,7 +84,31 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
         }
     }
 
-    handleLocationChange = (point: data.Position) => {
+    private loadEvents = () => {
+        const account = msalClient.getAllAccounts()[0];
+
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = defaultHeaders('GET');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+            var user = getUserFromCache();
+
+            fetch('api/events/userevents/' + user.id, {
+                method: 'GET',
+                headers: headers
+            })
+                .then(response => response.json() as Promise<EventData[]>)
+                .then(data => {
+                    this.setState({ myEventList: data, loading: false });
+                });
+        });
+    }
+
+    private handleLocationChange = (point: data.Position) => {
         // do nothing
     }
 
@@ -95,7 +121,7 @@ class MyDashboard extends Component<Props, MyDashboardDataState> {
                 </div>
                 <div>
                     <div>
-                        <UserEvents history={this.props.history} location={this.props.location} match={this.props.match}  eventList={data.myEventList} eventTypeList={this.state.eventTypeList} loading={data.loading} />
+                        <UserEvents history={this.props.history} location={this.props.location} match={this.props.match} eventList={data.myEventList} eventTypeList={this.state.eventTypeList} loading={data.loading} onEventListChanged={this.loadEvents} />
                     </div>
                 </div>
                 <div>

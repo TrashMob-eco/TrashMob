@@ -12,6 +12,7 @@ interface PropsType extends RouteComponentProps {
     eventList: EventData[];
     eventTypeList: EventTypeData[];
     loading: boolean;
+    onEventListChanged: any;
 };
 
 interface FetchEventDataState {
@@ -51,7 +52,7 @@ export class UserEvents extends Component<PropsType, FetchEventDataState> {
                 fetch('api/EventAttendees/' + id + '/' + this.state.currentUserId, {
                     method: 'delete',
                     headers: headers
-                }).then(() => { this.props.history.push("/"); })
+                }).then(() => { this.props.onEventListChanged(); })
             });
         }
     }
@@ -75,7 +76,7 @@ export class UserEvents extends Component<PropsType, FetchEventDataState> {
                 fetch('api/Events/' + id, {
                     method: 'delete',
                     headers: headers
-                }).then(() => { this.props.history.push("/"); });
+                }).then(() => { this.props.onEventListChanged(); });
             });
         }
     }

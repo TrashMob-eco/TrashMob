@@ -52,7 +52,6 @@ export function verifyAccount(result: msal.AuthenticationResult) {
         headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
         user.nameIdentifier = result.idTokenClaims["sub"];
-        user.nameIdentifier = result.idTokenClaims["sub"];
         user.userName = result.account?.username ?? "";
         user.city = result.account?.idTokenClaims["city"] ?? "";
         user.region = result.account?.idTokenClaims["region"] ?? "";
