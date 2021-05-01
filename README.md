@@ -26,16 +26,13 @@ Here's what needs to be done before we can launch
   1. Styling
     1. Required field indicators
     1. Number of characters remaining
-    1. Tool tips
     1. Carousel Content
     1. Bold field names
     1. Bootstrap theme?
   1. Get proper logo
     1. In process
   1. Fix email issues (waiting for DNS Servers to update)
-  1. Brand sign in pages
-  1. Fix issue with clicking on Nav Bar links causing loss of user info
-  
+  1. Brand sign in pages  
 
 ## High Priority Post Launch Items
 These items did not make the cut for launch but need to be done
