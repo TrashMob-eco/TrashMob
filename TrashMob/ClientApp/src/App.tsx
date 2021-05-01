@@ -30,22 +30,26 @@ import UserData from './components/Models/UserData';
 import * as msal from "@azure/msal-browser";
 
 interface AppProps extends RouteComponentProps<MatchParams> {
+    isUserLoaded: boolean;
+    currentUser: UserData;
 }
 
-export const App = (props) => {
-    const [isUserLoaded, setIsUserLoaded] = React.useState(false);
-    const [currentUser, setCurrentUser] = React.useState<UserData>(new UserData());
-    
-    initializeIcons();
+export const App: React.FC<AppProps> = (props) => {
+    const [isUserLoaded, setIsUserLoaded] = React.useState(props.isUserLoaded);
+    const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
 
-    msalClient.addEventCallback((message: msal.EventMessage) => {
-        if (message.eventType === msal.EventType.LOGIN_SUCCESS) {
-            verifyAccount(message.payload as msal.AuthenticationResult)
-        }
-        if (message.eventType === msal.EventType.LOGOUT_SUCCESS) {
-            clearUser();
-        }
-    });
+    React.useEffect(() => {
+        initializeIcons();
+
+        msalClient.addEventCallback((message: msal.EventMessage) => {
+            if (message.eventType === msal.EventType.LOGIN_SUCCESS) {
+                verifyAccount(message.payload as msal.AuthenticationResult)
+            }
+            if (message.eventType === msal.EventType.LOGOUT_SUCCESS) {
+                clearUser();
+            }
+        });
+    }, []);
 
     function ErrorComponent(error: MsalAuthenticationResult) {
         return <p>An Error Occurred: {error}</p>;
@@ -165,7 +169,7 @@ export const App = (props) => {
 
                         <BrowserRouter>
                             <Switch>
-                                <Route path="/editevent/:eventId" render={(props) => renderEditEvent(props)} />
+                                <Route path="/editevent/:eventId" render={(props: AppProps) => renderEditEvent(props)} />
                                 <Route path="/eventdetails/:eventId" component={EventDetails} />
                                 <Route path="/createevent">
                                     <MsalAuthenticationTemplate

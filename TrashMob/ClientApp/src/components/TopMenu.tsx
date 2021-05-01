@@ -9,6 +9,18 @@ interface TopMenuProps extends RouteComponentProps {
 }
 
 export const TopMenu: React.FC<TopMenuProps> = (props) => {
+    const [userName, setUserName] = React.useState<string>("");
+    const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
+    const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
+
+    React.useEffect(() => {
+        if (props.currentUser && props.isUserLoaded) {
+            setUserName(props.currentUser.givenName);
+        }
+
+        setIsUserLoaded(props.isUserLoaded);
+        setCurrentUser(props.currentUser);
+    }, [props.currentUser, props.isUserLoaded])
 
     const mainNavItems = [
         { name: "Home", url: "/" },
@@ -44,7 +56,7 @@ export const TopMenu: React.FC<TopMenuProps> = (props) => {
                         <ul className="navbar-nav mr-auto">
                             {mainNavItems.map(item => (
                                 <li className="nav-item" key={item.name}>
-                                    <a className="nav-link" href={item.url}>{item.name}</a>
+                                    <a className="nav-link" href="{item.url}">{item.name}</a>
                                 </li>
                             ))}
                             <li className="nav-item dropdown">
@@ -58,9 +70,9 @@ export const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 </div>
                             </li>
                         </ul>
-                        <label hidden={!props.isUserLoaded}>Welcome, {props.currentUser.givenName}!</label>
-                        <button hidden={props.isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)}>Sign Up/Log In</button>
-                        <button hidden={!props.isUserLoaded}className="btn btn-outline-primary" onClick={(e) => signOut(e)}>Log Out</button>
+                        <label hidden={!isUserLoaded}>Welcome, {userName}!</label>
+                        <button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)}>Sign Up/Log In</button>
+                        <button hidden={!isUserLoaded}className="btn btn-outline-primary" onClick={(e) => signOut(e)}>Log Out</button>
                     </div>
                 </nav>
             </div>
