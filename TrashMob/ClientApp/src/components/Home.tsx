@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import { MainEvents } from './MainEvents';
 import { MainCarousel } from './MainCarousel';
-import { Link, RouteComponentProps } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
@@ -12,7 +12,7 @@ import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapController from './MapController';
 import UserData from './Models/UserData';
 
-export interface HomeProps extends RouteComponentProps {
+export interface HomeProps {
     isUserLoaded: boolean;
     currentUser: UserData;
 }

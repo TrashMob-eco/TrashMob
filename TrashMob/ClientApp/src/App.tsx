@@ -34,9 +34,9 @@ interface AppProps extends RouteComponentProps<MatchParams> {
     currentUser: UserData;
 }
 
-export const App: React.FC<AppProps> = (props) => {
-    const [isUserLoaded, setIsUserLoaded] = React.useState(props.isUserLoaded);
-    const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
+export const App: React.FC = () => {
+    const [isUserLoaded, setIsUserLoaded] = React.useState(false);
+    const [currentUser, setCurrentUser] = React.useState<UserData>(new UserData());
 
     React.useEffect(() => {
         initializeIcons();
@@ -171,7 +171,7 @@ export const App: React.FC<AppProps> = (props) => {
     return (
         <MsalProvider instance={msalClient} >
             <div className="d-flex flex-column h-100">
-                <TopMenu {...props} isUserLoaded={isUserLoaded} currentUser={currentUser} />
+                <TopMenu isUserLoaded={isUserLoaded} currentUser={currentUser} />
 
                 <div className="container">
                     <div className="">
@@ -221,7 +221,7 @@ export const App: React.FC<AppProps> = (props) => {
                                     <TermsOfService />
                                 </Route>
                                 <Route exact path='/'>
-                                    <Home {...props} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                    <Home currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </Route>
                                 <Route>
                                     <NoMatch />
