@@ -24,16 +24,17 @@ ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want
 Here's what needs to be done before we can launch
 1. UI
   1. Styling
-    1. Required field indicators
-    1. Number of characters remaining
-    1. Carousel Content
-    1. Bold field names
-    1. Bootstrap theme?
+    1. Bootstrap theme
+    1. Make forms and grids presentable
+    1. Add Required field indicators
+    1. Improve Carousel Content / verify images not licensed
+    1. Make field names more prominent
+    1. Add logo to header    
   1. Get proper logo
     1. In process
-  1. Fix email issues (waiting for DNS Servers to update)
-  1. Brand sign in pages  
-
+1. Brand sign in pages (need logo and colors)
+1. Fix email issues (waiting for DNS Servers to update - Joe working on this)
+  
 ## High Priority Post Launch Items
 These items did not make the cut for launch but need to be done
   1. Ensure user can't multi-click buttons
@@ -45,13 +46,16 @@ These items did not make the cut for launch but need to be done
   1. Find a way to secure the Azure Maps Key (referral restriction?)
   1. Set up rotation of Azure Maps Keys every 24 hours
   1. Set up bicep deployment of all resources needed by devs to run the site.
+  1. Redeploy test environment with standardized names
   
 ## Upcoming Feature List (not ordered)
-  1. Redeploy test environment with standardized names
+  1. Number of characters remaining
+  1. Allow user to view and update their profile
+  1. Allow user to delete account
+  1. On user dashboard, allow sorting, ordering and filtering
   1. Improve redirect on login logic so we don't have to add all the paths to the AD config
   1. Add search / filter of events on main page
   1. Allow user / sponsor / partner to request an event
-  1. Allow user to view and update their profile
   1. Test on Mobile device
   1. Set up SendMail for Contact Us
   1. Register a Sponsor
@@ -66,7 +70,6 @@ These items did not make the cut for launch but need to be done
     1. Number of Users who have attended at least 1 event
     1. Number of Users who have attended at least 5 events
     1. Number of Users who have attended at least 10 events
-  1. Allow browser to detect location
   1. Allow user to be notified when a new event is added within x distance of their location
   1. Allow event lead to email all registered attendees
   1. Create mobile version of the app
@@ -84,7 +87,6 @@ These items did not make the cut for launch but need to be done
     1. Park Guides
   1. Add ability to see where events have been previously and how long before
   1. Add profanity filter for text fields
-  1. Allow user to delete accounts
   1. Allow event leads to specify specialized skills/tools needed (i.e. chainsaws, skidsteer, safety truck, metal detector, sharps containers)
   1. GDPR handling
   1. Admin Site
