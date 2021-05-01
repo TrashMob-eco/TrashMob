@@ -26,6 +26,8 @@ export const Home: React.FC<HomeProps> = (props) => {
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState(false);
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
+    const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
+    const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
 
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
@@ -64,6 +66,14 @@ export const Home: React.FC<HomeProps> = (props) => {
     }, [])
 
     React.useEffect(() => {
+
+        setCurrentUser(props.currentUser);
+        setIsUserLoaded(props.isUserLoaded);
+
+        if (!props.isUserLoaded || !props.currentUser) {
+            return;
+        }
+
         // If the user is logged in, get the events they are attending
         var accounts = msalClient.getAllAccounts();
 
@@ -104,12 +114,12 @@ export const Home: React.FC<HomeProps> = (props) => {
                     <Link to="/createevent">Create a New Event</Link>
                 </div>
                 <div style={{ width: 50 + '%' }}>
-                    <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={props.isUserLoaded} currentUser={props.currentUser} />
+                    <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} />
                 </div>
                 <div style={{ width: 50 + '%' }}>
                     <AzureMapsProvider>
                         <>
-                            <MapController center={center} multipleEvents={eventList} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUserId={props.currentUser.id} />
+                            <MapController center={center} multipleEvents={eventList} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} />
                         </>
                     </AzureMapsProvider>
                 </div>

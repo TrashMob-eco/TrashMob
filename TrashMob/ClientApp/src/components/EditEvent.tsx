@@ -40,9 +40,9 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [createdByUserId, setCreatedByUserId] = React.useState<string>();
     const [eventStatusId, setEventStatusId] = React.useState<number>(0);
     const [eventTypeList, setEventTypeList] = React.useState<EventTypeData[]>([]);
-    const [eventDateErrors, setEventDateErrors] = React.useState<string>();
-    const [latitudeErrors, setLatitudeErrors] = React.useState<string>();
-    const [longitudeErrors, setLongitudeErrors] = React.useState<string>();
+    const [eventDateErrors, setEventDateErrors] = React.useState<string>("");
+    const [latitudeErrors, setLatitudeErrors] = React.useState<string>("");
+    const [longitudeErrors, setLongitudeErrors] = React.useState<string>("");
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);;
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();;
@@ -229,6 +229,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         eventData.longitude = longitude ?? 0;
         eventData.maxNumberOfParticipants = maxNumberOfParticipants ?? 0;
         eventData.createdByUserId = createdByUserId;
+        eventData.lastUpdatedByUserId = props.currentUser.id;
         eventData.eventStatusId = eventStatusId;
 
         eventData.lastUpdatedByUserId = props.currentUser.id;
@@ -351,7 +352,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     <div>
                         <AzureMapsProvider>
                             <>
-                                <MapController center={center} multipleEvents={eventList} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUserId={props.currentUser.id} />
+                                <MapController center={center} multipleEvents={eventList} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
                             </>
                         </AzureMapsProvider>
                     </div>

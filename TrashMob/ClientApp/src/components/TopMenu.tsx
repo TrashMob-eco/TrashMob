@@ -58,7 +58,7 @@ export const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 </div>
                             </li>
                         </ul>
-                        <label hidden={!props.isUserLoaded}>Welcome, {props.currentUser.givenName}</label>
+                        <label hidden={!props.isUserLoaded}>Welcome, {props.currentUser.givenName}!</label>
                         <button hidden={props.isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)}>Sign Up/Log In</button>
                         <button hidden={!props.isUserLoaded}className="btn btn-outline-primary" onClick={(e) => signOut(e)}>Log Out</button>
                     </div>

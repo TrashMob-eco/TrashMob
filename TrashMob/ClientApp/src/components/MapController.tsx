@@ -5,6 +5,7 @@ import { data, layer, source } from 'azure-maps-control';
 import MapComponent from './MapComponent';
 import EventData from './Models/EventData';
 import * as MapStore from '../store/MapStore'
+import UserData from './Models/UserData';
 
 const dataSourceRef = new source.DataSource();
 const layerRef = new layer.SymbolLayer(dataSourceRef);
@@ -19,13 +20,14 @@ interface MapControllerProps {
     latitude: number;
     longitude: number;
     onLocationChange: any;
-    currentUserId: string;
+    currentUser: UserData;
+    isUserLoaded: boolean;
 }
 
 export const MapController: React.FC<MapControllerProps> = (props) => {
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
-    
+
     useEffect(() => {
         if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded) {
             // Simple Camera options modification
@@ -35,11 +37,11 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
 
     // This is used for maps with multiple events
     useEffect(() => {
-        if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded) {
+        if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && props.isUserLoaded) {
             clearMarkers();
             props.multipleEvents.forEach(mobEvent => {
                 var pin = new MapStore.markerPoint();
-                var pinColor = mobEvent.createdByUserId === props.currentUserId ? 'pin-round-blue' : 'pin-round-green';
+                var pinColor = mobEvent.createdByUserId === props.currentUser.id ? 'pin-round-blue' : 'pin-round-green';
                 pin.position = new data.Point(new data.Position(mobEvent.longitude, mobEvent.latitude));
                 pin.properties = {
                     title: mobEvent.name, icon: pinColor, type: 'Point'
@@ -47,11 +49,11 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
                 addMarker(pin);
             })
         }
-    }, [props.multipleEvents, mapRef, props.isEventDataLoaded, props.isMapKeyLoaded, props.currentUserId]);
+    }, [props.multipleEvents, mapRef, props.isEventDataLoaded, props.isMapKeyLoaded, props.currentUser, props.isUserLoaded]);
 
     // This is only used for maps with a single event
     useEffect(() => {
-        if (!props.isEventDataLoaded && props.eventName !== '' && props.isMapKeyLoaded && mapRef && isMapReady) {
+        if (props.isEventDataLoaded && props.eventName !== '' && props.isMapKeyLoaded && mapRef && isMapReady) {
             var pin = new MapStore.markerPoint();
             pin.position = new data.Point(new data.Position(props.longitude, props.latitude));
             pin.properties = {

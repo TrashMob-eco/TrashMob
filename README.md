@@ -42,7 +42,6 @@ These items did not make the cut for launch but need to be done
   1. Allow map to respond to changes in country, region, city or postal code
   1. Check response codes from APIs are correct
   1. Fix Terms of Service accept popup
-  1. Fix welcome user message on main header
   1. Allow event location to be dragged with visual indicator
   1. Add Patreon
   1. Redeploy test environment with standardized names
@@ -51,6 +50,7 @@ These items did not make the cut for launch but need to be done
   1. Set up bicep deployment of all resources needed by devs to run the site.
   
 ## Upcoming Feature List (not ordered)
+  1. Improve redirect on login logic so we don't have to add all the paths to the AD config
   1. Add search / filter of events on main page
   1. Allow user / sponsor / partner to request an event
   1. Allow user to view and update their profile

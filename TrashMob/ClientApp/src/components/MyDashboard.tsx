@@ -19,48 +19,32 @@ interface MyDashboardProps extends RouteComponentProps<any> {
 const MyDashboard: React.FC<MyDashboardProps> = (props) => {
     const [myEventList, setMyEventList] = React.useState<EventData[]>([]);
     const [eventTypeList, setEventTypeList] = React.useState<EventTypeData[]>([]);
-    const [isDataLoaded, setIsDataLoaded] = React.useState<boolean>(false);
+    const [isEventDataLoaded, setIsEventDataLoaded] = React.useState<boolean>(false);
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
+    const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
+    const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
 
     React.useEffect(() => {
-        const account = msalClient.getAllAccounts()[0];
+        const headers = getDefaultHeaders('GET');
 
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
+        setCurrentUser(props.currentUser);
+        setIsUserLoaded(props.isUserLoaded);
 
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('api/eventtypes', {
-                method: 'GET',
-                headers: headers,
-            })
-                .then(response => response.json() as Promise<Array<any>>)
-                .then(data => {
-                    setEventTypeList(data);
-                });
-
-            fetch('api/events/userevents/' + props.currentUser.id, {
-                method: 'GET',
-                headers: headers
-            })
-                .then(response => response.json() as Promise<EventData[]>)
-                .then(data => {
-                    setMyEventList(data);
-                    setIsDataLoaded(true);
-                });
-        });
+        fetch('api/eventtypes', {
+            method: 'GET',
+            headers: headers,
+        })
+            .then(response => response.json() as Promise<Array<any>>)
+            .then(data => {
+                setEventTypeList(data);
+            });
 
         MapStore.getOption().then(opts => {
             setMapOptions(opts);
             setIsMapKeyLoaded(true);
         })
-
 
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(position => {
@@ -90,7 +74,7 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
                     .then(response => response.json() as Promise<EventData[]>)
                     .then(data => {
                         setMyEventList(data);
-                        setIsDataLoaded(true);
+                        setIsEventDataLoaded(true);
                     });
             });
         }
@@ -98,6 +82,7 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
 
     function loadEvents() {
         if (props.isUserLoaded) {
+            setIsEventDataLoaded(false);
             const account = msalClient.getAllAccounts()[0];
 
             var request = {
@@ -109,14 +94,14 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('api/events/userevents/' + props.currentUser.id, {
+                fetch('api/events/userevents/' + currentUser.id, {
                     method: 'GET',
                     headers: headers
                 })
                     .then(response => response.json() as Promise<EventData[]>)
                     .then(data => {
                         setMyEventList(data);
-                        setIsDataLoaded(true);
+                        setIsEventDataLoaded(true);
                     });
             });
         }
@@ -133,13 +118,13 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
             </div>
             <div>
                 <div>
-                    <UserEvents history={props.history} location={props.location} match={props.match} eventList={myEventList} eventTypeList={eventTypeList} isDataLoaded={isDataLoaded} onEventListChanged={loadEvents} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                    <UserEvents history={props.history} location={props.location} match={props.match} eventList={myEventList} eventTypeList={eventTypeList} isEventDataLoaded={isEventDataLoaded} onEventListChanged={loadEvents} currentUser={currentUser} isUserLoaded={isUserLoaded} />
                 </div>
             </div>
             <div>
                 <AzureMapsProvider>
                     <>
-                        <MapController center={center} multipleEvents={myEventList} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUserId={props.currentUser.id} />
+                        <MapController center={center} multipleEvents={myEventList} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} />
                     </>
                 </AzureMapsProvider>
             </div>

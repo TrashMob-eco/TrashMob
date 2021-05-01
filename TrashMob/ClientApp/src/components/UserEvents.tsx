@@ -10,7 +10,7 @@ import UserData from './Models/UserData';
 interface UserEventsPropsType extends RouteComponentProps {
     eventList: EventData[];
     eventTypeList: EventTypeData[];
-    isDataLoaded: boolean;
+    isEventDataLoaded: boolean;
     onEventListChanged: any;
     isUserLoaded: boolean;
     currentUser: UserData;
@@ -83,13 +83,13 @@ export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
                     </thead>
                     <tbody>
                         {events.map(mobEvent => {
-                            var isOwner = mobEvent.createdByUserId === this.props.currentUser.id;
+                            var isOwner = mobEvent.createdByUserId === props.currentUser.id;
 
                             return (
                                 <tr key={mobEvent.id.toString()}>
                                     <td>{mobEvent.name}</td>
                                     <td>{new Date(mobEvent.eventDate).toLocaleString()}</td>
-                                    <td>{getEventType(this.props.eventTypeList, mobEvent.eventTypeId)}</td>
+                                    <td>{getEventType(props.eventTypeList, mobEvent.eventTypeId)}</td>
                                     <td>{mobEvent.city}</td>
                                     <td>{mobEvent.region}</td>
                                     <td>{mobEvent.country}</td>
@@ -109,7 +109,7 @@ export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
         );
     }
 
-    let contents = props.isDataLoaded
+    let contents = props.isEventDataLoaded
         ? renderEventsTable(props.eventList)
         : <p><em>Loading...</em></p>;
 

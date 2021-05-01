@@ -10,9 +10,9 @@ interface ContactUsProps extends RouteComponentProps<any> {
 export const ContactUs: React.FC<ContactUsProps> = (props) => {
     const [name, setName] = React.useState<string>();
     const [email, setEmail] = React.useState<string>();
-    const [emailErrors, setEmailErrors] = React.useState<string>();
-    const [message, setMessage] = React.useState<string>();
-    const [messageErrors, setMessageErrors] = React.useState<string>();
+    const [emailErrors, setEmailErrors] = React.useState<string>("");
+    const [message, setMessage] = React.useState<string>("");
+    const [messageErrors, setMessageErrors] = React.useState<string>("");
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
@@ -20,14 +20,18 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
 
         const form = new FormData(event.target);
 
+        if (messageErrors !== "" || emailErrors !== "") {
+            return;
+        }
+
         var user_captcha_value = form.get("user_captcha_input")?.toString() ?? "";
 
         if (validateCaptcha(user_captcha_value) === true) {
 
             var contactRequestData = new ContactRequestData();
-            contactRequestData.name = this.state.name ?? "";
-            contactRequestData.email = this.state.email ?? "";
-            contactRequestData.message = this.state.message ?? "";
+            contactRequestData.name = name ?? "";
+            contactRequestData.email = email ?? "";
+            contactRequestData.message = message ?? "";
 
             var data = JSON.stringify(contactRequestData);
 
@@ -38,7 +42,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
                 body: data,
                 headers: headers,
             }).then(() => {
-                this.props.history.push("/");
+                props.history.push("/");
             })
         }
 
@@ -118,7 +122,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
                     </div>
                 </div >
                 <div className="form-group">
-                    <button type="submit" className="action btn-default">Save</button>
+                    <button disabled={emailErrors !== "" || messageErrors !== ""} type="submit" className="action btn-default">Save</button>
                     <button className="action" onClick={(e) => handleCancel(e)}>Cancel</button>
                 </div >
             </form >

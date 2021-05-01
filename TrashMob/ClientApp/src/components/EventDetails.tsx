@@ -40,6 +40,8 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();;
     const [eventList, setEventList] = React.useState<EventData[]>([]);;
     const [userList, setUserList] = React.useState<UserData[]>([]);;
+    const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
+    const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
 
     React.useEffect(() => {
 
@@ -92,6 +94,11 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
             setIsMapKeyLoaded(true);
         })
     }, [eventId]);
+
+    React.useEffect(() => {
+        setCurrentUser(props.currentUser);
+        setIsUserLoaded(props.isUserLoaded);
+    },[props.currentUser, props.isUserLoaded])
 
     function handleLocationChange(point: data.Position) {
         // do nothing
@@ -190,12 +197,13 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     </div>
                 </div >
                 <div>
+                    <h2>Attendees</h2>
                     {renderUsersTable(userList)}
                 </div>
                 <div>
                     <AzureMapsProvider>
                         <>
-                            <MapController center={center} multipleEvents={eventList} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUserId={props.currentUser.id} />
+                            <MapController center={center} multipleEvents={eventList} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} />
                         </>
                     </AzureMapsProvider>
                 </div>
