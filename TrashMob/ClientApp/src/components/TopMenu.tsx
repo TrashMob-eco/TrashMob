@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { msalClient } from '../store/AuthStore';
 import UserData from './Models/UserData';
 
-interface TopMenuProps extends RouteComponentProps {
+interface TopMenuProps {
     isUserLoaded: boolean;
     currentUser: UserData;
 }
