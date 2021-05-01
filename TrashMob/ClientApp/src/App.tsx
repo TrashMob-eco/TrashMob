@@ -21,7 +21,7 @@ import { TermsOfService } from './components/TermsOfService';
 import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
-import { apiConfig, defaultHeaders, msalClient } from './store/AuthStore';
+import { apiConfig, getDefaultHeaders, msalClient } from './store/AuthStore';
 import CreateEvent from './components/CreateEvent';
 import { EventDetails, MatchParams } from './components/EventDetails';
 import { EditEvent } from './components/EditEvent';
@@ -81,7 +81,7 @@ export const App = (props) => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = defaultHeaders('PUT');
+            const headers = getDefaultHeaders('PUT');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
             var user = new UserData();
 
@@ -130,7 +130,7 @@ export const App = (props) => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = defaultHeaders('GET');
+            const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
             fetch('api/Users/' + currentUser.id, {

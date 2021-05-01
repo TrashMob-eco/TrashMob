@@ -1,5 +1,5 @@
 ﻿import { AuthenticationType, SymbolLayerOptions, data } from 'azure-maps-control'
-import { defaultHeaders } from './AuthStore';
+import { getDefaultHeaders } from './AuthStore';
 import {IAzureMapOptions} from 'react-azure-maps';
 
 export async function getOption(): Promise<IAzureMapOptions> {
@@ -13,7 +13,7 @@ export async function getOption(): Promise<IAzureMapOptions> {
 export async function getKey(): Promise<string> {
     var key = '';
 
-    const headers = defaultHeaders('GET');
+    const headers = getDefaultHeaders('GET');
 
     await fetch('api/maps', {
         method: 'GET',

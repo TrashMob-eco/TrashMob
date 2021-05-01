@@ -3,12 +3,12 @@ import { RouteComponentProps } from 'react-router-dom';
 import { msalClient } from '../store/AuthStore';
 import UserData from './Models/UserData';
 
-interface topMenuProps extends RouteComponentProps {
+interface TopMenuProps extends RouteComponentProps {
     isUserLoaded: boolean;
     currentUser: UserData;
 }
 
-export const TopMenu: React.FC<topMenuProps> = (props) => {
+export const TopMenu: React.FC<TopMenuProps> = (props) => {
 
     const mainNavItems = [
         { name: "Home", url: "/" },

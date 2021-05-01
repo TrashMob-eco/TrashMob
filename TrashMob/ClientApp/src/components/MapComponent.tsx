@@ -1,14 +1,13 @@
 ﻿import * as React from 'react';
 import { AzureMap, IAzureMapOptions } from 'react-azure-maps';
 
-interface MapComponentState {
+interface MapComponentProps {
     mapOptions: IAzureMapOptions,
     isKeyLoaded: boolean,
     onLocationChange: any;
 }
 
-
-const MapComponent: React.FC<MapComponentState> = (props) => {
+const MapComponent: React.FC<MapComponentProps> = (props) => {
 
     function getCoordinates(e: any) {
         props.onLocationChange(e.position);

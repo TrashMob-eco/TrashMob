@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import * as React from 'react'
 
 import { MainEvents } from './MainEvents';
@@ -6,7 +5,7 @@ import { MainCarousel } from './MainCarousel';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
-import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
+import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
@@ -18,35 +17,45 @@ export interface HomeProps extends RouteComponentProps {
     currentUser: UserData;
 }
 
-export interface HomeDataState {
-    eventList: EventData[];
-    eventTypeList: EventTypeData[];
-    myAttendanceList: EventData[];
-    loading: boolean;
-    isKeyLoaded: boolean;
-    center: data.Position;
-    mapOptions: IAzureMapOptions;
-}
+export const Home: React.FC<HomeProps> = (props) => {
+    const [eventList, setEventList] = React.useState<EventData[]>([]);
+    const [eventTypeList, setEventTypeList] = React.useState<EventTypeData[]>([]);
+    const [myAttendanceList, setMyAttendanceList] = React.useState<EventData[]>([]);
+    const [isDataLoaded, setIsDataLoaded] = React.useState(true);
+    const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState(false);
+    const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
+    const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
 
-export class Home extends Component<HomeProps, HomeDataState> {
-    static displayName = Home.name;
+    const headers = getDefaultHeaders('GET');
+    getEventTypes();
 
-    constructor(props: HomeProps) {
-        super(props);
-        this.state = { eventList: [], eventTypeList: [], myAttendanceList: [], loading: true, center: new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude), isKeyLoaded: false, mapOptions: null };
+    fetch('api/Events/active', {
+        method: 'GET',
+        headers: headers
+    })
+        .then(response => response.json() as Promise<EventData[]>)
+        .then(data => {
+            setEventList(data);
+            setIsDataLoaded(false);
+        });
 
-        const headers = defaultHeaders('GET');
-        this.getEventTypes();
+    MapStore.getOption().then(opts => {
+        setMapOptions(opts);
+        setIsMapKeyLoaded(true);
+    })
 
-        fetch('api/Events/active', {
-            method: 'GET',
-            headers: headers
-        })
-            .then(response => response.json() as Promise<EventData[]>)
-            .then(data => {
-                this.setState({ eventList: data, loading: false });
+    React.useEffect(() => {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(position => {
+                var point = new data.Position(position.coords.longitude, position.coords.latitude);
+                setCenter(point)
             });
+        } else {
+            console.log("Not Available");
+        }
+    }, [])
 
+    React.useEffect(() => {
         // If the user is logged in, get the events they are attending
         var accounts = msalClient.getAllAccounts();
 
@@ -57,7 +66,7 @@ export class Home extends Component<HomeProps, HomeDataState> {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = defaultHeaders('GET');
+                const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
                 fetch('api/events/eventsuserisattending/' + props.currentUser.id, {
@@ -66,30 +75,15 @@ export class Home extends Component<HomeProps, HomeDataState> {
                 })
                     .then(response => response.json() as Promise<EventData[]>)
                     .then(data => {
-                        this.setState({ myAttendanceList: data, loading: false });
+                        setMyAttendanceList(data);
+                        setIsDataLoaded(false);
                     })
             });
         }
+    }, [props.isUserLoaded, props.currentUser]);
 
-        MapStore.getOption().then(opts => {
-            this.setState({ mapOptions: opts });
-            this.setState({ isKeyLoaded: true });
-        })
-    }
-
-    componentDidMount() {
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(position => {
-                var point = new data.Position(position.coords.longitude, position.coords.latitude);
-                this.setState({ center: point })
-            });
-        } else {
-            console.log("Not Available");
-        }
-    }
-
-    private getEventTypes() {
-        const headers = defaultHeaders('GET');
+    function getEventTypes() {
+        const headers = getDefaultHeaders('GET');
 
         fetch('api/eventtypes', {
             method: 'GET',
@@ -97,38 +91,34 @@ export class Home extends Component<HomeProps, HomeDataState> {
         })
             .then(response => response.json() as Promise<Array<any>>)
             .then(data => {
-                this.setState({ eventTypeList: data });
+                setEventTypeList(data);
             });
     }
 
-    handleLocationChange = (point: data.Position) => {
+    function handleLocationChange(point: data.Position) {
         // do nothing
     }
 
-    render() {
-        const data = this.state;
-        return (
-
+    return (
+        <div>
+            <div>
+                <MainCarousel />
+            </div>
             <div>
                 <div>
-                    <MainCarousel />
+                    <Link to="/createevent">Create a New Event</Link>
                 </div>
-                <div>
-                    <div>
-                        <Link to="/createevent">Create a New Event</Link>
-                    </div>
-                    <div style={{ width: 50 + '%' }}>
-                        <MainEvents eventList={data.eventList} eventTypeList={data.eventTypeList} myAttendanceList={data.myAttendanceList} loading={data.loading} isLoggedIn={this.props.isUserLoaded} currentUser={this.props.currentUser} />
-                    </div>
-                    <div style={{ width: 50 + '%' }}>
-                        <AzureMapsProvider>
-                            <>
-                                <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={this.handleLocationChange} currentUserId={this.props.currentUser.id} />
-                            </>
-                        </AzureMapsProvider>
-                    </div>
+                <div style={{ width: 50 + '%' }}>
+                    <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isDataLoaded={isDataLoaded} isUserLoaded={props.isUserLoaded} currentUser={props.currentUser} />
+                </div>
+                <div style={{ width: 50 + '%' }}>
+                    <AzureMapsProvider>
+                        <>
+                            <MapController center={center} multipleEvents={eventList} isDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUserId={props.currentUser.id} />
+                        </>
+                    </AzureMapsProvider>
                 </div>
             </div>
-        );
-    }
+        </div>
+    );
 }

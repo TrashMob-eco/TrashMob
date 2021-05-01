@@ -9,12 +9,12 @@ import * as MapStore from '../store/MapStore'
 const dataSourceRef = new source.DataSource();
 const layerRef = new layer.SymbolLayer(dataSourceRef);
 
-interface MapControllerState {
+interface MapControllerProps {
     mapOptions: IAzureMapOptions
     center: data.Position;
     multipleEvents: EventData[],
-    loading: boolean,
-    isKeyLoaded: boolean
+    isDataLoaded: boolean,
+    isMapKeyLoaded: boolean
     eventName: string;
     latitude: number;
     longitude: number;
@@ -22,41 +22,36 @@ interface MapControllerState {
     currentUserId: string;
 }
 
-const MapController = (props: MapControllerState) => {
+export const MapController: React.FC<MapControllerProps> = (props) => {
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     
     useEffect(() => {
-        if (mapRef && !props.loading && props.isKeyLoaded) {
+        if (mapRef && !props.isDataLoaded && props.isMapKeyLoaded) {
             // Simple Camera options modification
             mapRef.setCamera({ center: props.center, zoom: MapStore.defaultUserLocationZoom });
         }
-    }, [mapRef, props.center, props.loading, props.isKeyLoaded]);
-
-    function createPin(eventData: EventData): MapStore.markerPoint {
-        var pin = new MapStore.markerPoint();
-        var pinColor = eventData.createdByUserId === props.currentUserId ? 'pin-round-blue' : 'pin-round-green';
-        pin.position = new data.Point(new data.Position(eventData.longitude, eventData.latitude));
-        pin.properties = {
-            title: eventData.name, icon: pinColor, type: 'Point'
-        } 
-        return pin;
-    }
+    }, [mapRef, props.center, props.isDataLoaded, props.isMapKeyLoaded]);
 
     // This is used for maps with multiple events
     useEffect(() => {
-        if (mapRef && !props.loading && props.isKeyLoaded) {
+        if (mapRef && !props.isDataLoaded && props.isMapKeyLoaded) {
             clearMarkers();
             props.multipleEvents.forEach(mobEvent => {
-                var pin = createPin(mobEvent);
+                var pin = new MapStore.markerPoint();
+                var pinColor = mobEvent.createdByUserId === props.currentUserId ? 'pin-round-blue' : 'pin-round-green';
+                pin.position = new data.Point(new data.Position(mobEvent.longitude, mobEvent.latitude));
+                pin.properties = {
+                    title: mobEvent.name, icon: pinColor, type: 'Point'
+                }
                 addMarker(pin);
             })
         }
-    }, [props.multipleEvents, mapRef, props.loading, props.isKeyLoaded]);
+    }, [props.multipleEvents, mapRef, props.isDataLoaded, props.isMapKeyLoaded, props.currentUserId]);
 
     // This is only used for maps with a single event
     useEffect(() => {
-        if (!props.loading && props.eventName !== '' && props.isKeyLoaded && mapRef && isMapReady) {
+        if (!props.isDataLoaded && props.eventName !== '' && props.isMapKeyLoaded && mapRef && isMapReady) {
             var pin = new MapStore.markerPoint();
             pin.position = new data.Point(new data.Position(props.longitude, props.latitude));
             pin.properties = {
@@ -65,18 +60,17 @@ const MapController = (props: MapControllerState) => {
             clearMarkers();
             addMarker(pin);
         }
-    }, [props.loading, props.latitude, props.longitude, props.eventName, props.isKeyLoaded, mapRef, isMapReady])
+    }, [props.isDataLoaded, props.latitude, props.longitude, props.eventName, props.isMapKeyLoaded, mapRef, isMapReady])
 
 
     useEffect(() => {
-        if (isMapReady && mapRef && props.isKeyLoaded) {
+        if (isMapReady && mapRef && props.isMapKeyLoaded) {
             // Need to add source and layer to map on init and ready
             mapRef.sources.add(dataSourceRef);
             layerRef.setOptions(MapStore.memoizedOptions);
             mapRef.layers.add(layerRef);
         }
-    }, [isMapReady, mapRef, props.isKeyLoaded]);
-
+    }, [isMapReady, mapRef, props.isMapKeyLoaded]);
 
     function handleLocationChange(e: any) {
         props.onLocationChange(e);
@@ -93,7 +87,7 @@ const MapController = (props: MapControllerState) => {
 
     return (
         <>
-            <MapComponent mapOptions={props.mapOptions} isKeyLoaded={props.isKeyLoaded} onLocationChange={handleLocationChange} />
+            <MapComponent mapOptions={props.mapOptions} isKeyLoaded={props.isMapKeyLoaded} onLocationChange={handleLocationChange} />
         </>
     );
 };
