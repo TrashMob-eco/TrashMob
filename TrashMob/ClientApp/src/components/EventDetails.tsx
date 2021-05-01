@@ -53,6 +53,14 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
         });
 
     if (eventId != null) {
+        fetch('api/eventattendees/' + eventId, {
+            method: 'GET',
+        })
+            .then(response => response.json() as Promise<UserData[]>)
+            .then(data => {
+                setUserList(data);
+            });
+
         fetch('api/Events/' + eventId, {
             method: 'GET',
             headers: headers
@@ -73,15 +81,6 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                 setLongitude(eventData.longitude);
                 setMaxNumberOfParticipants(eventData.maxNumberOfParticipants);
                 setCenter(new data.Position(eventData.longitude, eventData.latitude));
-                setIsDataLoaded(false);
-            });
-
-        fetch('api/eventattendees/' + eventId, {
-            method: 'GET',
-        })
-            .then(response => response.json() as Promise<UserData[]>)
-            .then(data => {
-                setUserList(data);
                 setIsDataLoaded(true);
             });
     }

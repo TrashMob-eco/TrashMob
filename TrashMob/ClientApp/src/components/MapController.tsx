@@ -27,7 +27,7 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     
     useEffect(() => {
-        if (mapRef && !props.isDataLoaded && props.isMapKeyLoaded) {
+        if (mapRef && props.isDataLoaded && props.isMapKeyLoaded) {
             // Simple Camera options modification
             mapRef.setCamera({ center: props.center, zoom: MapStore.defaultUserLocationZoom });
         }
@@ -35,7 +35,7 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
 
     // This is used for maps with multiple events
     useEffect(() => {
-        if (mapRef && !props.isDataLoaded && props.isMapKeyLoaded) {
+        if (mapRef && props.isDataLoaded && props.isMapKeyLoaded) {
             clearMarkers();
             props.multipleEvents.forEach(mobEvent => {
                 var pin = new MapStore.markerPoint();
@@ -87,7 +87,7 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
 
     return (
         <>
-            <MapComponent mapOptions={props.mapOptions} isKeyLoaded={props.isMapKeyLoaded} onLocationChange={handleLocationChange} />
+            <MapComponent mapOptions={props.mapOptions} isMapKeyLoaded={props.isMapKeyLoaded} onLocationChange={handleLocationChange} />
         </>
     );
 };

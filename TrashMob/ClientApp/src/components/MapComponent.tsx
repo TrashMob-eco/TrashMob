@@ -3,7 +3,7 @@ import { AzureMap, IAzureMapOptions } from 'react-azure-maps';
 
 interface MapComponentProps {
     mapOptions: IAzureMapOptions,
-    isKeyLoaded: boolean,
+    isMapKeyLoaded: boolean,
     onLocationChange: any;
 }
 
@@ -15,8 +15,8 @@ const MapComponent: React.FC<MapComponentProps> = (props) => {
 
     return (
         <div style={{ height: '300px' }}>
-            {!props.isKeyLoaded && <div>Map is loading.</div>}
-            {props.isKeyLoaded && <AzureMap options={props.mapOptions} events={{ click: getCoordinates }}/> }
+            {!props.isMapKeyLoaded && <div>Map is loading.</div>}
+            {props.isMapKeyLoaded && <AzureMap options={props.mapOptions} events={{ click: getCoordinates }}/> }
         </div>
     );
 };

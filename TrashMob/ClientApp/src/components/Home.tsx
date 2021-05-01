@@ -21,7 +21,7 @@ export const Home: React.FC<HomeProps> = (props) => {
     const [eventList, setEventList] = React.useState<EventData[]>([]);
     const [eventTypeList, setEventTypeList] = React.useState<EventTypeData[]>([]);
     const [myAttendanceList, setMyAttendanceList] = React.useState<EventData[]>([]);
-    const [isDataLoaded, setIsDataLoaded] = React.useState(true);
+    const [isDataLoaded, setIsDataLoaded] = React.useState(false);
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState(false);
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
@@ -36,7 +36,7 @@ export const Home: React.FC<HomeProps> = (props) => {
         .then(response => response.json() as Promise<EventData[]>)
         .then(data => {
             setEventList(data);
-            setIsDataLoaded(false);
+            setIsDataLoaded(true);
         });
 
     MapStore.getOption().then(opts => {
@@ -76,7 +76,7 @@ export const Home: React.FC<HomeProps> = (props) => {
                     .then(response => response.json() as Promise<EventData[]>)
                     .then(data => {
                         setMyAttendanceList(data);
-                        setIsDataLoaded(false);
+                        setIsDataLoaded(true);
                     })
             });
         }

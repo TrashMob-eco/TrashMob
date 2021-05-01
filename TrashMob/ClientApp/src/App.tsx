@@ -155,14 +155,6 @@ export const App = (props) => {
         })
     }
 
-    function updateUserLoaded(isLoaded: boolean) {
-        setIsUserLoaded(isLoaded);
-    }
-
-    function updateUser(user: UserData) {
-        setCurrentUser(user);
-    }
-
     return (
         <MsalProvider instance={msalClient} >
             <div className="d-flex flex-column h-100">

@@ -32,7 +32,7 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
     const history = useHistory();
 
     React.useEffect(() => {
-        if (!props.isDataLoaded && props.eventList && props.myAttendanceList) {
+        if (props.isDataLoaded && props.eventList && props.myAttendanceList) {
             const list = props.eventList.map((mobEvent) => {
                 var dispEvent = new DisplayEvent()
                 dispEvent.id = mobEvent.id;
@@ -134,8 +134,8 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
     return (
         <>
             <div>
-                {props.isDataLoaded && <p><em>Loading...</em></p>}
-                {!props.isDataLoaded && renderEventsTable(displayEvents)}
+                {!props.isDataLoaded && <p><em>Loading...</em></p>}
+                {props.isDataLoaded && renderEventsTable(displayEvents)}
             </div>
         </>
     );
