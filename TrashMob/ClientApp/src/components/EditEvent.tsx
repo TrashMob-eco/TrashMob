@@ -12,6 +12,9 @@ import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapController from './MapController';
 import UserData from './Models/UserData';
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
+import * as ToolTips from "../store/ToolTips";
 
 export interface MatchParams {
     eventId: string;
@@ -263,6 +266,54 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         props.history.push("/mydashboard");
     }
 
+    function renderDescriptionToolTip(props) {
+        return <Tooltip {...props}>{ToolTips.EventDescription}</Tooltip>
+    }
+
+    function renderEventNameToolTip(props) {
+        return <Tooltip {...props}>{ToolTips.EventName}</Tooltip>
+    }
+
+    function renderStreetAddressToolTip(props) {
+        return <Tooltip {...props}>{ToolTips.EventStreetAddress}</Tooltip>
+    }
+
+    function renderCityToolTip(props) {
+        return <Tooltip {...props}>{ToolTips.EventCity}</Tooltip>
+    }
+
+    function renderCountryToolTip(props) {
+        return <Tooltip {...props}>{ToolTips.EventCountry}</Tooltip>
+    }
+
+    function renderRegionToolTip(props) {
+        return <Tooltip {...props}>{ToolTips.EventRegion}</Tooltip>
+    }
+
+    function renderPostalCodeToolTip(props) {
+        return <Tooltip {...props}>{ToolTips.EventPostalCode}</Tooltip>
+    }
+
+    function renderMaxNumberOfParticipantsToolTip(props) {
+        return <Tooltip {...props}>{ToolTips.EventMaxNumberOfParticipants}</Tooltip>
+    }
+
+    function renderLatitudeToolTip(props) {
+        return <Tooltip {...props}>{ToolTips.EventLatitude}</Tooltip>
+    }
+
+    function renderLongitudeToolTip(props) {
+        return <Tooltip {...props}>{ToolTips.EventLongitude}</Tooltip>
+    }
+
+    function renderEventTypeToolTip(props) {
+        return <Tooltip {...props}>{ToolTips.EventType}</Tooltip>
+    }
+
+    function renderEventDateToolTip(props) {
+        return <Tooltip {...props}>{ToolTips.EventDate}</Tooltip>
+    }
+
     // Returns the HTML Form to the render() method.  
     function renderCreateForm(typeList: Array<EventTypeData>) {
         return (
@@ -272,16 +323,22 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         <input type="hidden" name="Id" value={eventId.toString()} />
                     </div>
                     < div className="form-group row" >
-                        <label className=" control-label col-xs-2" htmlFor="Name">Name:</label>
+                        <OverlayTrigger placement="top" overlay={renderEventNameToolTip}>
+                            <label className=" control-label col-xs-2" htmlFor="Name">Name:</label>
+                        </OverlayTrigger>
                         <div className="col-xs-2">
                             <input className="form-control" type="text" name="name" defaultValue={eventName} onChange={(val) => handleEventNameChanged(val.target.value)} maxLength={parseInt('64')} required />
                         </div>
-                        <label className="control-label col-xs-2" htmlFor="EventDate">EventDate:</label>
+                        <OverlayTrigger placement="top" overlay={renderEventDateToolTip}>
+                            <label className="control-label col-xs-2" htmlFor="EventDate">EventDate:</label>
+                        </OverlayTrigger>
                         <div className="col-xs-2">
                             <DateTimePicker name="eventDate" onChange={handleEventDateChange} value={eventDate} />
                             <span style={{ color: "red" }}>{eventDateErrors}</span>
                         </div>
-                        <label className="control-label col-xs-2" htmlFor="EventType">Event Type:</label>
+                        <OverlayTrigger placement="top" overlay={renderEventTypeToolTip}>
+                            <label className="control-label col-xs-2" htmlFor="EventType">Event Type:</label>
+                        </OverlayTrigger>
                         <div className="col-xs-2">
                             <select className="form-control" data-val="true" name="eventTypeId" defaultValue={eventTypeId} onChange={(val) => selectEventType(val.target.value)} required>
                                 <option value="">-- Select Event Type --</option>
@@ -292,33 +349,44 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         </div>
                     </div >
                     <div className="form-group row">
-                        <label className="control-label col-md-12">Describe the event so attendees know what kind of gear to bring and where exactly to meet up.</label>
+                        <OverlayTrigger placement="top" overlay={renderDescriptionToolTip}>
+                            <label className="control-label col-md-12">Describe the event so attendees know what kind of gear to bring and where exactly to meet up.</label>
+                        </OverlayTrigger>
                         <label className="control-label col-xs-2" htmlFor="Description">Description:</label>
                         <div className="col-md-10">
                             <textarea className="form-control" name="description" defaultValue={description} onChange={(val) => handleDescriptionChanged(val.target.value)} maxLength={parseInt('2048')} rows={5} cols={5} required />
                         </div>
                     </div >
                     <div className="form-group row">
-                        <label className="control-label col-xs-2" htmlFor="StreetAddress">Street Address:</label>
+                        <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
+                            <label className="control-label col-xs-2" htmlFor="StreetAddress">Street Address:</label>
+                        </OverlayTrigger>
                         <div className="col-md-4">
                             <input className="form-control" type="text" name="streetAddress" value={streetAddress} onChange={(val) => handleStreetAddressChanged(val.target.value)} maxLength={parseInt('256')} />
                         </div>
-                        <label className="control-label col-xs-2" htmlFor="City">City:</label>
+                        <OverlayTrigger placement="top" overlay={renderCityToolTip}>
+                            <label className="control-label col-xs-2" htmlFor="City">City:</label>
+                        </OverlayTrigger >
                         <div className="col-xs-2">
                             <input className="form-control" type="text" name="city" value={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
                         </div>
-                        <label className="control-label col-xs-2" htmlFor="PostalCode">Postal Code:</label>
+                        <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
+                            <label className="control-label col-xs-2" htmlFor="PostalCode">Postal Code:</label>
+                        </OverlayTrigger >
                         <div className="col-xs-2">
                             <input className="form-control" type="text" name="postalCode" value={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
                         </div>
                     </div >
                     <div className="form-group row">
-                        <label className="control-label col-md-12">Choose a country, and the list of states/provinces/regions will auto-fill</label>
-                        <label className="control-label col-xs-2" htmlFor="Country">Country:</label>
+                        <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
+                            <label className="control-label col-xs-2" htmlFor="Country">Country:</label>
+                        </OverlayTrigger >
                         <div className="col-xs-2">
                             <CountryDropdown name="country" value={country} onChange={(val) => selectCountry(val)} />
                         </div>
-                        <label className="control-label col-xs-2" htmlFor="Region">Region:</label>
+                        <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
+                            <label className="control-label col-xs-2" htmlFor="Region">Region:</label>
+                        </OverlayTrigger >
                         <div className="col-xs-2">
                             <RegionDropdown
                                 country={country}
@@ -327,20 +395,23 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         </div>
                     </div >
                     <div className="form-group row">
-                        <div>
-                            <label className="control-label col-md-12">To set or change the latitude and longitude of an event, click the location on the map where you want attendees to meet, and the values will be updated. Don't foget to save your changes before leaving the page!</label>
-                        </div>
-                        <label className="control-label col-xs-2" htmlFor="Latitude">Latitude:</label>
+                        <OverlayTrigger placement="top" overlay={renderLatitudeToolTip}>
+                            <label className="control-label col-xs-2" htmlFor="Latitude">Latitude:</label>
+                        </OverlayTrigger>
                         <div className="col-xs-2">
                             <input className="form-control" type="text" name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
                             <span style={{ color: "red" }}>{latitudeErrors}</span>
                         </div>
-                        <label className="control-label col-xs-2" htmlFor="Longitude">Longitude:</label>
+                        <OverlayTrigger placement="top" overlay={renderLongitudeToolTip}>
+                            <label className="control-label col-xs-2" htmlFor="Longitude">Longitude:</label>
+                        </OverlayTrigger >
                         <div className="col-xs-2">
                             <input className="form-control" type="text" name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
                             <span style={{ color: "red" }}>{longitudeErrors}</span>
                         </div>
-                        <label className="control-label col-xs-2" htmlFor="MaxNumberOfParticipants">Max Number Of Participants:</label>
+                        <OverlayTrigger placement="top" overlay={renderMaxNumberOfParticipantsToolTip}>
+                            <label className="control-label col-xs-2" htmlFor="MaxNumberOfParticipants">Max Number Of Participants:</label>
+                        </OverlayTrigger >
                         <div className="col-xs-2">
                             <input className="form-control" type="text" name="maxNumberOfParticipants" defaultValue={maxNumberOfParticipants} onChange={(val) => handleMaxNumberOfParticipantsChanged(val.target.value)} />
                         </div>

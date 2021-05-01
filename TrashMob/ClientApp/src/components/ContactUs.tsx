@@ -3,6 +3,9 @@ import ContactRequestData from './Models/ContactRequestData';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { loadCaptchaEnginge, LoadCanvasTemplateNoReload, validateCaptcha } from 'react-simple-captcha';
 import { getDefaultHeaders } from '../store/AuthStore';
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
+import * as ToolTips from "../store/ToolTips";
 
 interface ContactUsProps extends RouteComponentProps<any> {
 }
@@ -87,6 +90,19 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
         loadCaptchaEnginge(6);
     });
 
+
+    function renderNameToolTip(props) {
+        return <Tooltip {...props}>{ToolTips.ContactUsName}</Tooltip>
+    }
+
+    function renderEmailToolTip(props) {
+        return <Tooltip {...props}>{ToolTips.ContactUsEmail}</Tooltip>
+    }
+
+    function renderMessageToolTip(props) {
+        return <Tooltip {...props}>{ToolTips.ContactUsMessage}</Tooltip>
+    }
+
     return (
         <div className="container-fluid">
             <h1>Contact Us</h1>
@@ -95,18 +111,24 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
                 </div>
             <form onSubmit={handleSave} >
                 < div className="form-group row" >
-                    <label className=" control-label col-xs-1" htmlFor="Name">Name:</label>
+                    <OverlayTrigger placement="top" overlay={renderNameToolTip}>
+                        <label className=" control-label col-xs-1" htmlFor="Name">Name:</label>
+                    </OverlayTrigger>
                     <div className="col-md-4">
                         <input className="form-control" type="text" name="name" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
                     </div>
-                    <label className=" control-label col-xs-1" htmlFor="Email">Email:</label>
+                    <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
+                        <label className=" control-label col-xs-1" htmlFor="Email">Email:</label>
+                    </OverlayTrigger>
                     <div className="col-md-4">
                         <input className="form-control" type="text" name="email" defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required />
                         <span style={{ color: "red" }}>{emailErrors}</span>
                     </div>
                 </div >
                 <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="Message">Message:</label>
+                    <OverlayTrigger placement="top" overlay={renderMessageToolTip}>
+                        <label className="control-label col-md-12" htmlFor="Message">Message:</label>
+                    </OverlayTrigger>
                     <div className="col-md-12">
                         <textarea className="form-control" name="message" defaultValue={message} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleMessageChanged(val.target.value)} required />
                         <span style={{ color: "red" }}>{messageErrors}</span>
