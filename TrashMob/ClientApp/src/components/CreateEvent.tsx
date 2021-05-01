@@ -44,24 +44,24 @@ export const CreateEvent: React.FC<CreateEventProps> = (props) => {
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();;
     const [eventList, setEventList] = React.useState<EventData[]>([]);;
 
-    const headers = getDefaultHeaders('GET');
-
-    fetch('api/eventtypes', {
-        method: 'GET',
-        headers: headers,
-    })
-        .then(response => response.json() as Promise<Array<any>>)
-        .then(data => {
-            setEventTypeList(data);
-            setIsDataLoaded(true);
-        });
-
-    MapStore.getOption().then(opts => {
-        setMapOptions(opts);
-        setIsMapKeyLoaded(true);
-    })
-
     React.useEffect(() => {
+        const headers = getDefaultHeaders('GET');
+
+        fetch('api/eventtypes', {
+            method: 'GET',
+            headers: headers,
+        })
+            .then(response => response.json() as Promise<Array<any>>)
+            .then(data => {
+                setEventTypeList(data);
+                setIsDataLoaded(true);
+            });
+
+        MapStore.getOption().then(opts => {
+            setMapOptions(opts);
+            setIsMapKeyLoaded(true);
+        })
+
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(position => {
                 var point = new data.Position(position.coords.longitude, position.coords.latitude);
@@ -320,7 +320,7 @@ export const CreateEvent: React.FC<CreateEventProps> = (props) => {
                     <div>
                         <AzureMapsProvider>
                             <>
-                                <MapController center={center} multipleEvents={eventList} isDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUserId={props.currentUser.id} />
+                                <MapController center={center} multipleEvents={eventList} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUserId={props.currentUser.id} />
                             </>
                         </AzureMapsProvider>
                     </div>

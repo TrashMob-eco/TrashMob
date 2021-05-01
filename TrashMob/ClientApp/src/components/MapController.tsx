@@ -13,7 +13,7 @@ interface MapControllerProps {
     mapOptions: IAzureMapOptions
     center: data.Position;
     multipleEvents: EventData[],
-    isDataLoaded: boolean,
+    isEventDataLoaded: boolean,
     isMapKeyLoaded: boolean
     eventName: string;
     latitude: number;
@@ -27,15 +27,15 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     
     useEffect(() => {
-        if (mapRef && props.isDataLoaded && props.isMapKeyLoaded) {
+        if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded) {
             // Simple Camera options modification
             mapRef.setCamera({ center: props.center, zoom: MapStore.defaultUserLocationZoom });
         }
-    }, [mapRef, props.center, props.isDataLoaded, props.isMapKeyLoaded]);
+    }, [mapRef, props.center, props.isEventDataLoaded, props.isMapKeyLoaded]);
 
     // This is used for maps with multiple events
     useEffect(() => {
-        if (mapRef && props.isDataLoaded && props.isMapKeyLoaded) {
+        if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded) {
             clearMarkers();
             props.multipleEvents.forEach(mobEvent => {
                 var pin = new MapStore.markerPoint();
@@ -47,11 +47,11 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
                 addMarker(pin);
             })
         }
-    }, [props.multipleEvents, mapRef, props.isDataLoaded, props.isMapKeyLoaded, props.currentUserId]);
+    }, [props.multipleEvents, mapRef, props.isEventDataLoaded, props.isMapKeyLoaded, props.currentUserId]);
 
     // This is only used for maps with a single event
     useEffect(() => {
-        if (!props.isDataLoaded && props.eventName !== '' && props.isMapKeyLoaded && mapRef && isMapReady) {
+        if (!props.isEventDataLoaded && props.eventName !== '' && props.isMapKeyLoaded && mapRef && isMapReady) {
             var pin = new MapStore.markerPoint();
             pin.position = new data.Point(new data.Position(props.longitude, props.latitude));
             pin.properties = {
@@ -60,7 +60,7 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
             clearMarkers();
             addMarker(pin);
         }
-    }, [props.isDataLoaded, props.latitude, props.longitude, props.eventName, props.isMapKeyLoaded, mapRef, isMapReady])
+    }, [props.isEventDataLoaded, props.latitude, props.longitude, props.eventName, props.isMapKeyLoaded, mapRef, isMapReady])
 
 
     useEffect(() => {
@@ -76,12 +76,12 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
         props.onLocationChange(e);
     }
 
-    const clearMarkers = () => {
+    function clearMarkers() {
         dataSourceRef.clear();
     };
 
     // Util function to add pin
-    const addMarker = (point: MapStore.markerPoint) => {
+    function addMarker(point: MapStore.markerPoint) {
         dataSourceRef.add(new data.Feature(point.position, point.properties));
     };
 

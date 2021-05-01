@@ -48,52 +48,51 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();;
     const [eventList, setEventList] = React.useState<EventData[]>([]);;
 
+    React.useEffect(() => {
+        const headers = getDefaultHeaders('GET');
 
-    const headers = getDefaultHeaders('GET');
-
-    fetch('api/eventtypes', {
-        method: 'GET',
-        headers: headers
-    })
-        .then(response => response.json() as Promise<Array<any>>)
-        .then(data => {
-            setEventTypeList(data);
-        });
-
-    // This will set state for Edit Event  
-    if (eventId != null) {
-        fetch('api/Events/' + eventId, {
+        fetch('api/eventtypes', {
             method: 'GET',
             headers: headers
         })
-            .then(response => response.json() as Promise<EventData>)
-            .then(eventData => {
-                setEventId(eventData.id);
-                setEventName(eventData.name);
-                setDescription(eventData.description);
-                setEventDate(new Date(eventData.eventDate));
-                setEventTypeId(eventData.eventTypeId);
-                setStreetAddress(eventData.streetAddress);
-                setCity(eventData.city);
-                setCountry(eventData.country);
-                setRegion(eventData.region);
-                setPostalCode(eventData.postalCode);
-                setLatitude(eventData.latitude);
-                setLongitude(eventData.longitude);
-                setMaxNumberOfParticipants(eventData.maxNumberOfParticipants);
-                setCreatedByUserId(eventData.createdByUserId);
-                setEventStatusId(eventData.eventStatusId);
-                setCenter(new data.Position(eventData.longitude, eventData.latitude));
-                setIsDataLoaded(true);
+            .then(response => response.json() as Promise<Array<any>>)
+            .then(data => {
+                setEventTypeList(data);
             });
-    }
 
-    MapStore.getOption().then(opts => {
-        setMapOptions(opts);
-        setIsMapKeyLoaded(true);
-    })
+        // This will set state for Edit Event  
+        if (eventId != null) {
+            fetch('api/Events/' + eventId, {
+                method: 'GET',
+                headers: headers
+            })
+                .then(response => response.json() as Promise<EventData>)
+                .then(eventData => {
+                    setEventId(eventData.id);
+                    setEventName(eventData.name);
+                    setDescription(eventData.description);
+                    setEventDate(new Date(eventData.eventDate));
+                    setEventTypeId(eventData.eventTypeId);
+                    setStreetAddress(eventData.streetAddress);
+                    setCity(eventData.city);
+                    setCountry(eventData.country);
+                    setRegion(eventData.region);
+                    setPostalCode(eventData.postalCode);
+                    setLatitude(eventData.latitude);
+                    setLongitude(eventData.longitude);
+                    setMaxNumberOfParticipants(eventData.maxNumberOfParticipants);
+                    setCreatedByUserId(eventData.createdByUserId);
+                    setEventStatusId(eventData.eventStatusId);
+                    setCenter(new data.Position(eventData.longitude, eventData.latitude));
+                    setIsDataLoaded(true);
+                });
+        }
 
-    React.useEffect(() => {
+        MapStore.getOption().then(opts => {
+            setMapOptions(opts);
+            setIsMapKeyLoaded(true);
+        })
+
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(position => {
                 var point = new data.Position(position.coords.longitude, position.coords.latitude);
@@ -102,7 +101,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         } else {
             console.log("Not Available");
         }
-    }, [])
+    }, [eventId])
 
     function handleEventNameChanged(val: string) {
         setEventName(val);
@@ -352,7 +351,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     <div>
                         <AzureMapsProvider>
                             <>
-                                <MapController center={center} multipleEvents={eventList} isDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUserId={props.currentUser.id} />
+                                <MapController center={center} multipleEvents={eventList} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUserId={props.currentUser.id} />
                             </>
                         </AzureMapsProvider>
                     </div>
@@ -364,7 +363,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     let contents = isDataLoaded
         ? renderCreateForm(eventTypeList)
         : <p><em>Loading...</em></p>;
-
 
     return <div>
         <h3>Event</h3>

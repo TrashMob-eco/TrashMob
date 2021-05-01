@@ -32,7 +32,6 @@ Here's what needs to be done before we can launch
     1. Bootstrap theme?
   1. Get proper logo
     1. In process
-  1. Fix issue with MyDashboard not reloading after delete of event (set to home for now to force reload)
   1. Fix email issues (waiting for DNS Servers to update)
   1. Brand sign in pages
   
@@ -44,11 +43,8 @@ These items did not make the cut for launch but need to be done
   1. Check response codes from APIs are correct
   1. Fix Terms of Service accept popup
   1. Fix welcome user message on main header
-  1. Logout button should not be available if not logged in
-  1. Login button should not be available if already logged in
   1. Allow event location to be dragged with visual indicator
   1. Add Patreon
-  1. Convert classes to Functional Components
   1. Redeploy test environment with standardized names
   1. Find a way to secure the Azure Maps Key (referral restriction?)
   1. Set up rotation of Azure Maps Keys every 24 hours

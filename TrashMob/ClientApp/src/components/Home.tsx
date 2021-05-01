@@ -21,30 +21,38 @@ export const Home: React.FC<HomeProps> = (props) => {
     const [eventList, setEventList] = React.useState<EventData[]>([]);
     const [eventTypeList, setEventTypeList] = React.useState<EventTypeData[]>([]);
     const [myAttendanceList, setMyAttendanceList] = React.useState<EventData[]>([]);
-    const [isDataLoaded, setIsDataLoaded] = React.useState(false);
+    const [isEventDataLoaded, setIsEventDataLoaded] = React.useState(false);
+    const [isUserEventDataLoaded, setIsUserEventDataLoaded] = React.useState(false);
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState(false);
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
 
-    const headers = getDefaultHeaders('GET');
-    getEventTypes();
-
-    fetch('api/Events/active', {
-        method: 'GET',
-        headers: headers
-    })
-        .then(response => response.json() as Promise<EventData[]>)
-        .then(data => {
-            setEventList(data);
-            setIsDataLoaded(true);
-        });
-
-    MapStore.getOption().then(opts => {
-        setMapOptions(opts);
-        setIsMapKeyLoaded(true);
-    })
-
     React.useEffect(() => {
+        const headers = getDefaultHeaders('GET');
+        fetch('api/eventtypes', {
+            method: 'GET',
+            headers: headers
+        })
+            .then(response => response.json() as Promise<Array<any>>)
+            .then(data => {
+                setEventTypeList(data);
+            });
+
+        fetch('api/Events/active', {
+            method: 'GET',
+            headers: headers
+        })
+            .then(response => response.json() as Promise<EventData[]>)
+            .then(data => {
+                setEventList(data);
+                setIsEventDataLoaded(true);
+            });
+
+        MapStore.getOption().then(opts => {
+            setMapOptions(opts);
+            setIsMapKeyLoaded(true);
+        })
+
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(position => {
                 var point = new data.Position(position.coords.longitude, position.coords.latitude);
@@ -76,24 +84,11 @@ export const Home: React.FC<HomeProps> = (props) => {
                     .then(response => response.json() as Promise<EventData[]>)
                     .then(data => {
                         setMyAttendanceList(data);
-                        setIsDataLoaded(true);
+                        setIsUserEventDataLoaded(true);
                     })
             });
         }
     }, [props.isUserLoaded, props.currentUser]);
-
-    function getEventTypes() {
-        const headers = getDefaultHeaders('GET');
-
-        fetch('api/eventtypes', {
-            method: 'GET',
-            headers: headers
-        })
-            .then(response => response.json() as Promise<Array<any>>)
-            .then(data => {
-                setEventTypeList(data);
-            });
-    }
 
     function handleLocationChange(point: data.Position) {
         // do nothing
@@ -109,12 +104,12 @@ export const Home: React.FC<HomeProps> = (props) => {
                     <Link to="/createevent">Create a New Event</Link>
                 </div>
                 <div style={{ width: 50 + '%' }}>
-                    <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isDataLoaded={isDataLoaded} isUserLoaded={props.isUserLoaded} currentUser={props.currentUser} />
+                    <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={props.isUserLoaded} currentUser={props.currentUser} />
                 </div>
                 <div style={{ width: 50 + '%' }}>
                     <AzureMapsProvider>
                         <>
-                            <MapController center={center} multipleEvents={eventList} isDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUserId={props.currentUser.id} />
+                            <MapController center={center} multipleEvents={eventList} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUserId={props.currentUser.id} />
                         </>
                     </AzureMapsProvider>
                 </div>

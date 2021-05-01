@@ -22,7 +22,8 @@ export interface MainEventsDataProps {
     eventList: EventData[];
     eventTypeList: EventTypeData[];
     myAttendanceList: EventData[];
-    isDataLoaded: boolean;
+    isEventDataLoaded: boolean;
+    isUserEventDataLoaded: boolean;
     isUserLoaded: boolean;
     currentUser: UserData;
 };
@@ -32,7 +33,7 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
     const history = useHistory();
 
     React.useEffect(() => {
-        if (props.isDataLoaded && props.eventList && props.myAttendanceList) {
+        if (props.isEventDataLoaded && props.eventList) {
             const list = props.eventList.map((mobEvent) => {
                 var dispEvent = new DisplayEvent()
                 dispEvent.id = mobEvent.id;
@@ -42,13 +43,18 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
                 dispEvent.eventDate = mobEvent.eventDate;
                 dispEvent.eventTypeId = mobEvent.eventTypeId;
                 dispEvent.name = mobEvent.name;
-                var isAttending = props.myAttendanceList.findIndex((e) => e.id === mobEvent.id) >= 0;
-                dispEvent.isAttending = !props.isUserLoaded ? 'Log in to see your status' : (isAttending ? 'Yes' : 'No');
+                if (props.isUserEventDataLoaded) {
+                    var isAttending = props.myAttendanceList.findIndex((e) => e.id === mobEvent.id) >= 0;
+                    dispEvent.isAttending = (isAttending ? 'Yes' : 'No');
+                }
+                else {
+                    dispEvent.isAttending = 'Log in to see your status';
+                }
                 return dispEvent;
             });
             setDisplayEvents(list);
         }
-    }, [props.isDataLoaded, props.eventList, props.myAttendanceList, props.isUserLoaded])
+    }, [props.isEventDataLoaded, props.eventList, props.myAttendanceList, props.isUserLoaded, props.isUserEventDataLoaded])
 
     function addAttendee(eventId: string) {
 
@@ -134,8 +140,8 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
     return (
         <>
             <div>
-                {!props.isDataLoaded && <p><em>Loading...</em></p>}
-                {props.isDataLoaded && renderEventsTable(displayEvents)}
+                {!props.isEventDataLoaded && <p><em>Loading...</em></p>}
+                {props.isEventDataLoaded && renderEventsTable(displayEvents)}
             </div>
         </>
     );
