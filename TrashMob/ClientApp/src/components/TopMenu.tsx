@@ -56,7 +56,7 @@ export const TopMenu: React.FC<TopMenuProps> = (props) => {
                         <ul className="navbar-nav mr-auto">
                             {mainNavItems.map(item => (
                                 <li className="nav-item" key={item.name}>
-                                    <a className="nav-link" href="{item.url}">{item.name}</a>
+                                    <a className="nav-link" href={item.url}>{item.name}</a>
                                 </li>
                             ))}
                             <li className="nav-item dropdown">

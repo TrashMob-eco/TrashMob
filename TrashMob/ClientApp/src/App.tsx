@@ -49,6 +49,13 @@ export const App: React.FC<AppProps> = (props) => {
                 clearUser();
             }
         });
+
+        var userStr = localStorage.getItem('user');
+        if (userStr) {
+            var user = JSON.parse(userStr);
+            setCurrentUser(user);
+            setIsUserLoaded(true);
+        }
     }, []);
 
     function ErrorComponent(error: MsalAuthenticationResult) {
@@ -73,6 +80,7 @@ export const App: React.FC<AppProps> = (props) => {
         setIsUserLoaded(false);
         var user = new UserData();
         setCurrentUser(user)
+        localStorage.setItem('user', JSON.stringify(user));
     }
 
     function verifyAccount(result: msal.AuthenticationResult) {
@@ -115,6 +123,7 @@ export const App: React.FC<AppProps> = (props) => {
                         user.termsOfServiceVersion = data.termsOfServiceVersion;
                         setCurrentUser(user);
                         setIsUserLoaded(true);
+                        localStorage.setItem('user', JSON.stringify(user));
                     }
 
                     //if (user.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate || user.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate || user.termsOfServiceVersion === "" || user.privacyPolicyVersion === "") {
