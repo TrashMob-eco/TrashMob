@@ -1,5 +1,5 @@
 ﻿import EventTypeData from "../components/Models/EventTypeData";
-import { defaultHeaders } from "./AuthStore";
+import { getDefaultHeaders } from "./AuthStore";
 
 export function getEventType(eventTypeList: EventTypeData[], eventTypeId: any): string {
     if (eventTypeList === null || eventTypeList.length === 0) {
@@ -13,7 +13,7 @@ export function getEventType(eventTypeList: EventTypeData[], eventTypeId: any): 
 }
 
 function getEventTypes() : EventTypeData[] {
-    const headers = defaultHeaders('GET');
+    const headers = getDefaultHeaders('GET');
 
     fetch('api/eventtypes', {
         method: 'GET',

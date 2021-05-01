@@ -1,88 +1,51 @@
-import { Component } from 'react';
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router';
-import { Guid } from "guid-typescript";
 import EventData from './Models/EventData';
 import UserData from './Models/UserData';
 import EventTypeData from './Models/EventTypeData';
-import { defaultHeaders } from '../store/AuthStore';
+import { getDefaultHeaders } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapController from './MapController';
-import { getUserFromCache } from '../store/accountHandler';
-
-export interface EventDetailsDataState {
-    title: string;
-    loading: boolean;
-    eventId: string;
-    eventName: string;
-    description: string;
-    eventDate: Date;
-    eventTypeId: number;
-    streetAddress: string;
-    city: string;
-    country: string;
-    region: string;
-    postalCode: string;
-    latitude: number;
-    longitude: number;
-    maxNumberOfParticipants: number;
-    createdByUserId: string;
-    eventStatusId: number;
-    typeList: EventTypeData[];
-    eventDateErrors: string;
-    latitudeErrors: string;
-    longitudeErrors: string;
-    center: data.Position;
-    isKeyLoaded: boolean;
-    mapOptions: IAzureMapOptions;
-    eventList: EventData[];
-    eventTypeList: EventTypeData[];
-    userList: UserData[];
-    currentUserId: string;
-}
 
 export interface MatchParams {
     eventId: string;
 }
 
-export class EventDetails extends Component<RouteComponentProps<MatchParams>, EventDetailsDataState> {
-    constructor(props: RouteComponentProps<MatchParams>) {
-        super(props);
-        this.state = {
-            title: "",
-            loading: true,
-            eventId: Guid.create().toString(),
-            eventName: "",
-            description: "",
-            eventDate: new Date(),
-            eventTypeId: 0,
-            streetAddress: '',
-            city: '',
-            country: '',
-            region: '',
-            postalCode: '',
-            latitude: 0,
-            longitude: 0,
-            maxNumberOfParticipants: 0,
-            createdByUserId: '',
-            eventStatusId: 0,
-            typeList: [],
-            eventDateErrors: '',
-            latitudeErrors: '',
-            longitudeErrors: '',
-            center: new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude),
-            isKeyLoaded: false,
-            mapOptions: null,
-            eventList: [],
-            eventTypeList: [],
-            userList: [],
-            currentUserId: ""
-        };
+export interface EventDetailsProps extends RouteComponentProps<MatchParams> {
+    isUserLoaded: boolean;
+    currentUser: UserData;
+}
 
-        const headers = defaultHeaders('GET');
+export const EventDetails: React.FC<EventDetailsProps> = (props) => {
+    const [isDataLoaded, setIsDataLoaded] = React.useState<boolean>(false);
+    const [eventId, setEventId] = React.useState<string>(props.match.params["eventId"]);
+    const [eventName, setEventName] = React.useState<string>("New Event");
+    const [description, setDescription] = React.useState<string>();
+    const [eventDate, setEventDate] = React.useState<Date>(new Date());
+    const [eventTypeId, setEventTypeId] = React.useState<number>(0);
+    const [streetAddress, setStreetAddress] = React.useState<string>();
+    const [city, setCity] = React.useState<string>();
+    const [country, setCountry] = React.useState<string>();
+    const [region, setRegion] = React.useState<string>();
+    const [postalCode, setPostalCode] = React.useState<string>();
+    const [latitude, setLatitude] = React.useState<number>(0);
+    const [longitude, setLongitude] = React.useState<number>(0);
+    const [maxNumberOfParticipants, setMaxNumberOfParticipants] = React.useState<number>(0);
+    const [eventTypeList, setEventTypeList] = React.useState<EventTypeData[]>([]);
+    const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
+    const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);;
+    const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();;
+    const [eventList, setEventList] = React.useState<EventData[]>([]);;
+    const [userList, setUserList] = React.useState<UserData[]>([]);;
+    const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
+    const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
+
+    React.useEffect(() => {
+
+        const headers = getDefaultHeaders('GET');
 
         fetch('api/eventtypes', {
             method: 'GET',
@@ -90,64 +53,58 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
         })
             .then(response => response.json() as Promise<Array<any>>)
             .then(data => {
-                this.setState({ eventTypeList: data });
+                setEventTypeList(data);
             });
 
-        var user = getUserFromCache();
-        if (user) {
-            this.setState({currentUserId: user.Id})
-        }
-
-        var eventId = this.props.match.params["eventId"];
-
         if (eventId != null) {
+            fetch('api/eventattendees/' + eventId, {
+                method: 'GET',
+            })
+                .then(response => response.json() as Promise<UserData[]>)
+                .then(data => {
+                    setUserList(data);
+                });
+
             fetch('api/Events/' + eventId, {
                 method: 'GET',
                 headers: headers
             })
                 .then(response => response.json() as Promise<EventData>)
                 .then(eventData => {
-                    this.setState({
-                        title: "Event Details",
-                        loading: false,
-                        eventId: eventData.id,
-                        eventName: eventData.name,
-                        description: eventData.description,
-                        eventDate: new Date(eventData.eventDate),
-                        eventTypeId: eventData.eventTypeId,
-                        streetAddress: eventData.streetAddress,
-                        city: eventData.city,
-                        country: eventData.country,
-                        region: eventData.region,
-                        postalCode: eventData.postalCode,
-                        latitude: eventData.latitude,
-                        longitude: eventData.longitude,
-                        maxNumberOfParticipants: eventData.maxNumberOfParticipants,
-                        createdByUserId: eventData.createdByUserId,
-                        eventStatusId: eventData.eventStatusId,
-                        center: new data.Position(eventData.longitude, eventData.latitude)
-                    });
-                });
-
-            fetch('api/eventattendees/' + eventId, {
-                method: 'GET',
-            })
-                .then(response => response.json() as Promise<UserData[]>)
-                .then(data => {
-                    this.setState({ userList: data, loading: false });
+                    setEventId(eventData.id);
+                    setEventName(eventData.name);
+                    setDescription(eventData.description);
+                    setEventDate(new Date(eventData.eventDate));
+                    setEventTypeId(eventData.eventTypeId);
+                    setStreetAddress(eventData.streetAddress);
+                    setCity(eventData.city);
+                    setCountry(eventData.country);
+                    setRegion(eventData.region);
+                    setPostalCode(eventData.postalCode);
+                    setLatitude(eventData.latitude);
+                    setLongitude(eventData.longitude);
+                    setMaxNumberOfParticipants(eventData.maxNumberOfParticipants);
+                    setCenter(new data.Position(eventData.longitude, eventData.latitude));
+                    setIsDataLoaded(true);
                 });
         }
 
         MapStore.getOption().then(opts => {
-            this.setState({ mapOptions: opts });
-            this.setState({ isKeyLoaded: true });
+            setMapOptions(opts);
+            setIsMapKeyLoaded(true);
         })
+    }, [eventId]);
+
+    React.useEffect(() => {
+        setCurrentUser(props.currentUser);
+        setIsUserLoaded(props.isUserLoaded);
+    },[props.currentUser, props.isUserLoaded])
+
+    function handleLocationChange(point: data.Position) {
+        // do nothing
     }
 
-    handleLocationChange = (point: data.Position) => {
-    }
-
-    private renderUsersTable(users: UserData[]) {
+    function renderUsersTable(users: UserData[]) {
         return (
             <div>
                 <table className='table table-striped' aria-labelledby="tabelLabel">
@@ -174,94 +131,92 @@ export class EventDetails extends Component<RouteComponentProps<MatchParams>, Ev
         );
     }
 
-    public render() {
-        let contents = this.state.loading
-            ? <p><em>Loading...</em></p>
-            : this.renderEvent();
-
-        return <div>
-            <h1>{this.state.title}</h1>
-            <hr />
-            {contents}
-        </div>;
-    }
-
-    private renderEvent() {
+    function renderEvent() {
 
         return (
             <div>
                 <div className="form-group row" >
-                    <input type="hidden" name="Id" value={this.state.eventId.toString()} />
+                    <input type="hidden" name="Id" value={eventId.toString()} />
                 </div>
                 < div className="form-group row" >
                     <label className="control-label col-xs-2" htmlFor="Name">Name:</label>
                     <div className="col-xs-2">
-                        <label className="form-control">{this.state.eventName}</label>
+                        <label className="form-control">{eventName}</label>
                     </div>
                     <label className="control-label col-xs-2" htmlFor="EventDate">EventDate:</label>
                     <div className="col-xs-2">
-                        <label className="form-control">{this.state.eventDate.toLocaleString()}</label>
+                        <label className="form-control">{eventDate.toLocaleString()}</label>
                     </div>
                     <label className="control-label col-xs-2" htmlFor="EventType">Event Type:</label>
                     <div className="col-xs-2">
-                        <label className="form-control">{getEventType(this.state.eventTypeList, this.state.eventTypeId)}</label>
+                        <label className="form-control">{getEventType(eventTypeList, eventTypeId)}</label>
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-xs-2" htmlFor="Description">Description:</label>
                     <div className="col-md-10">
-                        <textarea className="form-control" name="description" defaultValue={this.state.description} rows={5} cols={5} readOnly />
+                        <textarea className="form-control" name="description" defaultValue={description} rows={5} cols={5} readOnly />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-xs-2" htmlFor="StreetAddress">Street Address:</label>
                     <div className="col-xs-2">
-                        <label className="form-control">{this.state.streetAddress}</label>
+                        <label className="form-control">{streetAddress}</label>
                     </div>
                     <label className="control-label col-xs-2" htmlFor="City">City:</label>
                     <div className="col-xs-2">
-                        <label className="form-control">{this.state.city}</label>
+                        <label className="form-control">{city}</label>
                     </div>
                     <label className="control-label col-xs-2" htmlFor="postalCode">Postal Code:</label>
                     <div className="col-xs-2">
-                        <label className="form-control">{this.state.postalCode}</label>
+                        <label className="form-control">{postalCode}</label>
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-xs-2" htmlFor="stateProvince">Region:</label>
                     <div className="col-xs-2">
-                        <label className="form-control">{this.state.region}</label>
+                        <label className="form-control">{region}</label>
                     </div>
                     <label className="control-label col-xs-2" htmlFor="Country">Country:</label>
                     <div className="col-xs-2">
-                        <label className="form-control">{this.state.country}</label>
+                        <label className="form-control">{country}</label>
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-xs-2" htmlFor="Latitude">Latitude:</label>
                     <div className="col-xs-2">
-                        <label className="form-control">{this.state.latitude}</label>
+                        <label className="form-control">{latitude}</label>
                     </div>
                     <label className="control-label col-xs-2" htmlFor="Longitude">Longitude:</label>
                     <div className="col-xs-2">
-                        <label className="form-control">{this.state.longitude}</label>
+                        <label className="form-control">{longitude}</label>
                     </div>
                     <label className="control-label col-xs-2" htmlFor="MaxNumberOfParticipants">Max Number Of Participants:</label>
                     <div className="col-xs-2">
-                        <label className="form-control">{this.state.maxNumberOfParticipants}</label>
+                        <label className="form-control">{maxNumberOfParticipants}</label>
                     </div>
                 </div >
                 <div>
-                    {this.renderUsersTable(this.state.userList)}
+                    <h2>Attendees</h2>
+                    {renderUsersTable(userList)}
                 </div>
                 <div>
                     <AzureMapsProvider>
                         <>
-                            <MapController center={this.state.center} multipleEvents={this.state.eventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={this.state.eventName} latitude={this.state.latitude} longitude={this.state.longitude} onLocationChange={this.handleLocationChange} currentUserId={this.state.currentUserId} />
+                            <MapController center={center} multipleEvents={eventList} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} />
                         </>
                     </AzureMapsProvider>
                 </div>
             </div >
         )
     }
+
+    let contents = isDataLoaded
+        ? renderEvent()
+        : <p><em>Loading...</em></p>;
+
+    return <div>
+        <hr />
+        {contents}
+    </div>;
 }

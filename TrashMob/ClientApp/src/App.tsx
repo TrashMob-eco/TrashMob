@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Route, Switch } from 'react-router';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, RouteComponentProps } from 'react-router-dom';
 
 import { Home } from './components/Home';
 
@@ -21,15 +21,35 @@ import { TermsOfService } from './components/TermsOfService';
 import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
-import { msalClient } from './store/AuthStore';
+import { apiConfig, getDefaultHeaders, msalClient } from './store/AuthStore';
 import CreateEvent from './components/CreateEvent';
-import { EventDetails } from './components/EventDetails';
-import { EditEvent, EditEventProps } from './components/EditEvent';
+import { EventDetails, MatchParams } from './components/EventDetails';
+import { EditEvent } from './components/EditEvent';
 import { NoMatch } from './components/NoMatch';
+import UserData from './components/Models/UserData';
+import * as msal from "@azure/msal-browser";
 
-export const App = (props) => {
+interface AppProps extends RouteComponentProps<MatchParams> {
+    isUserLoaded: boolean;
+    currentUser: UserData;
+}
 
-    initializeIcons();
+export const App: React.FC<AppProps> = (props) => {
+    const [isUserLoaded, setIsUserLoaded] = React.useState(props.isUserLoaded);
+    const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
+
+    React.useEffect(() => {
+        initializeIcons();
+
+        msalClient.addEventCallback((message: msal.EventMessage) => {
+            if (message.eventType === msal.EventType.LOGIN_SUCCESS) {
+                verifyAccount(message.payload as msal.AuthenticationResult)
+            }
+            if (message.eventType === msal.EventType.LOGOUT_SUCCESS) {
+                clearUser();
+            }
+        });
+    }, []);
 
     function ErrorComponent(error: MsalAuthenticationResult) {
         return <p>An Error Occurred: {error}</p>;
@@ -39,33 +59,124 @@ export const App = (props) => {
         return <p>Authentication in progress...</p>;
     }
 
-    function renderEditEvent(inp: EditEventProps ) {
+    function renderEditEvent(inp: AppProps ) {
         return (
             <MsalAuthenticationTemplate
                 interactionType={InteractionType.Redirect}
                 errorComponent={ErrorComponent}
                 loadingComponent={LoadingComponent}>
-                <EditEvent {...inp} />
+                <EditEvent {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded}  />
             </MsalAuthenticationTemplate >);
+    }
+
+    function clearUser() {
+        setIsUserLoaded(false);
+        var user = new UserData();
+        setCurrentUser(user)
+    }
+
+    function verifyAccount(result: msal.AuthenticationResult) {
+
+        const account = msalClient.getAllAccounts()[0];
+
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = getDefaultHeaders('PUT');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+            var user = new UserData();
+
+            user.nameIdentifier = result.idTokenClaims["sub"];
+            user.userName = result.account?.username ?? "";
+            user.city = result.account?.idTokenClaims["city"] ?? "";
+            user.region = result.account?.idTokenClaims["region"] ?? "";
+            user.country = result.account?.idTokenClaims["country"] ?? "";
+            user.postalCode = result.account?.idTokenClaims["postalCode"] ?? "";
+            user.givenName = result.account?.idTokenClaims["given_name"] ?? "";
+            user.surname = result.account?.idTokenClaims["family_name"] ?? "";
+            user.email = result.account?.idTokenClaims["emails"][0] ?? "";
+
+            fetch('api/Users', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(user)
+            })
+                .then(response => response.json() as Promise<UserData> | null)
+                .then(data => {
+                    if (data) {
+                        user.id = data.id;
+                        user.dateAgreedToPrivacyPolicy = data.dateAgreedToPrivacyPolicy;
+                        user.dateAgreedToTermsOfService = data.dateAgreedToTermsOfService;
+                        user.memberSince = data.memberSince;
+                        user.privacyPolicyVersion = data.privacyPolicyVersion;
+                        user.termsOfServiceVersion = data.termsOfServiceVersion;
+                        setCurrentUser(user);
+                        setIsUserLoaded(true);
+                    }
+
+                    //if (user.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate || user.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate || user.termsOfServiceVersion === "" || user.privacyPolicyVersion === "") {
+                    //    return AgreeToPolicies;
+                    // }
+                });
+        });
+    }
+
+    function updateAgreements(tosVersion: string, privacyVersion: string) {
+
+        const account = msalClient.getAllAccounts()[0];
+
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = getDefaultHeaders('GET');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+            fetch('api/Users/' + currentUser.id, {
+                method: 'GET',
+                headers: headers,
+                body: JSON.stringify(currentUser)
+            })
+                .then(response => response.json() as Promise<UserData> | null)
+                .then(user => {
+                    user.dateAgreedToPrivacyPolicy = new Date();
+                    user.dateAgreedToTermsOfService = new Date();
+                    user.termsOfServiceVersion = tosVersion;
+                    user.privacyPolicyVersion = privacyVersion;
+                    fetch('api/Users', {
+                        method: 'PUT',
+                        headers: headers,
+                        body: JSON.stringify(user)
+                    })
+                        .then(response => response.json() as Promise<UserData> | null)
+                        .then(data => setCurrentUser(data));
+                })
+        })
     }
 
     return (
         <MsalProvider instance={msalClient} >
             <div className="d-flex flex-column h-100">
-                <TopMenu />
+                <TopMenu {...props} isUserLoaded={isUserLoaded} currentUser={currentUser} />
+
                 <div className="container">
                     <div className="">
 
                         <BrowserRouter>
                             <Switch>
-                                <Route path="/editevent/:eventId" render={(props) => renderEditEvent(props)} />
+                                <Route path="/editevent/:eventId" render={(props: AppProps) => renderEditEvent(props)} />
                                 <Route path="/eventdetails/:eventId" component={EventDetails} />
                                 <Route path="/createevent">
                                     <MsalAuthenticationTemplate
                                         interactionType={InteractionType.Redirect}
                                         errorComponent={ErrorComponent}
                                         loadingComponent={LoadingComponent}>
-                                        <CreateEvent />
+                                        <CreateEvent currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                     </MsalAuthenticationTemplate >
                                 </Route>
                                 <Route exact path="/mydashboard">
@@ -73,7 +184,7 @@ export const App = (props) => {
                                         interactionType={InteractionType.Redirect}
                                         errorComponent={ErrorComponent}
                                         loadingComponent={LoadingComponent}>
-                                        <MyDashboard />
+                                        <MyDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                     </MsalAuthenticationTemplate >
                                 </Route>
                                 <Route exact path="/aboutus">
@@ -101,7 +212,7 @@ export const App = (props) => {
                                     <TermsOfService />
                                 </Route>
                                 <Route exact path='/'>
-                                    <Home {...props}  />
+                                    <Home {...props} currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </Route>
                                 <Route>
                                     <NoMatch />

@@ -1,39 +1,25 @@
-import { Component } from 'react';
 import * as React from 'react'
 
 import { RouteComponentProps } from 'react-router-dom';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
-import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
+import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
-import { getUserFromCache } from '../store/accountHandler';
+import UserData from './Models/UserData';
 
-interface PropsType extends RouteComponentProps {
+interface UserEventsPropsType extends RouteComponentProps {
     eventList: EventData[];
     eventTypeList: EventTypeData[];
-    loading: boolean;
+    isEventDataLoaded: boolean;
+    onEventListChanged: any;
+    isUserLoaded: boolean;
+    currentUser: UserData;
 };
 
-interface FetchEventDataState {
-    eventList: EventData[];
-    eventTypeList: EventTypeData[];
-    currentUserId: string;
-    loading: boolean;
-}
+export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
 
-export class UserEvents extends Component<PropsType, FetchEventDataState> {
-
-    constructor(props: PropsType) {
-        super(props);
-        this.state = { eventList: this.props.eventList, eventTypeList: this.props.eventTypeList, loading: this.props.loading, currentUserId: getUserFromCache().id };
-
-        // This binding is necessary to make "this" work in the callback  
-        this.handleDelete = this.handleDelete.bind(this);
-        this.handleRemove = this.handleRemove.bind(this);
-    }
-
-    // Handle Remove request for an event  
-    private handleRemove(id: string, name: string) {
+    // Handle Remove request for an event
+    function handleRemove(id: string, name: string) {
         if (!window.confirm("Do you want to remove yourself from this event: " + name + "?"))
             return;
         else {
@@ -45,19 +31,19 @@ export class UserEvents extends Component<PropsType, FetchEventDataState> {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = defaultHeaders('DELETE');
+                const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('api/EventAttendees/' + id + '/' + this.state.currentUserId, {
+                fetch('api/EventAttendees/' + id + '/' + props.currentUser.id, {
                     method: 'delete',
                     headers: headers
-                }).then(() => { this.props.history.push("/"); })
+                }).then(() => { props.onEventListChanged(); })
             });
         }
     }
 
     // Handle Delete request for an event  
-    private handleDelete(id: string, name: string) {
+    function handleDelete(id: string, name: string) {
         if (!window.confirm("Do you want to delete event with name: " + name))
             return;
         else {
@@ -69,31 +55,18 @@ export class UserEvents extends Component<PropsType, FetchEventDataState> {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = defaultHeaders('DELETE');
+                const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
                 fetch('api/Events/' + id, {
                     method: 'delete',
                     headers: headers
-                }).then(() => { this.props.history.push("/"); });
+                }).then(() => { props.onEventListChanged(); });
             });
         }
     }
 
-    public render() {
-        let contents = this.props.loading
-            ? <p><em>Loading...</em></p>
-            : this.renderEventsTable(this.props.eventList);
-
-        return (
-            <div>
-                <h1 id="tabelLabel" >My Events</h1>
-                {contents}
-            </div>
-        );
-    }
-
-    private renderEventsTable(events: EventData[]) {
+    function renderEventsTable(events: EventData[]) {
         return (
             <div>
                 <table className='table table-striped' aria-labelledby="tabelLabel">
@@ -110,22 +83,22 @@ export class UserEvents extends Component<PropsType, FetchEventDataState> {
                     </thead>
                     <tbody>
                         {events.map(mobEvent => {
-                            var isOwner = mobEvent.createdByUserId === this.state.currentUserId;
+                            var isOwner = mobEvent.createdByUserId === props.currentUser.id;
 
                             return (
                                 <tr key={mobEvent.id.toString()}>
                                     <td>{mobEvent.name}</td>
                                     <td>{new Date(mobEvent.eventDate).toLocaleString()}</td>
-                                    <td>{getEventType(this.props.eventTypeList, mobEvent.eventTypeId)}</td>
+                                    <td>{getEventType(props.eventTypeList, mobEvent.eventTypeId)}</td>
                                     <td>{mobEvent.city}</td>
                                     <td>{mobEvent.region}</td>
                                     <td>{mobEvent.country}</td>
                                     <td>{mobEvent.postalCode}</td>
                                     <td>
-                                        <button hidden={!isOwner} className="action" onClick={() => this.props.history.push('/editevent/' + mobEvent.id)}>Edit Event</button>
-                                        <button hidden={!isOwner} className="action" onClick={() => this.handleDelete(mobEvent.id, mobEvent.name)}>Delete Event</button>
-                                        <button hidden={isOwner} className="action" onClick={() => this.props.history.push('/eventdetails/' + mobEvent.id)}>View Details</button>
-                                        <button hidden={isOwner} className="action" onClick={() => this.handleRemove(mobEvent.id, mobEvent.name)}>Remove Me from Event</button>
+                                        <button hidden={!isOwner} className="action" onClick={() => props.history.push('/editevent/' + mobEvent.id)}>Edit Event</button>
+                                        <button hidden={!isOwner} className="action" onClick={() => handleDelete(mobEvent.id, mobEvent.name)}>Delete Event</button>
+                                        <button hidden={isOwner} className="action" onClick={() => props.history.push('/eventdetails/' + mobEvent.id)}>View Details</button>
+                                        <button hidden={isOwner} className="action" onClick={() => handleRemove(mobEvent.id, mobEvent.name)}>Remove Me from Event</button>
                                     </td>
                                 </tr>)
                         }
@@ -135,4 +108,16 @@ export class UserEvents extends Component<PropsType, FetchEventDataState> {
             </div>
         );
     }
+
+    let contents = props.isEventDataLoaded
+        ? renderEventsTable(props.eventList)
+        : <p><em>Loading...</em></p>;
+
+    return (
+        <div>
+            <h1 id="tabelLabel" >My Events</h1>
+            {contents}
+        </div>
+    );
 }
+

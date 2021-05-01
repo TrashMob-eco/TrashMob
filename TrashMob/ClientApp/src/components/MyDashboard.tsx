@@ -1,116 +1,138 @@
-import { Component } from 'react';
 import * as React from 'react'
 
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { UserEvents } from './UserEvents'
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
-import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
-import { getUserFromCache } from '../store/accountHandler';
+import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapController from './MapController';
+import UserData from './Models/UserData';
 
-interface Props extends RouteComponentProps<any> {
+interface MyDashboardProps extends RouteComponentProps<any> {
+    isUserLoaded: boolean;
+    currentUser: UserData;
 }
 
-interface MyDashboardDataState {
-    title: string;
-    myEventList: EventData[];
-    myAttendanceList: EventData[];
-    eventTypeList: EventTypeData[];
-    loading: boolean;
-    center: data.Position;
-    isKeyLoaded: boolean;
-    mapOptions: IAzureMapOptions;
-    currentUserId: string;
-}
+const MyDashboard: React.FC<MyDashboardProps> = (props) => {
+    const [myEventList, setMyEventList] = React.useState<EventData[]>([]);
+    const [eventTypeList, setEventTypeList] = React.useState<EventTypeData[]>([]);
+    const [isEventDataLoaded, setIsEventDataLoaded] = React.useState<boolean>(false);
+    const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
+    const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
+    const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
+    const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
+    const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
 
-class MyDashboard extends Component<Props, MyDashboardDataState> {
-    constructor(props: Props) {
-        super(props);
+    React.useEffect(() => {
+        const headers = getDefaultHeaders('GET');
 
-        this.state = {
-            title: "My Dashboard", loading: false, myEventList: [], myAttendanceList: [], eventTypeList: [], center: new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude), isKeyLoaded: false, mapOptions: null, currentUserId: getUserFromCache().id
-        };
+        setCurrentUser(props.currentUser);
+        setIsUserLoaded(props.isUserLoaded);
 
-        const account = msalClient.getAllAccounts()[0];
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = defaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('api/eventtypes', {
-                method: 'GET',
-                headers: headers,
-            })
-                .then(response => response.json() as Promise<Array<any>>)
-                .then(data => {
-                    this.setState({ eventTypeList: data });
-                });
-
-            fetch('api/events/userevents/' + getUserFromCache().id, {
-                method: 'GET',
-                headers: headers
-            })
-                .then(response => response.json() as Promise<EventData[]>)
-                .then(data => {
-                    this.setState({ myEventList: data, loading: false });
-                });
-        });
+        fetch('api/eventtypes', {
+            method: 'GET',
+            headers: headers,
+        })
+            .then(response => response.json() as Promise<Array<any>>)
+            .then(data => {
+                setEventTypeList(data);
+            });
 
         MapStore.getOption().then(opts => {
-            this.setState({ mapOptions: opts });
-            this.setState({ isKeyLoaded: true });
+            setMapOptions(opts);
+            setIsMapKeyLoaded(true);
         })
-    }
 
-    componentDidMount() {
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(position => {
                 var point = new data.Position(position.coords.longitude, position.coords.latitude);
-                this.setState({ center: point })
+                setCenter(point)
             });
         } else {
             console.log("Not Available");
         }
-    }
 
-    handleLocationChange = (point: data.Position) => {
+        if (props.isUserLoaded) {
+            const account = msalClient.getAllAccounts()[0];
+
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                fetch('api/events/userevents/' + props.currentUser.id, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<EventData[]>)
+                    .then(data => {
+                        setMyEventList(data);
+                        setIsEventDataLoaded(true);
+                    });
+            });
+        }
+    }, [props.currentUser, props.isUserLoaded]);
+
+    function loadEvents() {
+        if (props.isUserLoaded) {
+            setIsEventDataLoaded(false);
+            const account = msalClient.getAllAccounts()[0];
+
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                fetch('api/events/userevents/' + currentUser.id, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<EventData[]>)
+                    .then(data => {
+                        setMyEventList(data);
+                        setIsEventDataLoaded(true);
+                    });
+            });
+        }
+    };
+
+    function handleLocationChange(point: data.Position) {
         // do nothing
     }
 
-    render() {
-        const data = this.state;
-        return (
+    return (
+        <div>
+            <div>
+                <Link to="/createevent">Create a New Event</Link>
+            </div>
             <div>
                 <div>
-                    <Link to="/createevent">Create a New Event</Link>
-                </div>
-                <div>
-                    <div>
-                        <UserEvents history={this.props.history} location={this.props.location} match={this.props.match}  eventList={data.myEventList} eventTypeList={this.state.eventTypeList} loading={data.loading} />
-                    </div>
-                </div>
-                <div>
-                    <AzureMapsProvider>
-                        <>
-                            <MapController center={this.state.center} multipleEvents={data.myEventList} loading={this.state.loading} mapOptions={this.state.mapOptions} isKeyLoaded={this.state.isKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={this.handleLocationChange} currentUserId={this.state.currentUserId} />
-                        </>
-                    </AzureMapsProvider>
-                </div>
-                <div>
-                    My Stats
+                    <UserEvents history={props.history} location={props.location} match={props.match} eventList={myEventList} eventTypeList={eventTypeList} isEventDataLoaded={isEventDataLoaded} onEventListChanged={loadEvents} currentUser={currentUser} isUserLoaded={isUserLoaded} />
                 </div>
             </div>
-        );
-    }
+            <div>
+                <AzureMapsProvider>
+                    <>
+                        <MapController center={center} multipleEvents={myEventList} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                    </>
+                </AzureMapsProvider>
+            </div>
+            <div>
+                My Stats
+                </div>
+        </div>
+    );
 }
 
 export default withRouter(MyDashboard);

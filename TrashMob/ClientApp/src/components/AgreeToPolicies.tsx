@@ -2,7 +2,6 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { Modal } from 'reactstrap';
-import { updateAgreements } from '../store/accountHandler';
 import { CurrentPrivacyPolicyVersion } from './PrivacyPolicy';
 import { CurrentTermsOfServiceVersion } from './TermsOfService';
 
@@ -28,15 +27,15 @@ const AgreeToPolicies: React.FC = () => {
                     <label htmlFor="agree"> I agree to the TrashMob <Link to="./termsofservice">terms of use</Link> and the TrashMob <Link to="./privacypolicy">privacy policy</Link></label>
                 </div>
 
-                <div>
-                    <button disabled={!agree} className="action" onClick={() => {
-                        updateAgreements(CurrentTermsOfServiceVersion.versionId, CurrentPrivacyPolicyVersion.versionId);
-                        togglemodal();
-                        }
-                    }>
-                        I Agree
-                    </button>
-                </div>
+            {/*    <div>*/}
+            {/*        <button disabled={!agree} className="action" onClick={() => {*/}
+            {/*            updateAgreements(CurrentTermsOfServiceVersion.versionId, CurrentPrivacyPolicyVersion.versionId);*/}
+            {/*            togglemodal();*/}
+            {/*            }*/}
+            {/*        }>*/}
+            {/*            I Agree*/}
+            {/*        </button>*/}
+            {/*    </div>*/}
             </div>
         </Modal>
     );

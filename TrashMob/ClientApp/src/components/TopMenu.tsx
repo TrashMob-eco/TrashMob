@@ -1,7 +1,26 @@
 ﻿import * as React from 'react'
+import { RouteComponentProps } from 'react-router-dom';
 import { msalClient } from '../store/AuthStore';
+import UserData from './Models/UserData';
 
-export const TopMenu: React.FC = () => {
+interface TopMenuProps extends RouteComponentProps {
+    isUserLoaded: boolean;
+    currentUser: UserData;
+}
+
+export const TopMenu: React.FC<TopMenuProps> = (props) => {
+    const [userName, setUserName] = React.useState<string>("");
+    const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
+    const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
+
+    React.useEffect(() => {
+        if (props.currentUser && props.isUserLoaded) {
+            setUserName(props.currentUser.givenName);
+        }
+
+        setIsUserLoaded(props.isUserLoaded);
+        setCurrentUser(props.currentUser);
+    }, [props.currentUser, props.isUserLoaded])
 
     const mainNavItems = [
         { name: "Home", url: "/" },
@@ -37,7 +56,7 @@ export const TopMenu: React.FC = () => {
                         <ul className="navbar-nav mr-auto">
                             {mainNavItems.map(item => (
                                 <li className="nav-item" key={item.name}>
-                                    <a className="nav-link" href={item.url}>{item.name}</a>
+                                    <a className="nav-link" href="{item.url}">{item.name}</a>
                                 </li>
                             ))}
                             <li className="nav-item dropdown">
@@ -51,8 +70,9 @@ export const TopMenu: React.FC = () => {
                                 </div>
                             </li>
                         </ul>
-                        <button className="btn btn-primary" onClick={(e) => signIn(e)}>Sign Up/Log In</button>
-                        <button className="btn btn-outline-primary" onClick={(e) => signOut(e)}>Log Out</button>
+                        <label hidden={!isUserLoaded}>Welcome, {userName}!</label>
+                        <button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)}>Sign Up/Log In</button>
+                        <button hidden={!isUserLoaded}className="btn btn-outline-primary" onClick={(e) => signOut(e)}>Log Out</button>
                     </div>
                 </nav>
             </div>

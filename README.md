@@ -31,7 +31,10 @@ Here's what needs to be done before we can launch
     1. Bold field names
     1. Bootstrap theme?
   1. Get proper logo
-  1. Fix issue with MyDashboard not reloading after delete (set to home for now to force reload)
+    1. In process
+  1. Fix email issues (waiting for DNS Servers to update)
+  1. Brand sign in pages
+  1. Fix issue with clicking on Nav Bar links causing loss of user info
   
 
 ## High Priority Post Launch Items
@@ -40,19 +43,15 @@ These items did not make the cut for launch but need to be done
   1. Allow map to respond to changes in country, region, city or postal code
   1. Check response codes from APIs are correct
   1. Fix Terms of Service accept popup
-  1. Fix welcome user message on main header
-  1. Logout button should not be available if not logged in
-  1. Login button should not be available if already logged in
   1. Allow event location to be dragged with visual indicator
-  1. Add Google / Twitter / Instagram / Apple logins
-  1. Add Patreon
-  1. Convert classes to Functional Components
-  1. Redeploy test environment with standardized names
+  1. Add Patreon?
   1. Find a way to secure the Azure Maps Key (referral restriction?)
   1. Set up rotation of Azure Maps Keys every 24 hours
   1. Set up bicep deployment of all resources needed by devs to run the site.
   
 ## Upcoming Feature List (not ordered)
+  1. Redeploy test environment with standardized names
+  1. Improve redirect on login logic so we don't have to add all the paths to the AD config
   1. Add search / filter of events on main page
   1. Allow user / sponsor / partner to request an event
   1. Allow user to view and update their profile
@@ -82,6 +81,7 @@ These items did not make the cut for launch but need to be done
   1. Allow users to become friends with other users
   1. Allow users to be notified when one of their friends creates a new event
   1. Allow users to be notified of changes to events they are scheduled to attend
+  1. Add weather reports
   1. Add ability for users to add location notes
     1. Region / City guides
     1. Park Guides

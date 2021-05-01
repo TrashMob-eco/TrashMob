@@ -1,11 +1,11 @@
 import * as React from 'react'
-import { Link, useHistory } from 'react-router-dom';
-import { getUserFromCache } from '../store/accountHandler';
+import { useHistory } from 'react-router-dom';
 import EventAttendeeData from './Models/EventAttendeeData';
-import { apiConfig, defaultHeaders, msalClient } from '../store/AuthStore';
+import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
+import UserData from './Models/UserData';
 
 class DisplayEvent {
     id: string;
@@ -18,20 +18,22 @@ class DisplayEvent {
     isAttending: string;
 }
 
-export interface MainEventsDataState {
+export interface MainEventsDataProps {
     eventList: EventData[];
     eventTypeList: EventTypeData[];
     myAttendanceList: EventData[];
-    isLoggedIn: boolean;
-    loading: boolean;
+    isEventDataLoaded: boolean;
+    isUserEventDataLoaded: boolean;
+    isUserLoaded: boolean;
+    currentUser: UserData;
 };
 
-export const MainEvents: React.FC<MainEventsDataState> = (props) => {
+export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
     const [displayEvents, setDisplayEvents] = React.useState([]);
     const history = useHistory();
 
     React.useEffect(() => {
-        if (!props.loading && props.eventList && props.myAttendanceList) {
+        if (props.isEventDataLoaded && props.eventList) {
             const list = props.eventList.map((mobEvent) => {
                 var dispEvent = new DisplayEvent()
                 dispEvent.id = mobEvent.id;
@@ -41,13 +43,18 @@ export const MainEvents: React.FC<MainEventsDataState> = (props) => {
                 dispEvent.eventDate = mobEvent.eventDate;
                 dispEvent.eventTypeId = mobEvent.eventTypeId;
                 dispEvent.name = mobEvent.name;
-                var isAttending = props.myAttendanceList.findIndex((e) => e.id === mobEvent.id) >= 0;
-                dispEvent.isAttending = !props.isLoggedIn ? 'Log in to see your status' : (isAttending ? 'Yes' : 'No');
+                if (props.isUserEventDataLoaded) {
+                    var isAttending = props.myAttendanceList.findIndex((e) => e.id === mobEvent.id) >= 0;
+                    dispEvent.isAttending = (isAttending ? 'Yes' : 'No');
+                }
+                else {
+                    dispEvent.isAttending = 'Log in to see your status';
+                }
                 return dispEvent;
             });
             setDisplayEvents(list);
         }
-    }, [props.loading, props.eventList, props.myAttendanceList, props.isLoggedIn])
+    }, [props.isEventDataLoaded, props.eventList, props.myAttendanceList, props.isUserLoaded, props.isUserEventDataLoaded])
 
     function addAttendee(eventId: string) {
 
@@ -60,14 +67,13 @@ export const MainEvents: React.FC<MainEventsDataState> = (props) => {
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
 
-            var user = getUserFromCache();
             var eventAttendee = new EventAttendeeData();
-            eventAttendee.userId = user.id;
+            eventAttendee.userId = props.currentUser.id;
             eventAttendee.eventId = eventId;
 
             var data = JSON.stringify(eventAttendee);
 
-            const headers = defaultHeaders('POST');
+            const headers = getDefaultHeaders('POST');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
             // POST request for Add EventAttendee.  
@@ -134,8 +140,8 @@ export const MainEvents: React.FC<MainEventsDataState> = (props) => {
     return (
         <>
             <div>
-                {props.loading && <p><em>Loading...</em></p>}
-                {!props.loading && renderEventsTable(displayEvents)}
+                {!props.isEventDataLoaded && <p><em>Loading...</em></p>}
+                {props.isEventDataLoaded && renderEventsTable(displayEvents)}
             </div>
         </>
     );
