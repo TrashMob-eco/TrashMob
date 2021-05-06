@@ -33,7 +33,6 @@ Here's what needs to be done before we can launch
   1. Get proper logo
     1. In process
 1. Brand sign in pages (need logo and colors)
-1. Fix email issues (waiting for DNS Servers to update - Joe working on this)
   
 ## High Priority Post Launch Items
 These items did not make the cut for launch but need to be done
@@ -48,53 +47,6 @@ These items did not make the cut for launch but need to be done
   1. Set up bicep deployment of all resources needed by devs to run the site.
   1. Redeploy test environment with standardized names
   
-## Upcoming Feature List (not ordered)
-  1. Number of characters remaining
-  1. Allow user to view and update their profile
-  1. Allow user to delete account
-  1. On user dashboard, allow sorting, ordering and filtering
-  1. Improve redirect on login logic so we don't have to add all the paths to the AD config
-  1. Add search / filter of events on main page
-  1. Allow user / sponsor / partner to request an event
-  1. Test on Mobile device
-  1. Set up SendMail for Contact Us
-  1. Register a Sponsor
-  1. Register a Partner
-  1. Add a Partner to an Event
-  1. Add a Sponsor to an Event
-  1. Add stats to carousel
-    1. Number of Registered Users
-    1. Number of Upcoming Events
-    1. Number of Users registered for upcoming events
-    1. Number of Completed events
-    1. Number of Users who have attended at least 1 event
-    1. Number of Users who have attended at least 5 events
-    1. Number of Users who have attended at least 10 events
-  1. Allow user to be notified when a new event is added within x distance of their location
-  1. Allow event lead to email all registered attendees
-  1. Create mobile version of the app
-  1. Allow event lead to send messages to all registered attendees
-  1. Allow event lead to upload photos / videos of the event and add after event notes
-  1. Allow registered users to share info about an upcoming event on Twitter and Facebook
-  1. Allow users to post stories to the site
-  1. Allow users to send kudos to another registered user
-  1. Allow users to become friends with other users
-  1. Allow users to be notified when one of their friends creates a new event
-  1. Allow users to be notified of changes to events they are scheduled to attend
-  1. Add weather reports
-  1. Add ability for users to add location notes
-    1. Region / City guides
-    1. Park Guides
-  1. Add ability to see where events have been previously and how long before
-  1. Add profanity filter for text fields
-  1. Allow event leads to specify specialized skills/tools needed (i.e. chainsaws, skidsteer, safety truck, metal detector, sharps containers)
-  1. GDPR handling
-  1. Admin Site
-    1. Delete an Event
-    1. Executive Dashboard
-    1. Ban User
-  1. Merchandise Sales
-
 ## What is the domain name going to be?
 
 Trashmob.eco
