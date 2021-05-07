@@ -1,8 +1,8 @@
 ﻿import * as React from 'react'
 
 export const CurrentTermsOfServiceVersion: TermsOfServiceVersion = {
-    versionId: "0.1",
-    versionDate: new Date(2021, 4, 12, 0, 0, 0, 0)
+    versionId: "0.2",
+    versionDate: new Date(2021, 4, 13, 0, 0, 0, 0)
 }
 
 export class TermsOfServiceVersion {

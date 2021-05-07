@@ -1,8 +1,8 @@
 ﻿import * as React from 'react'
 
 export const CurrentPrivacyPolicyVersion: PrivacyPolicyVersion = {
-    versionId: "0.1",
-    versionDate: new Date(2021, 4, 1, 0, 0, 0, 0)
+    versionId: "0.2",
+    versionDate: new Date(2021, 4, 13, 0, 0, 0, 0)
 }
 
 export class PrivacyPolicyVersion {

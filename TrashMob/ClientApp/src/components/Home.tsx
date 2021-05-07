@@ -11,6 +11,9 @@ import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapController from './MapController';
 import UserData from './Models/UserData';
+import { Modal } from 'reactstrap';
+import { CurrentTermsOfServiceVersion } from './TermsOfService';
+import { CurrentPrivacyPolicyVersion } from './PrivacyPolicy';
 
 export interface HomeProps {
     isUserLoaded: boolean;
@@ -28,6 +31,8 @@ export const Home: React.FC<HomeProps> = (props) => {
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
     const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
     const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
+    const [agree, setAgree] = React.useState(false);
+    const [isOpen, setIsOpen] = React.useState(false);
 
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
@@ -100,12 +105,87 @@ export const Home: React.FC<HomeProps> = (props) => {
         }
     }, [props.isUserLoaded, props.currentUser]);
 
+    React.useLayoutEffect(() => {
+        if (!isUserLoaded || !currentUser) {
+            return;
+        }
+
+        if (currentUser.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate || currentUser.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate || currentUser.termsOfServiceVersion === "" || currentUser.privacyPolicyVersion === "") {
+            setIsOpen(true);
+        }
+
+    }, [isUserLoaded, currentUser]);
+
     function handleLocationChange(point: data.Position) {
         // do nothing
     }
 
+    function checkboxhandler() {
+        // if agree === true, it will be set to false
+        // if agree === false, it will be set to true
+        setAgree(!agree);
+    }
+
+    function togglemodal() {
+        setIsOpen(!isOpen);
+    }
+
+    function updateAgreements(tosVersion: string, privacyVersion: string) {
+
+        const account = msalClient.getAllAccounts()[0];
+
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = getDefaultHeaders('GET');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+            fetch('api/Users/' + currentUser.id, {
+                method: 'GET',
+                headers: headers
+            })
+                .then(response => response.json() as Promise<UserData> | null)
+                .then(user => {
+                    user.dateAgreedToPrivacyPolicy = new Date();
+                    user.dateAgreedToTermsOfService = new Date();
+                    user.termsOfServiceVersion = tosVersion;
+                    user.privacyPolicyVersion = privacyVersion;
+                    fetch('api/Users', {
+                        method: 'PUT',
+                        headers: headers,
+                        body: JSON.stringify(user)
+                    })
+                        .then(response => response.json() as Promise<UserData> | null)
+                        .then(data => setCurrentUser(data))
+                })
+        })
+    }
+
     return (
         <div>
+            <div>
+                <Modal isopen={isOpen} onrequestclose={togglemodal} contentlabel="accept terms of use">
+                    <div className="container">
+                        <div>
+                            <input type="checkbox" id="agree" onChange={checkboxhandler} />
+                            <label htmlFor="agree"> I agree to the TrashMob <Link to="./termsofservice">terms of use</Link> and the TrashMob <Link to="./privacypolicy">privacy policy</Link></label>
+                        </div>
+
+                        <div>
+                            <button disabled={!agree} className="action" onClick={() => {
+                                updateAgreements(CurrentTermsOfServiceVersion.versionId, CurrentPrivacyPolicyVersion.versionId);
+                                togglemodal();
+                            }
+                            }>
+                                I Agree
+                    </button>
+                        </div>
+                    </div>
+                </Modal>
+            </div>
             <div>
                 <MainCarousel />
             </div>
