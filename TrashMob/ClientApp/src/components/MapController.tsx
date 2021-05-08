@@ -37,11 +37,15 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
 
     // This is used for maps with multiple events
     useEffect(() => {
-        if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && props.isUserLoaded) {
+        if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded) {
             clearMarkers();
             props.multipleEvents.forEach(mobEvent => {
                 var pin = new MapStore.markerPoint();
-                var pinColor = mobEvent.createdByUserId === props.currentUser.id ? 'pin-round-blue' : 'pin-round-green';
+                var pinColor ='pin-round-green';
+                if (props.isUserLoaded && props.currentUser && mobEvent.createdByUserId === props.currentUser.id) {
+                    pinColor = 'pin-round-blue';
+                }
+
                 pin.position = new data.Point(new data.Position(mobEvent.longitude, mobEvent.latitude));
                 pin.properties = {
                     title: mobEvent.name, icon: pinColor, type: 'Point'

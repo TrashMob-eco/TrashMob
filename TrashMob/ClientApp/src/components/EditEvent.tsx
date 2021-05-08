@@ -49,7 +49,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);;
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();;
-    const [eventList, setEventList] = React.useState<EventData[]>([]);;
 
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
@@ -423,7 +422,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     <div>
                         <AzureMapsProvider>
                             <>
-                                <MapController center={center} multipleEvents={eventList} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                                <MapController center={center} multipleEvents={[]} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
                             </>
                         </AzureMapsProvider>
                     </div>
