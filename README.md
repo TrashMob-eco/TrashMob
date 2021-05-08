@@ -10,6 +10,14 @@ I read about a guy in California named [Edgar McGregor](https://twitter.com/edga
  
 Basically, TrashMob is the NerdDinner.com site re-purposed to allow people to start mobs of their own to tackle cleanup or whatever needs doing. And I keep coming up with more and more ideas for it. I'm hoping this site grows organically because of the good that we can do we get together.
 
+## What is website address?
+
+To see what is currently deployed to the prod environment, go to:
+https://www.trashmob.eco
+
+To see what is currently deployed to the dev environment, go to:
+https://trashmobdev.azurewebsites.net
+
 # FAQ 
 ## What is the current state of this project?
 
@@ -45,13 +53,7 @@ These items did not make the cut for launch but need to be done
   1. Find a way to secure the Azure Maps Key (referral restriction?)
   1. Set up rotation of Azure Maps Keys every 24 hours
   1. Set up bicep deployment of all resources needed by devs to run the site.
-  1. Redeploy test environment with standardized names
-  
-## What is the domain name going to be?
-
-Trashmob.eco
-
-It's a little unusual, but it'll work.
+  1. Redeploy test environment with standardized names  
 
 ## When this project is "done" will it be open sourced?
 
@@ -141,21 +143,18 @@ dotnet ef migrations add <YourMigrationName>
 dotnet ef database update
 ```
 
-## How do I deploy the Azure Web App?
+## How do I deploy the Azure Web App from GitHub?
+The Dev site is automatically deployed with each push to the Main branch via a GitHub action. This is the preferred method of updating the Development Server. If you need to push an update from your development machine instead, please let the team know that there are changes in the environment pending checkin.
+
+The Production site is manually deployed via a GitHub action from the release branch. This is the ONLY way production should be updated.
+
+## How do I deploy the Azure Web App from my PC?
 Use Visual Studio Publish to publish the site to the dev server.
-
-To see what is currently deployed to the dev environment, go to:
-https://trashmobdev.azurewebsites.net
-
-To see what is currently deployed to the prod environment, go to:
-https://trashmobprod.azurewebsites.net
 
 If setting up a new environment, you will need to add the IP Address of the App Service to the list of IP Addresses accessible in the SQL Server. This needs to me automated in the future to make sure that a change to an IP address doesn't break the site.
 
 ## The site is asking me to login
-If you try to access a secure page, you will need a user id on the site. Currently, the site only allows user ids created in the development tenant we are using. This means that to log in the first time, you must first create a new account in the tenant.
-
-When you hit a secured page, the site will redirect you to a sign in page. Click the Sign up now link on the bottom of the login box.
+If you try to access a secure page, you will need a user id on the site. When you hit a secured page, the site will redirect you to a sign in page. Click the Sign up now link on the bottom of the login box. Multiple identity providers are now available, including Facebook, Twitter, Google, and Microsoft, along with the TrashMob tenant itself if you prefer not to use an integrated signup.
 
 ## Test Cases
 1. Verify that the following pages/actions require the user to be signed in:
