@@ -28,6 +28,7 @@ import { EditEvent } from './components/EditEvent';
 import { NoMatch } from './components/NoMatch';
 import UserData from './components/Models/UserData';
 import * as msal from "@azure/msal-browser";
+import { Guid } from 'guid-typescript';
 
 interface AppProps extends RouteComponentProps<MatchParams> {
     isUserLoaded: boolean;
@@ -54,7 +55,11 @@ export const App: React.FC = () => {
         if (userStr) {
             var user = JSON.parse(userStr);
             setCurrentUser(user);
-            setIsUserLoaded(true);
+            if (user.id === Guid.EMPTY) {
+                setIsUserLoaded(false);
+            } else {
+                setIsUserLoaded(true);
+            }
         }
     }, []);
 
@@ -66,13 +71,13 @@ export const App: React.FC = () => {
         return <p>Authentication in progress...</p>;
     }
 
-    function renderEditEvent(inp: AppProps ) {
+    function renderEditEvent(inp: AppProps) {
         return (
             <MsalAuthenticationTemplate
                 interactionType={InteractionType.Redirect}
                 errorComponent={ErrorComponent}
                 loadingComponent={LoadingComponent}>
-                <EditEvent {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded}  />
+                <EditEvent {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </MsalAuthenticationTemplate >);
     }
 
@@ -125,54 +130,14 @@ export const App: React.FC = () => {
                         setIsUserLoaded(true);
                         sessionStorage.setItem('user', JSON.stringify(user));
                     }
-
-                    //if (user.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate || user.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate || user.termsOfServiceVersion === "" || user.privacyPolicyVersion === "") {
-                    //    return AgreeToPolicies;
-                    // }
                 });
         });
-    }
-
-    function updateAgreements(tosVersion: string, privacyVersion: string) {
-
-        const account = msalClient.getAllAccounts()[0];
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('api/Users/' + currentUser.id, {
-                method: 'GET',
-                headers: headers,
-                body: JSON.stringify(currentUser)
-            })
-                .then(response => response.json() as Promise<UserData> | null)
-                .then(user => {
-                    user.dateAgreedToPrivacyPolicy = new Date();
-                    user.dateAgreedToTermsOfService = new Date();
-                    user.termsOfServiceVersion = tosVersion;
-                    user.privacyPolicyVersion = privacyVersion;
-                    fetch('api/Users', {
-                        method: 'PUT',
-                        headers: headers,
-                        body: JSON.stringify(user)
-                    })
-                        .then(response => response.json() as Promise<UserData> | null)
-                        .then(data => setCurrentUser(data));
-                })
-        })
     }
 
     return (
         <MsalProvider instance={msalClient} >
             <div className="d-flex flex-column h-100">
                 <TopMenu isUserLoaded={isUserLoaded} currentUser={currentUser} />
-
                 <div className="container">
                     <div className="">
 
