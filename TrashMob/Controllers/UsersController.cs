@@ -46,7 +46,7 @@ namespace TrashMob.Controllers
 
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
+        [HttpPut()]
         public async Task<IActionResult> PutUser(User user)
         {
             if (!ValidateUser(user.NameIdentifier))

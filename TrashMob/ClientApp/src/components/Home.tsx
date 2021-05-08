@@ -14,6 +14,7 @@ import UserData from './Models/UserData';
 import { Modal } from 'reactstrap';
 import { CurrentTermsOfServiceVersion } from './TermsOfService';
 import { CurrentPrivacyPolicyVersion } from './PrivacyPolicy';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export interface HomeProps {
     isUserLoaded: boolean;
@@ -105,7 +106,7 @@ export const Home: React.FC<HomeProps> = (props) => {
         }
     }, [props.isUserLoaded, props.currentUser]);
 
-    React.useLayoutEffect(() => {
+    React.useEffect(() => {
         if (!isUserLoaded || !currentUser) {
             return;
         }
@@ -153,7 +154,7 @@ export const Home: React.FC<HomeProps> = (props) => {
                     user.dateAgreedToTermsOfService = new Date();
                     user.termsOfServiceVersion = tosVersion;
                     user.privacyPolicyVersion = privacyVersion;
-                    fetch('api/Users', {
+                    fetch('api/Users/', {
                         method: 'PUT',
                         headers: headers,
                         body: JSON.stringify(user)
@@ -167,12 +168,12 @@ export const Home: React.FC<HomeProps> = (props) => {
     return (
         <div>
             <div>
-                <Modal isopen={isOpen} onrequestclose={togglemodal} contentlabel="accept terms of use">
+                <Modal isOpen={isOpen} onrequestclose={togglemodal} contentlabel="Accept Terms of Use" fade={true} style={{ width: "300px", display: "block" }}>
                     <div className="container">
-                        <div>
+                        <span>
                             <input type="checkbox" id="agree" onChange={checkboxhandler} />
-                            <label htmlFor="agree"> I agree to the TrashMob <Link to="./termsofservice">terms of use</Link> and the TrashMob <Link to="./privacypolicy">privacy policy</Link></label>
-                        </div>
+                            <label htmlFor="agree"> I agree to the TrashMob.eco <Link to="./termsofservice">Terms of Use</Link> and the TrashMob.eco <Link to="./privacypolicy">Privacy Policy</Link>.</label>
+                        </span>
 
                         <div>
                             <button disabled={!agree} className="action" onClick={() => {
@@ -181,7 +182,7 @@ export const Home: React.FC<HomeProps> = (props) => {
                             }
                             }>
                                 I Agree
-                    </button>
+                            </button>
                         </div>
                     </div>
                 </Modal>
