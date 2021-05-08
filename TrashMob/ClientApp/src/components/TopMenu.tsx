@@ -9,7 +9,6 @@ interface TopMenuProps {
 
 export const TopMenu: React.FC<TopMenuProps> = (props) => {
     const [userName, setUserName] = React.useState<string>("");
-    const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
     const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
 
     React.useEffect(() => {
@@ -18,7 +17,6 @@ export const TopMenu: React.FC<TopMenuProps> = (props) => {
         }
 
         setIsUserLoaded(props.isUserLoaded);
-        setCurrentUser(props.currentUser);
     }, [props.currentUser, props.isUserLoaded])
 
     const mainNavItems = [
@@ -59,7 +57,7 @@ export const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 </li>
                             ))}
                             <li className="nav-item dropdown">
-                                <a className="nav-link dropdown-toggle" href="#" id="dropdown09" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Learn More</a>
+                                <button className="btn btn-link dropdown-toggle" id="dropdown09" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Learn More</button>
                                 <div className="dropdown-menu" aria-labelledby="dropdown09">
                                     <a className="dropdown-item" href="/aboutus">About TrashMob</a>
                                     <a className="dropdown-item" href="/partners">Partners</a>

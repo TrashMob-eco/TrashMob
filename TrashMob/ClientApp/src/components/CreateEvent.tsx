@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router';
-import { Guid } from "guid-typescript";
 import EventData from './Models/EventData';
 import DateTimePicker from 'react-datetime-picker';
 import EventTypeData from './Models/EventTypeData';
@@ -25,7 +24,6 @@ interface CreateEventProps extends RouteComponentProps<any> {
 
 export const CreateEvent: React.FC<CreateEventProps> = (props) => {
     const [isDataLoaded, setIsDataLoaded] = React.useState<boolean>(false);
-    const [eventId, setEventId] = React.useState<string>(Guid.create().toString());
     const [eventName, setEventName] = React.useState<string>("New Event");
     const [description, setDescription] = React.useState<string>();
     const [eventDate, setEventDate] = React.useState<Date>(new Date());
@@ -45,7 +43,6 @@ export const CreateEvent: React.FC<CreateEventProps> = (props) => {
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);;
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();;
-    const [eventList, setEventList] = React.useState<EventData[]>([]);;
 
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
@@ -288,9 +285,6 @@ export const CreateEvent: React.FC<CreateEventProps> = (props) => {
         return (
             <div className="container-fluid" >
                 <form onSubmit={handleSave} >
-                    <div className="form-group row" >
-                        <input type="hidden" name="Id" value={eventId.toString()} />
-                    </div>
                     < div className="form-group row" >
                         <OverlayTrigger placement="top" overlay={renderEventNameToolTip}>
                             <label className=" control-label col-xs-2" htmlFor="Name">Name:</label>
@@ -394,7 +388,7 @@ export const CreateEvent: React.FC<CreateEventProps> = (props) => {
                     <div>
                         <AzureMapsProvider>
                             <>
-                                <MapController center={center} multipleEvents={eventList} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                                <MapController center={center} multipleEvents={[]} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
                             </>
                         </AzureMapsProvider>
                     </div>
