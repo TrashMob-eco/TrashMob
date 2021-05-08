@@ -29,17 +29,17 @@ Here's what needs to be done before we can launch
     1. Add Required field indicators
     1. Improve Carousel Content / verify images not licensed
     1. Make field names more prominent
-    1. Add logo to header    
+    1. Add logo to header  
+    1. Fix format of Terms of Service accept popup
   1. Get proper logo
     1. In process
-1. Brand sign in pages (need logo and colors)
+1. Brand sign in pages (need to redo logo and colors)
   
 ## High Priority Post Launch Items
 These items did not make the cut for launch but need to be done
   1. Ensure user can't multi-click buttons
   1. Allow map to respond to changes in country, region, city or postal code
   1. Check response codes from APIs are correct
-  1. Fix Terms of Service accept popup
   1. Allow event location to be dragged with visual indicator
   1. Add Patreon?
   1. Find a way to secure the Azure Maps Key (referral restriction?)
