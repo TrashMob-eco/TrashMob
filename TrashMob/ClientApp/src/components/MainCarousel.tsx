@@ -1,11 +1,8 @@
 ﻿import * as React from 'react'
 
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
-import sign from "./assets/sign.jpg";
 import litter from "./assets/litter.jpg";
 import beachlitter from "./assets/beachlitter.jpg";
-import trash1000miles from "./assets/trash1000miles.jpg";
-import stoplittering from "./assets/stoplittering.jpg";
 
 export const MainCarousel: React.FC = () => {
     return (
@@ -22,8 +19,7 @@ export const MainCarousel: React.FC = () => {
                     }}
                     >
                         <div className="carousel-caption d-none d-md-block">
-                            <h5>Using the power of the Flash Mob to clean up the planet</h5>
-                            <a href="" className="btn btn-primary">Join today</a>
+                            <h5>Using the power of the Flash Mob to clean up the planet</h5>                            
                         </div>
                     </div>
                     <div className="carousel-item" style={{
