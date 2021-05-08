@@ -4,9 +4,6 @@
 name: Build and deploy ASP.Net Core app to Azure Web App - TrashMobProd
 
 on:
-  push:
-    branches:
-      - release
   workflow_dispatch:
 
 jobs:
