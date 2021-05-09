@@ -1,5 +1,5 @@
-param environment string
-param region string
+param environment string = ''
+param region string = ''
 
 var account_map_name = 'map_tm_${environment}_${region}'
 

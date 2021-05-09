@@ -1,10 +1,10 @@
 param environment string
 param region string
-param subscription string
+param subscriptionId string
 param rgName string
 
 var components_as_name = 'as-tm-${environment}-${region}'
-var workspaces_law_name = '/subscriptions/${subscription}/resourceGroups/${rgName}/providers/microsoft.operationalinsights/workspaces/law-tm-${environment}-${region}'
+var workspaces_law_name = '/subscriptions/${subscriptionId}/resourceGroups/${rgName}/providers/microsoft.operationalinsights/workspaces/law-tm-${environment}-${region}'
 
 resource components_as_name_resource 'microsoft.insights/components@2020-02-02-preview' = {
   name: components_as_name

@@ -1,12 +1,14 @@
-param ($subscriptionId, $environment, $region)
+param ($subscriptionId, $environment, $region, $sqlAdminPassword)
 
 $rgName = "rg-trashmob-$environment"
 
-az deployment group create -f ".\azureMaps.bicep" -g $rgName --parameters environment=$environment region=$region
-az deployment group create -f ".\sqlServer.bicep" -g $rgName --parameters environment=$environment region=$region
-az deployment group create -f ".\sqlDatabase.bicep" -g $rgName --parameters environment=$environment region=$region
-az deployment group create -f ".\keyVault.bicep" -g $rgName --parameters environment=$environment region=$region
-az deployment group create -f ".\appServicePlan.bicep" -g $rgName --parameters environment=$environment region=$region
-az deployment group create -f ".\appService.bicep" -g $rgName --parameters environment=$environment region=$region subscription=$subscriptionId rgName=$rgName
-az deployment group create -f ".\logAnalyticsWorkspace.bicep" -g $rgName --parameters environment=$environment region=$region 
-az deployment group create -f ".\appInsights.bicep" -g $rgName --parameters environment=$environment region=$region subscription=$subscriptionId rgName=$rgName
+az group create --location $region --name $rgName
+
+az deployment group create --template-file ".\azureMaps.bicep" -g $rgName --parameters environment=$environment region=$region
+az deployment group create --template-file ".\sqlServer.bicep" -g $rgName --parameters environment=$environment region=$region subscriptionId=$subscriptionId sqlAdminPassword=$sqlAdminPassword
+az deployment group create --template-file ".\sqlDatabase.bicep" -g $rgName --parameters environment=$environment region=$region subscriptionId=$subscriptionId rgName=$rgName
+az deployment group create --template-file ".\keyVault.bicep" -g $rgName --parameters environment=$environment region=$region
+az deployment group create --template-file ".\appServicePlan.bicep" -g $rgName --parameters environment=$environment region=$region
+az deployment group create --template-file ".\appService.bicep" -g $rgName --parameters environment=$environment region=$region subscriptionId=$subscriptionId sqlAdminPassword=$sqlAdminPassword
+az deployment group create --template-file ".\logAnalyticsWorkspace.bicep" --name $rgName --parameters environment=$environment region=$region 
+az deployment group create --template-file ".\appInsights.bicep" -g $rgName --parameters environment=$environment region=$region subscriptionId=$subscriptionId rgName=$rgName

@@ -2,9 +2,11 @@
 
 param environment string
 param region string
+param subscriptionId string
+param sqlAdminPassword string
 
-param vulnerabilityAssessments_Default_storageContainerPath string
-var servers_db_name = 'db-tm-${environment}-${region}'
+var servers_db_name = 'sql-tm-${environment}-${region}'
+var db_Name = 'db-tm-${environment}-${region}'
 
 resource servers_db_name_resource 'Microsoft.Sql/servers@2020-11-01-preview' = {
   name: servers_db_name
@@ -13,6 +15,7 @@ resource servers_db_name_resource 'Microsoft.Sql/servers@2020-11-01-preview' = {
     administratorLogin: 'dbadmin'
     version: '12.0'
     publicNetworkAccess: 'Enabled'
+    administratorLoginPassword: '${sqlAdminPassword}'
   }
 }
 
@@ -70,8 +73,8 @@ resource Microsoft_Sql_servers_auditingSettings_servers_db_name_Default 'Microso
   }
 }
 
-resource servers_db_name_ftm_dev 'Microsoft.Sql/servers/databases@2020-11-01-preview' = {
-  name: '${servers_db_name_resource.name}/ftm-dev'
+resource servers_db_name_tm_ 'Microsoft.Sql/servers/databases@2020-11-01-preview' = {
+  name: '${servers_db_name_resource.name}/${db_Name}'
   location: '${region}'
   sku: {
     name: 'Basic'
@@ -85,7 +88,7 @@ resource servers_db_name_ftm_dev 'Microsoft.Sql/servers/databases@2020-11-01-pre
     zoneRedundant: false
     readScale: 'Disabled'
     requestedBackupStorageRedundancy: 'Geo'
-    maintenanceConfigurationId: '/subscriptions/39a254b7-c01a-45ab-bebd-4038ea4adea9/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default'
+    maintenanceConfigurationId: '/subscriptions/${subscriptionId}/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default'
   }
 }
 
@@ -220,19 +223,8 @@ resource Microsoft_Sql_servers_securityAlertPolicies_servers_db_name_Default 'Mi
   }
 }
 
-resource Microsoft_Sql_servers_vulnerabilityAssessments_servers_db_name_Default 'Microsoft.Sql/servers/vulnerabilityAssessments@2020-11-01-preview' = {
-  name: '${servers_db_name_resource.name}/Default'
-  properties: {
-    recurringScans: {
-      isEnabled: false
-      emailSubscriptionAdmins: true
-    }
-    storageContainerPath: vulnerabilityAssessments_Default_storageContainerPath
-  }
-}
-
-resource servers_db_name_ftm_dev_CreateIndex 'Microsoft.Sql/servers/databases/advisors@2014-04-01' = {
-  name: '${servers_db_name_ftm_dev.name}/CreateIndex'
+resource servers_db_name_tm_CreateIndex 'Microsoft.Sql/servers/databases/advisors@2014-04-01' = {
+  name: '${servers_db_name_tm_.name}/CreateIndex'
   properties: {
     autoExecuteValue: 'Disabled'
   }
@@ -241,8 +233,8 @@ resource servers_db_name_ftm_dev_CreateIndex 'Microsoft.Sql/servers/databases/ad
   ]
 }
 
-resource servers_db_name_ftm_dev_DbParameterization 'Microsoft.Sql/servers/databases/advisors@2014-04-01' = {
-  name: '${servers_db_name_ftm_dev.name}/DbParameterization'
+resource servers_db_name_tm_DbParameterization 'Microsoft.Sql/servers/databases/advisors@2014-04-01' = {
+  name: '${servers_db_name_tm_.name}/DbParameterization'
   properties: {
     autoExecuteValue: 'Disabled'
   }
@@ -251,8 +243,8 @@ resource servers_db_name_ftm_dev_DbParameterization 'Microsoft.Sql/servers/datab
   ]
 }
 
-resource servers_db_name_ftm_dev_DefragmentIndex 'Microsoft.Sql/servers/databases/advisors@2014-04-01' = {
-  name: '${servers_db_name_ftm_dev.name}/DefragmentIndex'
+resource servers_db_name_tm_DefragmentIndex 'Microsoft.Sql/servers/databases/advisors@2014-04-01' = {
+  name: '${servers_db_name_tm_.name}/DefragmentIndex'
   properties: {
     autoExecuteValue: 'Disabled'
   }
@@ -261,8 +253,8 @@ resource servers_db_name_ftm_dev_DefragmentIndex 'Microsoft.Sql/servers/database
   ]
 }
 
-resource servers_db_name_ftm_dev_DropIndex 'Microsoft.Sql/servers/databases/advisors@2014-04-01' = {
-  name: '${servers_db_name_ftm_dev.name}/DropIndex'
+resource servers_db_name_tm_DropIndex 'Microsoft.Sql/servers/databases/advisors@2014-04-01' = {
+  name: '${servers_db_name_tm_.name}/DropIndex'
   properties: {
     autoExecuteValue: 'Disabled'
   }
@@ -271,8 +263,8 @@ resource servers_db_name_ftm_dev_DropIndex 'Microsoft.Sql/servers/databases/advi
   ]
 }
 
-resource servers_db_name_ftm_dev_ForceLastGoodPlan 'Microsoft.Sql/servers/databases/advisors@2014-04-01' = {
-  name: '${servers_db_name_ftm_dev.name}/ForceLastGoodPlan'
+resource servers_db_name_tm_ForceLastGoodPlan 'Microsoft.Sql/servers/databases/advisors@2014-04-01' = {
+  name: '${servers_db_name_tm_.name}/ForceLastGoodPlan'
   properties: {
     autoExecuteValue: 'Enabled'
   }
@@ -281,8 +273,8 @@ resource servers_db_name_ftm_dev_ForceLastGoodPlan 'Microsoft.Sql/servers/databa
   ]
 }
 
-resource servers_db_name_ftm_dev_Default 'Microsoft.Sql/servers/databases/auditingPolicies@2014-04-01' = {
-  name: '${servers_db_name_ftm_dev.name}/Default'
+resource servers_db_name_tm_Default 'Microsoft.Sql/servers/databases/auditingPolicies@2014-04-01' = {
+  name: '${servers_db_name_tm_.name}/Default'
   properties: {
     auditingState: 'Disabled'
   }
@@ -291,8 +283,8 @@ resource servers_db_name_ftm_dev_Default 'Microsoft.Sql/servers/databases/auditi
   ]
 }
 
-resource Microsoft_Sql_servers_databases_auditingSettings_servers_db_name_ftm_dev_Default 'Microsoft.Sql/servers/databases/auditingSettings@2020-11-01-preview' = {
-  name: '${servers_db_name_ftm_dev.name}/Default'
+resource Microsoft_Sql_servers_databases_auditingSettings_servers_db_name_tm_Default 'Microsoft.Sql/servers/databases/auditingSettings@2020-11-01-preview' = {
+  name: '${servers_db_name_tm_.name}/Default'
   properties: {
     retentionDays: 0
     isAzureMonitorTargetEnabled: false
@@ -304,8 +296,8 @@ resource Microsoft_Sql_servers_databases_auditingSettings_servers_db_name_ftm_de
   ]
 }
 
-resource Microsoft_Sql_servers_databases_backupLongTermRetentionPolicies_servers_db_name_ftm_dev_default 'Microsoft.Sql/servers/databases/backupLongTermRetentionPolicies@2020-11-01-preview' = {
-  name: '${servers_db_name_ftm_dev.name}/default'
+resource Microsoft_Sql_servers_databases_backupLongTermRetentionPolicies_servers_db_name_tm_default 'Microsoft.Sql/servers/databases/backupLongTermRetentionPolicies@2020-11-01-preview' = {
+  name: '${servers_db_name_tm_.name}/default'
   properties: {
     weeklyRetention: 'PT0S'
     monthlyRetention: 'PT0S'
@@ -317,8 +309,8 @@ resource Microsoft_Sql_servers_databases_backupLongTermRetentionPolicies_servers
   ]
 }
 
-resource Microsoft_Sql_servers_databases_backupShortTermRetentionPolicies_servers_db_name_ftm_dev_default 'Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies@2020-11-01-preview' = {
-  name: '${servers_db_name_ftm_dev.name}/default'
+resource Microsoft_Sql_servers_databases_backupShortTermRetentionPolicies_servers_db_name_tm_default 'Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies@2020-11-01-preview' = {
+  name: '${servers_db_name_tm_.name}/default'
   properties: {
     retentionDays: 7
   }
@@ -327,8 +319,8 @@ resource Microsoft_Sql_servers_databases_backupShortTermRetentionPolicies_server
   ]
 }
 
-resource Microsoft_Sql_servers_databases_extendedAuditingSettings_servers_db_name_ftm_dev_Default 'Microsoft.Sql/servers/databases/extendedAuditingSettings@2020-11-01-preview' = {
-  name: '${servers_db_name_ftm_dev.name}/Default'
+resource Microsoft_Sql_servers_databases_extendedAuditingSettings_servers_db_name_tm_Default 'Microsoft.Sql/servers/databases/extendedAuditingSettings@2020-11-01-preview' = {
+  name: '${servers_db_name_tm_.name}/Default'
   properties: {
     retentionDays: 0
     isAzureMonitorTargetEnabled: false
@@ -340,8 +332,8 @@ resource Microsoft_Sql_servers_databases_extendedAuditingSettings_servers_db_nam
   ]
 }
 
-resource Microsoft_Sql_servers_databases_geoBackupPolicies_servers_db_name_ftm_dev_Default 'Microsoft.Sql/servers/databases/geoBackupPolicies@2014-04-01' = {
-  name: '${servers_db_name_ftm_dev.name}/Default'
+resource Microsoft_Sql_servers_databases_geoBackupPolicies_servers_db_name_tm_Default 'Microsoft.Sql/servers/databases/geoBackupPolicies@2014-04-01' = {
+  name: '${servers_db_name_tm_.name}/Default'
   properties: {
     state: 'Enabled'
   }
@@ -350,8 +342,8 @@ resource Microsoft_Sql_servers_databases_geoBackupPolicies_servers_db_name_ftm_d
   ]
 }
 
-resource Microsoft_Sql_servers_databases_securityAlertPolicies_servers_db_name_ftm_dev_Default 'Microsoft.Sql/servers/databases/securityAlertPolicies@2020-11-01-preview' = {
-  name: '${servers_db_name_ftm_dev.name}/Default'
+resource Microsoft_Sql_servers_databases_securityAlertPolicies_servers_db_name_tm_Default 'Microsoft.Sql/servers/databases/securityAlertPolicies@2020-11-01-preview' = {
+  name: '${servers_db_name_tm_.name}/Default'
   properties: {
     state: 'Disabled'
   }
@@ -360,8 +352,8 @@ resource Microsoft_Sql_servers_databases_securityAlertPolicies_servers_db_name_f
   ]
 }
 
-resource servers_db_name_ftm_dev_current 'Microsoft.Sql/servers/databases/transparentDataEncryption@2014-04-01' = {
-  name: '${servers_db_name_ftm_dev.name}/current'
+resource servers_db_name_tm_current 'Microsoft.Sql/servers/databases/transparentDataEncryption@2014-04-01' = {
+  name: '${servers_db_name_tm_.name}/current'
   properties: {
     status: 'Enabled'
   }
@@ -370,8 +362,8 @@ resource servers_db_name_ftm_dev_current 'Microsoft.Sql/servers/databases/transp
   ]
 }
 
-resource Microsoft_Sql_servers_databases_vulnerabilityAssessments_servers_db_name_ftm_dev_Default 'Microsoft.Sql/servers/databases/vulnerabilityAssessments@2020-11-01-preview' = {
-  name: '${servers_db_name_ftm_dev.name}/Default'
+resource Microsoft_Sql_servers_databases_vulnerabilityAssessments_servers_db_name_tm_Default 'Microsoft.Sql/servers/databases/vulnerabilityAssessments@2020-11-01-preview' = {
+  name: '${servers_db_name_tm_.name}/Default'
   properties: {
     recurringScans: {
       isEnabled: false

@@ -1,10 +1,13 @@
 param environment string
 param region string
+param subscriptionId string
+param rgName string
 
-var servers_db_name = 'db-tm-${environment}-${region}'
+var servers_db_name = 'sql-tm-${environment}-${region}'
+var db_Name = 'db-tm-${environment}-${region}'
 
 resource servers_db_name_tm 'Microsoft.Sql/servers/databases@2020-11-01-preview' = {
-  name: '${servers_db_name}/tm-${environment}'
+  name: '${servers_db_name}/${db_Name}'
   location: '${region}'
   sku: {
     name: 'Basic'
@@ -18,7 +21,7 @@ resource servers_db_name_tm 'Microsoft.Sql/servers/databases@2020-11-01-preview'
     zoneRedundant: false
     readScale: 'Disabled'
     requestedBackupStorageRedundancy: 'Geo'
-    maintenanceConfigurationId: '/subscriptions/39a254b7-c01a-45ab-bebd-4038ea4adea9/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default'
+    maintenanceConfigurationId: '/subscriptions/${subscriptionId}/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default'
   }
 }
 

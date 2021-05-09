@@ -1,10 +1,10 @@
 param environment string
 param region string
-param subscription string
+param subscriptionId string
 param rgName string
 
 var sites_tm_name = 'as_tm_${environment}-${region}'
-var serverfarms_tmplan_externalid = '/subscriptions/${subscription}/resourceGroups/${rgName}/providers/Microsoft.Web/serverfarms/asp_tm_${environment}-${region}'
+var serverfarms_tmplan_externalid = '/subscriptions/${subscriptionId}/resourceGroups/${rgName}/providers/Microsoft.Web/serverfarms/asp_tm_${environment}-${region}'
 
 resource sites_tm_name_resource 'Microsoft.Web/sites@2018-11-01' = {
   name: sites_tm_name
