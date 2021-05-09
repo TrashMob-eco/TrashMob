@@ -68,26 +68,24 @@ Quite possibly. We'll see how fast the site gains momentum
 ## Getting Started
 
 1. You must install the .net 5 SDK
-1. Install visual studio code
+1. Install Visual Studio Code
 1. Connect to github and clone the repo
-1. Contact joe beernink to be added to the dev subscription (unless you want to set all the dependencies up yourself (scripting opportunity?))
-1. Get added to the dev keyvault to be allowed to get the secrets
+1. Follow the Infrastructure Deployment Steps (here)[.\Deploy\readme.md].
 
 ## The secrets you will need to run locally
 
 ```
-
 cd Trashmob
 dotnet user-secrets init
-dotnet user-secrets set "AzureMapsKey" "<insert secret here from keyvault>"
-dotnet user-secrets set "TMDBServerConnectionString" "<insert secret here from keyvault>"
-
+dotnet user-secrets set "AzureMapsKey" "<insert secret here from your keyvault>"
+dotnet user-secrets set "TMDBServerConnectionString" "<insert secret here from your keyvault>"
 ```
 
 ## Setting up your launchsettings.json
 
-Because of RedirectUrls, life is a lot easier if you stick with the same ports as everyone else. In the trashmobfolder, under Properties, add the following launchsettings.json file: 
+Because of RedirectUrls, life is a lot easier if you stick with the same ports as everyone else. In the TrashMob folder, under Properties, add the following launchsettings.json file: 
 
+```
 {
   "iisSettings": {
     "windowsAuthentication": false,
@@ -116,11 +114,19 @@ Because of RedirectUrls, life is a lot easier if you stick with the same ports a
   }
 }
 
+```
+
 ## To Build the app:
 
 In the Trashmob project folder, run the following command:
 ```
 dotnet build
+```
+
+## Update Your Database with the current Model
+Int he TrashMob project folder, run the following command:
+```
+dotnet ef database update
 ```
 
 ## To Run the app:
@@ -130,12 +136,14 @@ In the Trashmob project folder, run the following command:
 dotnet run
 ```
 
+or if using Visual Studio, set the TrashMob project as the start up project and hit F5.
+
 If a browser does not open, open one for yourself and go to https://localhost:44332
 
-## Database generation
-The project is now using Entity Framework Core V6 Model-First database updates.
+## To Update the Database Model
+The project uses Entity Framework Core V6 Model-First database updates.
 
-1. Update the models / MobDbContext as needed.
+1. Update the models / MobDbContext as needed in the repo.
 2. In VS Code, run the following commands from the TrashMob folder
 
 ```
