@@ -1,7 +1,7 @@
 param environment string
 param region string
 
-var keyvault_name = 'kv-tm-${environment}'
+var keyvault_name = 'kv-tm-${environment}-${region}'
 
 resource keyvault_name_resource 'Microsoft.KeyVault/vaults@2021-04-01-preview' = {
   name: keyvault_name
@@ -163,32 +163,5 @@ resource keyvault_name_resource 'Microsoft.KeyVault/vaults@2021-04-01-preview' =
     enableRbacAuthorization: false
     vaultUri: 'https://${keyvault_name}.vault.azure.net/'
     provisioningState: 'Succeeded'
-  }
-}
-
-resource keyvault_name_AzureMapsKey 'Microsoft.KeyVault/vaults/secrets@2021-04-01-preview' = {
-  name: '${keyvault_name_resource.name}/AzureMapsKey'
-  properties: {
-    attributes: {
-      enabled: true
-    }
-  }
-}
-
-resource keyvault_name_ConnectionStrings_TMDBServerConnectionString 'Microsoft.KeyVault/vaults/secrets@2021-04-01-preview' = {
-  name: '${keyvault_name_resource.name}/ConnectionStrings--TMDBServerConnectionString'
-  properties: {
-    attributes: {
-      enabled: true
-    }
-  }
-}
-
-resource keyvault_name_TMDBServerConnectionString 'Microsoft.KeyVault/vaults/secrets@2021-04-01-preview' = {
-  name: '${keyvault_name_resource.name}/TMDBServerConnectionString'
-  properties: {
-    attributes: {
-      enabled: true
-    }
   }
 }

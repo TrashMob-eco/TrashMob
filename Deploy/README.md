@@ -25,11 +25,11 @@ i.e.
 .\deployInfra.ps1 -environment jb -region westus2 -subscriptionId <your subscription Id> -sqlAdminPassword "TestP$$wrd1"
 
 ```
-    where:
-      env is the same as set above (i.e. jb)
-      regionName is the Azure Region you wish to deploy to (i.e. uswest2)
-      subscriptionId is the current subscription id
-      password is the password value you want to set for your sql server that is being created. The password must meet Azure minimum password standards
+where:
+  env is the same as set above (i.e. jb)
+  regionName is the Azure Region you wish to deploy to (i.e. uswest2)
+  subscriptionId is the current subscription id
+  password is the password value you want to set for your sql server that is being created. The password must meet Azure minimum password standards
 
 ## To deploy everything needed to run TrashMob in your own environment in the cloud, you will need to run the following steps:
 1. Open a Powershell window and go to the $GitRoot\Deploy folder
@@ -51,8 +51,8 @@ i.e.
 .\deployAll.ps1 -environment jb -region westus2 -subscriptionId <your subscription Id> -sqlAdminPassword "TestP$$wrd1"
 
 ```
-    where:
-      subscriptionId is your current subscriptionId
-      env is the same as set above (i.e. jb)
-      regionName is the Azure Region you wish to deploy to (i.e. uswest2)
-      password is the password value you want to set for your sql server that is being created. The password must meet Azure minimum password standards
+where:
+  subscriptionId is your current subscriptionId
+  env is the same as set above (i.e. jb)
+  regionName is the Azure Region you wish to deploy to (i.e. uswest2)
+  password is the password value you want to set for your sql server that is being created. The password must meet Azure minimum password standards
