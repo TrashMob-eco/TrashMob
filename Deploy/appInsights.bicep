@@ -1,24 +1,29 @@
-param components_as_tm_dev_name string = 'as-tm-dev'
-param workspaces_law_trashmobdev_externalid string = '/subscriptions/39a254b7-c01a-45ab-bebd-4038ea4adea9/resourceGroups/trashmob/providers/microsoft.operationalinsights/workspaces/law-trashmobdev'
+param environment string
+param region string
+param subscription string
+param rgName string
 
-resource components_as_tm_dev_name_resource 'microsoft.insights/components@2020-02-02-preview' = {
-  name: components_as_tm_dev_name
-  location: 'westus2'
+var components_as_name = 'as-tm-${environment}-${region}'
+var workspaces_law_name = '/subscriptions/${subscription}/resourceGroups/${rgName}/providers/microsoft.operationalinsights/workspaces/law-tm-${environment}-${region}'
+
+resource components_as_name_resource 'microsoft.insights/components@2020-02-02-preview' = {
+  name: components_as_name
+  location: '${region}'
   kind: 'web'
   properties: {
     Application_Type: 'web'
     Flow_Type: 'Redfield'
     Request_Source: 'IbizaAIExtension'
-    WorkspaceResourceId: workspaces_law_trashmobdev_externalid
+    WorkspaceResourceId: workspaces_law_name
     IngestionMode: 'LogAnalytics'
     publicNetworkAccessForIngestion: 'Enabled'
     publicNetworkAccessForQuery: 'Enabled'
   }
 }
 
-resource components_as_tm_dev_name_degradationindependencyduration 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  name: '${components_as_tm_dev_name_resource.name}/degradationindependencyduration'
-  location: 'westus2'
+resource components_as_name_degradationindependencyduration 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  name: '${components_as_name_resource.name}/degradationindependencyduration'
+  location: '${region}'
   properties: {
     RuleDefinitions: {
       Name: 'degradationindependencyduration'
@@ -36,9 +41,9 @@ resource components_as_tm_dev_name_degradationindependencyduration 'microsoft.in
   }
 }
 
-resource components_as_tm_dev_name_degradationinserverresponsetime 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  name: '${components_as_tm_dev_name_resource.name}/degradationinserverresponsetime'
-  location: 'westus2'
+resource components_as_name_degradationinserverresponsetime 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  name: '${components_as_name_resource.name}/degradationinserverresponsetime'
+  location: '${region}'
   properties: {
     RuleDefinitions: {
       Name: 'degradationinserverresponsetime'
@@ -56,9 +61,9 @@ resource components_as_tm_dev_name_degradationinserverresponsetime 'microsoft.in
   }
 }
 
-resource components_as_tm_dev_name_digestMailConfiguration 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  name: '${components_as_tm_dev_name_resource.name}/digestMailConfiguration'
-  location: 'westus2'
+resource components_as_name_digestMailConfiguration 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  name: '${components_as_name_resource.name}/digestMailConfiguration'
+  location: '${region}'
   properties: {
     RuleDefinitions: {
       Name: 'digestMailConfiguration'
@@ -76,9 +81,9 @@ resource components_as_tm_dev_name_digestMailConfiguration 'microsoft.insights/c
   }
 }
 
-resource components_as_tm_dev_name_extension_billingdatavolumedailyspikeextension 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  name: '${components_as_tm_dev_name_resource.name}/extension_billingdatavolumedailyspikeextension'
-  location: 'westus2'
+resource components_as_name_extension_billingdatavolumedailyspikeextension 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  name: '${components_as_name_resource.name}/extension_billingdatavolumedailyspikeextension'
+  location: '${region}'
   properties: {
     RuleDefinitions: {
       Name: 'extension_billingdatavolumedailyspikeextension'
@@ -96,9 +101,9 @@ resource components_as_tm_dev_name_extension_billingdatavolumedailyspikeextensio
   }
 }
 
-resource components_as_tm_dev_name_extension_canaryextension 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  name: '${components_as_tm_dev_name_resource.name}/extension_canaryextension'
-  location: 'westus2'
+resource components_as_name_extension_canaryextension 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  name: '${components_as_name_resource.name}/extension_canaryextension'
+  location: '${region}'
   properties: {
     RuleDefinitions: {
       Name: 'extension_canaryextension'
@@ -116,9 +121,9 @@ resource components_as_tm_dev_name_extension_canaryextension 'microsoft.insights
   }
 }
 
-resource components_as_tm_dev_name_extension_exceptionchangeextension 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  name: '${components_as_tm_dev_name_resource.name}/extension_exceptionchangeextension'
-  location: 'westus2'
+resource components_as_name_extension_exceptionchangeextension 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  name: '${components_as_name_resource.name}/extension_exceptionchangeextension'
+  location: '${region}'
   properties: {
     RuleDefinitions: {
       Name: 'extension_exceptionchangeextension'
@@ -136,9 +141,9 @@ resource components_as_tm_dev_name_extension_exceptionchangeextension 'microsoft
   }
 }
 
-resource components_as_tm_dev_name_extension_memoryleakextension 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  name: '${components_as_tm_dev_name_resource.name}/extension_memoryleakextension'
-  location: 'westus2'
+resource components_as_name_extension_memoryleakextension 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  name: '${components_as_name_resource.name}/extension_memoryleakextension'
+  location: '${region}'
   properties: {
     RuleDefinitions: {
       Name: 'extension_memoryleakextension'
@@ -156,9 +161,9 @@ resource components_as_tm_dev_name_extension_memoryleakextension 'microsoft.insi
   }
 }
 
-resource components_as_tm_dev_name_extension_securityextensionspackage 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  name: '${components_as_tm_dev_name_resource.name}/extension_securityextensionspackage'
-  location: 'westus2'
+resource components_as_name_extension_securityextensionspackage 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  name: '${components_as_name_resource.name}/extension_securityextensionspackage'
+  location: '${region}'
   properties: {
     RuleDefinitions: {
       Name: 'extension_securityextensionspackage'
@@ -176,9 +181,9 @@ resource components_as_tm_dev_name_extension_securityextensionspackage 'microsof
   }
 }
 
-resource components_as_tm_dev_name_extension_traceseveritydetector 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  name: '${components_as_tm_dev_name_resource.name}/extension_traceseveritydetector'
-  location: 'westus2'
+resource components_as_name_extension_traceseveritydetector 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  name: '${components_as_name_resource.name}/extension_traceseveritydetector'
+  location: '${region}'
   properties: {
     RuleDefinitions: {
       Name: 'extension_traceseveritydetector'
@@ -196,9 +201,9 @@ resource components_as_tm_dev_name_extension_traceseveritydetector 'microsoft.in
   }
 }
 
-resource components_as_tm_dev_name_longdependencyduration 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  name: '${components_as_tm_dev_name_resource.name}/longdependencyduration'
-  location: 'westus2'
+resource components_as_name_longdependencyduration 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  name: '${components_as_name_resource.name}/longdependencyduration'
+  location: '${region}'
   properties: {
     RuleDefinitions: {
       Name: 'longdependencyduration'
@@ -216,9 +221,9 @@ resource components_as_tm_dev_name_longdependencyduration 'microsoft.insights/co
   }
 }
 
-resource components_as_tm_dev_name_migrationToAlertRulesCompleted 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  name: '${components_as_tm_dev_name_resource.name}/migrationToAlertRulesCompleted'
-  location: 'westus2'
+resource components_as_name_migrationToAlertRulesCompleted 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  name: '${components_as_name_resource.name}/migrationToAlertRulesCompleted'
+  location: '${region}'
   properties: {
     RuleDefinitions: {
       Name: 'migrationToAlertRulesCompleted'
@@ -236,9 +241,9 @@ resource components_as_tm_dev_name_migrationToAlertRulesCompleted 'microsoft.ins
   }
 }
 
-resource components_as_tm_dev_name_slowpageloadtime 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  name: '${components_as_tm_dev_name_resource.name}/slowpageloadtime'
-  location: 'westus2'
+resource components_as_name_slowpageloadtime 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  name: '${components_as_name_resource.name}/slowpageloadtime'
+  location: '${region}'
   properties: {
     RuleDefinitions: {
       Name: 'slowpageloadtime'
@@ -256,9 +261,9 @@ resource components_as_tm_dev_name_slowpageloadtime 'microsoft.insights/componen
   }
 }
 
-resource components_as_tm_dev_name_slowserverresponsetime 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  name: '${components_as_tm_dev_name_resource.name}/slowserverresponsetime'
-  location: 'westus2'
+resource components_as_name_slowserverresponsetime 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  name: '${components_as_name_resource.name}/slowserverresponsetime'
+  location: '${region}'
   properties: {
     RuleDefinitions: {
       Name: 'slowserverresponsetime'

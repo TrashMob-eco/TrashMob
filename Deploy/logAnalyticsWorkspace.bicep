@@ -1,8 +1,13 @@
-param workspaces_law_trashmobdev_name string = 'law-trashmobdev'
+param environment string
+param region string
+param subscription string
+param rgName string
 
-resource workspaces_law_trashmobdev_name_resource 'microsoft.operationalinsights/workspaces@2020-10-01' = {
-  name: workspaces_law_trashmobdev_name
-  location: 'westus2'
+var workspaces_law_tm_name = 'law-tm-${environment}-${region}'
+
+resource workspaces_law_tm_name_resource 'microsoft.operationalinsights/workspaces@2020-10-01' = {
+  name: workspaces_law_tm_name
+  location: '${region}'
   properties: {
     provisioningState: 'Succeeded'
     sku: {
@@ -22,8 +27,8 @@ resource workspaces_law_trashmobdev_name_resource 'microsoft.operationalinsights
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_General_AlphabeticallySortedComputers 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_General|AlphabeticallySortedComputers'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_General_AlphabeticallySortedComputers 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_General|AlphabeticallySortedComputers'
   properties: {
     displayName: 'All Computers with their most recent data'
     category: 'General Exploration'
@@ -32,8 +37,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_General_dataPointsPerManagementGroup 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_General|dataPointsPerManagementGroup'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_General_dataPointsPerManagementGroup 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_General|dataPointsPerManagementGroup'
   properties: {
     displayName: 'Which Management Group is generating the most data points?'
     category: 'General Exploration'
@@ -42,8 +47,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_General_dataTypeDistribution 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_General|dataTypeDistribution'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_General_dataTypeDistribution 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_General|dataTypeDistribution'
   properties: {
     displayName: 'Distribution of data Types'
     category: 'General Exploration'
@@ -52,8 +57,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_General_StaleComputers 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_General|StaleComputers'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_General_StaleComputers 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_General|StaleComputers'
   properties: {
     displayName: 'Stale Computers (data older than 24 hours)'
     category: 'General Exploration'
@@ -62,8 +67,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_AllEvents 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|AllEvents'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_AllEvents 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|AllEvents'
   properties: {
     displayName: 'All Events'
     category: 'Log Management'
@@ -72,8 +77,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_AllSyslog 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|AllSyslog'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_AllSyslog 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|AllSyslog'
   properties: {
     displayName: 'All Syslogs'
     category: 'Log Management'
@@ -82,8 +87,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_AllSyslogByFacility 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|AllSyslogByFacility'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_AllSyslogByFacility 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|AllSyslogByFacility'
   properties: {
     displayName: 'All Syslog Records grouped by Facility'
     category: 'Log Management'
@@ -92,8 +97,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_AllSyslogByProcessName 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|AllSyslogByProcessName'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_AllSyslogByProcessName 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|AllSyslogByProcessName'
   properties: {
     displayName: 'All Syslog Records grouped by ProcessName'
     category: 'Log Management'
@@ -102,8 +107,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_AllSyslogsWithErrors 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|AllSyslogsWithErrors'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_AllSyslogsWithErrors 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|AllSyslogsWithErrors'
   properties: {
     displayName: 'All Syslog Records with Errors'
     category: 'Log Management'
@@ -112,8 +117,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_AverageHTTPRequestTimeByClientIPAddress 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|AverageHTTPRequestTimeByClientIPAddress'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_AverageHTTPRequestTimeByClientIPAddress 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|AverageHTTPRequestTimeByClientIPAddress'
   properties: {
     displayName: 'Average HTTP Request time by Client IP Address'
     category: 'Log Management'
@@ -122,8 +127,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_AverageHTTPRequestTimeHTTPMethod 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|AverageHTTPRequestTimeHTTPMethod'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_AverageHTTPRequestTimeHTTPMethod 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|AverageHTTPRequestTimeHTTPMethod'
   properties: {
     displayName: 'Average HTTP Request time by HTTP Method'
     category: 'Log Management'
@@ -132,8 +137,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_CountIISLogEntriesClientIPAddress 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|CountIISLogEntriesClientIPAddress'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_CountIISLogEntriesClientIPAddress 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|CountIISLogEntriesClientIPAddress'
   properties: {
     displayName: 'Count of IIS Log Entries by Client IP Address'
     category: 'Log Management'
@@ -142,8 +147,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_CountIISLogEntriesHTTPRequestMethod 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|CountIISLogEntriesHTTPRequestMethod'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_CountIISLogEntriesHTTPRequestMethod 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|CountIISLogEntriesHTTPRequestMethod'
   properties: {
     displayName: 'Count of IIS Log Entries by HTTP Request Method'
     category: 'Log Management'
@@ -152,8 +157,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_CountIISLogEntriesHTTPUserAgent 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|CountIISLogEntriesHTTPUserAgent'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_CountIISLogEntriesHTTPUserAgent 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|CountIISLogEntriesHTTPUserAgent'
   properties: {
     displayName: 'Count of IIS Log Entries by HTTP User Agent'
     category: 'Log Management'
@@ -162,8 +167,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_CountOfIISLogEntriesByHostRequestedByClient 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|CountOfIISLogEntriesByHostRequestedByClient'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_CountOfIISLogEntriesByHostRequestedByClient 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|CountOfIISLogEntriesByHostRequestedByClient'
   properties: {
     displayName: 'Count of IIS Log Entries by Host requested by client'
     category: 'Log Management'
@@ -172,8 +177,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_CountOfIISLogEntriesByURLForHost 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|CountOfIISLogEntriesByURLForHost'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_CountOfIISLogEntriesByURLForHost 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|CountOfIISLogEntriesByURLForHost'
   properties: {
     displayName: 'Count of IIS Log Entries by URL for the host "www.contoso.com" (replace with your own)'
     category: 'Log Management'
@@ -182,8 +187,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_CountOfIISLogEntriesByURLRequestedByClient 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|CountOfIISLogEntriesByURLRequestedByClient'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_CountOfIISLogEntriesByURLRequestedByClient 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|CountOfIISLogEntriesByURLRequestedByClient'
   properties: {
     displayName: 'Count of IIS Log Entries by URL requested by client (without query strings)'
     category: 'Log Management'
@@ -192,8 +197,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_CountOfWarningEvents 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|CountOfWarningEvents'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_CountOfWarningEvents 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|CountOfWarningEvents'
   properties: {
     displayName: 'Count of Events with level "Warning" grouped by Event ID'
     category: 'Log Management'
@@ -202,8 +207,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_DisplayBreakdownRespondCodes 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|DisplayBreakdownRespondCodes'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_DisplayBreakdownRespondCodes 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|DisplayBreakdownRespondCodes'
   properties: {
     displayName: 'Shows breakdown of response codes'
     category: 'Log Management'
@@ -212,8 +217,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_EventsByEventLog 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|EventsByEventLog'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_EventsByEventLog 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|EventsByEventLog'
   properties: {
     displayName: 'Count of Events grouped by Event Log'
     category: 'Log Management'
@@ -222,8 +227,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_EventsByEventsID 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|EventsByEventsID'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_EventsByEventsID 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|EventsByEventsID'
   properties: {
     displayName: 'Count of Events grouped by Event ID'
     category: 'Log Management'
@@ -232,8 +237,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_EventsByEventSource 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|EventsByEventSource'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_EventsByEventSource 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|EventsByEventSource'
   properties: {
     displayName: 'Count of Events grouped by Event Source'
     category: 'Log Management'
@@ -242,8 +247,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_EventsInOMBetween2000to3000 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|EventsInOMBetween2000to3000'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_EventsInOMBetween2000to3000 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|EventsInOMBetween2000to3000'
   properties: {
     displayName: 'Events in the Operations Manager Event Log whose Event ID is in the range between 2000 and 3000'
     category: 'Log Management'
@@ -252,8 +257,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_EventsWithStartedinEventID 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|EventsWithStartedinEventID'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_EventsWithStartedinEventID 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|EventsWithStartedinEventID'
   properties: {
     displayName: 'Count of Events containing the word "started" grouped by EventID'
     category: 'Log Management'
@@ -262,8 +267,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_FindMaximumTimeTakenForEachPage 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|FindMaximumTimeTakenForEachPage'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_FindMaximumTimeTakenForEachPage 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|FindMaximumTimeTakenForEachPage'
   properties: {
     displayName: 'Find the maximum time taken for each page'
     category: 'Log Management'
@@ -272,8 +277,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_IISLogEntriesForClientIP 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|IISLogEntriesForClientIP'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_IISLogEntriesForClientIP 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|IISLogEntriesForClientIP'
   properties: {
     displayName: 'IIS Log Entries for a specific client IP Address (replace with your own)'
     category: 'Log Management'
@@ -282,8 +287,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_ListAllIISLogEntries 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|ListAllIISLogEntries'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_ListAllIISLogEntries 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|ListAllIISLogEntries'
   properties: {
     displayName: 'All IIS Log Entries'
     category: 'Log Management'
@@ -292,8 +297,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_NoOfConnectionsToOMSDKService 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|NoOfConnectionsToOMSDKService'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_NoOfConnectionsToOMSDKService 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|NoOfConnectionsToOMSDKService'
   properties: {
     displayName: 'How many connections to Operations Manager\'s SDK service by day'
     category: 'Log Management'
@@ -302,8 +307,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_ServerRestartTime 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|ServerRestartTime'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_ServerRestartTime 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|ServerRestartTime'
   properties: {
     displayName: 'When did my servers initiate restart?'
     category: 'Log Management'
@@ -312,8 +317,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_Show404PagesList 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|Show404PagesList'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_Show404PagesList 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|Show404PagesList'
   properties: {
     displayName: 'Shows which pages people are getting a 404 for'
     category: 'Log Management'
@@ -322,8 +327,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_ShowServersThrowingInternalServerError 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|ShowServersThrowingInternalServerError'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_ShowServersThrowingInternalServerError 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|ShowServersThrowingInternalServerError'
   properties: {
     displayName: 'Shows servers that are throwing internal server error'
     category: 'Log Management'
@@ -332,8 +337,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_TotalBytesReceivedByEachAzureRoleInstance 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|TotalBytesReceivedByEachAzureRoleInstance'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_TotalBytesReceivedByEachAzureRoleInstance 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|TotalBytesReceivedByEachAzureRoleInstance'
   properties: {
     displayName: 'Total Bytes received by each Azure Role Instance'
     category: 'Log Management'
@@ -342,8 +347,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_TotalBytesReceivedByEachIISComputer 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|TotalBytesReceivedByEachIISComputer'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_TotalBytesReceivedByEachIISComputer 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|TotalBytesReceivedByEachIISComputer'
   properties: {
     displayName: 'Total Bytes received by each IIS Computer'
     category: 'Log Management'
@@ -352,8 +357,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_TotalBytesRespondedToClientsByClientIPAddress 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|TotalBytesRespondedToClientsByClientIPAddress'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_TotalBytesRespondedToClientsByClientIPAddress 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|TotalBytesRespondedToClientsByClientIPAddress'
   properties: {
     displayName: 'Total Bytes responded back to clients by Client IP Address'
     category: 'Log Management'
@@ -362,8 +367,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_TotalBytesRespondedToClientsByEachIISServerIPAddress 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|TotalBytesRespondedToClientsByEachIISServerIPAddress'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_TotalBytesRespondedToClientsByEachIISServerIPAddress 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|TotalBytesRespondedToClientsByEachIISServerIPAddress'
   properties: {
     displayName: 'Total Bytes responded back to clients by each IIS ServerIP Address'
     category: 'Log Management'
@@ -372,8 +377,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_TotalBytesSentByClientIPAddress 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|TotalBytesSentByClientIPAddress'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_TotalBytesSentByClientIPAddress 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|TotalBytesSentByClientIPAddress'
   properties: {
     displayName: 'Total Bytes sent by Client IP Address'
     category: 'Log Management'
@@ -382,8 +387,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_WarningEvents 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|WarningEvents'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_WarningEvents 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|WarningEvents'
   properties: {
     displayName: 'All Events with level "Warning"'
     category: 'Log Management'
@@ -392,8 +397,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_WindowsFireawallPolicySettingsChanged 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|WindowsFireawallPolicySettingsChanged'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_WindowsFireawallPolicySettingsChanged 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|WindowsFireawallPolicySettingsChanged'
   properties: {
     displayName: 'Windows Firewall Policy settings have changed'
     category: 'Log Management'
@@ -402,8 +407,8 @@ resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobde
   }
 }
 
-resource workspaces_law_trashmobdev_name_LogManagement_workspaces_law_trashmobdev_name_LogManagement_WindowsFireawallPolicySettingsChangedByMachines 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
-  name: '${workspaces_law_trashmobdev_name_resource.name}/LogManagement(${workspaces_law_trashmobdev_name})_LogManagement|WindowsFireawallPolicySettingsChangedByMachines'
+resource workspaces_law_tm_name_LogManagement_workspaces_law_tm_name_LogManagement_WindowsFireawallPolicySettingsChangedByMachines 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' = {
+  name: '${workspaces_law_tm_name_resource.name}/LogManagement(${workspaces_law_tm_name})_LogManagement|WindowsFireawallPolicySettingsChangedByMachines'
   properties: {
     displayName: 'On which machines and how many times have Windows Firewall Policy settings changed'
     category: 'Log Management'

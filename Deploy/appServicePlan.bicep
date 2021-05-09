@@ -1,8 +1,11 @@
-param serverfarms_TrashMobDevPlan_name string = 'TrashMobDevPlan'
+param environment string
+param region string
 
-resource serverfarms_TrashMobDevPlan_name_resource 'Microsoft.Web/serverfarms@2018-02-01' = {
-  name: serverfarms_TrashMobDevPlan_name
-  location: 'West US 2'
+var serverfarms_tmplan_name = 'asp_tm_${environment}-${region}'
+
+resource serverfarms_tmplan_name_resource 'Microsoft.Web/serverfarms@2018-02-01' = {
+  name: serverfarms_tmplan_name
+  location: '${region}'
   sku: {
     name: 'D1'
     tier: 'Shared'

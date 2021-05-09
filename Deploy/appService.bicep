@@ -1,33 +1,36 @@
-param sites_TrashMobDev_name string = 'TrashMobDev'
-param serverfarms_TrashMobDevPlan_externalid string = '/subscriptions/39a254b7-c01a-45ab-bebd-4038ea4adea9/resourceGroups/TrashMob/providers/Microsoft.Web/serverfarms/TrashMobDevPlan'
+param environment string
+param region string
+param subscription string
+param rgName string
 
-resource sites_TrashMobDev_name_resource 'Microsoft.Web/sites@2018-11-01' = {
-  name: sites_TrashMobDev_name
-  location: 'West US 2'
+var sites_tm_name = 'as_tm_${environment}-${region}'
+var serverfarms_tmplan_externalid = '/subscriptions/${subscription}/resourceGroups/${rgName}/providers/Microsoft.Web/serverfarms/asp_tm_${environment}-${region}'
+
+resource sites_tm_name_resource 'Microsoft.Web/sites@2018-11-01' = {
+  name: sites_tm_name
+  location: '${region}'
   tags: {
     'hidden-related:/subscriptions/39a254b7-c01a-45ab-bebd-4038ea4adea9/resourceGroups/TrashMob/providers/Microsoft.Web/serverfarms/TrashMobDevPlan': 'empty'
   }
   kind: 'app'
   identity: {
-    principalId: '7315d8f3-ecd4-4409-b800-ef779d71f58b'
-    tenantId: 'f0062da2-b273-427c-b99e-6e85f75b23eb'
     type: 'SystemAssigned'
   }
   properties: {
     enabled: true
     hostNameSslStates: [
       {
-        name: 'trashmobdev.azurewebsites.net'
+        name: '${sites_tm_name}.azurewebsites.net'
         sslState: 'Disabled'
         hostType: 'Standard'
       }
       {
-        name: 'trashmobdev.scm.azurewebsites.net'
+        name: '${sites_tm_name}.scm.azurewebsites.net'
         sslState: 'Disabled'
         hostType: 'Repository'
       }
     ]
-    serverFarmId: serverfarms_TrashMobDevPlan_externalid
+    serverFarmId: serverfarms_tmplan_externalid
     reserved: false
     isXenon: false
     hyperV: false
@@ -43,12 +46,8 @@ resource sites_TrashMobDev_name_resource 'Microsoft.Web/sites@2018-11-01' = {
   }
 }
 
-resource sites_TrashMobDev_name_web 'Microsoft.Web/sites/config@2018-11-01' = {
-  name: '${sites_TrashMobDev_name_resource.name}/web'
-  location: 'West US 2'
-  tags: {
-    'hidden-related:/subscriptions/39a254b7-c01a-45ab-bebd-4038ea4adea9/resourceGroups/TrashMob/providers/Microsoft.Web/serverfarms/TrashMobDevPlan': 'empty'
-  }
+resource sites_tm_name_web 'Microsoft.Web/sites/config@2018-11-01' = {
+  name: '${sites_tm_name_resource.name}/web'
   properties: {
     numberOfWorkers: 1
     defaultDocuments: [
@@ -69,9 +68,7 @@ resource sites_TrashMobDev_name_web 'Microsoft.Web/sites/config@2018-11-01' = {
     httpLoggingEnabled: false
     logsDirectorySizeLimit: 35
     detailedErrorLoggingEnabled: false
-    publishingUsername: '$TrashMobDev'
     azureStorageAccounts: {}
-    scmType: 'GitHubAction'
     use32BitWorkerProcess: true
     webSocketsEnabled: false
     alwaysOn: false
@@ -116,46 +113,14 @@ resource sites_TrashMobDev_name_web 'Microsoft.Web/sites/config@2018-11-01' = {
   }
 }
 
-resource sites_TrashMobDev_name_7e8af4dc3a844019b044d003947ee57d 'Microsoft.Web/sites/deployments@2018-11-01' = {
-  name: '${sites_TrashMobDev_name_resource.name}/7e8af4dc3a844019b044d003947ee57d'
-  location: 'West US 2'
+resource sites_tm_name_sites_tm_name_azurewebsites_net 'Microsoft.Web/sites/hostNameBindings@2018-11-01' = {
+  name: '${sites_tm_name_resource.name}/${sites_tm_name}.azurewebsites.net'
   properties: {
-    status: 4
-    author_email: 'N/A'
-    author: 'N/A'
-    deployer: 'GITHUB_ZIP_DEPLOY'
-    message: '{"type":"deployment","sha":"fde34cad56d0d5e9b1c3a4bc940bdb8c93c296db","repoName":"joebeernink/FlashTrashMob","slotName":"production"}'
-    start_time: '5/8/2021 9:02:16 PM'
-    end_time: '5/8/2021 9:02:22 PM'
-    active: true
-  }
-}
-
-resource sites_TrashMobDev_name_f952d3ddde4b4ba5a79781326c0030db 'Microsoft.Web/sites/deployments@2018-11-01' = {
-  name: '${sites_TrashMobDev_name_resource.name}/f952d3ddde4b4ba5a79781326c0030db'
-  location: 'West US 2'
-  properties: {
-    status: 4
-    author_email: 'N/A'
-    author: 'N/A'
-    deployer: 'GITHUB_ZIP_DEPLOY'
-    message: '{"type":"deployment","sha":"dbda1504c72c15a9246df01924e641fc15d49010","repoName":"joebeernink/FlashTrashMob","slotName":"production"}'
-    start_time: '5/8/2021 6:12:35 PM'
-    end_time: '5/8/2021 6:12:43 PM'
-    active: false
-  }
-}
-
-resource sites_TrashMobDev_name_sites_TrashMobDev_name_azurewebsites_net 'Microsoft.Web/sites/hostNameBindings@2018-11-01' = {
-  name: '${sites_TrashMobDev_name_resource.name}/${sites_TrashMobDev_name}.azurewebsites.net'
-  location: 'West US 2'
-  properties: {
-    siteName: 'TrashMobDev'
+    siteName: '${sites_tm_name}'
     hostNameType: 'Verified'
   }
 }
 
-resource sites_TrashMobDev_name_Microsoft_AspNetCore_AzureAppServices_SiteExtension 'Microsoft.Web/sites/siteextensions@2018-11-01' = {
-  name: '${sites_TrashMobDev_name_resource.name}/Microsoft.AspNetCore.AzureAppServices.SiteExtension'
-  location: 'West US 2'
+resource sites_tm_name_Microsoft_AspNetCore_AzureAppServices_SiteExtension 'Microsoft.Web/sites/siteextensions@2018-11-01' = {
+  name: '${sites_tm_name_resource.name}/Microsoft.AspNetCore.AzureAppServices.SiteExtension'
 }

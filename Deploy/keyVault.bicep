@@ -1,8 +1,11 @@
-param vaults_kv_ftm_dev_name string = 'kv-ftm-dev'
+param environment string
+param region string
 
-resource vaults_kv_ftm_dev_name_resource 'Microsoft.KeyVault/vaults@2021-04-01-preview' = {
-  name: vaults_kv_ftm_dev_name
-  location: 'westus2'
+var keyvault_name = 'kv-tm-${environment}'
+
+resource keyvault_name_resource 'Microsoft.KeyVault/vaults@2021-04-01-preview' = {
+  name: keyvault_name
+  location: region
   properties: {
     sku: {
       family: 'A'
@@ -158,14 +161,13 @@ resource vaults_kv_ftm_dev_name_resource 'Microsoft.KeyVault/vaults@2021-04-01-p
     enableSoftDelete: true
     softDeleteRetentionInDays: 90
     enableRbacAuthorization: false
-    vaultUri: 'https://${vaults_kv_ftm_dev_name}.vault.azure.net/'
+    vaultUri: 'https://${keyvault_name}.vault.azure.net/'
     provisioningState: 'Succeeded'
   }
 }
 
-resource vaults_kv_ftm_dev_name_AzureMapsDev 'Microsoft.KeyVault/vaults/secrets@2021-04-01-preview' = {
-  name: '${vaults_kv_ftm_dev_name_resource.name}/AzureMapsDev'
-  location: 'westus2'
+resource keyvault_name_AzureMapsKey 'Microsoft.KeyVault/vaults/secrets@2021-04-01-preview' = {
+  name: '${keyvault_name_resource.name}/AzureMapsKey'
   properties: {
     attributes: {
       enabled: true
@@ -173,9 +175,8 @@ resource vaults_kv_ftm_dev_name_AzureMapsDev 'Microsoft.KeyVault/vaults/secrets@
   }
 }
 
-resource vaults_kv_ftm_dev_name_AzureMapsKey 'Microsoft.KeyVault/vaults/secrets@2021-04-01-preview' = {
-  name: '${vaults_kv_ftm_dev_name_resource.name}/AzureMapsKey'
-  location: 'westus2'
+resource keyvault_name_ConnectionStrings_TMDBServerConnectionString 'Microsoft.KeyVault/vaults/secrets@2021-04-01-preview' = {
+  name: '${keyvault_name_resource.name}/ConnectionStrings--TMDBServerConnectionString'
   properties: {
     attributes: {
       enabled: true
@@ -183,19 +184,8 @@ resource vaults_kv_ftm_dev_name_AzureMapsKey 'Microsoft.KeyVault/vaults/secrets@
   }
 }
 
-resource vaults_kv_ftm_dev_name_ConnectionStrings_TMDBServerConnectionString 'Microsoft.KeyVault/vaults/secrets@2021-04-01-preview' = {
-  name: '${vaults_kv_ftm_dev_name_resource.name}/ConnectionStrings--TMDBServerConnectionString'
-  location: 'westus2'
-  properties: {
-    attributes: {
-      enabled: true
-    }
-  }
-}
-
-resource vaults_kv_ftm_dev_name_TMDBServerConnectionString 'Microsoft.KeyVault/vaults/secrets@2021-04-01-preview' = {
-  name: '${vaults_kv_ftm_dev_name_resource.name}/TMDBServerConnectionString'
-  location: 'westus2'
+resource keyvault_name_TMDBServerConnectionString 'Microsoft.KeyVault/vaults/secrets@2021-04-01-preview' = {
+  name: '${keyvault_name_resource.name}/TMDBServerConnectionString'
   properties: {
     attributes: {
       enabled: true

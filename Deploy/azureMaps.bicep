@@ -1,7 +1,10 @@
-param accounts_map_trashmobdev_name string = 'map_trashmobdev'
+param environment string
+param region string
+
+var account_map_name = 'map_tm_${environment}_${region}'
 
 resource accounts_map_trashmobdev_name_resource 'Microsoft.Maps/accounts@2021-02-01' = {
-  name: accounts_map_trashmobdev_name
+  name: account_map_name
   location: 'global'
   sku: {
     name: 'S0'
