@@ -52,7 +52,6 @@ These items did not make the cut for launch but need to be done
   1. Add Patreon?
   1. Find a way to secure the Azure Maps Key (referral restriction?)
   1. Set up rotation of Azure Maps Keys every 24 hours
-  1. Set up bicep deployment of all resources needed by devs to run the site.
   1. Redeploy test environment with standardized names  
 
 ## When this project is "done" will it be open sourced?
@@ -71,14 +70,13 @@ Quite possibly. We'll see how fast the site gains momentum
 1. Install Visual Studio Code
 1. Connect to github and clone the repo
 1. Follow the Infrastructure Deployment Steps (here)[.\Deploy\readme.md].
-
-## The secrets you will need to run locally
-
+1. Run the following script on your machine from the TrashMob folder in the project to set up your dev machine to run the project locally. You must be logged into Azure in your PowerShell window in the correct subscription
 ```
-cd Trashmob
-dotnet user-secrets init
-dotnet user-secrets set "AzureMapsKey" "<insert secret here from your keyvault>"
-dotnet user-secrets set "TMDBServerConnectionString" "<insert secret here from your keyvault>"
+.\setupdev.ps1 -environment <yourenv> -region <yourregion>
+
+i.e.
+.\setupdev.ps1 -environment jb -region westus2
+
 ```
 
 ## Setting up your launchsettings.json
@@ -91,7 +89,7 @@ Because of RedirectUrls, life is a lot easier if you stick with the same ports a
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:50422/",
+      "applicationUrl": "http://localhost:44332/",
       "sslPort": 44332
     }
   },
@@ -121,12 +119,6 @@ Because of RedirectUrls, life is a lot easier if you stick with the same ports a
 In the Trashmob project folder, run the following command:
 ```
 dotnet build
-```
-
-## Update Your Database with the current Model
-Int he TrashMob project folder, run the following command:
-```
-dotnet ef database update
 ```
 
 ## To Run the app:

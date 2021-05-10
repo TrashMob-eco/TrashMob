@@ -1,7 +1,7 @@
 param environment string
 param region string
 
-var serverfarms_tmplan_name = 'asp_tm_${environment}-${region}'
+var serverfarms_tmplan_name = 'asp-tm-${environment}-${region}'
 
 resource serverfarms_tmplan_name_resource 'Microsoft.Web/serverfarms@2018-02-01' = {
   name: serverfarms_tmplan_name
