@@ -162,6 +162,5 @@ resource keyvault_name_resource 'Microsoft.KeyVault/vaults@2021-04-01-preview' =
     softDeleteRetentionInDays: 90
     enableRbacAuthorization: false
     vaultUri: 'https://${keyvault_name}.vault.azure.net/'
-    provisioningState: 'Succeeded'
   }
 }

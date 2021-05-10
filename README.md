@@ -52,7 +52,6 @@ These items did not make the cut for launch but need to be done
   1. Add Patreon?
   1. Find a way to secure the Azure Maps Key (referral restriction?)
   1. Set up rotation of Azure Maps Keys every 24 hours
-  1. Set up bicep deployment of all resources needed by devs to run the site.
   1. Redeploy test environment with standardized names  
 
 ## When this project is "done" will it be open sourced?
