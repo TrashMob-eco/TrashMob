@@ -57,7 +57,8 @@ namespace TrashMob.Controllers
             try
             {
                 var updatedUser = await userRepository.UpdateUser(user).ConfigureAwait(false);
-                return Ok(updatedUser);
+                var returnedUser = await userRepository.GetUserByNameIdentifier(user.NameIdentifier).ConfigureAwait(false);
+                return Ok(returnedUser);
             }
             catch (DbUpdateConcurrencyException)
             {
