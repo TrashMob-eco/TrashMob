@@ -357,9 +357,6 @@ export const CreateEvent: React.FC<CreateEventProps> = (props) => {
                         </div>
                     </div >
                     <div className="form-group row">
-                        <div>
-                            <label className="control-label col-md-12">To set or change the latitude and longitude of an event, click the location on the map where you want attendees to meet, and the values will be updated. Don't foget to save your changes before leaving the page!</label>
-                        </div>
                         <OverlayTrigger placement="top" overlay={renderLatitudeToolTip}>
                             <label className="control-label col-xs-2" htmlFor="Latitude">Latitude:</label>
                         </OverlayTrigger>
