@@ -51,6 +51,20 @@
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
+                entity.Property(e => e.UserName).HasMaxLength(32);
+
+                entity.Property(e => e.GivenName).HasMaxLength(32);
+
+                entity.Property(e => e.SurName).HasMaxLength(32);
+
+                entity.Property(e => e.Email).HasMaxLength(64);
+
+                entity.Property(e => e.City).HasMaxLength(64);
+
+                entity.Property(e => e.PostalCode).HasMaxLength(25);
+
+                entity.Property(e => e.PrivacyPolicyVersion).HasMaxLength(50);
+
                 entity.Property(e => e.PrivacyPolicyVersion).HasMaxLength(50);
 
                 entity.Property(e => e.TermsOfServiceVersion).HasMaxLength(50);

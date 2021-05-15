@@ -5,7 +5,7 @@ class UserData {
     nameIdentifier: string = "";
     userName: string = "";
     givenName: string = "";
-    surname: string = "";
+    surName: string = "";
     city: string = "";
     region: string = "";
     country: string = "";

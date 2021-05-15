@@ -1,4 +1,5 @@
 ﻿import * as React from 'react'
+import { Link } from 'react-router-dom';
 import { msalClient } from '../store/AuthStore';
 import UserData from './Models/UserData';
 
@@ -67,7 +68,7 @@ export const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 </div>
                             </li>
                         </ul>
-                        <label hidden={!isUserLoaded}>Welcome, {userName}!</label>
+                        <Link hidden={!isUserLoaded} className="btn btn-link" to={"/userprofile"}>Welcome, {userName}!</Link>
                         <button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)}>Sign Up/Log In</button>
                         <button hidden={!isUserLoaded}className="btn btn-outline-primary" onClick={(e) => signOut(e)}>Log Out</button>
                     </div>

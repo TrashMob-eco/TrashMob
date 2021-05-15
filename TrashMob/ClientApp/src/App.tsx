@@ -29,6 +29,7 @@ import { NoMatch } from './components/NoMatch';
 import UserData from './components/Models/UserData';
 import * as msal from "@azure/msal-browser";
 import { Guid } from 'guid-typescript';
+import UserProfile from './components/UserProfile';
 
 interface AppProps extends RouteComponentProps<MatchParams> {
     isUserLoaded: boolean;
@@ -104,12 +105,6 @@ export const App: React.FC = () => {
 
             user.nameIdentifier = result.idTokenClaims["sub"];
             user.userName = result.account?.username ?? "";
-            user.city = result.account?.idTokenClaims["city"] ?? "";
-            user.region = result.account?.idTokenClaims["region"] ?? "";
-            user.country = result.account?.idTokenClaims["country"] ?? "";
-            user.postalCode = result.account?.idTokenClaims["postalCode"] ?? "";
-            user.givenName = result.account?.idTokenClaims["given_name"] ?? "";
-            user.surname = result.account?.idTokenClaims["family_name"] ?? "";
             user.email = result.account?.idTokenClaims["emails"][0] ?? "";
 
             fetch('api/Users', {
@@ -159,6 +154,14 @@ export const App: React.FC = () => {
                                         errorComponent={ErrorComponent}
                                         loadingComponent={LoadingComponent}>
                                         <MyDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                    </MsalAuthenticationTemplate >
+                                </Route>
+                                <Route exact path="/userprofile">
+                                    <MsalAuthenticationTemplate
+                                        interactionType={InteractionType.Redirect}
+                                        errorComponent={ErrorComponent}
+                                        loadingComponent={LoadingComponent}>
+                                        <UserProfile currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                     </MsalAuthenticationTemplate >
                                 </Route>
                                 <Route exact path="/aboutus">
