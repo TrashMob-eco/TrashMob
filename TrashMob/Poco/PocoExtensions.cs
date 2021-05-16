@@ -11,7 +11,7 @@ namespace TrashMob.Poco
             {
                 City = user.City,
                 Country = user.Country,
-                GivenName = user.GivenName,
+                UserName = user.UserName,
                 Id = user.Id,
                 MemberSince = user.MemberSince,
                 Region = user.Region            

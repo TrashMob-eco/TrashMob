@@ -109,7 +109,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                 <table className='table table-striped' aria-labelledby="tabelLabel">
                     <thead>
                         <tr>
-                            <th>First Name</th>
+                            <th>User Name</th>
                             <th>City</th>
                             <th>Country</th>
                             <th>Member Since</th>
@@ -118,7 +118,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     <tbody>
                         {users.map(user =>
                             <tr key={user.id.toString()}>
-                                <td>{user.givenName}</td>
+                                <td>{user.userName ? user.userName : user.sourceSystemUserName }</td>
                                 <td>{user.city}</td>
                                 <td>{user.country}</td>
                                 <td>{new Date(user.memberSince).toLocaleDateString()}</td>

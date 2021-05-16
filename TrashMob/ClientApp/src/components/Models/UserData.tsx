@@ -4,8 +4,9 @@ class UserData {
     id: string = Guid.createEmpty().toString();
     nameIdentifier: string = "";
     userName: string = "";
+    sourceSystemUserName: string = "";
     givenName: string = "";
-    surname: string = "";
+    surName: string = "";
     city: string = "";
     region: string = "";
     country: string = "";

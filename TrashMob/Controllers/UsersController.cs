@@ -56,6 +56,7 @@ namespace TrashMob.Controllers
 
             try
             {
+                // ToDo: Verify can't have duplicate usernames
                 var updatedUser = await userRepository.UpdateUser(user).ConfigureAwait(false);
                 var returnedUser = await userRepository.GetUserByNameIdentifier(user.NameIdentifier).ConfigureAwait(false);
                 return Ok(returnedUser);
@@ -88,14 +89,8 @@ namespace TrashMob.Controllers
                     return Forbid();
                 }
 
-                originalUser.City = user.City;
-                originalUser.Country = user.Country;
                 originalUser.Email = user.Email;
-                originalUser.GivenName = user.GivenName;
-                originalUser.PostalCode = user.PostalCode;
-                originalUser.Region = user.Region;
-                originalUser.SurName = user.SurName;
-                originalUser.UserName = user.UserName;
+                originalUser.SourceSystemUserName = user.SourceSystemUserName;
                 await userRepository.UpdateUser(originalUser);
                 var returnedUser = await userRepository.GetUserByNameIdentifier(user.NameIdentifier).ConfigureAwait(false);
                 return Ok(returnedUser);

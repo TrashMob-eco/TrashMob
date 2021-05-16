@@ -3,10 +3,10 @@ import * as React from 'react';
 import { Route, Switch } from 'react-router';
 import { BrowserRouter, RouteComponentProps } from 'react-router-dom';
 
-import { Home } from './components/Home';
+import Home from './components/Home';
 
 // Layout
-import { TopMenu } from './components/TopMenu';
+import TopMenu from './components/TopMenu';
 
 import { AboutUs } from './components/AboutUs';
 import ContactUs from './components/ContactUs';
@@ -29,6 +29,7 @@ import { NoMatch } from './components/NoMatch';
 import UserData from './components/Models/UserData';
 import * as msal from "@azure/msal-browser";
 import { Guid } from 'guid-typescript';
+import UserProfile from './components/UserProfile';
 
 interface AppProps extends RouteComponentProps<MatchParams> {
     isUserLoaded: boolean;
@@ -103,14 +104,9 @@ export const App: React.FC = () => {
             var user = new UserData();
 
             user.nameIdentifier = result.idTokenClaims["sub"];
-            user.userName = result.account?.username ?? "";
-            user.city = result.account?.idTokenClaims["city"] ?? "";
-            user.region = result.account?.idTokenClaims["region"] ?? "";
-            user.country = result.account?.idTokenClaims["country"] ?? "";
-            user.postalCode = result.account?.idTokenClaims["postalCode"] ?? "";
-            user.givenName = result.account?.idTokenClaims["given_name"] ?? "";
-            user.surname = result.account?.idTokenClaims["family_name"] ?? "";
+            user.sourceSystemUserName = result.account?.username;
             user.email = result.account?.idTokenClaims["emails"][0] ?? "";
+
 
             fetch('api/Users', {
                 method: 'POST',
@@ -121,6 +117,7 @@ export const App: React.FC = () => {
                 .then(data => {
                     if (data) {
                         user.id = data.id;
+                        user.userName = data.userName;
                         user.dateAgreedToPrivacyPolicy = data.dateAgreedToPrivacyPolicy;
                         user.dateAgreedToTermsOfService = data.dateAgreedToTermsOfService;
                         user.memberSince = data.memberSince;
@@ -137,11 +134,11 @@ export const App: React.FC = () => {
     return (
         <MsalProvider instance={msalClient} >
             <div className="d-flex flex-column h-100">
-                <TopMenu isUserLoaded={isUserLoaded} currentUser={currentUser} />
-                <div className="container">
-                    <div className="">
+                <BrowserRouter>
+                    <TopMenu isUserLoaded={isUserLoaded} currentUser={currentUser} />
+                    <div className="container">
+                        <div className="">
 
-                        <BrowserRouter>
                             <Switch>
                                 <Route path="/editevent/:eventId" render={(props: AppProps) => renderEditEvent(props)} />
                                 <Route path="/eventdetails/:eventId" component={EventDetails} />
@@ -159,6 +156,14 @@ export const App: React.FC = () => {
                                         errorComponent={ErrorComponent}
                                         loadingComponent={LoadingComponent}>
                                         <MyDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                    </MsalAuthenticationTemplate >
+                                </Route>
+                                <Route exact path="/userprofile">
+                                    <MsalAuthenticationTemplate
+                                        interactionType={InteractionType.Redirect}
+                                        errorComponent={ErrorComponent}
+                                        loadingComponent={LoadingComponent}>
+                                        <UserProfile currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                     </MsalAuthenticationTemplate >
                                 </Route>
                                 <Route exact path="/aboutus">
@@ -195,9 +200,9 @@ export const App: React.FC = () => {
                             <div>
                                 <Footer />
                             </div>
-                        </BrowserRouter>
+                        </div>
                     </div>
-                </div>
+                </BrowserRouter>
             </div>
         </MsalProvider>
     );
