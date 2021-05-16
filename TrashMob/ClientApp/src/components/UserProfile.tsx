@@ -18,6 +18,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
     const [userId, setUserId] = React.useState<string>(props.currentUser.id);
     const [nameIdentifier, setNameIdentifier] = React.useState<string>("");
     const [userName, setUserName] = React.useState<string>("");
+    const [sourceSystemUserName, setSourceSystemUserName] = React.useState<string>("");
     const [givenName, setGivenName] = React.useState<string>("");
     const [surName, setSurName] = React.useState<string>("");
     const [email, setEmail] = React.useState<string>();
@@ -120,12 +121,12 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
             const headers = getDefaultHeaders('PUT');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('api/Events', {
+            fetch('api/users', {
                 method: 'PUT',
                 headers: headers,
                 body: usrdata,
             }).then(() => {
-                props.history.push("/mydashboard");
+                props.history.push("/");
             })
         })
     }
@@ -140,18 +141,6 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
 
     function handleSurNameChanged(val: string) {
         setSurName(val);
-    }
-
-    function handleEmailChanged(val: string) {
-        var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
-
-        if (!pattern.test(val)) {
-            setEmailErrors("Please enter valid email address.");
-        }
-        else {
-            setEmailErrors("");
-            setEmail(val);
-        }
     }
 
     function handleCityChanged(val: string) {
@@ -222,6 +211,10 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.UserProfileMemberSince}</Tooltip>
     }
 
+    function renderSourceSystemUserNameToolTip(props) {
+        return <Tooltip {...props}>{ToolTips.UserProfileSourceSystemUserName}</Tooltip>
+    }
+
     return (
         !isDataLoaded ? <div>Loading</div> :
             <div>
@@ -230,7 +223,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                     <form onSubmit={handleSave} >
                         < div className="form-group row" >
                             <OverlayTrigger placement="top" overlay={renderUserNameToolTip}>
-                                <label className=" control-label col-xs-2" htmlFor="UserName">Username:</label>
+                                <label className=" control-label col-xs-2" htmlFor="UserName">User Name:</label>
                             </OverlayTrigger>
                             <div className="col-md-4">
                                 <input className="form-control" type="text" name="userName" defaultValue={userName} onChange={(val) => handleUserNameChanged(val.target.value)} maxLength={parseInt('32')} required />
@@ -239,9 +232,8 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
                                 <label className="control-label col-xs-2" htmlFor="email">Email:</label>
                             </OverlayTrigger>
-                            <div className="col-md-4">
-                                <input className="form-control" type="text" name="email" defaultValue={email} onChange={(val) => handleEmailChanged(val.target.value)} maxLength={parseInt('64')} required />
-                                <span style={{ color: "red" }}>{emailErrors}</span>
+                            <div className="col-xs-2">
+                                <label className="form-control">{email}</label>
                             </div>
                         </div >
                         <div className="form-group row">
@@ -295,9 +287,6 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                 <span style={{ color: "red" }}>{regionErrors}</span>
                             </div>
                         </div >
-                        <div className="form-group">
-                            <button type="submit" className="btn btn-default">Save</button>
-                        </div >
                         <div className="form-group row">
                             <OverlayTrigger placement="top" overlay={renderDateAgreedToPrivacyPolicyToolTip}>
                                 <label className="control-label col-xs-2" htmlFor="dateAgreedToPrivacyPolicy">Date Agreed To Privacy Policy:</label>
@@ -332,6 +321,14 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             </OverlayTrigger>
                             <div className="col-xs-2">
                                 <label className="form-control">{memberSince ? memberSince.toLocaleString() : "" }</label>
+                            </div>
+                        </div >
+                        <div className="form-group row">
+                            <OverlayTrigger placement="top" overlay={renderSourceSystemUserNameToolTip}>
+                                <label className="control-label col-xs-2" htmlFor="memberSince">Source System User Name:</label>
+                            </OverlayTrigger>
+                            <div className="col-xs-2">
+                                <label className="form-control">{sourceSystemUserName}</label>
                             </div>
                         </div >
                         <div className="form-group">

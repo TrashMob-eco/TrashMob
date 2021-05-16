@@ -53,6 +53,8 @@
 
                 entity.Property(e => e.UserName).HasMaxLength(32);
 
+                entity.Property(e => e.SourceSystemUserName).HasMaxLength(32);
+
                 entity.Property(e => e.GivenName).HasMaxLength(32);
 
                 entity.Property(e => e.SurName).HasMaxLength(32);

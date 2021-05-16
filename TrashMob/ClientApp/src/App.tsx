@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Route, Switch } from 'react-router';
 import { BrowserRouter, RouteComponentProps } from 'react-router-dom';
 
-import { Home } from './components/Home';
+import Home from './components/Home';
 
 // Layout
 import TopMenu from './components/TopMenu';
@@ -104,8 +104,9 @@ export const App: React.FC = () => {
             var user = new UserData();
 
             user.nameIdentifier = result.idTokenClaims["sub"];
-            user.userName = result.account?.username ?? "";
+            user.sourceSystemUserName = result.account?.username;
             user.email = result.account?.idTokenClaims["emails"][0] ?? "";
+
 
             fetch('api/Users', {
                 method: 'POST',
@@ -116,6 +117,7 @@ export const App: React.FC = () => {
                 .then(data => {
                     if (data) {
                         user.id = data.id;
+                        user.userName = data.userName;
                         user.dateAgreedToPrivacyPolicy = data.dateAgreedToPrivacyPolicy;
                         user.dateAgreedToTermsOfService = data.dateAgreedToTermsOfService;
                         user.memberSince = data.memberSince;

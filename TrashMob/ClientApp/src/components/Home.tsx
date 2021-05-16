@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import { MainEvents } from './MainEvents';
 import { MainCarousel } from './MainCarousel';
-import { Link } from 'react-router-dom';
+import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
@@ -16,12 +16,12 @@ import { CurrentTermsOfServiceVersion } from './TermsOfService';
 import { CurrentPrivacyPolicyVersion } from './PrivacyPolicy';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-export interface HomeProps {
+export interface HomeProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
     currentUser: UserData;
 }
 
-export const Home: React.FC<HomeProps> = (props) => {
+const Home: React.FC<HomeProps> = (props) => {
     const [eventList, setEventList] = React.useState<EventData[]>([]);
     const [eventTypeList, setEventTypeList] = React.useState<EventTypeData[]>([]);
     const [myAttendanceList, setMyAttendanceList] = React.useState<EventData[]>([]);
@@ -111,10 +111,12 @@ export const Home: React.FC<HomeProps> = (props) => {
             return;
         }
 
-        if (currentUser.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate || currentUser.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate || currentUser.termsOfServiceVersion === "" || currentUser.privacyPolicyVersion === "") {
+        var isPrivacyPolicyOutOfDate = currentUser.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate;
+        var isTermsOfServiceOutOfDate = currentUser.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate;
+
+        if (isPrivacyPolicyOutOfDate || isTermsOfServiceOutOfDate || (currentUser.termsOfServiceVersion === "") || (currentUser.privacyPolicyVersion === "")) {
             setIsOpen(true);
         }
-
     }, [isUserLoaded, currentUser]);
 
     function handleLocationChange(point: data.Position) {
@@ -160,7 +162,12 @@ export const Home: React.FC<HomeProps> = (props) => {
                         body: JSON.stringify(user)
                     })
                         .then(response => response.json() as Promise<UserData> | null)
-                        .then(data => setCurrentUser(data))
+                        .then(data => {
+                            setCurrentUser(data);
+                            if (!currentUser.userName) {
+                                props.history.push("/userprofile");
+                            }
+                            })                        
                 })
         })
     }
@@ -208,3 +215,5 @@ export const Home: React.FC<HomeProps> = (props) => {
         </div>
     );
 }
+
+export default withRouter(Home);
