@@ -6,7 +6,6 @@ import * as ToolTips from "../store/ToolTips";
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import { PrivacyPolicyVersion } from './PrivacyPolicy';
 
 interface UserProfileProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -14,8 +13,8 @@ interface UserProfileProps extends RouteComponentProps<any> {
 }
 
 const UserProfile: React.FC<UserProfileProps> = (props) => {
+    const userId = props.currentUser.id;
     const [isDataLoaded, setIsDataLoaded] = React.useState<boolean>(false);
-    const [userId, setUserId] = React.useState<string>(props.currentUser.id);
     const [nameIdentifier, setNameIdentifier] = React.useState<string>("");
     const [userName, setUserName] = React.useState<string>("");
     const [sourceSystemUserName, setSourceSystemUserName] = React.useState<string>("");
@@ -34,7 +33,6 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
     const [userNameErrors, setUserNameErrors] = React.useState<string>("");
     const [givenNameErrors, setGivenNameErrors] = React.useState<string>("");
     const [surNameErrors, setSurNameErrors] = React.useState<string>("");
-    const [emailErrors, setEmailErrors] = React.useState<string>("");
     const [cityErrors, setCityErrors] = React.useState<string>("");
     const [countryErrors, setCountryErrors] = React.useState<string>("");
     const [regionErrors, setRegionErrors] = React.useState<string>("");
@@ -63,6 +61,16 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 setPrivacyPolicyVersion(data.privacyPolicyVersion);
                 setTermsOfServiceVersion(data.termsOfServiceVersion);
                 setMemberSince(data.memberSince);
+                setSourceSystemUserName(data.sourceSystemUserName);
+
+                setUserNameErrors("");
+                setGivenNameErrors("");
+                setSurNameErrors("");
+                setCityErrors("");
+                setCountryErrors("");
+                setRegionErrors("");
+                setPostalCodeErrors("");
+
                 setIsDataLoaded(true);
             });
     }, [userId])
@@ -80,7 +88,6 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
         if (userNameErrors !== "" ||
             givenNameErrors !== "" ||
             surNameErrors !== "" ||
-            emailErrors !== "" ||
             cityErrors !== "" ||
             countryErrors !== "" ||
             regionErrors !== "" ||
@@ -332,7 +339,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             </div>
                         </div >
                         <div className="form-group">
-                            <button disabled={emailErrors !== "" || userNameErrors !== ""} type="submit" className="action btn-default">Save</button>
+                            <button disabled={userNameErrors !== ""} type="submit" className="action btn-default">Save</button>
                             <button className="action" onClick={(e) => handleCancel(e)}>Cancel</button>
                         </div >
                     </form >
