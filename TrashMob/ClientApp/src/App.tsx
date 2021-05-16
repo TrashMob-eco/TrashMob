@@ -6,7 +6,7 @@ import { BrowserRouter, RouteComponentProps } from 'react-router-dom';
 import { Home } from './components/Home';
 
 // Layout
-import { TopMenu } from './components/TopMenu';
+import TopMenu from './components/TopMenu';
 
 import { AboutUs } from './components/AboutUs';
 import ContactUs from './components/ContactUs';
@@ -132,11 +132,11 @@ export const App: React.FC = () => {
     return (
         <MsalProvider instance={msalClient} >
             <div className="d-flex flex-column h-100">
-                <TopMenu isUserLoaded={isUserLoaded} currentUser={currentUser} />
-                <div className="container">
-                    <div className="">
+                <BrowserRouter>
+                    <TopMenu isUserLoaded={isUserLoaded} currentUser={currentUser} />
+                    <div className="container">
+                        <div className="">
 
-                        <BrowserRouter>
                             <Switch>
                                 <Route path="/editevent/:eventId" render={(props: AppProps) => renderEditEvent(props)} />
                                 <Route path="/eventdetails/:eventId" component={EventDetails} />
@@ -198,9 +198,9 @@ export const App: React.FC = () => {
                             <div>
                                 <Footer />
                             </div>
-                        </BrowserRouter>
+                        </div>
                     </div>
-                </div>
+                </BrowserRouter>
             </div>
         </MsalProvider>
     );

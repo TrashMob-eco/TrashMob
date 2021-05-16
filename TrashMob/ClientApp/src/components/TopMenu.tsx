@@ -1,20 +1,21 @@
 ﻿import * as React from 'react'
-import { Link } from 'react-router-dom';
+import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
 import { msalClient } from '../store/AuthStore';
 import UserData from './Models/UserData';
 
-interface TopMenuProps {
+interface TopMenuProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
     currentUser: UserData;
 }
 
-export const TopMenu: React.FC<TopMenuProps> = (props) => {
+const TopMenu: React.FC<TopMenuProps> = (props) => {
     const [userName, setUserName] = React.useState<string>("");
     const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
+    const history = useHistory();
 
     React.useEffect(() => {
         if (props.currentUser && props.isUserLoaded) {
-            setUserName(props.currentUser.givenName);
+            setUserName(props.currentUser.userName);
         }
 
         setIsUserLoaded(props.isUserLoaded);
@@ -39,6 +40,11 @@ export const TopMenu: React.FC<TopMenuProps> = (props) => {
     function signIn(e: any) {
         e.preventDefault();
         msalClient.loginRedirect();
+    }
+
+    function viewUserProfile(e: any) {
+        e.preventDefault();
+        history.push("/userprofile");
     }
 
     return (
@@ -68,7 +74,7 @@ export const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 </div>
                             </li>
                         </ul>
-                        <Link hidden={!isUserLoaded} className="btn btn-link" to={"/userprofile"}>Welcome, {userName}!</Link>
+                        <button hidden={!isUserLoaded} className="btn btn-link" onClick={(e) => viewUserProfile(e)}>Welcome, {userName}!</button>
                         <button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)}>Sign Up/Log In</button>
                         <button hidden={!isUserLoaded}className="btn btn-outline-primary" onClick={(e) => signOut(e)}>Log Out</button>
                     </div>
@@ -77,3 +83,5 @@ export const TopMenu: React.FC<TopMenuProps> = (props) => {
         </header>
     )
 }
+
+export default withRouter(TopMenu);

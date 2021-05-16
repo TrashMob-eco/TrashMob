@@ -223,6 +223,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
     }
 
     return (
+        !isDataLoaded ? <div>Loading</div> :
         <div>
             <h1>User Profile</h1>
             <div className="container-fluid" >
@@ -235,6 +236,15 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <input className="form-control" type="text" name="userName" defaultValue={userName} onChange={(val) => handleUserNameChanged(val.target.value)} maxLength={parseInt('32')} required />
                             <span style={{ color: "red" }}>{userNameErrors}</span>
                         </div>
+                        <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
+                            <label className="control-label col-xs-2" htmlFor="email">Email:</label>
+                        </OverlayTrigger>
+                        <div className="col-md-4">
+                            <input className="form-control" type="text" name="email" defaultValue={email} onChange={(val) => handleEmailChanged(val.target.value)} maxLength={parseInt('64')} required />
+                            <span style={{ color: "red" }}>{emailErrors}</span>
+                        </div>
+                    </div >
+                    <div className="form-group row">
                         <OverlayTrigger placement="top" overlay={renderGivenNameToolTip}>
                             <label className="control-label col-xs-2" htmlFor="GivenName">Given Name:</label>
                         </OverlayTrigger>
@@ -248,13 +258,6 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                         <div className="col-md-4">
                             <input className="form-control" type="text" name="surName" defaultValue={surName} onChange={(val) => handleSurNameChanged(val.target.value)} maxLength={parseInt('32')} />
                             <span style={{ color: "red" }}>{surNameErrors}</span>
-                        </div>
-                        <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
-                            <label className="control-label col-xs-2" htmlFor="email">Email:</label>
-                        </OverlayTrigger>
-                        <div className="col-md-4">
-                            <input className="form-control" type="text" name="email" defaultValue={email} onChange={(val) => handleEmailChanged(val.target.value)} maxLength={parseInt('64')} required />
-                            <span style={{ color: "red" }}>{emailErrors}</span>
                         </div>
                     </div >
                     <div className="form-group row">
@@ -300,13 +303,13 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <label className="control-label col-xs-2" htmlFor="dateAgreedToPrivacyPolicy">Date Agreed To Privacy Policy:</label>
                         </OverlayTrigger>
                         <div className="col-xs-2">
-                            <label className="form-control">{dateAgreedToPrivacyPolicy}</label>
+                                <label className="form-control">{() => { return dateAgreedToPrivacyPolicy !== null ? dateAgreedToPrivacyPolicy.toString() : "" }}</label>
                         </div>
                         <OverlayTrigger placement="top" overlay={renderPrivacyPolicyVersionToolTip}>
                             <label className="control-label col-xs-2" htmlFor="PrivacyPolicyVersion">Privacy Policy Version:</label>
                         </OverlayTrigger>
                         <div className="col-xs-2">
-                            <label className="form-control">{PrivacyPolicyVersion}</label>
+                                <label className="form-control">{() => { return privacyPolicyVersion }}</label>
                         </div>
                     </div >
                     <div className="form-group row">
@@ -314,13 +317,13 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <label className="control-label col-xs-2" htmlFor="dateAgreedToTermsOfService">Date Agreed To Terms of Service:</label>
                         </OverlayTrigger>
                         <div className="col-xs-2">
-                            <label className="form-control">{dateAgreedToTermsOfService}</label>
+                                <label className="form-control">{() => { return dateAgreedToTermsOfService !== null ? dateAgreedToTermsOfService.toString() : "" }}</label>
                         </div>
                         <OverlayTrigger placement="top" overlay={renderTermsOfServiceVersionToolTip}>
                             <label className="control-label col-xs-2" htmlFor="TermsOfServiceVersion">Terms Of Service Version:</label>
                         </OverlayTrigger>
                         <div className="col-xs-2">
-                            <label className="form-control">{termsOfServiceVersion}</label>
+                                <label className="form-control">{() => { return termsOfServiceVersion }}</label>
                         </div>
                     </div >
                     <div className="form-group row">
@@ -328,7 +331,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <label className="control-label col-xs-2" htmlFor="memberSince">Member Since:</label>
                         </OverlayTrigger>
                         <div className="col-xs-2">
-                            <label className="form-control">{memberSince}</label>
+                                <label className="form-control">{() => { return memberSince !== null ? memberSince.toString() : "" }}</label>
                         </div>
                     </div >
                     <div className="form-group">
