@@ -127,7 +127,7 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
                                 <td>
                                     <button hidden={!props.isUserLoaded || mobEvent.isAttending === "Yes"} className="action" onClick={() => handleAttend(mobEvent.id)}>Register to Attend Event</button>
                                     <label hidden={props.isUserLoaded}>Log in to see your status</label>
-                                    <label hidden={!props.isUserLoaded && mobEvent.isAttending !== 'Yes'}>Yes</label>
+                                    <label hidden={!props.isUserLoaded || mobEvent.isAttending !== 'Yes'}>Yes</label>
                                 </td>
                                 <td>
                                     <button className="action" onClick={() => history.push('/eventdetails/' + mobEvent.id)}>View Details</button>

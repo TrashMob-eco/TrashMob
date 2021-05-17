@@ -6,6 +6,7 @@ import * as ToolTips from "../store/ToolTips";
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
+import { Modal } from 'reactstrap';
 
 interface UserProfileProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -37,6 +38,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
     const [countryErrors, setCountryErrors] = React.useState<string>("");
     const [regionErrors, setRegionErrors] = React.useState<string>("");
     const [postalCodeErrors, setPostalCodeErrors] = React.useState<string>("");
+    const [isOpen, setIsOpen] = React.useState(false);
 
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
@@ -75,10 +77,44 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
             });
     }, [userId])
 
+    function togglemodal() {
+        setIsOpen(!isOpen);
+    }
+
     // This will handle Cancel button click event.  
     function handleCancel(event: any) {
         event.preventDefault();
         props.history.push("/");
+    }
+
+    function handleDelete(event: any) {
+        event.preventDefault();
+        setIsOpen(true);
+    }
+
+    // This will handle the delete account
+    function deleteAccount() {
+
+        const account = msalClient.getAllAccounts()[0];
+
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            const headers = getDefaultHeaders('DELETE');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+            fetch('api/users/' + userId, {
+                method: 'DELETE',
+                headers: headers
+            }).then(() => {
+                msalClient.logoutRedirect();
+                props.history.push("/");
+            })
+        })
     }
 
     // This will handle the submit form event.  
@@ -226,8 +262,36 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
         !isDataLoaded ? <div>Loading</div> :
             <div>
                 <h1>User Profile</h1>
+                <div>
+                    <Modal isOpen={isOpen} onrequestclose={togglemodal} contentlabel="Delete Account?" fade={true} style={{ width: "300px", display: "block" }}>
+                        <div className="container">
+                            <span>
+                                <label>Are you sure you want to delete your account and all your events? Deleted accounts cannot be recovered!</label>
+                            </span>
+
+                            <div>
+                                <button className="action" onClick={() => {
+                                    togglemodal();
+                                    deleteAccount();
+                                }
+                                }>
+                                    Yes, Delete My Account
+                            </button>
+                                <button className="action" onClick={() => {
+                                    togglemodal();
+                                }
+                                }>
+                                    Cancel
+                            </button>
+                            </div>
+                        </div>
+                    </Modal>
+                </div>
                 <div className="container-fluid" >
                     <form onSubmit={handleSave} >
+                        <div>
+                            <button className="action" onClick={(e) => handleDelete(e)}>Delete Account</button>
+                        </div>
                         < div className="form-group row" >
                             <OverlayTrigger placement="top" overlay={renderUserNameToolTip}>
                                 <label className=" control-label col-xs-2" htmlFor="UserName">User Name:</label>
