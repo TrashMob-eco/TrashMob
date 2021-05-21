@@ -2,6 +2,7 @@ import * as React from 'react'
 import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
 import { msalClient } from '../store/AuthStore';
 import UserData from './Models/UserData';
+import logo from './assets/logo.svg'
 
 interface TopMenuProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -51,7 +52,7 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
         <header className="tm-header">
             <div className="container-fluid bg-light tm-mainNav">
                 <nav className="container navbar navbar-expand-lg navbar-light">
-                    <a className="navbar-brand" href="/">TrashMob</a>
+                    <a className="navbar-brand" href="/"><img src={logo} alt="TrashMob Logo" /></a>
                     <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample09" aria-controls="navbarsExample09" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
