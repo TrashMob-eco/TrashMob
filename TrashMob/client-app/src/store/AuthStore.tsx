@@ -1,4 +1,4 @@
-﻿import * as msal from "@azure/msal-browser";
+import * as msal from "@azure/msal-browser";
 
 export const msalClient: msal.PublicClientApplication = new msal.PublicClientApplication(
     {

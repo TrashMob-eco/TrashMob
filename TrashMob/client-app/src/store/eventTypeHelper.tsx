@@ -1,4 +1,4 @@
-﻿import EventTypeData from "../components/Models/EventTypeData";
+import EventTypeData from "../components/Models/EventTypeData";
 import { getDefaultHeaders } from "./AuthStore";
 
 export function getEventType(eventTypeList: EventTypeData[], eventTypeId: any): string {

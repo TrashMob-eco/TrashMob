@@ -1,4 +1,4 @@
-﻿import { AuthenticationType, SymbolLayerOptions, data } from 'azure-maps-control'
+import { AuthenticationType, SymbolLayerOptions, data } from 'azure-maps-control'
 import { getDefaultHeaders } from './AuthStore';
 import {IAzureMapOptions} from 'react-azure-maps';
 
