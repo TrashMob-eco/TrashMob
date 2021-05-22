@@ -1,4 +1,4 @@
-$primary: #96BA00;
+$primary: #96ba00;
 
 .App {
   text-align: center;
@@ -41,49 +41,51 @@ $primary: #96BA00;
 
 .tm-header {
   border-bottom: 1px solid #f2f2f2;
-  background:#353A3F;
+  background: #353a3f;
 
   .tm-secondaryNav-link {
-      color:white;
+    color: white;
 
-      &:hover {color:white}
+    &:hover {
+      color: white;
+    }
   }
 
   .tm-secondaryNav-list {
-      display: flex;        
-      list-style: none;
-      padding: 0;
-      margin: 5px 0;
-      font-size: 14px;
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 5px 0;
+    font-size: 14px;
 
-      @include media-breakpoint-up(sm) {
-          justify-content: flex-end;
-      }
+    @include media-breakpoint-up(sm) {
+      justify-content: flex-end;
+    }
   }
 
   .tm-secondaryNav-item:not(:first-child) {
-      margin-left: 1rem;
+    margin-left: 1rem;
   }
 
   .navbar {
-      padding:1.2rem 1rem;
+    padding: 1.2rem 1rem;
 
-      .btn:not(:first-of-type) {
-          margin-left:1rem;
-      }
+    .btn:not(:first-of-type) {
+      margin-left: 1rem;
+    }
   }
 
   .navbar-light .navbar-nav .nav-link {
-      color:#212529;
+    color: #212529;
 
-      &:hover {
-          color: $primary;
-      }
+    &:hover {
+      color: $primary;
+    }
   }
 }
 
 .carousel {
-  margin: 30px 0;
+  margin: 0px 0 30px;
 }
 
 .carousel-item {
@@ -92,18 +94,18 @@ $primary: #96BA00;
 }
 
 .carousel-caption {
-  background: rgba(0,0,0, .7);
+  background: rgba(0, 0, 0, 0.7);
 }
 
 .navbar-brand {
-    height: 17.150959014892578px;
-    width: 197.75704956054688px;
-    left: 1 75px;
-    top: 48px;
-    border-radius: 0px;
-    position: absolute;
-    left: 19.53%;
-    right: 70.17%;
-    top: 0.92%;
-    bottom: 98.76%;
+  height: 17.150959014892578px;
+  width: 197.75704956054688px;
+  left: 1 75px;
+  top: 48px;
+  border-radius: 0px;
+  position: absolute;
+  left: 19.53%;
+  right: 70.17%;
+  top: 0.92%;
+  bottom: 98.76%;
 }
