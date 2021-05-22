@@ -198,14 +198,14 @@ const Home: React.FC<HomeProps> = (props) => {
             <div>
                 <MainCarousel />
             </div>
-            <div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", alignContent: "center" }}>
                 <div>
                     <Link to="/createevent">Create a New Event</Link>
                 </div>
-                <div style={{ width: 50 + '%' }}>
+                <div style={{ width: 100 + '%', margin: '0' }}>
                     <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} />
                 </div>
-                <div style={{ width: 50 + '%' }}>
+                <div style={{ width: 100 + '%', margin: '0' }}>
                     <AzureMapsProvider>
                         <>
                             <MapController center={center} multipleEvents={eventList} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} />

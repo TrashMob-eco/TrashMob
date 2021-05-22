@@ -6,10 +6,10 @@ import '../custom.css';
 
 export const Footer: React.FC = () => {
     return (
-        <div>
+        <div >
             <hr className="rounded" />
-            <p><Link to="/privacypolicy">Privacy Policy</Link></p>
-            <p><Link to="/termsofservice">Terms Of Service</Link></p>
+            <p><Link to="/privacypolicy" style={{ display: 'inline-block', padding: '4px 20px 4px 0px'}}>Privacy Policy</Link>
+            <Link to="/termsofservice" style={{ display: 'inline-block', padding: '4px 20px 4px 0px'}}>Terms Of Service</Link></p>
         </div>
     );
 }
