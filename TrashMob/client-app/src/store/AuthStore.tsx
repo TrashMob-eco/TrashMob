@@ -6,7 +6,8 @@ export const msalClient: msal.PublicClientApplication = new msal.PublicClientApp
         {
             clientId: '0a1647a4-c758-4964-904f-a9b66958c071',
             authority: 'https://trashmob.b2clogin.com/Trashmob.onmicrosoft.com/b2c_1_signupsignin1',
-            postLogoutRedirectUri: "/"
+            postLogoutRedirectUri: "/",
+            knownAuthorities: [ 'trashmob.b2clogin.com' ]
         },
         cache: { cacheLocation: "sessionStorage", storeAuthStateInCookie: false},
         system: {
