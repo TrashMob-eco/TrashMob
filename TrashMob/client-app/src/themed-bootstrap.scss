@@ -1,0 +1,20 @@
+﻿// =================
+// Bootstrap overrides.
+// It's better to change bootstrap variables to theme
+// instead of overriding with extra lines of CSS
+// =================
+// Example
+// $white: black;
+
+// =================
+// Importing Bootstrap
+// Has to go below the new variables in order to take effect.
+// =================
+@import "bootstrap/scss/bootstrap.scss";
+
+@import "./components/assets/global-styles/bootstrap.min.module.css";
+
+// =================
+// Importing app styles here so we can reuse bootstrap variables
+// =================
+@import "./app.scss";
