@@ -32,16 +32,14 @@ ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want
 Here's what needs to be done before we can launch
 1. UI
   1. Styling
-    1. Bootstrap theme
     1. Make forms and grids presentable
     1. Add Required field indicators
-    1. Improve Carousel Content / verify images not licensed
     1. Make field names more prominent
-    1. Add logo to header  
     1. Fix format of Terms of Service accept popup
-  1. Get proper logo
-    1. In process
+    1. Fix carousel not working
 1. Brand sign in pages (need to redo logo and colors)
+1. Fix image on github page
+1. Change github name? i.e. FlashTrashMob to TrashMob
   
 ## High Priority Post Launch Items
 These items did not make the cut for launch but need to be done
