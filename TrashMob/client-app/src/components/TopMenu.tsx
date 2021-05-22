@@ -23,9 +23,9 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
     }, [props.currentUser, props.isUserLoaded])
 
     const mainNavItems = [
-        { name: "Home", url: "/" },
         { name: "Getting Started", url: "/gettingstarted" },
-        { name: "My Dashboard", url: "/mydashboard" }
+        { name: "My Dashboard", url: "/mydashboard" },
+        { name: "About TrashMob", url: "/aboutus" }
     ];
 
     function signOut(e: any) {
@@ -67,7 +67,6 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                             <li className="nav-item dropdown">
                                 <button className="btn btn-link dropdown-toggle" id="dropdown09" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Learn More</button>
                                 <div className="dropdown-menu" aria-labelledby="dropdown09">
-                                    <a className="dropdown-item" href="/aboutus">About TrashMob</a>
                                     <a className="dropdown-item" href="/partners">Partners</a>
                                     <a className="dropdown-item" href="/sponsors">Sponsors</a>
                                     <a className="dropdown-item" href="/contactus">Contact Us</a>
@@ -77,7 +76,7 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                         </ul>
                         <button hidden={!isUserLoaded} className="btn btn-link" onClick={(e) => viewUserProfile(e)}>Welcome{userName ? ", " + userName : ""}!</button>
                         <button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)}>Sign Up/Log In</button>
-                        <button hidden={!isUserLoaded}className="btn btn-outline-primary" onClick={(e) => signOut(e)}>Log Out</button>
+                        <button hidden={!isUserLoaded} className="btn btn-outline-primary" onClick={(e) => signOut(e)}>Log Out</button>
                     </div>
                 </nav>
             </div>

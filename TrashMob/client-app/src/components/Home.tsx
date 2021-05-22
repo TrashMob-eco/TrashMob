@@ -14,7 +14,6 @@ import UserData from './Models/UserData';
 import { Modal } from 'reactstrap';
 import { CurrentTermsOfServiceVersion } from './TermsOfService';
 import { CurrentPrivacyPolicyVersion } from './PrivacyPolicy';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 export interface HomeProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
