@@ -1,6 +1,5 @@
 import * as React from 'react'
-
-import "./assets/global-styles/carousel.min.css"; // requires a loader
+// import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import litter from "./assets/litter.jpg";
 import beachlitter from "./assets/beachlitter.jpg";
 import styrofoam from "./assets/brian-yurasits-0G2jF-c704s-unsplash.jpg"
@@ -9,12 +8,12 @@ import man from "./assets/brian-yurasits-euyUAlyZxTo-unsplash.jpg"
 export const MainCarousel: React.FC = () => {
     return (
         <div>
-            <div id="carouselCaptions" className="carousel slide" data-ride="carousel">
+            <div id="carouselExampleCaptions" className="carousel slide" data-ride="carousel">
                 <ol className="carousel-indicators">
-                    <li data-target="#carouselCaptions" data-slide-to="0" className="active"></li>
-                    <li data-target="#carouselCaptions" data-slide-to="1"></li>
-                    <li data-target="#carouselCaptions" data-slide-to="2"></li>
-                    <li data-target="#carouselCaptions" data-slide-to="3"></li>
+                    <li data-target="#carouselExampleCaptions" data-slide-to="0" className="active"></li>
+                    <li data-target="#carouselExampleCaptions" data-slide-to="1"></li>
+                    <li data-target="#carouselExampleCaptions" data-slide-to="2"></li>
+                    <li data-target="#carouselExampleCaptions" data-slide-to="3"></li>
                 </ol>
                 <div className="carousel-inner">
                     <div className="carousel-item active" style={{
@@ -53,11 +52,11 @@ export const MainCarousel: React.FC = () => {
                         </div>
                     </div>
                 </div>
-                <a className="carousel-control-prev" href="#carouselCaptions" role="button" data-slide="prev">
+                <a className="carousel-control-prev" href="#carouselExampleCaptions" role="button" data-slide="prev">
                     <span className="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span className="sr-only">Previous</span>
                 </a>
-                <a className="carousel-control-next" href="#carouselCaptions" role="button" data-slide="next">
+                <a className="carousel-control-next" href="#carouselExampleCaptions" role="button" data-slide="next">
                     <span className="carousel-control-next-icon" aria-hidden="true"></span>
                     <span className="sr-only">Next</span>
                 </a>
