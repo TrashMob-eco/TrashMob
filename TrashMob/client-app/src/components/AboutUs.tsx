@@ -1,4 +1,7 @@
 import * as React from 'react';
+import onTheBeach from './assets/brian-yurasits-43upsZNmy9Q-unsplash.jpg';
+import pile from './assets/cmophoto-net-4ANtcRmvgE4-unsplash.jpg';
+import bigpile from './assets/muhammad-numan-ZVgxiKJlMk0-unsplash.jpg'
 
 export const AboutUs: React.FC = () => {
     return (
@@ -12,21 +15,7 @@ export const AboutUs: React.FC = () => {
                 little dirty, but that's what gloves are for! It also doesn't matter where you help to clean up. Whether it's your neighborhood, a park, a stream, a road, or even a parking lot of a big box store,
                 all litter needs to be cleaned up, and every bit we pick up, no matter where it is, helps make this planet of ours a little better for the next generation.
                 </p>
-            <h2>Why not do this on my own?</h2>
-            <p>
-                There's absolutely no reason not to do this on your own. In fact, the inspiration I got for this project came from other doing this on their own.
-                </p>
-            <p>
-                But doing this with a group brings some sizable benefits with it:
-                    <ol>
-                    <li>A TrashMob can tackle really bad areas in a very short time. An individual may take days or weeks, and become demoralized</li>
-                    <li>A TrashMob can grab the attention of other citizens much more quickly than an individual and can spur even more cleanups</li>
-                    <li>A TrashMob can get resources like hauling of the gathered trash, local merchant support, and municipal support that an individual just can't. If you tell your city works department
-                        that you are cleaning up a park, they'll be nice and say thanks. But if you say you've got <b>30</b> people showing up at 10AM to clean up a notorious area, they will help you to get
-                            the supplies you need, and may even help with the haulaway. Communities want to see active citizens and will do whatever they can to encourage it.</li>
-                </ol>
-            </p>
-
+            <img src={onTheBeach} alt="Person picking litter on a beach" />
             <h2>Where did the idea come from?</h2>
             <p>
                 Years ago, Scott Hanselman at Microsoft built out the NerdDinner.com site as a demo of the capabilities of ASP.NET MVC. I (<a target="_blank" rel="noopener noreferrer" href="https://twitter.com/joebeernink">Joe Beernink</a>) actually went to a bunch of the nerd dinners in Redmond, WA which were fantastic
@@ -51,7 +40,23 @@ export const AboutUs: React.FC = () => {
                 Basically, TrashMob is the NerdDinner.com site re-purposed to allow people to start TrashMobs of their own to tackle cleanup or <i>whatever</i> needs doing. And we keep coming up with more and more ideas for the site that will
                     allow it to grow organically because of the good that we can do we get together with a common goal!
                 </p>
+            <img src={pile} alt="Pile of trash by bin" />
 
+            <h2>Why not do this on my own?</h2>
+            <p>
+                There's absolutely no reason not to do this on your own. In fact, the inspiration I got for this project came from other doing this on their own.
+                </p>
+            <p>
+                But doing this with a group brings some sizable benefits with it:
+                    <ol>
+                    <li>A TrashMob can tackle really bad areas in a very short time. An individual may take days or weeks, and may become demoralized</li>
+                    <li>A TrashMob can grab the attention of other citizens much more quickly than an individual and can spur even more cleanups</li>
+                    <li>A TrashMob can get resources like hauling of the gathered trash, local merchant support, and municipal support that an individual just can't. If you tell your city works department
+                        that you are cleaning up a park, they'll be nice and say thanks. But if you say you've got <b>30</b> people showing up at 10AM to clean up a notorious area, they will help you to get
+                            the supplies you need, and may even help with the haulaway. Communities want to see active citizens and will do whatever they can to encourage it.</li>
+                </ol>
+            </p>
+            <img src={bigpile} alt="Pile of collected trash" />
         </div>
     );
 }
