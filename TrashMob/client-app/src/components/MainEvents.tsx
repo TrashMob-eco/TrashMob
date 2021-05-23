@@ -133,7 +133,7 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
                                 {/* <td>{mobEvent.country}</td> */}
                                 <td>
                                     <button hidden={!props.isUserLoaded || mobEvent.isAttending === "Yes"} className="action" onClick={() => handleAttend(mobEvent.id)}>Register to Attend Event</button>
-                                    <label hidden={props.isUserLoaded}>Sign-in to view</label>
+                                    <label hidden={props.isUserLoaded}>Sign-in required</label>
                                     <label hidden={!props.isUserLoaded || mobEvent.isAttending !== 'Yes'}>Yes</label>
                                 </td>
                                 <td>
