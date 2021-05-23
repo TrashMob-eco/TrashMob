@@ -1,5 +1,5 @@
 import * as React from 'react'
-// import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import litter from "./assets/litter.jpg";
 import beachlitter from "./assets/beachlitter.jpg";
 import styrofoam from "./assets/brian-yurasits-0G2jF-c704s-unsplash.jpg"
@@ -8,7 +8,7 @@ import man from "./assets/brian-yurasits-euyUAlyZxTo-unsplash.jpg"
 export const MainCarousel: React.FC = () => {
     return (
         <div>
-            <div id="carouselExampleCaptions" className="carousel slide" data-ride="carousel">
+            <div id="carouselExampleCaptions" className="carousel slide carousel-fade" data-ride="carousel">
                 <ol className="carousel-indicators">
                     <li data-target="#carouselExampleCaptions" data-slide-to="0" className="active"></li>
                     <li data-target="#carouselExampleCaptions" data-slide-to="1"></li>
