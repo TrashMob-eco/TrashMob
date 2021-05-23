@@ -95,7 +95,16 @@
     <Content Include="client-app\src\components\assets\cmophoto-net-4ANtcRmvgE4-unsplash.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="client-app\src\components\assets\jared-murray-NSuufgf-BME-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="client-app\src\components\assets\javardh-l0Yt7XMw-yk-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\jeshoots-com--2vD8lIhdnw-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\lance-grandahl-Z2JPWzWGih4-unsplash.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="client-app\src\components\assets\manny-becerra-7FkFJqJ2fmw-unsplash.jpg">
@@ -105,6 +114,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="client-app\src\components\assets\paige-cody-G8VOA-BrnHo-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\tim-mossholder-vdhNO4mGQ14-unsplash.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
