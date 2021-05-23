@@ -98,14 +98,107 @@ $primary: #96ba00;
 }
 
 .navbar-brand {
-  height: 17.150959014892578px;
-  width: 197.75704956054688px;
-  left: 1 75px;
-  top: 48px;
-  border-radius: 0px;
+  display: inline-block;
+  height: auto;
+  left: 0px;
+  width: 240px;
+  margin: 1px 20px 0px -8px;
+  position: relative;
+  flex-wrap: unset;
+  top: auto;
+  position: relative;
+  right: auto;
+  bottom: auto;
+}
+
+nav {
+  display: block;
+  flex-wrap: unset;
+  height: auto;
+  width: auto;
+}
+
+nav > div {
+  display: inline-block;
+  width: 100%;
+}
+
+nav div button.btn-primary {
+  display: block;
+  width: auto;
+  margin: 8px 0px 0px;
+  white-space: nowrap;
+}
+
+nav ul.navbar-nav {
+  display: inline-block;
+  width: 100%;
+}
+
+nav ul li {
+  display: inline-block;
+  padding: 16px 20px 8px 0px;
+}
+
+nav ul li.dropdown {
+  padding: 8px 20px 8px 0px;
+}
+
+nav ul li a {
+  vertical-align: middle;
+  margin: 0px;
+  padding: 0px;
+}
+
+nav ul li .dropdown > a {
+  margin: 0px;
+  padding: 0px 8px;
+  display: block;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+}
+
+nav ul li .dropdown > a:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+footer {
+  margin: 20px 0px;
+}
+
+footer::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 10px;
+  margin: 0px 0px 10px 0px;
+  background: #eee;
+  border-radius: 6px;
+}
+
+footer p a {
+  display: inline-block;
+  padding: 4px 20px 4px 0px;
+  text-decoration: none;
+}
+
+.carousel-inner {
+  display: block;
+  width: 100%;
+  height: 500px;
+}
+
+.carousel-item {
+  z-index: -1;
+  display: block;
+  width: 100%;
+  height: 500px;
+  background-position: center center;
   position: absolute;
-  left: 19.53%;
-  right: 70.17%;
-  top: 0.92%;
-  bottom: 98.76%;
+}
+
+.carousel-caption {
+  display: block;
+  position: absolute;
+  z-index: 2;
 }

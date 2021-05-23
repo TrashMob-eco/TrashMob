@@ -6,14 +6,13 @@ import '../custom.css';
 
 export const Footer: React.FC = () => {
     return (
-        <div >
-            <hr className="rounded" />
+        <footer>
             <p>
-                <Link to="/privacypolicy" style={{ display: 'inline-block', padding: '4px 20px 4px 0px' }}>Privacy Policy</Link>
-                <Link to="/termsofservice" style={{ display: 'inline-block', padding: '4px 20px 4px 0px' }}>Terms Of Service</Link>
-                <a href="https://www.twitter.com/trashmobe" style={{ display: 'inline-block', padding: '4px 20px 4px 0px' }}>Follow us on Twitter</a>
-                <a href="https://www.instagram.com/trashmob" style={{ display: 'inline-block', padding: '4px 20px 4px 0px' }}>Follow us on Instagram</a>
+                <Link to="/privacypolicy">Privacy Policy</Link>
+                <Link to="/termsofservice">Terms of Service</Link>
+                <a href="https://www.twitter.com/trashmobe">Twitter</a>
+                <a href="https://www.instagram.com/trashmob">Instagram</a>
             </p>
-        </div>
+        </footer>
     );
 }

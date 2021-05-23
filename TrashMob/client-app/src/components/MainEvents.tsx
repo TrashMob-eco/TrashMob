@@ -7,6 +7,12 @@ import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
 import UserData from './Models/UserData';
 
+const options = {
+     weekday: "long",
+     year: "numeric",
+     month:"long",
+     day:"numeric"
+};
 class DisplayEvent {
     id: string = "";
     name: string = "";
@@ -17,6 +23,7 @@ class DisplayEvent {
     country: string = "";
     isAttending: string = "";
 }
+
 
 export interface MainEventsDataProps {
     eventList: EventData[];
@@ -108,8 +115,8 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
                             <th>Name</th>
                             <th>Date</th>
                             <th>Event Type</th>
-                            <th>City</th>
-                            <th>Region</th>
+                            {/* <th>City</th> */}
+                            {/* <th>Region</th> */}
                             {/* <th>Country</th> */}
                             <th>Am I Attending?</th>
                             <th />
@@ -119,14 +126,14 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
                         {events.map(mobEvent =>
                             <tr key={mobEvent.id.toString()}>
                                 <td>{mobEvent.name}</td>
-                                <td>{new Date(mobEvent.eventDate).toLocaleString()}</td>
+                                <td>{new Date(mobEvent.eventDate).toLocaleDateString("en-US", {month:"long", day:"numeric", hour: 'numeric', minute: 'numeric' })}</td>
                                 <td>{getEventType(props.eventTypeList, mobEvent.eventTypeId)}</td>
-                                <td>{mobEvent.city}</td>
-                                <td>{mobEvent.region}</td>
+                                {/* <td>{mobEvent.city}</td> */}
+                                {/* <td>{mobEvent.region}</td> */}
                                 {/* <td>{mobEvent.country}</td> */}
                                 <td>
                                     <button hidden={!props.isUserLoaded || mobEvent.isAttending === "Yes"} className="action" onClick={() => handleAttend(mobEvent.id)}>Register to Attend Event</button>
-                                    <label hidden={props.isUserLoaded}>Sign-in</label>
+                                    <label hidden={props.isUserLoaded}>Sign-in to view</label>
                                     <label hidden={!props.isUserLoaded || mobEvent.isAttending !== 'Yes'}>Yes</label>
                                 </td>
                                 <td>
