@@ -3,6 +3,7 @@ import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
 import { msalClient } from '../store/AuthStore';
 import UserData from './Models/UserData';
 import logo from './assets/logo.svg'
+import { Dropdown } from 'react-bootstrap';
 
 interface TopMenuProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -58,20 +59,24 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample09" aria-controls="navbarsExample09" aria-expanded="false" aria-label="Toggle navigation">
                             <span className="navbar-toggler-icon"></span>
                         </button>
-                        <ul className="navbar-nav mr-auto" style={{ display: 'inline-block', width: 100 +'%' }}>
+                        <ul className="navbar-nav mr-auto" style={{ display: 'inline-block', width: 100 + '%' }}>
                             {mainNavItems.map(item => (
                                 <li className="nav-item" key={item.name} style={{ display: 'inline-block', padding: '16px 20px 8px 0px' }}>
-                                    <a className="nav-link" style={{ verticalAlign: 'middle', margin: '0px', padding: '0px'}} href={item.url}>{item.name}</a>
+                                    <a className="nav-link" style={{ verticalAlign: 'middle', margin: '0px', padding: '0px' }} href={item.url}>{item.name}</a>
                                 </li>
                             ))}
                             <li className="nav-item dropdown" style={{ display: 'inline-block', padding: '8px 20px 8px 0px' }}>
-                                <button className="btn btn-link dropdown-toggle" id="dropdown09" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style={{ verticalAlign: 'middle', margin: '0px', padding: '0px', display: 'block'}}>Learn More</button>
-                                <div className="dropdown-menu" aria-labelledby="dropdown09">
-                                    <a className="dropdown-item" href="/partners">Partners</a>
-                                    <a className="dropdown-item" href="/sponsors">Sponsors</a>
-                                    <a className="dropdown-item" href="/contactus">Contact Us</a>
-                                    <a className="dropdown-item" href="/faq">FAQ</a>
-                                </div>
+                                <Dropdown>
+                                    <Dropdown.Toggle className="btn btn-link dropdown-toggle" href="#" role="button" id="dropdown09" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style={{ verticalAlign: 'middle', margin: '0px', padding: '0px', display: 'block' }}>
+                                        Learn More
+                                    </Dropdown.Toggle>
+                                    <Dropdown.Menu className="dropdown-menu" aria-labelledby="dropdown09">
+                                        <Dropdown.Item className="dropdown-item" href="/partners">Partners</Dropdown.Item>
+                                        <Dropdown.Item className="dropdown-item" href="/sponsors">Sponsors</Dropdown.Item>
+                                        <Dropdown.Item className="dropdown-item" href="/contactus">Contact Us</Dropdown.Item>
+                                        <Dropdown.Item className="dropdown-item" href="/faq">FAQ</Dropdown.Item>
+                                    </Dropdown.Menu>
+                                </Dropdown>
                             </li>
                         </ul>
                         <button hidden={!isUserLoaded} className="btn btn-link" onClick={(e) => viewUserProfile(e)}>Welcome{userName ? ", " + userName : ""}!</button>
