@@ -1,5 +1,6 @@
 import * as React from 'react';
-import workgloves from './assets/lance-grandahl-Z2JPWzWGih4-unsplash.jpg';
+import equipment from './assets/equipment.jpg';
+import picker from './assets/picker.jpg';
 import highways from './assets/jared-murray-NSuufgf-BME-unsplash.jpg';
 import joinmob from './assets/paige-cody-G8VOA-BrnHo-unsplash.jpg';
 
@@ -17,7 +18,7 @@ export const GettingStarted: React.FC = () => {
                 <li>A bucket</li>
                 <li>A good attitude</li>
             </ol>
-            <div className='carousel-inner' style={{backgroundImage: 'url(' + workgloves + ')'}} ></div>
+            <div className='carousel-inner' style={{ backgroundImage: 'url(' + equipment + ')'}} ></div>
             {/* <img src={workgloves} alt="Work gloves" /> */}
             <p>
                 Really, that's all you need. A single trip to the hardware store, and you're ready to go. For the gloves, we recommend
@@ -48,6 +49,7 @@ export const GettingStarted: React.FC = () => {
                 <li>We're constantly on the lookout for new and better ones, but so far, the one we've had the most success with is the <Link to="https://www.amazon.com/gp/product/B01G5WNO2M/ref=ppx_yo_dt_b_asin_title_o02_s01?ie=UTF8&psc=1">Unger Grabber Plus Reacher</Link>. It's a little heavier than the
                             cheap ones, but so far so good with it. If you find a better one, please let us know.</li>
             </ol>
+            <img src={picker} alt="Grabber / picker" />
             <h2>What about the Highways?</h2>
             <p>In America, the highways are nortorious for litter. People tend to throw trash out their windows in areas they don't live near, and unsecured loads tend to fly out of trucks at highway speeds. Our highways can look like thousand mile long
                     trash dumps.</p>
