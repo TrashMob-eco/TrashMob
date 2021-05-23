@@ -40,8 +40,8 @@ $primary: #96ba00;
 }
 
 .tm-header {
-  border-bottom: 1px solid #f2f2f2;
-  background: #353a3f;
+  border-bottom: 1px solid #ffff;
+  background-color: #fff;
 
   .tm-secondaryNav-link {
     color: white;
@@ -49,6 +49,10 @@ $primary: #96ba00;
     &:hover {
       color: white;
     }
+  }
+
+  .bg-light {
+    background-color: #fff !important;
   }
 
   .tm-secondaryNav-list {
@@ -186,6 +190,8 @@ footer p a {
   display: block;
   width: 100%;
   height: 500px;
+  background-position: center center;
+  margin-bottom: 2%;
 }
 
 .carousel-item {
@@ -193,7 +199,6 @@ footer p a {
   display: block;
   width: 100%;
   height: 500px;
-  background-position: center center;
   position: absolute;
 }
 
@@ -201,4 +206,30 @@ footer p a {
   display: block;
   position: absolute;
   z-index: 2;
+}
+
+img {
+  max-width: 100%;
+  margin: 2% 0px 1%;
+}
+
+.expandCollapse > div {
+  color: #444;
+  // cursor: pointer;
+  padding: 0px;
+  transition: 0.4s;
+  display: block;
+}
+
+// .expandCollapse > div p {
+//   display: none;
+//   overflow: hidden;
+// }
+
+.expandCollapse > div:active p,
+.expandCollapse > div:focus p,
+.expandCollapse > .active p {
+  display: block;
+  overflow: auto;
+  line-height: 1.5em;
 }
