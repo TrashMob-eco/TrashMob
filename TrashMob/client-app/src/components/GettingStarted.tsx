@@ -2,7 +2,7 @@ import * as React from 'react';
 import equipment from './assets/equipment.jpg';
 import picker from './assets/picker.jpg';
 import highways from './assets/jared-murray-NSuufgf-BME-unsplash.jpg';
-import joinmob from './assets/paige-cody-G8VOA-BrnHo-unsplash.jpg';
+import joinmob from "./assets/brian-yurasits-euyUAlyZxTo-unsplash.jpg"
 
 import { Link } from 'react-router-dom';
 

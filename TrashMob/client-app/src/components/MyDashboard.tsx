@@ -128,9 +128,6 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
                     </>
                 </AzureMapsProvider>
             </div>
-            <div>
-                My Stats
-                </div>
         </div>
     );
 }

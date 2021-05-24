@@ -7,12 +7,6 @@ import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
 import UserData from './Models/UserData';
 
-const options = {
-     weekday: "long",
-     year: "numeric",
-     month:"long",
-     day:"numeric"
-};
 class DisplayEvent {
     id: string = "";
     name: string = "";
@@ -51,7 +45,7 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
                 dispEvent.eventTypeId = mobEvent.eventTypeId;
                 dispEvent.name = mobEvent.name;
                 if (props.isUserEventDataLoaded) {
-                    var isAttending = props.myAttendanceList.findIndex((e) => e.id === mobEvent.id) >= 0;
+                    var isAttending = props.myAttendanceList && (props.myAttendanceList.findIndex((e) => e.id === mobEvent.id) >= 0);
                     dispEvent.isAttending = (isAttending ? 'Yes' : 'No');
                 }
                 else {
