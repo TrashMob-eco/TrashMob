@@ -17,7 +17,7 @@ export const Faq: React.FC = () => {
             <div>
                 <h3>Are you still looking for developers/designers to help with the site?</h3>
                 <p>As you can probably tell, this site is not finished. Besides some fit and finish, we have a lot more ideas than time to implement them. We would love more help! If you know ReactJS or web design
-                        or are good with web content, ASP.NET Core, security, or have any non-technical skills that would be useful to a site / org like ours, please <Link to="./contactus">contact us</Link>!
+                        or are good with web content, ASP.NET Core, security, or have any non-technical skills that would be useful to a site / organization like ours, please <Link to="./contactus">Contact Us</Link>!
                     <img src={helpwanted} alt="Help wanted" />
                 </p>
             </div>
@@ -30,18 +30,14 @@ export const Faq: React.FC = () => {
 
             <div>
                 <h3>What would donations be used for?</h3>
-                <p>The site has hosting costs that currently come out of the pocket of the devs. While these aren't huge, things do add up over time.</p>
+                <p>The site has hosting costs that currently come out of the pocket of the developers. While these costs aren't huge, things do add up over time. With more usage, costs will climb.</p>
             </div>
 
             <div>
-                <h3>Is there a 503c Charity behind this site?</h3>
-                <p>Not yet. But it is in the plans.</p>
-            </div>
-
-            <div>
-                <h3>Is this an open-source project?</h3>
-                <p>Yes. The hope is that this project can be used as a basis for other crowd-based sites which aim to improve life on planet Earth. If you can find a way to use this to help with these types of efforts, in a
-                            way that continues the spirit of TrashMob, we encourage you to fork <a target="_blank" rel="noopener noreferrer" href="https://github.com/joebeernink/FlashTrashMob">the repo</a>.</p>
+                <h3>Is there a Non-Profit Charity behind this site?</h3>
+                <p>Not yet. But it is in the plans. Setting up an international not-for-profit takes a lot of time and resources away from working on the site and working on the litter problem itself. We'll need more volunteers involved in order to make this happen. If
+                    you happen to have expertise in setting up non-profits and want to help in that area, please let us know.
+                   </p>
             </div>
 
             <div>
@@ -51,7 +47,6 @@ export const Faq: React.FC = () => {
                     <img src={frustrated} alt="Frustrated" />
                 </p>
             </div>
-
 
             <div>
                 <h3>Why do I have to be a registered user to Create an Event?</h3>
