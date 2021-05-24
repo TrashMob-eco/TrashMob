@@ -13,24 +13,25 @@ export const MainCarousel: React.FC = () => {
             <Carousel.Item className="carousel-inner" style={{ backgroundImage: 'url(' + woman + ')' }}>
                 <Carousel.Caption className="carousel-caption d-none d-md-block">
                     <h5>It's easy to get started</h5>
-                    <p>Get out and start with you neighborhood and expand from there. Every bit matters!</p>
+                    <p>Get out and start with your neighborhood and expand from there. Every bit matters!</p>
                 </Carousel.Caption>
             </Carousel.Item>
             <Carousel.Item className="carousel-inner" style={{backgroundImage: 'url(' + styrofoam + ')'}}  >
                 <Carousel.Caption className="carousel-caption d-none d-md-block">
-                    <h5>Using the power of the flash mob to clean up the planet</h5>
+                    <h5>TrashMob.eco</h5>
+                    <p>Using the power of the flash mob to clean up the planet</p>
                 </Carousel.Caption>
             </Carousel.Item>
             <Carousel.Item className="carousel-inner" style={{backgroundImage: 'url(' + litter + ')'}} >
                 <Carousel.Caption className="carousel-caption d-none d-md-block">
-                    <h5>An hour at a local park</h5>
+                    <h5>One hour at a local park</h5>
                     <p>It's amazing how much is out there, even in "clean" parks. Get started today!</p>
                 </Carousel.Caption>
             </Carousel.Item>
             <Carousel.Item className="carousel-inner" style={{backgroundImage: 'url(' + beachlitter + ')'}} >
                 <Carousel.Caption className="carousel-caption d-none d-md-block">
-                    <h5>Beach Litter</h5>
-                    <p>Stop the litter before it hits the oceans!</p>
+                    <h5>Protecting the oceans from your neighborhood</h5>
+                    <p>Every piece of litter picked up before it hits the watershed solves a problem before it starts</p>
                 </Carousel.Caption>
             </Carousel.Item>
         </Carousel>
