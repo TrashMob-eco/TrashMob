@@ -292,7 +292,10 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                         <div>
                             <button className="action" onClick={(e) => handleDelete(e)}>Delete Account</button>
                         </div>
-                        < div className="form-group row" >
+                        <div>
+                            <h2>Enter a User Name below to help other recognize you!</h2>
+                        </div>
+                        <div className="form-group row">
                             <OverlayTrigger placement="top" overlay={renderUserNameToolTip}>
                                 <label className=" control-label col-xs-2" htmlFor="UserName">User Name:</label>
                             </OverlayTrigger>
