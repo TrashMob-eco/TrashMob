@@ -3,7 +3,7 @@ import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
 import { msalClient } from '../store/AuthStore';
 import UserData from './Models/UserData';
 import logo from './assets/logo.svg'
-import { Dropdown } from 'react-bootstrap';
+import { Button, Dropdown } from 'react-bootstrap';
 
 interface TopMenuProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -56,9 +56,9 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
 
                     <div className="collapse navbar-collapse" id="navbarsExample09">
                         <a className="navbar-brand" href="/"><img src={logo} alt="TrashMob Logo" /></a>
-                        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample09" aria-controls="navbarsExample09" aria-expanded="false" aria-label="Toggle navigation">
+                        <Button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample09" aria-controls="navbarsExample09" aria-expanded="false" aria-label="Toggle navigation">
                             <span className="navbar-toggler-icon"></span>
-                        </button>
+                        </Button>
                         <ul className="navbar-nav mr-auto">
                             {mainNavItems.map(item => (
                                 <li className="nav-item" key={item.name}>
@@ -79,9 +79,9 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 </Dropdown>
                             </li>
                         </ul>
-                        <button hidden={!isUserLoaded} className="btn btn-link" onClick={(e) => viewUserProfile(e)}>Welcome{userName ? ", " + userName : ""}!</button>
-                        <button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)}>Sign Up/Log In</button>
-                        <button hidden={!isUserLoaded} className="btn btn-outline-primary" onClick={(e) => signOut(e)}>Log Out</button>
+                        <Button hidden={!isUserLoaded} className="btn btn-link" onClick={(e) => viewUserProfile(e)}>Welcome{userName ? ", " + userName : ""}!</Button>
+                        <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)}>Sign Up/Log In</Button>
+                        <Button hidden={!isUserLoaded} className="btn btn-outline-primary" onClick={(e) => signOut(e)}>Log Out</Button>
                     </div>
                 </nav>
             </div>

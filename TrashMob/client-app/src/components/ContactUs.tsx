@@ -6,6 +6,7 @@ import { getDefaultHeaders } from '../store/AuthStore';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../store/ToolTips";
+import { Button } from 'react-bootstrap';
 
 interface ContactUsProps extends RouteComponentProps<any> {
 }
@@ -144,8 +145,8 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
                     </div>
                 </div >
                 <div className="form-group">
-                    <button disabled={emailErrors !== "" || messageErrors !== ""} type="submit" className="action btn-default">Save</button>
-                    <button className="action" onClick={(e) => handleCancel(e)}>Cancel</button>
+                    <Button disabled={emailErrors !== "" || messageErrors !== ""} type="submit" className="action btn-default">Save</Button>
+                    <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
                 </div >
             </form >
         </div>
