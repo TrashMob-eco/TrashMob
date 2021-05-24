@@ -30,7 +30,7 @@ export const MainCarousel: React.FC = () => {
             </Carousel.Item>
             <Carousel.Item className="carousel-inner" style={{backgroundImage: 'url(' + beachlitter + ')'}} >
                 <Carousel.Caption className="carousel-caption d-none d-md-block">
-                    <h5>Protecting the oceans from your neighborhood</h5>
+                    <h5>Protecting the oceans starts in your own neighborhood</h5>
                     <p>Every piece of litter picked up before it hits the watershed solves a problem before it starts</p>
                 </Carousel.Caption>
             </Carousel.Item>
