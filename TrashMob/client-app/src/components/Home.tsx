@@ -11,7 +11,7 @@ import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapController from './MapController';
 import UserData from './Models/UserData';
-import { Modal } from 'reactstrap';
+import { Button, Modal } from 'reactstrap';
 import { CurrentTermsOfServiceVersion } from './TermsOfService';
 import { CurrentPrivacyPolicyVersion } from './PrivacyPolicy';
 
@@ -186,13 +186,13 @@ const Home: React.FC<HomeProps> = (props) => {
                         </span>
 
                         <div>
-                            <button disabled={!agree} className="action" onClick={() => {
+                            <Button disabled={!agree} className="action" onClick={() => {
                                 updateAgreements(CurrentTermsOfServiceVersion.versionId, CurrentPrivacyPolicyVersion.versionId);
                                 togglemodal();
                             }
                             }>
                                 I Agree
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </Modal>

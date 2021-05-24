@@ -16,6 +16,7 @@ import UserData from './Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../store/ToolTips";
+import { Button } from 'react-bootstrap';
 
 interface CreateEventProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -379,8 +380,8 @@ export const CreateEvent: React.FC<CreateEventProps> = (props) => {
                         </div>
                     </div >
                     <div className="form-group">
-                        <button type="submit" className="btn btn-default">Save</button>
-                        <button className="btn" onClick={(e) => handleCancel(e)}>Cancel</button>
+                        <Button type="submit" className="btn btn-default">Save</Button>
+                        <Button className="btn" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
                     </div >
                     <div>
                         <AzureMapsProvider>

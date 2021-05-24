@@ -6,7 +6,7 @@ import * as ToolTips from "../store/ToolTips";
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import { Modal } from 'reactstrap';
+import { Button, Modal } from 'reactstrap';
 
 interface UserProfileProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -270,19 +270,19 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             </span>
 
                             <div>
-                                <button className="action" onClick={() => {
+                                <Button className="action" onClick={() => {
                                     togglemodal();
                                     deleteAccount();
                                 }
                                 }>
                                     Yes, Delete My Account
-                            </button>
-                                <button className="action" onClick={() => {
+                            </Button>
+                                <Button className="action" onClick={() => {
                                     togglemodal();
                                 }
                                 }>
                                     Cancel
-                            </button>
+                            </Button>
                             </div>
                         </div>
                     </Modal>
@@ -290,7 +290,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 <div className="container-fluid" >
                     <form onSubmit={handleSave} >
                         <div>
-                            <button className="action" onClick={(e) => handleDelete(e)}>Delete Account</button>
+                            <Button className="action" onClick={(e) => handleDelete(e)}>Delete Account</Button>
                         </div>
                         <div>
                             <h2>Enter a User Name below to help other recognize you!</h2>
@@ -406,8 +406,8 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             </div>
                         </div >
                         <div className="form-group">
-                            <button disabled={userNameErrors !== ""} type="submit" className="action btn-default">Save</button>
-                            <button className="action" onClick={(e) => handleCancel(e)}>Cancel</button>
+                            <Button disabled={userNameErrors !== ""} type="submit" className="action btn-default">Save</Button>
+                            <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
                         </div >
                     </form >
                 </div>

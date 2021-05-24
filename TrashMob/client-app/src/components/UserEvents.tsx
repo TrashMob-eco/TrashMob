@@ -6,6 +6,7 @@ import EventTypeData from './Models/EventTypeData';
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
 import UserData from './Models/UserData';
+import { Button } from 'react-bootstrap';
 
 interface UserEventsPropsType extends RouteComponentProps {
     eventList: EventData[];
@@ -95,10 +96,10 @@ export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
                                     <td>{mobEvent.country}</td>
                                     <td>{mobEvent.postalCode}</td>
                                     <td>
-                                        <button hidden={!isOwner} className="action" onClick={() => props.history.push('/editevent/' + mobEvent.id)}>Edit Event</button>
-                                        <button hidden={!isOwner} className="action" onClick={() => handleDelete(mobEvent.id, mobEvent.name)}>Delete Event</button>
-                                        <button hidden={isOwner} className="action" onClick={() => props.history.push('/eventdetails/' + mobEvent.id)}>View Details</button>
-                                        <button hidden={isOwner} className="action" onClick={() => handleRemove(mobEvent.id, mobEvent.name)}>Remove Me from Event</button>
+                                        <Button hidden={!isOwner} className="action" onClick={() => props.history.push('/editevent/' + mobEvent.id)}>Edit Event</Button>
+                                        <Button hidden={!isOwner} className="action" onClick={() => handleDelete(mobEvent.id, mobEvent.name)}>Delete Event</Button>
+                                        <Button hidden={isOwner} className="action" onClick={() => props.history.push('/eventdetails/' + mobEvent.id)}>View Details</Button>
+                                        <Button hidden={isOwner} className="action" onClick={() => handleRemove(mobEvent.id, mobEvent.name)}>Remove Me from Event</Button>
                                     </td>
                                 </tr>)
                         }

@@ -6,6 +6,7 @@ import { getEventType } from '../store/eventTypeHelper';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
 import UserData from './Models/UserData';
+import { Button } from 'react-bootstrap';
 
 class DisplayEvent {
     id: string = "";
@@ -126,12 +127,12 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
                                 {/* <td>{mobEvent.region}</td> */}
                                 {/* <td>{mobEvent.country}</td> */}
                                 <td>
-                                    <button hidden={!props.isUserLoaded || mobEvent.isAttending === "Yes"} className="action" onClick={() => handleAttend(mobEvent.id)}>Register to Attend Event</button>
+                                    <Button hidden={!props.isUserLoaded || mobEvent.isAttending === "Yes"} className="action" onClick={() => handleAttend(mobEvent.id)}>Register to Attend Event</Button>
                                     <label hidden={props.isUserLoaded}>Sign-in required</label>
                                     <label hidden={!props.isUserLoaded || mobEvent.isAttending !== 'Yes'}>Yes</label>
                                 </td>
                                 <td>
-                                    <button className="action" onClick={() => history.push('/eventdetails/' + mobEvent.id)}>View Details</button>
+                                    <Button className="action" onClick={() => history.push('/eventdetails/' + mobEvent.id)}>View Details</Button>
                                 </td>
                             </tr>
                         )}

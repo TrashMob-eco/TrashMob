@@ -15,6 +15,7 @@ import UserData from './Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../store/ToolTips";
+import { Button } from 'react-bootstrap';
 
 export interface MatchParams {
     eventId: string;
@@ -416,8 +417,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         </div>
                     </div >
                     <div className="form-group">
-                        <button type="submit" className="action btn-default">Save</button>
-                        <button className="action" onClick={(e) => handleCancel(e)}>Cancel</button>
+                        <Button type="submit" className="action btn-default">Save</Button>
+                        <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
                     </div >
                     <div>
                         <AzureMapsProvider>
