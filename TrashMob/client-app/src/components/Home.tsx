@@ -18,6 +18,7 @@ import { CurrentPrivacyPolicyVersion } from './PrivacyPolicy';
 export interface HomeProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
     currentUser: UserData;
+    onUserUpdated: any;
 }
 
 const Home: React.FC<HomeProps> = (props) => {
@@ -164,6 +165,7 @@ const Home: React.FC<HomeProps> = (props) => {
                             .then(response => response.json() as Promise<UserData>)
                             .then(data => {
                                 setCurrentUser(data);
+                                props.onUserUpdated();
                                 if (!currentUser.userName) {
                                     props.history.push("/userprofile");
                                 }
