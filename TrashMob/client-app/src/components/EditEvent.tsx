@@ -54,7 +54,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
 
-        fetch('api/eventtypes', {
+        fetch('/api/eventtypes', {
             method: 'GET',
             headers: headers
         })
@@ -65,7 +65,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
         // This will set state for Edit Event  
         if (eventId != null) {
-            fetch('api/Events/' + eventId, {
+            fetch('/api/Events/' + eventId, {
                 method: 'GET',
                 headers: headers
             })
@@ -251,7 +251,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             const headers = getDefaultHeaders('PUT');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('api/Events', {
+            fetch('/api/Events', {
                 method: 'PUT',
                 body: data,
                 headers: headers

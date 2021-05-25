@@ -99,7 +99,7 @@ export const App: React.FC = () => {
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('api/Users/' + currentUser.id, {
+            fetch('/api/Users/' + currentUser.id, {
                 method: 'GET',
                 headers: headers,
             })
@@ -133,7 +133,7 @@ export const App: React.FC = () => {
                 user.email = result.account?.idTokenClaims["emails"][0] ?? "";
             }
 
-            fetch('api/Users', {
+            fetch('/api/Users', {
                 method: 'POST',
                 headers: headers,
                 body: JSON.stringify(user)

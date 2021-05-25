@@ -15,7 +15,7 @@ export function getEventType(eventTypeList: EventTypeData[], eventTypeId: any): 
 function getEventTypes() : EventTypeData[] {
     const headers = getDefaultHeaders('GET');
 
-    fetch('api/eventtypes', {
+    fetch('/api/eventtypes', {
         method: 'GET',
         headers: headers
     })

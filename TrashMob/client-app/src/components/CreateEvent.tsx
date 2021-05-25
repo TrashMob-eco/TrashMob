@@ -381,7 +381,7 @@ export const CreateEvent: React.FC<CreateEventProps> = (props) => {
                     </div >
                     <div className="form-group">
                         <Button type="submit" className="btn btn-default">Save</Button>
-                        <Button className="btn" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
+                        <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
                     </div >
                     <div>
                         <AzureMapsProvider>

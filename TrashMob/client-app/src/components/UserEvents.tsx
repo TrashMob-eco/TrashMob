@@ -35,7 +35,7 @@ export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('api/EventAttendees/' + id + '/' + props.currentUser.id, {
+                fetch('/api/EventAttendees/' + id + '/' + props.currentUser.id, {
                     method: 'delete',
                     headers: headers
                 }).then(() => { props.onEventListChanged(); })

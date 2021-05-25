@@ -37,7 +37,7 @@ const Home: React.FC<HomeProps> = (props) => {
 
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
-        fetch('api/eventtypes', {
+        fetch('/api/eventtypes', {
             method: 'GET',
             headers: headers
         })
@@ -46,7 +46,7 @@ const Home: React.FC<HomeProps> = (props) => {
                 setEventTypeList(data);
             });
 
-        fetch('api/Events/active', {
+        fetch('/api/Events/active', {
             method: 'GET',
             headers: headers
         })
@@ -93,7 +93,7 @@ const Home: React.FC<HomeProps> = (props) => {
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('api/events/eventsuserisattending/' + props.currentUser.id, {
+                fetch('/api/events/eventsuserisattending/' + props.currentUser.id, {
                     method: 'GET',
                     headers: headers
                 })
@@ -146,7 +146,7 @@ const Home: React.FC<HomeProps> = (props) => {
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('api/Users/' + currentUser.id, {
+            fetch('/api/Users/' + currentUser.id, {
                 method: 'GET',
                 headers: headers
             })
@@ -157,7 +157,7 @@ const Home: React.FC<HomeProps> = (props) => {
                         user.dateAgreedToTermsOfService = new Date();
                         user.termsOfServiceVersion = tosVersion;
                         user.privacyPolicyVersion = privacyVersion;
-                        fetch('api/Users/', {
+                        fetch('/api/Users/', {
                             method: 'PUT',
                             headers: headers,
                             body: JSON.stringify(user)
