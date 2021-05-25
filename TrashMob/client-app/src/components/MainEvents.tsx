@@ -79,7 +79,7 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
             // POST request for Add EventAttendee.  
-            fetch('api/EventAttendees', {
+            fetch('/api/EventAttendees', {
                 method: 'POST',
                 body: data,
                 headers: headers,

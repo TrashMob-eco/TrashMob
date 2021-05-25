@@ -43,7 +43,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
 
-        fetch('api/users/' + userId, {
+        fetch('/api/users/' + userId, {
             method: 'GET',
             headers: headers,
         })
@@ -107,7 +107,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
             const headers = getDefaultHeaders('DELETE');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('api/users/' + userId, {
+            fetch('/api/users/' + userId, {
                 method: 'DELETE',
                 headers: headers
             }).then(() => {
@@ -164,7 +164,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
             const headers = getDefaultHeaders('PUT');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('api/users', {
+            fetch('/api/users', {
                 method: 'PUT',
                 headers: headers,
                 body: usrdata,
@@ -270,7 +270,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             </span>
 
                             <div>
-                                <Button className="action" onClick={() => {
+                                <Button variant="danger" onClick={() => {
                                     togglemodal();
                                     deleteAccount();
                                 }
@@ -290,7 +290,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 <div className="container-fluid" >
                     <form onSubmit={handleSave} >
                         <div>
-                            <Button className="action" onClick={(e) => handleDelete(e)}>Delete Account</Button>
+                            <Button variant="danger" onClick={(e) => handleDelete(e)}>Delete Account</Button>
                         </div>
                         <div>
                             <h2>Enter a User Name below to help other recognize you!</h2>
@@ -361,6 +361,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                 <span style={{ color: "red" }}>{regionErrors}</span>
                             </div>
                         </div >
+                        <hr />
                         <div className="form-group row">
                             <OverlayTrigger placement="top" overlay={renderDateAgreedToPrivacyPolicyToolTip}>
                                 <label className="control-label col-xs-2" htmlFor="dateAgreedToPrivacyPolicy">Date Agreed To Privacy Policy:</label>

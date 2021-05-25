@@ -79,9 +79,9 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 </Dropdown>
                             </li>
                         </ul>
-                        <Button hidden={!isUserLoaded} className="btn btn-link" onClick={(e) => viewUserProfile(e)}>Welcome{userName ? ", " + userName : ""}!</Button>
+                        <Button hidden={!isUserLoaded} className="btn btn-link" style={{ color: "#ffffff" }} onClick={(e) => viewUserProfile(e)}>Welcome{userName ? ", " + userName : ""}!</Button>
                         <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)}>Sign Up/Log In</Button>
-                        <Button hidden={!isUserLoaded} className="btn btn-outline-primary" onClick={(e) => signOut(e)}>Log Out</Button>
+                        <Button hidden={!isUserLoaded} className="btn btn-outline-primary" style={{ color:"#ffffff" }} onClick={(e) => signOut(e)}>Log Out</Button>
                     </div>
                 </nav>
             </div>

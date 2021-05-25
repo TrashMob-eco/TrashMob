@@ -41,7 +41,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
 
             const headers = getDefaultHeaders('POST');
 
-            fetch('api/ContactRequest', {
+            fetch('/api/ContactRequest', {
                 method: 'POST',
                 body: data,
                 headers: headers,

@@ -46,7 +46,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
 
         const headers = getDefaultHeaders('GET');
 
-        fetch('api/eventtypes', {
+        fetch('/api/eventtypes', {
             method: 'GET',
             headers: headers,
         })
@@ -56,15 +56,16 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
             });
 
         if (eventId != null) {
-            fetch('api/eventattendees/' + eventId, {
+            fetch('/api/eventattendees/' + eventId, {
                 method: 'GET',
+                headers: headers,
             })
                 .then(response => response.json() as Promise<UserData[]>)
                 .then(data => {
                     setUserList(data);
                 });
 
-            fetch('api/Events/' + eventId, {
+            fetch('/api/Events/' + eventId, {
                 method: 'GET',
                 headers: headers
             })
