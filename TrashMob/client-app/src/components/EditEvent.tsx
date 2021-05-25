@@ -421,6 +421,9 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
                     </div >
                     <div>
+                        <label>Click on the map to set the location for your event. The location fields above will be automatically populated.</label>
+                    </div>
+                    <div>
                         <AzureMapsProvider>
                             <>
                                 <MapController center={center} multipleEvents={[]} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
