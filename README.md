@@ -21,27 +21,20 @@ https://trashmobdev.azurewebsites.net
 # FAQ 
 ## What is the current state of this project?
 
-This project is currently under development, with the plan to launch in the spring of 2021. There's lots of work to get the site to an MVP state. I have a plan I have been working on that I will share if people are interested
+As of 5/26/2021, we are now in Beta launch. We'll hold at Beta for about a month. Beta only means that if things really go wrong, we may have to delete data manually and depending on load, site availability is not guaranteed.
 
 ## Are you looking for contributors?
 
 ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want to get involved. All kinds of skills needed, from logo design to reactjs, to website design, to aspnet core, to deployment / github skills.
-
-## Ship Blockers
-
-Here's what needs to be done before we can launch
-1. UI
-  1. Styling
-    1. Make forms and grids presentable
-    1. Add Required field indicators
-    1. Make field names more prominent
-    1. Fix format of Terms of Service accept popup
-1. Brand sign in pages (need to redo logo and colors)
-1. Fix image on github page
-1. Change github name? i.e. FlashTrashMob to TrashMob
-  
+ 
 ## High Priority Post Launch Items
 These items did not make the cut for launch but need to be done
+  1. UI
+    1. Styling
+      1. Add Required field indicators    
+  1. Brand sign in pages (need to redo logo and colors)
+  1. Fix image on github page
+  1. Change github name? i.e. FlashTrashMob to TrashMob
   1. Ensure user can't multi-click buttons
   1. Allow map to respond to changes in country, region, city or postal code
   1. Check response codes from APIs are correct
@@ -51,14 +44,6 @@ These items did not make the cut for launch but need to be done
   1. Set up rotation of Azure Maps Keys every 24 hours
   1. Redeploy test environment with standardized names  
   1. Ensure AD is set up correctly (is it needed in my Sandbox sub?)
-
-## When this project is "done" will it be open sourced?
-
-Yes. Since this idea came from NerdDinner.com (which was open-source), this project will continue to be available for others to learn from, contribute to, and fork, under the same license. I'm hopeful that others can use this project as an example of how to organize large numbers of people for good purposes, and by adding event types to it (or spawning new types of sites from a fork), that we can fix global problems by starting locally.
-
-## Will this site be turned into a non-profit. 
-
-Quite possibly. We'll see how fast the site gains momentum
 
 # Development Notes
 
