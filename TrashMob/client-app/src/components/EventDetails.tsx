@@ -9,6 +9,7 @@ import { data } from 'azure-maps-control';
 import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapController from './MapController';
+import { Col, Form } from 'react-bootstrap';
 
 export interface MatchParams {
     eventId: string;
@@ -98,7 +99,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
     React.useEffect(() => {
         setCurrentUser(props.currentUser);
         setIsUserLoaded(props.isUserLoaded);
-    },[props.currentUser, props.isUserLoaded])
+    }, [props.currentUser, props.isUserLoaded])
 
     function handleLocationChange(point: data.Position) {
         // do nothing
@@ -119,7 +120,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     <tbody>
                         {users.map(user =>
                             <tr key={user.id.toString()}>
-                                <td>{user.userName ? user.userName : user.sourceSystemUserName }</td>
+                                <td>{user.userName ? user.userName : user.sourceSystemUserName}</td>
                                 <td>{user.city}</td>
                                 <td>{user.country}</td>
                                 <td>{new Date(user.memberSince).toLocaleDateString()}</td>
@@ -135,67 +136,90 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
 
         return (
             <div>
-                <div className="form-group row" >
-                    <input type="hidden" name="Id" value={eventId.toString()} />
-                </div>
-                < div className="form-group row" >
-                    <label className="control-label col-xs-2" htmlFor="Name">Name:</label>
-                    <div className="col-xs-2">
-                        <label className="form-control">{eventName}</label>
-                    </div>
-                    <label className="control-label col-xs-2" htmlFor="EventDate">EventDate:</label>
-                    <div className="col-xs-2">
-                        <label className="form-control">{eventDate.toLocaleString()}</label>
-                    </div>
-                    <label className="control-label col-xs-2" htmlFor="EventType">Event Type:</label>
-                    <div className="col-xs-2">
-                        <label className="form-control">{getEventType(eventTypeList, eventTypeId)}</label>
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-xs-2" htmlFor="Description">Description:</label>
-                    <div className="col-md-10">
-                        <textarea className="form-control" name="description" defaultValue={description} rows={5} cols={5} readOnly />
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-xs-2" htmlFor="StreetAddress">Street Address:</label>
-                    <div className="col-xs-2">
-                        <label className="form-control">{streetAddress}</label>
-                    </div>
-                    <label className="control-label col-xs-2" htmlFor="City">City:</label>
-                    <div className="col-xs-2">
-                        <label className="form-control">{city}</label>
-                    </div>
-                    <label className="control-label col-xs-2" htmlFor="postalCode">Postal Code:</label>
-                    <div className="col-xs-2">
-                        <label className="form-control">{postalCode}</label>
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-xs-2" htmlFor="stateProvince">Region:</label>
-                    <div className="col-xs-2">
-                        <label className="form-control">{region}</label>
-                    </div>
-                    <label className="control-label col-xs-2" htmlFor="Country">Country:</label>
-                    <div className="col-xs-2">
-                        <label className="form-control">{country}</label>
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-xs-2" htmlFor="Latitude">Latitude:</label>
-                    <div className="col-xs-2">
-                        <label className="form-control">{latitude}</label>
-                    </div>
-                    <label className="control-label col-xs-2" htmlFor="Longitude">Longitude:</label>
-                    <div className="col-xs-2">
-                        <label className="form-control">{longitude}</label>
-                    </div>
-                    <label className="control-label col-xs-2" htmlFor="MaxNumberOfParticipants">Max Number Of Participants:</label>
-                    <div className="col-xs-2">
-                        <label className="form-control">{maxNumberOfParticipants}</label>
-                    </div>
-                </div >
+                <Form>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group>
+                                <Form.Label htmlFor="Name">Name:</Form.Label>
+                                <Form.Control disabled type="text" defaultValue={eventName} />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <Form.Label htmlFor="EventDate">EventDate:</Form.Label>
+                                <Form.Control disabled type="text" defaultValue={eventDate.toLocaleString()} />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <Form.Label htmlFor="EventType">Event Type:</Form.Label>
+                                <Form.Control disabled type="text" defaultValue={getEventType(eventTypeList, eventTypeId)} />
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group>
+                                <Form.Label htmlFor="Description">Description:</Form.Label>
+                                <Form.Control disabled as="textarea" defaultValue={description} rows={5} cols={5} />
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group>
+                                <Form.Label htmlFor="StreetAddress">Street Address:</Form.Label>
+                                <Form.Control disabled type="text" defaultValue={streetAddress} />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <Form.Label htmlFor="City">City:</Form.Label>
+                                <Form.Control disabled type="text" defaultValue={city} />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <Form.Label htmlFor="postalCode">Postal Code:</Form.Label>
+                                <Form.Control disabled type="text" defaultValue={postalCode} />
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group>
+                                <Form.Label htmlFor="stateProvince">Region:</Form.Label>
+                                <Form.Control disabled type="text" defaultValue={region} />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <Form.Label htmlFor="Country">Country:</Form.Label>
+                                <Form.Control disabled type="text" defaultValue={country} />
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group>
+                                <Form.Label htmlFor="Latitude">Latitude:</Form.Label>
+                                <Form.Control disabled type="text" defaultValue={latitude} />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <Form.Label htmlFor="Longitude">Longitude:</Form.Label>
+                                <Form.Control disabled type="text" defaultValue={longitude} />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <Form.Label htmlFor="MaxNumberOfParticipants">Max Number Of Participants:</Form.Label>
+                                <Form.Control disabled type="text" defaultValue={maxNumberOfParticipants} />
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                </Form >
                 <div>
                     <h2>Attendees</h2>
                     {renderUsersTable(userList)}
@@ -207,7 +231,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                         </>
                     </AzureMapsProvider>
                 </div>
-            </div >
+            </div>
         )
     }
 
@@ -216,6 +240,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
         : <p><em>Loading...</em></p>;
 
     return <div>
+        <h3>Event Details</h3>
         <hr />
         {contents}
     </div>;

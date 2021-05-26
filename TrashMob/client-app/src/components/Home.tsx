@@ -14,6 +14,7 @@ import UserData from './Models/UserData';
 import { Button, Modal } from 'reactstrap';
 import { CurrentTermsOfServiceVersion } from './TermsOfService';
 import { CurrentPrivacyPolicyVersion } from './PrivacyPolicy';
+import { Form } from 'react-bootstrap';
 
 export interface HomeProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -180,20 +181,20 @@ const Home: React.FC<HomeProps> = (props) => {
             <div>
                 <Modal isOpen={isOpen} onrequestclose={togglemodal} contentlabel="Accept Terms of Use" fade={true} style={{ width: "300px", display: "block" }}>
                     <div className="container">
-                        <span>
-                            <input type="checkbox" id="agree" onChange={checkboxhandler} />
-                            <label htmlFor="agree"> I agree to the TrashMob.eco <Link to="./termsofservice">Terms of Use</Link> and the TrashMob.eco <Link to="./privacypolicy">Privacy Policy</Link>.</label>
-                        </span>
-
-                        <div>
-                            <Button disabled={!agree} className="action" onClick={() => {
-                                updateAgreements(CurrentTermsOfServiceVersion.versionId, CurrentPrivacyPolicyVersion.versionId);
-                                togglemodal();
-                            }
-                            }>
-                                I Agree
-                            </Button>
-                        </div>
+                        <Form>
+                            <Form.Row>
+                                    <Form.Check id="agree" onChange={checkboxhandler} label='I agree to the TrashMob.eco <Link to="./termsofservice">Terms of Use</Link> and the TrashMob.eco <Link to="./privacypolicy">Privacy Policy</Link>.' />
+                            </Form.Row>
+                            <Form.Row>
+                                    <Button disabled={!agree} className="action" onClick={() => {
+                                        updateAgreements(CurrentTermsOfServiceVersion.versionId, CurrentPrivacyPolicyVersion.versionId);
+                                        togglemodal();
+                                    }
+                                    }>
+                                        I Agree
+                                    </Button>
+                            </Form.Row>
+                        </Form>
                     </div>
                 </Modal>
             </div>
