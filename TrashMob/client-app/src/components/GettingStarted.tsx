@@ -13,16 +13,14 @@ export const GettingStarted: React.FC = () => {
 
             <h2>The Basics</h2>
             <p>There are really only three things you absolutely need to have to get started working with a TrashMob:</p>
+            <img className='right' src={equipment} alt="Work gloves" />
             <ol>
                 <li>Work gloves</li>
                 <li>A bucket</li>
                 <li>A good attitude</li>
             </ol>
-            <div className='carousel-inner' style={{ backgroundImage: 'url(' + equipment + ')'}} ></div>
-            {/* <img src={workgloves} alt="Work gloves" /> */}
             <p>
-                Really, that's all you need. A single trip to the hardware store, and you're ready to go. For the gloves, we recommend
-                    <Link to="https://www.amazon.com/3100L-DZ-Gloves-Textured-Construction-12-Pairs/dp/B001YJHEDW/ref=sr_1_9?dchild=1&keywords=work+gloves&qid=1617415033&sr=8-9">Rubber Latex Double coated work gloves</Link>. There's a good chance you will find glass or something sharp out there, and these gloves will offer some protection from that. It's also likely that either the outside of the trash will be wet, or there will be something inside
+                Really, that's all you need. A single trip to the hardware store, and you're ready to go. For the gloves, we recommend <Link to="https://www.amazon.com/3100L-DZ-Gloves-Textured-Construction-12-Pairs/dp/B001YJHEDW/ref=sr_1_9?dchild=1&keywords=work+gloves&qid=1617415033&sr=8-9">Rubber Latex Double coated work gloves</Link>. There's a good chance you will find glass or something sharp out there, and these gloves will offer some protection from that. It's also likely that either the outside of the trash will be wet, or there will be something inside
                     the trash that is wet or icky. Get the gloves.
                 </p>
             <p>
