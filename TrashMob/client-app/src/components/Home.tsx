@@ -235,9 +235,9 @@ const Home: React.FC<HomeProps> = (props) => {
                 </Modal>
             </div>
             <div>
-                <h3>Welcome to the TrashMob.eco BETA!</h3>
-                <p>We're still working out the kinks, but we'd love to get your feedback! Please send us any comments you may have via our Contact Us page, or reach out to us on <a href="https://www.twitter.com/trashmobe">Twitter</a>. If you're a developer
-                    or designer and interested in improving TrashMob, we'd appreciate the help!
+                <h6>Welcome to the TrashMob.eco BETA!</h6>
+                <p><small>We're still working out the kinks, but we'd love to get your feedback! Please send us any comments you may have via our Contact Us page, or reach out to us on <a href="https://www.twitter.com/trashmobe">Twitter</a>. If you're a developer
+                    or designer and interested in improving TrashMob, we'd appreciate the help!</small>
                  </p>
             </div>
             <div>
