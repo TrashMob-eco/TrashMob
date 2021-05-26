@@ -11,13 +11,15 @@ import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapController from './MapController';
 import UserData from './Models/UserData';
-import { Modal } from 'reactstrap';
+import { Button, Modal } from 'reactstrap';
 import { CurrentTermsOfServiceVersion } from './TermsOfService';
 import { CurrentPrivacyPolicyVersion } from './PrivacyPolicy';
+import { Form } from 'react-bootstrap';
 
 export interface HomeProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
     currentUser: UserData;
+    onUserUpdated: any;
 }
 
 const Home: React.FC<HomeProps> = (props) => {
@@ -36,7 +38,7 @@ const Home: React.FC<HomeProps> = (props) => {
 
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
-        fetch('api/eventtypes', {
+        fetch('/api/eventtypes', {
             method: 'GET',
             headers: headers
         })
@@ -45,7 +47,7 @@ const Home: React.FC<HomeProps> = (props) => {
                 setEventTypeList(data);
             });
 
-        fetch('api/Events/active', {
+        fetch('/api/Events/active', {
             method: 'GET',
             headers: headers
         })
@@ -92,7 +94,7 @@ const Home: React.FC<HomeProps> = (props) => {
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('api/events/eventsuserisattending/' + props.currentUser.id, {
+                fetch('/api/events/eventsuserisattending/' + props.currentUser.id, {
                     method: 'GET',
                     headers: headers
                 })
@@ -122,6 +124,39 @@ const Home: React.FC<HomeProps> = (props) => {
         // do nothing
     }
 
+    function handleAttendanceChanged() {
+        setIsUserEventDataLoaded(false);
+
+        if (!props.isUserLoaded || !props.currentUser) {
+            return;
+        }
+
+        // If the user is logged in, get the events they are attending
+        var accounts = msalClient.getAllAccounts();
+
+        if (accounts !== null && accounts.length > 0) {
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: accounts[0]
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                fetch('/api/events/eventsuserisattending/' + props.currentUser.id, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<EventData[]>)
+                    .then(data => {
+                        setMyAttendanceList(data);
+                        setIsUserEventDataLoaded(true);
+                    })
+            });
+        }
+    }
+
     function checkboxhandler() {
         // if agree === true, it will be set to false
         // if agree === false, it will be set to true
@@ -145,7 +180,7 @@ const Home: React.FC<HomeProps> = (props) => {
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('api/Users/' + currentUser.id, {
+            fetch('/api/Users/' + currentUser.id, {
                 method: 'GET',
                 headers: headers
             })
@@ -156,7 +191,7 @@ const Home: React.FC<HomeProps> = (props) => {
                         user.dateAgreedToTermsOfService = new Date();
                         user.termsOfServiceVersion = tosVersion;
                         user.privacyPolicyVersion = privacyVersion;
-                        fetch('api/Users/', {
+                        fetch('/api/Users/', {
                             method: 'PUT',
                             headers: headers,
                             body: JSON.stringify(user)
@@ -164,6 +199,7 @@ const Home: React.FC<HomeProps> = (props) => {
                             .then(response => response.json() as Promise<UserData>)
                             .then(data => {
                                 setCurrentUser(data);
+                                props.onUserUpdated();
                                 if (!currentUser.userName) {
                                     props.history.push("/userprofile");
                                 }
@@ -176,24 +212,33 @@ const Home: React.FC<HomeProps> = (props) => {
     return (
         <div>
             <div>
-                <Modal isOpen={isOpen} onrequestclose={togglemodal} contentlabel="Accept Terms of Use" fade={true} style={{ width: "300px", display: "block" }}>
+                <Modal isOpen={isOpen} onrequestclose={togglemodal} contentlabel="Accept Terms of Use" fade={true} style={{ width: "500px", display: "block" }}>
                     <div className="container">
-                        <span>
-                            <input type="checkbox" id="agree" onChange={checkboxhandler} />
-                            <label htmlFor="agree"> I agree to the TrashMob.eco <Link to="./termsofservice">Terms of Use</Link> and the TrashMob.eco <Link to="./privacypolicy">Privacy Policy</Link>.</label>
-                        </span>
-
-                        <div>
-                            <button disabled={!agree} className="action" onClick={() => {
-                                updateAgreements(CurrentTermsOfServiceVersion.versionId, CurrentPrivacyPolicyVersion.versionId);
-                                togglemodal();
-                            }
-                            }>
-                                I Agree
-                            </button>
-                        </div>
+                        <Form>
+                            <Form.Row>
+                                <Form.Group>
+                                    <Form.Label>I have reviewed and I agree to the TrashMob.eco <Link to='./termsofservice'>Terms of Use</Link> and the TrashMob.eco <Link to='./privacypolicy'>Privacy Policy</Link>.</Form.Label>
+                                    <Form.Check id="agree" onChange={checkboxhandler} label="Yes" />
+                                </Form.Group>
+                            </Form.Row>
+                            <Form.Row>
+                                <Button disabled={!agree} className="action" onClick={() => {
+                                    updateAgreements(CurrentTermsOfServiceVersion.versionId, CurrentPrivacyPolicyVersion.versionId);
+                                    togglemodal();
+                                }
+                                }>
+                                    I Agree
+                                    </Button>
+                            </Form.Row>
+                        </Form>
                     </div>
                 </Modal>
+            </div>
+            <div>
+                <h6>Welcome to the TrashMob.eco BETA!</h6>
+                <p><small>We're still working out the kinks, but we'd love to get your feedback! Please send us any comments you may have via our Contact Us page, or reach out to us on <a href="https://www.twitter.com/trashmobe">Twitter</a>. If you're a developer
+                    or designer and interested in improving TrashMob, we'd appreciate the help!</small>
+                 </p>
             </div>
             <div>
                 <MainCarousel />
@@ -203,7 +248,7 @@ const Home: React.FC<HomeProps> = (props) => {
                     <Link to="/createevent">Create a New Event</Link>
                 </div>
                 <div style={{ width: 100 + '%', margin: '0' }}>
-                    <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} />
+                    <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} />
                 </div>
                 <div style={{ width: 100 + '%', margin: '0' }}>
                     <AzureMapsProvider>

@@ -6,6 +6,7 @@ import * as ToolTips from "../store/ToolTips";
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
+import { Button, Col, Form } from 'react-bootstrap';
 import { Modal } from 'reactstrap';
 
 interface UserProfileProps extends RouteComponentProps<any> {
@@ -43,7 +44,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
 
-        fetch('api/users/' + userId, {
+        fetch('/api/users/' + userId, {
             method: 'GET',
             headers: headers,
         })
@@ -107,7 +108,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
             const headers = getDefaultHeaders('DELETE');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('api/users/' + userId, {
+            fetch('/api/users/' + userId, {
                 method: 'DELETE',
                 headers: headers
             }).then(() => {
@@ -164,7 +165,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
             const headers = getDefaultHeaders('PUT');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('api/users', {
+            fetch('/api/users', {
                 method: 'PUT',
                 headers: headers,
                 body: usrdata,
@@ -261,154 +262,190 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
     return (
         !isDataLoaded ? <div>Loading</div> :
             <div>
-                <h1>User Profile</h1>
+                <h3>User Profile</h3>
                 <div>
                     <Modal isOpen={isOpen} onrequestclose={togglemodal} contentlabel="Delete Account?" fade={true} style={{ width: "300px", display: "block" }}>
-                        <div className="container">
-                            <span>
-                                <label>Are you sure you want to delete your account and all your events? Deleted accounts cannot be recovered!</label>
-                            </span>
-
-                            <div>
-                                <button className="action" onClick={() => {
+                        <Form>
+                            <Form.Row>
+                                <h3>Are you sure you want to delete your account and all your events? Deleted accounts cannot be recovered!</h3>
+                            </Form.Row>
+                            <Form.Row>
+                                <Button variant="danger" onClick={() => {
                                     togglemodal();
                                     deleteAccount();
                                 }
                                 }>
                                     Yes, Delete My Account
-                            </button>
-                                <button className="action" onClick={() => {
+                            </Button>
+                                <Button className="action" onClick={() => {
                                     togglemodal();
                                 }
                                 }>
                                     Cancel
-                            </button>
-                            </div>
-                        </div>
+                            </Button>
+                            </Form.Row>
+                        </Form>
                     </Modal>
                 </div>
                 <div className="container-fluid" >
-                    <form onSubmit={handleSave} >
-                        <div>
-                            <button className="action" onClick={(e) => handleDelete(e)}>Delete Account</button>
-                        </div>
-                        < div className="form-group row" >
-                            <OverlayTrigger placement="top" overlay={renderUserNameToolTip}>
-                                <label className=" control-label col-xs-2" htmlFor="UserName">User Name:</label>
-                            </OverlayTrigger>
-                            <div className="col-md-4">
-                                <input className="form-control" type="text" name="userName" defaultValue={userName} onChange={(val) => handleUserNameChanged(val.target.value)} maxLength={parseInt('32')} required />
-                                <span style={{ color: "red" }}>{userNameErrors}</span>
-                            </div>
-                            <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
-                                <label className="control-label col-xs-2" htmlFor="email">Email:</label>
-                            </OverlayTrigger>
-                            <div className="col-xs-2">
-                                <label className="form-control">{email}</label>
-                            </div>
-                        </div >
-                        <div className="form-group row">
-                            <OverlayTrigger placement="top" overlay={renderGivenNameToolTip}>
-                                <label className="control-label col-xs-2" htmlFor="GivenName">Given Name:</label>
-                            </OverlayTrigger>
-                            <div className="col-md-4">
-                                <input className="form-control" type="text" name="givenName" defaultValue={givenName} onChange={(val) => handleGivenNameChanged(val.target.value)} maxLength={parseInt('32')} />
-                                <span style={{ color: "red" }}>{givenNameErrors}</span>
-                            </div>
-                            <OverlayTrigger placement="top" overlay={renderSurNameToolTip}>
-                                <label className="control-label col-xs-2" htmlFor="SurName">Surname:</label>
-                            </OverlayTrigger>
-                            <div className="col-md-4">
-                                <input className="form-control" type="text" name="surName" defaultValue={surName} onChange={(val) => handleSurNameChanged(val.target.value)} maxLength={parseInt('32')} />
-                                <span style={{ color: "red" }}>{surNameErrors}</span>
-                            </div>
-                        </div >
-                        <div className="form-group row">
-                            <OverlayTrigger placement="top" overlay={renderCityToolTip}>
-                                <label className="control-label col-xs-2" htmlFor="City">City:</label>
-                            </OverlayTrigger>
-                            <div className="col-xs-2">
-                                <input className="form-control" type="text" name="city" defaultValue={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('64')} />
-                                <span style={{ color: "red" }}>{cityErrors}</span>
-                            </div>
-                            <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                <label className="control-label col-xs-2" htmlFor="PostalCode">Postal Code:</label>
-                            </OverlayTrigger>
-                            <div className="col-xs-2">
-                                <input className="form-control" type="text" name="postalCode" defaultValue={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
-                                <span style={{ color: "red" }}>{postalCodeErrors}</span>
-                            </div>
-                        </div >
-                        <div className="form-group row">
-                            <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
-                                <label className="control-label col-xs-2" htmlFor="Country">Country:</label>
-                            </OverlayTrigger>
-                            <div className="col-xs-4">
-                                <CountryDropdown name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
-                                <span style={{ color: "red" }}>{countryErrors}</span>
-                            </div>
-                            <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
-                                <label className="control-label col-xs-2" htmlFor="region">Region:</label>
-                            </OverlayTrigger>
-                            <div className="col-xs-4">
-                                <RegionDropdown
-                                    country={country ?? ""}
-                                    value={region ?? ""}
-                                    onChange={(val) => selectRegion(val)} />
-                                <span style={{ color: "red" }}>{regionErrors}</span>
-                            </div>
-                        </div >
-                        <div className="form-group row">
-                            <OverlayTrigger placement="top" overlay={renderDateAgreedToPrivacyPolicyToolTip}>
-                                <label className="control-label col-xs-2" htmlFor="dateAgreedToPrivacyPolicy">Date Agreed To Privacy Policy:</label>
-                            </OverlayTrigger>
-                            <div className="col-xs-2">
-                                <label className="form-control">{dateAgreedToPrivacyPolicy ? dateAgreedToPrivacyPolicy.toString() : ""}</label>
-                            </div>
-                            <OverlayTrigger placement="top" overlay={renderPrivacyPolicyVersionToolTip}>
-                                <label className="control-label col-xs-2" htmlFor="PrivacyPolicyVersion">Privacy Policy Version:</label>
-                            </OverlayTrigger>
-                            <div className="col-xs-2">
-                                <label className="form-control">{privacyPolicyVersion}</label>
-                            </div>
-                        </div >
-                        <div className="form-group row">
-                            <OverlayTrigger placement="top" overlay={renderDateAgreedToTermsOfServiceToolTip}>
-                                <label className="control-label col-xs-2" htmlFor="dateAgreedToTermsOfService">Date Agreed To Terms of Service:</label>
-                            </OverlayTrigger>
-                            <div className="col-xs-2">
-                                <label className="form-control">{dateAgreedToTermsOfService ? dateAgreedToTermsOfService.toString() : ""}</label>
-                            </div>
-                            <OverlayTrigger placement="top" overlay={renderTermsOfServiceVersionToolTip}>
-                                <label className="control-label col-xs-2" htmlFor="TermsOfServiceVersion">Terms Of Service Version:</label>
-                            </OverlayTrigger>
-                            <div className="col-xs-2">
-                                <label className="form-control">{termsOfServiceVersion}</label>
-                            </div>
-                        </div >
-                        <div className="form-group row">
-                            <OverlayTrigger placement="top" overlay={renderMemberSinceToolTip}>
-                                <label className="control-label col-xs-2" htmlFor="memberSince">Member Since:</label>
-                            </OverlayTrigger>
-                            <div className="col-xs-2">
-                                <label className="form-control">{memberSince ? memberSince.toLocaleString() : "" }</label>
-                            </div>
-                        </div >
-                        <div className="form-group row">
-                            <OverlayTrigger placement="top" overlay={renderSourceSystemUserNameToolTip}>
-                                <label className="control-label col-xs-2" htmlFor="memberSince">Source System User Name:</label>
-                            </OverlayTrigger>
-                            <div className="col-xs-2">
-                                <label className="form-control">{sourceSystemUserName}</label>
-                            </div>
-                        </div >
-                        <div className="form-group">
-                            <button disabled={userNameErrors !== ""} type="submit" className="action btn-default">Save</button>
-                            <button className="action" onClick={(e) => handleCancel(e)}>Cancel</button>
-                        </div >
-                    </form >
+                    <Form onSubmit={handleSave} >
+                        <Form.Row>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderUserNameToolTip}>
+                                        <Form.Label htmlFor="UserName">User Name:</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" name="userName" defaultValue={userName} onChange={(val) => handleUserNameChanged(val.target.value)} maxLength={parseInt('32')} required />
+                                    <span style={{ color: "red" }}>{userNameErrors}</span>
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
+                                        <Form.Label htmlFor="email">Email:</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" disabled defaultValue={email} />
+                                </Form.Group>
+                            </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderGivenNameToolTip}>
+                                        <Form.Label htmlFor="GivenName">Given Name:</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" name="givenName" defaultValue={givenName} onChange={(val) => handleGivenNameChanged(val.target.value)} maxLength={parseInt('32')} />
+                                    <span style={{ color: "red" }}>{givenNameErrors}</span>
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderSurNameToolTip}>
+                                        <Form.Label htmlFor="SurName">Surname:</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" name="surName" defaultValue={surName} onChange={(val) => handleSurNameChanged(val.target.value)} maxLength={parseInt('32')} />
+                                    <span style={{ color: "red" }}>{surNameErrors}</span>
+                                </Form.Group>
+                            </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderCityToolTip}>
+                                        <Form.Label htmlFor="City">City:</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control className="form-control" type="text" name="city" defaultValue={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('64')} />
+                                    <span style={{ color: "red" }}>{cityErrors}</span>
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
+                                        <Form.Label htmlFor="PostalCode">Postal Code:</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" name="postalCode" defaultValue={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
+                                    <span style={{ color: "red" }}>{postalCodeErrors}</span>
+                                </Form.Group>
+                            </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
+                                        <Form.Label htmlFor="Country">Country:</Form.Label>
+                                    </OverlayTrigger>
+                                    <CountryDropdown name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
+                                    <span style={{ color: "red" }}>{countryErrors}</span>
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
+                                        <Form.Label htmlFor="region">Region:</Form.Label>
+                                    </OverlayTrigger>
+                                    <RegionDropdown
+                                        country={country ?? ""}
+                                        value={region ?? ""}
+                                        onChange={(val) => selectRegion(val)} />
+                                    <span style={{ color: "red" }}>{regionErrors}</span>
+                                </Form.Group>
+                            </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col>
+                                <hr />
+                            </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderDateAgreedToPrivacyPolicyToolTip}>
+                                        <Form.Label htmlFor="dateAgreedToPrivacyPolicy">Date Agreed To Privacy Policy:</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" disabled defaultValue={dateAgreedToPrivacyPolicy ? dateAgreedToPrivacyPolicy.toString() : ""} />
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderPrivacyPolicyVersionToolTip}>
+                                        <Form.Label htmlFor="PrivacyPolicyVersion">Privacy Policy Version:</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" disabled defaultValue={privacyPolicyVersion} />
+                                </Form.Group>
+                            </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderDateAgreedToTermsOfServiceToolTip}>
+                                        <Form.Label htmlFor="dateAgreedToTermsOfService">Date Agreed To Terms of Service:</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" disabled defaultValue={dateAgreedToTermsOfService ? dateAgreedToTermsOfService.toString() : ""} />
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderTermsOfServiceVersionToolTip}>
+                                        <Form.Label htmlFor="TermsOfServiceVersion">Terms Of Service Version:</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" disabled defaultValue={termsOfServiceVersion} />
+                                </Form.Group>
+                            </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderMemberSinceToolTip}>
+                                        <Form.Label htmlFor="memberSince">Member Since:</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" disabled defaultValue={memberSince ? memberSince.toLocaleString() : ""} />
+                                </Form.Group>
+                            </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderSourceSystemUserNameToolTip}>
+                                        <Form.Label htmlFor="memberSince">Source System User Name:</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" disabled defaultValue={sourceSystemUserName} />
+                                </Form.Group>
+                            </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col>
+                                <Form.Group>
+                                    <Button disabled={userNameErrors !== ""} type="submit" className="action btn-default">Save</Button>
+                                    <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Button variant="danger" onClick={(e) => handleDelete(e)}>Delete Account</Button>
+                            </Col>
+                        </Form.Row>
+                    </Form >
                 </div>
-            </div>
+            </div >
     );
 }
 

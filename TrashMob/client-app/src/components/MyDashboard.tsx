@@ -32,7 +32,7 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
         setCurrentUser(props.currentUser);
         setIsUserLoaded(props.isUserLoaded);
 
-        fetch('api/eventtypes', {
+        fetch('/api/eventtypes', {
             method: 'GET',
             headers: headers,
         })
@@ -67,7 +67,7 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('api/events/userevents/' + props.currentUser.id, {
+                fetch('/api/events/userevents/' + props.currentUser.id, {
                     method: 'GET',
                     headers: headers
                 })
@@ -94,7 +94,7 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('api/events/userevents/' + currentUser.id, {
+                fetch('/api/events/userevents/' + currentUser.id, {
                     method: 'GET',
                     headers: headers
                 })
@@ -128,9 +128,6 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
                     </>
                 </AzureMapsProvider>
             </div>
-            <div>
-                My Stats
-                </div>
         </div>
     );
 }

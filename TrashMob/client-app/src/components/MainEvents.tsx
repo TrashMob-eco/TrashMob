@@ -6,13 +6,8 @@ import { getEventType } from '../store/eventTypeHelper';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
 import UserData from './Models/UserData';
+import { Button } from 'react-bootstrap';
 
-const options = {
-     weekday: "long",
-     year: "numeric",
-     month:"long",
-     day:"numeric"
-};
 class DisplayEvent {
     id: string = "";
     name: string = "";
@@ -33,6 +28,7 @@ export interface MainEventsDataProps {
     isUserEventDataLoaded: boolean;
     isUserLoaded: boolean;
     currentUser: UserData;
+    onAttendanceChanged: any;
 };
 
 export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
@@ -51,7 +47,7 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
                 dispEvent.eventTypeId = mobEvent.eventTypeId;
                 dispEvent.name = mobEvent.name;
                 if (props.isUserEventDataLoaded) {
-                    var isAttending = props.myAttendanceList.findIndex((e) => e.id === mobEvent.id) >= 0;
+                    var isAttending = props.myAttendanceList && (props.myAttendanceList.findIndex((e) => e.id === mobEvent.id) >= 0);
                     dispEvent.isAttending = (isAttending ? 'Yes' : 'No');
                 }
                 else {
@@ -84,11 +80,12 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
             // POST request for Add EventAttendee.  
-            fetch('api/EventAttendees', {
+            fetch('/api/EventAttendees', {
                 method: 'POST',
                 body: data,
                 headers: headers,
             }).then((response) => response.json())
+                .then(props.onAttendanceChanged())
         })
     }
 
@@ -132,12 +129,12 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
                                 {/* <td>{mobEvent.region}</td> */}
                                 {/* <td>{mobEvent.country}</td> */}
                                 <td>
-                                    <button hidden={!props.isUserLoaded || mobEvent.isAttending === "Yes"} className="action" onClick={() => handleAttend(mobEvent.id)}>Register to Attend Event</button>
+                                    <Button hidden={!props.isUserLoaded || mobEvent.isAttending === "Yes"} className="action" onClick={() => handleAttend(mobEvent.id)}>Register to Attend Event</Button>
                                     <label hidden={props.isUserLoaded}>Sign-in required</label>
                                     <label hidden={!props.isUserLoaded || mobEvent.isAttending !== 'Yes'}>Yes</label>
                                 </td>
                                 <td>
-                                    <button className="action" onClick={() => history.push('/eventdetails/' + mobEvent.id)}>View Details</button>
+                                    <Button className="action" onClick={() => history.push('/eventdetails/' + mobEvent.id)}>View Details</Button>
                                 </td>
                             </tr>
                         )}

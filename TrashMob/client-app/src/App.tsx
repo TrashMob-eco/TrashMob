@@ -87,6 +87,31 @@ export const App: React.FC = () => {
         sessionStorage.setItem('user', JSON.stringify(user));
     }
 
+    function handleUserUpdated() {
+        const account = msalClient.getAllAccounts()[0];
+
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = getDefaultHeaders('GET');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+            fetch('/api/Users/' + currentUser.id, {
+                method: 'GET',
+                headers: headers,
+            })
+                .then(response => response.json() as Promise<UserData>)
+                .then(data => {
+                        setCurrentUser(data);
+                        setIsUserLoaded(true);
+                        sessionStorage.setItem('user', JSON.stringify(data));
+                    });
+        });
+    }
+
     function verifyAccount(result: msal.AuthenticationResult) {
 
         const account = msalClient.getAllAccounts()[0];
@@ -108,7 +133,7 @@ export const App: React.FC = () => {
                 user.email = result.account?.idTokenClaims["emails"][0] ?? "";
             }
 
-            fetch('api/Users', {
+            fetch('/api/Users', {
                 method: 'POST',
                 headers: headers,
                 body: JSON.stringify(user)
@@ -191,7 +216,7 @@ export const App: React.FC = () => {
                                     <TermsOfService />
                                 </Route>
                                 <Route exact path='/'>
-                                    <Home currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                    <Home currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
                                 </Route>
                                 <Route>
                                     <NoMatch />

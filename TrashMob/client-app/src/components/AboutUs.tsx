@@ -6,8 +6,6 @@ import bigpile from './assets/muhammad-numan-ZVgxiKJlMk0-unsplash.jpg'
 export const AboutUs: React.FC = () => {
     return (
         <div>
-            <h1>About TrashMob</h1>
-
             <h2>What is a TrashMob?</h2>
             <p>
                 A TrashMob is a group of citizens who are willing to take a hour or two out of their busy lives to get together and clean up a mess. Friends, family, total strangers, it doesn't matter. If you've ever
@@ -31,26 +29,26 @@ export const AboutUs: React.FC = () => {
 
             <p>
                 In January 2021, I read about <a target="_blank" rel="noopener noreferrer" href="https://twitter.com/edgarmcgregor">Edgar McGregor</a> in California, who had, at that time, spent over 580 days cleaning up a park in his community, two pails of litter at a time, and I thought,
-                    that was a great idea. His actions inspired me to get out and clean up a local park one Saturday. It was fun and rewarding and other people saw what I was doing on my own and thanks me for doing it. It felt great.
+                    that was a great idea. His actions inspired me to get out and clean up a local park one Saturday. It was fun and rewarding and other people saw what I was doing on my own and thanked me for doing it. It felt great.
                     And then I passed by an area of town that was completely covered in trash and I thought "this is too much for me alone. It would be great to have a group of people descend on this area like a mob and clean
-                    it up in an hour or two". And the idea for TrashMob.eco was born.
+                    it up in an hour or two". And the idea for <b>TrashMob.eco</b> was born.
                 </p>
 
             <p>
-                Basically, TrashMob is the NerdDinner.com site re-purposed to allow people to start TrashMobs of their own to tackle cleanup or <i>whatever</i> needs doing. And we keep coming up with more and more ideas for the site that will
+                Basically, TrashMob.eco is the NerdDinner.com site modernized and re-purposed to allow people to start TrashMobs of their own to tackle cleanup or <i>whatever</i> needs doing. And we keep coming up with more and more ideas for the site that will
                     allow it to grow organically because of the good that we can do we get together with a common goal!
                 </p>
             <img src={pile} alt="Pile of trash by bin" />
 
-            <h2>Why not do this on my own?</h2>
+            <h2>Can't I just do this on my own?</h2>
             <p>
-                There's absolutely no reason not to do this on your own. In fact, the inspiration I got for this project came from other doing this on their own.
+                There's absolutely no reason not to do this on your own. In fact, the inspiration I got for this project came from others doing this on their own.
                 </p>
             <p>
                 But doing this with a group brings some sizable benefits with it:
                     <ol>
                     <li>A TrashMob can tackle really bad areas in a very short time. An individual may take days or weeks, and may become demoralized</li>
-                    <li>A TrashMob can grab the attention of other citizens much more quickly than an individual and can spur even more cleanups</li>
+                    <li>A TrashMob can grab the attention of other citizens much more quickly than an individual, and can spur even more cleanups</li>
                     <li>A TrashMob can get resources like hauling of the gathered trash, local merchant support, and municipal support that an individual just can't. If you tell your city works department
                         that you are cleaning up a park, they'll be nice and say thanks. But if you say you've got <b>30</b> people showing up at 10AM to clean up a notorious area, they will help you to get
                             the supplies you need, and may even help with the haulaway. Communities want to see active citizens and will do whatever they can to encourage it.</li>

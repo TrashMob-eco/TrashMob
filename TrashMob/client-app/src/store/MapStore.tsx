@@ -15,7 +15,7 @@ export async function getKey(): Promise<string> {
 
     const headers = getDefaultHeaders('GET');
 
-    await fetch('api/maps', {
+    await fetch('/api/maps', {
         method: 'GET',
         headers: headers,
     })

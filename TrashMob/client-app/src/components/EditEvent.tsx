@@ -15,6 +15,7 @@ import UserData from './Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../store/ToolTips";
+import { Button, Col, Form } from 'react-bootstrap';
 
 export interface MatchParams {
     eventId: string;
@@ -53,7 +54,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
 
-        fetch('api/eventtypes', {
+        fetch('/api/eventtypes', {
             method: 'GET',
             headers: headers
         })
@@ -64,7 +65,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
         // This will set state for Edit Event  
         if (eventId != null) {
-            fetch('api/Events/' + eventId, {
+            fetch('/api/Events/' + eventId, {
                 method: 'GET',
                 headers: headers
             })
@@ -250,7 +251,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             const headers = getDefaultHeaders('PUT');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('api/Events', {
+            fetch('/api/Events', {
                 method: 'PUT',
                 body: data,
                 headers: headers
@@ -317,116 +318,153 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     function renderCreateForm(typeList: Array<EventTypeData>) {
         return (
             <div className="container-fluid" >
-                <form onSubmit={handleSave} >
-                    <div className="form-group row" >
+                <Form onSubmit={handleSave}>
+                    <Form.Row>
                         <input type="hidden" name="Id" value={eventId.toString()} />
-                    </div>
-                    < div className="form-group row" >
-                        <OverlayTrigger placement="top" overlay={renderEventNameToolTip}>
-                            <label className=" control-label col-xs-2" htmlFor="Name">Name:</label>
-                        </OverlayTrigger>
-                        <div className="col-xs-2">
-                            <input className="form-control" type="text" name="name" defaultValue={eventName} onChange={(val) => handleEventNameChanged(val.target.value)} maxLength={parseInt('64')} required />
-                        </div>
-                        <OverlayTrigger placement="top" overlay={renderEventDateToolTip}>
-                            <label className="control-label col-xs-2" htmlFor="EventDate">EventDate:</label>
-                        </OverlayTrigger>
-                        <div className="col-xs-2">
-                            <DateTimePicker name="eventDate" onChange={handleEventDateChange} value={eventDate} />
-                            <span style={{ color: "red" }}>{eventDateErrors}</span>
-                        </div>
-                        <OverlayTrigger placement="top" overlay={renderEventTypeToolTip}>
-                            <label className="control-label col-xs-2" htmlFor="EventType">Event Type:</label>
-                        </OverlayTrigger>
-                        <div className="col-xs-2">
-                            <select className="form-control" data-val="true" name="eventTypeId" defaultValue={eventTypeId} onChange={(val) => selectEventType(val.target.value)} required>
-                                <option value="">-- Select Event Type --</option>
-                                {typeList.map(type =>
-                                    <option key={type.id} value={type.id}>{type.name}</option>
-                                )}
-                            </select>
-                        </div>
-                    </div >
-                    <div className="form-group row">
-                        <OverlayTrigger placement="top" overlay={renderDescriptionToolTip}>
-                            <label className="control-label col-md-12">Describe the event so attendees know what kind of gear to bring and where exactly to meet up.</label>
-                        </OverlayTrigger>
-                        <label className="control-label col-xs-2" htmlFor="Description">Description:</label>
-                        <div className="col-md-10">
-                            <textarea className="form-control" name="description" defaultValue={description} onChange={(val) => handleDescriptionChanged(val.target.value)} maxLength={parseInt('2048')} rows={5} cols={5} required />
-                        </div>
-                    </div >
-                    <div className="form-group row">
-                        <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
-                            <label className="control-label col-xs-2" htmlFor="StreetAddress">Street Address:</label>
-                        </OverlayTrigger>
-                        <div className="col-md-4">
-                            <input className="form-control" type="text" name="streetAddress" value={streetAddress} onChange={(val) => handleStreetAddressChanged(val.target.value)} maxLength={parseInt('256')} />
-                        </div>
-                        <OverlayTrigger placement="top" overlay={renderCityToolTip}>
-                            <label className="control-label col-xs-2" htmlFor="City">City:</label>
-                        </OverlayTrigger >
-                        <div className="col-xs-2">
-                            <input className="form-control" type="text" name="city" value={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
-                        </div>
-                        <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                            <label className="control-label col-xs-2" htmlFor="PostalCode">Postal Code:</label>
-                        </OverlayTrigger >
-                        <div className="col-xs-2">
-                            <input className="form-control" type="text" name="postalCode" value={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
-                        </div>
-                    </div >
-                    <div className="form-group row">
-                        <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
-                            <label className="control-label col-xs-2" htmlFor="Country">Country:</label>
-                        </OverlayTrigger >
-                        <div className="col-xs-2">
-                            <CountryDropdown name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
-                        </div>
-                        <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
-                            <label className="control-label col-xs-2" htmlFor="Region">Region:</label>
-                        </OverlayTrigger >
-                        <div className="col-xs-2">
-                            <RegionDropdown
-                                country={country ?? ""}
-                                value={region ?? ""}
-                                onChange={(val) => selectRegion(val)} />
-                        </div>
-                    </div >
-                    <div className="form-group row">
-                        <OverlayTrigger placement="top" overlay={renderLatitudeToolTip}>
-                            <label className="control-label col-xs-2" htmlFor="Latitude">Latitude:</label>
-                        </OverlayTrigger>
-                        <div className="col-xs-2">
-                            <input className="form-control" type="text" name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
-                            <span style={{ color: "red" }}>{latitudeErrors}</span>
-                        </div>
-                        <OverlayTrigger placement="top" overlay={renderLongitudeToolTip}>
-                            <label className="control-label col-xs-2" htmlFor="Longitude">Longitude:</label>
-                        </OverlayTrigger >
-                        <div className="col-xs-2">
-                            <input className="form-control" type="text" name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
-                            <span style={{ color: "red" }}>{longitudeErrors}</span>
-                        </div>
-                        <OverlayTrigger placement="top" overlay={renderMaxNumberOfParticipantsToolTip}>
-                            <label className="control-label col-xs-2" htmlFor="MaxNumberOfParticipants">Max Number Of Participants:</label>
-                        </OverlayTrigger >
-                        <div className="col-xs-2">
-                            <input className="form-control" type="text" name="maxNumberOfParticipants" defaultValue={maxNumberOfParticipants} onChange={(val) => handleMaxNumberOfParticipantsChanged(val.target.value)} />
-                        </div>
-                    </div >
-                    <div className="form-group">
-                        <button type="submit" className="action btn-default">Save</button>
-                        <button className="action" onClick={(e) => handleCancel(e)}>Cancel</button>
-                    </div >
-                    <div>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderEventNameToolTip}>
+                                    <Form.Label htmlFor="Name">Name:</Form.Label>
+                                </OverlayTrigger>
+                                <Form.Control type="text" name="name" defaultValue={eventName} onChange={(val) => handleEventNameChanged(val.target.value)} maxLength={parseInt('64')} required />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderEventDateToolTip}>
+                                    <Form.Label className="control-label col-xs-2" htmlFor="EventDate">EventDate:</Form.Label>
+                                </OverlayTrigger>
+                                <div>
+                                    <DateTimePicker name="eventDate" onChange={handleEventDateChange} value={eventDate} />
+                                    <span style={{ color: "red" }}>{eventDateErrors}</span>
+                                </div>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderEventTypeToolTip}>
+                                    <Form.Label htmlFor="EventType">Event Type:</Form.Label>
+                                </OverlayTrigger>
+                                <div>
+                                    <select data-val="true" name="eventTypeId" defaultValue={eventTypeId} onChange={(val) => selectEventType(val.target.value)} required>
+                                        <option value="">-- Select Event Type --</option>
+                                        {typeList.map(type =>
+                                            <option key={type.id} value={type.id}>{type.name}</option>
+                                        )}
+                                    </select>
+                                </div>
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderDescriptionToolTip}>
+                                    <Form.Label htmlFor="Description">Description:</Form.Label>
+                                </OverlayTrigger>
+                                <Form.Control as="textarea" name="description" defaultValue={description} onChange={(val) => handleDescriptionChanged(val.target.value)} maxLength={parseInt('2048')} rows={5} cols={5} required />
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
+                                    <Form.Label htmlFor="StreetAddress">Street Address:</Form.Label>
+                                </OverlayTrigger>
+                                <Form.Control type="text" name="streetAddress" value={streetAddress} onChange={(val) => handleStreetAddressChanged(val.target.value)} maxLength={parseInt('256')} />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderCityToolTip}>
+                                    <Form.Label htmlFor="City">City:</Form.Label>
+                                </OverlayTrigger >
+                                <Form.Control type="text" name="city" value={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
+                                    <Form.Label htmlFor="PostalCode">Postal Code:</Form.Label>
+                                </OverlayTrigger >
+                                <Form.Control type="text" name="postalCode" value={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
+                                    <Form.Label htmlFor="Country">Country:</Form.Label>
+                                </OverlayTrigger >
+                                <div>
+                                    <CountryDropdown name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
+                                </div>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
+                                    <Form.Label htmlFor="Region">Region:</Form.Label>
+                                </OverlayTrigger >
+                                <div>
+                                    <RegionDropdown
+                                        country={country ?? ""}
+                                        value={region ?? ""}
+                                        onChange={(val) => selectRegion(val)} />
+                                </div>
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderLatitudeToolTip}>
+                                    <Form.Label htmlFor="Latitude">Latitude:</Form.Label>
+                                </OverlayTrigger>
+                                <Form.Control type="text" name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
+                                <span style={{ color: "red" }}>{latitudeErrors}</span>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderLongitudeToolTip}>
+                                    <Form.Label htmlFor="Longitude">Longitude:</Form.Label>
+                                </OverlayTrigger >
+                                <Form.Control type="text" name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
+                                <span style={{ color: "red" }}>{longitudeErrors}</span>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderMaxNumberOfParticipantsToolTip}>
+                                    <Form.Label htmlFor="MaxNumberOfParticipants">Max Number Of Participants:</Form.Label>
+                                </OverlayTrigger >
+                                <Form.Control type="text" name="maxNumberOfParticipants" defaultValue={maxNumberOfParticipants} onChange={(val) => handleMaxNumberOfParticipantsChanged(val.target.value)} />
+
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Form.Group>
+                            <Button type="submit" className="action btn-default">Save</Button>
+                            <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
+                        </Form.Group>
+                    </Form.Row>
+                    <Form.Row>
+                        <Form.Label>Click on the map to set the location for your event. The location fields above will be automatically populated.</Form.Label>
+                    </Form.Row>
+                    <Form.Row>
                         <AzureMapsProvider>
                             <>
                                 <MapController center={center} multipleEvents={[]} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
                             </>
                         </AzureMapsProvider>
-                    </div>
-                </form >
+                    </Form.Row>
+                </Form >
             </div>
         )
     }
@@ -436,7 +474,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         : <p><em>Loading...</em></p>;
 
     return <div>
-        <h3>Event</h3>
+        <h3>Edit Event</h3>
         <hr />
         {contents}
     </div>;

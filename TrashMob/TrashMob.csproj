@@ -95,6 +95,9 @@
     <Content Include="client-app\src\components\assets\cmophoto-net-4ANtcRmvgE4-unsplash.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="client-app\src\components\assets\equipment.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="client-app\src\components\assets\jared-murray-NSuufgf-BME-unsplash.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -114,6 +117,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="client-app\src\components\assets\paige-cody-G8VOA-BrnHo-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\picker.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="client-app\src\components\assets\tim-mossholder-vdhNO4mGQ14-unsplash.jpg">
