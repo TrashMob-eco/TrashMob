@@ -6,8 +6,6 @@ import bigpile from './assets/muhammad-numan-ZVgxiKJlMk0-unsplash.jpg'
 export const AboutUs: React.FC = () => {
     return (
         <div>
-            <h1>About TrashMob</h1>
-
             <h2>What is a TrashMob?</h2>
             <p>
                 A TrashMob is a group of citizens who are willing to take a hour or two out of their busy lives to get together and clean up a mess. Friends, family, total strangers, it doesn't matter. If you've ever
@@ -42,7 +40,7 @@ export const AboutUs: React.FC = () => {
                 </p>
             <img src={pile} alt="Pile of trash by bin" />
 
-            <h2>Why not do this on my own?</h2>
+            <h2>Can't I just do this on my own?</h2>
             <p>
                 There's absolutely no reason not to do this on your own. In fact, the inspiration I got for this project came from others doing this on their own.
                 </p>

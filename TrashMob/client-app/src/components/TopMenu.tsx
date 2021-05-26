@@ -24,9 +24,9 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
     }, [props.currentUser, props.isUserLoaded])
 
     const mainNavItems = [
+        { name: "What is TrashMob?", url: "/aboutus" },
         { name: "Getting Started", url: "/gettingstarted" },
-        { name: "My Dashboard", url: "/mydashboard" },
-        { name: "About TrashMob", url: "/aboutus" }
+        { name: "My Dashboard", url: "/mydashboard" }
     ];
 
     function signOut(e: any) {
