@@ -28,6 +28,7 @@ export interface MainEventsDataProps {
     isUserEventDataLoaded: boolean;
     isUserLoaded: boolean;
     currentUser: UserData;
+    onAttendanceChanged: any;
 };
 
 export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
@@ -84,6 +85,7 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
                 body: data,
                 headers: headers,
             }).then((response) => response.json())
+                .then(props.onAttendanceChanged())
         })
     }
 

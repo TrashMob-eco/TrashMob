@@ -124,6 +124,39 @@ const Home: React.FC<HomeProps> = (props) => {
         // do nothing
     }
 
+    function handleAttendanceChanged() {
+        setIsUserEventDataLoaded(false);
+
+        if (!props.isUserLoaded || !props.currentUser) {
+            return;
+        }
+
+        // If the user is logged in, get the events they are attending
+        var accounts = msalClient.getAllAccounts();
+
+        if (accounts !== null && accounts.length > 0) {
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: accounts[0]
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                fetch('/api/events/eventsuserisattending/' + props.currentUser.id, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<EventData[]>)
+                    .then(data => {
+                        setMyAttendanceList(data);
+                        setIsUserEventDataLoaded(true);
+                    })
+            });
+        }
+    }
+
     function checkboxhandler() {
         // if agree === true, it will be set to false
         // if agree === false, it will be set to true
@@ -179,19 +212,22 @@ const Home: React.FC<HomeProps> = (props) => {
     return (
         <div>
             <div>
-                <Modal isOpen={isOpen} onrequestclose={togglemodal} contentlabel="Accept Terms of Use" fade={true} style={{ width: "300px", display: "block" }}>
+                <Modal isOpen={isOpen} onrequestclose={togglemodal} contentlabel="Accept Terms of Use" fade={true} style={{ width: "500px", display: "block" }}>
                     <div className="container">
                         <Form>
                             <Form.Row>
-                                    <Form.Check id="agree" onChange={checkboxhandler} label='I agree to the TrashMob.eco <Link to="./termsofservice">Terms of Use</Link> and the TrashMob.eco <Link to="./privacypolicy">Privacy Policy</Link>.' />
+                                <Form.Group>
+                                    <Form.Label>I have reviewed and I agree to the TrashMob.eco <Link to='./termsofservice'>Terms of Use</Link> and the TrashMob.eco <Link to='./privacypolicy'>Privacy Policy</Link>.</Form.Label>
+                                    <Form.Check id="agree" onChange={checkboxhandler} label="Yes" />
+                                </Form.Group>
                             </Form.Row>
                             <Form.Row>
-                                    <Button disabled={!agree} className="action" onClick={() => {
-                                        updateAgreements(CurrentTermsOfServiceVersion.versionId, CurrentPrivacyPolicyVersion.versionId);
-                                        togglemodal();
-                                    }
-                                    }>
-                                        I Agree
+                                <Button disabled={!agree} className="action" onClick={() => {
+                                    updateAgreements(CurrentTermsOfServiceVersion.versionId, CurrentPrivacyPolicyVersion.versionId);
+                                    togglemodal();
+                                }
+                                }>
+                                    I Agree
                                     </Button>
                             </Form.Row>
                         </Form>
@@ -212,7 +248,7 @@ const Home: React.FC<HomeProps> = (props) => {
                     <Link to="/createevent">Create a New Event</Link>
                 </div>
                 <div style={{ width: 100 + '%', margin: '0' }}>
-                    <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} />
+                    <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} />
                 </div>
                 <div style={{ width: 100 + '%', margin: '0' }}>
                     <AzureMapsProvider>
