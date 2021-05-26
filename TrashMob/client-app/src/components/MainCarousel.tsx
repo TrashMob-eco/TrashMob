@@ -19,7 +19,7 @@ export const MainCarousel: React.FC = () => {
             <Carousel.Item className="carousel-inner" style={{backgroundImage: 'url(' + styrofoam + ')'}}  >
                 <Carousel.Caption className="carousel-caption d-none d-md-block">
                     <h5>TrashMob.eco</h5>
-                    <p>Using the power of the flash mob to clean up the planet</p>
+                    <p>Cleaning up Planet Earth, one bucket of trash at a time.</p>
                 </Carousel.Caption>
             </Carousel.Item>
             <Carousel.Item className="carousel-inner" style={{backgroundImage: 'url(' + litter + ')'}} >
