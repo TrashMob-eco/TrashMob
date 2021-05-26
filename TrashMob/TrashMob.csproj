@@ -5,7 +5,7 @@
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
-    <SpaRoot>ClientApp\</SpaRoot>
+    <SpaRoot>client-app\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
   </PropertyGroup>
 
@@ -44,31 +44,85 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="ClientApp\src\components\assets\stoplittering.jpg" />
-    <None Remove="ClientApp\src\components\assets\trash1000miles.jpg" />
+    <None Remove="client-app\src\components\assets\brian-yurasits-0G2jF-c704s-unsplash.jpg" />
+    <None Remove="client-app\src\components\assets\brian-yurasits-43upsZNmy9Q-unsplash.jpg" />
+    <None Remove="client-app\src\components\assets\brian-yurasits-AANTeiHQmRU-unsplash.jpg" />
+    <None Remove="client-app\src\components\assets\brian-yurasits-euyUAlyZxTo-unsplash.jpg" />
+    <None Remove="client-app\src\components\assets\brian-yurasits-IvWEUvMwmlg-unsplash.jpg" />
+    <None Remove="client-app\src\components\assets\brian-yurasits-nwS3b_s-IRs-unsplash.jpg" />
+    <None Remove="client-app\src\components\assets\cmophoto-net-4ANtcRmvgE4-unsplash.jpg" />
+    <None Remove="client-app\src\components\assets\javardh-l0Yt7XMw-yk-unsplash.jpg" />
+    <None Remove="client-app\src\components\assets\manny-becerra-7FkFJqJ2fmw-unsplash.jpg" />
+    <None Remove="client-app\src\components\assets\muhammad-numan-ZVgxiKJlMk0-unsplash.jpg" />
+    <None Remove="client-app\src\components\assets\paige-cody-G8VOA-BrnHo-unsplash.jpg" />
     <None Remove="robots.txt" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="ClientApp\src\components\assets\beachlitter.jpg">
+    <Content Include="client-app\src\components\assets\beachlitter.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ClientApp\src\components\assets\litter.jpg">
+    <Content Include="client-app\src\components\assets\litter.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ClientApp\src\components\assets\Logo1.png">
+    <Content Include="client-app\src\components\assets\sign.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ClientApp\src\components\assets\sign.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ClientApp\src\components\assets\stoplittering.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ClientApp\src\components\assets\trash1000miles.jpg">
+    <Content Include="client-app\src\components\assets\trash1000miles.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="robots.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\brian-yurasits-0G2jF-c704s-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\brian-yurasits-43upsZNmy9Q-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\brian-yurasits-AANTeiHQmRU-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\brian-yurasits-euyUAlyZxTo-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\brian-yurasits-IvWEUvMwmlg-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\brian-yurasits-nwS3b_s-IRs-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\cmophoto-net-4ANtcRmvgE4-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\equipment.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\jared-murray-NSuufgf-BME-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\javardh-l0Yt7XMw-yk-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\jeshoots-com--2vD8lIhdnw-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\lance-grandahl-Z2JPWzWGih4-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\manny-becerra-7FkFJqJ2fmw-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\muhammad-numan-ZVgxiKJlMk0-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\paige-cody-G8VOA-BrnHo-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\picker.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="client-app\src\components\assets\tim-mossholder-vdhNO4mGQ14-unsplash.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

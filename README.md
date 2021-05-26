@@ -21,30 +21,20 @@ https://trashmobdev.azurewebsites.net
 # FAQ 
 ## What is the current state of this project?
 
-This project is currently under development, with the plan to launch in the spring of 2021. There's lots of work to get the site to an MVP state. I have a plan I have been working on that I will share if people are interested
+As of 5/26/2021, we are now in Beta launch. We'll hold at Beta for about a month. Beta only means that if things really go wrong, we may have to delete data manually and depending on load, site availability is not guaranteed.
 
 ## Are you looking for contributors?
 
 ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want to get involved. All kinds of skills needed, from logo design to reactjs, to website design, to aspnet core, to deployment / github skills.
-
-## Ship Blockers
-
-Here's what needs to be done before we can launch
-1. UI
-  1. Styling
-    1. Bootstrap theme
-    1. Make forms and grids presentable
-    1. Add Required field indicators
-    1. Improve Carousel Content / verify images not licensed
-    1. Make field names more prominent
-    1. Add logo to header  
-    1. Fix format of Terms of Service accept popup
-  1. Get proper logo
-    1. In process
-1. Brand sign in pages (need to redo logo and colors)
-  
+ 
 ## High Priority Post Launch Items
 These items did not make the cut for launch but need to be done
+  1. UI
+    1. Styling
+      1. Add Required field indicators    
+  1. Brand sign in pages (need to redo logo and colors)
+  1. Fix image on github page
+  1. Change github name? i.e. FlashTrashMob to TrashMob
   1. Ensure user can't multi-click buttons
   1. Allow map to respond to changes in country, region, city or postal code
   1. Check response codes from APIs are correct
@@ -52,48 +42,37 @@ These items did not make the cut for launch but need to be done
   1. Add Patreon?
   1. Find a way to secure the Azure Maps Key (referral restriction?)
   1. Set up rotation of Azure Maps Keys every 24 hours
-  1. Set up bicep deployment of all resources needed by devs to run the site.
   1. Redeploy test environment with standardized names  
-
-## When this project is "done" will it be open sourced?
-
-Yes. Since this idea came from NerdDinner.com (which was open-source), this project will continue to be available for others to learn from, contribute to, and fork, under the same license. I'm hopeful that others can use this project as an example of how to organize large numbers of people for good purposes, and by adding event types to it (or spawning new types of sites from a fork), that we can fix global problems by starting locally.
-
-## Will this site be turned into a non-profit. 
-
-Quite possibly. We'll see how fast the site gains momentum
+  1. Ensure AD is set up correctly (is it needed in my Sandbox sub?)
 
 # Development Notes
 
 ## Getting Started
 
 1. You must install the .net 5 SDK
-1. Install visual studio code
+1. Install Visual Studio Code
 1. Connect to github and clone the repo
-1. Contact joe beernink to be added to the dev subscription (unless you want to set all the dependencies up yourself (scripting opportunity?))
-1. Get added to the dev keyvault to be allowed to get the secrets
-
-## The secrets you will need to run locally
-
+1. Follow the Infrastructure Deployment Steps (here)[.\Deploy\readme.md].
+1. Run the following script on your machine from the TrashMob folder in the project to set up your dev machine to run the project locally. You must be logged into Azure in your PowerShell window in the correct subscription
 ```
+.\setupdev.ps1 -environment <yourenv> -region <yourregion>
 
-cd Trashmob
-dotnet user-secrets init
-dotnet user-secrets set "AzureMapsKey" "<insert secret here from keyvault>"
-dotnet user-secrets set "TMDBServerConnectionString" "<insert secret here from keyvault>"
+i.e.
+.\setupdev.ps1 -environment jb -region westus2
 
 ```
 
 ## Setting up your launchsettings.json
 
-Because of RedirectUrls, life is a lot easier if you stick with the same ports as everyone else. In the trashmobfolder, under Properties, add the following launchsettings.json file: 
+Because of RedirectUrls, life is a lot easier if you stick with the same ports as everyone else. In the TrashMob folder, under Properties, add the following launchsettings.json file: 
 
+```
 {
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:50422/",
+      "applicationUrl": "http://localhost:44332/",
       "sslPort": 44332
     }
   },
@@ -116,6 +95,8 @@ Because of RedirectUrls, life is a lot easier if you stick with the same ports a
   }
 }
 
+```
+
 ## To Build the app:
 
 In the Trashmob project folder, run the following command:
@@ -130,12 +111,14 @@ In the Trashmob project folder, run the following command:
 dotnet run
 ```
 
+or if using Visual Studio, set the TrashMob project as the start up project and hit F5.
+
 If a browser does not open, open one for yourself and go to https://localhost:44332
 
-## Database generation
-The project is now using Entity Framework Core V6 Model-First database updates.
+## To Update the Database Model
+The project uses Entity Framework Core V6 Model-First database updates.
 
-1. Update the models / MobDbContext as needed.
+1. Update the models / MobDbContext as needed in the repo.
 2. In VS Code, run the following commands from the TrashMob folder
 
 ```

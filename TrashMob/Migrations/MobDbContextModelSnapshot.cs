@@ -429,7 +429,8 @@ namespace TrashMob.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
@@ -441,10 +442,12 @@ namespace TrashMob.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("GivenName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<DateTimeOffset?>("MemberSince")
                         .HasColumnType("datetimeoffset");
@@ -453,7 +456,8 @@ namespace TrashMob.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostalCode")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
 
                     b.Property<string>("PrivacyPolicyVersion")
                         .HasMaxLength(50)
@@ -462,15 +466,21 @@ namespace TrashMob.Migrations
                     b.Property<string>("Region")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("SourceSystemUserName")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
                     b.Property<string>("SurName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<string>("TermsOfServiceVersion")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.HasKey("Id");
 
