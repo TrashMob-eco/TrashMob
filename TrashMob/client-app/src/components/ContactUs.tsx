@@ -6,9 +6,9 @@ import { getDefaultHeaders } from '../store/AuthStore';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../store/ToolTips";
-import { Button, Form } from 'react-bootstrap';
+import { Button, Col, Form } from 'react-bootstrap';
 
-interface ContactUsProps extends RouteComponentProps<any> {}
+interface ContactUsProps extends RouteComponentProps<any> { }
 
 export const ContactUs: React.FC<ContactUsProps> = (props) => {
     const [name, setName] = React.useState<string>();
@@ -110,29 +110,31 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
                 Have a question for the TrashMob team? Or an idea to make this site better? Or just want to tell us you love us? Drop us a note!
                 </div>
             <Form onSubmit={handleSave} >
-                <Form.Group>
-                    <OverlayTrigger placement="top" overlay={renderNameToolTip}>
-                        <Form.Label>Name:</Form.Label>
-                    </OverlayTrigger>
-                    <div>
-                        <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
-                    </div>
-                    <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
-                        <Form.Label>Email:</Form.Label>
-                    </OverlayTrigger>
-                    <div>
-                        <Form.Control type="text" defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required />
-                        <span style={{ color: "red" }}>{emailErrors}</span>
-                    </div>
-                </Form.Group >
+                <Form.Row>
+                    <Col>
+                        <Form.Group>
+                            <OverlayTrigger placement="top" overlay={renderNameToolTip}>
+                                <Form.Label>Name:</Form.Label>
+                            </OverlayTrigger>
+                            <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
+                        </Form.Group>
+                    </Col>
+                    <Col>
+                        <Form.Group>
+                            <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
+                                <Form.Label>Email:</Form.Label>
+                            </OverlayTrigger>
+                            <Form.Control type="text" defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required />
+                            <span style={{ color: "red" }}>{emailErrors}</span>
+                        </Form.Group >
+                    </Col>
+                </Form.Row>
                 <Form.Group>
                     <OverlayTrigger placement="top" overlay={renderMessageToolTip}>
                         <Form.Label>Message:</Form.Label>
                     </OverlayTrigger>
-                    <div>
-                        <Form.Control as="textarea" defaultValue={message} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleMessageChanged(val.target.value)} required />
-                        <span style={{ color: "red" }}>{messageErrors}</span>
-                    </div>
+                    <Form.Control as="textarea" defaultValue={message} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleMessageChanged(val.target.value)} required />
+                    <span style={{ color: "red" }}>{messageErrors}</span>
                 </Form.Group >
                 <Form.Group>
                     <LoadCanvasTemplateNoReload />
