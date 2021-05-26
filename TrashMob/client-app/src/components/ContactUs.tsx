@@ -6,10 +6,9 @@ import { getDefaultHeaders } from '../store/AuthStore';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../store/ToolTips";
-import { Button } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 
-interface ContactUsProps extends RouteComponentProps<any> {
-}
+interface ContactUsProps extends RouteComponentProps<any> {}
 
 export const ContactUs: React.FC<ContactUsProps> = (props) => {
     const [name, setName] = React.useState<string>();
@@ -110,45 +109,43 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
             <div>
                 Have a question for the TrashMob team? Or an idea to make this site better? Or just want to tell us you love us? Drop us a note!
                 </div>
-            <form onSubmit={handleSave} >
-                < div className="form-group row" >
+            <Form onSubmit={handleSave} >
+                <Form.Group>
                     <OverlayTrigger placement="top" overlay={renderNameToolTip}>
-                        <label className=" control-label col-xs-1" htmlFor="Name">Name:</label>
+                        <Form.Label>Name:</Form.Label>
                     </OverlayTrigger>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="name" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
+                    <div>
+                        <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
                     </div>
                     <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
-                        <label className=" control-label col-xs-1" htmlFor="Email">Email:</label>
+                        <Form.Label>Email:</Form.Label>
                     </OverlayTrigger>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="email" defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required />
+                    <div>
+                        <Form.Control type="text" defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required />
                         <span style={{ color: "red" }}>{emailErrors}</span>
                     </div>
-                </div >
-                <div className="form-group row">
+                </Form.Group >
+                <Form.Group>
                     <OverlayTrigger placement="top" overlay={renderMessageToolTip}>
-                        <label className="control-label col-md-12" htmlFor="Message">Message:</label>
+                        <Form.Label>Message:</Form.Label>
                     </OverlayTrigger>
-                    <div className="col-md-12">
-                        <textarea className="form-control" name="message" defaultValue={message} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleMessageChanged(val.target.value)} required />
+                    <div>
+                        <Form.Control as="textarea" defaultValue={message} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleMessageChanged(val.target.value)} required />
                         <span style={{ color: "red" }}>{messageErrors}</span>
                     </div>
-                </div >
-                <div>
+                </Form.Group >
+                <Form.Group>
                     <LoadCanvasTemplateNoReload />
-                </div>
-                <div className="form-group row">
-                    <label className="control-label col-xs-2" htmlFor="Captcha">CAPTCHA Value:</label>
-                    <div className="col-xs-2">
-                        <input className="form-control" type="text" name="user_captcha_input" required />
-                    </div>
-                </div >
-                <div className="form-group">
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>CAPTCHA Value:</Form.Label>
+                    <Form.Control type="text" required name="user_captcha_input" />
+                </Form.Group >
+                <Form.Group className="form-group">
                     <Button disabled={emailErrors !== "" || messageErrors !== ""} type="submit" className="action btn-default">Save</Button>
                     <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
-                </div >
-            </form >
+                </Form.Group >
+            </Form >
         </div>
     )
 }
