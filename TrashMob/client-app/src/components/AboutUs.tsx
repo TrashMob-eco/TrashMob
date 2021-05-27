@@ -17,7 +17,7 @@ export const AboutUs: React.FC = () => {
             <h2>Where did the idea come from?</h2>
             <p>
                 Years ago, Scott Hanselman at Microsoft built out the NerdDinner.com site as a demo of the capabilities of ASP.NET MVC. I (<a target="_blank" rel="noopener noreferrer" href="https://twitter.com/joebeernink">Joe Beernink</a>) actually went to a bunch of the nerd dinners in Redmond, WA which were fantastic
-                    and had a huge roll in my career, including eventually leading me to join Microsoft. This site is based on both that code and the idea that getting people together to do small good things
+                    and had a huge role in my career, including eventually leading me to join Microsoft. This site is based on both that code and the idea that getting people together to do small good things
                     results in larger good things in the long term.
                 </p>
 
