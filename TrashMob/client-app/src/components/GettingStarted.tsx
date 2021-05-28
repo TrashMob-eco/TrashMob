@@ -4,8 +4,6 @@ import picker from './assets/picker.jpg';
 import highways from './assets/jared-murray-NSuufgf-BME-unsplash.jpg';
 import joinmob from "./assets/brian-yurasits-euyUAlyZxTo-unsplash.jpg"
 
-import { Link } from 'react-router-dom';
-
 export const GettingStarted: React.FC = () => {
     return (
         <div>
@@ -20,7 +18,7 @@ export const GettingStarted: React.FC = () => {
                 <li>A good attitude</li>
             </ol>
             <p>
-                Really, that's all you need. A single trip to the hardware store, and you're ready to go. For the gloves, we recommend <a target="_blank" href="https://www.amazon.com/3100L-DZ-Gloves-Textured-Construction-12-Pairs/dp/B001YJHEDW/ref=sr_1_9?dchild=1&keywords=work+gloves&qid=1617415033&sr=8-9">Rubber Latex Double coated work gloves</a>. There's a good chance you will find glass or something sharp out there, and these gloves will offer some protection from that. It's also likely that either the outside of the trash will be wet, or there will be something inside
+                Really, that's all you need. A single trip to the hardware store, and you're ready to go. For the gloves, we recommend <a target="_blank" rel="noreferrer" href="https://www.amazon.com/3100L-DZ-Gloves-Textured-Construction-12-Pairs/dp/B001YJHEDW/ref=sr_1_9?dchild=1&keywords=work+gloves&qid=1617415033&sr=8-9">Rubber Latex Double coated work gloves</a>. There's a good chance you will find glass or something sharp out there, and these gloves will offer some protection from that. It's also likely that either the outside of the trash will be wet, or there will be something inside
                     the trash that is wet or icky. Get the gloves.
                 </p>
             <p>
@@ -36,7 +34,7 @@ export const GettingStarted: React.FC = () => {
             If you come out in sandals, you'll probably regret it.
                 </p>
             <p>
-                If you are working along a roadside, we <b>strongly urge you</b> to get a <a target="_blank" href="https://www.amazon.com/SHORFUNE-Visibility-Reflective-Pockets-Breathable/dp/B0733544MJ/ref=sr_1_2_sspa?dchild=1&keywords=reflective+vest&qid=1622158312&sr=8-2-spons&psc=1&smid=A12LJG9CBCPG51&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUFFRTVHMTI3RlcwSzEmZW5jcnlwdGVkSWQ9QTA4NTQ3NjYxSjlCTDdGVElVS1Y2JmVuY3J5cHRlZEFkSWQ9QTAyNTEyNzRaN1hOSVBaVjhWUlUmd2lkZ2V0TmFtZT1zcF9hdGYmYWN0aW9uPWNsaWNrUmVkaXJlY3QmZG9Ob3RMb2dDbGljaz10cnVl">reflective vest</a>. They can save your life.
+                If you are working along a roadside, we <b>strongly urge you</b> to get a <a target="_blank" rel="noreferrer" href="https://www.amazon.com/SHORFUNE-Visibility-Reflective-Pockets-Breathable/dp/B0733544MJ/ref=sr_1_2_sspa?dchild=1&keywords=reflective+vest&qid=1622158312&sr=8-2-spons&psc=1&smid=A12LJG9CBCPG51&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUFFRTVHMTI3RlcwSzEmZW5jcnlwdGVkSWQ9QTA4NTQ3NjYxSjlCTDdGVElVS1Y2JmVuY3J5cHRlZEFkSWQ9QTAyNTEyNzRaN1hOSVBaVjhWUlUmd2lkZ2V0TmFtZT1zcF9hdGYmYWN0aW9uPWNsaWNrUmVkaXJlY3QmZG9Ob3RMb2dDbGljaz10cnVl">reflective vest</a>. They can save your life.
                     </p>
             <h2>What About Those Grabber Things?</h2>
             <p>You'll see a lot of people using grabbers to pick litter. They save a ton of bending over when picking, and really facilitate getting small pieces of plastic off the ground, or trash out of a bush. They aren't essential, but we always carry one when we're gathering, and it
@@ -44,7 +42,7 @@ export const GettingStarted: React.FC = () => {
             <ol>
                 <li>You get what you pay for. We've tried the $10 ones and they work, but they don't last long. You'll want to treat them very gently. They're not meant to be used as a cane, or as a prybar, or to pick up bricks with.</li>
                 <li>Get one with a pistol grip. You may squeeze that trigger two hundred times, and ergonomics are your friend.</li>
-                <li>We're constantly on the lookout for new and better ones, but so far, the one we've had the most success with is the <a target="_blank" href="https://www.amazon.com/gp/product/B01G5WNO2M/ref=ppx_yo_dt_b_asin_title_o02_s01?ie=UTF8&psc=1">Unger Grabber Plus Reacher</a>. It's a little heavier than the
+                <li>We're constantly on the lookout for new and better ones, but so far, the one we've had the most success with is the <a target="_blank" rel="noreferrer" href="https://www.amazon.com/gp/product/B01G5WNO2M/ref=ppx_yo_dt_b_asin_title_o02_s01?ie=UTF8&psc=1">Unger Grabber Plus Reacher</a>. It's a little heavier than the
                             cheap ones, but so far so good with it. If you find a better one, please let us know.</li>
             </ol>
             <img src={picker} alt="Grabber / picker" />
