@@ -88,7 +88,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
 
     React.useEffect(() => {
         loadCaptchaEnginge(6);
-    });
+    }, []);
 
 
     function renderNameToolTip(props: any) {
