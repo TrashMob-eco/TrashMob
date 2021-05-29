@@ -22,6 +22,9 @@ $sqlKey = "Server=tcp:sql-tm-$environment-$region.database.windows.net,1433;Data
 az keyvault secret set --vault-name $keyVaultName --name AzureMapsKey --value $mapKey
 az keyvault secret set --vault-name $keyVaultName --name TMDBServerConnectionString --value $sqlKey
 
+# We default this to "x" to prevent email from being sent from developer instances accidentally
+az keyvault secret set --vault-name $keyVaultName --name sendGridApiKey --value "x"
+
 # Add current IP Address to SQL Server Firewall
 $ipAddress = (Invoke-WebRequest -uri "http://ifconfig.me/ip").Content
 az sql server firewall-rule create --name devRule --resource-group $rgName --server sql-tm-$environment-$region --start-ip-address $ipAddress --end-ip-address $ipAddress
