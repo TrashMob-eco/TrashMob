@@ -4,6 +4,7 @@ namespace TrashMob.Controllers
     using System;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -12,16 +13,19 @@ namespace TrashMob.Controllers
     using TrashMob.Common;
     using TrashMob.Models;
     using TrashMob.Persistence;
+    using TrashMob.Poco;
 
     [ApiController]
     [Route("api/users")]
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository userRepository;
+        private readonly IEmailManager emailManager;
 
-        public UsersController(IUserRepository userRepository)
+        public UsersController(IUserRepository userRepository, IEmailManager emailManager)
         {
             this.userRepository = userRepository;
+            this.emailManager = emailManager;
         }
 
         [HttpGet]
@@ -97,6 +101,16 @@ namespace TrashMob.Controllers
             }
 
             var newUser = await userRepository.AddUser(user).ConfigureAwait(false);
+
+            var email = new Email
+            {
+                Message = $"A new user: {user.Email} has joined TrashMob.eco!",
+                Subject = "New User Alert"
+            };
+
+            email.Addresses.Add(new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress });
+
+            await emailManager.SendSystemEmail(email, CancellationToken.None).ConfigureAwait(false);
 
             return Ok(newUser);
         }

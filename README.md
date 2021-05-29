@@ -27,23 +27,6 @@ As of 5/26/2021, we are now in Beta launch. We'll hold at Beta for about a month
 
 ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want to get involved. All kinds of skills needed, from logo design to reactjs, to website design, to aspnet core, to deployment / github skills.
  
-## High Priority Post Launch Items
-These items did not make the cut for launch but need to be done
-  1. UI
-    1. Styling
-      1. Add Required field indicators    
-  1. Brand sign in pages (need to redo logo and colors)
-  1. Fix image on github page
-  1. Ensure user can't multi-click buttons
-  1. Allow map to respond to changes in country, region, city or postal code
-  1. Check response codes from APIs are correct
-  1. Allow event location to be dragged with visual indicator
-  1. Add Patreon?
-  1. Find a way to secure the Azure Maps Key (referral restriction?)
-  1. Set up rotation of Azure Maps Keys every 24 hours
-  1. Redeploy test environment with standardized names  
-  1. Ensure AD is set up correctly (is it needed in my Sandbox sub?)
-
 # Development Notes
 
 ## Getting Started
