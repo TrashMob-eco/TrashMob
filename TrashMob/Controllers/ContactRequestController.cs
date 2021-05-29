@@ -3,6 +3,7 @@
     using Microsoft.AspNetCore.Mvc;
     using System.Threading;
     using System.Threading.Tasks;
+    using TrashMob.Common;
     using TrashMob.Models;
     using TrashMob.Persistence;
     using TrashMob.Poco;
@@ -29,7 +30,7 @@
                 Message = $"From Email: {contactRequest.Email}\nFrom Name:{contactRequest.Name}\nMessage:\n{contactRequest.Message}",
                 Subject = "Contact Request"
             };
-            email.Addresses.Add(new EmailAddress { Name = "TrashMob Info", Email = "info@trashmob.eco" });
+            email.Addresses.Add(new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress });
            
             await emailManager.SendSystemEmail(email, CancellationToken.None).ConfigureAwait(false);
             

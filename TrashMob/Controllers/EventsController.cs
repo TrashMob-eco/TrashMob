@@ -4,6 +4,7 @@ namespace TrashMob.Controllers
     using System;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ namespace TrashMob.Controllers
     using TrashMob.Common;
     using TrashMob.Models;
     using TrashMob.Persistence;
+    using TrashMob.Poco;
 
     [ApiController]
     [Route("api/events")]
@@ -20,12 +22,14 @@ namespace TrashMob.Controllers
         private readonly IEventRepository eventRepository;
         private readonly IEventAttendeeRepository eventAttendeeRepository;
         private readonly IUserRepository userRepository;
+        private readonly IEmailManager emailManager;
 
-        public EventsController(IEventRepository eventRepository, IEventAttendeeRepository eventAttendeeRepository, IUserRepository userRepository)
+        public EventsController(IEventRepository eventRepository, IEventAttendeeRepository eventAttendeeRepository, IUserRepository userRepository, IEmailManager emailManager)
         {
             this.eventRepository = eventRepository;
             this.eventAttendeeRepository = eventAttendeeRepository;
             this.userRepository = userRepository;
+            this.emailManager = emailManager;
         }
 
         [HttpGet]
@@ -154,6 +158,16 @@ namespace TrashMob.Controllers
             }
 
             await eventRepository.AddEvent(mobEvent).ConfigureAwait(false);
+
+            var email = new Email
+            {
+                Message = $"A new event: {mobEvent.Name} in {mobEvent.City} has been created on TrashMob.eco!",
+                Subject = "New User Alert"
+            };
+
+            email.Addresses.Add(new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress });
+
+            await emailManager.SendSystemEmail(email, CancellationToken.None).ConfigureAwait(false);
 
             return Ok();
         }

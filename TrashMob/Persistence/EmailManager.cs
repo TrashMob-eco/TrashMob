@@ -8,6 +8,7 @@ namespace TrashMob.Persistence
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using TrashMob.Common;
     using TrashMob.Poco;
 
     public class EmailManager : IEmailManager
@@ -29,7 +30,7 @@ namespace TrashMob.Persistence
                 return;
             }
 
-            var from = new SendGrid.Helpers.Mail.EmailAddress("info@trashmob.eco", "TrashMob Information");
+            var from = new SendGrid.Helpers.Mail.EmailAddress(Constants.TrashMobEmailAddress, Constants.TrashMobEmailName);
 
             var tos = new List<SendGrid.Helpers.Mail.EmailAddress>();
             foreach (var address in email.Addresses)
