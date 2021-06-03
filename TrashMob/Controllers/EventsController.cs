@@ -162,7 +162,7 @@ namespace TrashMob.Controllers
             var email = new Email
             {
                 Message = $"A new event: {mobEvent.Name} in {mobEvent.City} has been created on TrashMob.eco!",
-                Subject = "New User Alert"
+                Subject = "New Event Alert"
             };
 
             email.Addresses.Add(new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress });

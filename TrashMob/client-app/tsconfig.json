@@ -8,6 +8,8 @@
       "esnext"
     ],
     "allowJs": true,
+    "declaration": true,
+    "declarationDir": "./js/typings",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -17,16 +19,23 @@
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "importHelpers": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
     "suppressImplicitAnyIndexErrors": true,
     "typeRoots": [
       "./node_modules/@types/",
+      "./types",
       "./global.d.ts"
     ]
   },
   "include": [
     "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "typings",
+    "types"
   ]
 }
