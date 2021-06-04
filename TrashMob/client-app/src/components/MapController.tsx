@@ -62,7 +62,8 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
                     // Create an HtmlMarker.
                     return new HtmlMarker({
                         position: position,
-                        color: color
+                        color: color,
+                        text: properties.name,
                     });
                 },
                 source: dataSourceRef
@@ -71,45 +72,45 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
             // markerLayer.setOptions(MapStore.memoizedOptions);
 
             // Add mouse events to the layer to show/hide a popup when hovering over a marker.
-            mapRef.events.add('mouseover', markerLayer, markerHovered);
-            mapRef.events.add('mouseout', markerLayer, hidePopup);
+            mapRef.events.add('mouseover', markerLayer, (e: any) => {
+                var content;
+                var marker = e.target;
+                if (marker.properties.cluster) {
+                    content = `Cluster of ${marker.properties.point_count_abbreviated} markers`;
+                } else {
+                    content = marker.properties.name;
+                }
+
+                if (popup) {
+                    // Update the content and position of the popup.
+                    popup.setOptions({
+                        content: `<div style="padding:10px;">${content}</div>`,
+                        position: marker.getOptions().position
+                    });
+
+                    // Open the popup.
+                    if (mapRef) {
+                        popup.open(mapRef);
+                    }
+                }
+            });
+
+            mapRef.events.add('mouseout', markerLayer, (e: any) => {
+                if (popup) {
+                    popup.close();
+                }
+            });
 
             //Add marker layer to the map.
             mapRef.layers.add(markerLayer);
 
             props.multipleEvents.forEach(mobEvent => {
                 var position = new data.Point(new data.Position(mobEvent.longitude, mobEvent.latitude));
-                dataSourceRef.add(new data.Feature(position));
-            })
-        }
-
-        function markerHovered(e: any) {
-            var content;
-            var marker = e.target;
-            if (marker.properties.cluster) {
-                content = `Cluster of ${marker.properties.point_count_abbreviated} markers`;
-            } else {
-                content = marker.properties.Name;
-            }
-
-            if (popup) {
-                // Update the content and position of the popup.
-                popup.setOptions({
-                    content: `<div style="padding:10px;">${content}</div>`,
-                    position: marker.getOptions().position
-                });
-
-                // Open the popup.
-                if (mapRef) {
-                    popup.open(mapRef);
+                var properties = {
+                    name: mobEvent.name,
                 }
-            }
-        }
-
-        function hidePopup() {
-            if (popup) {
-                popup.close();
-            }
+                dataSourceRef.add(new data.Feature(position, properties));
+            })
         }
     }, [mapRef,
         props.center,

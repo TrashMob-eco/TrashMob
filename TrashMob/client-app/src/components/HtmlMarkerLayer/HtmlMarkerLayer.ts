@@ -444,7 +444,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
      * A simple event handler wrapper.
      * @param e Event arg. Will be a TargetedEvent from an HTML Marker.
      */
-    private _wrappedEvent = (e : any) => {
+    private _wrappedEvent(e : any) {
         this.map.events.invoke(e.type, this, e);
     }
 }
