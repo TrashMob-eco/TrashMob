@@ -281,7 +281,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
         const opt = self._options;
         const zoom = (map) ? map.getCamera().zoom : undefined;
 
-        if (opt.visible && zoom !== undefined && opt.minZoom && opt.maxZoom && zoom >= opt.minZoom && zoom <= opt.maxZoom) {
+        if (opt.visible && zoom !== undefined && opt.minZoom !== undefined && opt.maxZoom !== undefined && zoom >= opt.minZoom && zoom <= opt.maxZoom) {
             //TODO: Bug: this doesn't currently return clusters. Using underlying code to work around this.
             //const shapes = map.layers.getRenderedShapes(null, self, opt.filter);
 
