@@ -72,34 +72,8 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
             // markerLayer.setOptions(MapStore.memoizedOptions);
 
             // Add mouse events to the layer to show/hide a popup when hovering over a marker.
-            mapRef.events.add('mouseover', markerLayer, (e: any) => {
-                var content;
-                var marker = e.target;
-                if (marker.properties.cluster) {
-                    content = `Cluster of ${marker.properties.point_count_abbreviated} markers`;
-                } else {
-                    content = marker.properties.name;
-                }
-
-                if (popup) {
-                    // Update the content and position of the popup.
-                    popup.setOptions({
-                        content: `<div style="padding:10px;">${content}</div>`,
-                        position: marker.getOptions().position
-                    });
-
-                    // Open the popup.
-                    if (mapRef) {
-                        popup.open(mapRef);
-                    }
-                }
-            });
-
-            mapRef.events.add('mouseout', markerLayer, (e: any) => {
-                if (popup) {
-                    popup.close();
-                }
-            });
+            mapRef.events.add('mouseover', markerLayer, onHover );
+            mapRef.events.add('mouseout', markerLayer, closePopup);
 
             //Add marker layer to the map.
             mapRef.layers.add(markerLayer);
@@ -125,6 +99,35 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
 
     function handleLocationChange(e: any) {
         props.onLocationChange(e);
+    }
+
+    function closePopup(e: any) {
+        if (popup) {
+            popup.close();
+        }
+    }
+
+    function onHover(e: any) {
+        var content;
+        var marker = e.target;
+        if (marker.properties.cluster) {
+            content = `Cluster of ${marker.properties.point_count_abbreviated} markers`;
+        } else {
+            content = marker.properties.name;
+        }
+
+        if (popup) {
+            // Update the content and position of the popup.
+            popup.setOptions({
+                content: `<div style="padding:10px;">${content}</div>`,
+                position: marker.getOptions().position
+            });
+
+            // Open the popup.
+            if (mapRef) {
+                popup.open(mapRef);
+            }
+        }
     }
 
     return (

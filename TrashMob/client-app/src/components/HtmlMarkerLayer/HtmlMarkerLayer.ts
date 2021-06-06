@@ -412,15 +412,12 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
         }
     }
 
+
     /**
      * Wraps all events on a marker.
      * @param marker Marker to wrap events on.
      */
-    private _addEvents(marker: azmaps.HtmlMarker | null): void {
-        if (!marker) {
-            return;
-        }
-
+    private _addEvents(marker: ExtendedHtmlMarker): void {
         const self = this;
         self._supportedEvents.forEach(e => {
             //@ts-ignore
@@ -432,7 +429,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
      * Removes all wrapped events on a marker.
      * @param marker Marker to remove events from.
      */
-    private _removeEvents(marker: azmaps.HtmlMarker): void {
+    private _removeEvents(marker: ExtendedHtmlMarker): void {
         const self = this;
         self._supportedEvents.forEach(e => {
             //@ts-ignore
@@ -444,7 +441,43 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
      * A simple event handler wrapper.
      * @param e Event arg. Will be a TargetedEvent from an HTML Marker.
      */
-    private _wrappedEvent(e : any) {
-        this.map.events.invoke(e.type, this, e);
+    private _wrappedEvent = (e: azmaps.TargetedEvent) => {
+        this.map.events.invoke(e.type, e.target as ExtendedHtmlMarker, e.target as ExtendedHtmlMarker);
     }
+
+//    /**
+//     * Wraps all events on a marker.
+//     * @param marker Marker to wrap events on.
+//     */
+//    private _addEvents(marker: azmaps.HtmlMarker | null): void {
+//        if (!marker) {
+//            return;
+//        }
+
+//        const self = this;
+//        self._supportedEvents.forEach(e => {
+//            //@ts-ignore
+//            self.map.events.add(e, marker, self._wrappedEvent(e, marker));
+//        });
+//    }
+
+//    /**
+//     * Removes all wrapped events on a marker.
+//     * @param marker Marker to remove events from.
+//     */
+//    private _removeEvents(marker: azmaps.HtmlMarker): void {
+//        const self = this;
+//        self._supportedEvents.forEach(e => {
+//            //@ts-ignore
+//            self.map.events.remove(e, marker, self._wrappedEvent(e, marker));
+//        });
+//    }
+
+//    /**
+//     * A simple event handler wrapper.
+//     * @param e Event arg. Will be a TargetedEvent from an HTML Marker.
+//     */
+//    private _wrappedEvent(e : any, marker: azmaps.HtmlMarker) {
+//        this.map.events.invoke(e.type, marker);
+//    }
 }
