@@ -3,7 +3,7 @@ import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
 import { msalClient } from '../store/AuthStore';
 import UserData from './Models/UserData';
 import logo from './assets/logo.svg'
-import { Button, Dropdown, Navbar, Nav, NavDropdown } from 'react-bootstrap';
+import { Button, Navbar, Nav, NavDropdown } from 'react-bootstrap';
 
 interface TopMenuProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
