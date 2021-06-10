@@ -10,18 +10,18 @@ var db_Name = 'db-tm-${environment}-${region}'
 
 resource servers_db_name_resource 'Microsoft.Sql/servers@2020-11-01-preview' = {
   name: servers_db_name
-  location: '${region}'
+  location: region
   properties: {
     administratorLogin: 'dbadmin'
     version: '12.0'
     publicNetworkAccess: 'Enabled'
-    administratorLoginPassword: '${sqlAdminPassword}'
+    administratorLoginPassword: sqlAdminPassword
   }
 }
 
 resource servers_db_name_tm_ 'Microsoft.Sql/servers/databases@2020-11-01-preview' = {
   name: '${servers_db_name_resource.name}/${db_Name}'
-  location: '${region}'
+  location: region
   sku: {
     name: 'Basic'
     tier: 'Basic'
