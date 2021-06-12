@@ -40,3 +40,8 @@ az keyvault secret set --vault-name $keyVaultName --name sendGridApiKey --value 
 # Add current IP Address to SQL Server Firewall
 $ipAddress = (Invoke-WebRequest -uri "http://ifconfig.me/ip").Content
 az sql server firewall-rule create --name devRule --resource-group $rgName --server sql-tm-$environment-$region --start-ip-address $ipAddress --end-ip-address $ipAddress
+
+# Get the System Managed Identity for the FunctionApp to allow the Azure Function to access KeyVault
+$principal = az functionapp identity show --name $functionAppName --subscription $subscriptionId --resource-group $rgName | ConvertFrom-Json
+$principalId = $principal.principalId
+az keyvault set-policy --name $keyVaultName --object-id $principalId --secret-permissions "get"
