@@ -45,3 +45,7 @@ az sql server firewall-rule create --name devRule --resource-group $rgName --ser
 $principal = az functionapp identity show --name $functionAppName --subscription $subscriptionId --resource-group $rgName | ConvertFrom-Json
 $principalId = $principal.principalId
 az keyvault set-policy --name $keyVaultName --object-id $principalId --secret-permissions "get"
+
+$secret = az keyvault secret show --vault-name $keyVaultName --name TMDBServerConnectionString | ConvertFrom-Json
+$secretId = "@Microsoft.KeyVault(SecretUri=$secret.id)"
+az functionapp config appsettings set --name $functionAppName --subscription $subscriptionId --resource-group $rgName --settings "DbConnectionString=$secretId"
