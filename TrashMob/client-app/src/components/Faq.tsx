@@ -5,7 +5,7 @@ import frustrated from './assets/jeshoots-com--2vD8lIhdnw-unsplash.jpg';
 
 export const Faq: React.FC = () => {
     return (
-        <div className="expandCollapse">
+        <div className="expandCollapse card">
             <h1>Frequently Asked Questions</h1>
 
             <h2>Questions About the Site</h2>

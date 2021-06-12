@@ -5,7 +5,7 @@ import bigpile from './assets/muhammad-numan-ZVgxiKJlMk0-unsplash.jpg'
 
 export const AboutUs: React.FC = () => {
     return (
-        <div>
+        <div className="card">
             <h2>What is a TrashMob?</h2>
             <p>
                 A TrashMob is a group of citizens who are willing to take a hour or two out of their busy lives to get together and clean up a mess. Friends, family, total strangers, it doesn't matter. If you've ever

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 export const Sponsors: React.FC = () => {
     return (
-        <div>
+        <div className="card">
             <h1>Sponsors</h1>
 
             <h2>The Role of Sponsors at TrashMob.eco</h2>
