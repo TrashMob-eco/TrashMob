@@ -47,5 +47,7 @@ $principalId = $principal.principalId
 az keyvault set-policy --name $keyVaultName --object-id $principalId --secret-permissions "get"
 
 $secret = az keyvault secret show --vault-name $keyVaultName --name TMDBServerConnectionString | ConvertFrom-Json
-$secretId = "@Microsoft.KeyVault(SecretUri=$secret.id)"
-az functionapp config appsettings set --name $functionAppName --subscription $subscriptionId --resource-group $rgName --settings "DbConnectionString=$secretId"
+
+# Set the secret in the App Settings for the function. Need to update this to use KeyVault directly in the future, but couldn't get it to work on first few attempts
+$secretValue = $secret.value
+az functionapp config appsettings set --name $functionAppName --subscription $subscriptionId --resource-group $rgName --settings "DbConnectionString=$secretValue"
