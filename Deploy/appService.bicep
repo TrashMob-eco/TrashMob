@@ -2,13 +2,14 @@ param environment string
 param region string
 param subscriptionId string
 param rgName string
+param appServicePlanName string
 
 var sites_tm_name = 'as-tm-${environment}-${region}'
-var serverfarms_tmplan_externalid = '/subscriptions/${subscriptionId}/resourceGroups/${rgName}/providers/Microsoft.Web/serverfarms/asp-tm-${environment}-${region}'
+var serverfarms_tmplan_externalid = '/subscriptions/${subscriptionId}/resourceGroups/${rgName}/providers/Microsoft.Web/serverfarms/${appServicePlanName}'
 
 resource sites_tm_name_resource 'Microsoft.Web/sites@2018-11-01' = {
   name: sites_tm_name
-  location: '${region}'
+  location: region
   tags: {
     'hidden-related:/subscriptions/39a254b7-c01a-45ab-bebd-4038ea4adea9/resourceGroups/TrashMob/providers/Microsoft.Web/serverfarms/TrashMobDevPlan': 'empty'
   }
@@ -116,7 +117,7 @@ resource sites_tm_name_web 'Microsoft.Web/sites/config@2018-11-01' = {
 resource sites_tm_name_sites_tm_name_azurewebsites_net 'Microsoft.Web/sites/hostNameBindings@2018-11-01' = {
   name: '${sites_tm_name_resource.name}/${sites_tm_name}.azurewebsites.net'
   properties: {
-    siteName: '${sites_tm_name}'
+    siteName: sites_tm_name
     hostNameType: 'Verified'
   }
 }

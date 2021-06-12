@@ -28,6 +28,8 @@
 
         public virtual DbSet<EventType> EventTypes { get; set; }
 
+        public virtual DbSet<SiteMetric> SiteMetrics { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"]);
@@ -150,6 +152,21 @@
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EventAttendees_ApplicationUser");
+            });
+
+            modelBuilder.Entity<SiteMetric>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.MetricType)
+                    .IsRequired()
+                    .HasMaxLength(64);
+
+                entity.Property(e => e.ProcessedTime)
+                    .IsRequired();
+
+                entity.Property(e => e.MetricValue)
+                    .IsRequired();
             });
 
             modelBuilder.Entity<EventHistory>(entity =>
