@@ -1,7 +1,7 @@
-param env string
+param environment string
 param region string
 
-var keyvault_name = 'kv-tm-${env}-${region}'
+var keyvault_name = 'kv-tm-${environment}-${region}'
 
 resource keyvault_name_resource 'Microsoft.KeyVault/vaults@2021-04-01-preview' = {
   name: keyvault_name
@@ -161,6 +161,6 @@ resource keyvault_name_resource 'Microsoft.KeyVault/vaults@2021-04-01-preview' =
     enableSoftDelete: true
     softDeleteRetentionInDays: 90
     enableRbacAuthorization: false
-    vaultUri: 'https://${keyvault_name}.${environment().suffixes.keyvaultDns}/'
+    vaultUri: 'https://${keyvault_name}.vault.azure.net/'
   }
 }
