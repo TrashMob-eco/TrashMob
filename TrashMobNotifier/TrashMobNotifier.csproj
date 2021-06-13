@@ -7,7 +7,11 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.17.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.13" />
+    <PackageReference Include="SendGrid" Version="9.23.2" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TrashMob.Shared\TrashMob.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

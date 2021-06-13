@@ -6,8 +6,8 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using TrashMob.Common;
     using TrashMob.Models;
+    using TrashMob.Shared;
 
     public class EventAttendeeRepository : IEventAttendeeRepository
     {

@@ -1,9 +1,8 @@
 ﻿namespace TrashMob.Persistence
 {
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Poco;
+    using TrashMob.Shared;
 
     public interface IEmailManager
     {

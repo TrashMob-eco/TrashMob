@@ -1,8 +1,10 @@
 using System;
 using System.Data.SqlClient;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using TrashMob.Shared;
 
 namespace TrashMobNotifier
 {
@@ -13,20 +15,27 @@ namespace TrashMobNotifier
         {
             log.LogInformation($"Getting Stats trigger function executed at: {DateTime.Now}");
             var connectionString = Environment.GetEnvironmentVariable("DBConnectionString");
+            var sendGridApiKey = Environment.GetEnvironmentVariable("SendGridApiKey");
+            var instanceName = Environment.GetEnvironmentVariable("InstanceName");
+
+            var siteStats = new SiteStats();
 
             using (var conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                await CountUsers(log, conn);
-                await CountEvents(log, conn);
-                await CountEventAttendees(log, conn);
-                await CountFutureEvents(log, conn);
-                await CountFutureEventAttendees(log, conn);
-                await CountContactRequests(log, conn);
+
+                siteStats.UserCount = await CountUsers(log, conn).ConfigureAwait(false);
+                siteStats.EventCount = await CountEvents(log, conn).ConfigureAwait(false);
+                siteStats.AttendeeCount = await CountEventAttendees(log, conn).ConfigureAwait(false);
+                siteStats.FutureEventsCount = await CountFutureEvents(log, conn).ConfigureAwait(false);
+                siteStats.FutureEventAttendeesCount = await CountFutureEventAttendees(log, conn).ConfigureAwait(false);
+                siteStats.ContactRequestsCount = await CountContactRequests(log, conn).ConfigureAwait(false);
             }
+
+            await SendSummaryReport(siteStats, instanceName, sendGridApiKey).ConfigureAwait(false);
         }
 
-        private static async Task CountUsers(ILogger log, SqlConnection conn)
+        private static async Task<int> CountUsers(ILogger log, SqlConnection conn)
         {
             var sql = "SELECT count(*) FROM dbo.Users";
             var numberOfUsers = 0;
@@ -39,9 +48,11 @@ namespace TrashMobNotifier
             }
 
             await AddSiteMetrics(log, conn, "TotalSiteUsers", numberOfUsers);
+
+            return numberOfUsers;
         }
 
-        private static async Task CountEvents(ILogger log, SqlConnection conn)
+        private static async Task<int> CountEvents(ILogger log, SqlConnection conn)
         {
             var sql = "SELECT count(*) FROM dbo.Events";
             var numberOfEvents = 0;
@@ -54,9 +65,11 @@ namespace TrashMobNotifier
             }
 
             await AddSiteMetrics(log, conn, "TotalEvents", numberOfEvents);
+
+            return numberOfEvents;
         }
 
-        private static async Task CountFutureEvents(ILogger log, SqlConnection conn)
+        private static async Task<int> CountFutureEvents(ILogger log, SqlConnection conn)
         {
             var sql = "SELECT count(*) FROM dbo.Events WHERE EventDate > GetDate()";
             var numberOfEvents = 0;
@@ -69,9 +82,11 @@ namespace TrashMobNotifier
             }
 
             await AddSiteMetrics(log, conn, "TotalFutureEvents", numberOfEvents);
+
+            return numberOfEvents;
         }
 
-        private static async Task CountEventAttendees(ILogger log, SqlConnection conn)
+        private static async Task<int> CountEventAttendees(ILogger log, SqlConnection conn)
         {
             var sql = "SELECT count(*) FROM dbo.EventAttendees";
             var numberOfEventAttendees = 0;
@@ -84,9 +99,11 @@ namespace TrashMobNotifier
             }
 
             await AddSiteMetrics(log, conn, "TotalEventAttendees", numberOfEventAttendees);
+
+            return numberOfEventAttendees;
         }
 
-        private static async Task CountFutureEventAttendees(ILogger log, SqlConnection conn)
+        private static async Task<int> CountFutureEventAttendees(ILogger log, SqlConnection conn)
         {
             var sql = "  Select count(*) from dbo.EventAttendees ea inner join dbo.Events e on ea.EventId = e.id  WHERE e.EventDate > GetDate() ";
             var numberOfEventAttendees = 0;
@@ -99,9 +116,11 @@ namespace TrashMobNotifier
             }
 
             await AddSiteMetrics(log, conn, "TotalFutureEventAttendees", numberOfEventAttendees);
+
+            return numberOfEventAttendees;
         }
 
-        private static async Task CountContactRequests(ILogger log, SqlConnection conn)
+        private static async Task<int> CountContactRequests(ILogger log, SqlConnection conn)
         {
             var sql = "SELECT count(*) FROM dbo.ContactRequests";
             var numberOfContactRequests = 0;
@@ -114,6 +133,8 @@ namespace TrashMobNotifier
             }
 
             await AddSiteMetrics(log, conn, "TotalContactRequests", numberOfContactRequests);
+
+            return numberOfContactRequests;
         }
 
         private static async Task AddSiteMetrics(ILogger log, SqlConnection conn, string metricType, long metricValue)
@@ -135,5 +156,44 @@ namespace TrashMobNotifier
                     log.LogError("Error inserting data into Database!");
             }
         }
+
+        private static Task SendSummaryReport(SiteStats siteStats, string instanceName, string sendGridApiKey)
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine($"Summary Report for '{instanceName}'");
+            sb.AppendLine($"Total Number of Users: {siteStats.UserCount}");
+            sb.AppendLine($"Total Number of Events: {siteStats.EventCount}");
+            sb.AppendLine($"Total Number of Attendees: {siteStats.AttendeeCount}");
+            sb.AppendLine($"Total Number of Future Events: {siteStats.FutureEventsCount}");
+            sb.AppendLine($"Total Number of Future Event Attendees: {siteStats.FutureEventAttendeesCount}");
+            sb.AppendLine($"Total Number of Contact Requests: {siteStats.ContactRequestsCount}");
+
+            var email = new Email
+            {
+                Subject = $"Summary Report for '{instanceName}'",
+                Message = sb.ToString()
+            };
+
+            email.Addresses.Add(new EmailAddress() { Email = Constants.TrashMobEmailAddress, Name = Constants.TrashMobEmailName });
+            
+            var emailSender = new EmailSender();
+            return emailSender.SendEmailAsync(email, sendGridApiKey);
+        }
+    }
+
+    public class SiteStats
+    {
+        public int UserCount { get; set; }
+
+        public int EventCount { get; set; }
+
+        public int AttendeeCount { get; set; }
+
+        public int FutureEventsCount { get; set; }
+
+        public int FutureEventAttendeesCount { get; set; }
+
+        public int ContactRequestsCount { get; set; }
     }
 }
