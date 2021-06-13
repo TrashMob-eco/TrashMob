@@ -29,7 +29,7 @@ az deployment group create --template-file ".\azureMaps.bicep" -g $rgName --para
 az deployment group create --template-file ".\storageAccount.bicep" -g $rgName --parameters storageAccountName=$storageAccountName region=$region
 az deployment group create --template-file ".\sqlServer.bicep" -g $rgName --parameters environment=$environment region=$region subscriptionId=$subscriptionId sqlAdminPassword=$sqlAdminPassword
 az deployment group create --template-file ".\sqlDatabase.bicep" -g $rgName --parameters environment=$environment region=$region subscriptionId=$subscriptionId
-az deployment group create --template-file ".\keyVault.bicep" -g $rgName --parameters env=$environment region=$region
+az deployment group create --template-file ".\keyVault.bicep" -g $rgName --parameters environment=$environment region=$region
 az deployment group create --template-file ".\appServicePlan.bicep" -g $rgName --parameters appServicePlanName=$appServicePlanName region=$region
 az deployment group create --template-file ".\appService.bicep" -g $rgName --parameters appServicePlanName=$appServicePlanName appServiceName=$appServiceName region=$region subscriptionId=$subscriptionId rgName=$rgName
 az deployment group create --template-file ".\logAnalyticsWorkspace.bicep" -g $rgName --parameters environment=$environment region=$region
@@ -61,7 +61,9 @@ $principalId = $principal.principalId
 az keyvault set-policy --name $keyVaultName --object-id $principalId --secret-permissions "get"
 
 # Add the Policy for the App Service Id to the KeyVault
-# az keyvault set-policy --name $keyVaultName --object-id $principalId --secret-permissions "get","list"
+$principal2 = az webapp identity show --name as-tm-dev-westus2 --resource-group rg-trashmob-dev-westus2 | ConvertFrom-Json
+$principal2Id = $principal2.principalId
+az keyvault set-policy --name $keyVaultName --object-id $principal2Id --secret-permissions get list
 
 # Set the secret in the App Settings for the function. Need to update this to use KeyVault directly in the future, but couldn't get the function app to work on first few attempts
 az functionapp config appsettings set --name $functionAppName --subscription $subscriptionId --resource-group $rgName --settings "DbConnectionString=$sqlKey SendGridApiKey=$sendGridApiKey InstanceName=$appServiceName"
