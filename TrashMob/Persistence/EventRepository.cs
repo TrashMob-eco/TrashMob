@@ -5,9 +5,9 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using TrashMob.Common;
     using TrashMob.Extensions;
     using TrashMob.Models;
+    using TrashMob.Shared;
 
     public class EventRepository : IEventRepository
     {

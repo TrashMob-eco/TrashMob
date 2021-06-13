@@ -4,6 +4,7 @@
     using Microsoft.Extensions.Configuration;
     using TrashMob.Common;
     using TrashMob.Models;
+    using TrashMob.Shared;
 
     public class MobDbContext : DbContext
     {

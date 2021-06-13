@@ -1,5 +1,5 @@
 ﻿
-namespace TrashMob.Poco
+namespace TrashMob.Shared
 {
     using System.Collections.Generic;
 

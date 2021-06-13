@@ -3,10 +3,9 @@
     using Microsoft.AspNetCore.Mvc;
     using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Common;
+    using TrashMob.Shared;
     using TrashMob.Models;
     using TrashMob.Persistence;
-    using TrashMob.Poco;
 
     [ApiController]
     [Route("api/contactrequest")]
