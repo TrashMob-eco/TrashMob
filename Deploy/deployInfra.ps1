@@ -51,6 +51,9 @@ az keyvault secret set --vault-name $keyVaultName --name TMDBServerConnectionStr
 az keyvault secret set --vault-name $keyVaultName --name StorageAccountKey --value $storageKey
 az keyvault secret set --vault-name $keyVaultName --name sendGridApiKey --value $sendGridApiKey
 
+# Set the webapp to the correct keyvaulturi
+az webapp config appsettings set --name $appServiceName --resource-group $rgName --settings "VaultUri=https://$keyVaultName.vault.azure.net"
+
 # Add current IP Address to SQL Server Firewall
 $ipAddress = (Invoke-WebRequest -uri "http://ifconfig.me/ip").Content
 az sql server firewall-rule create --name devRule --resource-group $rgName --server sql-tm-$environment-$region --start-ip-address $ipAddress --end-ip-address $ipAddress
@@ -61,7 +64,7 @@ $principalId = $principal.principalId
 az keyvault set-policy --name $keyVaultName --object-id $principalId --secret-permissions "get"
 
 # Add the Policy for the App Service Id to the KeyVault
-$principal2 = az webapp identity show --name as-tm-dev-westus2 --resource-group rg-trashmob-dev-westus2 | ConvertFrom-Json
+$principal2 = az webapp identity show --name $appServiceName --resource-group $rgName | ConvertFrom-Json
 $principal2Id = $principal2.principalId
 az keyvault set-policy --name $keyVaultName --object-id $principal2Id --secret-permissions get list
 
