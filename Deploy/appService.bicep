@@ -10,7 +10,7 @@ resource sites_tm_name_resource 'Microsoft.Web/sites@2018-11-01' = {
   name: appServiceName
   location: region
   tags: {
-    'hidden-related:/subscriptions/39a254b7-c01a-45ab-bebd-4038ea4adea9/resourceGroups/TrashMob/providers/Microsoft.Web/serverfarms/TrashMobDevPlan': 'empty'
+    'hidden-related:/subscriptions/${subscriptionId}/resourceGroups/${rgName}/providers/Microsoft.Web/serverfarms/${appServicePlanName}': 'empty'
   }
   kind: 'app'
   identity: {
