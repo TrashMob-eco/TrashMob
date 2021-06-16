@@ -13,7 +13,7 @@ namespace TrashMob.Controllers
     using TrashMob.Common;
     using TrashMob.Models;
     using TrashMob.Persistence;
-    using TrashMob.Poco;
+    using TrashMob.Shared;
 
     [ApiController]
     [Route("api/events")]

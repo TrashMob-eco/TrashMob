@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 export const Partners: React.FC = () => {
     return (
-        <div>
+        <div className="card">
             <h1>Partners</h1>
 
             <h2>What are Partners?</h2>

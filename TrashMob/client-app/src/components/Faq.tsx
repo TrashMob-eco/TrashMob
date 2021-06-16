@@ -5,7 +5,7 @@ import frustrated from './assets/jeshoots-com--2vD8lIhdnw-unsplash.jpg';
 
 export const Faq: React.FC = () => {
     return (
-        <div className="expandCollapse">
+        <div className="expandCollapse card">
             <h1>Frequently Asked Questions</h1>
 
             <h2>Questions About the Site</h2>
@@ -55,7 +55,7 @@ export const Faq: React.FC = () => {
 
             <div>
                 <h3>What do you do with my email address?</h3>
-                <p>We will only use your email address to contact you regarding events on this site. We will never give your email address to outside agencies (except as required by law) or other users. Period. See our <Link to="./PrivacyPolicy">Privacy Policy</Link></p>
+                <p>We will only use your email address to contact you regarding events on this site. We will never give your email address to outside agencies (except as required by law) or to other users. Period. See our <Link to="./PrivacyPolicy">Privacy Policy</Link></p>
             </div>
 
             <h2>Questions about TrashMob Events</h2>

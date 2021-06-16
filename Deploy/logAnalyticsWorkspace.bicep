@@ -5,7 +5,7 @@ var workspaces_law_tm_name = 'law-tm-${environment}-${region}'
 
 resource workspaces_law_tm_name_resource 'microsoft.operationalinsights/workspaces@2020-10-01' = {
   name: workspaces_law_tm_name
-  location: '${region}'
+  location: region
   properties: {
     sku: {
       name: 'PerGB2018'

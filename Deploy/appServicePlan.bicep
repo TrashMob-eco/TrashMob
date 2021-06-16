@@ -1,11 +1,9 @@
-param environment string
 param region string
-
-var serverfarms_tmplan_name = 'asp-tm-${environment}-${region}'
+param appServicePlanName string
 
 resource serverfarms_tmplan_name_resource 'Microsoft.Web/serverfarms@2018-02-01' = {
-  name: serverfarms_tmplan_name
-  location: '${region}'
+  name: appServicePlanName
+  location: region
   sku: {
     name: 'D1'
     tier: 'Shared'

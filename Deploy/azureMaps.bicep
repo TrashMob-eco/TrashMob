@@ -8,7 +8,6 @@ resource accounts_map_trashmobdev_name_resource 'Microsoft.Maps/accounts@2021-02
   location: 'global'
   sku: {
     name: 'S0'
-    tier: 'Standard'
   }
   kind: 'Gen1'
   properties: {

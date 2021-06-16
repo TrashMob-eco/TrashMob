@@ -17,7 +17,7 @@ namespace TrashMob.Migrations
             modelBuilder
                 .HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.4")
+                .HasAnnotation("ProductVersion", "5.0.6")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("TrashMob.Models.ContactRequest", b =>
@@ -421,6 +421,27 @@ namespace TrashMob.Migrations
                             IsActive = true,
                             Name = "Other"
                         });
+                });
+
+            modelBuilder.Entity("TrashMob.Models.SiteMetric", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("MetricType")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<long>("MetricValue")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset>("ProcessedTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SiteMetrics");
                 });
 
             modelBuilder.Entity("TrashMob.Models.User", b =>
