@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrashMob", "TrashMob\TrashM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrashMobNotifier", "TrashMobNotifier\TrashMobNotifier.csproj", "{A3372627-E00B-495F-87F5-F824892A608A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrashMob.Shared", "TrashMob.Shared\TrashMob.Shared.csproj", "{2FD76A36-109C-407B-B3CA-6FFA2ABAA67C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrashMob.Shared", "TrashMob.Shared\TrashMob.Shared.csproj", "{2FD76A36-109C-407B-B3CA-6FFA2ABAA67C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrashMob.Shared.Tests", "TrashMob.Shared.Tests\TrashMob.Shared.Tests.csproj", "{5C9F3B30-8A2A-4E73-AE7C-A4EABA0353B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{2FD76A36-109C-407B-B3CA-6FFA2ABAA67C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FD76A36-109C-407B-B3CA-6FFA2ABAA67C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FD76A36-109C-407B-B3CA-6FFA2ABAA67C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C9F3B30-8A2A-4E73-AE7C-A4EABA0353B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C9F3B30-8A2A-4E73-AE7C-A4EABA0353B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C9F3B30-8A2A-4E73-AE7C-A4EABA0353B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C9F3B30-8A2A-4E73-AE7C-A4EABA0353B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
