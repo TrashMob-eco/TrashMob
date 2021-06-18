@@ -98,7 +98,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
             setMapOptions(opts);
             setIsMapKeyLoaded(true);
         })
-    }, [eventId]);
+    }, [eventId, eventUrl]);
 
     React.useEffect(() => {
         setCurrentUser(props.currentUser);
