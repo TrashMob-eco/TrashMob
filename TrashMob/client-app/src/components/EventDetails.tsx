@@ -42,6 +42,8 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
     const [userList, setUserList] = React.useState<UserData[]>([]);
     const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
     const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
+    const [shareText, setShareText] = React.useState<string>();
+    const [eventUrl, setEventUrl] = React.useState<string>();
 
     React.useEffect(() => {
 
@@ -57,6 +59,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
             });
 
         if (eventId != null) {
+            setEventUrl("https://www.trashmob.eco/eventdetails/" + eventId);
             fetch('/api/eventattendees/' + eventId, {
                 method: 'GET',
                 headers: headers,
@@ -84,6 +87,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     setPostalCode(eventData.postalCode);
                     setLatitude(eventData.latitude);
                     setLongitude(eventData.longitude);
+                    setShareText("Help clean up Planet Earth! Sign up for this TrashMob.eco event in " + eventData.city + ", " + eventData.region + " on " + (new Date(eventData.eventDate)).toLocaleDateString() +"! " + eventUrl);
                     setMaxNumberOfParticipants(eventData.maxNumberOfParticipants);
                     setCenter(new data.Position(eventData.longitude, eventData.latitude));
                     setIsDataLoaded(true);
@@ -137,6 +141,14 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
         return (
             <div>
                 <Form>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group>
+                                <div><a target="_blank" rel="noopener noreferrer" href="https://twitter.com/intent/tweet?button_hashtag=TrashMob&ref_src=twsrc%5Etfw" className="twitter-hashtag-button" data-size="large" data-text={shareText + " @TrashMob"} data-related="trashmobe" data-show-count="false">Share on Twitter</a></div>                               
+                                <div className="fb-share-button" data-href={eventUrl} data-layout="button" data-size="small"><a target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.trashmob.eco%2Feventdetails&amp;src=sdkpreparse" className="fb-xfbml-parse-ignore">Share on Facebook</a></div>
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
                     <Form.Row>
                         <Col>
                             <Form.Group>
