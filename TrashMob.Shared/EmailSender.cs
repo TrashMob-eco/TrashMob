@@ -7,9 +7,9 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    public class EmailSender
+    public class EmailSender : IEmailSender
     {
-        public async Task SendEmailAsync(Email email, string apiKey,  CancellationToken cancellationToken = default)
+        public async Task SendEmailAsync(Email email, string apiKey, CancellationToken cancellationToken = default)
         {
             // To not send emails from dev environments, don't store an apikey password in the local secrets
             if (string.IsNullOrWhiteSpace(apiKey) || apiKey == "x")

@@ -11,18 +11,20 @@ namespace TrashMob.Shared.Tests
         private readonly Mock<IEventRepository> eventRepository;
         private readonly Mock<IEventAttendeeRepository> eventAttendeeRepository;
         private readonly Mock<IUserRepository> userRepository;
+        private readonly Mock<IEmailSender> emailSender;
 
         public UpcomingEventAttendingThisWeekNotifierTests()
         {
             eventRepository = new Mock<IEventRepository>();
             eventAttendeeRepository = new Mock<IEventAttendeeRepository>();
             userRepository = new Mock<IUserRepository>();
+            emailSender = new Mock<IEmailSender>();
         }
 
         [Fact]
         public async Task GenerateNotificationsAsync_WithNoDataAvailable_Succeeds()
         {
-            var engine = new UpcomingEventAttendingThisWeekNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object);
+            var engine = new UpcomingEventAttendingThisWeekNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, emailSender.Object);
 
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
         }
