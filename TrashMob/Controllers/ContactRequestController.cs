@@ -4,8 +4,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared;
-    using TrashMob.Models;
-    using TrashMob.Persistence;
+    using TrashMob.Shared.Models;
+    using TrashMob.Shared.Persistence;
 
     [ApiController]
     [Route("api/contactrequest")]
