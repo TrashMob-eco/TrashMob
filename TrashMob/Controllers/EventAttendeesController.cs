@@ -10,8 +10,9 @@ namespace TrashMob.Controllers
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Shared;
-    using TrashMob.Models;
-    using TrashMob.Persistence;
+    using TrashMob.Shared.Extensions;
+    using TrashMob.Shared.Models;
+    using TrashMob.Shared.Persistence;
     using TrashMob.Poco;
 
     [ApiController]

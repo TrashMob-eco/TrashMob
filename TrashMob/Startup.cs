@@ -9,7 +9,7 @@ namespace TrashMob
     using Microsoft.Extensions.Hosting;
     using Microsoft.Identity.Web;
     using Microsoft.OpenApi.Models;
-    using TrashMob.Persistence;
+    using TrashMob.Shared.Persistence;
     
     public class Startup
     {

@@ -2,7 +2,7 @@
 {
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
-    using TrashMob.Persistence;
+    using TrashMob.Shared.Persistence;
 
     [ApiController]
     [Route("api/maps")]
