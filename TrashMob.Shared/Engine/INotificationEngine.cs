@@ -4,6 +4,6 @@
 
     public interface INotificationEngine
     {
-        public Task GenerateEventNotificatonsAsync();
+        public Task GenerateNotificationsAsync();
     }
 }
