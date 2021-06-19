@@ -8,10 +8,13 @@ namespace TrashMob.Shared.Engine
 
     public class EventSummaryHostReminderNotifier : NotificationEngineBase, INotificationEngine
     {
+        protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.EventSummaryHostReminder;
+ 
         public EventSummaryHostReminderNotifier(IEventRepository eventRepository, IUserRepository userRepository, IEventAttendeeRepository eventAttendeeRepository, IEmailSender emailSender) :
             base(eventRepository, userRepository, eventAttendeeRepository, emailSender)
         {
         }
+
 
         public Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {

@@ -28,5 +28,15 @@ namespace TrashMob.Shared.Tests
 
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
         }
+
+        [Fact]
+        public void GetEmailTemplate_Succeeds()
+        {
+            var engine = new EventSummaryAttendeeNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, emailSender.Object);
+
+            var template = engine.GetEmailTemplate();
+
+            Assert.False(string.IsNullOrWhiteSpace(template));
+        }
     }
 }

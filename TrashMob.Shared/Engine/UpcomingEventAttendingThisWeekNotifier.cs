@@ -8,6 +8,8 @@ namespace TrashMob.Shared.Engine
 
     public class UpcomingEventAttendingThisWeekNotifier : NotificationEngineBase, INotificationEngine
     {
+        protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UpcomingEventAttendingThisWeek;
+
         public UpcomingEventAttendingThisWeekNotifier(IEventRepository eventRepository, IUserRepository userRepository, IEventAttendeeRepository eventAttendeeRepository, IEmailSender emailSender) :
             base(eventRepository, userRepository, eventAttendeeRepository, emailSender)
         {

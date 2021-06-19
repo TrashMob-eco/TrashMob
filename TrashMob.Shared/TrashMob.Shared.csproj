@@ -5,6 +5,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Engine\EmailTemplates\EventSummaryAttendee.html" />
+    <None Remove="Engine\EmailTemplates\EventSummaryHostReminder.html" />
+    <None Remove="Engine\EmailTemplates\UpcomingEventAttendingThisWeek.html" />
+    <None Remove="Engine\EmailTemplates\UpcomingEventAttendingToday.html" />
+    <None Remove="Engine\EmailTemplates\UpcomingEventHostingThisWeek.html" />
+    <None Remove="Engine\EmailTemplates\UpcomingEventHostingToday.html" />
+    <None Remove="Engine\EmailTemplates\UpcomingEventsInYourAreaThisWeek.html" />
+    <None Remove="Engine\EmailTemplates\UpcomingEventsInYourAreaToday.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Engine\EmailTemplates\EventSummaryAttendee.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\EventSummaryHostReminder.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\UpcomingEventAttendingThisWeek.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\UpcomingEventAttendingToday.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\UpcomingEventHostingThisWeek.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\UpcomingEventHostingToday.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\UpcomingEventsInYourAreaThisWeek.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\UpcomingEventsInYourAreaToday.html" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.7">

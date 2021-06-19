@@ -8,6 +8,8 @@ namespace TrashMob.Shared.Engine
 
     public class EventSummaryAttendeeNotifier : NotificationEngineBase, INotificationEngine
     {
+        protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.EventSummaryAttendee;
+
         public EventSummaryAttendeeNotifier(IEventRepository eventRepository, IUserRepository userRepository, IEventAttendeeRepository eventAttendeeRepository, IEmailSender emailSender) : 
             base(eventRepository, userRepository, eventAttendeeRepository, emailSender)
         {
