@@ -1,6 +1,7 @@
 ﻿namespace TrashMobNotifier
 {
     using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using TrashMob.Shared;
     using TrashMob.Shared.Persistence;
@@ -10,6 +11,10 @@
         public override void Configure(IFunctionsHostBuilder builder)
         {
             builder.Services.AddSingleton<IEmailSender, EmailSender>();
+            
+            // Todo Add configuration
+            // builder.Services.AddSingleton<IConfiguration, FunctionConfiguration>
+
             builder.Services.AddDbContext<MobDbContext>();
             builder.Services.AddSingleton<IContactRequestRepository, ContactRequestRepository>();
             builder.Services.AddSingleton<IEmailManager, EmailManager>();

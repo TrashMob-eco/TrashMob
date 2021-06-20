@@ -1,6 +1,4 @@
 using System;
-using System.Data.SqlClient;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -17,8 +15,9 @@ namespace TrashMobNotifier
             var connectionString = Environment.GetEnvironmentVariable("DBConnectionString");
             var sendGridApiKey = Environment.GetEnvironmentVariable("SendGridApiKey");
             var instanceName = Environment.GetEnvironmentVariable("InstanceName");
+            var azureMapsKey = Environment.GetEnvironmentVariable("AzureMapsKey");
 
-            
+            await userNotificationManager.RunAllNotificatons().ConfigureAwait(false);
         }
     }
 }
