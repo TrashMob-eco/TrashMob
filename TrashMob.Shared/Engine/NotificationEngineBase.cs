@@ -12,16 +12,20 @@
         protected IEventRepository EventRepository { get; }
 
         protected IUserRepository UserRepository { get; }
-        
+
         protected IEventAttendeeRepository EventAttendeeRepository { get; }
 
         protected IUserNotificationRepository UserNotificationRepository { get; }
-        
+
         public IUserNotificationPreferenceRepository UserNotificationPreferenceRepository { get; }
 
         protected IEmailSender EmailSender { get; }
 
+        protected IMapRepository MapRepository { get; }
+        
         protected abstract NotificationTypeEnum NotificationType { get; }
+
+        protected abstract int NumberOfHoursInWindow { get; }
 
         protected abstract string EmailSubject { get; }
 
@@ -32,7 +36,8 @@
                                       IEventAttendeeRepository eventAttendeeRepository, 
                                       IUserNotificationRepository userNotificationRepository, 
                                       IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
-                                      IEmailSender emailSender)
+                                      IEmailSender emailSender,
+                                      IMapRepository mapRepository)
         {
             EventRepository = eventRepository;
             UserRepository = userRepository;
@@ -40,6 +45,7 @@
             UserNotificationRepository = userNotificationRepository;
             UserNotificationPreferenceRepository = userNotificationPreferenceRepository;
             EmailSender = emailSender;
+            MapRepository = mapRepository;
         }
 
         public string GetEmailTemplate()

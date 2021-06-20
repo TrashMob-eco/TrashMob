@@ -7,35 +7,17 @@ namespace TrashMob.Shared.Tests
     using System.Threading.Tasks;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
     using Xunit;
 
     public class UpcomingEventsInYourAreaTodayNotifierTests : NotifierTestsBase
     {
-        private readonly Mock<IEventRepository> eventRepository;
-        private readonly Mock<IEventAttendeeRepository> eventAttendeeRepository;
-        private readonly Mock<IUserRepository> userRepository;
-        private readonly Mock<IUserNotificationRepository> userNotificationRepository;
-        private readonly Mock<IUserNotificationPreferenceRepository> userNotificationPreferenceRepository;
-        private readonly Mock<IEmailSender> emailSender;
-
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UpcomingEventsInYourAreaToday;
-
-        public UpcomingEventsInYourAreaTodayNotifierTests()
-        {
-            eventRepository = new Mock<IEventRepository>();
-            eventAttendeeRepository = new Mock<IEventAttendeeRepository>();
-            userRepository = new Mock<IUserRepository>();
-            userNotificationRepository = new Mock<IUserNotificationRepository>();
-            userNotificationPreferenceRepository = new Mock<IUserNotificationPreferenceRepository>();
-            emailSender = new Mock<IEmailSender>();
-        }
 
         [Fact]
         public void GetEmailTemplate_Succeeds()
         {
             // Arrange
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, userNotificationRepository.Object, userNotificationPreferenceRepository.Object, emailSender.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
 
             // Act
             var template = engine.GetEmailTemplate();
@@ -49,14 +31,14 @@ namespace TrashMob.Shared.Tests
         public async Task GenerateNotificationsAsync_WithNoDataAvailable_Succeeds()
         {
             // Arrange
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, userNotificationRepository.Object, userNotificationPreferenceRepository.Object, emailSender.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            userNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
-            emailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
+            UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
+            EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -69,21 +51,21 @@ namespace TrashMob.Shared.Tests
             List<Event> events = GetEventList1();
             List<User> users = GetUserList1();
 
-            eventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            userRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, userNotificationRepository.Object, userNotificationPreferenceRepository.Object, emailSender.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            eventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
-            userNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
-            userRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            eventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Once);
-            userNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Once);
-            emailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Once);
+            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
+            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Once);
+            UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Once);
+            EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -93,21 +75,21 @@ namespace TrashMob.Shared.Tests
             List<Event> events = GetEventList2();
             List<User> users = GetUserList1();
 
-            eventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            userRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, userNotificationRepository.Object, userNotificationPreferenceRepository.Object, emailSender.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            eventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
-            userNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
-            userRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            eventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Once);
-            userNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Exactly(2));
-            emailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Once);
+            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
+            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Once);
+            UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Exactly(2));
+            EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -117,21 +99,21 @@ namespace TrashMob.Shared.Tests
             List<Event> events = GetEventList1();
             List<User> users = GetUserList2();
 
-            eventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            userRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, userNotificationRepository.Object, userNotificationPreferenceRepository.Object, emailSender.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            userRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            userNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Exactly(2));
-            eventRepository.Verify(_ => _.GetActiveEvents(), Times.Exactly(2));
-            eventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Exactly(2));
-            userNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Exactly(2));
-            emailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Exactly(2));
+            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Exactly(2));
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Exactly(2));
+            UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Exactly(2));
+            EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
         }
 
         [Fact]
@@ -141,24 +123,24 @@ namespace TrashMob.Shared.Tests
             List<Event> events = GetEventList1();
             List<User> users = GetUserList1();
 
-            eventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            userRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
             // The user is attending all available events
-            eventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, userNotificationRepository.Object, userNotificationPreferenceRepository.Object, emailSender.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            userRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            userNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
-            eventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
-            eventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Once);
-            userNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
-            emailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
+            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
+            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Once);
+            UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
+            EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -170,24 +152,24 @@ namespace TrashMob.Shared.Tests
             List<Event> alternateEvents = GetEventList1();
             alternateEvents[0].Id = new Guid();
 
-            eventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            userRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
             // The user is attending all available events
-            eventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(alternateEvents);
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(alternateEvents);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, userNotificationRepository.Object, userNotificationPreferenceRepository.Object, emailSender.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            userRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            userNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
-            eventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
-            eventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Once);
-            userNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Once);
-            emailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Once);
+            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
+            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Once);
+            UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Once);
+            EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -197,8 +179,8 @@ namespace TrashMob.Shared.Tests
             List<Event> events = GetEventList1();
             List<User> users = GetUserList1();
 
-            eventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            userRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
             // The user has already received notifications for all events
             var userNotification = new UserNotification()
@@ -211,20 +193,20 @@ namespace TrashMob.Shared.Tests
 
             var userNotifications = new List<UserNotification>() { userNotification };
 
-            userNotificationRepository.Setup(ea => ea.GetUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(userNotifications);
+            UserNotificationRepository.Setup(ea => ea.GetUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(userNotifications);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, userNotificationRepository.Object, userNotificationPreferenceRepository.Object, emailSender.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            userRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            userNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
-            eventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
-            eventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Once);
-            userNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
-            emailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
+            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
+            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Once);
+            UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
+            EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -234,8 +216,8 @@ namespace TrashMob.Shared.Tests
             List<Event> events = GetEventList1();
             List<User> users = GetUserList1();
 
-            eventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            userRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
             // The user has already received notifications for all events
             var userNotification = new UserNotification()
@@ -248,20 +230,20 @@ namespace TrashMob.Shared.Tests
 
             var userNotifications = new List<UserNotification>() { userNotification };
 
-            userNotificationRepository.Setup(ea => ea.GetUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(userNotifications);
+            UserNotificationRepository.Setup(ea => ea.GetUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(userNotifications);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, userNotificationRepository.Object, userNotificationPreferenceRepository.Object, emailSender.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            userRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            userNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
-            eventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
-            eventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Once);
-            userNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Once);
-            emailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Once);
+            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
+            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Once);
+            UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Once);
+            EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -273,21 +255,21 @@ namespace TrashMob.Shared.Tests
 
             users[0].IsOptedOutOfAllEmails = true;
 
-            eventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            userRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, userNotificationRepository.Object, userNotificationPreferenceRepository.Object, emailSender.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            userRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            userNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Never);
-            eventRepository.Verify(_ => _.GetActiveEvents(), Times.Never);
-            eventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Never);
-            userNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
-            emailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
+            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Never);
+            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Never);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Never);
+            UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
+            EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -300,22 +282,75 @@ namespace TrashMob.Shared.Tests
             var unIndex = userNotificationPreferences.FindIndex(unp => unp.UserNotificationTypeId == (int)NotificationType);
             userNotificationPreferences[unIndex].IsOptedOut = true;
 
-            eventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            userRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
-            userNotificationPreferenceRepository.Setup(unp => unp.GetUserNotificationPreferences(It.IsAny<Guid>())).ReturnsAsync(userNotificationPreferences);
+            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            UserNotificationPreferenceRepository.Setup(unp => unp.GetUserNotificationPreferences(It.IsAny<Guid>())).ReturnsAsync(userNotificationPreferences);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, userNotificationRepository.Object, userNotificationPreferenceRepository.Object, emailSender.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            userRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            eventRepository.Verify(_ => _.GetActiveEvents(), Times.Never);
-            userNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
-            eventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Never);
-            userNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
-            emailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
+            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
+            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Never);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Never);
+            UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
+            EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task GenerateNotificationsAsync_With1EventFor1UsersWhereEventIsMoreThan24HoursAway_SendsNoEmail()
+        {
+            // Arrange
+            List<Event> events = GetEventList1();
+            List<User> users = GetUserList1();
+            events[0].EventDate = DateTimeOffset.UtcNow.AddDays(3);
+
+            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
+
+            // Act
+            await engine.GenerateNotificationsAsync().ConfigureAwait(false);
+
+            // Assert
+            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
+            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Once);
+            UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
+            EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task GenerateNotificationsAsync_With1EventFor1UsersWhereEventIsOutsideOfTravelPreference_SendsNoEmail()
+        {
+            // Arrange
+            List<Event> events = GetEventList1();
+            List<User> users = GetUserList1();
+            events[0].EventDate = DateTimeOffset.UtcNow.AddDays(3);
+
+            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+
+            // Setup a return of distance between User and Event of 50 (in whatever units)
+            MapRepository.Setup(mr => mr.GetDistanceBetweenTwoPoints(It.IsAny<Tuple<double, double>>(), It.IsAny<Tuple<double, double>>(), It.IsAny<bool>())).ReturnsAsync(50);
+
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
+
+            // Act
+            await engine.GenerateNotificationsAsync().ConfigureAwait(false);
+
+            // Assert
+            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
+            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Once);
+            UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
+            EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
         }
     }
 }

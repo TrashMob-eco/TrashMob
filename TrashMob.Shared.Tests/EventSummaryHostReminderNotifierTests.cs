@@ -9,43 +9,26 @@ namespace TrashMob.Shared.Tests
 
     public class EventSummaryHostReminderNotifierTests : NotifierTestsBase
     {
-        private readonly Mock<IEventRepository> eventRepository;
-        private readonly Mock<IEventAttendeeRepository> eventAttendeeRepository;
-        private readonly Mock<IUserRepository> userRepository;
-        private readonly Mock<IUserNotificationRepository> userNotificationRepository;
-        private readonly Mock<IUserNotificationPreferenceRepository> userNotificationPreferenceRepository;
-        private readonly Mock<IEmailSender> emailSender;
-
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.EventSummaryHostReminder;
-
-        public EventSummaryHostReminderNotifierTests()
-        {
-            eventRepository = new Mock<IEventRepository>();
-            eventAttendeeRepository = new Mock<IEventAttendeeRepository>();
-            userRepository = new Mock<IUserRepository>();
-            userNotificationRepository = new Mock<IUserNotificationRepository>();
-            userNotificationPreferenceRepository = new Mock<IUserNotificationPreferenceRepository>();
-            emailSender = new Mock<IEmailSender>();
-        }
 
         [Fact]
         public async Task GenerateNotificationsAsync_WithNoDataAvailable_Succeeds()
         {
             // Arrange
-            var engine = new EventSummaryHostReminderNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, userNotificationRepository.Object, userNotificationPreferenceRepository.Object, emailSender.Object);
+            var engine = new EventSummaryHostReminderNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            emailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
+            EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
         public void GetEmailTemplate_Succeeds()
         {
             // Arrange
-            var engine = new EventSummaryHostReminderNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, userNotificationRepository.Object, userNotificationPreferenceRepository.Object, emailSender.Object);
+            var engine = new EventSummaryHostReminderNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
 
             // Act
             var template = engine.GetEmailTemplate();

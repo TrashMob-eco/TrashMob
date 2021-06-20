@@ -15,13 +15,16 @@ namespace TrashMob.Shared.Engine
 
         protected override string EmailSubject => "Upcoming TrashMob.eco events in your area today!";
 
+        protected override int NumberOfHoursInWindow => 24;
+
         public UpcomingEventsInYourAreaTodayNotifier(IEventRepository eventRepository, 
                                                      IUserRepository userRepository, 
                                                      IEventAttendeeRepository eventAttendeeRepository, 
                                                      IUserNotificationRepository userNotificationRepository,
                                                      IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
-                                                     IEmailSender emailSender) : 
-            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender)
+                                                     IEmailSender emailSender,
+                                                     IMapRepository mapRepository) : 
+            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository)
         {
         }
 
@@ -40,16 +43,29 @@ namespace TrashMob.Shared.Engine
 
                 var eventsToNotifyUserFor = new List<Event>();
 
-                // Get list of events where date is today and either city or postal code matches user
+                // Get list of active events
                 var events = await EventRepository.GetActiveEvents().ConfigureAwait(false);
 
                 // Get list of events user is already attending
                 var eventsUserIsAttending = await EventAttendeeRepository.GetEventsUserIsAttending(user.Id).ConfigureAwait(false);
 
-                foreach (var mobEvent in events)
+                // Limit the list of events to process to those in the next 48 hours UTC
+                foreach (var mobEvent in events.Where(e => e.EventDate <= DateTimeOffset.UtcNow.AddHours(NumberOfHoursInWindow)))
                 {
                     // Verify that the user is not already attending the event. No need to remind them to attend
                     if (eventsUserIsAttending.Any(ea => ea.Id == mobEvent.Id))
+                    {
+                        continue;
+                    }
+
+                    // Get the distance from the User's home location to the event location
+                    var userLocation = new Tuple<double, double>(user.Latitude.Value, user.Longtitude.Value);
+                    var eventLocation = new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value);
+
+                    var distance = await MapRepository.GetDistanceBetweenTwoPoints(userLocation, eventLocation, user.PrefersMetric).ConfigureAwait(false);
+
+                    // If the distance to the event is greater than the User's preference for distance, ignore it
+                    if (distance > user.TravelLimitForLocalEvents)
                     {
                         continue;
                     }

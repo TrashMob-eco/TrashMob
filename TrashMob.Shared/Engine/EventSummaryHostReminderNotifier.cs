@@ -9,6 +9,8 @@ namespace TrashMob.Shared.Engine
     {
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.EventSummaryHostReminder;
 
+        protected override int NumberOfHoursInWindow => -4;
+
         protected override string EmailSubject => "Upcoming TrashMob.eco events in your area today!";
 
         public EventSummaryHostReminderNotifier(IEventRepository eventRepository, 
@@ -16,8 +18,9 @@ namespace TrashMob.Shared.Engine
                                                 IEventAttendeeRepository eventAttendeeRepository,
                                                 IUserNotificationRepository userNotificationRepository,
                                                 IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
-                                                IEmailSender emailSender) :
-            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender)
+                                                IEmailSender emailSender,
+                                                IMapRepository mapRepository) :
+            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository)
         {
         }
 

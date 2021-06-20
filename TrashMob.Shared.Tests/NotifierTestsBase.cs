@@ -1,10 +1,12 @@
 ﻿
 namespace TrashMob.Shared.Tests
 {
+    using Moq;
     using System;
     using System.Collections.Generic;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Models;
+    using TrashMob.Shared.Persistence;
 
     public abstract class NotifierTestsBase
     {
@@ -14,11 +16,36 @@ namespace TrashMob.Shared.Tests
 
         protected abstract NotificationTypeEnum NotificationType { get; }
 
+        protected Mock<IEventRepository> EventRepository { get; }
+        
+        protected Mock<IEventAttendeeRepository> EventAttendeeRepository { get; }
+        
+        protected Mock<IUserRepository> UserRepository { get; }
+        
+        protected Mock<IUserNotificationRepository> UserNotificationRepository { get; }
+        
+        protected Mock<IUserNotificationPreferenceRepository> UserNotificationPreferenceRepository { get; }
+        
+        protected Mock<IEmailSender> EmailSender { get; }
+        
+        protected Mock<IMapRepository> MapRepository { get; }
+
         public NotifierTestsBase()
         {
             userId1 = Guid.NewGuid();
             userId2 = Guid.NewGuid();
             createdById = Guid.NewGuid();
+
+            EventRepository = new Mock<IEventRepository>();
+            EventAttendeeRepository = new Mock<IEventAttendeeRepository>();
+            UserRepository = new Mock<IUserRepository>();
+            UserNotificationRepository = new Mock<IUserNotificationRepository>();
+            UserNotificationPreferenceRepository = new Mock<IUserNotificationPreferenceRepository>();
+            EmailSender = new Mock<IEmailSender>();
+            MapRepository = new Mock<IMapRepository>();
+
+            // Setup a default return of distance between User and Event of 10 (in whatever units)
+            MapRepository.Setup(mr => mr.GetDistanceBetweenTwoPoints(It.IsAny<Tuple<double, double>>(), It.IsAny<Tuple<double, double>>(), It.IsAny<bool>())).ReturnsAsync(10);
         }
 
         protected List<User> GetUserList1()
@@ -41,6 +68,9 @@ namespace TrashMob.Shared.Tests
                 SurName = "Bleg",
                 TermsOfServiceVersion = "1.0",
                 UserName = "BlegD",
+                TravelLimitForLocalEvents = 25,
+                Longtitude = 0,
+                Latitude = 0,
             };
 
             var users = new List<User>
@@ -72,6 +102,9 @@ namespace TrashMob.Shared.Tests
                 TermsOfServiceVersion = "1.0",
                 UserName = "BlegD",
                 IsOptedOutOfAllEmails = false,
+                TravelLimitForLocalEvents = 25,
+                Longtitude = 0,
+                Latitude = 0,
             };
 
             var user2 = new User()
@@ -93,6 +126,9 @@ namespace TrashMob.Shared.Tests
                 TermsOfServiceVersion = "1.0",
                 UserName = "BlegD2",
                 IsOptedOutOfAllEmails = false,
+                TravelLimitForLocalEvents = 25,
+                Longtitude = 0,
+                Latitude = 0,
             };
 
             var users = new List<User>

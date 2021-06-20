@@ -36,6 +36,14 @@ namespace TrashMob.Shared.Models
 
         public string PostalCode { get; set; }
 
+        public double? Latitude { get; set; }
+
+        public double? Longtitude { get; set; }
+
+        public bool PrefersMetric { get; set; }
+
+        public int TravelLimitForLocalEvents { get; set; }
+
         public bool IsOptedOutOfAllEmails { get; set; }
 
         public DateTimeOffset? DateAgreedToPrivacyPolicy { get; set; }

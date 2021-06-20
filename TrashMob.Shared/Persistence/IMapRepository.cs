@@ -1,7 +1,12 @@
-﻿namespace TrashMob.Shared.Persistence
+﻿using System;
+using System.Threading.Tasks;
+
+namespace TrashMob.Shared.Persistence
 {
     public interface IMapRepository
     {
         string GetMapKey();
+
+        Task<double> GetDistanceBetweenTwoPoints(Tuple<double, double> pointA, Tuple<double, double> pointB, bool IsMetric = true);
     }
 }
