@@ -36,6 +36,8 @@ namespace TrashMob.Shared.Models
 
         public string PostalCode { get; set; }
 
+        public bool IsOptedOutOfAllEmails { get; set; }
+
         public DateTimeOffset? DateAgreedToPrivacyPolicy { get; set; }
 
         public string PrivacyPolicyVersion { get; set; }
@@ -51,5 +53,7 @@ namespace TrashMob.Shared.Models
         public virtual ICollection<Event> EventsUpdated { get; set; }
 
         public virtual ICollection<UserNotification> UserNotifications { get; set; }
+
+        public virtual ICollection<UserNotificationPreference> UserNotificationPreferences { get; set; }
     }
 }

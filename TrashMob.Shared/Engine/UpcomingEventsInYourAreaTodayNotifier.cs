@@ -1,6 +1,7 @@
 ﻿
 namespace TrashMob.Shared.Engine
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -17,9 +18,10 @@ namespace TrashMob.Shared.Engine
         public UpcomingEventsInYourAreaTodayNotifier(IEventRepository eventRepository, 
                                                      IUserRepository userRepository, 
                                                      IEventAttendeeRepository eventAttendeeRepository, 
-                                                     IUserNotificationRepository userNotificationRepository, 
+                                                     IUserNotificationRepository userNotificationRepository,
+                                                     IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
                                                      IEmailSender emailSender) : 
-            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, emailSender)
+            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender)
         {
         }
 
@@ -31,6 +33,11 @@ namespace TrashMob.Shared.Engine
             // for each user
             foreach (var user in users)
             {
+                if (await IsOptedOut(user).ConfigureAwait(false))
+                {
+                    continue;
+                }
+
                 var eventsToNotifyUserFor = new List<Event>();
 
                 // Get list of events where date is today and either city or postal code matches user
@@ -63,6 +70,21 @@ namespace TrashMob.Shared.Engine
                 // Populate email
                 if (eventsToNotifyUserFor.Any())
                 {
+                    // Update the database first so that a user is not notified multiple times
+                    foreach (var mobEvent in eventsToNotifyUserFor)
+                    {
+                        var userNotification = new UserNotification
+                        {
+                            Id = Guid.NewGuid(),
+                            EventId = mobEvent.Id,
+                            UserId = user.Id,
+                            SentDate = DateTimeOffset.UtcNow,
+                            UserNotificationTypeId = (int)NotificationType,
+                        };
+
+                        await UserNotificationRepository.AddUserNotification(userNotification).ConfigureAwait(false);
+                    }
+
                     var emailTemplate = GetEmailTemplate();
                     var email = new Email();
                     email.Addresses.Add(new EmailAddress() { Email = user.Email, Name = $"{user.GivenName} {user.SurName}" });

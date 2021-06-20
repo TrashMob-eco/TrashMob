@@ -22,5 +22,7 @@ namespace TrashMob.Shared.Models
         public bool? IsActive { get; set; }
 
         public virtual ICollection<UserNotification> UserNotifications { get; set; }
+
+        public virtual ICollection<UserNotificationPreference> UserNotificationPreferences { get; set; }
     }
 }

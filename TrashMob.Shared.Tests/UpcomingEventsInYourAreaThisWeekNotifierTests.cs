@@ -7,12 +7,13 @@ namespace TrashMob.Shared.Tests
     using TrashMob.Shared.Persistence;
     using Xunit;
 
-    public class UpcomingEventsInYourAreaThisWeekNotifierTests
+    public class UpcomingEventsInYourAreaThisWeekNotifierTests : NotifierTestsBase
     {
         private readonly Mock<IEventRepository> eventRepository;
         private readonly Mock<IEventAttendeeRepository> eventAttendeeRepository;
         private readonly Mock<IUserRepository> userRepository;
         private readonly Mock<IUserNotificationRepository> userNotificationRepository;
+        private readonly Mock<IUserNotificationPreferenceRepository> userNotificationPreferenceRepository;
         private readonly Mock<IEmailSender> emailSender;
 
         public UpcomingEventsInYourAreaThisWeekNotifierTests()
@@ -21,14 +22,17 @@ namespace TrashMob.Shared.Tests
             eventAttendeeRepository = new Mock<IEventAttendeeRepository>();
             userRepository = new Mock<IUserRepository>();
             userNotificationRepository = new Mock<IUserNotificationRepository>();
+            userNotificationPreferenceRepository = new Mock<IUserNotificationPreferenceRepository>();
             emailSender = new Mock<IEmailSender>();
         }
+
+        protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UpcomingEventsInYourAreaThisWeek;
 
         [Fact]
         public async Task GenerateNotificationsAsync_WithNoDataAvailable_Succeeds()
         {
             // Arrange
-            var engine = new UpcomingEventsInYourAreaThisWeekNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, userNotificationRepository.Object, emailSender.Object);
+            var engine = new UpcomingEventsInYourAreaThisWeekNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, userNotificationRepository.Object, userNotificationPreferenceRepository.Object, emailSender.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
@@ -41,7 +45,7 @@ namespace TrashMob.Shared.Tests
         public void GetEmailTemplate_Succeeds()
         {
             // Arrange
-            var engine = new UpcomingEventsInYourAreaThisWeekNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, userNotificationRepository.Object, emailSender.Object);
+            var engine = new UpcomingEventsInYourAreaThisWeekNotifier(eventRepository.Object, userRepository.Object, eventAttendeeRepository.Object, userNotificationRepository.Object, userNotificationPreferenceRepository.Object, emailSender.Object);
 
             // Act
             var template = engine.GetEmailTemplate();

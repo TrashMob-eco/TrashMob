@@ -32,6 +32,8 @@
 
         public virtual DbSet<UserNotification> UserNotifications { get; set; }
 
+        public virtual DbSet<UserNotificationPreference> UserNotificationPreferences { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"]);
@@ -97,6 +99,23 @@
                     .HasForeignKey(d => d.EventId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserNotifications_Event_Id");
+            });
+
+            modelBuilder.Entity<UserNotificationPreference>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.UserNotificationType)
+                    .WithMany(p => p.UserNotificationPreferences)
+                    .HasForeignKey(d => d.UserNotificationTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserNotificationPreferences_UserNotificationTypes");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserNotificationPreferences)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserNotificationPreferences_User_Id");
             });
 
             modelBuilder.Entity<Event>(entity =>

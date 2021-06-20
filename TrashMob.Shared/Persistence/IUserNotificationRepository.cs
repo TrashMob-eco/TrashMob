@@ -9,6 +9,6 @@
     {
         Task<IEnumerable<UserNotification>> GetUserNotifications(Guid userId, Guid eventId);
 
-        Task<UserNotification> AddUserNotification(UserNotification eventNotification);
+        Task<UserNotification> AddUserNotification(UserNotification userNotification);
     }
 }
