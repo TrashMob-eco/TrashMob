@@ -177,8 +177,8 @@ namespace TrashMobNotifier
 
             email.Addresses.Add(new EmailAddress() { Email = Constants.TrashMobEmailAddress, Name = Constants.TrashMobEmailName });
             
-            var emailSender = new EmailSender();
-            return emailSender.SendEmailAsync(email, sendGridApiKey);
+            var emailSender = new EmailSender() { ApiKey = sendGridApiKey };
+            return emailSender.SendEmailAsync(email);
         }
     }
 

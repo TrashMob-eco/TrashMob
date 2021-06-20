@@ -30,6 +30,8 @@
 
         public virtual DbSet<SiteMetric> SiteMetrics { get; set; }
 
+        public virtual DbSet<UserNotification> UserNotifications { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"]);
@@ -72,6 +74,29 @@
                 entity.Property(e => e.PrivacyPolicyVersion).HasMaxLength(50);
 
                 entity.Property(e => e.TermsOfServiceVersion).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<UserNotification>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.UserNotificationType)
+                    .WithMany(p => p.UserNotifications)
+                    .HasForeignKey(d => d.UserNotificationTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserNotifications_UserNotificationTypes");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserNotifications)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserNotifications_User_Id");
+
+                entity.HasOne(d => d.Event)
+                    .WithMany(p => p.UserNotifications)
+                    .HasForeignKey(d => d.EventId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserNotifications_Event_Id");
             });
 
             modelBuilder.Entity<Event>(entity =>

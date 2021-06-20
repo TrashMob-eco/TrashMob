@@ -15,13 +15,13 @@ namespace TrashMob.Shared.Persistence
         {
             this.configuration = configuration;
             this.emailSender = emailSender;
+            this.emailSender.ApiKey = configuration["sendGridApiKey"];
         }
 
         public Task SendSystemEmail(Email email, CancellationToken cancellationToken = default)
         {
-            var sendGridApiKey = configuration["sendGridApiKey"];
-
-            return emailSender.SendEmailAsync(email, sendGridApiKey, cancellationToken);
+            
+            return emailSender.SendEmailAsync(email, cancellationToken);
         }
     }
 }

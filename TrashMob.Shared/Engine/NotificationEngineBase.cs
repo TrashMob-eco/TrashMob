@@ -6,25 +6,39 @@
 
     public abstract class NotificationEngineBase
     {
-        private readonly IEventRepository eventRepository;
-        private readonly IUserRepository userRepository;
-        private readonly IEventAttendeeRepository eventAttendeeRepository;
-        private readonly IEmailSender emailSender;
+        protected IEventRepository EventRepository { get; }
+
+        protected IUserRepository UserRepository { get; }
+        
+        protected IEventAttendeeRepository EventAttendeeRepository { get; }
+
+        protected IUserNotificationRepository UserNotificationRepository { get; }
+
+        protected IEmailSender EmailSender { get; }
 
         protected abstract NotificationTypeEnum NotificationType { get; }
 
-        public NotificationEngineBase(IEventRepository eventRepository, IUserRepository userRepository, IEventAttendeeRepository eventAttendeeRepository, IEmailSender emailSender)
+        protected abstract string EmailSubject { get; }
+
+        protected string SendGridApiKey { get; }
+
+        public NotificationEngineBase(IEventRepository eventRepository, 
+                                      IUserRepository userRepository, 
+                                      IEventAttendeeRepository eventAttendeeRepository, 
+                                      IUserNotificationRepository userNotificationRepository, 
+                                      IEmailSender emailSender)
         {
-            this.eventRepository = eventRepository;
-            this.userRepository = userRepository;
-            this.eventAttendeeRepository = eventAttendeeRepository;
-            this.emailSender = emailSender;
+            EventRepository = eventRepository;
+            UserRepository = userRepository;
+            EventAttendeeRepository = eventAttendeeRepository;
+            UserNotificationRepository = userNotificationRepository;
+            EmailSender = emailSender;
         }
 
         public string GetEmailTemplate()
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = $"TrashMob.Shared.Engine.EmailTemplates.{NotificationType.ToString()}.html";
+            var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.html", NotificationType);
             string result;
 
             using (Stream stream = assembly.GetManifestResourceStream(resourceName))

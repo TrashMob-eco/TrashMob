@@ -1,7 +1,6 @@
 ﻿
 namespace TrashMob.Shared.Engine
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Persistence;
@@ -10,8 +9,14 @@ namespace TrashMob.Shared.Engine
     {
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UpcomingEventsInYourAreaThisWeek;
 
-        public UpcomingEventsInYourAreaThisWeekNotifier(IEventRepository eventRepository, IUserRepository userRepository, IEventAttendeeRepository eventAttendeeRepository, IEmailSender emailSender) : 
-            base(eventRepository, userRepository, eventAttendeeRepository, emailSender)
+        protected override string EmailSubject => "Upcoming TrashMob.eco events in your area today!";
+
+        public UpcomingEventsInYourAreaThisWeekNotifier(IEventRepository eventRepository, 
+                                                        IUserRepository userRepository, 
+                                                        IEventAttendeeRepository eventAttendeeRepository,
+                                                        IUserNotificationRepository userNotificationRepository,
+                                                        IEmailSender emailSender) : 
+            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, emailSender)
         {
         }
 
