@@ -17,6 +17,11 @@ class UserData {
     dateAgreedToTermsOfService: Date = new Date();
     termsOfServiceVersion: string = "";
     memberSince: Date = new Date();
+    latitude: number = 0;
+    longitude: number = 0;
+    prefersMetric: boolean = false;
+    isOptedOutOfAllEmails: boolean = false;
+    travelLimitForLocalEvents: number = 0;
 }
 
 export default UserData;

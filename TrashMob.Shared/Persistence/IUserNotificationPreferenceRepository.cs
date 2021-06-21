@@ -9,6 +9,6 @@
     {
         Task<IEnumerable<UserNotificationPreference>> GetUserNotificationPreferences(Guid userId);
 
-        Task<UserNotificationPreference> AddUserNotificationNotificationPreference(UserNotificationPreference userNotificationPreference);
+        Task AddUpdateUserNotificationPreference(UserNotificationPreference userNotificationPreference);
     }
 }

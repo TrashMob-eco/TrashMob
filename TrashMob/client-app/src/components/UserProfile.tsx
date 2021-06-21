@@ -6,8 +6,14 @@ import * as ToolTips from "../store/ToolTips";
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import { Button, Col, Form } from 'react-bootstrap';
+import { Button, Col, Form, ToggleButton } from 'react-bootstrap';
 import { Modal } from 'reactstrap';
+import * as MapStore from '../store/MapStore';
+import { getKey } from '../store/MapStore';
+import AddressData from './Models/AddressData';
+import { data } from 'azure-maps-control';
+import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
+import MapController from './MapController';
 
 interface UserProfileProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -39,7 +45,19 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
     const [countryErrors, setCountryErrors] = React.useState<string>("");
     const [regionErrors, setRegionErrors] = React.useState<string>("");
     const [postalCodeErrors, setPostalCodeErrors] = React.useState<string>("");
+    const [longitude, setLongitude] = React.useState<number>(0);
+    const [latitude, setLatitude] = React.useState<number>(0);
+    const [prefersMetric, setPrefersMetric] = React.useState<boolean>(false);
+    const [isOptedOutOfAllEmails, setIsOptedOutOfAllEmails] = React.useState<boolean>(false);
+    const [travelLimitForLocalEvents, setTravelLimitForLocalEvents] = React.useState<number>(10);
     const [isOpen, setIsOpen] = React.useState(false);
+    const [latitudeErrors, setLatitudeErrors] = React.useState<string>("");
+    const [longitudeErrors, setLongitudeErrors] = React.useState<string>("");
+    const [travelLimitForLocalEventsErrors, setTravelLimitForLocalEventsErrors] = React.useState<string>("");
+    const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
+    const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
+    const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
+    const [eventName, setEventName] = React.useState<string>("User Location");
 
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
@@ -65,6 +83,11 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 setTermsOfServiceVersion(data.termsOfServiceVersion);
                 setMemberSince(data.memberSince);
                 setSourceSystemUserName(data.sourceSystemUserName);
+                setLatitude(data.latitude);
+                setLongitude(data.longitude);
+                setIsOptedOutOfAllEmails(data.isOptedOutOfAllEmails);
+                setPrefersMetric(data.prefersMetric);
+                setTravelLimitForLocalEvents(data.travelLimitForLocalEvents);
 
                 setUserNameErrors("");
                 setGivenNameErrors("");
@@ -73,6 +96,9 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 setCountryErrors("");
                 setRegionErrors("");
                 setPostalCodeErrors("");
+                setLatitudeErrors("");
+                setLongitudeErrors("");
+                setTravelLimitForLocalEventsErrors("");
 
                 setIsDataLoaded(true);
             });
@@ -128,6 +154,9 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
             cityErrors !== "" ||
             countryErrors !== "" ||
             regionErrors !== "" ||
+            latitudeErrors !== "" ||
+            longitudeErrors !== "" ||
+            travelLimitForLocalEventsErrors !== "" ||
             postalCodeErrors !== "") {
             return;
         }
@@ -149,6 +178,11 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
         userData.privacyPolicyVersion = privacyPolicyVersion ?? "";
         userData.termsOfServiceVersion = termsOfServiceVersion;
         userData.memberSince = new Date(memberSince);
+        userData.latitude = latitude;
+        userData.longitude = longitude;
+        userData.isOptedOutOfAllEmails = isOptedOutOfAllEmails;
+        userData.prefersMetric = prefersMetric;
+        userData.travelLimitForLocalEvents = travelLimitForLocalEvents;
 
         var usrdata = JSON.stringify(userData);
 
@@ -201,6 +235,48 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
 
     function handlePostalCodeChanged(val: string) {
         setPostalCode(val);
+    }
+
+    function handleLatitudeChanged(val: string) {
+        try {
+            var floatVal = parseFloat(val);
+
+            if (floatVal < -90 || floatVal > 90) {
+                setLatitudeErrors("Latitude must be => -90 and <= 90");
+            }
+            else {
+                setLatitude(floatVal);
+                setLatitudeErrors("");
+            }
+        }
+        catch { }
+    }
+
+    function handleLongitudeChanged(val: string) {
+        try {
+            var floatVal = parseFloat(val);
+
+            if (floatVal < -180 || floatVal > 180) {
+                setLongitudeErrors("Longitude must be >= -180 and <= 180");
+            }
+            else {
+                setLongitude(floatVal);
+                setLongitudeErrors("");
+            }
+        }
+        catch { }
+    }
+
+    function handleTravelLimitForLocalEventsChanged(val: string) {
+        var intVal = parseInt(val);
+
+        if (intVal <= 0 || intVal > 1000) {
+            setTravelLimitForLocalEventsErrors("Travel limit must be greater than or equal to 0 and less than 1000.")
+        }
+        else {
+            setTravelLimitForLocalEvents(intVal);
+            setTravelLimitForLocalEventsErrors("");
+        }
     }
 
     function renderUserNameToolTip(props: any) {
@@ -259,6 +335,50 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.UserProfileSourceSystemUserName}</Tooltip>
     }
 
+    function renderTravelLimitForLocalEventsToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.UserProfileTravelLimitForLocalEvents}</Tooltip>
+    }
+
+    function renderUserLatitudeToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.UserProfileLatitude}</Tooltip>
+    }
+
+    function renderUserLongitudeToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.UserProfileLongitude}</Tooltip>
+    }
+
+    function renderPreferMetricToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.UserProfilePreferMetric}</Tooltip>
+    }
+
+    function renderIsOptedOutOfAllEmailsToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.UserProfileIsOptedOutOfAllEmails}</Tooltip>
+    }
+
+    function handleLocationChange(point: data.Position) {
+        // In an Azure Map point, the longitude is the first position, and latitude is second
+        setLatitude(point[1]);
+        setLongitude(point[0]);
+        var locationString = point[1] + ',' + point[0]
+        var headers = getDefaultHeaders('GET');
+
+        getKey()
+            .then(key => {
+                fetch('https://atlas.microsoft.com/search/address/reverse/json?subscription-key=' + key + '&api-version=1.0&query=' + locationString, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<AddressData>)
+                    .then(data => {
+                        setCity(data.addresses[0].address.municipality);
+                        setCountry(data.addresses[0].address.country);
+                        setRegion(data.addresses[0].address.countrySubdivisionName);
+                        setPostalCode(data.addresses[0].address.postalCode);
+                    })
+            }
+            )
+    }
+
     return (
         !isDataLoaded ? <div>Loading</div> :
             <div>
@@ -305,6 +425,22 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                         <Form.Label htmlFor="email">Email:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" disabled defaultValue={email} />
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderIsOptedOutOfAllEmailsToolTip}>
+                                        <Form.Label htmlFor="IsOptedOutOfAllEmails">Opt Out Of All Emails:</Form.Label>
+                                    </OverlayTrigger >
+                                    <ToggleButton
+                                        type="checkbox"
+                                        variant="secondary"
+                                        checked={isOptedOutOfAllEmails}
+                                        value="1"
+                                        onChange={(e) => setIsOptedOutOfAllEmails(e.currentTarget.checked)}
+                                    >
+                                        Opt Out
+                                    </ToggleButton>
                                 </Form.Group>
                             </Col>
                         </Form.Row>
@@ -370,6 +506,60 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                     <span style={{ color: "red" }}>{regionErrors}</span>
                                 </Form.Group>
                             </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderUserLatitudeToolTip}>
+                                        <Form.Label htmlFor="Latitude">Latitude:</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
+                                    <span style={{ color: "red" }}>{latitudeErrors}</span>
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderUserLongitudeToolTip}>
+                                        <Form.Label htmlFor="Longitude">Longitude:</Form.Label>
+                                    </OverlayTrigger >
+                                    <Form.Control type="text" name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
+                                    <span style={{ color: "red" }}>{longitudeErrors}</span>
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderTravelLimitForLocalEventsToolTip}>
+                                        <Form.Label htmlFor="TravelLimitForLocalEvents">Maximum distance willing to travel for events:</Form.Label>
+                                    </OverlayTrigger >
+                                    <Form.Control type="text" name="travelLimitForLocalEvents" defaultValue={travelLimitForLocalEvents} onChange={(val) => handleTravelLimitForLocalEventsChanged(val.target.value)} />
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderPreferMetricToolTip}>
+                                        <Form.Label htmlFor="PreferMetric">Use Metric System:</Form.Label>
+                                    </OverlayTrigger >
+                                    <ToggleButton
+                                        type="checkbox"
+                                        variant="secondary"
+                                        checked={prefersMetric}
+                                        value="1"
+                                        onChange={(e) => setPrefersMetric(e.currentTarget.checked)}
+                                    >
+                                        Prefer Metric over Imperial
+                                    </ToggleButton>
+                                </Form.Group>
+                            </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Form.Label>Click on the map to set your base location. This location will only be used to assist in locating events you wish to be notified about. The location fields above will be automatically populated.</Form.Label>
+                        </Form.Row>
+                        <Form.Row>
+                            <AzureMapsProvider>
+                                <>
+                                    <MapController center={center} multipleEvents={[]} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                                </>
+                            </AzureMapsProvider>
                         </Form.Row>
                         <Form.Row>
                             <Col>
