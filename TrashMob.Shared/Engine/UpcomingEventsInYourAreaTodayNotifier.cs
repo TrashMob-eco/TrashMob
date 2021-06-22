@@ -59,7 +59,7 @@ namespace TrashMob.Shared.Engine
                     }
 
                     // Get the distance from the User's home location to the event location
-                    var userLocation = new Tuple<double, double>(user.Latitude.Value, user.Longtitude.Value);
+                    var userLocation = new Tuple<double, double>(user.Latitude.Value, user.Longitude.Value);
                     var eventLocation = new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value);
 
                     var distance = await MapRepository.GetDistanceBetweenTwoPoints(userLocation, eventLocation, user.PrefersMetric).ConfigureAwait(false);

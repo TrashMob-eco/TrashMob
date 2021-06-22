@@ -69,7 +69,7 @@ namespace TrashMob.Shared.Tests
                 TermsOfServiceVersion = "1.0",
                 UserName = "BlegD",
                 TravelLimitForLocalEvents = 25,
-                Longtitude = 0,
+                Longitude = 0,
                 Latitude = 0,
             };
 
@@ -103,7 +103,7 @@ namespace TrashMob.Shared.Tests
                 UserName = "BlegD",
                 IsOptedOutOfAllEmails = false,
                 TravelLimitForLocalEvents = 25,
-                Longtitude = 0,
+                Longitude = 0,
                 Latitude = 0,
             };
 
@@ -127,7 +127,7 @@ namespace TrashMob.Shared.Tests
                 UserName = "BlegD2",
                 IsOptedOutOfAllEmails = false,
                 TravelLimitForLocalEvents = 25,
-                Longtitude = 0,
+                Longitude = 0,
                 Latitude = 0,
             };
 

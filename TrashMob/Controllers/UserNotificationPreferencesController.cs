@@ -13,13 +13,15 @@ namespace TrashMob.Controllers
     using System.Collections.Generic;
 
     [ApiController]
-    [Route("api/users")]
+    [Route("api/usernotificationpreferences")]
     public class UserNotificationPreferencesController : ControllerBase
     {
+        private readonly IUserRepository userRepository;
         private readonly IUserNotificationPreferenceRepository userNotificationPreferenceRepository;
 
-        public UserNotificationPreferencesController(IUserNotificationPreferenceRepository userNotificationPreferenceRepository)
+        public UserNotificationPreferencesController(IUserRepository userRepository, IUserNotificationPreferenceRepository userNotificationPreferenceRepository)
         {
+            this.userRepository = userRepository;
             this.userNotificationPreferenceRepository = userNotificationPreferenceRepository;
         }
 
@@ -34,22 +36,24 @@ namespace TrashMob.Controllers
 
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut]
+        [HttpPut("{userId}")]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> PutUserNotificationPreferences(User user, IList<UserNotificationPreference> userNotificationPreferences)
+        public async Task<IActionResult> PutUserNotificationPreferences(Guid userId, IList<UserNotificationPreference> userNotificationPreferences)
         {
+            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
+
             if (!ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }
 
-                foreach(var notificationPreference in userNotificationPreferences)
-                {
-                    await userNotificationPreferenceRepository.AddUpdateUserNotificationPreference(notificationPreference).ConfigureAwait(false);
-                }
+            foreach (var notificationPreference in userNotificationPreferences)
+            {
+                await userNotificationPreferenceRepository.AddUpdateUserNotificationPreference(notificationPreference).ConfigureAwait(false);
+            }
 
-                return Ok();
+            return Ok();
         }
 
         private bool ValidateUser(string userId)

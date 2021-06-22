@@ -102,6 +102,18 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
 
                 setIsDataLoaded(true);
             });
+
+        MapStore.getOption().then(opts => {
+            setMapOptions(opts);
+            setIsMapKeyLoaded(true);
+        })
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(position => {
+                var point = new data.Position(position.coords.longitude, position.coords.latitude);
+                setCenter(point)
+            });
+        } 
     }, [userId])
 
     function togglemodal() {
@@ -430,7 +442,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderIsOptedOutOfAllEmailsToolTip}>
-                                        <Form.Label htmlFor="IsOptedOutOfAllEmails">Opt Out Of All Emails:</Form.Label>
+                                        <Form.Label htmlFor="IsOptedOutOfAllEmails">Email Preference:</Form.Label>
                                     </OverlayTrigger >
                                     <ToggleButton
                                         type="checkbox"
@@ -438,9 +450,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                         checked={isOptedOutOfAllEmails}
                                         value="1"
                                         onChange={(e) => setIsOptedOutOfAllEmails(e.currentTarget.checked)}
-                                    >
-                                        Opt Out
-                                    </ToggleButton>
+                                    >Opt Out of All Emails</ToggleButton>
                                 </Form.Group>
                             </Col>
                         </Form.Row>
@@ -529,7 +539,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderTravelLimitForLocalEventsToolTip}>
-                                        <Form.Label htmlFor="TravelLimitForLocalEvents">Maximum distance willing to travel for events:</Form.Label>
+                                        <Form.Label htmlFor="TravelLimitForLocalEvents">Maximum travel distance for events:</Form.Label>
                                     </OverlayTrigger >
                                     <Form.Control type="text" name="travelLimitForLocalEvents" defaultValue={travelLimitForLocalEvents} onChange={(val) => handleTravelLimitForLocalEventsChanged(val.target.value)} />
                                 </Form.Group>
@@ -549,6 +559,17 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                         Prefer Metric over Imperial
                                     </ToggleButton>
                                 </Form.Group>
+                            </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col>
+                                <Form.Group>
+                                    <Button disabled={userNameErrors !== ""} type="submit" className="action btn-default">Save</Button>
+                                    <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Button variant="danger" onClick={(e) => handleDelete(e)}>Delete Account</Button>
                             </Col>
                         </Form.Row>
                         <Form.Row>
@@ -620,17 +641,6 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                     </OverlayTrigger>
                                     <Form.Control type="text" disabled defaultValue={sourceSystemUserName} />
                                 </Form.Group>
-                            </Col>
-                        </Form.Row>
-                        <Form.Row>
-                            <Col>
-                                <Form.Group>
-                                    <Button disabled={userNameErrors !== ""} type="submit" className="action btn-default">Save</Button>
-                                    <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
-                                </Form.Group>
-                            </Col>
-                            <Col>
-                                <Button variant="danger" onClick={(e) => handleDelete(e)}>Delete Account</Button>
                             </Col>
                         </Form.Row>
                     </Form >
