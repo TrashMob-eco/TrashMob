@@ -1,5 +1,6 @@
 ﻿namespace TrashMob.Shared.Engine
 {
+    using Microsoft.Extensions.Logging;
     using System.IO;
     using System.Linq;
     using System.Reflection;
@@ -22,7 +23,8 @@
         protected IEmailSender EmailSender { get; }
 
         protected IMapRepository MapRepository { get; }
-        
+        public ILogger Logger { get; }
+
         protected abstract NotificationTypeEnum NotificationType { get; }
 
         protected abstract int NumberOfHoursInWindow { get; }
@@ -31,13 +33,14 @@
 
         protected string SendGridApiKey { get; }
 
-        public NotificationEngineBase(IEventRepository eventRepository, 
-                                      IUserRepository userRepository, 
-                                      IEventAttendeeRepository eventAttendeeRepository, 
-                                      IUserNotificationRepository userNotificationRepository, 
+        public NotificationEngineBase(IEventRepository eventRepository,
+                                      IUserRepository userRepository,
+                                      IEventAttendeeRepository eventAttendeeRepository,
+                                      IUserNotificationRepository userNotificationRepository,
                                       IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
                                       IEmailSender emailSender,
-                                      IMapRepository mapRepository)
+                                      IMapRepository mapRepository, 
+                                      ILogger logger)
         {
             EventRepository = eventRepository;
             UserRepository = userRepository;
@@ -46,12 +49,14 @@
             UserNotificationPreferenceRepository = userNotificationPreferenceRepository;
             EmailSender = emailSender;
             MapRepository = mapRepository;
+            Logger = logger;
         }
 
         public string GetEmailTemplate()
         {
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.html", NotificationType);
+            Logger.LogInformation("Getting email template: {0}", resourceName);
             string result;
 
             using (Stream stream = assembly.GetManifestResourceStream(resourceName))

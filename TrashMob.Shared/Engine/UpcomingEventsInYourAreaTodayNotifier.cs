@@ -1,6 +1,7 @@
 ﻿
 namespace TrashMob.Shared.Engine
 {
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -23,15 +24,21 @@ namespace TrashMob.Shared.Engine
                                                      IUserNotificationRepository userNotificationRepository,
                                                      IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
                                                      IEmailSender emailSender,
-                                                     IMapRepository mapRepository) : 
-            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository)
+                                                     IMapRepository mapRepository,
+                                                     ILogger logger) : 
+            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository, logger)
         {
         }
 
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
+            Logger.LogInformation("Generating Notifications for {0}", NotificationType);
+
             // Get list of users who have notifications turned on for locations
             var users = await UserRepository.GetAllUsers().ConfigureAwait(false);
+            int notificationCounter = 0;
+
+            Logger.LogInformation("Generating {0} Notifications for {1} total users", NotificationType, users.Count());
 
             // for each user
             foreach (var user in users)
@@ -109,8 +116,11 @@ namespace TrashMob.Shared.Engine
 
                     // send email
                     await EmailSender.SendEmailAsync(email, cancellationToken);
+                    notificationCounter++;
                 }
             }
+
+            Logger.LogInformation("Generating {0} Total {1} Notifications", notificationCounter, NotificationType);
         }
     }
 }

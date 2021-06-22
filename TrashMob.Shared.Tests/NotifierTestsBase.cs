@@ -1,6 +1,7 @@
 ﻿
 namespace TrashMob.Shared.Tests
 {
+    using Microsoft.Extensions.Logging;
     using Moq;
     using System;
     using System.Collections.Generic;
@@ -30,6 +31,8 @@ namespace TrashMob.Shared.Tests
         
         protected Mock<IMapRepository> MapRepository { get; }
 
+        protected Mock<ILogger> Logger { get; }
+
         public NotifierTestsBase()
         {
             userId1 = Guid.NewGuid();
@@ -43,6 +46,7 @@ namespace TrashMob.Shared.Tests
             UserNotificationPreferenceRepository = new Mock<IUserNotificationPreferenceRepository>();
             EmailSender = new Mock<IEmailSender>();
             MapRepository = new Mock<IMapRepository>();
+            Logger = new Mock<ILogger>();
 
             // Setup a default return of distance between User and Event of 10 (in whatever units)
             MapRepository.Setup(mr => mr.GetDistanceBetweenTwoPoints(It.IsAny<Tuple<double, double>>(), It.IsAny<Tuple<double, double>>(), It.IsAny<bool>())).ReturnsAsync(10);

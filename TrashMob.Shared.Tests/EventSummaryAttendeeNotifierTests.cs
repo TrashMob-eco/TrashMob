@@ -15,7 +15,7 @@ namespace TrashMob.Shared.Tests
         public async Task GenerateNotificationsAsync_WithNoDataAvailable_Succeeds()
         {
             // Arrange
-            var engine = new EventSummaryAttendeeNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
+            var engine = new EventSummaryAttendeeNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
@@ -28,7 +28,7 @@ namespace TrashMob.Shared.Tests
         public void GetEmailTemplate_Succeeds()
         {
             // Arrange
-            var engine = new EventSummaryAttendeeNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
+            var engine = new EventSummaryAttendeeNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
             // Act
             var template = engine.GetEmailTemplate();

@@ -1,6 +1,7 @@
 ﻿
 namespace TrashMob.Shared.Engine
 {
+    using Microsoft.Extensions.Logging;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Persistence;
@@ -19,13 +20,15 @@ namespace TrashMob.Shared.Engine
                                                  IUserNotificationRepository userNotificationRepository,
                                                  IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
                                                  IEmailSender emailSender,
-                                                 IMapRepository mapRepository) : 
-            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository)
+                                                 IMapRepository mapRepository,
+                                                 ILogger logger) : 
+            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository, logger)
         {
         }
 
         public Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
+            Logger.LogInformation("Generating Notifications for {0}", NotificationType);
             return Task.CompletedTask;
         }
     }

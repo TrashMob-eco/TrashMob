@@ -17,7 +17,7 @@ namespace TrashMob.Shared.Tests
         public void GetEmailTemplate_Succeeds()
         {
             // Arrange
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
             // Act
             var template = engine.GetEmailTemplate();
@@ -31,7 +31,7 @@ namespace TrashMob.Shared.Tests
         public async Task GenerateNotificationsAsync_WithNoDataAvailable_Succeeds()
         {
             // Arrange
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
@@ -54,7 +54,7 @@ namespace TrashMob.Shared.Tests
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
@@ -78,7 +78,7 @@ namespace TrashMob.Shared.Tests
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
@@ -102,7 +102,7 @@ namespace TrashMob.Shared.Tests
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
@@ -129,7 +129,7 @@ namespace TrashMob.Shared.Tests
             // The user is attending all available events
             EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
@@ -158,7 +158,7 @@ namespace TrashMob.Shared.Tests
             // The user is attending all available events
             EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(alternateEvents);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
@@ -195,7 +195,7 @@ namespace TrashMob.Shared.Tests
 
             UserNotificationRepository.Setup(ea => ea.GetUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(userNotifications);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
@@ -232,7 +232,7 @@ namespace TrashMob.Shared.Tests
 
             UserNotificationRepository.Setup(ea => ea.GetUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(userNotifications);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
@@ -258,7 +258,7 @@ namespace TrashMob.Shared.Tests
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
@@ -286,7 +286,7 @@ namespace TrashMob.Shared.Tests
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
             UserNotificationPreferenceRepository.Setup(unp => unp.GetUserNotificationPreferences(It.IsAny<Guid>())).ReturnsAsync(userNotificationPreferences);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
@@ -311,7 +311,7 @@ namespace TrashMob.Shared.Tests
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
@@ -339,7 +339,7 @@ namespace TrashMob.Shared.Tests
             // Setup a return of distance between User and Event of 50 (in whatever units)
             MapRepository.Setup(mr => mr.GetDistanceBetweenTwoPoints(It.IsAny<Tuple<double, double>>(), It.IsAny<Tuple<double, double>>(), It.IsAny<bool>())).ReturnsAsync(50);
 
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object);
+            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
