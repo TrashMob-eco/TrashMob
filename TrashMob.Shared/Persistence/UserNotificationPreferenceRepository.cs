@@ -37,8 +37,9 @@
             {
                 unp.IsOptedOut = userNotificationPreference.IsOptedOut;
                 unp.LastUpdatedDate = DateTimeOffset.UtcNow;
-                await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
             }
+
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }

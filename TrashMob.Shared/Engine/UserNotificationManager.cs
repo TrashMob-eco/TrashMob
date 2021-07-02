@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
     using TrashMob.Shared.Persistence;
 
-    public class UserNotificationManager
+    public class UserNotificationManager : IUserNotificationManager 
     {
         private readonly IEventRepository eventRepository;
         private readonly IUserRepository userRepository;

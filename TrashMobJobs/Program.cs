@@ -5,6 +5,7 @@ namespace TrashMobJobs
     using Microsoft.Extensions.DependencyInjection;
     using TrashMob.Shared;
     using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Engine;
 
     public class Program
     {
@@ -23,7 +24,8 @@ namespace TrashMobJobs
                             .AddSingleton<IEventTypeRepository, EventTypeRepository>()
                             .AddSingleton<IMapRepository, MapRepository>()
                             .AddSingleton<IUserRepository, UserRepository>()
-                            .AddSingleton<IUserNotificationRepository, UserNotificationRepository>())
+                            .AddSingleton<IUserNotificationRepository, UserNotificationRepository>()
+                            .AddSingleton<IUserNotificationManager, UserNotificationManager>())
                 .Build();
 
             host.Run();

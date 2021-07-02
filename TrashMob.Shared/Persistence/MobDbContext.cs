@@ -3,6 +3,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using TrashMob.Shared;
+    using TrashMob.Shared.Engine;
     using TrashMob.Shared.Models;
 
     public class MobDbContext : DbContext
@@ -31,6 +32,8 @@
         public virtual DbSet<SiteMetric> SiteMetrics { get; set; }
 
         public virtual DbSet<UserNotification> UserNotifications { get; set; }
+
+        public virtual DbSet<UserNotificationType> UserNotificationTypes { get; set; }
 
         public virtual DbSet<UserNotificationPreference> UserNotificationPreferences { get; set; }
 
@@ -295,6 +298,26 @@
                     new EventType { Id = 13, Name = "Social Event", Description = "Social Event", DisplayOrder = 13, IsActive = true },
                     new EventType { Id = 14, Name = "Other", Description = "Other", DisplayOrder = 14, IsActive = true });
             });
+
+            modelBuilder.Entity<UserNotificationType>(entity =>
+            {
+                entity.Property(e => e.Description);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasData(
+                    new UserNotificationType { Id = (int)NotificationTypeEnum.EventSummaryAttendee, Name = "EventSummaryAttendee", Description = "Opt out of Post Event Summary", DisplayOrder = 1 },
+                    new UserNotificationType { Id = (int)NotificationTypeEnum.EventSummaryHostReminder, Name = "EventSummaryHostReminder", Description = "Opt out of Event Summary Reminder for events you have lead", DisplayOrder = 2 },
+                    new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventAttendingThisWeek, Name = "UpcomingEventAttendingThisWeek", Description = "Opt out of notifications for events upcoming this week you are attending", DisplayOrder = 3 },
+                    new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventAttendingToday, Name = "UpcomingEventAttendingToday", Description = "Opt out of notifications for events happening today you are attending", DisplayOrder = 4 },
+                    new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventHostingThisWeek, Name = "UpcomingEventHostingThisWeek", Description = "Opt out of notifications for events upcoming this week you are leading", DisplayOrder = 5 },
+                    new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventHostingToday, Name = "UpcomingEventHostingToday", Description = "Opt out of notifications for events happening today you are leading", DisplayOrder = 6 },
+                    new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventsInYourAreaThisWeek, Name = "UpcomingEventsInYourAreaThisWeek", Description = "Opt out of notification for new events upcoming in your area this week", DisplayOrder = 7 },
+                    new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventsInYourAreaToday, Name = "UpcomingEventsInYourAreaToday", Description = "Opt out of notification for new events happening in your area today", DisplayOrder = 8 });
+        });
+
         }
     }
 }

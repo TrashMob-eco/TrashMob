@@ -6,7 +6,7 @@ import * as ToolTips from "../store/ToolTips";
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import { Button, Col, Form, ToggleButton } from 'react-bootstrap';
+import { Button, ButtonGroup, Col, Form, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import { Modal } from 'reactstrap';
 import * as MapStore from '../store/MapStore';
 import { getKey } from '../store/MapStore';
@@ -14,6 +14,7 @@ import AddressData from './Models/AddressData';
 import { data } from 'azure-maps-control';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapController from './MapController';
+import UserNotificationPreferenceData, { UserNotificationPreferenceDefaults } from './Models/UserNotificationPreferenceData';
 
 interface UserProfileProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -57,51 +58,87 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
-    const [eventName, setEventName] = React.useState<string>("User Location");
+    const [eventName, setEventName] = React.useState<string>("User's Base Location");
+    const [userNotificationPreferences, setUserNotificationPreferences] = React.useState<UserNotificationPreferenceData[]>(UserNotificationPreferenceDefaults);
 
     React.useEffect(() => {
-        const headers = getDefaultHeaders('GET');
 
-        fetch('/api/users/' + userId, {
-            method: 'GET',
-            headers: headers,
-        })
-            .then(response => response.json() as Promise<UserData>)
-            .then(data => {
-                setNameIdentifier(data.nameIdentifier);
-                setUserName(data.userName);
-                setGivenName(data.givenName);
-                setSurName(data.surName);
-                setEmail(data.email);
-                setCity(data.city);
-                setCountry(data.country);
-                setRegion(data.region);
-                setPostalCode(data.postalCode);
-                setDateAgreedToPrivacyPolicy(data.dateAgreedToPrivacyPolicy);
-                setDateAgreedToTermsOfService(data.dateAgreedToTermsOfService);
-                setPrivacyPolicyVersion(data.privacyPolicyVersion);
-                setTermsOfServiceVersion(data.termsOfServiceVersion);
-                setMemberSince(data.memberSince);
-                setSourceSystemUserName(data.sourceSystemUserName);
-                setLatitude(data.latitude);
-                setLongitude(data.longitude);
-                setIsOptedOutOfAllEmails(data.isOptedOutOfAllEmails);
-                setPrefersMetric(data.prefersMetric);
-                setTravelLimitForLocalEvents(data.travelLimitForLocalEvents);
+        if (props.isUserLoaded && !isDataLoaded)  {
+            const account = msalClient.getAllAccounts()[0];
 
-                setUserNameErrors("");
-                setGivenNameErrors("");
-                setSurNameErrors("");
-                setCityErrors("");
-                setCountryErrors("");
-                setRegionErrors("");
-                setPostalCodeErrors("");
-                setLatitudeErrors("");
-                setLongitudeErrors("");
-                setTravelLimitForLocalEventsErrors("");
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
 
-                setIsDataLoaded(true);
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+
+                fetch('/api/users/' + userId, {
+                    method: 'GET',
+                    headers: headers,
+                })
+                    .then(response => response.json() as Promise<UserData>)
+                    .then(data => {
+                        setNameIdentifier(data.nameIdentifier);
+                        setUserName(data.userName);
+                        setGivenName(data.givenName);
+                        setSurName(data.surName);
+                        setEmail(data.email);
+                        setCity(data.city);
+                        setCountry(data.country);
+                        setRegion(data.region);
+                        setPostalCode(data.postalCode);
+                        setDateAgreedToPrivacyPolicy(data.dateAgreedToPrivacyPolicy);
+                        setDateAgreedToTermsOfService(data.dateAgreedToTermsOfService);
+                        setPrivacyPolicyVersion(data.privacyPolicyVersion);
+                        setTermsOfServiceVersion(data.termsOfServiceVersion);
+                        setMemberSince(data.memberSince);
+                        setSourceSystemUserName(data.sourceSystemUserName);
+                        setLatitude(data.latitude);
+                        setLongitude(data.longitude);
+                        setIsOptedOutOfAllEmails(data.isOptedOutOfAllEmails);
+                        setPrefersMetric(data.prefersMetric);
+                        setTravelLimitForLocalEvents(data.travelLimitForLocalEvents);
+
+                        setUserNameErrors("");
+                        setGivenNameErrors("");
+                        setSurNameErrors("");
+                        setCityErrors("");
+                        setCountryErrors("");
+                        setRegionErrors("");
+                        setPostalCodeErrors("");
+                        setLatitudeErrors("");
+                        setLongitudeErrors("");
+                        setTravelLimitForLocalEventsErrors("");
+
+                        setIsDataLoaded(true);
+                    });
+
+                fetch('/api/usernotificationpreferences/' + userId, {
+                    method: 'GET',
+                    headers: headers,
+                })
+                    .then(response => response.json() as Promise<UserNotificationPreferenceData[]>)
+                    .then(data => {
+                        if (data) {
+                            var mergedPrefs: UserNotificationPreferenceData[] = userNotificationPreferences.map((userpref) => {
+                                var loadedPref = data.find((p) => p.userNotificationTypeId === userpref.userNotificationTypeId);
+                                if (loadedPref) {
+                                    return loadedPref;
+                                }
+
+                                return userpref;
+                            });
+
+                            setUserNotificationPreferences(mergedPrefs);
+                        }
+                        setIsDataLoaded(true);
+                    });
             });
+        }
 
         MapStore.getOption().then(opts => {
             setMapOptions(opts);
@@ -113,8 +150,8 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 var point = new data.Position(position.coords.longitude, position.coords.latitude);
                 setCenter(point)
             });
-        } 
-    }, [userId])
+        }
+    }, [userId, userNotificationPreferences, props.isUserLoaded])
 
     function togglemodal() {
         setIsOpen(!isOpen);
@@ -206,6 +243,18 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
             account: account
         };
 
+        var userprefs: UserNotificationPreferenceData[] = userNotificationPreferences.map((userpref) => {
+            var val = new UserNotificationPreferenceData();
+            val.id = userpref.id;
+            val.isOptedOut = userpref.isOptedOut;
+            val.userId = userId;
+            val.userNotificationTypeId = userpref.userNotificationTypeId;
+
+            return val;
+        });
+
+        var usrprefdata = JSON.stringify(userprefs);
+
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
 
             const headers = getDefaultHeaders('PUT');
@@ -216,7 +265,13 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 headers: headers,
                 body: usrdata,
             }).then(() => {
-                props.history.push("/");
+                fetch('/api/usernotificationpreferences/' + userId, {
+                    method: 'PUT',
+                    headers: headers,
+                    body: usrprefdata,
+                }).then(() => {
+                    props.history.push("/");
+                });
             })
         })
     }
@@ -363,8 +418,14 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.UserProfilePreferMetric}</Tooltip>
     }
 
-    function renderIsOptedOutOfAllEmailsToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.UserProfileIsOptedOutOfAllEmails}</Tooltip>
+    function setIsOptedOut(userNotificationId: number) {
+        const updatedPrefs: UserNotificationPreferenceData[] = userNotificationPreferences.map((item, index) => {
+            if (item.userNotificationTypeId === userNotificationId)
+                item.isOptedOut = !item.isOptedOut;
+            return item;
+        });
+
+        setUserNotificationPreferences(updatedPrefs);
     }
 
     function handleLocationChange(point: data.Position) {
@@ -424,6 +485,17 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                         <Form.Row>
                             <Col>
                                 <Form.Group>
+                                    <Button disabled={userNameErrors !== ""} type="submit" className="action btn-default">Save</Button>
+                                    <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Button variant="danger" onClick={(e) => handleDelete(e)}>Delete Account</Button>
+                            </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col>
+                                <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderUserNameToolTip}>
                                         <Form.Label htmlFor="UserName">User Name:</Form.Label>
                                     </OverlayTrigger>
@@ -437,20 +509,6 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                         <Form.Label htmlFor="email">Email:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" disabled defaultValue={email} />
-                                </Form.Group>
-                            </Col>
-                            <Col>
-                                <Form.Group>
-                                    <OverlayTrigger placement="top" overlay={renderIsOptedOutOfAllEmailsToolTip}>
-                                        <Form.Label htmlFor="IsOptedOutOfAllEmails">Email Preference:</Form.Label>
-                                    </OverlayTrigger >
-                                    <ToggleButton
-                                        type="checkbox"
-                                        variant="secondary"
-                                        checked={isOptedOutOfAllEmails}
-                                        value="1"
-                                        onChange={(e) => setIsOptedOutOfAllEmails(e.currentTarget.checked)}
-                                    >Opt Out of All Emails</ToggleButton>
                                 </Form.Group>
                             </Col>
                         </Form.Row>
@@ -473,6 +531,16 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                     <span style={{ color: "red" }}>{surNameErrors}</span>
                                 </Form.Group>
                             </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Form.Label>Click on the map to set your base location. This location will only be used to assist in locating events you wish to be notified about. The location fields below will be automatically populated.</Form.Label>
+                        </Form.Row>
+                        <Form.Row>
+                            <AzureMapsProvider>
+                                <>
+                                    <MapController center={center} multipleEvents={[]} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                                </>
+                            </AzureMapsProvider>
                         </Form.Row>
                         <Form.Row>
                             <Col>
@@ -551,7 +619,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                     </OverlayTrigger >
                                     <ToggleButton
                                         type="checkbox"
-                                        variant="secondary"
+                                        variant="outline-dark"
                                         checked={prefersMetric}
                                         value="1"
                                         onChange={(e) => setPrefersMetric(e.currentTarget.checked)}
@@ -562,25 +630,43 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             </Col>
                         </Form.Row>
                         <Form.Row>
+                            <h3>Email Notification Preferences</h3>
+                        </Form.Row>
+                        <Form.Row>
+                            <Form.Label>Email Notification</Form.Label>
                             <Col>
                                 <Form.Group>
-                                    <Button disabled={userNameErrors !== ""} type="submit" className="action btn-default">Save</Button>
-                                    <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
+                                    <Form.Label>Check the box below to opt out of all email notifications</Form.Label>
+                                    <ToggleButton
+                                        type="checkbox"
+                                        variant="outline-dark"
+                                        checked={isOptedOutOfAllEmails}
+                                        value="1"
+                                        size="sm"
+                                        onChange={(e) => setIsOptedOutOfAllEmails(e.currentTarget.checked)}
+                                        block
+                                    >Opt Out of All Emails</ToggleButton>
                                 </Form.Group>
                             </Col>
-                            <Col>
-                                <Button variant="danger" onClick={(e) => handleDelete(e)}>Delete Account</Button>
+                            <Col xs="2" >
+                                <h4>- OR -</h4>
                             </Col>
-                        </Form.Row>
-                        <Form.Row>
-                            <Form.Label>Click on the map to set your base location. This location will only be used to assist in locating events you wish to be notified about. The location fields above will be automatically populated.</Form.Label>
-                        </Form.Row>
-                        <Form.Row>
-                            <AzureMapsProvider>
-                                <>
-                                    <MapController center={center} multipleEvents={[]} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
-                                </>
-                            </AzureMapsProvider>
+                            <Col>
+                                <Form.Label>Check the box below to opt out of certain types of email notifications</Form.Label>
+                                <ToggleButtonGroup size="sm" type="checkbox" vertical>
+                                    {userNotificationPreferences.map((pref) => (
+                                        <Form.Group>
+                                            <ToggleButton
+                                                type="checkbox"
+                                                variant="outline-dark"
+                                                checked={pref.isOptedOut}
+                                                value="1"
+                                                onChange={(e) => setIsOptedOut(pref.userNotificationTypeId)}                                                
+                                            >{pref.userFriendlyName}</ToggleButton>
+                                        </Form.Group>
+                                    ))}
+                                </ToggleButtonGroup>
+                            </Col>
                         </Form.Row>
                         <Form.Row>
                             <Col>

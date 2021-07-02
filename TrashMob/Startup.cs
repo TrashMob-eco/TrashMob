@@ -53,6 +53,7 @@ namespace TrashMob
             services.AddScoped<IMapRepository, MapRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
+            services.AddScoped<IUserNotificationPreferenceRepository, UserNotificationPreferenceRepository>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
