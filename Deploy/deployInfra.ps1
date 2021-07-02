@@ -69,4 +69,4 @@ $principal2Id = $principal2.principalId
 az keyvault set-policy --name $keyVaultName --object-id $principal2Id --secret-permissions get list
 
 # Set the secret in the App Settings for the function. Need to update this to use KeyVault directly in the future, but couldn't get the function app to work on first few attempts
-az functionapp config appsettings set --name $functionAppName --subscription $subscriptionId --resource-group $rgName --settings "DbConnectionString=$sqlKey SendGridApiKey=$sendGridApiKey InstanceName=$appServiceName AzureMapsKey=$mapKey"
+az functionapp config appsettings set --name $functionAppName --subscription $subscriptionId --resource-group $rgName --settings "DbConnectionString=$sqlKey" "SendGridApiKey=$sendGridApiKey" "InstanceName=$appServiceName" AzureMapsKey=$mapKey"
