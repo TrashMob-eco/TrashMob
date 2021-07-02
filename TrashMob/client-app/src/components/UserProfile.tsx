@@ -6,7 +6,7 @@ import * as ToolTips from "../store/ToolTips";
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import { Button, ButtonGroup, Col, Form, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
+import { Button, Col, Form, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import { Modal } from 'reactstrap';
 import * as MapStore from '../store/MapStore';
 import { getKey } from '../store/MapStore';
@@ -65,6 +65,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
 
         if (props.isUserLoaded && !isDataLoaded)  {
             const account = msalClient.getAllAccounts()[0];
+            setEventName("User's Base Location");
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -152,7 +153,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 setCenter(point)
             });
         }
-    }, [userId, userNotificationPreferences, props.isUserLoaded])
+    }, [userId, userNotificationPreferences, props.isUserLoaded, isDataLoaded])
 
     function togglemodal() {
         setIsOpen(!isOpen);
