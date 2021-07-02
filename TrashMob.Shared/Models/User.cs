@@ -11,6 +11,7 @@ namespace TrashMob.Shared.Models
         {
             EventsCreated = new HashSet<Event>();
             EventsUpdated = new HashSet<Event>();
+            UserNotifications = new HashSet<UserNotification>();
         }
 
         public Guid Id { get; set; }
@@ -35,6 +36,16 @@ namespace TrashMob.Shared.Models
 
         public string PostalCode { get; set; }
 
+        public double? Latitude { get; set; }
+
+        public double? Longitude { get; set; }
+
+        public bool PrefersMetric { get; set; }
+
+        public int TravelLimitForLocalEvents { get; set; }
+
+        public bool IsOptedOutOfAllEmails { get; set; }
+
         public DateTimeOffset? DateAgreedToPrivacyPolicy { get; set; }
 
         public string PrivacyPolicyVersion { get; set; }
@@ -48,5 +59,9 @@ namespace TrashMob.Shared.Models
         public virtual ICollection<Event> EventsCreated { get; set; }
 
         public virtual ICollection<Event> EventsUpdated { get; set; }
+
+        public virtual ICollection<UserNotification> UserNotifications { get; set; }
+
+        public virtual ICollection<UserNotificationPreference> UserNotificationPreferences { get; set; }
     }
 }

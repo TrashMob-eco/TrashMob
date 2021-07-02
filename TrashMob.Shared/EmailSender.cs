@@ -7,12 +7,14 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    public class EmailSender
+    public class EmailSender : IEmailSender
     {
-        public async Task SendEmailAsync(Email email, string apiKey,  CancellationToken cancellationToken = default)
+        public string ApiKey { get; set; }
+
+        public async Task SendEmailAsync(Email email, CancellationToken cancellationToken = default)
         {
             // To not send emails from dev environments, don't store an apikey password in the local secrets
-            if (string.IsNullOrWhiteSpace(apiKey) || apiKey == "x")
+            if (string.IsNullOrWhiteSpace(ApiKey) || ApiKey == "x")
             {
                 return;
             }
@@ -29,7 +31,7 @@
 
             try
             {
-                var client = new SendGridClient(apiKey);
+                var client = new SendGridClient(ApiKey);
                 var message = MailHelper.CreateSingleEmailToMultipleRecipients(from, tos, email.Subject, body, "");
                 var response = await client.SendEmailAsync(message, cancellationToken);
                 Console.WriteLine(response);

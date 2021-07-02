@@ -17,10 +17,10 @@ namespace TrashMob.Migrations
             modelBuilder
                 .HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.6")
+                .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("TrashMob.Models.ContactRequest", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.ContactRequest", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -46,7 +46,7 @@ namespace TrashMob.Migrations
                     b.ToTable("ContactRequests");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.Event", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.Event", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -132,7 +132,7 @@ namespace TrashMob.Migrations
                     b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.EventAttendee", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.EventAttendee", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -153,7 +153,7 @@ namespace TrashMob.Migrations
                     b.ToTable("EventAttendees");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.EventHistory", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.EventHistory", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -234,7 +234,7 @@ namespace TrashMob.Migrations
                     b.ToTable("EventHistory");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.EventStatus", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.EventStatus", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -285,7 +285,7 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Models.EventType", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.EventType", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -423,7 +423,7 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Models.SiteMetric", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.SiteMetric", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -444,7 +444,7 @@ namespace TrashMob.Migrations
                     b.ToTable("SiteMetrics");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.User", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -470,6 +470,15 @@ namespace TrashMob.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
 
+                    b.Property<bool>("IsOptedOutOfAllEmails")
+                        .HasColumnType("bit");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("float");
+
                     b.Property<DateTimeOffset?>("MemberSince")
                         .HasColumnType("datetimeoffset");
 
@@ -479,6 +488,9 @@ namespace TrashMob.Migrations
                     b.Property<string>("PostalCode")
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
+
+                    b.Property<bool>("PrefersMetric")
+                        .HasColumnType("bit");
 
                     b.Property<string>("PrivacyPolicyVersion")
                         .HasMaxLength(50)
@@ -499,6 +511,9 @@ namespace TrashMob.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("TravelLimitForLocalEvents")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserName")
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
@@ -508,28 +523,166 @@ namespace TrashMob.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.Event", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.UserNotification", b =>
                 {
-                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("SentDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("UserNotificationTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserNotificationTypeId");
+
+                    b.ToTable("UserNotifications");
+                });
+
+            modelBuilder.Entity("TrashMob.Shared.Models.UserNotificationPreference", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsOptedOut")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("UserNotificationTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserNotificationTypeId");
+
+                    b.ToTable("UserNotificationPreferences");
+                });
+
+            modelBuilder.Entity("TrashMob.Shared.Models.UserNotificationType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserNotificationTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Opt out of Post Event Summary",
+                            DisplayOrder = 1,
+                            Name = "EventSummaryAttendee"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Opt out of Event Summary Reminder for events you have lead",
+                            DisplayOrder = 2,
+                            Name = "EventSummaryHostReminder"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Opt out of notifications for events upcoming this week you are attending",
+                            DisplayOrder = 3,
+                            Name = "UpcomingEventAttendingThisWeek"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Opt out of notifications for events happening today you are attending",
+                            DisplayOrder = 4,
+                            Name = "UpcomingEventAttendingToday"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Description = "Opt out of notifications for events upcoming this week you are leading",
+                            DisplayOrder = 5,
+                            Name = "UpcomingEventHostingThisWeek"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Description = "Opt out of notifications for events happening today you are leading",
+                            DisplayOrder = 6,
+                            Name = "UpcomingEventHostingToday"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Description = "Opt out of notification for new events upcoming in your area this week",
+                            DisplayOrder = 7,
+                            Name = "UpcomingEventsInYourAreaThisWeek"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Description = "Opt out of notification for new events happening in your area today",
+                            DisplayOrder = 8,
+                            Name = "UpcomingEventsInYourAreaToday"
+                        });
+                });
+
+            modelBuilder.Entity("TrashMob.Shared.Models.Event", b =>
+                {
+                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
                         .WithMany("EventsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .HasConstraintName("FK_Events_ApplicationUser_CreatedBy")
                         .IsRequired();
 
-                    b.HasOne("TrashMob.Models.EventStatus", "EventStatus")
+                    b.HasOne("TrashMob.Shared.Models.EventStatus", "EventStatus")
                         .WithMany("Events")
                         .HasForeignKey("EventStatusId")
                         .HasConstraintName("FK_Events_EventStatuses")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TrashMob.Models.EventType", "EventType")
+                    b.HasOne("TrashMob.Shared.Models.EventType", "EventType")
                         .WithMany("Events")
                         .HasForeignKey("EventTypeId")
                         .HasConstraintName("FK_Events_EventTypes")
                         .IsRequired();
 
-                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
                         .WithMany("EventsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .HasConstraintName("FK_Events_ApplicationUser_LastUpdatedBy")
@@ -544,15 +697,15 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.EventAttendee", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.EventAttendee", b =>
                 {
-                    b.HasOne("TrashMob.Models.Event", "Event")
+                    b.HasOne("TrashMob.Shared.Models.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventId")
                         .HasConstraintName("FK_EventAttendees_Events")
                         .IsRequired();
 
-                    b.HasOne("TrashMob.Models.User", "User")
+                    b.HasOne("TrashMob.Shared.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK_EventAttendees_ApplicationUser")
@@ -563,21 +716,83 @@ namespace TrashMob.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.EventStatus", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.UserNotification", b =>
+                {
+                    b.HasOne("TrashMob.Shared.Models.Event", "Event")
+                        .WithMany("UserNotifications")
+                        .HasForeignKey("EventId")
+                        .HasConstraintName("FK_UserNotifications_Event_Id")
+                        .IsRequired();
+
+                    b.HasOne("TrashMob.Shared.Models.User", "User")
+                        .WithMany("UserNotifications")
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("FK_UserNotifications_User_Id")
+                        .IsRequired();
+
+                    b.HasOne("TrashMob.Shared.Models.UserNotificationType", "UserNotificationType")
+                        .WithMany("UserNotifications")
+                        .HasForeignKey("UserNotificationTypeId")
+                        .HasConstraintName("FK_UserNotifications_UserNotificationTypes")
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("User");
+
+                    b.Navigation("UserNotificationType");
+                });
+
+            modelBuilder.Entity("TrashMob.Shared.Models.UserNotificationPreference", b =>
+                {
+                    b.HasOne("TrashMob.Shared.Models.User", "User")
+                        .WithMany("UserNotificationPreferences")
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("FK_UserNotificationPreferences_User_Id")
+                        .IsRequired();
+
+                    b.HasOne("TrashMob.Shared.Models.UserNotificationType", "UserNotificationType")
+                        .WithMany("UserNotificationPreferences")
+                        .HasForeignKey("UserNotificationTypeId")
+                        .HasConstraintName("FK_UserNotificationPreferences_UserNotificationTypes")
+                        .IsRequired();
+
+                    b.Navigation("User");
+
+                    b.Navigation("UserNotificationType");
+                });
+
+            modelBuilder.Entity("TrashMob.Shared.Models.Event", b =>
+                {
+                    b.Navigation("UserNotifications");
+                });
+
+            modelBuilder.Entity("TrashMob.Shared.Models.EventStatus", b =>
                 {
                     b.Navigation("Events");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.EventType", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.EventType", b =>
                 {
                     b.Navigation("Events");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.User", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.User", b =>
                 {
                     b.Navigation("EventsCreated");
 
                     b.Navigation("EventsUpdated");
+
+                    b.Navigation("UserNotificationPreferences");
+
+                    b.Navigation("UserNotifications");
+                });
+
+            modelBuilder.Entity("TrashMob.Shared.Models.UserNotificationType", b =>
+                {
+                    b.Navigation("UserNotificationPreferences");
+
+                    b.Navigation("UserNotifications");
                 });
 #pragma warning restore 612, 618
         }

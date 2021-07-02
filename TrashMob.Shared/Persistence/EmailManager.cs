@@ -9,18 +9,19 @@ namespace TrashMob.Shared.Persistence
     public class EmailManager : IEmailManager
     {
         private readonly IConfiguration configuration;
+        private readonly IEmailSender emailSender;
 
-        public EmailManager(IConfiguration configuration)
+        public EmailManager(IConfiguration configuration, IEmailSender emailSender)
         {
             this.configuration = configuration;
+            this.emailSender = emailSender;
+            this.emailSender.ApiKey = configuration["sendGridApiKey"];
         }
 
         public Task SendSystemEmail(Email email, CancellationToken cancellationToken = default)
         {
-            var sendGridApiKey = configuration["sendGridApiKey"];
-
-            var emailSender = new EmailSender();
-            return emailSender.SendEmailAsync(email, sendGridApiKey, cancellationToken);
+            
+            return emailSender.SendEmailAsync(email, cancellationToken);
         }
     }
 }

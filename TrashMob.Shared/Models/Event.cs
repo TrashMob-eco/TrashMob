@@ -9,6 +9,7 @@ namespace TrashMob.Shared.Models
     {
         public Event()
         {
+            UserNotifications = new HashSet<UserNotification>();
         }
 
         public Guid Id { get; set; }
@@ -56,5 +57,7 @@ namespace TrashMob.Shared.Models
         public virtual User CreatedByUser { get; set; }
 
         public virtual User LastUpdatedByUser { get; set; }
+
+        public virtual ICollection<UserNotification> UserNotifications { get; set; }
     }
 }
