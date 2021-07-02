@@ -127,6 +127,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             var mergedPrefs: UserNotificationPreferenceData[] = userNotificationPreferences.map((userpref) => {
                                 var loadedPref = data.find((p) => p.userNotificationTypeId === userpref.userNotificationTypeId);
                                 if (loadedPref) {
+                                    loadedPref.userFriendlyName = userpref.userFriendlyName;
                                     return loadedPref;
                                 }
 
