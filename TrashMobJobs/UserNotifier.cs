@@ -8,16 +8,18 @@ namespace TrashMobJobs
 
     public class UserNotifier
     {
+        private readonly IUserNotificationManager userNotificationManager;
+
+        public UserNotifier(IUserNotificationManager userNotificationManager)
+        {
+            this.userNotificationManager = userNotificationManager;
+        }
+
         [Function("UserNotifierHosted")]
-        public async Task Run([TimerTrigger("0 0 * * * *")] MyInfo myTimer, FunctionContext context, IUserNotificationManager userNotificationManager)
+        public async Task Run([TimerTrigger("0 */5 * * * *")] MyInfo myTimer, FunctionContext context)
         {
             var log = context.GetLogger("UserNotifier");
             log.LogInformation($"UserNotifier trigger function executed at: {DateTime.Now}");
-            var connectionString = Environment.GetEnvironmentVariable("DBConnectionString");
-            var sendGridApiKey = Environment.GetEnvironmentVariable("SendGridApiKey");
-            var instanceName = Environment.GetEnvironmentVariable("InstanceName");
-            var azureMapsKey = Environment.GetEnvironmentVariable("AzureMapsKey");
-
             await userNotificationManager.RunAllNotificatons().ConfigureAwait(false);
         }
     }

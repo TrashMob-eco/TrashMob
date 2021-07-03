@@ -13,7 +13,7 @@
         private readonly IUserNotificationPreferenceRepository userNotificationPreferenceRepository;
         private readonly IEmailSender emailSender;
         private readonly IMapRepository mapRepository;
-        private readonly ILogger logger;
+        private readonly ILogger<UserNotificationManager> logger;
 
         public UserNotificationManager(IEventRepository eventRepository,
                                        IUserRepository userRepository,
@@ -22,7 +22,7 @@
                                        IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
                                        IEmailSender emailSender,
                                        IMapRepository mapRepository,
-                                       ILogger logger)
+                                       ILogger<UserNotificationManager> logger)
         {
             this.eventRepository = eventRepository;
             this.userRepository = userRepository;

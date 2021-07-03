@@ -109,10 +109,11 @@ namespace TrashMob.Shared.Engine
                     }
 
                     var emailTemplate = GetEmailTemplate();
+                    var content = EmailFormatter.PopulateTemplate(emailTemplate, user, eventsToNotifyUserFor);
                     var email = new Email();
                     email.Addresses.Add(new EmailAddress() { Email = user.Email, Name = $"{user.GivenName} {user.SurName}" });
                     email.Subject = EmailSubject;
-                    email.Message = emailTemplate;
+                    email.Message = content;
 
                     // send email
                     await EmailSender.SendEmailAsync(email, cancellationToken);
