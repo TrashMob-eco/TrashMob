@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using TrashMob.Shared.Models;
-
-namespace TrashMob.Shared.Engine
+﻿namespace TrashMob.Shared.Engine
 {
-    public class EmailFormatter
+    using System.Collections.Generic;
+    using System.Text;
+    using TrashMob.Shared.Models;
+
+    public static class EmailFormatter
     {
-        public string PopulateTemplate(string template, User user, Event mobEvent)
+        public static string PopulateTemplate(string template, User user, Event mobEvent)
         {
             var populatedTemplate = template;
             populatedTemplate.Replace("{UserName}", user.UserName);
@@ -19,7 +19,7 @@ namespace TrashMob.Shared.Engine
             return populatedTemplate;
         }
 
-        public string PopulateTemplate(string template, User user, IEnumerable<Event> mobEvents)
+        public static string PopulateTemplate(string template, User user, IEnumerable<Event> mobEvents)
         {
             var populatedTemplate = template;
             populatedTemplate.Replace("{UserName}", user.UserName);

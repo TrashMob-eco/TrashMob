@@ -15,7 +15,7 @@ namespace TrashMobJobs
         {
             var log = context.GetLogger("HttpExample");
             log.LogInformation($"Getting Stats trigger function executed at: {DateTime.Now}");
-            var connectionString = Environment.GetEnvironmentVariable("DBConnectionString");
+            var connectionString = Environment.GetEnvironmentVariable("TMDBServerConnectionString");
             var sendGridApiKey = Environment.GetEnvironmentVariable("SendGridApiKey");
             var instanceName = Environment.GetEnvironmentVariable("InstanceName");
 

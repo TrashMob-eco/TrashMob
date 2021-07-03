@@ -7,12 +7,17 @@ namespace TrashMobJobs
     using TrashMob.Shared.Persistence;
     using TrashMob.Shared.Engine;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Configuration;
 
     public class Program
     {
         public static async Task Main()
         {
             var host = new HostBuilder()
+                .ConfigureAppConfiguration(c =>
+                {
+                    c.AddEnvironmentVariables();
+                })
                 .ConfigureFunctionsWorkerDefaults()
                 .ConfigureServices(s =>
                     s.AddSingleton<IEmailSender, EmailSender>()
