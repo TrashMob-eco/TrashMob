@@ -16,6 +16,10 @@
             populatedTemplate.Replace("{EventCity}", mobEvent.City);
             populatedTemplate.Replace("{EventRegion}", mobEvent.Region);
             populatedTemplate.Replace("{EventCountry}", mobEvent.Country);
+            var summaryLink = $"<a target='_blank' href='https://www.trashmob.eco/eventsummary/{mobEvent.Id}'>Event Summary</a>";
+            populatedTemplate.Replace("{EventSummaryLink}", summaryLink);
+            var detailsLink = $"<a target='_blank' href='https://www.trashmob.eco/eventdetails/{mobEvent.Id}'>Event Details</a>";
+            populatedTemplate.Replace("{EventDetailsLink}", detailsLink);
             return populatedTemplate;
         }
 
@@ -45,16 +49,14 @@
             eventGrid.AppendLine("<td>");
             eventGrid.AppendLine("Event Country");
             eventGrid.AppendLine("</td>");
-            eventGrid.AppendLine("<td>");
-            eventGrid.AppendLine("Event Link");
-            eventGrid.AppendLine("</td>");
             eventGrid.AppendLine("</th>");
 
             foreach (var mobEvent in mobEvents)
             {
                 eventGrid.AppendLine("<tr>");
                 eventGrid.AppendLine("<td>");
-                eventGrid.AppendLine(mobEvent.Name);
+                var link = $"<a target='_blank' href='https://www.trashmob.eco/eventdetails/{mobEvent.Id}'>{mobEvent.Name}</a>";
+                eventGrid.AppendLine(link);
                 eventGrid.AppendLine("</td>");
                 eventGrid.AppendLine("<td>");
                 eventGrid.AppendLine(mobEvent.EventDate.ToString());
@@ -70,9 +72,6 @@
                 eventGrid.AppendLine("</td>");
                 eventGrid.AppendLine("<td>");
                 eventGrid.AppendLine(mobEvent.Country);
-                eventGrid.AppendLine("</td>");
-                eventGrid.AppendLine("<td>");
-                eventGrid.AppendFormat("https://www.trashmob.eco/eventdetails/{0}", mobEvent.Id);
                 eventGrid.AppendLine("</td>");
                 eventGrid.AppendLine("</tr>");
             }
