@@ -34,6 +34,14 @@
                 .ToListAsync().ConfigureAwait(false);
         }
 
+        public async Task<IEnumerable<Event>> GetCompletedEvents()
+        {
+            return await mobDbContext.Events
+                .Where(e => e.EventDate < DateTimeOffset.UtcNow)
+                .AsNoTracking()
+                .ToListAsync().ConfigureAwait(false);
+        }
+
         public async Task<IEnumerable<Event>> GetUserEvents(Guid userId)
         {
             return await mobDbContext.Events

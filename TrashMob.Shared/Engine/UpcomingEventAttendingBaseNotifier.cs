@@ -10,26 +10,19 @@ namespace TrashMob.Shared.Engine
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    public class EventSummaryHostReminderNotifier : NotificationEngineBase, INotificationEngine
+    public abstract class UpcomingEventAttendingBaseNotifier : NotificationEngineBase, INotificationEngine
     {
-        protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.EventSummaryHostReminder;
-
-        protected override int NumberOfHoursInWindow => -4;
-
-        protected override string EmailSubject => "Your TrashMob.eco event has completed. We'd love to know how it went!";
-
-        public EventSummaryHostReminderNotifier(IEventRepository eventRepository, 
-                                                IUserRepository userRepository, 
-                                                IEventAttendeeRepository eventAttendeeRepository,
-                                                IUserNotificationRepository userNotificationRepository,
-                                                IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
-                                                IEmailSender emailSender,
-                                                IMapRepository mapRepository,
-                                                ILogger logger) :
+        public UpcomingEventAttendingBaseNotifier(IEventRepository eventRepository,
+                                                     IUserRepository userRepository,
+                                                     IEventAttendeeRepository eventAttendeeRepository,
+                                                     IUserNotificationRepository userNotificationRepository,
+                                                     IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
+                                                     IEmailSender emailSender,
+                                                     IMapRepository mapRepository,
+                                                     ILogger logger) :
             base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository, logger)
         {
         }
-
 
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
@@ -52,10 +45,20 @@ namespace TrashMob.Shared.Engine
                 var eventsToNotifyUserFor = new List<Event>();
 
                 // Get list of active events
-                var events = await EventRepository.GetCompletedEvents().ConfigureAwait(false);
+                var events = await EventRepository.GetActiveEvents().ConfigureAwait(false);
 
-                foreach (var mobEvent in events.Where(e => e.CreatedByUserId == user.Id))
+                // Get list of events user is already attending
+                var eventsUserIsAttending = await EventAttendeeRepository.GetEventsUserIsAttending(user.Id).ConfigureAwait(false);
+
+                // Limit the list of events to process to those in the next window UTC
+                foreach (var mobEvent in events.Where(e => e.CreatedByUserId != user.Id && e.EventDate <= DateTimeOffset.UtcNow.AddHours(NumberOfHoursInWindow)))
                 {
+                    // Verify that the user is attending the event.
+                    if (!eventsUserIsAttending.Any(ea => ea.Id == mobEvent.Id))
+                    {
+                        continue;
+                    }
+
                     if (await UserHasAlreadyReceivedNotification(user, mobEvent).ConfigureAwait(false))
                     {
                         continue;
@@ -65,6 +68,7 @@ namespace TrashMob.Shared.Engine
                     eventsToNotifyUserFor.Add(mobEvent);
                 }
 
+                // Populate email
                 notificationCounter += await SendNotifications(user, eventsToNotifyUserFor, cancellationToken).ConfigureAwait(false);
             }
 

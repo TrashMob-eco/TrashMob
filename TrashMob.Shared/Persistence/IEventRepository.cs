@@ -11,6 +11,8 @@
  
         Task<IEnumerable<Event>> GetActiveEvents();
 
+        Task<IEnumerable<Event>> GetCompletedEvents();
+
         Task<IEnumerable<Event>> GetUserEvents(Guid userId);
 
         Task<Guid> AddEvent(Event mobEvent);

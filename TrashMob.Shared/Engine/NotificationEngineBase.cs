@@ -1,9 +1,12 @@
 ﻿namespace TrashMob.Shared.Engine
 {
     using Microsoft.Extensions.Logging;
+    using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
@@ -83,6 +86,50 @@
             }
 
             return false;
+        }
+
+        protected async Task<int> SendNotifications(User user, IEnumerable<Event> eventsToNotifyUserFor, CancellationToken cancellationToken)
+        {
+            // Populate email
+            if (eventsToNotifyUserFor.Any())
+            {
+                // Update the database first so that a user is not notified multiple times
+                foreach (var mobEvent in eventsToNotifyUserFor)
+                {
+                    var userNotification = new UserNotification
+                    {
+                        Id = Guid.NewGuid(),
+                        EventId = mobEvent.Id,
+                        UserId = user.Id,
+                        SentDate = DateTimeOffset.UtcNow,
+                        UserNotificationTypeId = (int)NotificationType,
+                    };
+
+                    await UserNotificationRepository.AddUserNotification(userNotification).ConfigureAwait(false);
+                }
+
+                var emailTemplate = GetEmailTemplate();
+                var content = EmailFormatter.PopulateTemplate(emailTemplate, user, eventsToNotifyUserFor);
+                var email = new Email();
+                email.Addresses.Add(new EmailAddress() { Email = user.Email, Name = $"{user.GivenName} {user.SurName}" });
+                email.Subject = EmailSubject;
+                email.Message = content;
+
+                // send email
+                await EmailSender.SendEmailAsync(email, cancellationToken);
+                return 1;
+            }
+
+            return 0;
+        }
+
+        protected async Task<bool> UserHasAlreadyReceivedNotification(User user, Event mobEvent)
+        {
+            // Get list of notification events user has already received for the event
+            var notifications = await UserNotificationRepository.GetUserNotifications(user.Id, mobEvent.Id).ConfigureAwait(false);
+
+            // Verify that the user has not already received this type of notification for this event
+            return notifications.Any(un => un.UserNotificationTypeId == (int)NotificationType);
         }
     }
 }
