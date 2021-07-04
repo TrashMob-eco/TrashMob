@@ -16,7 +16,6 @@ import { GettingStarted } from './components/GettingStarted';
 import MyDashboard from './components/MyDashboard';
 import { Partners } from './components/Partners';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
-import { Sponsors } from './components/Sponsors';
 import { TermsOfService } from './components/TermsOfService';
 import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
@@ -206,9 +205,6 @@ export const App: React.FC = () => {
                             </Route>
                             <Route exact path="/privacypolicy">
                                 <PrivacyPolicy />
-                            </Route>
-                            <Route exact path="/sponsors">
-                                <Sponsors />
                             </Route>
                             <Route exact path="/termsofservice">
                                 <TermsOfService />

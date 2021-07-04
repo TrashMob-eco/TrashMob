@@ -60,11 +60,10 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                         <Navbar.Collapse id="basic-navbar-nav">
                             <Nav className="mr-auto">
                                 {mainNavItems.map(item => (
-                                    <Nav.Link className="nav-link" href={item.url}>{item.name}</Nav.Link>
+                                    <Nav.Link className="nav-link" href={item.url} key={item.name}>{item.name}</Nav.Link>
                                 ))}
                                 <NavDropdown title="Learn More" id="basic-nav-dropdown">
                                     <NavDropdown.Item className="dropdown-item" href="/partners">Partners</NavDropdown.Item>
-                                    <NavDropdown.Item className="dropdown-item" href="/sponsors">Sponsors</NavDropdown.Item>
                                     <NavDropdown.Item className="dropdown-item" href="/contactus">Contact Us</NavDropdown.Item>
                                     <NavDropdown.Item className="dropdown-item" href="/faq">FAQ</NavDropdown.Item>
                                 </NavDropdown>
