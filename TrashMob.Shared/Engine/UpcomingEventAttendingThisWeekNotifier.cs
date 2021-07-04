@@ -2,11 +2,9 @@
 namespace TrashMob.Shared.Engine
 {
     using Microsoft.Extensions.Logging;
-    using System.Threading;
-    using System.Threading.Tasks;
     using TrashMob.Shared.Persistence;
 
-    public class UpcomingEventAttendingThisWeekNotifier : NotificationEngineBase, INotificationEngine
+    public class UpcomingEventAttendingThisWeekNotifier : UpcomingEventAttendingBaseNotifier, INotificationEngine
     {
         protected override NotificationTypeEnum NotificationType { get { return NotificationTypeEnum.UpcomingEventAttendingThisWeek; } }
 
@@ -24,12 +22,6 @@ namespace TrashMob.Shared.Engine
                                                       ILogger logger) :
             base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository, logger)
         {
-        }
-
-        public Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
-        {
-            Logger.LogInformation("Generating Notifications for {0}", NotificationType);
-            return Task.CompletedTask;
         }
     }
 }

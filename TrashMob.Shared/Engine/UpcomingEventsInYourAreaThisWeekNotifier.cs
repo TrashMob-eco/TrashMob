@@ -2,17 +2,15 @@
 namespace TrashMob.Shared.Engine
 {
     using Microsoft.Extensions.Logging;
-    using System.Threading;
-    using System.Threading.Tasks;
     using TrashMob.Shared.Persistence;
 
-    public class UpcomingEventsInYourAreaThisWeekNotifier : NotificationEngineBase, INotificationEngine
+    public class UpcomingEventsInYourAreaThisWeekNotifier : UpcomingEventsInYourAreaBaseNotifier, INotificationEngine
     {
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UpcomingEventsInYourAreaThisWeek;
 
         protected override int NumberOfHoursInWindow => 7 * 24;
 
-        protected override string EmailSubject => "Upcoming TrashMob.eco events in your area today!";
+        protected override string EmailSubject => "Upcoming TrashMob.eco events in your area this week!";
 
         public UpcomingEventsInYourAreaThisWeekNotifier(IEventRepository eventRepository, 
                                                         IUserRepository userRepository, 
@@ -24,12 +22,6 @@ namespace TrashMob.Shared.Engine
                                                         ILogger logger) : 
             base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository, logger)
         {
-        }
-
-        public Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
-        {
-            Logger.LogInformation("Generating Notifications for {0}", NotificationType);
-            return Task.CompletedTask;
         }
     }
 }
