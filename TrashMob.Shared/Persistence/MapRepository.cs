@@ -1,6 +1,7 @@
 ﻿namespace TrashMob.Shared.Persistence
 {
     using AzureMapsToolkit.Spatial;
+    using AzureMapsToolkit.Timezone;
     using Microsoft.Extensions.Configuration;
     using System;
     using System.Threading.Tasks;
@@ -43,6 +44,21 @@
             {
                 return distanceInMeters / MetersPerMile;
             }
+        }
+
+        public async Task<string> GetTimeForPoint(Tuple<double, double> pointA, DateTimeOffset dateTimeOffset)
+        {
+            var azureMaps = new AzureMapsToolkit.AzureMapsServices(GetMapKey());
+
+            var timezoneRequest = new TimeZoneRequest
+            {
+                Query = $"{pointA.Item1},{pointA.Item2}",
+                TimeStamp = dateTimeOffset.ToString()
+            };
+
+            var response = await azureMaps.GetTimezoneByCoordinates(timezoneRequest).ConfigureAwait(false);
+
+            return response.Result.TimeZones[0].ReferenceTime.WallTime;
         }
     }
 }

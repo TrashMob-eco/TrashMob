@@ -48,7 +48,7 @@ namespace TrashMob.Shared.Engine
                 var events = await EventRepository.GetActiveEvents().ConfigureAwait(false);
 
                 // Limit the list of events to process to those in the next window UTC
-                foreach (var mobEvent in events.Where(e => e.CreatedByUserId == user.Id && e.EventDate <= DateTimeOffset.UtcNow.AddHours(NumberOfHoursInWindow)))
+                foreach (var mobEvent in events.Where(e => e.CreatedByUserId == user.Id && e.EventDate >= DateTimeOffset.UtcNow && e.EventDate <= DateTimeOffset.UtcNow.AddHours(NumberOfHoursInWindow)))
                 {
                     if (await UserHasAlreadyReceivedNotification(user, mobEvent).ConfigureAwait(false))
                     { 
