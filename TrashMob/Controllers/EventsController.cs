@@ -11,8 +11,8 @@ namespace TrashMob.Controllers
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Common;
-    using TrashMob.Models;
-    using TrashMob.Persistence;
+    using TrashMob.Shared.Models;
+    using TrashMob.Shared.Persistence;
     using TrashMob.Shared;
 
     [ApiController]
@@ -162,7 +162,7 @@ namespace TrashMob.Controllers
             var email = new Email
             {
                 Message = $"A new event: {mobEvent.Name} in {mobEvent.City} has been created on TrashMob.eco!",
-                Subject = "New User Alert"
+                Subject = "New Event Alert"
             };
 
             email.Addresses.Add(new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress });
