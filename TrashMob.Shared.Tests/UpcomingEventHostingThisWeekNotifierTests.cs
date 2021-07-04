@@ -1,28 +1,15 @@
 namespace TrashMob.Shared.Tests
 {
-    using Moq;
-    using System.Threading;
-    using System.Threading.Tasks;
     using TrashMob.Shared.Engine;
-    using TrashMob.Shared.Persistence;
     using Xunit;
 
-    public class UpcomingEventHostingThisWeekNotifierTests : NotifierTestsBase
+    public class UpcomingEventHostingThisWeekNotifierTests : UpcomingEventHostingNotifierTestsBase
     {
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UpcomingEventHostingThisWeek;
 
-        [Fact]
-        public async Task GenerateNotificationsAsync_WithNoDataAvailable_Succeeds()
-        {
-            // Arrange
-            var engine = new UpcomingEventHostingThisWeekNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
+        protected override INotificationEngine Engine => new UpcomingEventHostingThisWeekNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
-            // Act
-            await engine.GenerateNotificationsAsync().ConfigureAwait(false);
-
-            // Assert
-            EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
-        }
+        protected override int NumberOfDaysToAddForEventOutOfWindow => 8;
 
         [Fact]
         public void GetEmailTemplate_Succeeds()

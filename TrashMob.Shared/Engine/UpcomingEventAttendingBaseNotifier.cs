@@ -51,7 +51,7 @@ namespace TrashMob.Shared.Engine
                 var eventsUserIsAttending = await EventAttendeeRepository.GetEventsUserIsAttending(user.Id).ConfigureAwait(false);
 
                 // Limit the list of events to process to those in the next window UTC
-                foreach (var mobEvent in events.Where(e => e.CreatedByUserId != user.Id && e.EventDate <= DateTimeOffset.UtcNow.AddHours(NumberOfHoursInWindow)))
+                foreach (var mobEvent in events.Where(e => e.CreatedByUserId != user.Id && e.EventDate >= DateTimeOffset.UtcNow && e.EventDate <= DateTimeOffset.UtcNow.AddHours(NumberOfHoursInWindow)))
                 {
                     // Verify that the user is attending the event.
                     if (!eventsUserIsAttending.Any(ea => ea.Id == mobEvent.Id))

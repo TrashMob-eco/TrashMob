@@ -9,9 +9,10 @@ namespace TrashMob.Shared.Tests
     using TrashMob.Shared.Models;
     using Xunit;
 
-    public abstract class UpcomingEventsInYourAreaNotifierTestsBase : NotifierTestsBase
+    public abstract class UpcomingEventAttendingNotifierTestsBase : NotifierTestsBase
     {
         protected abstract INotificationEngine Engine { get; }
+
         protected abstract int NumberOfDaysToAddForEventOutOfWindow { get; }
 
         [Fact]
@@ -34,6 +35,8 @@ namespace TrashMob.Shared.Tests
             List<Event> events = GetEventList1();
             List<User> users = GetUserList1();
 
+            // The user is attending all available events
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
@@ -56,6 +59,8 @@ namespace TrashMob.Shared.Tests
             List<Event> events = GetEventList2();
             List<User> users = GetUserList1();
 
+            // The user is attending all available events
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
@@ -78,6 +83,8 @@ namespace TrashMob.Shared.Tests
             List<Event> events = GetEventList1();
             List<User> users = GetUserList2();
 
+            // The users are attending all available events
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
@@ -94,7 +101,7 @@ namespace TrashMob.Shared.Tests
         }
 
         [Fact]
-        public async Task GenerateNotificationsAsync_With1EventFor1UsersWhoIsAlreadyAttending_SendsNoEmail()
+        public async Task GenerateNotificationsAsync_With1EventFor1UsersWhoIsNotAttending_SendsNoEmail()
         {
             // Arrange
             List<Event> events = GetEventList1();
@@ -102,9 +109,6 @@ namespace TrashMob.Shared.Tests
 
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
-
-            // The user is attending all available events
-            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
 
             // Act
             await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
@@ -131,7 +135,7 @@ namespace TrashMob.Shared.Tests
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
             // The user is attending all available events
-            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(alternateEvents);
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
 
             // Act
             await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
@@ -152,6 +156,8 @@ namespace TrashMob.Shared.Tests
             List<Event> events = GetEventList1();
             List<User> users = GetUserList1();
 
+            // The user is attending all available events
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
@@ -187,6 +193,8 @@ namespace TrashMob.Shared.Tests
             List<Event> events = GetEventList1();
             List<User> users = GetUserList1();
 
+            // The user is attending all available events
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
@@ -215,6 +223,8 @@ namespace TrashMob.Shared.Tests
 
             users[0].IsOptedOutOfAllEmails = true;
 
+            // The user is attending all available events
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
@@ -236,6 +246,9 @@ namespace TrashMob.Shared.Tests
             // Arrange
             List<Event> events = GetEventList1();
             List<User> users = GetUserList1();
+            // The user is attending all available events
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
+
             List<UserNotificationPreference> userNotificationPreferences = GetUserNotificationPreferences();
             var unIndex = userNotificationPreferences.FindIndex(unp => unp.UserNotificationTypeId == (int)NotificationType);
             userNotificationPreferences[unIndex].IsOptedOut = true;
@@ -262,36 +275,13 @@ namespace TrashMob.Shared.Tests
             // Arrange
             List<Event> events = GetEventList1();
             List<User> users = GetUserList1();
+            // The user is attending all available events
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
+
             events[0].EventDate = DateTimeOffset.UtcNow.AddDays(NumberOfDaysToAddForEventOutOfWindow);
 
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
-
-            // Act
-            await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
-
-            // Assert
-            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
-            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
-            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>()), Times.Once);
-            UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
-            EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task GenerateNotificationsAsync_With1EventFor1UsersWhereEventIsOutsideOfTravelPreference_SendsNoEmail()
-        {
-            // Arrange
-            List<Event> events = GetEventList1();
-            List<User> users = GetUserList1();
-            events[0].EventDate = DateTimeOffset.UtcNow.AddDays(3);
-
-            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
-
-            // Setup a return of distance between User and Event of 50 (in whatever units)
-            MapRepository.Setup(mr => mr.GetDistanceBetweenTwoPoints(It.IsAny<Tuple<double, double>>(), It.IsAny<Tuple<double, double>>(), It.IsAny<bool>())).ReturnsAsync(50);
 
             // Act
             await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
