@@ -12,7 +12,6 @@ on:
 env:
   AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '3.1.301'  # set this to the dotnet version to use
-  DOTNET_VERSION2: '5.0.x'  # set this to the dotnet version to use
 
 jobs:
   build-and-deploy:
@@ -25,11 +24,6 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION2 }}
 
     - name: 'Resolve Project Dependencies Using Dotnet'
       shell: pwsh
@@ -45,5 +39,5 @@ jobs:
         app-name: 'fa-tm-pr-westus2'
         slot-name: 'production'
         package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_ba2b71dbcfb3469fb5301f987576d0d5 }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_932dc1333e1f404b98588de2aa51d9c4 }}
   
