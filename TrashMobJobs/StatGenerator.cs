@@ -10,6 +10,7 @@ namespace TrashMobJobs
 
     public class StatGenerator
     {
+        // Runs once a day at 1 AM Z
         [Function("GetStatsHosted")]
         public async Task Run([TimerTrigger("0 0 0 */1 * *")] MyInfo myTimer, FunctionContext context)
         {

@@ -15,8 +15,9 @@ namespace TrashMobJobs
             this.userNotificationManager = userNotificationManager;
         }
 
+        // Runs at the top of each hour
         [Function("UserNotifierHosted")]
-        public async Task Run([TimerTrigger("0 */5 * * * *")] MyInfo myTimer, FunctionContext context)
+        public async Task Run([TimerTrigger("0 0 * * * *")] MyInfo myTimer, FunctionContext context)
         {
             var log = context.GetLogger("UserNotifier");
             log.LogInformation($"UserNotifier trigger function executed at: {DateTime.Now}");

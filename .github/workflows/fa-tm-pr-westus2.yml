@@ -1,22 +1,15 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: TrashMobDev - FunctionApp
-
+name: Build and deploy .NET Core Function App to Azure functions app
 on:
   push:
     branches:
-      - main
-  workflow_dispatch:
-
+    - dev/jobee/engine
 env:
-  AZURE_FUNCTIONAPP_NAME: fa-tm-dev-westus2
+  AZURE_FUNCTIONAPP_NAME: fa-tm-pr-westus2
   AZURE_FUNCTIONAPP_PACKAGE_PATH: TrashMobJobs/publish
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 5.0.x
   WORKING_DIRECTORY: TrashMobJobs
   DOTNET_CORE_VERSION_INPROC: 3.1.x
-
 jobs:
   build-and-deploy:
     runs-on: windows-latest
@@ -36,13 +29,9 @@ jobs:
       run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
     - name: Publish
       run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}"
-
-    - name: 'Run Azure Functions Action'
+    - name: Deploy to Azure Function App
       uses: Azure/functions-action@v1
-      id: fa
       with:
-        app-name: 'fa-tm-dev-westus2'
-        slot-name: 'production'
-        package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_98a8860f496e4feea3f4f70f508f3d16 }}
-  
+        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+        publish-profile: ${{ secrets.fa_tm_pr_westus2_f2ef }}
+        package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
