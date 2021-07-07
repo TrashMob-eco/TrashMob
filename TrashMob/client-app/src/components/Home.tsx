@@ -15,7 +15,6 @@ import { Button, Modal } from 'reactstrap';
 import { CurrentTermsOfServiceVersion } from './TermsOfService';
 import { CurrentPrivacyPolicyVersion } from './PrivacyPolicy';
 import { Form } from 'react-bootstrap';
-import AdBlockDetect from 'react-ad-block-detect';
 
 export interface HomeProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -234,14 +233,6 @@ const Home: React.FC<HomeProps> = (props) => {
                         </Form>
                     </div>
                 </Modal>
-            </div>
-            <div>
-                <AdBlockDetect>
-                    <h3>Ad Blocker Detected</h3>
-                    <p><small>We've noticed you're using an Ad Blocker. Unfortunately, this prevents the site from allowing you to share events to your favorite social media platforms
-                    like Facebook and Twitter. We don't show any ads on this site, so if you disable your AD Blocker for TrashMob.eco, we promise that your experience
-                        here will be much improved. Thanks!</small></p>
-                </AdBlockDetect>
             </div>
             <div className="card">
                 <h1>Welcome to the TrashMob.eco BETA!</h1>
