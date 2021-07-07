@@ -149,7 +149,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <div><a target="_blank" rel="noopener noreferrer" href={twitterUrl} className="twitter-share-button" data-size="large">Share on Twitter</a></div>
-                                <div className="fb-share-button" data-href={eventUrl} data-layout="button" data-size="small"><a target="_blank" href={facebookUrl} className="fb-xfbml-parse-ignore">Share</a></div>
+                                <div className="fb-share-button" data-href={eventUrl} data-layout="button" data-size="small"><a target="_blank" rel="noreferrer" href={facebookUrl} className="fb-xfbml-parse-ignore">Share</a></div>
                             </Form.Group>
                         </Col>
                     </Form.Row>
