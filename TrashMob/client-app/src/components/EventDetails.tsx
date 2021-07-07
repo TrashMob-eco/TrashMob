@@ -44,6 +44,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
     const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
     const [eventUrl, setEventUrl] = React.useState<string>();
     const [twitterUrl, setTwitterUrl] = React.useState<string>();
+    const [facebookUrl, setFacebookUrl] = React.useState<string>();
 
     React.useEffect(() => {
 
@@ -88,8 +89,9 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     setPostalCode(eventData.postalCode);
                     setLatitude(eventData.latitude);
                     setLongitude(eventData.longitude);
-                    var shareMessage = "Help clean up Planet Earth! Sign up for this TrashMob.eco event in " + eventData.city + ", " + eventData.region + " on " + (new Date(eventData.eventDate)).toLocaleDateString() +"! " + eventUrl + " via @trashmobe";
+                    var shareMessage = "Help clean up Planet Earth! Sign up for this TrashMob.eco event in " + eventData.city + ", " + eventData.region + " on " + (new Date(eventData.eventDate)).toLocaleDateString() +"! via @trashmobe";
                     setTwitterUrl("https://twitter.com/intent/tweet?text=" + encodeURI(shareMessage) + "&ref_src=twsrc%5Etfw");
+                    setFacebookUrl("https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.trashmob.eco%2Feventdetails%2" + eventId + "&amp;src=sdkpreparse");
                     setMaxNumberOfParticipants(eventData.maxNumberOfParticipants);
                     setCenter(new data.Position(eventData.longitude, eventData.latitude));
                     setIsDataLoaded(true);
@@ -147,7 +149,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <div><a target="_blank" rel="noopener noreferrer" href={twitterUrl} className="twitter-share-button" data-size="large">Share on Twitter</a></div>
-                                <div className="fb-share-button" data-href={eventUrl} data-layout="button" data-size="small"></div>
+                                <div className="fb-share-button" data-href={eventUrl} data-layout="button" data-size="small"><a target="_blank" href={facebookUrl} className="fb-xfbml-parse-ignore">Share</a></div>
                             </Form.Group>
                         </Col>
                     </Form.Row>
