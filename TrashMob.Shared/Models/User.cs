@@ -12,6 +12,7 @@ namespace TrashMob.Shared.Models
             EventsCreated = new HashSet<Event>();
             EventsUpdated = new HashSet<Event>();
             UserNotifications = new HashSet<UserNotification>();
+            EventMedias = new HashSet<EventMedia>();
         }
 
         public Guid Id { get; set; }
@@ -63,5 +64,7 @@ namespace TrashMob.Shared.Models
         public virtual ICollection<UserNotification> UserNotifications { get; set; }
 
         public virtual ICollection<UserNotificationPreference> UserNotificationPreferences { get; set; }
+
+        public virtual ICollection<EventMedia> EventMedias { get; set; }
     }
 }
