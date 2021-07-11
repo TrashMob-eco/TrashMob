@@ -26,8 +26,6 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("{eventId}")]
-        [Authorize]
-        [RequiredScope(Constants.TrashMobReadScope)]
         public async Task<IActionResult> GetEventMedias(Guid eventId)
         {
             var result = await eventMediaRepository.GetEventMediasByEvent(eventId).ConfigureAwait(false);

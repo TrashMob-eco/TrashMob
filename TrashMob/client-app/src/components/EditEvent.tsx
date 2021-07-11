@@ -16,6 +16,8 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../store/ToolTips";
 import { Button, Col, Form } from 'react-bootstrap';
+import EventMediaData from './Models/EventMediaData';
+import MediaTypeData from './Models/MediaTypeData';
 
 export interface MatchParams {
     eventId: string;
@@ -50,6 +52,10 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);;
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();;
+    const [eventMediaUrl, setEventMediaUrl] = React.useState<string>("");
+    const [eventMediaTypeId, setEventMediaTypeId] = React.useState<number>(0);
+    const [eventMediaUsageTypeId, setEventMediaUsageTypeId] = React.useState<number>(0);
+    const [mediaTypeList, setMediaTypeList] = React.useState<MediaTypeData[]>([]);
 
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
@@ -63,8 +69,30 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                 setEventTypeList(data);
             });
 
+        fetch('/api/mediatypes', {
+            method: 'GET',
+            headers: headers,
+        })
+            .then(response => response.json() as Promise<Array<any>>)
+            .then(data => {
+                setMediaTypeList(data);
+            });
+
         // This will set state for Edit Event  
         if (eventId != null) {
+            fetch('/api/eventmedias/' + eventId, {
+                method: 'GET',
+                headers: headers,
+            })
+                .then(response => response.json() as Promise<Array<EventMediaData>>)
+                .then(data => {
+                    if (data && data.length > 0) {
+                        setEventMediaUrl(data[0].mediaUrl);
+                        setEventMediaTypeId(data[0].mediaTypeId);
+                        setEventMediaUsageTypeId(data[0].mediaUsageTypeId);
+                    }
+                });
+
             fetch('/api/Events/' + eventId, {
                 method: 'GET',
                 headers: headers
@@ -172,6 +200,12 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         setEventTypeId(parseInt(val));
     }
 
+    function selectMediaType(val: string) {
+        setEventMediaTypeId(parseInt(val));
+        // Todo, change this default
+        setEventMediaUsageTypeId(1);
+    }
+
     function handleLocationChange(point: data.Position) {
         // In an Azure Map point, the longitude is the first position, and latitude is second
         setLatitude(point[1]);
@@ -208,6 +242,9 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         setEventDate(passedDate);
     }
 
+    function handleEventMediaUrlChanged(val: string) {
+        setEventMediaUrl(val);
+    }
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
@@ -256,6 +293,32 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                 body: data,
                 headers: headers
             }).then((response) => response.json() as Promise<number>)
+                .then(() => {
+                    var eventMediaData = new EventMediaData();
+                    eventMediaData.mediaUrl = eventMediaUrl ?? "";
+                    eventMediaData.eventId = eventId;
+                    eventMediaData.createdByUserId = props.currentUser.id;
+                    eventMediaData.mediaTypeId = eventMediaTypeId ?? 0;
+                    eventMediaData.mediaUsageTypeId = eventMediaUsageTypeId ?? 0;
+
+                    var evtmediadatas: EventMediaData[] = [];
+                    evtmediadatas.push(eventMediaData);
+                    var evtmediadata = JSON.stringify(evtmediadatas);
+
+                    if (eventMediaData.mediaUrl !== "") {
+                        const headers2 = getDefaultHeaders('PUT');
+                        headers2.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                        fetch('/api/eventmedias/' + props.currentUser.id, {
+                            method: 'PUT',
+                            headers: headers2,
+                            body: evtmediadata,
+                        })
+                    }
+                    else {
+                        Promise.resolve()
+                    }
+                })
                 .then(() => { props.history.push("/mydashboard"); })
         })
     }
@@ -314,8 +377,16 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.EventDate}</Tooltip>
     }
 
+    function renderMediaTypeToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.MediaType}</Tooltip>
+    }
+
+    function renderEventMediaUrlToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.EventMediaUrl}</Tooltip>
+    }
+
     // Returns the HTML Form to the render() method.  
-    function renderCreateForm(typeList: Array<EventTypeData>) {
+    function renderCreateForm(typeList: Array<EventTypeData>, mediaTypeList: Array<MediaTypeData>) {
         return (
             <div className="container-fluid" >
                 <Form onSubmit={handleSave}>
@@ -464,13 +535,38 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                             </>
                         </AzureMapsProvider>
                     </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderEventMediaUrlToolTip}>
+                                    <Form.Label htmlFor="mediaUrl">MediaUrl:</Form.Label>
+                                </OverlayTrigger>
+                                <Form.Control type="text" name="mediaUrl" value={eventMediaUrl} onChange={(val) => handleEventMediaUrlChanged(val.target.value)} />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderMediaTypeToolTip}>
+                                    <Form.Label htmlFor="EventType">Media Type:</Form.Label>
+                                </OverlayTrigger>
+                                <div>
+                                    <select data-val="true" name="eventMediaTypeId" defaultValue={eventMediaTypeId} onChange={(val) => selectMediaType(val.target.value)} required>
+                                        <option value="">-- Select Media Type --</option>
+                                        {mediaTypeList.map(type =>
+                                            <option key={type.id} value={type.id}>{type.name}</option>
+                                        )}
+                                    </select>
+                                </div>
+                            </Form.Group>
+                        </Col>
+                    </Form.Row >
                 </Form >
             </div>
         )
     }
 
     let contents = isDataLoaded
-        ? renderCreateForm(eventTypeList)
+        ? renderCreateForm(eventTypeList, mediaTypeList)
         : <p><em>Loading...</em></p>;
 
     return <div>
