@@ -71,7 +71,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
         })
             .then(response => response.json() as Promise<string>)
             .then(data => {
-                setInstagramToken(data);
+                setInstagramToken(Facebook.instagramAppId + '|' + data);
             });
 
         if (eventId != null) {

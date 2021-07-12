@@ -13,6 +13,7 @@ import ContactUs from './components/ContactUs';
 import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
 import { GettingStarted } from './components/GettingStarted';
+import { MediaGallery } from './components/MediaGallery';
 import MyDashboard from './components/MyDashboard';
 import { Partners } from './components/Partners';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
@@ -199,6 +200,9 @@ export const App: React.FC = () => {
                             </Route>
                             <Route exact path="/gettingstarted">
                                 <GettingStarted />
+                            </Route>
+                            <Route exact path="/mediagallery">
+                                <MediaGallery />
                             </Route>
                             <Route exact path="/partners">
                                 <Partners />

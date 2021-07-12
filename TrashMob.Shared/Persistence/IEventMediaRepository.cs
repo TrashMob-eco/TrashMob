@@ -7,6 +7,8 @@
 
     public interface IEventMediaRepository
     {
+        Task<IEnumerable<EventMedia>> GetEventMedias();
+
         Task<IEnumerable<EventMedia>> GetEventMediasByEvent(Guid eventId);
  
         Task<IEnumerable<EventMedia>> GetEventMediasByUser(Guid userId);

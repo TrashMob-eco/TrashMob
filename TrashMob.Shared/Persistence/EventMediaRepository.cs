@@ -16,6 +16,13 @@
             this.mobDbContext = mobDbContext;
         }
 
+        public async Task<IEnumerable<EventMedia>> GetEventMedias()
+        {
+            return await mobDbContext.EventMedias
+                .AsNoTracking()
+                .ToListAsync().ConfigureAwait(false);
+        }
+
         public async Task<IEnumerable<EventMedia>> GetEventMediasByEvent(Guid eventId)
         {
             return await mobDbContext.EventMedias.Where(em => em.EventId == eventId)
