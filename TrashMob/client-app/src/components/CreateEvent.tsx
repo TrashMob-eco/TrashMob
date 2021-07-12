@@ -47,9 +47,9 @@ export const CreateEvent: React.FC<CreateEventProps> = (props) => {
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
-    const [eventMediaUrl, setEventMediaUrl] = React.useState<string>();
-    const [eventMediaTypeId, setEventMediaTypeId] = React.useState<number>();
-    const [eventMediaUsageTypeId, setEventMediaUsageTypeId] = React.useState<number>();
+    const [eventMediaUrl, setEventMediaUrl] = React.useState<string>("");
+    const [eventMediaTypeId, setEventMediaTypeId] = React.useState<number>(0);
+    const [eventMediaUsageTypeId, setEventMediaUsageTypeId] = React.useState<number>(0);
     const [mediaTypeList, setMediaTypeList] = React.useState<MediaTypeData[]>([]);
 
     React.useEffect(() => {
@@ -317,8 +317,8 @@ export const CreateEvent: React.FC<CreateEventProps> = (props) => {
                     eventMediaData.mediaUrl = eventMediaUrl ?? "";
                     eventMediaData.eventId = mobEventId;
                     eventMediaData.createdByUserId = props.currentUser.id;
-                    eventMediaData.eventMediaTypeId = eventMediaTypeId ?? 0;
-                    eventMediaData.eventMediaUsageTypeId = eventMediaUsageTypeId ?? 0;
+                    eventMediaData.mediaTypeId = eventMediaTypeId ?? 0;
+                    eventMediaData.mediaUsageTypeId = eventMediaUsageTypeId ?? 0;
 
                     var evtmediadatas: EventMediaData[] = [];
                     evtmediadatas.push(eventMediaData);
