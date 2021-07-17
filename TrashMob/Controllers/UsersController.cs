@@ -10,10 +10,9 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
-    using TrashMob.Common;
-    using TrashMob.Models;
-    using TrashMob.Persistence;
-    using TrashMob.Poco;
+    using TrashMob.Shared.Models;
+    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared;
 
     [ApiController]
     [Route("api/users")]

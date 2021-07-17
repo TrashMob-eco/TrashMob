@@ -9,7 +9,8 @@ namespace TrashMob
     using Microsoft.Extensions.Hosting;
     using Microsoft.Identity.Web;
     using Microsoft.OpenApi.Models;
-    using TrashMob.Persistence;
+    using TrashMob.Shared;
+    using TrashMob.Shared.Persistence;
     
     public class Startup
     {
@@ -44,12 +45,15 @@ namespace TrashMob
             services.AddDbContext<MobDbContext>();
             services.AddScoped<IContactRequestRepository, ContactRequestRepository>();
             services.AddScoped<IEmailManager, EmailManager>();
+            services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
             services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IEventStatusRepository, EventStatusRepository>();
             services.AddScoped<IEventTypeRepository, EventTypeRepository>();
             services.AddScoped<IMapRepository, MapRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
+            services.AddScoped<IUserNotificationPreferenceRepository, UserNotificationPreferenceRepository>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 

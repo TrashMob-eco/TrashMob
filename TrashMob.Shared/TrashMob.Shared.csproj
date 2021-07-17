@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>e9194805-8151-4a3b-8e48-089d7ba118f1</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Engine\EmailTemplates\EventSummaryAttendee.html" />
+    <None Remove="Engine\EmailTemplates\EventSummaryHostReminder.html" />
+    <None Remove="Engine\EmailTemplates\UpcomingEventAttendingThisWeek.html" />
+    <None Remove="Engine\EmailTemplates\UpcomingEventAttendingToday.html" />
+    <None Remove="Engine\EmailTemplates\UpcomingEventHostingThisWeek.html" />
+    <None Remove="Engine\EmailTemplates\UpcomingEventHostingToday.html" />
+    <None Remove="Engine\EmailTemplates\UpcomingEventsInYourAreaThisWeek.html" />
+    <None Remove="Engine\EmailTemplates\UpcomingEventsInYourAreaToday.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Engine\EmailTemplates\EventSummaryAttendee.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\EventSummaryHostReminder.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\UpcomingEventAttendingThisWeek.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\UpcomingEventAttendingToday.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\UpcomingEventHostingThisWeek.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\UpcomingEventHostingToday.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\UpcomingEventsInYourAreaThisWeek.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\UpcomingEventsInYourAreaToday.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AzureMapsRestToolkit" Version="6.0.0" />
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
+    <PackageReference Include="SendGrid" Version="9.23.2" />
+  </ItemGroup>
+
+</Project>

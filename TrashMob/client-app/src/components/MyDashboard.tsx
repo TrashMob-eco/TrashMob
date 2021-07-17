@@ -112,7 +112,7 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
     }
 
     return (
-        <div>
+        <div className="card pop">
             <div>
                 <Link to="/createevent">Create a New Event</Link>
             </div>

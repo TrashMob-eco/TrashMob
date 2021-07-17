@@ -234,16 +234,16 @@ const Home: React.FC<HomeProps> = (props) => {
                     </div>
                 </Modal>
             </div>
-            <div>
-                <h6>Welcome to the TrashMob.eco BETA!</h6>
-                <p><small>We're still working out the kinks, but we'd love to get your feedback! Please send us any comments you may have via our Contact Us page, or reach out to us on <a href="https://www.twitter.com/trashmobe">Twitter</a>. If you're a developer
+            <div className="card">
+                <h1>Welcome to the TrashMob.eco BETA!</h1>
+                <p><small>We're still working out the kinks, but we'd love to get your feedback! Please send us any comments you may have via our Contact Us page, or reach out to us on <a href="https://www.twitter.com/TrashMobEco">Twitter</a>. If you're a developer
                     or designer and interested in improving TrashMob, we'd appreciate the help!</small>
-                 </p>
+                </p>
             </div>
-            <div>
+            <div className="card">
                 <MainCarousel />
             </div>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", alignContent: "center" }}>
+            <div className="card pop">
                 <div>
                     <Link to="/createevent">Create a New Event</Link>
                 </div>

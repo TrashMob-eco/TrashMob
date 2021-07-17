@@ -104,7 +104,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
     }
 
     return (
-        <div className="container-fluid">
+        <div className="container-fluid card">
             <h1>Contact Us</h1>
             <div>
                 Have a question for the TrashMob team? Or an idea to make this site better? Or just want to tell us you love us? Drop us a note!

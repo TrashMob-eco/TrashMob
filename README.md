@@ -1,12 +1,16 @@
-# FlashTrashMob
+# TrashMob.eco
 
-# Credit Where Credit Is Due
-Years ago, Scott Hanselman built out the NerdDinner.com site as a demo of the capabilities of ASP.NET MVC. I actually went to a bunch of the nerd dinners which were fantastic and had a huge roll in my career, including eventually leading me to join Microsoft. This site is based on both that code and the idea that getting people together to do small good things results in larger good things in the long term.
+**Cleaning up Planet Earth, one bucket of litter at a time. Together.**
+
+# What is TrashMob?
+TrashMob is a website dedicated to organizing groups of people to clean up the world we live in. Users create cleanup events, publicize them, and recruit people to join up, as well as ask for assistance from sponsors to help haul away the garbage once it is gathered. The idea is to turn what can be an intimidating process for event organizers into a few mouse clicks and simple forms. And once the process is simple, events will spring up all over the world, and the cleanup of the world can begin.
+
+# Where did this idea come from?
+Years ago, Scott Hanselman (and others at Microsoft) built out the NerdDinner.com site as a demo of the capabilities of ASP.NET MVC. I actually went to a bunch of the nerd dinners which were fantastic and had a huge roll in my career, including eventually leading me to join Microsoft. This site is based on both that code and the idea that getting people together to do small good things results in larger good things in the long term.
+
+My passion is fixing problems we have on the planet with pollution and climate change. I've been thinking about what technology can do to help in these areas, without creating more problems. And I keep coming back to the thought that a lot of this is a human problem. People want to help and they want to fix things, but they don't know where to start. Other people have ideas on where to start, but not enough help to get started.
  
-# What is a TrashMob?
-Fast forward to today, and my passion is fixing problems we have on the planet with pollution and climate change. I've been thinking about what technology can do to help in these areas, without creating more problems. And I keep coming back to the thought that a lot of this is a human problem. People want to help and they want to fix things, but they don't know where to start. Other people have ideas on where to start, but not enough help to get started.
- 
-I read about a guy in California named [Edgar McGregor](https://twitter.com/edgarrmcgregor), who has spent over 600 days cleaning up a park in his community, two pails of litter at a time, and I thought, that was a great idea. His actions inspired me to get out and clean up a local park one Saturday. It was fun and rewarding and other people saw what I was doing on my own and I know I have already inspired others to do the same. And then I passed by an area of town that is completely covered in trash and I thought "this is too much for me alone. It would be great to have a group of people descend on this area like a mob and clean it up in an hour or two". And my idea for TrashMob.org was born.
+I read about a guy in California named [Edgar McGregor](https://twitter.com/edgarrmcgregor), who has spent over 600 days cleaning up a park in his community, two pails of litter at a time, and I thought, that was a great idea. His actions inspired me to get out and clean up a local park one Saturday. It was fun and rewarding and other people saw what I was doing on my own and I know I have already inspired others to do the same. And then I passed by an area of town that is completely covered in trash and I thought "this is too much for me alone. It would be great to have a group of people descend on this area like a mob and clean it up in an hour or two". And my idea for TrashMob.eco was born.
  
 Basically, TrashMob is the NerdDinner.com site re-purposed to allow people to start mobs of their own to tackle cleanup or whatever needs doing. And I keep coming up with more and more ideas for it. I'm hoping this site grows organically because of the good that we can do we get together.
 
@@ -16,7 +20,7 @@ To see what is currently deployed to the prod environment, go to:
 https://www.trashmob.eco
 
 To see what is currently deployed to the dev environment, go to:
-https://trashmobdev.azurewebsites.net
+https://as-tm-dev-westus2.azurewebsites.net/
 
 # FAQ 
 ## What is the current state of this project?
@@ -101,7 +105,7 @@ If a browser does not open, open one for yourself and go to https://localhost:44
 The project uses Entity Framework Core V6 Model-First database updates.
 
 1. Update the models / MobDbContext as needed in the repo.
-2. In VS Code, run the following commands from the TrashMob folder
+2. In VS Code, run the following commands from the TrashMob.Shared folder
 
 ```
 dotnet ef migrations add <YourMigrationName>
@@ -129,36 +133,3 @@ If setting up a new environment, you will need to add the IP Address of the App 
 
 ## The site is asking me to login
 If you try to access a secure page, you will need a user id on the site. When you hit a secured page, the site will redirect you to a sign in page. Click the Sign up now link on the bottom of the login box. Multiple identity providers are now available, including Facebook, Twitter, Google, and Microsoft, along with the TrashMob tenant itself if you prefer not to use an integrated signup.
-
-## Test Cases
-1. Verify that the following pages/actions require the user to be signed in:
-    1. Create Event
-    1. User Dashboard
-    1. Edit Event
-    1. Delete Event
-1. Verify that a user is default added as an attendee to an event they created
-1. Verify that a user cannot be added as an attendee to an event they are already attending
-1. Verify that a user cannot edit or delete an event create by someone else
-1. Verify that a user cannot see someone else's dashboard
-1. Verify that the backend APIs can only be called by the app, not by other sites (at least for now)
-1. Verify that a user cannot remove themselves from an event they created
-1. Verify that a user cannot manipulate the payload sent to the back end and change owners on events or update other values
-1. Verify that events created with invalid coordinates / city do not break the app
-1. Verify that events are default sorted by date ascending and the main list does not show events which are in the past
-1. Verify that changing event dates once people are signed up is not allowed (at least until notifications are ready. User should add a note that they will not be attending for reasons)
-1. Verify that SQL injection attacks are not possible
-1. Verify that UTF16 input does not break site
-
-## Validations
-1. Required fields for an event are
-    1. Name
-    1. Event Date
-    1. Description
-    1. Country
-    1. Region
-    1. City or Lat/Long or GPS Coords
-1. Profanity/malicious entry filters
-
-
-
-

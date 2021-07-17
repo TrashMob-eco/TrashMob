@@ -16,7 +16,6 @@ import { GettingStarted } from './components/GettingStarted';
 import MyDashboard from './components/MyDashboard';
 import { Partners } from './components/Partners';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
-import { Sponsors } from './components/Sponsors';
 import { TermsOfService } from './components/TermsOfService';
 import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
@@ -162,71 +161,63 @@ export const App: React.FC = () => {
                 <BrowserRouter>
                     <TopMenu isUserLoaded={isUserLoaded} currentUser={currentUser} />
                     <div className="container">
-                        <div className="">
-
-                            <Switch>
-                                <Route path="/editevent/:eventId" render={(props: AppProps) => renderEditEvent(props)} />
-                                <Route path="/eventdetails/:eventId" component={EventDetails} />
-                                <Route path="/createevent">
-                                    <MsalAuthenticationTemplate
-                                        interactionType={InteractionType.Redirect}
-                                        errorComponent={ErrorComponent}
-                                        loadingComponent={LoadingComponent}>
-                                        <CreateEvent currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                                    </MsalAuthenticationTemplate >
-                                </Route>
-                                <Route exact path="/mydashboard">
-                                    <MsalAuthenticationTemplate
-                                        interactionType={InteractionType.Redirect}
-                                        errorComponent={ErrorComponent}
-                                        loadingComponent={LoadingComponent}>
-                                        <MyDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                                    </MsalAuthenticationTemplate >
-                                </Route>
-                                <Route exact path="/userprofile">
-                                    <MsalAuthenticationTemplate
-                                        interactionType={InteractionType.Redirect}
-                                        errorComponent={ErrorComponent}
-                                        loadingComponent={LoadingComponent}>
-                                        <UserProfile currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                                    </MsalAuthenticationTemplate >
-                                </Route>
-                                <Route exact path="/aboutus">
-                                    <AboutUs />
-                                </Route>
-                                <Route exact path="/contactus">
-                                    <ContactUs />
-                                </Route>
-                                <Route exact path="/faq">
-                                    <Faq />
-                                </Route>
-                                <Route exact path="/gettingstarted">
-                                    <GettingStarted />
-                                </Route>
-                                <Route exact path="/partners">
-                                    <Partners />
-                                </Route>
-                                <Route exact path="/privacypolicy">
-                                    <PrivacyPolicy />
-                                </Route>
-                                <Route exact path="/sponsors">
-                                    <Sponsors />
-                                </Route>
-                                <Route exact path="/termsofservice">
-                                    <TermsOfService />
-                                </Route>
-                                <Route exact path='/'>
-                                    <Home currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
-                                </Route>
-                                <Route>
-                                    <NoMatch />
-                                </Route>
-                            </Switch>
-                            <div>
-                                <Footer />
-                            </div>
-                        </div>
+                        <Switch>
+                            <Route path="/editevent/:eventId" render={(props: AppProps) => renderEditEvent(props)} />
+                            <Route path="/eventdetails/:eventId" component={EventDetails} />
+                            <Route path="/createevent">
+                                <MsalAuthenticationTemplate
+                                    interactionType={InteractionType.Redirect}
+                                    errorComponent={ErrorComponent}
+                                    loadingComponent={LoadingComponent}>
+                                    <CreateEvent currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                </MsalAuthenticationTemplate >
+                            </Route>
+                            <Route exact path="/mydashboard">
+                                <MsalAuthenticationTemplate
+                                    interactionType={InteractionType.Redirect}
+                                    errorComponent={ErrorComponent}
+                                    loadingComponent={LoadingComponent}>
+                                    <MyDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                </MsalAuthenticationTemplate >
+                            </Route>
+                            <Route exact path="/userprofile">
+                                <MsalAuthenticationTemplate
+                                    interactionType={InteractionType.Redirect}
+                                    errorComponent={ErrorComponent}
+                                    loadingComponent={LoadingComponent}>
+                                    <UserProfile currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                </MsalAuthenticationTemplate >
+                            </Route>
+                            <Route exact path="/aboutus">
+                                <AboutUs />
+                            </Route>
+                            <Route exact path="/contactus">
+                                <ContactUs />
+                            </Route>
+                            <Route exact path="/faq">
+                                <Faq />
+                            </Route>
+                            <Route exact path="/gettingstarted">
+                                <GettingStarted />
+                            </Route>
+                            <Route exact path="/partners">
+                                <Partners />
+                            </Route>
+                            <Route exact path="/privacypolicy">
+                                <PrivacyPolicy />
+                            </Route>
+                            <Route exact path="/termsofservice">
+                                <TermsOfService />
+                            </Route>
+                            <Route exact path='/'>
+                                <Home currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
+                            </Route>
+                            <Route>
+                                <NoMatch />
+                            </Route>
+                        </Switch>
                     </div>
+                    <Footer />
                 </BrowserRouter>
             </div>
         </MsalProvider>

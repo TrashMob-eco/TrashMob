@@ -3,7 +3,7 @@ namespace TrashMob.Controllers
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using TrashMob.Persistence;
+    using TrashMob.Shared.Persistence;
 
     [ApiController]
     [Route("api/eventtypes")]
