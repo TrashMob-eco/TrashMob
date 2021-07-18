@@ -7,7 +7,7 @@ import { getDefaultHeaders } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../store/MapStore';
-import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
+import { AzureMapsProvider, IAzureMapOptions } from '@ambientlight/react-azure-maps';
 import MapController from './MapController';
 import { Col, Form } from 'react-bootstrap';
 
