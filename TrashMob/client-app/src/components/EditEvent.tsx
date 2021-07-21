@@ -18,18 +18,18 @@ import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../store/ToolTips";
 import { Button, Col, Form } from 'react-bootstrap';
 
-export interface MatchParams {
-    eventId: string;
+export interface EditMatchParams {
+    eventId?: string;
 }
 
-export interface EditEventProps extends RouteComponentProps<MatchParams> {
+export interface EditEventProps extends RouteComponentProps<EditMatchParams> {
     isUserLoaded: boolean;
     currentUser: UserData;
 }
 
 export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [isDataLoaded, setIsDataLoaded] = React.useState<boolean>(false);
-    const [eventId, setEventId] = React.useState<string>(props.match.params["eventId"]);
+    const [eventId, setEventId] = React.useState<string>(props.match?.params["eventId"] ? props.match.params["eventId"] : "");
     const [eventName, setEventName] = React.useState<string>("New Event");
     const [description, setDescription] = React.useState<string>();
     const [eventDate, setEventDate] = React.useState<Date>(new Date());
@@ -51,6 +51,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
+    const [title, setTitle] = React.useState<string>("Create Event");
 
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
@@ -65,7 +66,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             });
 
         // This will set state for Edit Event  
-        if (eventId != null) {
+        if (eventId !== null && eventId !== "") {
+            setTitle("Edit Event");
             fetch('/api/Events/' + eventId, {
                 method: 'GET',
                 headers: headers
@@ -90,6 +92,10 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     setCenter(new data.Position(eventData.longitude, eventData.latitude));
                     setIsDataLoaded(true);
                 });
+        }
+
+        if (eventId === "") {
+            setIsDataLoaded(true);
         }
 
         MapStore.getOption().then(opts => {
@@ -273,7 +279,13 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         }
 
         var eventData = new EventData();
-        eventData.id = eventId;
+        var method = "POST";
+
+        if (eventId && eventId !== "") {
+            eventData.id = eventId;
+            method = "PUT";
+        }
+
         eventData.name = eventName ?? "";
         eventData.description = description ?? "";
         eventData.eventDate = new Date(eventDate);
@@ -303,18 +315,19 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         };
 
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders('PUT');
+            const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
             fetch('/api/Events', {
-                method: 'PUT',
+                method: method,
                 headers: headers,
                 body: evtdata,
-            }).then((response) => response.json() as Promise<number>)
-                .then(() => { props.history.push("/mydashboard"); })
+            }).then(() => {
+                props.history.push("/mydashboard");
+            });
         })
     }
-
+            
     // Returns the HTML Form to the render() method.  
     function renderCreateForm(typeList: Array<EventTypeData>) {
         return (
@@ -475,7 +488,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         : <p><em>Loading...</em></p>;
 
     return <div>
-        <h3>Edit Event</h3>
+        <h3>{title}</h3>
         <hr />
         {contents}
     </div>;
