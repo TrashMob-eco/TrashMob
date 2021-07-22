@@ -17,6 +17,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../store/ToolTips";
 import { Button, Col, Form } from 'react-bootstrap';
+import { Guid } from 'guid-typescript';
 
 export interface EditMatchParams {
     eventId?: string;
@@ -298,11 +299,9 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         eventData.latitude = latitude ?? 0;
         eventData.longitude = longitude ?? 0;
         eventData.maxNumberOfParticipants = maxNumberOfParticipants ?? 0;
-        eventData.createdByUserId = createdByUserId ?? "";
+        eventData.createdByUserId = createdByUserId ?? props.currentUser.id;
         eventData.lastUpdatedByUserId = props.currentUser.id;
         eventData.eventStatusId = eventStatusId;
-
-        eventData.lastUpdatedByUserId = props.currentUser.id;
 
         var evtdata = JSON.stringify(eventData);
 
