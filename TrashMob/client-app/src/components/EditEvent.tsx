@@ -17,7 +17,6 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../store/ToolTips";
 import { Button, Col, Form } from 'react-bootstrap';
-import { Guid } from 'guid-typescript';
 
 export interface EditMatchParams {
     eventId?: string;
