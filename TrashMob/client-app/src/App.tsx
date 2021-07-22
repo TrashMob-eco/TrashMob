@@ -21,7 +21,7 @@ import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
 import { apiConfig, getDefaultHeaders, msalClient } from './store/AuthStore';
-import { EventDetails, DetailsMatchParams } from './components/EventDetails';
+import { EventDetails } from './components/EventDetails';
 import { EditEvent, EditMatchParams } from './components/EditEvent';
 import { NoMatch } from './components/NoMatch';
 import UserData from './components/Models/UserData';
