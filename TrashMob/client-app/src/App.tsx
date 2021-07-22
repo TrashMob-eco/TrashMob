@@ -32,9 +32,6 @@ import UserProfile from './components/UserProfile';
 interface AppProps extends RouteComponentProps<EditMatchParams> {
 }
 
-interface DetailsAppProps extends RouteComponentProps<DetailsMatchParams> {
-}
-
 export const App: React.FC = () => {
     const [isUserLoaded, setIsUserLoaded] = React.useState(false);
     const [currentUser, setCurrentUser] = React.useState<UserData>(new UserData());
