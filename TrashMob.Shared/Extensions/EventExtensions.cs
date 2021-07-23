@@ -14,6 +14,8 @@
                 Name = originalEvent.Name,
                 Description = originalEvent.Description,
                 EventDate = originalEvent.EventDate,
+                DurationHours = originalEvent.DurationHours,
+                DurationMinutes = originalEvent.DurationMinutes,
                 EventTypeId = originalEvent.EventTypeId,
                 EventStatusId = originalEvent.EventStatusId,
                 StreetAddress = originalEvent.StreetAddress,

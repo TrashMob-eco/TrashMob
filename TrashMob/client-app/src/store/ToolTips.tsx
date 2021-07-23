@@ -1,5 +1,7 @@
 export const EventName = "Pick a user-friendly event name that is easy to remember or associated with what you want to accomplish.";
 export const EventDescription = "Describe the event so attendees know what kind of gear to bring and where exactly to meet up."
+export const EventDurationHours = "Enter the number of hours you expect the event to last."
+export const EventDurationMinutes = "Enter the number of additional minutes you expect the event to last. If the event is going to be 90 minutes total, enter 1 for the hour and 30 for the minutes."
 export const EventStreetAddress = "Street Address is optional if the place is well known and the description is thorough. The Street Address will auto-populate when clicking a location on the map."
 export const EventCity = "City is optional if the place is well known and the description is thorough. The City will auto-populate when clicking a location on the map."
 export const EventCountry = "The Country will auto-populate when clicking a location on the map."
