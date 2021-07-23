@@ -26,6 +26,8 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
     const [eventName, setEventName] = React.useState<string>("New Event");
     const [description, setDescription] = React.useState<string>();
     const [eventDate, setEventDate] = React.useState<Date>(new Date());
+    const [durationHours, setDurationHours] = React.useState<number>(1);
+    const [durationMinutes, setDurationMinutes] = React.useState<number>(0);
     const [eventTypeId, setEventTypeId] = React.useState<number>(0);
     const [streetAddress, setStreetAddress] = React.useState<string>();
     const [city, setCity] = React.useState<string>();
@@ -81,6 +83,8 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     setEventName(eventData.name);
                     setDescription(eventData.description);
                     setEventDate(new Date(eventData.eventDate));
+                    setDurationHours(eventData.durationHours);
+                    setDurationMinutes(eventData.durationMinutes);
                     setEventTypeId(eventData.eventTypeId);
                     setStreetAddress(eventData.streetAddress);
                     setCity(eventData.city);
@@ -164,6 +168,12 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                             <Form.Group>
                                 <Form.Label htmlFor="EventDate">EventDate:</Form.Label>
                                 <Form.Control disabled type="text" defaultValue={eventDate.toLocaleString()} />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <Form.Label htmlFor="Duration">Duration:</Form.Label>
+                                <Form.Control disabled type="text" defaultValue={durationHours + "hours, " + durationMinutes + "min"} />
                             </Form.Group>
                         </Col>
                         <Col>

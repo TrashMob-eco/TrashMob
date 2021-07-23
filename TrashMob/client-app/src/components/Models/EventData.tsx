@@ -5,6 +5,8 @@ class EventData {
     name: string = "";
     description: string = "";
     eventDate: Date = new Date();
+    durationHours: number = 1;
+    durationMinutes: number = 0;
     eventTypeId: number = 0;
     eventStatusId: number = 0;
     streetAddress: string = "";
