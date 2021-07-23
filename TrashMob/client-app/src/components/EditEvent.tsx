@@ -33,6 +33,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [eventName, setEventName] = React.useState<string>("New Event");
     const [description, setDescription] = React.useState<string>();
     const [eventDate, setEventDate] = React.useState<Date>(new Date());
+    const [durationHours, setDurationHours] = React.useState<number>(1);
+    const [durationMinutes, setDurationMinutes] = React.useState<number>(0);
     const [eventTypeId, setEventTypeId] = React.useState<number>(0);
     const [streetAddress, setStreetAddress] = React.useState<string>();
     const [city, setCity] = React.useState<string>();
@@ -46,6 +48,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [eventStatusId, setEventStatusId] = React.useState<number>(0);
     const [eventTypeList, setEventTypeList] = React.useState<EventTypeData[]>([]);
     const [eventDateErrors, setEventDateErrors] = React.useState<string>("");
+    const [durationHoursErrors, setDurationHoursErrors] = React.useState<string>("");
+    const [durationMinutesErrors, setDurationMinutesErrors] = React.useState<string>("");
     const [latitudeErrors, setLatitudeErrors] = React.useState<string>("");
     const [longitudeErrors, setLongitudeErrors] = React.useState<string>("");
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
@@ -78,6 +82,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     setEventName(eventData.name);
                     setDescription(eventData.description);
                     setEventDate(new Date(eventData.eventDate));
+                    setDurationHours(eventData.durationHours);
+                    setDurationMinutes(eventData.durationMinutes);
                     setEventTypeId(eventData.eventTypeId);
                     setStreetAddress(eventData.streetAddress);
                     setCity(eventData.city);
@@ -116,6 +122,36 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
     function handleEventNameChanged(val: string) {
         setEventName(val);
+    }
+
+    function handleDurationHoursChanged(val: string) {
+        try {
+            var hours = parseInt(val);
+
+            if (hours < 0 || hours > 10) {
+                setDurationHoursErrors("Duration Hours must be > 0 and less than 10");
+            }
+            else {
+                setDurationHoursErrors("");
+                setDurationHours(hours);
+            }
+        }
+        catch { }
+    }
+
+    function handleDurationMinutesChanged(val: string) {
+        try {
+            var minutes = parseInt(val);
+
+            if (minutes < 0 || minutes > 59) {
+                setDurationMinutesErrors("Duration Minutes must be > 0 and less than 60");
+            }
+            else {
+                setDurationMinutesErrors("");
+                setDurationMinutes(minutes);
+            }
+        }
+        catch { }
     }
 
     function handleDescriptionChanged(val: string) {
@@ -186,6 +222,14 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
     function renderEventNameToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.EventName}</Tooltip>
+    }
+
+    function renderDurationHoursToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.EventDurationHours}</Tooltip>
+    }
+
+    function renderDurationMinutesToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.EventDurationMinutes}</Tooltip>
     }
 
     function renderStreetAddressToolTip(props: any) {
@@ -289,6 +333,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         eventData.name = eventName ?? "";
         eventData.description = description ?? "";
         eventData.eventDate = new Date(eventDate);
+        eventData.durationHours = durationHours ?? 2;
+        eventData.durationMinutes = durationMinutes ?? 0;
         eventData.eventTypeId = eventTypeId ?? 0;
         eventData.streetAddress = streetAddress ?? "";
         eventData.city = city ?? "";
@@ -345,17 +391,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         </Col>
                         <Col>
                             <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderEventDateToolTip}>
-                                    <Form.Label htmlFor="EventDate">EventDate:</Form.Label>
-                                </OverlayTrigger>
-                                <div>
-                                    <DateTimePicker name="eventDate" onChange={handleEventDateChange} value={eventDate} />
-                                    <span style={{ color: "red" }}>{eventDateErrors}</span>
-                                </div>
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderEventTypeToolTip}>
                                     <Form.Label htmlFor="EventType">Event Type:</Form.Label>
                                 </OverlayTrigger>
@@ -366,6 +401,39 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                             <option key={type.id} value={type.id}>{type.name}</option>
                                         )}
                                     </select>
+                                </div>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderDurationHoursToolTip}>
+                                    <Form.Label htmlFor="DurationHours">Duration in Hours:</Form.Label>
+                                </OverlayTrigger>
+                                <div>
+                                    <Form.Control type="text" size="sm" name="durationHours" defaultValue={durationHours} onChange={(val) => handleDurationHoursChanged(val.target.value)} />
+                                    <span style={{ color: "red" }}>{durationHoursErrors}</span>
+                                </div>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderDurationMinutesToolTip}>
+                                    <Form.Label htmlFor="DurationMinutes">Additional Minutes:</Form.Label>
+                                </OverlayTrigger>
+                                <div>
+                                    <Form.Control type="text" size="sm" name="durationMinutes" defaultValue={durationMinutes} onChange={(val) => handleDurationMinutesChanged(val.target.value)} />
+                                    <span style={{ color: "red" }}>{durationMinutesErrors}</span>
+                                </div>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderEventDateToolTip}>
+                                    <Form.Label htmlFor="EventDate">EventDate:</Form.Label>
+                                </OverlayTrigger>
+                                <div>
+                                    <DateTimePicker name="eventDate" onChange={handleEventDateChange} value={eventDate} />
+                                    <span style={{ color: "red" }}>{eventDateErrors}</span>
                                 </div>
                             </Form.Group>
                         </Col>
