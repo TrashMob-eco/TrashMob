@@ -11,11 +11,11 @@ import { AzureMapsProvider, IAzureMapOptions } from '@ambientlight/react-azure-m
 import MapController from './MapController';
 import { Col, Form } from 'react-bootstrap';
 
-export interface MatchParams {
+export interface DetailsMatchParams {
     eventId: string;
 }
 
-export interface EventDetailsProps extends RouteComponentProps<MatchParams> {
+export interface EventDetailsProps extends RouteComponentProps<DetailsMatchParams> {
     isUserLoaded: boolean;
     currentUser: UserData;
 }

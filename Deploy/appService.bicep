@@ -71,7 +71,7 @@ resource sites_tm_name_web 'Microsoft.Web/sites/config@2018-11-01' = {
     azureStorageAccounts: {}
     use32BitWorkerProcess: true
     webSocketsEnabled: false
-    alwaysOn: false
+    alwaysOn: true
     managedPipelineMode: 'Integrated'
     virtualApplications: [
       {
