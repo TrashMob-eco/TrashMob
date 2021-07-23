@@ -256,6 +256,14 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.EventDate}</Tooltip>
     }
 
+    function renderMediaTypeToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.MediaType}</Tooltip>
+    }
+
+    function renderEventMediaUrlToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.EventMediaUrl}</Tooltip>
+    }
+
     function selectMediaType(val: string) {
         setEventMediaTypeId(parseInt(val));
         // Todo, change this default
@@ -355,7 +363,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
             fetch('/api/Events', {
                 method: 'PUT',
-                body: data,
+                body: evtdata,
                 headers: headers
             }).then((response) => response.json() as Promise<number>)
                 .then(() => {
@@ -387,22 +395,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                 .then(() => { props.history.push("/mydashboard"); })
         })
     }
-
-    // This will handle Cancel button click event.  
-    function handleCancel(event: any) {
-        event.preventDefault();
-        props.history.push("/mydashboard");
-    }
-
-    
-    function renderMediaTypeToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.MediaType}</Tooltip>
-    }
-
-    function renderEventMediaUrlToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.EventMediaUrl}</Tooltip>
-    }
-
+   
     // Returns the HTML Form to the render() method.  
     function renderCreateForm(typeList: Array<EventTypeData>, mediaTypeList: Array<MediaTypeData>) {
         return (
