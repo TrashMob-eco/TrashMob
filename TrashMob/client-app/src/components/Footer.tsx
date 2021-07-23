@@ -11,7 +11,7 @@ export const Footer: React.FC = () => {
                 <div className="fb-like" data-href="https://www.trashmob.eco" data-width="" data-layout="button_count" data-action="like" data-size="small" data-share="true"></div>
                 <a href="https://profiles.eco/trashmob?ref=tm" rel="noopener"><img className="eco-trustmark" alt=".eco profile for trashmob.eco" src="https://trust.profiles.eco/trashmob/eco-button.svg?color=%2396BA00" /></a>
                 <a className='instagram-button' href="https://www.instagram.com/trashmob">Instagram</a>
-                <div className="g-ytsubscribe" data-channel="TrashMob" />
+                <div className="g-ytsubscribe" data-channelid="UC2LgFmXFCA8kdkxd4IJ51BA" data-layout="default" data-count="default" />
             <p>
                 <Link to="/privacypolicy">Privacy Policy</Link>
                 <Link to="/termsofservice">Terms of Service</Link>

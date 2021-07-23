@@ -14,11 +14,11 @@ import EventMediaData from './Models/EventMediaData';
 import InstagramEmbed from 'react-instagram-embed';
 import * as Facebook from '../store/FacebookStore';
 
-export interface MatchParams {
+export interface DetailsMatchParams {
     eventId: string;
 }
 
-export interface EventDetailsProps extends RouteComponentProps<MatchParams> {
+export interface EventDetailsProps extends RouteComponentProps<DetailsMatchParams> {
     isUserLoaded: boolean;
     currentUser: UserData;
 }

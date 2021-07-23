@@ -25,7 +25,7 @@ https://as-tm-dev-westus2.azurewebsites.net/
 # FAQ 
 ## What is the current state of this project?
 
-As of 5/26/2021, we are now in Beta launch. We'll hold at Beta for about a month. Beta only means that if things really go wrong, we may have to delete data manually and depending on load, site availability is not guaranteed.
+As of 5/26/2021, we are now in Beta launch. We'll hold at Beta until a few more key features are complete so we can do a grand-relaunch when those features go in. Beta alsop means that if things really go wrong, we may have to delete data manually and depending on load, site availability is not guaranteed.
 
 ## Are you looking for contributors?
 

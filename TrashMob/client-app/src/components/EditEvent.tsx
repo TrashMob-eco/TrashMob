@@ -2,11 +2,12 @@ import * as React from 'react'
 import { RouteComponentProps } from 'react-router';
 import EventData from './Models/EventData';
 import DateTimePicker from 'react-datetime-picker';
-import { getKey } from '../store/MapStore';
 import EventTypeData from './Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
+import { withRouter } from 'react-router-dom';
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { data } from 'azure-maps-control';
+import { getKey } from '../store/MapStore';
 import AddressData from './Models/AddressData';
 import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
@@ -19,18 +20,18 @@ import { Button, Col, Form } from 'react-bootstrap';
 import EventMediaData from './Models/EventMediaData';
 import MediaTypeData from './Models/MediaTypeData';
 
-export interface MatchParams {
-    eventId: string;
+export interface EditMatchParams {
+    eventId?: string;
 }
 
-export interface EditEventProps extends RouteComponentProps<MatchParams> {
+export interface EditEventProps extends RouteComponentProps<EditMatchParams> {
     isUserLoaded: boolean;
     currentUser: UserData;
 }
 
 export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [isDataLoaded, setIsDataLoaded] = React.useState<boolean>(false);
-    const [eventId, setEventId] = React.useState<string>(props.match.params["eventId"]);
+    const [eventId, setEventId] = React.useState<string>(props.match?.params["eventId"] ? props.match.params["eventId"] : "");
     const [eventName, setEventName] = React.useState<string>("New Event");
     const [description, setDescription] = React.useState<string>();
     const [eventDate, setEventDate] = React.useState<Date>(new Date());
@@ -50,8 +51,9 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [latitudeErrors, setLatitudeErrors] = React.useState<string>("");
     const [longitudeErrors, setLongitudeErrors] = React.useState<string>("");
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
-    const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);;
-    const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();;
+    const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
+    const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
+    const [title, setTitle] = React.useState<string>("Create Event");
     const [eventMediaUrl, setEventMediaUrl] = React.useState<string>("");
     const [eventMediaTypeId, setEventMediaTypeId] = React.useState<number>(0);
     const [eventMediaUsageTypeId, setEventMediaUsageTypeId] = React.useState<number>(0);
@@ -79,7 +81,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             });
 
         // This will set state for Edit Event  
-        if (eventId != null) {
+        if (eventId !== null && eventId !== "") {
+            setTitle("Edit Event");
             fetch('/api/eventmedias/' + eventId, {
                 method: 'GET',
                 headers: headers,
@@ -119,6 +122,10 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                 });
         }
 
+        if (eventId === "") {
+            setIsDataLoaded(true);
+        }
+
         MapStore.getOption().then(opts => {
             setMapOptions(opts);
             setIsMapKeyLoaded(true);
@@ -133,6 +140,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             console.log("Not Available");
         }
     }, [eventId])
+
 
     function handleEventNameChanged(val: string) {
         setEventName(val);
@@ -196,141 +204,12 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         catch { }
     }
 
-    function selectEventType(val: string) {
-        setEventTypeId(parseInt(val));
-    }
-
-    function selectMediaType(val: string) {
-        setEventMediaTypeId(parseInt(val));
-        // Todo, change this default
-        setEventMediaUsageTypeId(1);
-    }
-
-    function handleLocationChange(point: data.Position) {
-        // In an Azure Map point, the longitude is the first position, and latitude is second
-        setLatitude(point[1]);
-        setLongitude(point[0]);
-        var locationString = point[1] + ',' + point[0]
-        var headers = getDefaultHeaders('GET');
-
-        getKey()
-            .then(key => {
-                fetch('https://atlas.microsoft.com/search/address/reverse/json?subscription-key=' + key + '&api-version=1.0&query=' + locationString, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<AddressData>)
-                    .then(data => {
-                        setStreetAddress(data.addresses[0].address.streetNameAndNumber);
-                        setCity(data.addresses[0].address.municipality);
-                        setCountry(data.addresses[0].address.country);
-                        setRegion(data.addresses[0].address.countrySubdivisionName);
-                        setPostalCode(data.addresses[0].address.postalCode);
-                    })
-            }
-            )
-    }
-
-    function handleEventDateChange(passedDate: Date) {
-        if (passedDate < new Date()) {
-            setEventDateErrors("Event cannot be in the past");
-        }
-        else {
-            setEventDateErrors("");
-        }
-
-        setEventDate(passedDate);
-    }
-
-    function handleEventMediaUrlChanged(val: string) {
-        setEventMediaUrl(val);
-    }
-
-    // This will handle the submit form event.  
-    function handleSave(event: any) {
-        event.preventDefault();
-
-        if (eventDateErrors !== "") {
-            return;
-        }
-
-        var eventData = new EventData();
-        eventData.id = eventId;
-        eventData.name = eventName ?? "";
-        eventData.description = description ?? "";
-        eventData.eventDate = new Date(eventDate);
-        eventData.eventTypeId = eventTypeId ?? 0;
-        eventData.streetAddress = streetAddress ?? "";
-        eventData.city = city ?? "";
-        eventData.region = region ?? "";
-        eventData.country = country ?? "";
-        eventData.postalCode = postalCode ?? "";
-        eventData.latitude = latitude ?? 0;
-        eventData.longitude = longitude ?? 0;
-        eventData.maxNumberOfParticipants = maxNumberOfParticipants ?? 0;
-        eventData.createdByUserId = createdByUserId ?? "";
-        eventData.lastUpdatedByUserId = props.currentUser.id;
-        eventData.eventStatusId = eventStatusId;
-
-        eventData.lastUpdatedByUserId = props.currentUser.id;
-
-        var data = JSON.stringify(eventData);
-
-        // PUT request for Edit Event.  
-        const account = msalClient.getAllAccounts()[0];
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        return msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders('PUT');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/Events', {
-                method: 'PUT',
-                body: data,
-                headers: headers
-            }).then((response) => response.json() as Promise<number>)
-                .then(() => {
-                    var eventMediaData = new EventMediaData();
-                    eventMediaData.mediaUrl = eventMediaUrl ?? "";
-                    eventMediaData.eventId = eventId;
-                    eventMediaData.createdByUserId = props.currentUser.id;
-                    eventMediaData.mediaTypeId = eventMediaTypeId ?? 0;
-                    eventMediaData.mediaUsageTypeId = eventMediaUsageTypeId ?? 0;
-
-                    var evtmediadatas: EventMediaData[] = [];
-                    evtmediadatas.push(eventMediaData);
-                    var evtmediadata = JSON.stringify(evtmediadatas);
-
-                    if (eventMediaData.mediaUrl !== "") {
-                        const headers2 = getDefaultHeaders('PUT');
-                        headers2.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                        fetch('/api/eventmedias/' + props.currentUser.id, {
-                            method: 'PUT',
-                            headers: headers2,
-                            body: evtmediadata,
-                        })
-                    }
-                    else {
-                        Promise.resolve()
-                    }
-                })
-                .then(() => { props.history.push("/mydashboard"); })
-        })
-    }
-
-    // This will handle Cancel button click event.  
-    function handleCancel(event: any) {
-        event.preventDefault();
-        props.history.push("/mydashboard");
-    }
-
     function renderDescriptionToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.EventDescription}</Tooltip>
+    }
+
+    function selectEventType(val: string) {
+        setEventTypeId(parseInt(val));
     }
 
     function renderEventNameToolTip(props: any) {
@@ -377,6 +256,145 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.EventDate}</Tooltip>
     }
 
+    function selectMediaType(val: string) {
+        setEventMediaTypeId(parseInt(val));
+        // Todo, change this default
+        setEventMediaUsageTypeId(1);
+    }
+
+    function handleLocationChange(point: data.Position) {
+        // In an Azure Map point, the longitude is the first position, and latitude is second
+        setLatitude(point[1]);
+        setLongitude(point[0]);
+        var locationString = point[1] + ',' + point[0]
+        var headers = getDefaultHeaders('GET');
+
+        getKey()
+            .then(key => {
+                fetch('https://atlas.microsoft.com/search/address/reverse/json?subscription-key=' + key + '&api-version=1.0&query=' + locationString, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<AddressData>)
+                    .then(data => {
+                        setStreetAddress(data.addresses[0].address.streetNameAndNumber);
+                        setCity(data.addresses[0].address.municipality);
+                        setCountry(data.addresses[0].address.country);
+                        setRegion(data.addresses[0].address.countrySubdivisionName);
+                        setPostalCode(data.addresses[0].address.postalCode);
+                    })
+            }
+            )
+    }
+
+    function handleEventDateChange(passedDate: Date) {
+        if (passedDate < new Date()) {
+            setEventDateErrors("Event cannot be in the past");
+        }
+        else {
+            setEventDateErrors("");
+        }
+
+        setEventDate(passedDate);
+    }
+
+    // This will handle Cancel button click event.
+    function handleCancel(event: any) {
+        event.preventDefault();
+        props.history.push("/mydashboard");
+    }
+    function handleEventMediaUrlChanged(val: string) {
+        setEventMediaUrl(val);
+    }
+
+    // This will handle the submit form event.  
+    function handleSave(event: any) {
+        event.preventDefault();
+
+        if (eventDateErrors !== "") {
+            return;
+        }
+
+        var eventData = new EventData();
+        var method = "POST";
+
+        if (eventId && eventId !== "") {
+            eventData.id = eventId;
+            method = "PUT";
+        }
+
+        eventData.name = eventName ?? "";
+        eventData.description = description ?? "";
+        eventData.eventDate = new Date(eventDate);
+        eventData.eventTypeId = eventTypeId ?? 0;
+        eventData.streetAddress = streetAddress ?? "";
+        eventData.city = city ?? "";
+        eventData.region = region ?? "";
+        eventData.country = country ?? "";
+        eventData.postalCode = postalCode ?? "";
+        eventData.latitude = latitude ?? 0;
+        eventData.longitude = longitude ?? 0;
+        eventData.maxNumberOfParticipants = maxNumberOfParticipants ?? 0;
+        eventData.createdByUserId = createdByUserId ?? props.currentUser.id;
+        eventData.lastUpdatedByUserId = props.currentUser.id;
+        eventData.eventStatusId = eventStatusId;
+
+        var evtdata = JSON.stringify(eventData);
+
+        // PUT request for Edit Event.  
+        const account = msalClient.getAllAccounts()[0];
+
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = getDefaultHeaders(method);
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+            fetch('/api/Events', {
+                method: 'PUT',
+                body: data,
+                headers: headers
+            }).then((response) => response.json() as Promise<number>)
+                .then(() => {
+                    var eventMediaData = new EventMediaData();
+                    eventMediaData.mediaUrl = eventMediaUrl ?? "";
+                    eventMediaData.eventId = eventId;
+                    eventMediaData.createdByUserId = props.currentUser.id;
+                    eventMediaData.mediaTypeId = eventMediaTypeId ?? 0;
+                    eventMediaData.mediaUsageTypeId = eventMediaUsageTypeId ?? 0;
+
+                    var evtmediadatas: EventMediaData[] = [];
+                    evtmediadatas.push(eventMediaData);
+                    var evtmediadata = JSON.stringify(evtmediadatas);
+
+                    if (eventMediaData.mediaUrl !== "") {
+                        const headers2 = getDefaultHeaders('PUT');
+                        headers2.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                        fetch('/api/eventmedias/' + props.currentUser.id, {
+                            method: 'PUT',
+                            headers: headers2,
+                            body: evtmediadata,
+                        })
+                    }
+                    else {
+                        Promise.resolve()
+                    }
+                })
+                .then(() => { props.history.push("/mydashboard"); })
+        })
+    }
+
+    // This will handle Cancel button click event.  
+    function handleCancel(event: any) {
+        event.preventDefault();
+        props.history.push("/mydashboard");
+    }
+
+    
     function renderMediaTypeToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.MediaType}</Tooltip>
     }
@@ -405,7 +423,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderEventDateToolTip}>
-                                    <Form.Label className="control-label col-xs-2" htmlFor="EventDate">EventDate:</Form.Label>
+                                    <Form.Label htmlFor="EventDate">EventDate:</Form.Label>
                                 </OverlayTrigger>
                                 <div>
                                     <DateTimePicker name="eventDate" onChange={handleEventDateChange} value={eventDate} />
@@ -521,8 +539,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     </Form.Row>
                     <Form.Row>
                         <Form.Group>
-                            <Button type="submit" className="action btn-default">Save</Button>
-                            <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
+                            <Button type="submit" className="btn btn-default">Save</Button>
+                            <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
                         </Form.Group>
                     </Form.Row>
                     <Form.Row>
@@ -565,14 +583,15 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         )
     }
 
-    let contents = isDataLoaded
+    var contents = isDataLoaded
         ? renderCreateForm(eventTypeList, mediaTypeList)
         : <p><em>Loading...</em></p>;
 
     return <div>
-        <h3>Edit Event</h3>
+        <h3>{title}</h3>
         <hr />
         {contents}
     </div>;
 }
 
+export default withRouter(EditEvent);

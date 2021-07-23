@@ -22,16 +22,15 @@ import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
 import { apiConfig, getDefaultHeaders, msalClient } from './store/AuthStore';
-import CreateEvent from './components/CreateEvent';
-import { EventDetails, MatchParams } from './components/EventDetails';
-import { EditEvent } from './components/EditEvent';
+import { EventDetails } from './components/EventDetails';
+import { EditEvent, EditMatchParams } from './components/EditEvent';
 import { NoMatch } from './components/NoMatch';
 import UserData from './components/Models/UserData';
 import * as msal from "@azure/msal-browser";
 import { Guid } from 'guid-typescript';
 import UserProfile from './components/UserProfile';
 
-interface AppProps extends RouteComponentProps<MatchParams> {
+interface AppProps extends RouteComponentProps<EditMatchParams> {
 }
 
 export const App: React.FC = () => {
@@ -163,16 +162,8 @@ export const App: React.FC = () => {
                     <TopMenu isUserLoaded={isUserLoaded} currentUser={currentUser} />
                     <div className="container">
                         <Switch>
-                            <Route path="/editevent/:eventId" render={(props: AppProps) => renderEditEvent(props)} />
+                            <Route path="/editevent/:eventId?" render={(props: AppProps) => renderEditEvent(props)} />
                             <Route path="/eventdetails/:eventId" component={EventDetails} />
-                            <Route path="/createevent">
-                                <MsalAuthenticationTemplate
-                                    interactionType={InteractionType.Redirect}
-                                    errorComponent={ErrorComponent}
-                                    loadingComponent={LoadingComponent}>
-                                    <CreateEvent currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                                </MsalAuthenticationTemplate >
-                            </Route>
                             <Route exact path="/mydashboard">
                                 <MsalAuthenticationTemplate
                                     interactionType={InteractionType.Redirect}
