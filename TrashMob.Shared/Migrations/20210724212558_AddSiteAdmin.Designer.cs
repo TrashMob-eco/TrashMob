@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrashMob.Shared.Persistence;
 
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    partial class MobDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210724212558_AddSiteAdmin")]
+    partial class AddSiteAdmin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -435,113 +437,6 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerRequest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("LastUpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(2048)
-                        .HasColumnType("nvarchar(2048)");
-
-                    b.Property<int>("PartnerRequestStatusId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PrimaryEmail")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<string>("PrimaryPhone")
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
-
-                    b.Property<string>("SecondaryEmail")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<string>("SecondaryPhone")
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastUpdatedByUserId");
-
-                    b.HasIndex("PartnerRequestStatusId");
-
-                    b.ToTable("PartnerRequests");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerRequestStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PartnerRequestStatus");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Request is Pending Approval by Site Administrator",
-                            DisplayOrder = 1,
-                            Name = "Pending"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Request has been canceled by the requestor",
-                            DisplayOrder = 2,
-                            Name = "Canceled"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Request has been approved by the Site Administrator",
-                            DisplayOrder = 3,
-                            Name = "Approved"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "Request has been approved by the Site Administrator",
-                            DisplayOrder = 4,
-                            Name = "Rejected"
-                        });
-                });
-
             modelBuilder.Entity("TrashMob.Shared.Models.SiteMetric", b =>
                 {
                     b.Property<Guid>("Id")
@@ -838,33 +733,6 @@ namespace TrashMob.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerRequest", b =>
-                {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
-                        .WithMany("PartnerRequestsCreated")
-                        .HasForeignKey("CreatedByUserId")
-                        .HasConstraintName("FK_PartnerRequests_CreatedByUser_Id")
-                        .IsRequired();
-
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
-                        .WithMany("PartnerRequestsUpdated")
-                        .HasForeignKey("LastUpdatedByUserId")
-                        .HasConstraintName("FK_PartnerRequests_LastUpdatedByUser_Id")
-                        .IsRequired();
-
-                    b.HasOne("TrashMob.Shared.Models.PartnerRequestStatus", "PartnerRequestStatus")
-                        .WithMany("PartnerRequests")
-                        .HasForeignKey("PartnerRequestStatusId")
-                        .HasConstraintName("FK_PartnerRequests_PartnerRequestStatus")
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastUpdatedByUser");
-
-                    b.Navigation("PartnerRequestStatus");
-                });
-
             modelBuilder.Entity("TrashMob.Shared.Models.UserNotification", b =>
                 {
                     b.HasOne("TrashMob.Shared.Models.Event", "Event")
@@ -926,20 +794,11 @@ namespace TrashMob.Migrations
                     b.Navigation("Events");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerRequestStatus", b =>
-                {
-                    b.Navigation("PartnerRequests");
-                });
-
             modelBuilder.Entity("TrashMob.Shared.Models.User", b =>
                 {
                     b.Navigation("EventsCreated");
 
                     b.Navigation("EventsUpdated");
-
-                    b.Navigation("PartnerRequestsCreated");
-
-                    b.Navigation("PartnerRequestsUpdated");
 
                     b.Navigation("UserNotificationPreferences");
 

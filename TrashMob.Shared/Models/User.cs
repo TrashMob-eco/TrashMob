@@ -46,6 +46,8 @@ namespace TrashMob.Shared.Models
 
         public bool IsOptedOutOfAllEmails { get; set; }
 
+        public bool IsSiteAdmin { get; set; }
+
         public DateTimeOffset? DateAgreedToPrivacyPolicy { get; set; }
 
         public string PrivacyPolicyVersion { get; set; }
@@ -63,5 +65,9 @@ namespace TrashMob.Shared.Models
         public virtual ICollection<UserNotification> UserNotifications { get; set; }
 
         public virtual ICollection<UserNotificationPreference> UserNotificationPreferences { get; set; }
+
+        public virtual ICollection<PartnerRequest> PartnerRequestsCreated { get; set; }
+
+        public virtual ICollection<PartnerRequest> PartnerRequestsUpdated { get; set; }
     }
 }

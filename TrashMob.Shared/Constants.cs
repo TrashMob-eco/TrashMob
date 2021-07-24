@@ -15,4 +15,12 @@
         Canceled = 3,
         Complete = 4,
     }
+
+    public enum PartnerRequestStatusEnum
+    {
+        Pending = 1,
+        Canceled = 2,
+        Approved = 3,
+        Rejected = 4,
+    }
 }

@@ -16,6 +16,8 @@
         }
 
         public virtual DbSet<ContactRequest> ContactRequests { get; set; }
+       
+        public virtual DbSet<PartnerRequest> PartnerRequests { get; set; }
 
         public virtual DbSet<User> Users { get; set; }
 
@@ -54,6 +56,39 @@
                 entity.Property(e => e.Email).HasMaxLength(64);
 
                 entity.Property(e => e.Message).HasMaxLength(2048);
+            });
+
+            modelBuilder.Entity<PartnerRequest>(entity =>
+            {
+                entity.Property(e => e.Name).HasMaxLength(128);
+
+                entity.Property(e => e.PrimaryEmail).HasMaxLength(64);
+
+                entity.Property(e => e.SecondaryEmail).HasMaxLength(64);
+
+                entity.Property(e => e.PrimaryPhone).HasMaxLength(32);
+
+                entity.Property(e => e.SecondaryPhone).HasMaxLength(32);
+
+                entity.Property(e => e.Notes).HasMaxLength(2048);
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.PartnerRequestsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerRequests_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.PartnerRequestsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerRequests_LastUpdatedByUser_Id");
+
+                entity.HasOne(d => d.PartnerRequestStatus)
+                    .WithMany(p => p.PartnerRequests)
+                    .HasForeignKey(d => d.PartnerRequestStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerRequests_PartnerRequestStatus");
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -270,6 +305,23 @@
                     new EventStatus { Id = (int)EventStatusEnum.Full, Name = "Full", Description = "Event is full", DisplayOrder = 2 },
                     new EventStatus { Id = (int)EventStatusEnum.Canceled, Name = "Canceled", Description = "Event has been canceled", DisplayOrder = 3 },
                     new EventStatus { Id = (int)EventStatusEnum.Complete, Name = "Completed", Description = "Event has completed", DisplayOrder = 4 });
+            });
+
+            modelBuilder.Entity<PartnerRequestStatus>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Description);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasData(
+                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Pending, Name = "Pending", Description = "Request is Pending Approval by Site Administrator", DisplayOrder = 1 },
+                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Canceled, Name = "Canceled", Description = "Request has been canceled by the requestor", DisplayOrder = 2 },
+                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Approved, Name = "Approved", Description = "Request has been approved by the Site Administrator", DisplayOrder = 3 },
+                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Rejected, Name = "Rejected", Description = "Request has been approved by the Site Administrator", DisplayOrder = 4 });
             });
 
             modelBuilder.Entity<EventType>(entity =>
