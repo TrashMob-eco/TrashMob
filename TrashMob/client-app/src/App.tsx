@@ -30,6 +30,7 @@ import { Guid } from 'guid-typescript';
 import UserProfile from './components/UserProfile';
 import PartnerDashboard from './components/PartnerDashboard';
 import BecomeAPartner from './components/BecomeAPartner';
+import SiteAdmin from './components/SiteAdmin';
 
 interface AppProps extends RouteComponentProps<EditMatchParams> {
 }
@@ -37,6 +38,7 @@ interface AppProps extends RouteComponentProps<EditMatchParams> {
 export const App: React.FC = () => {
     const [isUserLoaded, setIsUserLoaded] = React.useState(false);
     const [currentUser, setCurrentUser] = React.useState<UserData>(new UserData());
+    const [isSiteAdmin, setIsSiteAdmin] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         initializeIcons();
@@ -105,10 +107,11 @@ export const App: React.FC = () => {
             })
                 .then(response => response.json() as Promise<UserData>)
                 .then(data => {
-                        setCurrentUser(data);
-                        setIsUserLoaded(true);
-                        sessionStorage.setItem('user', JSON.stringify(data));
-                    });
+                    setCurrentUser(data);
+                    setIsSiteAdmin(data.isSiteAdmin);
+                    setIsUserLoaded(true);
+                    sessionStorage.setItem('user', JSON.stringify(data));
+                });
         });
     }
 
@@ -148,6 +151,7 @@ export const App: React.FC = () => {
                         user.memberSince = data.memberSince;
                         user.privacyPolicyVersion = data.privacyPolicyVersion;
                         user.termsOfServiceVersion = data.termsOfServiceVersion;
+                        user.isSiteAdmin = false;
                         setCurrentUser(user);
                         setIsUserLoaded(true);
                         sessionStorage.setItem('user', JSON.stringify(user));
@@ -187,6 +191,14 @@ export const App: React.FC = () => {
                                     errorComponent={ErrorComponent}
                                     loadingComponent={LoadingComponent}>
                                     <PartnerDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                </MsalAuthenticationTemplate >
+                            </Route>
+                            <Route exact path="/siteadmin">
+                                <MsalAuthenticationTemplate
+                                    interactionType={InteractionType.Redirect}
+                                    errorComponent={ErrorComponent}
+                                    loadingComponent={LoadingComponent}>
+                                    <SiteAdmin currentUser={currentUser} isUserLoaded={isUserLoaded} isSiteAdmin={isSiteAdmin} />
                                 </MsalAuthenticationTemplate >
                             </Route>
                             <Route exact path="/userprofile">
