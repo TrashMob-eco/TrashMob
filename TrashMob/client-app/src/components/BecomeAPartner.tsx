@@ -8,6 +8,7 @@ import * as ToolTips from "../store/ToolTips";
 import { Button, Col, Form } from 'react-bootstrap';
 import PartnerRequestData from './Models/PartnerRequestData';
 import UserData from './Models/UserData';
+import * as Constants from './Models/Constants';
 
 interface BecomeAPartnerProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -89,7 +90,7 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
     }
 
     function handlePrimaryEmailChanged(val: string) {
-        var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+        var pattern = new RegExp(Constants.RegexEmail);
 
         if (!pattern.test(val)) {
             setPrimaryEmailErrors("Please enter valid email address.");
@@ -101,7 +102,7 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
     }
 
     function handleSecondaryEmailChanged(val: string) {
-        var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+        var pattern = new RegExp(Constants.RegexEmail);
 
         if (!pattern.test(val)) {
             setSecondaryEmailErrors("Please enter valid email address.");
@@ -113,7 +114,7 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
     }
 
     function handlePrimaryPhoneChanged(val: string) {
-        var pattern = new RegExp("^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$");
+        var pattern = new RegExp(Constants.RegexPhoneNumber);
 
         if (!pattern.test(val)) {
             setPrimaryPhoneErrors("Please enter a valid phone number.");
@@ -125,7 +126,7 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
     }
 
     function handleSecondaryPhoneChanged(val: string) {
-        var pattern = new RegExp("^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$");
+        var pattern = new RegExp(Constants.RegexPhoneNumber);
 
         if (!pattern.test(val)) {
             setSecondaryPhoneErrors("Please enter a valid phone number.");
@@ -203,7 +204,7 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
                                 <Form.Label>Secondary Email:</Form.Label>
                             </OverlayTrigger>
                             <Form.Control type="text" defaultValue={secondaryEmail} maxLength={parseInt('64')} onChange={(val) => handleSecondaryEmailChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{primaryEmailErrors}</span>
+                            <span style={{ color: "red" }}>{secondaryEmailErrors}</span>
                         </Form.Group >
                     </Col>
                 </Form.Row>
