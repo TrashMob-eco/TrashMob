@@ -151,7 +151,7 @@ export const App: React.FC = () => {
                         user.memberSince = data.memberSince;
                         user.privacyPolicyVersion = data.privacyPolicyVersion;
                         user.termsOfServiceVersion = data.termsOfServiceVersion;
-                        user.isSiteAdmin = false;
+                        user.isSiteAdmin = data.isSiteAdmin;
                         setCurrentUser(user);
                         setIsUserLoaded(true);
                         sessionStorage.setItem('user', JSON.stringify(user));
@@ -198,7 +198,7 @@ export const App: React.FC = () => {
                                     interactionType={InteractionType.Redirect}
                                     errorComponent={ErrorComponent}
                                     loadingComponent={LoadingComponent}>
-                                    <SiteAdmin currentUser={currentUser} isUserLoaded={isUserLoaded} isSiteAdmin={isSiteAdmin} />
+                                    <SiteAdmin currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
                             </Route>
                             <Route exact path="/userprofile">

@@ -1,30 +1,34 @@
 import * as React from 'react';
+import { ButtonGroup, ToggleButton } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import UserData from './Models/UserData';
 
 interface SiteAdminProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
     currentUser: UserData;
-    isSiteAdmin: boolean;
 }
 
 const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
 
-    const [isManageUsersSelected, setIsManageUsersSelected] = React.useState<boolean>(false);
-    const [isManagePartnersSelected, setIsManagePartnersSelected] = React.useState<boolean>(false);
-    const [isManagePartnerRequestsSelected, setManagePartnerRequestsSelected] = React.useState<boolean>(false);
-    const [isManageEventsSelected, setIsManageEventsSelected] = React.useState<boolean>(false);
-    const [isSeeExecutiveSummarySelected, setSeeExecutiveSummarySelected] = React.useState<boolean>(false);
+    const [isSiteAdmin, setIsSiteAdmin] = React.useState<boolean>(false);
+    const [radioValue, setRadioValue] = React.useState('1');
+
+    const radios = [
+        { name: 'Manage Users', value: '1' },
+        { name: 'Manage Events', value: '2' },
+        { name: 'Manage Partners', value: '3' },
+        { name: 'Manage Partner Requests', value: '4' },
+        { name: 'View Executive Summary', value: '5' },
+    ];
 
     React.useEffect(() => {
-        if (props.isSiteAdmin) {
-
-        }
+        setIsSiteAdmin(props.currentUser.isSiteAdmin);
     })
 
     function renderManageEvents() {
         return (
             <div>
+                Events
             </div>
         )
     }
@@ -32,6 +36,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     function renderManageUsers() {
         return (
             <div>
+                UserList
             </div>
         )
     }
@@ -39,6 +44,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     function renderManagePartners() {
         return (
             <div>
+                Partner List
             </div>
         )
     }
@@ -46,6 +52,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     function renderManagePartnerRequests() {
         return (
             <div>
+                Partner Requests
             </div>
         )
     }
@@ -53,6 +60,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     function renderExecutiveSummary() {
         return (
             <div>
+                Executive Summary
             </div>
         )
     }
@@ -60,39 +68,28 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     function renderAdminTable() {
         return (
             <div>
-                <table>
-                    <tr>
-                        <td>
-                            Manage Users
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Manage Existing Partners
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Manage Partner Requests
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Manage Events
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            See Executive Summary
-                        </td>
-                    </tr>
-                </table>
+                <ButtonGroup>
+                    {radios.map((radio, idx) => (
+                        <ToggleButton
+                            key={idx}
+                            id={`radio-${idx}`}
+                            type="radio"
+                            variant={idx % 2 ? 'outline-success' : 'outline-danger'}
+                            name="radio"
+                            value={radio.value}
+                            checked={radioValue === radio.value}
+                            onChange={(e) => setRadioValue(e.currentTarget.value)}
+                        >
+                            {radio.name}
+                        </ToggleButton>
+                    ))}
+                </ButtonGroup>
 
-                {isManageEventsSelected && renderManageEvents()}
-                {isManageUsersSelected && renderManageUsers()}
-                {isManagePartnersSelected && renderManagePartners()}
-                {isSeeExecutiveSummarySelected && renderExecutiveSummary()}
-                {isManagePartnerRequestsSelected && renderManagePartnerRequests()}
+                {radioValue === '1' && renderManageUsers()}
+                {radioValue === '2' && renderManageEvents()}
+                {radioValue === '3' && renderManagePartners()}
+                {radioValue === '4' && renderManagePartnerRequests()}
+                {radioValue === '5' && renderExecutiveSummary()}
 
             </div>
         );
@@ -100,9 +97,10 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
 
     return (
         <>
+            <h1>Site Administration</h1>
             <div>
-                {!props.isSiteAdmin && <p><em>Access Denied</em></p>}
-                {props.isSiteAdmin && renderAdminTable()}
+                {!isSiteAdmin && <p><em>Access Denied</em></p>}
+                {isSiteAdmin && renderAdminTable()}
 
             </div>
         </>
