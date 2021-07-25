@@ -20,7 +20,8 @@ export const Partners: React.FC = () => {
             <p>That's where Partners come in. Partners, whether they be local goverment, or waste disposal companies, or companies not in the waste disposal business who have hauling capacity for the garbage we collect, are needed to do the hauling and disposal.</p>
             <p>And because this is a global issue, we need Partners all over the world to make it as easy as possible for the TrashMob.eco Mob leads to figure out who to contact to ensure the haul away is done correctly.</p>
 
-            <p>We're just starting out, so this page is otherwise empty. But if you've found us, and you want to become a partner, in whatever way that means to you, please <Link to="./contactus">Contact Us</Link>!</p>
+            <p>If you are not already registered for the site, please register, and then come back here to become a TrashMob.eco Partner!</p>
+            <p><Link to="./becomeapartner">Become a TrashMob.eco Partner</Link>!</p>
         </div>
     );
 }

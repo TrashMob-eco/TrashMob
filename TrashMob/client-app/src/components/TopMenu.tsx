@@ -64,6 +64,7 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 ))}
                                 <NavDropdown title="Learn More" id="basic-nav-dropdown">
                                     <NavDropdown.Item className="dropdown-item" href="/partners">Partners</NavDropdown.Item>
+                                    <NavDropdown.Item className="dropdown-item" href="/becomeapartner">Become a Partner</NavDropdown.Item>
                                     <NavDropdown.Item className="dropdown-item" hidden={!isUserLoaded} href="/partnerdashboard">Partner Dashboard</NavDropdown.Item>
                                     <NavDropdown.Item className="dropdown-item" href="/contactus">Contact Us</NavDropdown.Item>
                                     <NavDropdown.Item className="dropdown-item" href="/faq">FAQ</NavDropdown.Item>

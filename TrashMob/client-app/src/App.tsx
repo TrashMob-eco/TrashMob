@@ -29,6 +29,7 @@ import * as msal from "@azure/msal-browser";
 import { Guid } from 'guid-typescript';
 import UserProfile from './components/UserProfile';
 import PartnerDashboard from './components/PartnerDashboard';
+import BecomeAPartner from './components/BecomeAPartner';
 
 interface AppProps extends RouteComponentProps<EditMatchParams> {
 }
@@ -170,6 +171,14 @@ export const App: React.FC = () => {
                                     errorComponent={ErrorComponent}
                                     loadingComponent={LoadingComponent}>
                                     <MyDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                </MsalAuthenticationTemplate >
+                            </Route>
+                            <Route exact path="/becomeapartner">
+                                <MsalAuthenticationTemplate
+                                    interactionType={InteractionType.Redirect}
+                                    errorComponent={ErrorComponent}
+                                    loadingComponent={LoadingComponent}>
+                                    <BecomeAPartner currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
                             </Route>
                             <Route exact path="/partnerdashboard">
