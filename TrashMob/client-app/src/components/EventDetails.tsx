@@ -120,7 +120,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
     function renderUsersTable(users: UserData[]) {
         return (
             <div>
-                <table className='table table-striped' aria-labelledby="tabelLabel">
+                <table className='table table-striped' aria-labelledby="tableLabel">
                     <thead>
                         <tr>
                             <th>User Name</th>

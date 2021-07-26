@@ -30,7 +30,7 @@ import { Guid } from 'guid-typescript';
 import UserProfile from './components/UserProfile';
 import PartnerDashboard from './components/PartnerDashboard';
 import BecomeAPartner from './components/BecomeAPartner';
-import SiteAdmin from './components/SiteAdmin';
+import SiteAdmin from './components/Admin/SiteAdmin';
 
 interface AppProps extends RouteComponentProps<EditMatchParams> {
 }

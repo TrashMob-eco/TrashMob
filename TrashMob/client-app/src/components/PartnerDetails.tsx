@@ -80,7 +80,7 @@ export const PartnerDetails: React.FC<PartnerDetailsProps> = (props) => {
     function renderPartnerLocations(partners: PartnerLocationData[]) {
         return (
             <div>
-                <table className='table table-striped' aria-labelledby="tabelLabel">
+                <table className='table table-striped' aria-labelledby="tableLabel">
                     <thead>
                         <tr>
                             <th>City</th>
