@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { loadCaptchaEnginge, LoadCanvasTemplateNoReload, validateCaptcha } from 'react-simple-captcha';
-import { getDefaultHeaders } from '../store/AuthStore';
+import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../store/ToolTips";
@@ -61,15 +61,26 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
 
             var data = JSON.stringify(partnerRequestData);
 
-            const headers = getDefaultHeaders('POST');
+            const account = msalClient.getAllAccounts()[0];
 
-            fetch('/api/PartnerRequests', {
-                method: 'POST',
-                body: data,
-                headers: headers,
-            }).then(() => {
-                props.history.push("/");
-            })
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = getDefaultHeaders('POST');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+
+                fetch('/api/PartnerRequests', {
+                    method: 'POST',
+                    body: data,
+                    headers: headers,
+                }).then(() => {
+                    props.history.push("/");
+                })
+            });
         }
 
         else {
@@ -157,7 +168,7 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
 
 
     function renderNameToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.ContactUsName}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.PartnerRequestName}</Tooltip>
     }
 
     function renderPrimaryEmailToolTip(props: any) {

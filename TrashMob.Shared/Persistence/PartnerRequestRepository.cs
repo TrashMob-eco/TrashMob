@@ -35,6 +35,11 @@
                 .ToListAsync().ConfigureAwait(false);
         }
 
+        public async Task<PartnerRequest> GetPartnerRequest(Guid id)
+        {
+            return await mobDbContext.PartnerRequests.FindAsync(id);
+        }
+
         // Update the records of a particular Partner Request
         public async Task<PartnerRequest> UpdatePartnerRequest(PartnerRequest partnerRequest)
         {

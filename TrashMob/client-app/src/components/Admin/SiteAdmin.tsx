@@ -5,6 +5,7 @@ import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore'
 import EventData from '../Models/EventData';
 import PartnerData from '../Models/PartnerData';
 import PartnerRequestData from '../Models/PartnerRequestData';
+import PartnerRequestStatusData from '../Models/PartnerRequestStatusData';
 import UserData from '../Models/UserData';
 import { AdminEvents } from './AdminEvents';
 import { AdminPartnerRequests } from './AdminPartnerRequests';
@@ -30,6 +31,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     const [isEventDataLoaded, setIsEventDataLoaded] = React.useState<boolean>(false);
     const [isPartnerDataLoaded, setIsPartnerDataLoaded] = React.useState<boolean>(false);
     const [isPartnerRequestDataLoaded, setIsPartnerRequestDataLoaded] = React.useState<boolean>(false);
+    const [partnerRequestStatusList, setPartnerRequestStatusList] = React.useState<PartnerRequestStatusData[]>([]);
 
     const radios = [
         { name: 'Manage Users', value: '1' },
@@ -89,15 +91,27 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
                     setIsPartnerDataLoaded(true);
                 });
 
-            // Load the Partner Request List
-            fetch('/api/partnerrequests', {
+
+            // Load the PartnerRequestStatusList
+            fetch('/api/partnerrequeststatuses', {
                 method: 'GET',
-                headers: headers,
+                headers: headers
             })
-                .then(response => response.json() as Promise<Array<PartnerRequestData>>)
+                .then(response => response.json() as Promise<Array<any>>)
                 .then(data => {
-                    setPartnerRequestList(data);
-                    setIsPartnerRequestDataLoaded(true);
+                    setPartnerRequestStatusList(data);
+                })
+                .then(() => {
+                    // Load the Partner Request List
+                    fetch('/api/partnerrequests', {
+                        method: 'GET',
+                        headers: headers,
+                    })
+                        .then(response => response.json() as Promise<Array<PartnerRequestData>>)
+                        .then(data => {
+                            setPartnerRequestList(data);
+                            setIsPartnerRequestDataLoaded(true);
+                        });
                 });
         });
 
@@ -234,7 +248,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     function renderManagePartnerRequests() {
         return (
             <div>
-                <AdminPartnerRequests history={props.history} location={props.location} match={props.match} partnerRequestList={partnerRequestList} isPartnerRequestDataLoaded={isPartnerRequestDataLoaded} onPartnerRequestListChanged={loadPartnerRequests} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                <AdminPartnerRequests history={props.history} location={props.location} match={props.match} partnerRequestList={partnerRequestList} isPartnerRequestDataLoaded={isPartnerRequestDataLoaded} partnerRequestStatusList={partnerRequestStatusList} onPartnerRequestListChanged={loadPartnerRequests} currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </div>
         )
     }

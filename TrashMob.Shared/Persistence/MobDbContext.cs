@@ -19,6 +19,8 @@
        
         public virtual DbSet<PartnerRequest> PartnerRequests { get; set; }
 
+        public virtual DbSet<PartnerRequestStatus> PartnerRequestStatus { get; set; }
+
         public virtual DbSet<User> Users { get; set; }
 
         public virtual DbSet<Event> Events { get; set; }
@@ -319,9 +321,8 @@
 
                 entity.HasData(
                     new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Pending, Name = "Pending", Description = "Request is Pending Approval by Site Administrator", DisplayOrder = 1 },
-                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Canceled, Name = "Canceled", Description = "Request has been canceled by the requestor", DisplayOrder = 2 },
-                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Approved, Name = "Approved", Description = "Request has been approved by the Site Administrator", DisplayOrder = 3 },
-                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Rejected, Name = "Rejected", Description = "Request has been approved by the Site Administrator", DisplayOrder = 4 });
+                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Approved, Name = "Approved", Description = "Request has been approved by the Site Administrator", DisplayOrder = 2 },
+                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Denied, Name = "Denied", Description = "Request has been approved by the Site Administrator", DisplayOrder = 3 });
             });
 
             modelBuilder.Entity<EventType>(entity =>

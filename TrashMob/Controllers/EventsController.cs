@@ -54,7 +54,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetEventsUserOwns(Guid userId)
         {
             var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
-            if (!ValidateUser(user.NameIdentifier))
+            if (user == null || !ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }
@@ -70,7 +70,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetEventsUserIsAttending(Guid userId)
         {
             var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
-            if (!ValidateUser(user.NameIdentifier))
+            if (user == null || !ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }
@@ -86,7 +86,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetUserEvents(Guid userId)
         {
             var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
-            if (!ValidateUser(user.NameIdentifier))
+            if (user == null || !ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }
@@ -120,7 +120,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> PutEvent(Event mobEvent)
         {
             var user = await userRepository.GetUserByInternalId(mobEvent.CreatedByUserId).ConfigureAwait(false);
-            if (!ValidateUser(user.NameIdentifier))
+            if (user == null || !ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }
@@ -152,7 +152,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> PostEvent(Event mobEvent)
         {
             var user = await userRepository.GetUserByInternalId(mobEvent.CreatedByUserId).ConfigureAwait(false);
-            if (!ValidateUser(user.NameIdentifier))
+            if (user == null || !ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }
@@ -181,7 +181,7 @@ namespace TrashMob.Controllers
             var mobEvent = await eventRepository.GetEvent(id);
             var user = await userRepository.GetUserByInternalId(mobEvent.CreatedByUserId).ConfigureAwait(false);
 
-            if (!ValidateUser(user.NameIdentifier))
+            if (user == null || !ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }

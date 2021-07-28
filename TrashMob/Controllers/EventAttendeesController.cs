@@ -41,7 +41,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> PutEventAttendee(EventAttendee eventAttendee)
         {
             var user = await userRepository.GetUserByInternalId(eventAttendee.UserId).ConfigureAwait(false);
-            if (!ValidateUser(user.NameIdentifier))
+            if (user == null || !ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }
@@ -70,7 +70,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> PostEventAttendee(EventAttendee eventAttendee)
         {
             var user = await userRepository.GetUserByInternalId(eventAttendee.UserId).ConfigureAwait(false);
-            if (!ValidateUser(user.NameIdentifier))
+            if (user == null || !ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }
@@ -86,7 +86,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> DeleteEventAttendee(Guid eventId, Guid userId)
         {
             var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
-            if (!ValidateUser(user.NameIdentifier))
+            if (user == null || !ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }

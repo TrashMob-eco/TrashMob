@@ -19,8 +19,7 @@
     public enum PartnerRequestStatusEnum
     {
         Pending = 1,
-        Canceled = 2,
-        Approved = 3,
-        Rejected = 4,
+        Approved = 2,
+        Denied = 3,
     }
 }

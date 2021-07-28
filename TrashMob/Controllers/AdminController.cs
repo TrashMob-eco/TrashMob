@@ -30,7 +30,7 @@
         {
             var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
 
-            if (!ValidateUser(user.NameIdentifier) || user.IsSiteAdmin)
+            if (user == null || !ValidateUser(user.NameIdentifier) || user.IsSiteAdmin)
             {
                 return Forbid();
             }

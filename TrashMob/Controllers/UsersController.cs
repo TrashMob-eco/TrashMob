@@ -52,7 +52,7 @@ namespace TrashMob.Controllers
         [HttpPut()]
         public async Task<IActionResult> PutUser(User user)
         {
-            if (!ValidateUser(user.NameIdentifier))
+            if (user == null || !ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }
@@ -121,7 +121,7 @@ namespace TrashMob.Controllers
         {
             var user = await userRepository.GetUserByInternalId(id).ConfigureAwait(false);
 
-            if (!ValidateUser(user.NameIdentifier))
+            if (user == null || !ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }
