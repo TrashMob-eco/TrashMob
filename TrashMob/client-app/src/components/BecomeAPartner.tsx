@@ -54,12 +54,16 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
             partnerRequestData.secondaryEmail = secondaryEmail ?? "";
             partnerRequestData.primaryPhone = primaryPhone ?? "";
             partnerRequestData.secondaryPhone = secondaryPhone ?? "";
+            partnerRequestData.partnerRequestStatusId = 1;
             partnerRequestData.notes = notes ?? "";
+            partnerRequestData.createdByUserId = props.currentUser.id;
+            partnerRequestData.lastUpdatedByUserId = props.currentUser.id;
+
             var data = JSON.stringify(partnerRequestData);
 
             const headers = getDefaultHeaders('POST');
 
-            fetch('/api/PartnerRequest', {
+            fetch('/api/PartnerRequests', {
                 method: 'POST',
                 body: data,
                 headers: headers,

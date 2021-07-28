@@ -8,13 +8,13 @@
     using TrashMob.Shared.Persistence;
 
     [ApiController]
-    [Route("api/partnerrequest")]
-    public class PartnerRequestController : ControllerBase
+    [Route("api/partnerrequests")]
+    public class PartnerRequestsController : ControllerBase
     {
         private readonly IPartnerRequestRepository partnerRequestRepository;
         private readonly IEmailManager emailManager;
 
-        public PartnerRequestController(IPartnerRequestRepository partnerRequestRepository, IEmailManager emailManager)
+        public PartnerRequestsController(IPartnerRequestRepository partnerRequestRepository, IEmailManager emailManager)
         {
             this.partnerRequestRepository = partnerRequestRepository;
             this.emailManager = emailManager;
@@ -34,6 +34,12 @@
             await emailManager.SendSystemEmail(email, CancellationToken.None).ConfigureAwait(false);
             
             return Ok();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPartnerRequests()
+        {
+            return Ok(await partnerRequestRepository.GetPartnerRequests().ConfigureAwait(false));
         }
     }
 }

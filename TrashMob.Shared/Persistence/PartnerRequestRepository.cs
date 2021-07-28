@@ -2,6 +2,7 @@
 {
     using Microsoft.EntityFrameworkCore;
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
@@ -14,6 +15,7 @@
             this.mobDbContext = mobDbContext;
         }
 
+        
         public async Task AddPartnerRequest(PartnerRequest partnerRequest)
         {
             partnerRequest.Id = Guid.NewGuid();
@@ -24,6 +26,13 @@
             mobDbContext.PartnerRequests.Add(partnerRequest);
 
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<PartnerRequest>> GetPartnerRequests()
+        {
+            return await mobDbContext.PartnerRequests
+                .AsNoTracking()
+                .ToListAsync().ConfigureAwait(false);
         }
 
         // Update the records of a particular Partner Request

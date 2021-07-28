@@ -81,7 +81,7 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
 
     return (
         <div>
-            <h1 id="tableLabel">Partners</h1>
+            <h1 id="tableLabel">Partner Requests</h1>
             {contents}
         </div>
     );
