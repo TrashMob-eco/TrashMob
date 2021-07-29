@@ -7,6 +7,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared;
+    using TrashMob.Shared.Managers;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
@@ -16,12 +17,17 @@
     public class PartnerRequestsController : ControllerBase
     {
         private readonly IPartnerRequestRepository partnerRequestRepository;
+        private readonly IPartnerManager partnerManager;
         private readonly IUserRepository userRepository;
         private readonly IEmailManager emailManager;
 
-        public PartnerRequestsController(IPartnerRequestRepository partnerRequestRepository, IEmailManager emailManager, IUserRepository userRepository)
+        public PartnerRequestsController(IPartnerRequestRepository partnerRequestRepository, 
+                                         IPartnerManager partnerManager,
+                                         IEmailManager emailManager, 
+                                         IUserRepository userRepository)
         {
             this.partnerRequestRepository = partnerRequestRepository;
+            this.partnerManager = partnerManager;
             this.emailManager = emailManager;
             this.userRepository = userRepository;
         }
@@ -64,15 +70,7 @@
 
             await partnerRequestRepository.UpdatePartnerRequest(partnerRequest);
 
-            // Update this to notify user when their request has been approved and what to do next
-            //var email = new Email
-            //{
-            //    Message = $"From Email: {partnerRequest.PrimaryEmail}\nFrom Name:{partnerRequest.Name}\nMessage:\n{partnerRequest.Notes}",
-            //    Subject = "Partner Request"
-            //};
-            //email.Addresses.Add(new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress });
-
-            //await emailManager.SendSystemEmail(email, CancellationToken.None).ConfigureAwait(false);
+            await partnerManager.CreatePartner(partnerRequest);
 
             return Ok();
         }

@@ -22,4 +22,10 @@
         Approved = 2,
         Denied = 3,
     }
+
+    public enum PartnerStatusEnum
+    {
+        Active = 1,
+        Inactive = 2,
+    }
 }

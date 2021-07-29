@@ -69,5 +69,13 @@ namespace TrashMob.Shared.Models
         public virtual ICollection<PartnerRequest> PartnerRequestsCreated { get; set; }
 
         public virtual ICollection<PartnerRequest> PartnerRequestsUpdated { get; set; }
+
+        public virtual ICollection<Partner> PartnersCreated { get; set; }
+
+        public virtual ICollection<Partner> PartnersUpdated { get; set; }
+
+        public virtual ICollection<PartnerUser> PartnerUsersCreated { get; set; }
+
+        public virtual ICollection<PartnerUser> PartnerUsersUpdated { get; set; }
     }
 }
