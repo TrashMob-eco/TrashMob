@@ -3,6 +3,8 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
@@ -15,23 +17,46 @@
     {
         private readonly IPartnerUserRepository partnerUserRepository;
         private readonly IUserRepository userRepository;
+        private readonly IPartnerRepository partnerRepository;
 
-        public PartnerUsersController(IPartnerUserRepository partnerUserRepository, IUserRepository userRepository)
+        public PartnerUsersController(IPartnerUserRepository partnerUserRepository, IUserRepository userRepository, IPartnerRepository partnerRepository)
         {
             this.partnerUserRepository = partnerUserRepository;
             this.userRepository = userRepository;
+            this.partnerRepository = partnerRepository;
         }
 
         [HttpGet("{partnerId}")]
-        public async Task<IActionResult> GetPartnerUsers(Guid partnerId)
+        public IActionResult GetPartnerUsers(Guid partnerId)
         {
-            return Ok(await partnerUserRepository.GetPartnerUsers(partnerId).ConfigureAwait(false));
+            return Ok(partnerUserRepository.GetPartnerUsers().Where(pu => pu.PartnerId == partnerId).ToList());
+        }
+
+        [HttpGet("getpartnersforuser/{userId}")]
+        public async Task<IActionResult> GetPartnersForUser(Guid userId)
+        {
+            var partnerUsers = partnerUserRepository.GetPartnerUsers().Where(pu => pu.UserId == userId).ToList();
+
+            if (!partnerUsers.Any())
+            { 
+                return NotFound();
+            }
+
+            var partners = new List<Partner>();
+
+            foreach (var pu in partnerUsers)
+            {
+                var partner = await partnerRepository.GetPartner(pu.PartnerId).ConfigureAwait(false);
+                partners.Add(partner);
+            }
+
+            return Ok(partners);
         }
 
         [HttpGet("{partnerId}/{userId}")]
-        public async Task<IActionResult> GetPartnerUser(Guid partnerId, Guid userId)
+        public IActionResult GetPartnerUser(Guid partnerId, Guid userId)
         {
-            var partnerUser = await partnerUserRepository.GetPartnerUser(partnerId, userId).ConfigureAwait(false);
+            var partnerUser = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == partnerId && pu.UserId == userId);
 
             if (partnerUser == null)
             {
@@ -50,7 +75,7 @@
 
             if (!currentUser.IsSiteAdmin)
             {
-                var currentUserPartner = await partnerUserRepository.GetPartnerUser(partnerId, currentUser.Id).ConfigureAwait(false);
+                var currentUserPartner = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == partnerId && pu.UserId == currentUser.Id);
 
                 if (currentUserPartner == null)
                 {

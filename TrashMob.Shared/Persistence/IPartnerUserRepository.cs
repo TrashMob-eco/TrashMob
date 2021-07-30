@@ -1,15 +1,13 @@
 ﻿namespace TrashMob.Shared.Persistence
 {
     using System;
-    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
     public interface IPartnerUserRepository
     {
-        Task<IEnumerable<PartnerUser>> GetPartnerUsers(Guid partnerId);
-
-        Task<Partner> GetPartnerUser(Guid partnerId, Guid userId);
+        IQueryable<PartnerUser> GetPartnerUsers();
 
         Task AddPartnerUser(PartnerUser partnerUser);
 

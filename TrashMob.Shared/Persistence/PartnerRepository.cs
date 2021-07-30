@@ -39,7 +39,7 @@
 
         public async Task<Partner> GetPartner(Guid id)
         {
-            return await mobDbContext.Partners.FindAsync(id);
+            return await mobDbContext.Partners.FirstOrDefaultAsync(p => p.Id == id);
         }
 
         // Update the records of a particular Partner

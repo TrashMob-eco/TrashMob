@@ -23,7 +23,8 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
     const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
     const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
-
+    const [message, setMessage] = React.useState<string>("Loading...");
+ 
     React.useEffect(() => {
         setCurrentUser(props.currentUser);
         setIsUserLoaded(props.isUserLoaded);
@@ -54,14 +55,25 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partners/userpartners/' + props.currentUser.id, {
+                fetch('/api/partnerusers/getpartnersforuser/' + props.currentUser.id, {
                     method: 'GET',
                     headers: headers
                 })
-                    .then(response => response.json() as Promise<PartnerData[]>)
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json() as Promise<PartnerData[]>
+                        }
+                        else {
+                            throw new Error("No Partners found for this user");
+                        }
+                    })
                     .then(data => {
                         setPartnerList(data);
                         setIsPartnerDataLoaded(true);
+                    })
+                    .catch(_ => {
+                        setMessage("Your id does not map to an existing partner.")
+                        setIsPartnerDataLoaded(false);
                     });
             });
         }
@@ -98,25 +110,32 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         // do nothing
     }
 
-    return (
-        <div className="card pop">
-            <div>
-                <Link to="/addpartner">Create a New Partner</Link>
-            </div>
-            <div>
+    function renderPartners() {
+
+        return (
+            <div className="card pop">
                 <div>
-                    <PartnerList history={props.history} location={props.location} match={props.match} partnerList={myPartnerList} isPartnerDataLoaded={isPartnerDataLoaded} onPartnerLocationsChanged={loadPartnerLocations} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                    <div>
+                        <PartnerList history={props.history} location={props.location} match={props.match} partnerList={myPartnerList} isPartnerDataLoaded={isPartnerDataLoaded} onPartnerLocationsChanged={loadPartnerLocations} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                    </div>
                 </div>
-            </div>
-            <div>
-                <AzureMapsProvider>
-                    <>
-                        <MapController center={center} multipleEvents={[]} isEventDataLoaded={isPartnerDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                    </>
-                </AzureMapsProvider>
-            </div>
-        </div>
-    );
+                <div>
+                    <AzureMapsProvider>
+                        <>
+                            <MapController center={center} multipleEvents={[]} isEventDataLoaded={isPartnerDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                        </>
+                    </AzureMapsProvider>
+                </div>
+            </div>);
+    }
+
+    let contents = isPartnerDataLoaded ? renderPartners() : <p><em>{message}</em></p>;
+
+    return <div>
+        <h3>Partners</h3>
+        <hr />
+        {contents}
+    </div>;
 }
 
 export default withRouter(PartnerDashboard);

@@ -16,7 +16,7 @@
             this.mobDbContext = mobDbContext;
         }
 
-        
+
         public async Task AddPartnerUser(PartnerUser partnerUser)
         {
             partnerUser.CreatedDate = DateTimeOffset.UtcNow;
@@ -28,16 +28,9 @@
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<PartnerUser>> GetPartnerUsers(Guid partnerId)
+        public IQueryable<PartnerUser> GetPartnerUsers()
         {
-            return await mobDbContext.PartnerUsers.Where(pu => pu.PartnerId == partnerId)
-                .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
-        }
-
-        public async Task<Partner> GetPartnerUser(Guid partnerId, Guid userId)
-        {
-            return await mobDbContext.Partners.FindAsync(partnerId, userId);
+            return mobDbContext.PartnerUsers.AsQueryable();
         }
 
         // Update the records of a particular Partner User
