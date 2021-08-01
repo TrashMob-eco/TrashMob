@@ -27,6 +27,8 @@
 
         public virtual DbSet<PartnerUser> PartnerUsers { get; set; }
 
+        public virtual DbSet<PartnerLocation> PartnerLocations { get; set; }
+
         public virtual DbSet<User> Users { get; set; }
 
         public virtual DbSet<Event> Events { get; set; }
@@ -162,6 +164,52 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PartnerUsers_LastUpdatedByUser_Id");
+            });
+
+            modelBuilder.Entity<PartnerLocation>(entity =>
+            {
+                entity.HasKey(e => new { e.Id });
+
+                entity.Property(e => e.PartnerId)
+                    .IsRequired();
+
+                entity.Property(e => e.Region)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.StreetAddress)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.PostalCode)
+                    .IsRequired()
+                    .HasMaxLength(25);
+
+                entity.Property(e => e.City)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.Country)
+                    .IsRequired()
+                    .HasMaxLength(64);
+
+                entity.HasOne(d => d.Partner)
+                    .WithMany()
+                    .HasForeignKey(d => d.PartnerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerLocations_Partners");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.PartnerLocationsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerLocations_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.PartnerLocationsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerLocations_LastUpdatedByUser_Id");
             });
 
             modelBuilder.Entity<User>(entity =>

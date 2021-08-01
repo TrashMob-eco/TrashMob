@@ -13,6 +13,8 @@ import { PartnerEdit } from './PartnerEdit';
 import PartnerStatusData from './Models/PartnerStatusData';
 import { PartnerUsers } from './PartnerUsers';
 import PartnerUserData from './Models/PartnerUserData';
+import { PartnerLocations } from './PartnerLocations';
+import PartnerLocationData from './Models/PartnerLocationData';
 
 interface PartnerDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -22,12 +24,11 @@ interface PartnerDashboardProps extends RouteComponentProps<any> {
 const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
     const [partnerList, setPartnerList] = React.useState<PartnerData[]>([]);
     const [userList, setUserList] = React.useState<UserData[]>([]);
+    const [partnerLocationList, setPartnerLocationList] = React.useState<PartnerLocationData[]>([]);
     const [partnerStatusList, setPartnerStatusList] = React.useState<PartnerStatusData[]>([]);
     const [isPartnerDataLoaded, setIsPartnerDataLoaded] = React.useState<boolean>(false);
     const [isUserDataLoaded, setIsUserDataLoaded] = React.useState<boolean>(false);
-    const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
-    const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
-    const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
+    const [isPartnerLocationDataLoaded, setIsPartnerLocationDataLoaded] = React.useState<boolean>(false);
     const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
     const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
     const [message, setMessage] = React.useState<string>("Loading...");
@@ -39,20 +40,6 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
     React.useEffect(() => {
         setCurrentUser(props.currentUser);
         setIsUserLoaded(props.isUserLoaded);
-
-        MapStore.getOption().then(opts => {
-            setMapOptions(opts);
-            setIsMapKeyLoaded(true);
-        })
-
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(position => {
-                var point = new data.Position(position.coords.longitude, position.coords.latitude);
-                setCenter(point)
-            });
-        } else {
-            console.log("Not Available");
-        }
 
         if (props.isUserLoaded) {
             const account = msalClient.getAllAccounts()[0];
@@ -141,7 +128,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                                     return response.json() as Promise<UserData[]>
                                 }
                                 else {
-                                    throw new Error("No Partners Users found for this partner");
+                                    throw new Error("No Partner Users found for this partner");
                                 }
                             })
                             .then(data => {
@@ -154,7 +141,30 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                                 setUserList([]);
                             });
                     })
-            });
+                    .then(() => {
+                        fetch('/api/partnerlocations/' + partnerId, {
+                            method: 'GET',
+                            headers: headers
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    return response.json() as Promise<PartnerLocationData[]>
+                                }
+                                else {
+                                    throw new Error("No Partner Locations found for this partner");
+                                }
+                            })
+                            .then(data => {
+                                setPartnerLocationList(data);
+                                setIsPartnerLocationDataLoaded(true);
+                                return;
+                            })
+                            .catch(_ => {
+                                setIsPartnerLocationDataLoaded(false);
+                                setPartnerLocationList([]);
+                            });
+                    });
+            })
         }
     };
 
@@ -163,6 +173,10 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
     }
 
     function handlePartnerUsersUpdated() {
+        loadPartner(selectedPartnerId);
+    }
+
+    function handlePartnerLocationsUpdated() {
         loadPartner(selectedPartnerId);
     }
 
@@ -185,13 +199,6 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                         <PartnerList history={props.history} location={props.location} match={props.match} partnerList={partnerList} isPartnerDataLoaded={isPartnerDataLoaded} onSelectedPartnerChanged={loadPartner} currentUser={currentUser} isUserLoaded={isUserLoaded} />
                     </div>
                 </div>
-                <div>
-                    <AzureMapsProvider>
-                        <>
-                            <MapController center={center} multipleEvents={[]} isEventDataLoaded={isPartnerDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                        </>
-                    </AzureMapsProvider>
-                </div>
             </div>);
     }
 
@@ -206,11 +213,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                     <PartnerUsers history={props.history} location={props.location} match={props.match} users={userList} partnerId={partner.id} isUserDataLoaded={isUserDataLoaded} onPartnerUsersUpdated={handlePartnerUsersUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} />
                 </div>
                 <div>
-                    <AzureMapsProvider>
-                        <>
-                            <MapController center={center} multipleEvents={[]} isEventDataLoaded={isPartnerDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                        </>
-                    </AzureMapsProvider>
+                    <PartnerLocations history={props.history} location={props.location} match={props.match} partnerLocations={partnerLocationList} partnerId={partner.id} isPartnerLocationDataLoaded={isPartnerLocationDataLoaded} onPartnerLocationsUpdated={handlePartnerLocationsUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} />
                 </div>
             </div>);
     }
