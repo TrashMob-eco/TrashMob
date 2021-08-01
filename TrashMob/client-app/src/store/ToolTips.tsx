@@ -40,3 +40,7 @@ export const PartnerRequestSecondaryEmail = "Enter the secondary email for the r
 export const PartnerRequestPrimaryPhone = "Enter the primary phone number for person making the request."
 export const PartnerRequestSecondaryPhone = "Enter the secondary phone number for the request. We recommend making this the switchboard or main office number, in case the primary phone number becomes invalid in the future."
 export const PartnerRequestNotes = "Enter information regarding what services you are offering, and where you are located. This information will help the site administrators in the approval process."
+export const PartnerCreatedDate = "Date this record was created."
+export const PartnerLastUpdatedDate = "Date this record was last updated."
+export const PartnerStatus = "The current status of this partner."
+export const PartnerUserName = "Enter the username of the person you wish to associate to this partner."

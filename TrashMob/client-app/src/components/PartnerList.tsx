@@ -15,12 +15,11 @@ export interface PartnerListDataProps extends RouteComponentProps {
     isPartnerDataLoaded: boolean;
     isUserLoaded: boolean;
     currentUser: UserData;
-    onPartnerLocationsChanged: any;
+    onSelectedPartnerChanged: any;
 };
 
 export const PartnerList: React.FC<PartnerListDataProps> = (props) => {
     const [displayPartners, setDisplayPartners] = React.useState<DisplayPartner[]>([]);
-    const history = useHistory();
 
     React.useEffect(() => {
         if (props.isPartnerDataLoaded && props.partnerList) {
@@ -33,6 +32,10 @@ export const PartnerList: React.FC<PartnerListDataProps> = (props) => {
             setDisplayPartners(list);
         }
     }, [props.isPartnerDataLoaded, props.partnerList, props.isUserLoaded])
+
+    function getPartnerId(e: any) {
+        props.onSelectedPartnerChanged(e);
+    }
 
     function renderPartnersTable(partners: DisplayPartner[]) {
         return (
@@ -48,7 +51,7 @@ export const PartnerList: React.FC<PartnerListDataProps> = (props) => {
                             <tr key={partner.id.toString()}>
                                 <td>{partner.name}</td>
                                 <td>
-                                    <Button className="action" onClick={() => history.push('/partnerDetails/' + partner.id)}>View Details</Button>
+                                    <Button className="action" onClick={() => getPartnerId(partner.id)}>View Details</Button>
                                 </td>
                             </tr>
                         )}
