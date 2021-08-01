@@ -21,10 +21,10 @@ interface PartnerDashboardProps extends RouteComponentProps<any> {
 
 const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
     const [partnerList, setPartnerList] = React.useState<PartnerData[]>([]);
-    const [partnerUserList, setPartnerUserList] = React.useState<PartnerUserData[]>([]);
+    const [userList, setUserList] = React.useState<UserData[]>([]);
     const [partnerStatusList, setPartnerStatusList] = React.useState<PartnerStatusData[]>([]);
     const [isPartnerDataLoaded, setIsPartnerDataLoaded] = React.useState<boolean>(false);
-    const [isPartnerUserDataLoaded, setIsPartnerUserDataLoaded] = React.useState<boolean>(false);
+    const [isUserDataLoaded, setIsUserDataLoaded] = React.useState<boolean>(false);
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
@@ -92,6 +92,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                                 setIsPartnerDataLoaded(true);
                                 setSelectedPartnerId("");
                                 setSelectPartnerMessage("Select a partner to view more details");
+                                return;
                             });
                     })
                     .catch(_ => {
@@ -131,27 +132,28 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                         setIsSelectedPartnerDataLoaded(true);
                     })
                     .then(() => {
-                        fetch('/api/partnerusers/' + partnerId, {
+                        fetch('/api/partnerusers/users/' + partnerId, {
                             method: 'GET',
                             headers: headers
                         })
                             .then(response => {
                                 if (response.ok) {
-                                    return response.json() as Promise<PartnerUserData[]>
+                                    return response.json() as Promise<UserData[]>
                                 }
                                 else {
                                     throw new Error("No Partners Users found for this partner");
                                 }
                             })
                             .then(data => {
-                                setPartnerUserList(data);
-                                setIsPartnerUserDataLoaded(true);
+                                setUserList(data);
+                                setIsUserDataLoaded(true);
+                                return;
                             })
+                            .catch(_ => {
+                                setIsUserDataLoaded(false);
+                                setUserList([]);
+                            });
                     })
-                    .catch(() => {
-                        setIsPartnerUserDataLoaded(false);
-                        setPartnerUserList([]);
-                    });
             });
         }
     };
@@ -201,7 +203,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                     <PartnerEdit history={props.history} location={props.location} match={props.match} partner={partner} isPartnerDataLoaded={isPartnerDataLoaded} onPartnerUpdated={handlePartnerUpdated} onEditCanceled={handlePartnerEditCanceled} currentUser={currentUser} isUserLoaded={isUserLoaded} partnerStatusList={partnerStatusList} />
                 </div>
                 <div>
-                    <PartnerUsers history={props.history} location={props.location} match={props.match} partnerUsers={partnerUserList} partnerId={partner.id} isPartnerUserDataLoaded={isPartnerUserDataLoaded} onPartnerUsersUpdated={handlePartnerUsersUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                    <PartnerUsers history={props.history} location={props.location} match={props.match} users={userList} partnerId={partner.id} isUserDataLoaded={isUserDataLoaded} onPartnerUsersUpdated={handlePartnerUsersUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} />
                 </div>
                 <div>
                     <AzureMapsProvider>

@@ -15,6 +15,8 @@
 
         Task<User> GetUserByInternalId(Guid id);
 
+        Task<User> GetUserByUserName(string userName);
+
         Task<User> GetUserByNameIdentifier(string nameIdentifier);
 
         Task<int> DeleteUserByInternalId(Guid id);

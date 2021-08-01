@@ -34,8 +34,21 @@ namespace TrashMob.Controllers
             return Ok(result);
         }
 
+        [HttpGet("getUserByUserName/{userName}")]
+        public async Task<IActionResult> GetUser(string userName)
+        {
+            var user = await userRepository.GetUserByUserName(userName).ConfigureAwait(false);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
+        }
+
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUser(Guid id)
+        public async Task<IActionResult> GetUserByUserName(Guid id)
         {
             var user = await userRepository.GetUserByInternalId(id).ConfigureAwait(false);
 

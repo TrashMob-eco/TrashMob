@@ -43,4 +43,4 @@ export const PartnerRequestNotes = "Enter information regarding what services yo
 export const PartnerCreatedDate = "Date this record was created."
 export const PartnerLastUpdatedDate = "Date this record was last updated."
 export const PartnerStatus = "The current status of this partner."
-export const PartnerUserName = "Enter the username of the person you wish to associate to this partner."
+export const PartnerUserNameSearch = "Enter the username of the person you wish to associate to this partner."

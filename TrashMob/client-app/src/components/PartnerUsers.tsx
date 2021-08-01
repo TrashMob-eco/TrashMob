@@ -8,8 +8,8 @@ import * as ToolTips from "../store/ToolTips";
 
 export interface PartnerUsersDataProps extends RouteComponentProps {
     partnerId: string;
-    partnerUsers: PartnerUserData[];
-    isPartnerUserDataLoaded: boolean;
+    users: UserData[];
+    isUserDataLoaded: boolean;
     onPartnerUsersUpdated: any;
     isUserLoaded: boolean;
     currentUser: UserData;
@@ -20,7 +20,7 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
     const [userName, setUserName] = React.useState<string>("");
 
     function removeUser(userId: string, userName: string) {
-        if (!window.confirm("Do you want to remove user with userName: " + userName))
+        if (!window.confirm("Please confirm that you want to remove user with userName: '" + userName + "' as a user from this Partner?"))
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
@@ -67,7 +67,7 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
             })
                 .then(response => response.json() as Promise<UserData>)
                 .then(data => {
-                    if (!window.confirm("Do you want to add user with userName: " + userName + " and email address: " + data.email))
+                    if (!window.confirm("Please confirm you want to add user with userName: '" + userName + "' and email address: '" + data.email + "' as a user for this Partner."))
                         return;
                     else {
                         const headers = getDefaultHeaders('POST');
@@ -86,10 +86,10 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
     }
 
     function renderPartnerUserNameToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestPrimaryEmail}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.PartnerUserNameSearch}</Tooltip>
     }
 
-    function renderPartnerUsersTable(partnerUsers: PartnerUserData[]) {
+    function renderUsersTable(users: UserData[]) {
         return (
             <div>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
@@ -100,14 +100,14 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {partnerUsers.map(partnerUser =>
-                            <tr key={partnerUser.id.toString()}>
-                                <td>{partnerUser.userName}</td>
-                                <td>{partnerUser.email}</td>
-                                <td>
-                                    <Button className="action" onClick={() => removeUser(partnerUser.id, partnerUser.userName)}>Remove User</Button>
-                                </td>
-                            </tr>
+                        {users.map(user => 
+                                    <tr key={user.id.toString()}>
+                                        <td>{user.userName}</td>
+                                        <td>{user.email}</td>
+                                        <td>
+                                            <Button className="action" onClick={() => removeUser(user.id, user.userName)}>Remove User</Button>
+                                        </td>
+                                    </tr>
                         )}
                     </tbody>
                 </table>
@@ -138,9 +138,9 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
     return (
         <>
             <div>
-                {!props.isPartnerUserDataLoaded && <p><em>Loading...</em></p>}
-                {props.isPartnerUserDataLoaded && renderPartnerUsersTable(props.partnerUsers)}
-                renderAddUser();
+                {!props.isUserDataLoaded && <p><em>Loading...</em></p>}
+                {props.isUserDataLoaded && props.users && renderUsersTable(props.users)}
+                {renderAddUser()};
             </div>
         </>
     );

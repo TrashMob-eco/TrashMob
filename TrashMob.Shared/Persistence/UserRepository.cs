@@ -56,6 +56,12 @@
             return await mobDbContext.Users.FindAsync(id).ConfigureAwait(false);
         }
 
+        // Get the details of a particular User
+        public async Task<User> GetUserByUserName(string userName)
+        {
+            return await mobDbContext.Users.FirstOrDefaultAsync(u => u.UserName == userName).ConfigureAwait(false);
+        }
+
         // Delete the record of a particular User
         public async Task<int> DeleteUserByInternalId(Guid id)
         {

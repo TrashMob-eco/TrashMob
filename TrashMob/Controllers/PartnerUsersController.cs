@@ -7,6 +7,7 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using TrashMob.Poco;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
@@ -64,6 +65,27 @@
             }
 
             return Ok(partnerUser);
+        }
+
+        [HttpGet("users/{partnerId}")]
+        public async Task<IActionResult> GetUsers(Guid partnerId)
+        {
+            var partnerUsers = partnerUserRepository.GetPartnerUsers().Where(pu => pu.PartnerId == partnerId).ToList();
+
+            if (partnerUsers == null || !partnerUsers.Any())
+            {
+                return NotFound();
+            }
+
+            var users = new List<DisplayUser>();
+
+            foreach (var pu in partnerUsers)
+            {
+                var user = await userRepository.GetUserByInternalId(pu.UserId).ConfigureAwait(false);
+                users.Add(user.ToDisplayUser());
+            }
+
+            return Ok(users);
         }
 
         [HttpPost("{partnerId}/{userId}")]
