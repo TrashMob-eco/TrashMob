@@ -92,13 +92,13 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                                 setIsPartnerDataLoaded(true);
                                 setSelectedPartnerId("");
                                 setSelectPartnerMessage("Select a partner to view more details");
-                            })
-                            .catch(_ => {
-                                setMessage("Your id does not map to an existing partner.")
-                                setIsPartnerDataLoaded(false);
-                                setSelectedPartnerId("");
-                                setSelectPartnerMessage("");
                             });
+                    })
+                    .catch(_ => {
+                        setMessage("Your id does not map to an existing partner.")
+                        setIsPartnerDataLoaded(false);
+                        setSelectedPartnerId("");
+                        setSelectPartnerMessage("");
                     });
             });
         }
@@ -131,7 +131,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                         setIsSelectedPartnerDataLoaded(true);
                     })
                     .then(() => {
-                        fetch('/api/partnerusers/' + selectedPartnerId, {
+                        fetch('/api/partnerusers/' + partnerId, {
                             method: 'GET',
                             headers: headers
                         })
@@ -147,11 +147,10 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                                 setPartnerUserList(data);
                                 setIsPartnerUserDataLoaded(true);
                             })
-                            .catch(_ => {
-                                setIsPartnerUserDataLoaded(false);
-                                setPartnerUserList([]);
-                                setIsPartnerUserDataLoaded(true);
-                            });
+                    })
+                    .catch(() => {
+                        setIsPartnerUserDataLoaded(false);
+                        setPartnerUserList([]);
                     });
             });
         }

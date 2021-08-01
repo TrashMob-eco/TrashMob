@@ -38,7 +38,6 @@ interface AppProps extends RouteComponentProps<EditMatchParams> {
 export const App: React.FC = () => {
     const [isUserLoaded, setIsUserLoaded] = React.useState(false);
     const [currentUser, setCurrentUser] = React.useState<UserData>(new UserData());
-    const [isSiteAdmin, setIsSiteAdmin] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         initializeIcons();
@@ -108,7 +107,6 @@ export const App: React.FC = () => {
                 .then(response => response.json() as Promise<UserData>)
                 .then(data => {
                     setCurrentUser(data);
-                    setIsSiteAdmin(data.isSiteAdmin);
                     setIsUserLoaded(true);
                     sessionStorage.setItem('user', JSON.stringify(data));
                 });

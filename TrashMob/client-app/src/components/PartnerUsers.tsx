@@ -96,8 +96,6 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
                     <thead>
                         <tr>
                             <th>Username</th>
-                        </tr>
-                        <tr>
                             <th>Email</th>
                         </tr>
                     </thead>
@@ -113,21 +111,26 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
                         )}
                     </tbody>
                 </table>
-                <div>
-                    <Form onSubmit={handleSearch}>
-                        <Form.Row>
-                            <Col>
-                                <Form.Group>
-                                    <OverlayTrigger placement="top" overlay={renderPartnerUserNameToolTip}>
-                                        <Form.Label htmlFor="UserName">User Name:</Form.Label>
-                                    </OverlayTrigger>
-                                    <Form.Control type="text" name="username" defaultValue={userName} onChange={val => handleUserNameChanged(val.target.value)} maxLength={parseInt('64')} required />
-                                </Form.Group>
-                            </Col>
-                            <Button className="action" onClick={(e) => handleSearch(e)}>Search</Button>
-                        </Form.Row>
-                    </Form>
-                </div>
+            </div>
+        );
+    }
+
+    function renderAddUser() {
+        return (
+            <div>
+                <Form onSubmit={handleSearch}>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderPartnerUserNameToolTip}>
+                                    <Form.Label htmlFor="UserName">User Name:</Form.Label>
+                                </OverlayTrigger>
+                                <Form.Control type="text" name="username" defaultValue={userName} onChange={val => handleUserNameChanged(val.target.value)} maxLength={parseInt('64')} required />
+                            </Form.Group>
+                        </Col>
+                        <Button className="action" onClick={(e) => handleSearch(e)}>Search</Button>
+                    </Form.Row>
+                </Form>
             </div>
         );
     }
@@ -137,6 +140,7 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
             <div>
                 {!props.isPartnerUserDataLoaded && <p><em>Loading...</em></p>}
                 {props.isPartnerUserDataLoaded && renderPartnerUsersTable(props.partnerUsers)}
+                renderAddUser();
             </div>
         </>
     );

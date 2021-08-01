@@ -115,7 +115,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
                 });
         });
 
-    }, [props.currentUser, props.currentUser.isSiteAdmin])
+    }, [props.currentUser, props.currentUser.isSiteAdmin, props.isUserLoaded])
 
     function loadEvents() {
         const account = msalClient.getAllAccounts()[0];

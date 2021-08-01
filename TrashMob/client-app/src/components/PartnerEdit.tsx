@@ -23,17 +23,12 @@ export interface PartnerEditDataProps extends RouteComponentProps {
 
 export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
 
-    const [partnerId, setPartnerId] = React.useState<string>(props.partner.id);
     const [name, setName] = React.useState<string>(props.partner.name);
     const [primaryEmail, setPrimaryEmail] = React.useState<string>(props.partner.primaryEmail);
     const [secondaryEmail, setSecondaryEmail] = React.useState<string>(props.partner.secondaryEmail);
     const [primaryPhone, setPrimaryPhone] = React.useState<string>(props.partner.primaryPhone);
     const [secondaryPhone, setSecondaryPhone] = React.useState<string>(props.partner.secondaryPhone);
     const [partnerStatusId, setPartnerStatusId] = React.useState<number>(props.partner.partnerStatusId);
-    const [createdByUserId, setCreatedByUserId] = React.useState<string>(props.partner.createdByUserId);
-    const [createdDate, setCreatedDate] = React.useState<Date>(props.partner.createdDate);
-    const [lastUpdatedByUserId, setLastUpdatedByUserId] = React.useState<string>(props.partner.lastUpdatedByUserId);
-    const [lastUpdatedDate, setLastUpdatedDate] = React.useState<Date>(props.partner.lastUpdatedDate);
     const [notes, setNotes] = React.useState<string>(props.partner.notes);
     const [nameErrors, setNameErrors] = React.useState<string>("");
     const [primaryEmailErrors, setPrimaryEmailErrors] = React.useState<string>("");
@@ -43,13 +38,9 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
     const [notesErrors, setNotesErrors] = React.useState<string>("");
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
-    const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
-    const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
 
     React.useEffect(() => {
-        setCurrentUser(props.currentUser);
-        setIsUserLoaded(props.isUserLoaded);
 
         MapStore.getOption().then(opts => {
             setMapOptions(opts);
@@ -80,7 +71,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
         }
 
         var partnerData = new PartnerData();
-        partnerData.id = partnerId;
+        partnerData.id = props.partner.id;
         partnerData.name = name ?? "";
         partnerData.primaryEmail = primaryEmail ?? "";
         partnerData.secondaryEmail = secondaryEmail ?? "";
@@ -88,8 +79,8 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
         partnerData.secondaryPhone = secondaryPhone ?? "";
         partnerData.notes = notes ?? "";
         partnerData.partnerStatusId = partnerStatusId ?? 2;
-        partnerData.createdByUserId = createdByUserId ?? props.currentUser.id;
-        partnerData.createdDate = createdDate ?? props.partner.createdDate;
+        partnerData.createdByUserId = props.partner.createdByUserId ?? props.currentUser.id;
+        partnerData.createdDate = props.partner.createdDate;
         partnerData.lastUpdatedByUserId = props.currentUser.id;
 
         var data = JSON.stringify(partnerData);
@@ -313,7 +304,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                             <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
                                 <Form.Label htmlFor="createdDate">Created Date:</Form.Label>
                             </OverlayTrigger>
-                            <Form.Control type="text" disabled defaultValue={createdDate.toString()} />
+                            <Form.Control type="text" disabled defaultValue={props.partner.createdDate.toString()} />
                         </Form.Group>
                     </Col>
                     <Col>
@@ -321,7 +312,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                             <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
                                 <Form.Label htmlFor="lastUpdatedDate">Last Updated Date:</Form.Label>
                             </OverlayTrigger>
-                            <Form.Control type="text" disabled defaultValue={lastUpdatedDate.toString()} />
+                            <Form.Control type="text" disabled defaultValue={props.partner.lastUpdatedDate.toString()} />
                         </Form.Group>
                     </Col>
                 </Form.Row>

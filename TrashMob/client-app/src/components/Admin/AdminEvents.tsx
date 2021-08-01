@@ -56,8 +56,6 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
                     </thead>
                     <tbody>
                         {events.map(mobEvent => {
-                            var isOwner = mobEvent.createdByUserId === props.currentUser.id;
-
                             return (
                                 <tr key={mobEvent.id.toString()}>
                                     <td>{mobEvent.name}</td>
