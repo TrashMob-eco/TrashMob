@@ -2,17 +2,12 @@ import * as React from 'react'
 
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
-import { data } from 'azure-maps-control';
-import * as MapStore from '../../store/MapStore';
-import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import MapController from '../MapController';
 import UserData from '../Models/UserData';
 import PartnerData from '../Models/PartnerData';
 import { PartnerList } from './PartnerList';
 import { PartnerEdit } from './PartnerEdit';
 import PartnerStatusData from '../Models/PartnerStatusData';
 import { PartnerUsers } from './PartnerUsers';
-import PartnerUserData from '../Models/PartnerUserData';
 import { PartnerLocations } from './PartnerLocations';
 import PartnerLocationData from '../Models/PartnerLocationData';
 import { ButtonGroup, ToggleButton } from 'react-bootstrap';
@@ -190,10 +185,6 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         loadPartner(selectedPartnerId);
     }
 
-    function handleLocationChange() {
-        // do nothing
-    }
-
     function handlePartnerEditCanceled() {
         setSelectedPartnerId("");
         setIsSelectedPartnerDataLoaded(false);
@@ -231,7 +222,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
     function renderPartnerLocations(partner: PartnerData) {
         return (
             < div >
-                <PartnerLocations history={props.history} location={props.location} match={props.match} partnerLocations={partnerLocationList} partnerId={partner.id} isPartnerLocationDataLoaded={isPartnerLocationDataLoaded} onPartnerLocationsUpdated={handlePartnerLocationsUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                <PartnerLocations history={props.history} location={props.location} match={props.match} partnerLocations={partnerLocationList} partner={partner} isPartnerLocationDataLoaded={isPartnerLocationDataLoaded} onPartnerLocationsUpdated={handlePartnerLocationsUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </div >
         )
     }

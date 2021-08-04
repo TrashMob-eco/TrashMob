@@ -11,7 +11,6 @@ class PartnerLocationData {
     latitude: number = 0;
     longitude: number = 0;
     postalCode: string = "";
-    contactTypeId: number = 0;
     primaryPhone: string = "";
     secondaryPhone: string = "";
     primaryEmail: string = "";

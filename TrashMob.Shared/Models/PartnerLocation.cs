@@ -13,6 +13,8 @@ namespace TrashMob.Shared.Models
 
         public Guid PartnerId { get; set; }
 
+        public string Name { get; set; }
+
         public string StreetAddress { get; set; }
 
         public string City { get; set; }
@@ -26,6 +28,18 @@ namespace TrashMob.Shared.Models
         public double? Latitude { get; set; }
 
         public double? Longitude { get; set; }
+
+        public string PrimaryEmail { get; set; }
+
+        public string SecondaryEmail { get; set; }
+
+        public string PrimaryPhone { get; set; }
+
+        public string SecondaryPhone { get; set; }
+
+        public string Notes { get; set; }
+
+        public bool IsActive { get; set; }
 
         public Guid CreatedByUserId { get; set; }
 

@@ -1,14 +1,11 @@
 import * as React from 'react'
-import { RouteComponentProps, useHistory } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router-dom';
 import UserData from '../Models/UserData';
 import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import PartnerData from '../Models/PartnerData';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as Constants from '../Models/Constants';
 import * as ToolTips from "../../store/ToolTips";
-import * as MapStore from '../../store/MapStore';
-import { data } from 'azure-maps-control';
-import { IAzureMapOptions } from 'react-azure-maps';
 import PartnerStatusData from '../Models/PartnerStatusData';
 
 export interface PartnerEditDataProps extends RouteComponentProps {
@@ -36,26 +33,6 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
     const [primaryPhoneErrors, setPrimaryPhoneErrors] = React.useState<string>("");
     const [secondaryPhoneErrors, setSecondaryPhoneErrors] = React.useState<string>("");
     const [notesErrors, setNotesErrors] = React.useState<string>("");
-    const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
-    const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
-    const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
-
-    React.useEffect(() => {
-
-        MapStore.getOption().then(opts => {
-            setMapOptions(opts);
-            setIsMapKeyLoaded(true);
-        })
-
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(position => {
-                var point = new data.Position(position.coords.longitude, position.coords.latitude);
-                setCenter(point)
-            });
-        } else {
-            console.log("Not Available");
-        }
-    }, [props.currentUser, props.isUserLoaded]);
 
     // This will handle the submit form event.  
     function handleSave(event: any) {

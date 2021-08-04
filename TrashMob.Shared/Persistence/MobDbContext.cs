@@ -173,6 +173,18 @@
                 entity.Property(e => e.PartnerId)
                     .IsRequired();
 
+                entity.Property(e => e.Name).HasMaxLength(128);
+
+                entity.Property(e => e.PrimaryEmail).HasMaxLength(64);
+
+                entity.Property(e => e.SecondaryEmail).HasMaxLength(64);
+
+                entity.Property(e => e.PrimaryPhone).HasMaxLength(32);
+
+                entity.Property(e => e.SecondaryPhone).HasMaxLength(32);
+
+                entity.Property(e => e.Notes).HasMaxLength(2048);
+
                 entity.Property(e => e.Region)
                     .IsRequired()
                     .HasMaxLength(256);
