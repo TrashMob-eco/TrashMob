@@ -1,16 +1,14 @@
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router';
-import EventData from './Models/EventData';
-import UserData from './Models/UserData';
-import { getDefaultHeaders } from '../store/AuthStore';
-import { getEventType } from '../store/eventTypeHelper';
+import UserData from '../Models/UserData';
+import { getDefaultHeaders } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
-import * as MapStore from '../store/MapStore';
+import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import MapController from './MapController';
+import MapController from '../MapController';
 import { Col, Form } from 'react-bootstrap';
-import PartnerData from './Models/PartnerData';
-import PartnerLocationData from './Models/PartnerLocationData';
+import PartnerData from '../Models/PartnerData';
+import PartnerLocationData from '../Models/PartnerLocationData';
 
 export interface PartnerDetailsMatchParams {
     partnerId: string;

@@ -1,20 +1,20 @@
 import * as React from 'react'
 
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
+import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
-import * as MapStore from '../store/MapStore';
+import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import MapController from './MapController';
-import UserData from './Models/UserData';
-import PartnerData from './Models/PartnerData';
+import MapController from '../MapController';
+import UserData from '../Models/UserData';
+import PartnerData from '../Models/PartnerData';
 import { PartnerList } from './PartnerList';
 import { PartnerEdit } from './PartnerEdit';
-import PartnerStatusData from './Models/PartnerStatusData';
+import PartnerStatusData from '../Models/PartnerStatusData';
 import { PartnerUsers } from './PartnerUsers';
-import PartnerUserData from './Models/PartnerUserData';
+import PartnerUserData from '../Models/PartnerUserData';
 import { PartnerLocations } from './PartnerLocations';
-import PartnerLocationData from './Models/PartnerLocationData';
+import PartnerLocationData from '../Models/PartnerLocationData';
 
 interface PartnerDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;

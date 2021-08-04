@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router-dom';
-import UserData from './Models/UserData';
+import UserData from '../Models/UserData';
 import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
-import * as ToolTips from "../store/ToolTips";
-import PartnerLocationData from './Models/PartnerLocationData';
+import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import * as ToolTips from "../../store/ToolTips";
+import PartnerLocationData from '../Models/PartnerLocationData';
 
 export interface PartnerLocationsDataProps extends RouteComponentProps {
     partnerId: string;

@@ -1,15 +1,15 @@
 import * as React from 'react'
 import { RouteComponentProps, useHistory } from 'react-router-dom';
-import UserData from './Models/UserData';
+import UserData from '../Models/UserData';
 import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import PartnerData from './Models/PartnerData';
-import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
-import * as Constants from './Models/Constants';
-import * as ToolTips from "../store/ToolTips";
-import * as MapStore from '../store/MapStore';
+import PartnerData from '../Models/PartnerData';
+import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import * as Constants from '../Models/Constants';
+import * as ToolTips from "../../store/ToolTips";
+import * as MapStore from '../../store/MapStore';
 import { data } from 'azure-maps-control';
 import { IAzureMapOptions } from 'react-azure-maps';
-import PartnerStatusData from './Models/PartnerStatusData';
+import PartnerStatusData from '../Models/PartnerStatusData';
 
 export interface PartnerEditDataProps extends RouteComponentProps {
     partner: PartnerData;

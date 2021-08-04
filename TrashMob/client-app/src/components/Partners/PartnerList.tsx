@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router-dom';
-import UserData from './Models/UserData';
+import UserData from '../Models/UserData';
 import { Button } from 'react-bootstrap';
-import PartnerData from './Models/PartnerData';
+import PartnerData from '../Models/PartnerData';
 
 class DisplayPartner {
     id: string = "";

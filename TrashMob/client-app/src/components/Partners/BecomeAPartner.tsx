@@ -1,14 +1,14 @@
 import * as React from 'react'
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { loadCaptchaEnginge, LoadCanvasTemplateNoReload, validateCaptcha } from 'react-simple-captcha';
-import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
+import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
-import * as ToolTips from "../store/ToolTips";
+import * as ToolTips from "../../store/ToolTips";
 import { Button, Col, Form } from 'react-bootstrap';
-import PartnerRequestData from './Models/PartnerRequestData';
-import UserData from './Models/UserData';
-import * as Constants from './Models/Constants';
+import PartnerRequestData from '../Models/PartnerRequestData';
+import UserData from '../Models/UserData';
+import * as Constants from '../Models/Constants';
 
 interface BecomeAPartnerProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;

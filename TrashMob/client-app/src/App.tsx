@@ -14,7 +14,7 @@ import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
 import { GettingStarted } from './components/GettingStarted';
 import MyDashboard from './components/MyDashboard';
-import { Partners } from './components/Partners';
+import { Partners } from './components/Partners/Partners';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { TermsOfService } from './components/TermsOfService';
 import { initializeIcons } from '@uifabric/icons';
@@ -28,8 +28,8 @@ import UserData from './components/Models/UserData';
 import * as msal from "@azure/msal-browser";
 import { Guid } from 'guid-typescript';
 import UserProfile from './components/UserProfile';
-import PartnerDashboard from './components/PartnerDashboard';
-import BecomeAPartner from './components/BecomeAPartner';
+import PartnerDashboard from './components/Partners/PartnerDashboard';
+import BecomeAPartner from './components/Partners/BecomeAPartner';
 import SiteAdmin from './components/Admin/SiteAdmin';
 
 interface AppProps extends RouteComponentProps<EditMatchParams> {
