@@ -53,9 +53,17 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
         return <Tooltip {...props}>{ToolTips.PartnerLocationName}</Tooltip>
     }
 
-    function handleAddLocation(event: any) {
+    function addLocation() {
 
     }        
+
+    function editLocation(locationId: string) {
+
+    }
+
+    function saveLocation() {
+
+    }
 
     function renderPartnerLocationsTable(locations: PartnerLocationData[]) {
         return (
@@ -73,20 +81,22 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                                         <td>{location.name}</td>
                                         <td>{location.city}</td>
                                         <td>
+                                            <Button className="action" onClick={() => editLocation(location.id)}>Edit Location</Button>
                                             <Button className="action" onClick={() => removeLocation(location.id, location.name)}>Remove Location</Button>
                                         </td>
                                     </tr>
                         )}
                     </tbody>
                 </table>
+                <Button className="action" onClick={() => addLocation()}>Add Location</Button>
             </div>
         );
     }
 
-    function renderAddLocation() {
+    function renderEditLocation() {
         return (
             <div>
-                <Form onSubmit={handleAddLocation}>
+                <Form onSubmit={saveLocation}>
                     <Form.Row>
                         <Col>
                             <Form.Group>
@@ -96,7 +106,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                                 <Form.Control type="text" name="locationName" defaultValue={locationName} onChange={val => handleLocationNameChanged(val.target.value)} maxLength={parseInt('64')} required />
                             </Form.Group>
                         </Col>
-                        <Button className="action" onClick={(e) => handleAddLocation(e)}>Search</Button>
+                        <Button className="action" onClick={(e) => saveLocation()}>Save</Button>
                     </Form.Row>
                 </Form>
             </div>
@@ -108,7 +118,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
             <div>
                 {!props.isPartnerLocationDataLoaded && <p><em>Loading...</em></p>}
                 {props.isPartnerLocationDataLoaded && props.location && renderPartnerLocationsTable(props.partnerLocations)}
-                {renderAddLocation()};
+                {renderEditLocation()}
             </div>
         </>
     );

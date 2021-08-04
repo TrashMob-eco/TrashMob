@@ -139,7 +139,7 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
             <div>
                 {!props.isUserDataLoaded && <p><em>Loading...</em></p>}
                 {props.isUserDataLoaded && props.users && renderUsersTable(props.users)}
-                {renderAddUser()};
+                {renderAddUser()}
             </div>
         </>
     );

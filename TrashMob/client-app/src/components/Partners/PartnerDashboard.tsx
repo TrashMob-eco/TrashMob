@@ -15,6 +15,7 @@ import { PartnerUsers } from './PartnerUsers';
 import PartnerUserData from '../Models/PartnerUserData';
 import { PartnerLocations } from './PartnerLocations';
 import PartnerLocationData from '../Models/PartnerLocationData';
+import { ButtonGroup, ToggleButton } from 'react-bootstrap';
 
 interface PartnerDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -23,6 +24,7 @@ interface PartnerDashboardProps extends RouteComponentProps<any> {
 
 const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
     const [partnerList, setPartnerList] = React.useState<PartnerData[]>([]);
+    const [radioValue, setRadioValue] = React.useState('1');
     const [userList, setUserList] = React.useState<UserData[]>([]);
     const [partnerLocationList, setPartnerLocationList] = React.useState<PartnerLocationData[]>([]);
     const [partnerStatusList, setPartnerStatusList] = React.useState<PartnerStatusData[]>([]);
@@ -36,6 +38,14 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
     const [selectPartnerMessage, setSelectPartnerMessage] = React.useState<string>("");
     const [isSelectedPartnerDataLoaded, setIsSelectedPartnerDataLoaded] = React.useState<boolean>(false);
     const [selectedPartner, setSelectedPartner] = React.useState<PartnerData>(new PartnerData());
+
+    const radios = [
+        { name: 'Manage Partner', value: '1' },
+        { name: 'Manage Partner Users', value: '2' },
+        { name: 'Manage Partner Locations', value: '3' },
+        { name: 'Manage Event Requests', value: '4' },
+        { name: 'View Executive Summary', value: '5' },
+    ];
 
     React.useEffect(() => {
         setCurrentUser(props.currentUser);
@@ -202,19 +212,71 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
             </div>);
     }
 
-    function renderPartner(partner: PartnerData) {
+    function renderEditPartner(partner: PartnerData) {
+        return (
+            < div >
+                <PartnerEdit history={props.history} location={props.location} match={props.match} partner={partner} isPartnerDataLoaded={isPartnerDataLoaded} onPartnerUpdated={handlePartnerUpdated} onEditCanceled={handlePartnerEditCanceled} currentUser={currentUser} isUserLoaded={isUserLoaded} partnerStatusList={partnerStatusList} />
+            </div >
+        )
+    }
 
+    function renderPartnerUsers(partner: PartnerData) {
+        return (
+            < div >
+                <PartnerUsers history={props.history} location={props.location} match={props.match} users={userList} partnerId={partner.id} isUserDataLoaded={isUserDataLoaded} onPartnerUsersUpdated={handlePartnerUsersUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+            </div >
+        )
+    }
+
+    function renderPartnerLocations(partner: PartnerData) {
+        return (
+            < div >
+                <PartnerLocations history={props.history} location={props.location} match={props.match} partnerLocations={partnerLocationList} partnerId={partner.id} isPartnerLocationDataLoaded={isPartnerLocationDataLoaded} onPartnerLocationsUpdated={handlePartnerLocationsUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+            </div >
+        )
+    }
+
+    function renderEventRequests() {
+        return (
+            < div >
+                Event Requests - TBA
+            </div >
+        )
+    }
+
+    function renderExecutiveSummary() {
+        return (
+            < div >
+                Executive Summary - TBA
+            </div >
+        )
+    }
+
+    function renderPartner(partner: PartnerData) {
         return (
             <div className="card pop">
-                <div>
-                    <PartnerEdit history={props.history} location={props.location} match={props.match} partner={partner} isPartnerDataLoaded={isPartnerDataLoaded} onPartnerUpdated={handlePartnerUpdated} onEditCanceled={handlePartnerEditCanceled} currentUser={currentUser} isUserLoaded={isUserLoaded} partnerStatusList={partnerStatusList} />
-                </div>
-                <div>
-                    <PartnerUsers history={props.history} location={props.location} match={props.match} users={userList} partnerId={partner.id} isUserDataLoaded={isUserDataLoaded} onPartnerUsersUpdated={handlePartnerUsersUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                </div>
-                <div>
-                    <PartnerLocations history={props.history} location={props.location} match={props.match} partnerLocations={partnerLocationList} partnerId={partner.id} isPartnerLocationDataLoaded={isPartnerLocationDataLoaded} onPartnerLocationsUpdated={handlePartnerLocationsUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                </div>
+                <ButtonGroup>
+                    {radios.map((radio, idx) => (
+                        <ToggleButton
+                            key={idx}
+                            id={`radio-${idx}`}
+                            type="radio"
+                            variant={idx % 2 ? 'outline-success' : 'outline-danger'}
+                            name="radio"
+                            value={radio.value}
+                            checked={radioValue === radio.value}
+                            onChange={(e) => setRadioValue(e.currentTarget.value)}
+                        >
+                            {radio.name}
+                        </ToggleButton>
+                    ))}
+                </ButtonGroup>
+
+                { radioValue === '1' && renderEditPartner(partner)}
+                { radioValue === '2' && renderPartnerUsers(partner)}
+                { radioValue === '3' && renderPartnerLocations(partner)}
+                { radioValue === '4' && renderEventRequests()}
+                { radioValue === '5' && renderExecutiveSummary()}
             </div>);
     }
 
