@@ -197,6 +197,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
     function selectPartnerStatus(val: string) {
         setPartnerStatusId(parseInt(val));
     }
+
     return (
         <div className="container-fluid card">
             <h1>Edit Partner</h1>

@@ -44,9 +44,9 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
         }
     }
 
-    function handleSearch(event: any) {
+    function handleAddUser() {
         
-        if (userName == "")
+        if (userName === "")
             return;
 
         const account = msalClient.getAllAccounts()[0];
@@ -117,17 +117,17 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
     function renderAddUser() {
         return (
             <div>
-                <Form onSubmit={handleSearch}>
+                <Form onSubmit={handleAddUser}>
                     <Form.Row>
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderPartnerUserNameToolTip}>
-                                    <Form.Label htmlFor="UserName">User Name:</Form.Label>
+                                    <Form.Label htmlFor="UserName">Search for User Name to Add:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="username" defaultValue={userName} onChange={val => handleUserNameChanged(val.target.value)} maxLength={parseInt('64')} required />
                             </Form.Group>
                         </Col>
-                        <Button className="action" onClick={(e) => handleSearch(e)}>Search</Button>
+                        <Button className="action" onClick={() => handleAddUser()}>Add User</Button>
                     </Form.Row>
                 </Form>
             </div>

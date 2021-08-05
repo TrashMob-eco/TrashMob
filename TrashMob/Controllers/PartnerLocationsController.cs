@@ -16,14 +16,13 @@
     {
         private readonly IPartnerLocationRepository partnerLocationRepository;
         private readonly IUserRepository userRepository;
-        private readonly IPartnerRepository partnerRepository;
         private readonly IPartnerUserRepository partnerUserRepository;
 
-        public PartnerLocationsController(IPartnerLocationRepository partnerLocationRepository, IPartnerRepository partnerRepository, IPartnerUserRepository partnerUserRepository)
+        public PartnerLocationsController(IPartnerLocationRepository partnerLocationRepository, IPartnerUserRepository partnerUserRepository, IUserRepository userRepository)
         {
             this.partnerLocationRepository = partnerLocationRepository;
-            this.partnerRepository = partnerRepository;
             this.partnerUserRepository = partnerUserRepository;
+            this.userRepository = userRepository;
         }
 
         [HttpGet("{partnerId}")]
@@ -46,7 +45,6 @@
         }
 
         [HttpPost]
-
         public async Task<IActionResult> AddPartnerLocation(PartnerLocation partnerLocation)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
@@ -63,6 +61,48 @@
             }
 
             await partnerLocationRepository.AddPartnerLocation(partnerLocation).ConfigureAwait(false);
+
+            return Ok();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdatePartnerLocation(PartnerLocation partnerLocation)
+        {
+            // Make sure the person adding the user is either an admin or already a user for the partner
+            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+
+            if (!currentUser.IsSiteAdmin)
+            {
+                var currentUserPartner = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == partnerLocation.PartnerId && pu.UserId == currentUser.Id);
+
+                if (currentUserPartner == null)
+                {
+                    return Forbid();
+                }
+            }
+
+            await partnerLocationRepository.UpdatePartnerLocation(partnerLocation).ConfigureAwait(false);
+
+            return Ok();
+        }
+
+        [HttpDelete("{partnerId}/{partnerLocationId}")]
+        public async Task<IActionResult> DeletePartnerLocation(Guid partnerId, Guid partnerLocationId)
+        {
+            // Make sure the person adding the user is either an admin or already a user for the partner
+            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+
+            if (!currentUser.IsSiteAdmin)
+            {
+                var currentUserPartner = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == partnerId && pu.UserId == currentUser.Id);
+
+                if (currentUserPartner == null)
+                {
+                    return Forbid();
+                }
+            }
+
+            await partnerLocationRepository.DeletePartnerLocation(partnerLocationId).ConfigureAwait(false);
 
             return Ok();
         }

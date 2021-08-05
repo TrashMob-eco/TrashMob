@@ -344,11 +344,17 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders('PUT');
+            var method = "PUT";
+
+            if (partnerLocationData.id === Guid.EMPTY) {
+                method = "POST";
+            }
+
+            const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
             fetch('/api/partnerlocations', {
-                method: 'PUT',
+                method: method,
                 body: data,
                 headers: headers,
             })

@@ -51,7 +51,7 @@ export const PartnerList: React.FC<PartnerListDataProps> = (props) => {
                             <tr key={partner.id.toString()}>
                                 <td>{partner.name}</td>
                                 <td>
-                                    <Button className="action" onClick={() => getPartnerId(partner.id)}>View Details</Button>
+                                    <Button className="action" onClick={() => getPartnerId(partner.id)}>View Details / Edit</Button>
                                 </td>
                             </tr>
                         )}

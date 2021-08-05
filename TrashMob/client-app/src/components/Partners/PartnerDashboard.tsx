@@ -83,7 +83,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                                 setPartnerList(data);
                                 setIsPartnerDataLoaded(true);
                                 setSelectedPartnerId("");
-                                setSelectPartnerMessage("Select a partner to view more details");
+                                setSelectPartnerMessage("Select a partner to view / edit details");
                                 return;
                             });
                     })
@@ -174,7 +174,46 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
     };
 
     function handlePartnerUpdated() {
-        loadPartner(selectedPartnerId);
+
+        setIsPartnerDataLoaded(false);
+
+        const account = msalClient.getAllAccounts()[0];
+
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = getDefaultHeaders('GET');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+            fetch('/api/partnerusers/getpartnersforuser/' + props.currentUser.id, {
+                method: 'GET',
+                headers: headers
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json() as Promise<PartnerData[]>
+                    }
+                    else {
+                        throw new Error("No Partners found for this user");
+                    }
+                })
+                .then(data => {
+                    setPartnerList(data);
+                    setIsPartnerDataLoaded(true);
+                    setSelectedPartnerId("");
+                    setSelectPartnerMessage("Select a partner to view more details");
+                    return;
+                });
+        })
+            .catch(_ => {
+                setMessage("Your id does not map to an existing partner.")
+                setIsPartnerDataLoaded(false);
+                setSelectedPartnerId("");
+                setSelectPartnerMessage("");
+            });
     }
 
     function handlePartnerUsersUpdated() {
@@ -189,6 +228,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         setSelectedPartnerId("");
         setIsSelectedPartnerDataLoaded(false);
         setSelectedPartner(new PartnerData())
+        setSelectPartnerMessage("");
     }
 
     function renderPartners() {
@@ -196,6 +236,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         return (
             <div className="card pop">
                 <div>
+                    <h2>Your Partners</h2>
                     <div>
                         <PartnerList history={props.history} location={props.location} match={props.match} partnerList={partnerList} isPartnerDataLoaded={isPartnerDataLoaded} onSelectedPartnerChanged={loadPartner} currentUser={currentUser} isUserLoaded={isUserLoaded} />
                     </div>
@@ -205,7 +246,8 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
 
     function renderEditPartner(partner: PartnerData) {
         return (
-            < div >
+            <div>
+                <h2>Partner Metadata for {partner.name}</h2>
                 <PartnerEdit history={props.history} location={props.location} match={props.match} partner={partner} isPartnerDataLoaded={isPartnerDataLoaded} onPartnerUpdated={handlePartnerUpdated} onEditCanceled={handlePartnerEditCanceled} currentUser={currentUser} isUserLoaded={isUserLoaded} partnerStatusList={partnerStatusList} />
             </div >
         )
@@ -213,32 +255,34 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
 
     function renderPartnerUsers(partner: PartnerData) {
         return (
-            < div >
+            <div>
+                <h2>Users for {partner.name}</h2>
                 <PartnerUsers history={props.history} location={props.location} match={props.match} users={userList} partnerId={partner.id} isUserDataLoaded={isUserDataLoaded} onPartnerUsersUpdated={handlePartnerUsersUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} />
-            </div >
+            </div>
         )
     }
 
     function renderPartnerLocations(partner: PartnerData) {
         return (
-            < div >
+            <div>
+                <h2>Partner Locations for {partner.name}</h2>
                 <PartnerLocations history={props.history} location={props.location} match={props.match} partnerLocations={partnerLocationList} partner={partner} isPartnerLocationDataLoaded={isPartnerLocationDataLoaded} onPartnerLocationsUpdated={handlePartnerLocationsUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </div >
         )
     }
 
-    function renderEventRequests() {
+    function renderEventRequests(partner: PartnerData) {
         return (
-            < div >
-                Event Requests - TBA
+            <div>
+                <h2>Event Requests for {partner.name}</h2>
             </div >
         )
     }
 
-    function renderExecutiveSummary() {
+    function renderExecutiveSummary(partner: PartnerData) {
         return (
-            < div >
-                Executive Summary - TBA
+            <div>
+                <h2>Executive Summary for {partner.name}</h2>
             </div >
         )
     }
@@ -266,8 +310,8 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                 { radioValue === '1' && renderEditPartner(partner)}
                 { radioValue === '2' && renderPartnerUsers(partner)}
                 { radioValue === '3' && renderPartnerLocations(partner)}
-                { radioValue === '4' && renderEventRequests()}
-                { radioValue === '5' && renderExecutiveSummary()}
+                { radioValue === '4' && renderEventRequests(partner)}
+                { radioValue === '5' && renderExecutiveSummary(partner)}
             </div>);
     }
 
