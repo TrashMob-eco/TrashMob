@@ -3,12 +3,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import UserData from '../Models/UserData';
 import { Button } from 'react-bootstrap';
 import PartnerData from '../Models/PartnerData';
-
-class DisplayPartner {
-    id: string = "";
-    name: string = "";
-}
-
+import DisplayPartner from '../Models/DisplayPartner';
 
 export interface PartnerListDataProps extends RouteComponentProps {
     partnerList: PartnerData[];

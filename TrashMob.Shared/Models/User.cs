@@ -81,5 +81,9 @@ namespace TrashMob.Shared.Models
         public virtual ICollection<PartnerLocation> PartnerLocationsCreated { get; set; }
 
         public virtual ICollection<PartnerLocation> PartnerLocationsUpdated { get; set; }
+
+        public virtual ICollection<EventPartner> EventPartnersCreated { get; set; }
+
+        public virtual ICollection<EventPartner> EventPartnersUpdated { get; set; }
     }
 }

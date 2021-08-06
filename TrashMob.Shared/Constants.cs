@@ -28,4 +28,13 @@
         Active = 1,
         Inactive = 2,
     }
+
+    public enum EventPartnerStatusEnum
+    {
+        None = 0,
+        Requested = 1,
+        Accepted = 2,
+        Declined = 3,
+    }
+
 }

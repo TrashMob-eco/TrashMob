@@ -97,6 +97,7 @@ export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
                                     <td>{mobEvent.postalCode}</td>
                                     <td>
                                         <Button hidden={!isOwner} className="action" onClick={() => props.history.push('/editevent/' + mobEvent.id)}>Edit Event</Button>
+                                        <Button hidden={!isOwner} className="action" onClick={() => props.history.push('/eventpartners/' + mobEvent.id)}>Event Partners</Button>
                                         <Button hidden={!isOwner} className="action" onClick={() => handleDelete(mobEvent.id, mobEvent.name)}>Delete Event</Button>
                                         <Button hidden={isOwner} className="action" onClick={() => props.history.push('/eventdetails/' + mobEvent.id)}>View Details</Button>
                                         <Button hidden={isOwner} className="action" onClick={() => handleRemove(mobEvent.id, mobEvent.name)}>Remove Me from Event</Button>

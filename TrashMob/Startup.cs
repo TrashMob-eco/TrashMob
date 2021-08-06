@@ -49,6 +49,8 @@ namespace TrashMob
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
             services.AddScoped<IEventRepository, EventRepository>();
+            services.AddScoped<IEventPartnerRepository, EventPartnerRepository>();
+            services.AddScoped<IEventPartnerStatusRepository, EventPartnerStatusRepository>();
             services.AddScoped<IEventStatusRepository, EventStatusRepository>();
             services.AddScoped<IEventTypeRepository, EventTypeRepository>();
             services.AddScoped<IMapRepository, MapRepository>();
