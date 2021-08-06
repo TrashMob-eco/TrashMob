@@ -1,63 +1,96 @@
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router';
-import EventData from './Models/EventData';
 import { withRouter } from 'react-router-dom';
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
-import { data } from 'azure-maps-control';
-import * as MapStore from '../store/MapStore';
 import UserData from './Models/UserData';
 import { Button, Col, Form } from 'react-bootstrap';
-import DisplayPartner from './Models/DisplayPartner';
+import * as Constants from './Models/Constants';
+import DisplayEventPartnerData from './Models/DisplayEventPartnerData';
+import EventPartnerStatusData from './Models/EventPartnerStatusData';
+import { getEventPartnerStatus } from '../store/eventPartnerStatusHelper';
 import EventPartnerData from './Models/EventPartnerData';
-import PartnerLocationData from './Models/PartnerLocationData';
-import PartnerData from './Models/PartnerData';
 
-export interface EventPartnersMatchParams {
+export interface EventPartnersProps extends RouteComponentProps {
     eventId: string;
-}
-
-export interface EventPartnersProps extends RouteComponentProps<EventPartnersMatchParams> {
     isUserLoaded: boolean;
     currentUser: UserData;
 }
 
 export const EventPartners: React.FC<EventPartnersProps> = (props) => {
-    const [isDataLoaded, setIsDataLoaded] = React.useState<boolean>(false);
-    const [eventId, setEventId] = React.useState<string>(props.match.params["eventId"]);
-    const [partners, setPartners] = React.useState<PartnerData[]>([]);
-    const [partnerLocations, setEventPartnerLocations] = React.useState<PartnerLocationData[]>([]);
-    const [eventPartners, setEventPartners] = React.useState<EventPartnerData[]>([]);
-    const [title, setTitle] = React.useState<string>("Event Partners");
+    const [isEventPartnerDataLoaded, setIsEventPartnerDataLoaded] = React.useState<boolean>(false);
+    const [eventPartnerStatusList, setEventPartnerStatusList] = React.useState<EventPartnerStatusData[]>([]);
+    const [eventPartners, setEventPartners] = React.useState<DisplayEventPartnerData[]>([]);
 
     React.useEffect(() => {
-        const headers = getDefaultHeaders('GET');
+        if (props.isUserLoaded) {
+            const account = msalClient.getAllAccounts()[0];
 
-        
-        fetch('/api/EventPartnersPotentialMatches/' + eventId, {
-            method: 'GET',
-            headers: headers
-        })
-            .then(response => response.json() as Promise<EventPartnerData[]>)
-            .then(data => {
-                setEventPartners(data);
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                fetch('/api/partnerstatuses', {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<EventPartnerStatusData[]>)
+                    .then(data => {
+                        setEventPartnerStatusList(data)
+                    })
+                    .then(() => {
+
+                        fetch('/api/eventpartners/' + props.eventId, {
+                            method: 'GET',
+                            headers: headers
+                        })
+                            .then(response => response.json() as Promise<DisplayEventPartnerData[]>)
+                            .then(data => {
+                                setEventPartners(data);
+                                setIsEventPartnerDataLoaded(true)
+                            })
+                    });
+            });
+        }
+    }, [props.eventId, props.isUserLoaded])
+
+    function OnEventPartnersUpdated() {
+        const account = msalClient.getAllAccounts()[0];
+
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = getDefaultHeaders('GET');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+            fetch('/api/eventpartners/' + props.match.params["eventId"], {
+                method: 'GET',
+                headers: headers
             })
-        .then(data => )
-
-
-
-    }, [eventId])
-
-    // This will handle Cancel button click event.
-    function handleCancel(event: any) {
-        event.preventDefault();
-        props.history.push("/mydashboard");
+                .then(response => response.json() as Promise<DisplayEventPartnerData[]>)
+                .then(data => {
+                    setEventPartners(data);
+                    setIsEventPartnerDataLoaded(true)
+                })
+        });
     }
 
     // This will handle the submit form event.  
-    function handleSave(event: any) {
-        event.preventDefault();
+    function handleRequestPartnerAssistance(eventId: string, partnerId: string, partnerLocationId: string) {
 
-        var eventData = new EventData();
+        var eventData = new EventPartnerData();
+        eventData.eventId = eventId;
+        eventData.partnerId = partnerId;
+        eventData.partnerLocationId = partnerLocationId;
+        eventData.eventPartnerStatusId = Constants.EventPartnerStatusRequested;
+
         var method = "POST";
 
         var evtdata = JSON.stringify(eventData);
@@ -74,47 +107,37 @@ export const EventPartners: React.FC<EventPartnersProps> = (props) => {
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/EventPartners', {
+            fetch('/api/eventpartners', {
                 method: method,
                 headers: headers,
                 body: evtdata,
             }).then(() => {
-                props.history.push("/mydashboard");
+                OnEventPartnersUpdated();
             });
         })
     }
 
-    React.useEffect(() => {
-        if (props.isPartnerDataLoaded && props.partnerList) {
-            const list = props.partnerList.map((partner) => {
-                var dispPartner = new DisplayPartner()
-                dispPartner.id = partner.id;
-                dispPartner.name = partner.name;
-                return dispPartner;
-            });
-            setDisplayPartners(list);
-        }
-    }, [props.isPartnerDataLoaded, props.partnerList, props.isUserLoaded])
-
-    function getPartnerId(e: any) {
-        props.onSelectedPartnerChanged(e);
-    }
-
-    function renderPartnersTable(partners: DisplayPartner[]) {
+    function renderEventPartnersTable(eventPartners: DisplayEventPartnerData[]) {
         return (
             <div>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
-                            <th>Name</th>
+                            <th>Partner Name</th>
+                            <th>Partner Location Name</th>
+                            <th>Partner Notes</th>
+                            <th>Partner Status for this Event</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {partners.map(partner =>
-                            <tr key={partner.id.toString()}>
-                                <td>{partner.name}</td>
+                        {eventPartners.map(eventPartner =>
+                            <tr key={eventPartner.partnerLocationId.toString()}>
+                                <td>{eventPartner.partnerName}</td>
+                                <td>{eventPartner.partnerLocationName}</td>
+                                <td>{eventPartner.partnerLocationNotes}</td>
+                                <td>{getEventPartnerStatus(eventPartnerStatusList, eventPartner.eventPartnerStatusId)}</td>
                                 <td>
-                                    <Button className="action" onClick={() => getPartnerId(partner.id)}>View Details / Edit</Button>
+                                    <Button hidden={eventPartner.eventPartnerStatusId !== Constants.EventPartnerStatusNone} className="action" onClick={() => handleRequestPartnerAssistance(eventPartner.eventId, eventPartner.partnerId, eventPartner.partnerLocationId)}>Request Partner Assistance</Button>
                                 </td>
                             </tr>
                         )}
@@ -127,8 +150,8 @@ export const EventPartners: React.FC<EventPartnersProps> = (props) => {
     return (
         <>
             <div>
-                {!props.isPartnerDataLoaded && <p><em>Loading...</em></p>}
-                {props.isPartnerDataLoaded && renderPartnersTable(displayPartners)}
+                {!isEventPartnerDataLoaded && <p><em>Loading...</em></p>}
+                {isEventPartnerDataLoaded && renderEventPartnersTable(eventPartners)}
             </div>
         </>
     );
