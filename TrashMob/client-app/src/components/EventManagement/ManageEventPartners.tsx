@@ -1,12 +1,12 @@
 import * as React from 'react'
-import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
-import UserData from './Models/UserData';
+import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import UserData from '../Models/UserData';
 import { Button } from 'react-bootstrap';
-import * as Constants from './Models/Constants';
-import DisplayEventPartnerData from './Models/DisplayEventPartnerData';
-import EventPartnerStatusData from './Models/EventPartnerStatusData';
-import { getEventPartnerStatus } from '../store/eventPartnerStatusHelper';
-import EventPartnerData from './Models/EventPartnerData';
+import * as Constants from '../Models/Constants';
+import DisplayEventPartnerData from '../Models/DisplayEventPartnerData';
+import EventPartnerStatusData from '../Models/EventPartnerStatusData';
+import { getEventPartnerStatus } from '../../store/eventPartnerStatusHelper';
+import EventPartnerData from '../Models/EventPartnerData';
 
 export interface ManageEventPartnersProps {
     eventId: string;

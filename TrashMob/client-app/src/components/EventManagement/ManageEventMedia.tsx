@@ -1,13 +1,14 @@
 import * as React from 'react'
-import UserData from './Models/UserData';
+import UserData from '../Models/UserData';
 
-export interface ManagerEventSummaryProps {
+export interface ManageEventMediaProps {
     eventId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
 }
 
-export const ManageEventSummary: React.FC<ManagerEventSummaryProps> = (props) => {
+export const ManageEventMedia: React.FC<ManageEventMediaProps> = () => {
+ 
     return (
         <>
             <div>

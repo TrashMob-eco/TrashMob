@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
-import UserData from './Models/UserData';
+import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import UserData from '../Models/UserData';
 
 export interface ManageEventAttendeesProps {
     eventId: string;

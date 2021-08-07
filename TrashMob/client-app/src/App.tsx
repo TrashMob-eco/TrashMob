@@ -30,7 +30,7 @@ import UserProfile from './components/UserProfile';
 import PartnerDashboard from './components/Partners/PartnerDashboard';
 import BecomeAPartner from './components/Partners/BecomeAPartner';
 import SiteAdmin from './components/Admin/SiteAdmin';
-import ManageEventDashboard, { ManageEventDashboardMatchParams } from './components/ManageEventDashboard';
+import ManageEventDashboard, { ManageEventDashboardMatchParams } from './components/EventManagement/ManageEventDashboard';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }

@@ -1,19 +1,19 @@
 import * as React from 'react'
-import EventData from './Models/EventData';
+import EventData from '../Models/EventData';
 import DateTimePicker from 'react-datetime-picker';
-import EventTypeData from './Models/EventTypeData';
+import EventTypeData from '../Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
+import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
-import { getKey } from '../store/MapStore';
-import AddressData from './Models/AddressData';
-import * as MapStore from '../store/MapStore';
+import { getKey } from '../../store/MapStore';
+import AddressData from '../Models/AddressData';
+import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import MapController from './MapController';
-import UserData from './Models/UserData';
+import MapController from '../MapController';
+import UserData from '../Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
-import * as ToolTips from "../store/ToolTips";
+import * as ToolTips from "../../store/ToolTips";
 import { Button, Col, Form } from 'react-bootstrap';
 
 export interface EditEventProps {

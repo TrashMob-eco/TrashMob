@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import UserData from './Models/UserData';
+import UserData from '../Models/UserData';
 import { ButtonGroup, ToggleButton } from 'react-bootstrap';
 import { EditEvent } from './EditEvent';
 import { ManageEventSummary } from './ManageEventSummary';
