@@ -1,11 +1,10 @@
 import * as React from 'react'
-import { RouteComponentProps } from 'react-router-dom';
 import UserData from '../Models/UserData';
 import { Button } from 'react-bootstrap';
 import PartnerData from '../Models/PartnerData';
 import DisplayPartner from '../Models/DisplayPartner';
 
-export interface PartnerListDataProps extends RouteComponentProps {
+export interface PartnerListDataProps {
     partnerList: PartnerData[];
     isPartnerDataLoaded: boolean;
     isUserLoaded: boolean;

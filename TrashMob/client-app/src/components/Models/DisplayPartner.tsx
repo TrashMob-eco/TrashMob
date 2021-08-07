@@ -1,4 +1,4 @@
-﻿class DisplayPartner {
+class DisplayPartner {
     id: string = "";
     name: string = "";
 }

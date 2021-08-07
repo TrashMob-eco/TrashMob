@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { RouteComponentProps } from 'react-router-dom';
 import UserData from '../Models/UserData';
 import { Button, Col, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
@@ -15,7 +14,7 @@ import * as Constants from '../Models/Constants';
 import AddressData from '../Models/AddressData';
 import MapController from '../MapController';
 
-export interface PartnerLocationsDataProps extends RouteComponentProps {
+export interface PartnerLocationsDataProps {
     partner: PartnerData;
     partnerLocations: PartnerLocationData[];
     isPartnerLocationDataLoaded: boolean;
@@ -593,7 +592,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
         <>
             <div>
                 {!props.isPartnerLocationDataLoaded && <p><em>Loading...</em></p>}
-                {props.isPartnerLocationDataLoaded && props.location && renderPartnerLocationsTable(props.partnerLocations)}
+                {props.isPartnerLocationDataLoaded && props.partnerLocations && renderPartnerLocationsTable(props.partnerLocations)}
                 {isEditOrAdd && renderEditLocation()}
             </div>
         </>

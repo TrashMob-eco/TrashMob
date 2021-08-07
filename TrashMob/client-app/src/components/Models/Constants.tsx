@@ -4,3 +4,5 @@ export const RegexEmail = /^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w -\s]+")([\
 export const PartnerRequestStatusPending = 1;
 export const EventPartnerStatusNone = 0;
 export const EventPartnerStatusRequested = 1;
+export const EventPartnerStatusAccepted = 2;
+export const EventPartnerStatusDeclined = 3;

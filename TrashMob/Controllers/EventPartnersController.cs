@@ -22,13 +22,19 @@ namespace TrashMob.Controllers
         private readonly IUserRepository userRepository;
         private readonly IPartnerRepository partnerRepository;
         private readonly IPartnerLocationRepository partnerLocationRepository;
+        private readonly IPartnerUserRepository partnerUserRepository;
 
-        public EventPartnersController(IEventPartnerRepository eventPartnerRepository, IUserRepository userRepository, IPartnerRepository partnerRepository, IPartnerLocationRepository partnerLocationRepository)
+        public EventPartnersController(IEventPartnerRepository eventPartnerRepository, 
+                                       IUserRepository userRepository, 
+                                       IPartnerRepository partnerRepository, 
+                                       IPartnerLocationRepository partnerLocationRepository,
+                                       IPartnerUserRepository partnerUserRepository)
         {
             this.eventPartnerRepository = eventPartnerRepository;
             this.userRepository = userRepository;
             this.partnerRepository = partnerRepository;
             this.partnerLocationRepository = partnerLocationRepository;
+            this.partnerUserRepository = partnerUserRepository;
         }
 
         [HttpGet("{eventId}")]
@@ -85,16 +91,25 @@ namespace TrashMob.Controllers
             return Ok(displayEventPartners);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> PutEventPartner(EventPartner eventPartner)
         {
+            // Make sure the person adding the user is either an admin or already a user for the partner
             var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
-            if (currentUser == null || !ValidateUser(currentUser.NameIdentifier))
+
+            if (!currentUser.IsSiteAdmin)
             {
-                return Forbid();
+                var currentUserPartner = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == eventPartner.PartnerId && pu.UserId == currentUser.Id);
+
+                if (currentUserPartner == null)
+                {
+                    return Forbid();
+                }
             }
+
+            eventPartner.LastUpdatedByUserId = currentUser.Id;
 
             var updatedEventPartner = await eventPartnerRepository.UpdateEventPartner(eventPartner).ConfigureAwait(false);
             return Ok(updatedEventPartner);

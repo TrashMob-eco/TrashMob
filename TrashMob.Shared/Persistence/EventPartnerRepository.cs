@@ -27,6 +27,16 @@
             return eventPartners;
         }
 
+        public async Task<IEnumerable<EventPartner>> GetPartnerEvents(Guid partnerId)
+        {
+            var eventPartners = await mobDbContext.EventPartners
+                .Where(ea => ea.PartnerId == partnerId)
+                .AsNoTracking()
+                .ToListAsync().ConfigureAwait(false);
+
+            return eventPartners;
+        }
+
         public Task<int> AddEventPartner(EventPartner eventPartner)
         {
             try
@@ -51,8 +61,13 @@
 
         public Task<int> UpdateEventPartner(EventPartner eventPartner)
         {
-            eventPartner.LastUpdatedDate = DateTimeOffset.UtcNow;
-            mobDbContext.Entry(eventPartner).State = EntityState.Modified;
+            var originalEventPartner = mobDbContext.EventPartners
+                .FirstOrDefault(ep => ep.EventId == eventPartner.EventId && ep.PartnerId == eventPartner.PartnerId && ep.PartnerLocationId == eventPartner.PartnerLocationId);
+
+            originalEventPartner.LastUpdatedDate = DateTimeOffset.UtcNow;
+            originalEventPartner.LastUpdatedByUserId = eventPartner.LastUpdatedByUserId;
+            originalEventPartner.EventPartnerStatusId = eventPartner.EventPartnerStatusId;
+
             return mobDbContext.SaveChangesAsync();
         }
 

@@ -1,11 +1,10 @@
 import * as React from 'react'
-import { RouteComponentProps } from 'react-router-dom';
 import UserData from '../Models/UserData';
 import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 
-export interface PartnerUsersDataProps extends RouteComponentProps {
+export interface PartnerUsersDataProps {
     partnerId: string;
     users: UserData[];
     isUserDataLoaded: boolean;

@@ -11,6 +11,7 @@ import { PartnerUsers } from './PartnerUsers';
 import { PartnerLocations } from './PartnerLocations';
 import PartnerLocationData from '../Models/PartnerLocationData';
 import { ButtonGroup, ToggleButton } from 'react-bootstrap';
+import { PartnerEventRequests } from './PartnerEventRequests';
 
 interface PartnerDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -39,7 +40,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         { name: 'Manage Partner Users', value: '2' },
         { name: 'Manage Partner Locations', value: '3' },
         { name: 'Manage Event Requests', value: '4' },
-        { name: 'View Executive Summary', value: '5' },
+    //    { name: 'View Executive Summary', value: '5' },
     ];
 
     React.useEffect(() => {
@@ -238,7 +239,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                 <div>
                     <h2>Your Partners</h2>
                     <div>
-                        <PartnerList history={props.history} location={props.location} match={props.match} partnerList={partnerList} isPartnerDataLoaded={isPartnerDataLoaded} onSelectedPartnerChanged={loadPartner} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                        <PartnerList partnerList={partnerList} isPartnerDataLoaded={isPartnerDataLoaded} onSelectedPartnerChanged={loadPartner} currentUser={currentUser} isUserLoaded={isUserLoaded} />
                     </div>
                 </div>
             </div>);
@@ -248,7 +249,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         return (
             <div>
                 <h2>Partner Metadata for {partner.name}</h2>
-                <PartnerEdit history={props.history} location={props.location} match={props.match} partner={partner} isPartnerDataLoaded={isPartnerDataLoaded} onPartnerUpdated={handlePartnerUpdated} onEditCanceled={handlePartnerEditCanceled} currentUser={currentUser} isUserLoaded={isUserLoaded} partnerStatusList={partnerStatusList} />
+                <PartnerEdit partner={partner} isPartnerDataLoaded={isPartnerDataLoaded} onPartnerUpdated={handlePartnerUpdated} onEditCanceled={handlePartnerEditCanceled} currentUser={currentUser} isUserLoaded={isUserLoaded} partnerStatusList={partnerStatusList} />
             </div >
         )
     }
@@ -257,7 +258,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         return (
             <div>
                 <h2>Users for {partner.name}</h2>
-                <PartnerUsers history={props.history} location={props.location} match={props.match} users={userList} partnerId={partner.id} isUserDataLoaded={isUserDataLoaded} onPartnerUsersUpdated={handlePartnerUsersUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                <PartnerUsers users={userList} partnerId={partner.id} isUserDataLoaded={isUserDataLoaded} onPartnerUsersUpdated={handlePartnerUsersUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </div>
         )
     }
@@ -266,7 +267,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         return (
             <div>
                 <h2>Partner Locations for {partner.name}</h2>
-                <PartnerLocations history={props.history} location={props.location} match={props.match} partnerLocations={partnerLocationList} partner={partner} isPartnerLocationDataLoaded={isPartnerLocationDataLoaded} onPartnerLocationsUpdated={handlePartnerLocationsUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                <PartnerLocations partnerLocations={partnerLocationList} partner={partner} isPartnerLocationDataLoaded={isPartnerLocationDataLoaded} onPartnerLocationsUpdated={handlePartnerLocationsUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </div >
         )
     }
@@ -275,6 +276,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         return (
             <div>
                 <h2>Event Requests for {partner.name}</h2>
+                <PartnerEventRequests partnerId={partner.id}  currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </div >
         )
     }
