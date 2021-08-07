@@ -20,11 +20,15 @@ namespace TrashMob.Controllers
     {
         private readonly IEventPartnerRepository eventPartnerRepository;
         private readonly IUserRepository userRepository;
+        private readonly IPartnerRepository partnerRepository;
+        private readonly IPartnerLocationRepository partnerLocationRepository;
 
-        public EventPartnersController(IEventPartnerRepository eventPartnerRepository, IUserRepository userRepository)
+        public EventPartnersController(IEventPartnerRepository eventPartnerRepository, IUserRepository userRepository, IPartnerRepository partnerRepository, IPartnerLocationRepository partnerLocationRepository)
         {
             this.eventPartnerRepository = eventPartnerRepository;
             this.userRepository = userRepository;
+            this.partnerRepository = partnerRepository;
+            this.partnerLocationRepository = partnerLocationRepository;
         }
 
         [HttpGet("{eventId}")]
@@ -35,7 +39,7 @@ namespace TrashMob.Controllers
             var possiblePartners = await eventPartnerRepository.GetPotentialEventPartners(eventId).ConfigureAwait(false);
 
             // Convert the current list of partners for the event to a display partner (reduces round trips)
-            foreach (var cp in currentPartners)
+            foreach (var cp in currentPartners.ToList())
             {
                 var displayEventPartner = new DisplayEventPartner
                 {
@@ -43,16 +47,21 @@ namespace TrashMob.Controllers
                     PartnerId = cp.PartnerId,
                     PartnerLocationId = cp.PartnerLocationId,
                     EventPartnerStatusId = cp.EventPartnerStatusId,
-                    PartnerLocationName = cp.PartnerLocation.Name,
-                    PartnerLocationNotes = cp.PartnerLocation.Notes,
-                    PartnerName = cp.Partner.Name,
                 };
 
+                var partner = await partnerRepository.GetPartner(cp.PartnerId).ConfigureAwait(false);
+                displayEventPartner.PartnerName = partner.Name;
+
+                var partnerLocation = partnerLocationRepository.GetPartnerLocations().FirstOrDefault(pl => pl.PartnerId == cp.PartnerId && pl.Id == cp.PartnerLocationId);
+
+                displayEventPartner.PartnerLocationName = partnerLocation.Name;
+                displayEventPartner.PartnerLocationNotes = partnerLocation.Notes;
+ 
                 displayEventPartners.Add(displayEventPartner);
             }
 
             // Convert the current list of possible partners for the event to a display partner unless the partner location is already included (reduces round trips)
-            foreach (var pp in possiblePartners)
+            foreach (var pp in possiblePartners.ToList())
             {
                 if (!displayEventPartners.Any(ep => ep.PartnerLocationId == pp.Id))
                 {
@@ -64,8 +73,10 @@ namespace TrashMob.Controllers
                         EventPartnerStatusId = (int)EventPartnerStatusEnum.None,
                         PartnerLocationName = pp.Name,
                         PartnerLocationNotes = pp.Notes,
-                        PartnerName = pp.Partner.Name,
                     };
+
+                    var partner = await partnerRepository.GetPartner(pp.PartnerId).ConfigureAwait(false);
+                    displayEventPartner.PartnerName = partner.Name;
 
                     displayEventPartners.Add(displayEventPartner);
                 }

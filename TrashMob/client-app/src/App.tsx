@@ -22,7 +22,6 @@ import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } fr
 import { InteractionType } from '@azure/msal-browser';
 import { apiConfig, getDefaultHeaders, msalClient } from './store/AuthStore';
 import { EventDetails } from './components/EventDetails';
-import { EditEvent, EditMatchParams } from './components/EditEvent';
 import { NoMatch } from './components/NoMatch';
 import UserData from './components/Models/UserData';
 import * as msal from "@azure/msal-browser";
@@ -31,8 +30,9 @@ import UserProfile from './components/UserProfile';
 import PartnerDashboard from './components/Partners/PartnerDashboard';
 import BecomeAPartner from './components/Partners/BecomeAPartner';
 import SiteAdmin from './components/Admin/SiteAdmin';
+import ManageEventDashboard, { ManageEventDashboardMatchParams } from './components/ManageEventDashboard';
 
-interface AppProps extends RouteComponentProps<EditMatchParams> {
+interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }
 
 export const App: React.FC = () => {
@@ -77,7 +77,7 @@ export const App: React.FC = () => {
                 interactionType={InteractionType.Redirect}
                 errorComponent={ErrorComponent}
                 loadingComponent={LoadingComponent}>
-                <EditEvent {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                <ManageEventDashboard {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </MsalAuthenticationTemplate >);
     }
 
@@ -165,7 +165,7 @@ export const App: React.FC = () => {
                     <TopMenu isUserLoaded={isUserLoaded} currentUser={currentUser} />
                     <div className="container">
                         <Switch>
-                            <Route path="/editevent/:eventId?" render={(props: AppProps) => renderEditEvent(props)} />
+                            <Route path="/manageeventdashboard/:eventId?" render={(props: AppProps) => renderEditEvent(props)} />
                             <Route path="/eventdetails/:eventId" component={EventDetails} />
                             <Route exact path="/mydashboard">
                                 <MsalAuthenticationTemplate

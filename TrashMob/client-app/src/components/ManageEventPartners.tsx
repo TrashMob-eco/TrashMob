@@ -1,22 +1,20 @@
 import * as React from 'react'
-import { RouteComponentProps } from 'react-router';
-import { withRouter } from 'react-router-dom';
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import UserData from './Models/UserData';
-import { Button, Col, Form } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import * as Constants from './Models/Constants';
 import DisplayEventPartnerData from './Models/DisplayEventPartnerData';
 import EventPartnerStatusData from './Models/EventPartnerStatusData';
 import { getEventPartnerStatus } from '../store/eventPartnerStatusHelper';
 import EventPartnerData from './Models/EventPartnerData';
 
-export interface EventPartnersProps extends RouteComponentProps {
+export interface ManageEventPartnersProps {
     eventId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
 }
 
-export const EventPartners: React.FC<EventPartnersProps> = (props) => {
+export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) => {
     const [isEventPartnerDataLoaded, setIsEventPartnerDataLoaded] = React.useState<boolean>(false);
     const [eventPartnerStatusList, setEventPartnerStatusList] = React.useState<EventPartnerStatusData[]>([]);
     const [eventPartners, setEventPartners] = React.useState<DisplayEventPartnerData[]>([]);
@@ -34,7 +32,7 @@ export const EventPartners: React.FC<EventPartnersProps> = (props) => {
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerstatuses', {
+                fetch('/api/partnerrequeststatuses', {
                     method: 'GET',
                     headers: headers
                 })
@@ -70,7 +68,7 @@ export const EventPartners: React.FC<EventPartnersProps> = (props) => {
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/eventpartners/' + props.match.params["eventId"], {
+            fetch('/api/eventpartners/' + props.eventId, {
                 method: 'GET',
                 headers: headers
             })
@@ -151,10 +149,9 @@ export const EventPartners: React.FC<EventPartnersProps> = (props) => {
         <>
             <div>
                 {!isEventPartnerDataLoaded && <p><em>Loading...</em></p>}
-                {isEventPartnerDataLoaded && renderEventPartnersTable(eventPartners)}
+                {isEventPartnerDataLoaded && eventPartners.length === 0 && <p> <em>Sorry, there are no registered partners in your area.</em></p>}
+                {isEventPartnerDataLoaded && eventPartners.length !== 0 && renderEventPartnersTable(eventPartners)}
             </div>
         </>
     );
 }
-
-export default withRouter(EventPartners);

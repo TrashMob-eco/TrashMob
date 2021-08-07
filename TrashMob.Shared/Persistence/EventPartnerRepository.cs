@@ -72,7 +72,7 @@
             var mobEvent = await mobDbContext.Events.FindAsync(eventId).ConfigureAwait(false);
 
             // Simple match on postal code or city first. Radius later
-            var partnerLocations = mobDbContext.PartnerLocations
+            var partnerLocations = mobDbContext.PartnerLocations                
                 .Where(pl => pl.PostalCode == mobEvent.PostalCode
                        || pl.City == mobEvent.City);
                         
