@@ -10,6 +10,7 @@ namespace TrashMob
     using Microsoft.Identity.Web;
     using Microsoft.OpenApi.Models;
     using TrashMob.Shared;
+    using TrashMob.Shared.Managers;
     using TrashMob.Shared.Persistence;
     
     public class Startup
@@ -48,9 +49,18 @@ namespace TrashMob
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
             services.AddScoped<IEventRepository, EventRepository>();
+            services.AddScoped<IEventPartnerRepository, EventPartnerRepository>();
+            services.AddScoped<IEventPartnerStatusRepository, EventPartnerStatusRepository>();
             services.AddScoped<IEventStatusRepository, EventStatusRepository>();
             services.AddScoped<IEventTypeRepository, EventTypeRepository>();
             services.AddScoped<IMapRepository, MapRepository>();
+            services.AddScoped<IPartnerLocationRepository, PartnerLocationRepository>();
+            services.AddScoped<IPartnerManager, PartnerManager>();
+            services.AddScoped<IPartnerRepository, PartnerRepository>();
+            services.AddScoped<IPartnerStatusRepository, PartnerStatusRepository>();
+            services.AddScoped<IPartnerRequestRepository, PartnerRequestRepository>();
+            services.AddScoped<IPartnerRequestStatusRepository, PartnerRequestStatusRepository>();
+            services.AddScoped<IPartnerUserRepository, PartnerUserRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
             services.AddScoped<IUserNotificationPreferenceRepository, UserNotificationPreferenceRepository>();

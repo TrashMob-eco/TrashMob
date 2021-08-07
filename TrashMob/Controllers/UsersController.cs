@@ -34,8 +34,21 @@ namespace TrashMob.Controllers
             return Ok(result);
         }
 
+        [HttpGet("getUserByUserName/{userName}")]
+        public async Task<IActionResult> GetUser(string userName)
+        {
+            var user = await userRepository.GetUserByUserName(userName).ConfigureAwait(false);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
+        }
+
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUser(Guid id)
+        public async Task<IActionResult> GetUserByUserName(Guid id)
         {
             var user = await userRepository.GetUserByInternalId(id).ConfigureAwait(false);
 
@@ -52,7 +65,7 @@ namespace TrashMob.Controllers
         [HttpPut()]
         public async Task<IActionResult> PutUser(User user)
         {
-            if (!ValidateUser(user.NameIdentifier))
+            if (user == null || !ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }
@@ -121,7 +134,7 @@ namespace TrashMob.Controllers
         {
             var user = await userRepository.GetUserByInternalId(id).ConfigureAwait(false);
 
-            if (!ValidateUser(user.NameIdentifier))
+            if (user == null || !ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }

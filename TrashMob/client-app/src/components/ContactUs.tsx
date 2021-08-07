@@ -7,6 +7,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../store/ToolTips";
 import { Button, Col, Form } from 'react-bootstrap';
+import * as Constants from './Models/Constants';
 
 interface ContactUsProps extends RouteComponentProps<any> { }
 
@@ -65,7 +66,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
     }
 
     function handleEmailChanged(val: string) {
-        var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+        var pattern = new RegExp(Constants.RegexEmail);
 
         if (!pattern.test(val)) {
             setEmailErrors("Please enter valid email address.");
