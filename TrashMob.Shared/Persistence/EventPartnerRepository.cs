@@ -88,8 +88,8 @@
 
             // Simple match on postal code or city first. Radius later
             var partnerLocations = mobDbContext.PartnerLocations                
-                .Where(pl => pl.PostalCode == mobEvent.PostalCode
-                       || pl.City == mobEvent.City);
+                .Where(pl => pl.IsActive && pl.Partner.PartnerStatusId == (int)PartnerStatusEnum.Active && 
+                        (pl.PostalCode == mobEvent.PostalCode || pl.City == mobEvent.City));
                         
             return partnerLocations;
         }
