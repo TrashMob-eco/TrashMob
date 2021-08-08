@@ -33,7 +33,7 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerrequeststatuses', {
+                fetch('/api/eventpartnerstatuses', {
                     method: 'GET',
                     headers: headers
                 })
