@@ -564,14 +564,12 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                             </Form.Group>
                         </Col>
                     </Form.Row>
-                    <Form.Row>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                                <Form.Label>Notes:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} required />
-                        </Form.Group >
-                    </Form.Row>
+                    <Form.Group>
+                        <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
+                            <Form.Label>Notes:</Form.Label>
+                        </OverlayTrigger>
+                        <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} required />
+                    </Form.Group >
                     <Form.Row>
                         <Form.Label>Click on the map to set the location for your Partner. The location fields above will be automatically populated.</Form.Label>
                     </Form.Row>

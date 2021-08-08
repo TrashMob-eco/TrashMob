@@ -31,6 +31,7 @@ import PartnerDashboard from './components/Partners/PartnerDashboard';
 import BecomeAPartner from './components/Partners/BecomeAPartner';
 import SiteAdmin from './components/Admin/SiteAdmin';
 import ManageEventDashboard, { ManageEventDashboardMatchParams } from './components/EventManagement/ManageEventDashboard';
+import { Shop } from './components/Shop';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }
@@ -206,6 +207,9 @@ export const App: React.FC = () => {
                                     loadingComponent={LoadingComponent}>
                                     <UserProfile currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
+                            </Route>
+                            <Route exact path="/shop">
+                                <Shop />
                             </Route>
                             <Route exact path="/aboutus">
                                 <AboutUs />
