@@ -68,7 +68,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             });
 
         // This will set state for Edit Event  
-        if (eventId !== null && eventId !== "" && eventId != Guid.EMPTY) {
+        if (eventId !== null && eventId !== "" && eventId !== Guid.EMPTY) {
             setTitle("Edit Event");
             fetch('/api/Events/' + eventId, {
                 method: 'GET',

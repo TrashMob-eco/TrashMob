@@ -14,7 +14,7 @@ export const ManageEventAttendees: React.FC<ManageEventAttendeesProps> = (props)
     const [isEventAttendeeDataLoaded, setIsEventAttendeeDataLoaded] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        if (props.isUserLoaded && props.eventId && props.eventId != Guid.EMPTY) {
+        if (props.isUserLoaded && props.eventId && props.eventId !== Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
 
             var request = {
