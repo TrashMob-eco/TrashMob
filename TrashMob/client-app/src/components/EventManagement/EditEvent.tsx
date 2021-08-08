@@ -1,35 +1,33 @@
 import * as React from 'react'
-import { RouteComponentProps } from 'react-router';
-import EventData from './Models/EventData';
+import EventData from '../Models/EventData';
 import DateTimePicker from 'react-datetime-picker';
-import EventTypeData from './Models/EventTypeData';
+import EventTypeData from '../Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import { withRouter } from 'react-router-dom';
-import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
+import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
-import { getKey } from '../store/MapStore';
-import AddressData from './Models/AddressData';
-import * as MapStore from '../store/MapStore';
+import { getKey } from '../../store/MapStore';
+import AddressData from '../Models/AddressData';
+import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import MapController from './MapController';
-import UserData from './Models/UserData';
+import MapController from '../MapController';
+import UserData from '../Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
-import * as ToolTips from "../store/ToolTips";
+import * as ToolTips from "../../store/ToolTips";
 import { Button, Col, Form } from 'react-bootstrap';
+import { Guid } from 'guid-typescript';
 
-export interface EditMatchParams {
-    eventId?: string;
-}
-
-export interface EditEventProps extends RouteComponentProps<EditMatchParams> {
+export interface EditEventProps {
+    eventId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
+    onEditCancel: any;
+    onEditSave: any;
 }
 
 export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [isDataLoaded, setIsDataLoaded] = React.useState<boolean>(false);
-    const [eventId, setEventId] = React.useState<string>(props.match?.params["eventId"] ? props.match.params["eventId"] : "");
+    const [eventId, setEventId] = React.useState<string>(props.eventId);
     const [eventName, setEventName] = React.useState<string>("New Event");
     const [description, setDescription] = React.useState<string>();
     const [eventDate, setEventDate] = React.useState<Date>(new Date());
@@ -70,7 +68,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             });
 
         // This will set state for Edit Event  
-        if (eventId !== null && eventId !== "") {
+        if (eventId !== null && eventId !== "" && eventId !== Guid.EMPTY) {
             setTitle("Edit Event");
             fetch('/api/Events/' + eventId, {
                 method: 'GET',
@@ -100,7 +98,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                 });
         }
 
-        if (eventId === "") {
+        if (eventId === Guid.EMPTY) {
             setIsDataLoaded(true);
         }
 
@@ -311,7 +309,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     // This will handle Cancel button click event.
     function handleCancel(event: any) {
         event.preventDefault();
-        props.history.push("/mydashboard");
+        props.onEditCancel();
     }
 
     // This will handle the submit form event.  
@@ -325,7 +323,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         var eventData = new EventData();
         var method = "POST";
 
-        if (eventId && eventId !== "") {
+        if (eventId && eventId !== Guid.EMPTY) {
             eventData.id = eventId;
             method = "PUT";
         }
@@ -367,11 +365,11 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                 headers: headers,
                 body: evtdata,
             }).then(() => {
-                props.history.push("/mydashboard");
+                props.onEditSave();
             });
         })
     }
-            
+
     // Returns the HTML Form to the render() method.  
     function renderCreateForm(typeList: Array<EventTypeData>) {
         return (
@@ -404,6 +402,19 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                 </div>
                             </Form.Group>
                         </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderEventDateToolTip}>
+                                    <Form.Label htmlFor="EventDate">EventDate:</Form.Label>
+                                </OverlayTrigger>
+                                <div>
+                                    <DateTimePicker name="eventDate" onChange={handleEventDateChange} value={eventDate} />
+                                    <span style={{ color: "red" }}>{eventDateErrors}</span>
+                                </div>
+                            </Form.Group>
+                        </Col>
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderDurationHoursToolTip}>
@@ -423,17 +434,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                 <div>
                                     <Form.Control type="text" size="sm" name="durationMinutes" defaultValue={durationMinutes} onChange={(val) => handleDurationMinutesChanged(val.target.value)} />
                                     <span style={{ color: "red" }}>{durationMinutesErrors}</span>
-                                </div>
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderEventDateToolTip}>
-                                    <Form.Label htmlFor="EventDate">EventDate:</Form.Label>
-                                </OverlayTrigger>
-                                <div>
-                                    <DateTimePicker name="eventDate" onChange={handleEventDateChange} value={eventDate} />
-                                    <span style={{ color: "red" }}>{eventDateErrors}</span>
                                 </div>
                             </Form.Group>
                         </Col>
@@ -549,7 +549,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         )
     }
 
-    var contents = isDataLoaded
+    var contents = isDataLoaded && eventId
         ? renderCreateForm(eventTypeList)
         : <p><em>Loading...</em></p>;
 
@@ -559,5 +559,3 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         {contents}
     </div>;
 }
-
-export default withRouter(EditEvent);
