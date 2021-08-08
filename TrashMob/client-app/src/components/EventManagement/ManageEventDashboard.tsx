@@ -24,7 +24,7 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
     const [radioValue, setRadioValue] = React.useState('1');
     const [eventId, setEventId] = React.useState<string>("");
     const [isEventIdReady, setIsEventIdReady] = React.useState<boolean>();
-    const [loadedEventId, setLoadedEventId] = React.useState<string | undefined>(props.match.params["eventId"]);
+    const [loadedEventId, setLoadedEventId] = React.useState<string | undefined>(props.match?.params["eventId"]);
 
     const radios = [
         { name: 'Manage Event', value: '1' },

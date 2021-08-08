@@ -15,6 +15,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
 import { Button, Col, Form } from 'react-bootstrap';
+import { Guid } from 'guid-typescript';
 
 export interface EditEventProps {
     eventId: string;
@@ -67,7 +68,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             });
 
         // This will set state for Edit Event  
-        if (eventId !== null && eventId !== "") {
+        if (eventId !== null && eventId !== "" && eventId != Guid.EMPTY) {
             setTitle("Edit Event");
             fetch('/api/Events/' + eventId, {
                 method: 'GET',
@@ -97,7 +98,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                 });
         }
 
-        if (eventId === "") {
+        if (eventId === Guid.EMPTY) {
             setIsDataLoaded(true);
         }
 
@@ -322,7 +323,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         var eventData = new EventData();
         var method = "POST";
 
-        if (eventId && eventId !== "") {
+        if (eventId && eventId !== Guid.EMPTY) {
             eventData.id = eventId;
             method = "PUT";
         }
@@ -548,7 +549,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         )
     }
 
-    var contents = isDataLoaded
+    var contents = isDataLoaded && eventId
         ? renderCreateForm(eventTypeList)
         : <p><em>Loading...</em></p>;
 

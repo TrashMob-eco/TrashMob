@@ -7,6 +7,7 @@ import DisplayEventPartnerData from '../Models/DisplayEventPartnerData';
 import EventPartnerStatusData from '../Models/EventPartnerStatusData';
 import { getEventPartnerStatus } from '../../store/eventPartnerStatusHelper';
 import EventPartnerData from '../Models/EventPartnerData';
+import { Guid } from 'guid-typescript';
 
 export interface ManageEventPartnersProps {
     eventId: string;
@@ -20,7 +21,7 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
     const [eventPartners, setEventPartners] = React.useState<DisplayEventPartnerData[]>([]);
 
     React.useEffect(() => {
-        if (props.isUserLoaded) {
+        if (props.isUserLoaded && props.eventId && props.eventId !== Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
 
             var request = {
@@ -148,7 +149,8 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
     return (
         <>
             <div>
-                {!isEventPartnerDataLoaded && <p><em>Loading...</em></p>}
+                {props.eventId === Guid.EMPTY && <p> <em>Event must be created first.</em></p>}
+                {!isEventPartnerDataLoaded && props.eventId !== Guid.EMPTY && <p><em>Loading...</em></p>}
                 {isEventPartnerDataLoaded && eventPartners.length === 0 && <p> <em>Sorry, there are no registered partners in your area.</em></p>}
                 {isEventPartnerDataLoaded && eventPartners.length !== 0 && renderEventPartnersTable(eventPartners)}
             </div>
