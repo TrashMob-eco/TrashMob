@@ -84,7 +84,13 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                                 setPartnerList(data);
                                 setIsPartnerDataLoaded(true);
                                 setSelectedPartnerId("");
-                                setSelectPartnerMessage("Select a partner to view / edit details");
+
+                                if (data.length === 0) {
+                                    setSelectPartnerMessage("No Partners found for this user")
+                                }
+                                else {
+                                    setSelectPartnerMessage("Select a partner to view / edit details");
+                                }
                                 return;
                             });
                     })

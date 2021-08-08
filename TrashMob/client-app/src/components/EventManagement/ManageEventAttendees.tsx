@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
+import { Guid } from 'guid-typescript';
 
 export interface ManageEventAttendeesProps {
     eventId: string;
@@ -13,7 +14,7 @@ export const ManageEventAttendees: React.FC<ManageEventAttendeesProps> = (props)
     const [isEventAttendeeDataLoaded, setIsEventAttendeeDataLoaded] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        if (props.isUserLoaded) {
+        if (props.isUserLoaded && props.eventId && props.eventId != Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
 
             var request = {
@@ -68,7 +69,8 @@ export const ManageEventAttendees: React.FC<ManageEventAttendeesProps> = (props)
     return (
         <>
             <div>
-                {!isEventAttendeeDataLoaded && <p><em>Loading...</em></p>}
+                {props.eventId === Guid.EMPTY && <p> <em>Event must be created first.</em></p>}
+                {!isEventAttendeeDataLoaded && props.eventId !== Guid.EMPTY && <p><em>Loading...</em></p>}
                 {isEventAttendeeDataLoaded && renderEventAttendeesTable(eventAttendees)}
             </div>
         </>
