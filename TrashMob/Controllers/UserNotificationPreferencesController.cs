@@ -43,7 +43,7 @@ namespace TrashMob.Controllers
         {
             var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
 
-            if (!ValidateUser(user.NameIdentifier))
+            if (user == null || !ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }

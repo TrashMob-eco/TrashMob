@@ -32,22 +32,34 @@
             user.DateAgreedToTermsOfService = DateTimeOffset.MinValue;
             user.PrivacyPolicyVersion = string.Empty;
             user.TermsOfServiceVersion = string.Empty;
+            user.IsSiteAdmin = false;
             mobDbContext.Users.Add(user);
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
             return user;
         }
 
-        // Update the records of a particluar user
-        public Task<int> UpdateUser(User user)
+        // Update the records of a particular user
+        public async Task<int> UpdateUser(User user)
         {
             mobDbContext.Entry(user).State = EntityState.Modified;
-            return mobDbContext.SaveChangesAsync();
+
+            // The IsSiteAdmin flag can only be changed directly in the database, so once set, we need to preserve that, no matter what the user passes in
+            var matchedUser = await GetUserByInternalId(user.Id).ConfigureAwait(false);
+            user.IsSiteAdmin = matchedUser.IsSiteAdmin;
+
+            return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         // Get the details of a particular User
         public async Task<User> GetUserByInternalId(Guid id)
         {
             return await mobDbContext.Users.FindAsync(id).ConfigureAwait(false);
+        }
+
+        // Get the details of a particular User
+        public async Task<User> GetUserByUserName(string userName)
+        {
+            return await mobDbContext.Users.FirstOrDefaultAsync(u => u.UserName == userName).ConfigureAwait(false);
         }
 
         // Delete the record of a particular User

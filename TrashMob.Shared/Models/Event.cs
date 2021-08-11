@@ -21,6 +21,10 @@ namespace TrashMob.Shared.Models
 
         public DateTimeOffset EventDate { get; set; }
 
+        public int DurationHours { get; set; }
+
+        public int DurationMinutes { get; set; }
+
         public int EventTypeId { get; set; }
 
         public int EventStatusId { get; set; }

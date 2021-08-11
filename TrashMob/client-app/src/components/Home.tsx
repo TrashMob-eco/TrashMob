@@ -245,7 +245,7 @@ const Home: React.FC<HomeProps> = (props) => {
             </div>
             <div className="card pop">
                 <div>
-                    <Link to="/editevent">Create a New Event</Link>
+                    <Link to="/manageeventdashboard">Create a New Event</Link>
                 </div>
                 <div style={{ width: 100 + '%', margin: '0' }}>
                     <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} />

@@ -16,6 +16,20 @@
         }
 
         public virtual DbSet<ContactRequest> ContactRequests { get; set; }
+       
+        public virtual DbSet<PartnerRequest> PartnerRequests { get; set; }
+        
+        public virtual DbSet<Partner> Partners { get; set; }
+
+        public virtual DbSet<PartnerRequestStatus> PartnerRequestStatus { get; set; }
+
+        public virtual DbSet<PartnerStatus> PartnerStatus { get; set; }
+
+        public virtual DbSet<PartnerUser> PartnerUsers { get; set; }
+
+        public virtual DbSet<PartnerLocation> PartnerLocations { get; set; }
+
+        public virtual DbSet<EventPartner> EventPartners { get; set; }
 
         public virtual DbSet<User> Users { get; set; }
 
@@ -26,6 +40,8 @@
         public virtual DbSet<EventHistory> EventHistories { get; set; }
 
         public virtual DbSet<EventStatus> EventStatuses { get; set; }
+
+        public virtual DbSet<EventPartnerStatus> EventPartnerStatuses { get; set; }
 
         public virtual DbSet<EventType> EventTypes { get; set; }
 
@@ -60,6 +76,162 @@
                 entity.Property(e => e.Email).HasMaxLength(64);
 
                 entity.Property(e => e.Message).HasMaxLength(2048);
+            });
+
+            modelBuilder.Entity<PartnerRequest>(entity =>
+            {
+                entity.Property(e => e.Name).HasMaxLength(128);
+
+                entity.Property(e => e.PrimaryEmail).HasMaxLength(64);
+
+                entity.Property(e => e.SecondaryEmail).HasMaxLength(64);
+
+                entity.Property(e => e.PrimaryPhone).HasMaxLength(32);
+
+                entity.Property(e => e.SecondaryPhone).HasMaxLength(32);
+
+                entity.Property(e => e.Notes).HasMaxLength(2048);
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.PartnerRequestsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerRequests_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.PartnerRequestsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerRequests_LastUpdatedByUser_Id");
+
+                entity.HasOne(d => d.PartnerRequestStatus)
+                    .WithMany(p => p.PartnerRequests)
+                    .HasForeignKey(d => d.PartnerRequestStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerRequests_PartnerRequestStatus");
+            });
+
+            modelBuilder.Entity<Partner>(entity =>
+            {
+                entity.Property(e => e.Name).HasMaxLength(128);
+
+                entity.Property(e => e.PrimaryEmail).HasMaxLength(64);
+
+                entity.Property(e => e.SecondaryEmail).HasMaxLength(64);
+
+                entity.Property(e => e.PrimaryPhone).HasMaxLength(32);
+
+                entity.Property(e => e.SecondaryPhone).HasMaxLength(32);
+
+                entity.Property(e => e.Notes).HasMaxLength(2048);
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.PartnersCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Partners_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.PartnersUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Partners_LastUpdatedByUser_Id");
+
+                entity.HasOne(d => d.PartnerStatus)
+                    .WithMany(p => p.Partners)
+                    .HasForeignKey(d => d.PartnerStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Partners_PartnerRequestStatus");
+            });
+
+            modelBuilder.Entity<PartnerUser>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.PartnerId });
+
+                entity.Property(e => e.UserId)
+                    .IsRequired();
+
+                entity.HasOne(d => d.Partner)
+                    .WithMany()
+                    .HasForeignKey(d => d.PartnerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerUser_Partners");
+
+                entity.HasOne(d => d.User)
+                    .WithMany()
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerUser_User");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.PartnerUsersCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerUsers_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.PartnerUsersUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerUsers_LastUpdatedByUser_Id");
+            });
+
+            modelBuilder.Entity<PartnerLocation>(entity =>
+            {
+                entity.HasKey(e => new { e.Id });
+
+                entity.Property(e => e.PartnerId)
+                    .IsRequired();
+
+                entity.Property(e => e.Name).HasMaxLength(128);
+
+                entity.Property(e => e.PrimaryEmail).HasMaxLength(64);
+
+                entity.Property(e => e.SecondaryEmail).HasMaxLength(64);
+
+                entity.Property(e => e.PrimaryPhone).HasMaxLength(32);
+
+                entity.Property(e => e.SecondaryPhone).HasMaxLength(32);
+
+                entity.Property(e => e.Notes).HasMaxLength(2048);
+
+                entity.Property(e => e.Region)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.StreetAddress)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.PostalCode)
+                    .IsRequired()
+                    .HasMaxLength(25);
+
+                entity.Property(e => e.City)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.Country)
+                    .IsRequired()
+                    .HasMaxLength(64);
+
+                entity.HasOne(d => d.Partner)
+                    .WithMany()
+                    .HasForeignKey(d => d.PartnerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerLocations_Partners");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.PartnerLocationsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerLocations_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.PartnerLocationsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerLocations_LastUpdatedByUser_Id");
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -218,6 +390,55 @@
                     .HasConstraintName("FK_Events_ApplicationUser_LastUpdatedBy");
             });
 
+            modelBuilder.Entity<EventPartner>(entity =>
+            {
+                entity.HasKey(e => new { e.EventId, e.PartnerId, e.PartnerLocationId });
+
+                entity.Property(e => e.EventId)
+                    .IsRequired();
+
+                entity.Property(e => e.PartnerId)
+                    .IsRequired();
+
+                entity.Property(e => e.PartnerLocationId)
+                    .IsRequired();
+
+                entity.HasOne(d => d.Event)
+                    .WithMany()
+                    .HasForeignKey(d => d.EventId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventPartners_Events");
+
+                entity.HasOne(d => d.Partner)
+                    .WithMany()
+                    .HasForeignKey(d => d.PartnerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventPartners_Partners");
+
+                entity.HasOne(d => d.PartnerLocation)
+                    .WithMany()
+                    .HasForeignKey(d => d.PartnerLocationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventPartners_PartnerLocations");
+
+                entity.HasOne(d => d.EventPartnerStatus)
+                    .WithMany(p => p.EventPartners)
+                    .HasForeignKey(d => d.EventPartnerStatusId)
+                    .HasConstraintName("FK_EventPartners_EventPartnerStatuses");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.EventPartnersCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventPartners_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.EventPartnersUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventPartners_User_LastUpdatedBy");
+            });
+
             modelBuilder.Entity<EventAttendee>(entity =>
             {
                 entity.HasKey(e => new { e.UserId, e.EventId });
@@ -307,6 +528,54 @@
                     new EventStatus { Id = (int)EventStatusEnum.Full, Name = "Full", Description = "Event is full", DisplayOrder = 2 },
                     new EventStatus { Id = (int)EventStatusEnum.Canceled, Name = "Canceled", Description = "Event has been canceled", DisplayOrder = 3 },
                     new EventStatus { Id = (int)EventStatusEnum.Complete, Name = "Completed", Description = "Event has completed", DisplayOrder = 4 });
+            });
+
+            modelBuilder.Entity<EventPartnerStatus>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Description);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasData(
+                    new EventPartnerStatus { Id = (int)EventPartnerStatusEnum.None, Name = "None", Description = "Partner has not been contacted", DisplayOrder = 1 },
+                    new EventPartnerStatus { Id = (int)EventPartnerStatusEnum.Requested, Name = "Requested", Description = "Request is awaiting processing by partner", DisplayOrder = 2 },
+                    new EventPartnerStatus { Id = (int)EventPartnerStatusEnum.Accepted, Name = "Accepted", Description = "Request has been approved by partner", DisplayOrder = 3 },
+                    new EventPartnerStatus { Id = (int)EventPartnerStatusEnum.Declined, Name = "Declined", Description = "Request has been declined by partner", DisplayOrder = 4 });
+            });
+
+            modelBuilder.Entity<PartnerRequestStatus>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Description);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasData(
+                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Pending, Name = "Pending", Description = "Request is Pending Approval by Site Administrator", DisplayOrder = 1 },
+                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Approved, Name = "Approved", Description = "Request has been approved by the Site Administrator", DisplayOrder = 2 },
+                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Denied, Name = "Denied", Description = "Request has been approved by the Site Administrator", DisplayOrder = 3 });
+            });
+
+            modelBuilder.Entity<PartnerStatus>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Description);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasData(
+                    new PartnerStatus { Id = (int)PartnerStatusEnum.Active, Name = "Active", Description = "Partner is Active", DisplayOrder = 1 },
+                    new PartnerStatus { Id = (int)PartnerStatusEnum.Inactive, Name = "Inactive", Description = "Partner is Inactive", DisplayOrder = 2 });
             });
 
             modelBuilder.Entity<EventType>(entity =>

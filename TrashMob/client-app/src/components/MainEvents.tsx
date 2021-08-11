@@ -106,7 +106,7 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
     function renderEventsTable(events: DisplayEvent[]) {
         return (
             <div>
-                <table className='table table-striped' aria-labelledby="tabelLabel" width='100%'>
+                <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
                             <th>Name</th>
