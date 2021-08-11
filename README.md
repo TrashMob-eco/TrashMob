@@ -1,6 +1,6 @@
 # TrashMob.eco
 
-**Cleaning up Planet Earth, one bucket of litter at a time. Together.**
+**Meet up. Clean up. Feel good.**
 
 # What is TrashMob?
 TrashMob is a website dedicated to organizing groups of people to clean up the world we live in. Users create cleanup events, publicize them, and recruit people to join up, as well as ask for assistance from sponsors to help haul away the garbage once it is gathered. The idea is to turn what can be an intimidating process for event organizers into a few mouse clicks and simple forms. And once the process is simple, events will spring up all over the world, and the cleanup of the world can begin.
