@@ -22,6 +22,7 @@ class UserData {
     prefersMetric: boolean = false;
     isOptedOutOfAllEmails: boolean = false;
     travelLimitForLocalEvents: number = 0;
+    isSiteAdmin: boolean = false;
 }
 
 export default UserData;

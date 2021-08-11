@@ -12,7 +12,7 @@ export const MainCarousel: React.FC = () => {
         <Carousel className="carousel slide carousel-fade">
             <Carousel.Item className="carousel-inner" style={{ backgroundImage: 'url(' + woman + ')' }}>
                 <Carousel.Caption className="carousel-caption d-none d-md-block">
-                    <h5>It's easy to get started</h5>
+                    <h5>Meet up. Clean up. Feel good!</h5>
                     <p>Get out and start with your neighborhood and expand from there. Every bit matters!</p>
                 </Carousel.Caption>
             </Carousel.Item>

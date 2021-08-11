@@ -74,7 +74,7 @@
             return mobEvent.Id;
         }
 
-        // Update the records of a particluar Event  
+        // Update the records of a particular Event  
         public Task<int> UpdateEvent(Event mobEvent)
         {
             mobDbContext.Entry(mobEvent).State = EntityState.Modified;

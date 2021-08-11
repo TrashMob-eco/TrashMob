@@ -70,7 +70,7 @@ export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
     function renderEventsTable(events: EventData[]) {
         return (
             <div>
-                <table className='table table-striped' aria-labelledby="tabelLabel">
+                <table className='table table-striped' aria-labelledby="tableLabel">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -96,7 +96,7 @@ export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
                                     <td>{mobEvent.country}</td>
                                     <td>{mobEvent.postalCode}</td>
                                     <td>
-                                        <Button hidden={!isOwner} className="action" onClick={() => props.history.push('/editevent/' + mobEvent.id)}>Edit Event</Button>
+                                        <Button hidden={!isOwner} className="action" onClick={() => props.history.push('/manageeventdashboard/' + mobEvent.id)}>Manage Event</Button>
                                         <Button hidden={!isOwner} className="action" onClick={() => handleDelete(mobEvent.id, mobEvent.name)}>Delete Event</Button>
                                         <Button hidden={isOwner} className="action" onClick={() => props.history.push('/eventdetails/' + mobEvent.id)}>View Details</Button>
                                         <Button hidden={isOwner} className="action" onClick={() => handleRemove(mobEvent.id, mobEvent.name)}>Remove Me from Event</Button>
@@ -116,7 +116,7 @@ export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
 
     return (
         <div>
-            <h1 id="tabelLabel" >My Events</h1>
+            <h1 id="tableLabel" >My Events</h1>
             {contents}
         </div>
     );

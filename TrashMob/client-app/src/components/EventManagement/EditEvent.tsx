@@ -1,38 +1,38 @@
 import * as React from 'react'
-import { RouteComponentProps } from 'react-router';
-import EventData from './Models/EventData';
+import EventData from '../Models/EventData';
 import DateTimePicker from 'react-datetime-picker';
-import EventTypeData from './Models/EventTypeData';
+import EventTypeData from '../Models/EventTypeData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import { withRouter } from 'react-router-dom';
-import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
+import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
-import { getKey } from '../store/MapStore';
-import AddressData from './Models/AddressData';
-import * as MapStore from '../store/MapStore';
-import { AzureMapsProvider, IAzureMapOptions } from '@ambientlight/react-azure-maps';
-import MapController from './MapController';
-import UserData from './Models/UserData';
+import { getKey } from '../../store/MapStore';
+import AddressData from '../Models/AddressData';
+import * as MapStore from '../../store/MapStore';
+import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
+import MapController from '../MapController';
+import UserData from '../Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
-import * as ToolTips from "../store/ToolTips";
+import * as ToolTips from "../../store/ToolTips";
 import { Button, Col, Form } from 'react-bootstrap';
+import { Guid } from 'guid-typescript';
 
-export interface EditMatchParams {
-    eventId?: string;
-}
-
-export interface EditEventProps extends RouteComponentProps<EditMatchParams> {
+export interface EditEventProps {
+    eventId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
+    onEditCancel: any;
+    onEditSave: any;
 }
 
 export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [isDataLoaded, setIsDataLoaded] = React.useState<boolean>(false);
-    const [eventId, setEventId] = React.useState<string>(props.match?.params["eventId"] ? props.match.params["eventId"] : "");
+    const [eventId, setEventId] = React.useState<string>(props.eventId);
     const [eventName, setEventName] = React.useState<string>("New Event");
     const [description, setDescription] = React.useState<string>();
     const [eventDate, setEventDate] = React.useState<Date>(new Date());
+    const [durationHours, setDurationHours] = React.useState<number>(1);
+    const [durationMinutes, setDurationMinutes] = React.useState<number>(0);
     const [eventTypeId, setEventTypeId] = React.useState<number>(0);
     const [streetAddress, setStreetAddress] = React.useState<string>();
     const [city, setCity] = React.useState<string>();
@@ -46,6 +46,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [eventStatusId, setEventStatusId] = React.useState<number>(0);
     const [eventTypeList, setEventTypeList] = React.useState<EventTypeData[]>([]);
     const [eventDateErrors, setEventDateErrors] = React.useState<string>("");
+    const [durationHoursErrors, setDurationHoursErrors] = React.useState<string>("");
+    const [durationMinutesErrors, setDurationMinutesErrors] = React.useState<string>("");
     const [latitudeErrors, setLatitudeErrors] = React.useState<string>("");
     const [longitudeErrors, setLongitudeErrors] = React.useState<string>("");
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
@@ -66,7 +68,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             });
 
         // This will set state for Edit Event  
-        if (eventId !== null && eventId !== "") {
+        if (eventId !== null && eventId !== "" && eventId !== Guid.EMPTY) {
             setTitle("Edit Event");
             fetch('/api/Events/' + eventId, {
                 method: 'GET',
@@ -78,6 +80,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     setEventName(eventData.name);
                     setDescription(eventData.description);
                     setEventDate(new Date(eventData.eventDate));
+                    setDurationHours(eventData.durationHours);
+                    setDurationMinutes(eventData.durationMinutes);
                     setEventTypeId(eventData.eventTypeId);
                     setStreetAddress(eventData.streetAddress);
                     setCity(eventData.city);
@@ -94,7 +98,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                 });
         }
 
-        if (eventId === "") {
+        if (eventId === Guid.EMPTY) {
             setIsDataLoaded(true);
         }
 
@@ -116,6 +120,36 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
     function handleEventNameChanged(val: string) {
         setEventName(val);
+    }
+
+    function handleDurationHoursChanged(val: string) {
+        try {
+            var hours = parseInt(val);
+
+            if (hours < 0 || hours > 10) {
+                setDurationHoursErrors("Duration Hours must be > 0 and less than 10");
+            }
+            else {
+                setDurationHoursErrors("");
+                setDurationHours(hours);
+            }
+        }
+        catch { }
+    }
+
+    function handleDurationMinutesChanged(val: string) {
+        try {
+            var minutes = parseInt(val);
+
+            if (minutes < 0 || minutes > 59) {
+                setDurationMinutesErrors("Duration Minutes must be > 0 and less than 60");
+            }
+            else {
+                setDurationMinutesErrors("");
+                setDurationMinutes(minutes);
+            }
+        }
+        catch { }
     }
 
     function handleDescriptionChanged(val: string) {
@@ -186,6 +220,14 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
     function renderEventNameToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.EventName}</Tooltip>
+    }
+
+    function renderDurationHoursToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.EventDurationHours}</Tooltip>
+    }
+
+    function renderDurationMinutesToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.EventDurationMinutes}</Tooltip>
     }
 
     function renderStreetAddressToolTip(props: any) {
@@ -267,7 +309,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     // This will handle Cancel button click event.
     function handleCancel(event: any) {
         event.preventDefault();
-        props.history.push("/mydashboard");
+        props.onEditCancel();
     }
 
     // This will handle the submit form event.  
@@ -281,7 +323,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         var eventData = new EventData();
         var method = "POST";
 
-        if (eventId && eventId !== "") {
+        if (eventId && eventId !== Guid.EMPTY) {
             eventData.id = eventId;
             method = "PUT";
         }
@@ -289,6 +331,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         eventData.name = eventName ?? "";
         eventData.description = description ?? "";
         eventData.eventDate = new Date(eventDate);
+        eventData.durationHours = durationHours ?? 2;
+        eventData.durationMinutes = durationMinutes ?? 0;
         eventData.eventTypeId = eventTypeId ?? 0;
         eventData.streetAddress = streetAddress ?? "";
         eventData.city = city ?? "";
@@ -321,11 +365,11 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                 headers: headers,
                 body: evtdata,
             }).then(() => {
-                props.history.push("/mydashboard");
+                props.onEditSave();
             });
         })
     }
-            
+
     // Returns the HTML Form to the render() method.  
     function renderCreateForm(typeList: Array<EventTypeData>) {
         return (
@@ -345,6 +389,23 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         </Col>
                         <Col>
                             <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderEventTypeToolTip}>
+                                    <Form.Label htmlFor="EventType">Event Type:</Form.Label>
+                                </OverlayTrigger>
+                                <div>
+                                    <select data-val="true" name="eventTypeId" defaultValue={eventTypeId} onChange={(val) => selectEventType(val.target.value)} required>
+                                        <option value="">-- Select Event Type --</option>
+                                        {typeList.map(type =>
+                                            <option key={type.id} value={type.id}>{type.name}</option>
+                                        )}
+                                    </select>
+                                </div>
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderEventDateToolTip}>
                                     <Form.Label htmlFor="EventDate">EventDate:</Form.Label>
                                 </OverlayTrigger>
@@ -356,16 +417,23 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         </Col>
                         <Col>
                             <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderEventTypeToolTip}>
-                                    <Form.Label htmlFor="EventType">Event Type:</Form.Label>
+                                <OverlayTrigger placement="top" overlay={renderDurationHoursToolTip}>
+                                    <Form.Label htmlFor="DurationHours">Duration in Hours:</Form.Label>
                                 </OverlayTrigger>
                                 <div>
-                                    <select data-val="true" name="eventTypeId" defaultValue={eventTypeId} onChange={(val) => selectEventType(val.target.value)} required>
-                                        <option value="">-- Select Event Type --</option>
-                                        {typeList.map(type =>
-                                            <option key={type.id} value={type.id}>{type.name}</option>
-                                        )}
-                                    </select>
+                                    <Form.Control type="text" size="sm" name="durationHours" defaultValue={durationHours} onChange={(val) => handleDurationHoursChanged(val.target.value)} />
+                                    <span style={{ color: "red" }}>{durationHoursErrors}</span>
+                                </div>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderDurationMinutesToolTip}>
+                                    <Form.Label htmlFor="DurationMinutes">Additional Minutes:</Form.Label>
+                                </OverlayTrigger>
+                                <div>
+                                    <Form.Control type="text" size="sm" name="durationMinutes" defaultValue={durationMinutes} onChange={(val) => handleDurationMinutesChanged(val.target.value)} />
+                                    <span style={{ color: "red" }}>{durationMinutesErrors}</span>
                                 </div>
                             </Form.Group>
                         </Col>
@@ -481,7 +549,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         )
     }
 
-    var contents = isDataLoaded
+    var contents = isDataLoaded && eventId
         ? renderCreateForm(eventTypeList)
         : <p><em>Loading...</em></p>;
 
@@ -491,5 +559,3 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         {contents}
     </div>;
 }
-
-export default withRouter(EditEvent);
