@@ -9,7 +9,7 @@ export const EventRegion = "The Region will auto-populate when clicking a locati
 export const EventPostalCode = "Postal Code is optional if the place is well known and the description is thorough. The Postal Code will auto-populate when clicking a location on the map if there is a Postal Code for that location."
 export const EventMaxNumberOfParticipants = "Max Number of Participants is optional. If you are concerned your event's work area is too small to accomodate large numbers of people, select a value that is practical for the location, knowing that attendance rates will vary depending on location, weather, and other factors."
 export const EventType = "Choose an Event Type that matches the type of location and the type of work being done. Note that some event types may require special training (i.e. Highway cleanup), so be sure to mention any special requirements you may have in your event description.";
-export const EventMediaUrl = "Enter the url or the media you wish to add to the Event.";
+export const EditEventMediaUrl = "Enter the url or the media you wish to add to the Event.";
 export const MediaType = "Choose a Media Type that matches the type of media being linked.";
 export const EventLatitude = "The Latitude will auto-populate when clicking a location on the map. It must be between -90.0 and 90.0"
 export const EventLongitude = "The Longitude will auto-populate when clicking a location on the map. It must be between -180.0 and 180.0"
@@ -60,3 +60,4 @@ export const PartnerLocationPrimaryPhone = "Enter the primary phone number for t
 export const PartnerLocationSecondaryPhone = "Enter the secondary phone number for the location. We recommend making this the switchboard or main office number, in case the primary phone number becomes invalid in the future."
 export const PartnerLocationNotes = "Enter information regarding the services provided. This will be shown to event leads so they can contact the right partner."
 export const PartnerLocationIsPartnerLocationActive = "Use this to temporarily disable a partner location."
+
