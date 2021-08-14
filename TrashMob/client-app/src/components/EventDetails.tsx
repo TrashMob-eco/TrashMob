@@ -11,8 +11,6 @@ import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapController from './MapController';
 import { Carousel, Col, Form } from 'react-bootstrap';
 import EventMediaData from './Models/EventMediaData';
-import InstagramEmbed from 'react-instagram-embed';
-import * as Facebook from '../store/FacebookStore';
 
 export interface DetailsMatchParams {
     eventId: string;
@@ -65,15 +63,6 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
             .then(response => response.json() as Promise<Array<any>>)
             .then(data => {
                 setEventTypeList(data);
-            });
-
-        fetch('/api/secrets/InstagramTest', {
-            method: 'GET',
-            headers: headers,
-        })
-            .then(response => response.json() as Promise<string>)
-            .then(data => {
-                setInstagramToken(Facebook.instagramAppId + '|' + data);
             });
 
         if (eventId != null) {
@@ -167,24 +156,6 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     </tbody>
                 </table>
             </div>
-        );
-    }
-
-    function renderMedia(mediaList: EventMediaData[]) {
-        return (
-            <Carousel className="carousel slide carousel-fade">
-                {mediaList.map(media =>
-                    <Carousel.Item className="carousel-inner">
-                        <InstagramEmbed
-                            url={media.mediaUrl}
-                            clientAccessToken={instagramToken}
-                            maxWidth={320}
-                            hideCaption={false}
-                            containerTagName='div'
-                        />
-                    </Carousel.Item>
-                )}
-            </Carousel>
         );
     }
 
@@ -300,10 +271,6 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                             <MapController center={center} multipleEvents={[]} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} />
                         </>
                     </AzureMapsProvider>
-                </div>
-                <div>
-                    <h2>Media</h2>
-                    {renderMedia(mediaList)}
                 </div>
             </div>
         )
