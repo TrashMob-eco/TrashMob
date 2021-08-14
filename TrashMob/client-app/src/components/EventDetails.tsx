@@ -11,6 +11,8 @@ import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapController from './MapController';
 import { Carousel, Col, Form } from 'react-bootstrap';
 import EventMediaData from './Models/EventMediaData';
+import YouTubeEmbed from "./YouTubeEmbed";
+import * as Constants from './Models/Constants';
 
 export interface DetailsMatchParams {
     eventId: string;
@@ -50,8 +52,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
     const [facebookUrl, setFacebookUrl] = React.useState<string>();
     const [mediaList, setMediaList] = React.useState<EventMediaData[]>([]);
     const [isEventMediaDataLoaded, setIsEventMediaDataLoaded] = React.useState<boolean>(false);
-    const [instagramToken, setInstagramToken] = React.useState<string>("");
-
+    
     React.useEffect(() => {
 
         const headers = getDefaultHeaders('GET');
@@ -156,6 +157,30 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     </tbody>
                 </table>
             </div>
+        );
+    }
+
+    function renderMedia(mediaList: EventMediaData[]) {
+        return (
+            <Carousel className="carousel slide carousel-fade">
+                { mediaList.map(media => {
+                    if (media.mediaTypeId === Constants.MediaTypeYouTube) {
+                        return (
+                            <Carousel.Item className="carousel-inner">
+                                <YouTubeEmbed embedId={media.mediaUrl} />
+                            </Carousel.Item>
+                        );
+                    }
+                    else {
+                        return (
+                            <Carousel.Item className="carousel-inner">
+                                Media Type not available
+                            </Carousel.Item>
+                        )
+                    }
+                })
+                }
+            </Carousel>
         );
     }
 
@@ -271,6 +296,10 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                             <MapController center={center} multipleEvents={[]} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} />
                         </>
                     </AzureMapsProvider>
+                </div>
+                <div>
+                    <h2>Media</h2>
+                    {renderMedia(mediaList)}
                 </div>
             </div>
         )
