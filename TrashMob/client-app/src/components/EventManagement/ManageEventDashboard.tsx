@@ -30,7 +30,7 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
         { name: 'Manage Event', value: '1' },
         { name: 'Manage Event Partners', value: '2' },
         { name: 'Manage Event Attendees', value: '3' },
-    //    { name: 'Manage Event Media', value: '4' },
+        { name: 'Manage Event Media', value: '4' },
     //    { name: 'Manage Event Summary', value: '5' },
     ];
 

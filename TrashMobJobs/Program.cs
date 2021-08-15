@@ -32,7 +32,9 @@ namespace TrashMobJobs
                      .AddSingleton<IUserRepository, UserRepository>()
                      .AddSingleton<IUserNotificationRepository, UserNotificationRepository>()
                      .AddSingleton<IUserNotificationPreferenceRepository, UserNotificationPreferenceRepository>()
-                     .AddSingleton<IUserNotificationManager, UserNotificationManager>())
+                     .AddSingleton<IUserNotificationManager, UserNotificationManager>()
+                     .AddSingleton<IMediaTypeRepository, MediaTypeRepository>()
+                     .AddSingleton<IEventMediaRepository, EventMediaRepository>())
                 .Build();
 
             await host.RunAsync().ConfigureAwait(false);
