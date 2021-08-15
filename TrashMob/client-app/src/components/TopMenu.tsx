@@ -64,6 +64,7 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                     <Nav.Link className="nav-link" href={item.url} key={item.name}>{item.name}</Nav.Link>
                                 ))}
                                 <NavDropdown title="Learn More" id="basic-nav-dropdown">
+                                    <NavDropdown.Item className="dropdown-item" href="/mediagallery">Media Gallery</NavDropdown.Item>
                                     <NavDropdown.Item className="dropdown-item" href="/partners">Partners</NavDropdown.Item>
                                     <NavDropdown.Item className="dropdown-item" href="/becomeapartner">Become a Partner</NavDropdown.Item>
                                     <NavDropdown.Item className="dropdown-item" hidden={!isUserLoaded} href="/partnerdashboard">Partner Dashboard</NavDropdown.Item>

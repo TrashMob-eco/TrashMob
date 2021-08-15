@@ -73,12 +73,28 @@
                 mobDbContext.EventAttendees.Remove(attendee);
             }
 
+            // Remove the userNotificationPreferences records
+            var userNotificationPreferences = mobDbContext.UserNotificationPreferences.Where(e => e.UserId == id);
+
+            foreach (var userNotificationPreference in userNotificationPreferences)
+            {
+                mobDbContext.UserNotificationPreferences.Remove(userNotificationPreference);
+            }
+
             // Remove the userNotification records where the user created or updated the event
             var userNotifications = mobDbContext.UserNotifications.Where(e => e.UserId == id);
 
             foreach (var userNotification in userNotifications)
             {
                 mobDbContext.UserNotifications.Remove(userNotification);
+            }
+
+            // Remove the EventMedia records owned by this user
+            var eventMedias = mobDbContext.EventMedias.Where(e => e.CreatedByUserId == id);
+
+            foreach (var eventMedia in eventMedias)
+            {
+                mobDbContext.EventMedias.Remove(eventMedia);
             }
 
             // Remove the history records where the user created or updated the event
