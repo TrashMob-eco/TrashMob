@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 
 interface YouTubeEmbedPropTypes {
     embedId: string;
@@ -15,7 +15,7 @@ const YouTubeEmbed: React.FC<YouTubeEmbedPropTypes> = (props) => {
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                title="Embedded youtube"
+                title="TrashMob.eco YouTube Gallery"
             />
         </div>
     );

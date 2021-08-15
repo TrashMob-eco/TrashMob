@@ -39,6 +39,13 @@ namespace TrashMob.Controllers
             return Ok(result);
         }
 
+        [HttpGet("bymediaid/{eventMediaId}")]
+        public async Task<IActionResult> GetEventMediaById(Guid eventMediaId)
+        {
+            var result = await eventMediaRepository.GetEventMediaById(eventMediaId).ConfigureAwait(false);
+            return Ok(result);
+        }
+
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{userId}")]

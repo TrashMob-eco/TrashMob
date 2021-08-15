@@ -7,6 +7,7 @@ import EventMediaData from '../Models/EventMediaData';
 import MediaTypeData from '../Models/MediaTypeData';
 import UserData from '../Models/UserData';
 import * as ToolTips from "../../store/ToolTips";
+import * as Constants from '../Models/Constants';
 
 export interface ManageEventMediaProps {
     eventId: string;
@@ -46,7 +47,7 @@ export const ManageEventMedia: React.FC<ManageEventMediaProps> = (props) => {
                         setIsEditOrAdd(false);
                     });
             });
-    })
+    }, [props.eventId])
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
@@ -84,12 +85,13 @@ export const ManageEventMedia: React.FC<ManageEventMediaProps> = (props) => {
                 method: method,
                 headers: headers,
                 body: evtmediadata,
-            })
+            }).then(() => {
+                onEventMediasUpdated();
+            });
         })
     }
 
     function onEventMediasUpdated() {
-        // PUT request for Edit Event.  
         const account = msalClient.getAllAccounts()[0];
 
         var request = {
@@ -106,6 +108,7 @@ export const ManageEventMedia: React.FC<ManageEventMediaProps> = (props) => {
             })
                 .then(response => response.json() as Promise<Array<EventMediaData>>)
                 .then(data => {
+                    setIsEventMediaDataLoaded(false);
                     setEventMedias(data);
                     setIsEventMediaDataLoaded(true);
                     setIsEditOrAdd(false);
@@ -128,7 +131,7 @@ export const ManageEventMedia: React.FC<ManageEventMediaProps> = (props) => {
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/eventMedia/' + eventMediaId, {
+                fetch('/api/eventMedias/' + eventMediaId, {
                     method: 'DELETE',
                     headers: headers,
                 })
@@ -149,8 +152,12 @@ export const ManageEventMedia: React.FC<ManageEventMediaProps> = (props) => {
         setEventMediaUrl(val);
     }
 
-    function renderEventMediaUrlToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.EditEventMediaUrl}</Tooltip>
+    function renderEventMediaYouTubeVideoIdToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.EditEventMediaYouTubeVideoId}</Tooltip>
+    }
+
+    function renderEventMediaInstagramUrlToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.EditEventMediaInstagramUrl}</Tooltip>
     }
 
     function renderMediaTypeToolTip(props: any) {
@@ -162,7 +169,7 @@ export const ManageEventMedia: React.FC<ManageEventMediaProps> = (props) => {
         setIsEditOrAdd(true);
     }
 
-    function editEventMedia(eventMediaId: string) {
+    function editEventMedia(mediaId: string) {
         const account = msalClient.getAllAccounts()[0];
 
         var request = {
@@ -174,7 +181,7 @@ export const ManageEventMedia: React.FC<ManageEventMediaProps> = (props) => {
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/eventMedias/' + eventMediaId, {
+            fetch('/api/eventMedias/bymediaid/' + mediaId, {
                 method: 'GET',
                 headers: headers,
             })
@@ -195,8 +202,8 @@ export const ManageEventMedia: React.FC<ManageEventMediaProps> = (props) => {
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
-                            <th>Url</th>
                             <th>Media Type</th>
+                            <th>Media</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -225,28 +232,38 @@ export const ManageEventMedia: React.FC<ManageEventMediaProps> = (props) => {
                         <input type="hidden" name="Id" value={eventMediaId.toString()} />
                     </Form.Row>
                     <Button className="action" onClick={(e) => handleSave(e)}>Save</Button>
+                    <Col>
+                        <Form.Group>
+                            <OverlayTrigger placement="top" overlay={renderMediaTypeToolTip}>
+                                <Form.Label htmlFor="MediaType">Media Type:</Form.Label>
+                            </OverlayTrigger>
+                            <div>
+                                <select data-val="true" name="mediaTypeId" defaultValue={eventMediaTypeId} onChange={(val) => selectMediaType(val.target.value)} required>
+                                    <option value="">-- Select Media Type --</option>
+                                    {mediaTypeList.map(type =>
+                                        <option key={type.id} value={type.id}>{type.name}</option>
+                                    )}
+                                </select>
+                            </div>
+                        </Form.Group>
+                    </Col>
                     <Form.Row>
                         <Col>
                             <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderEventMediaUrlToolTip}>
-                                    <Form.Label htmlFor="EventMediaUrl">Event Media Url:</Form.Label>
-                                </OverlayTrigger>
+                                {() => {
+                                    if (eventMediaTypeId === Constants.MediaTypeYouTube) {
+                                        <OverlayTrigger placement="top" overlay={renderEventMediaYouTubeVideoIdToolTip}>
+                                            <Form.Label htmlFor="EventMediaUrl">YouTube Video Id:</Form.Label>
+                                        </OverlayTrigger>
+                                    }
+                                    else {
+                                        <OverlayTrigger placement="top" overlay={renderEventMediaInstagramUrlToolTip}>
+                                            <Form.Label htmlFor="EventMediaUrl">Instagram Url:</Form.Label>
+                                        </OverlayTrigger>
+                                    }
+                                }
+                                }
                                 <Form.Control type="text" name="eventMediaUrl" defaultValue={eventMediaUrl} onChange={val => handleEventMediaUrlChanged(val.target.value)} maxLength={parseInt('1024')} required />
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderMediaTypeToolTip}>
-                                    <Form.Label htmlFor="MediaType">Media Type:</Form.Label>
-                                </OverlayTrigger>
-                                <div>
-                                    <select data-val="true" name="mediaTypeId" defaultValue={eventMediaTypeId} onChange={(val) => selectMediaType(val.target.value)} required>
-                                        <option value="">-- Select Event Type --</option>
-                                        {mediaTypeList.map(type =>
-                                            <option key={type.id} value={type.id}>{type.name}</option>
-                                        )}
-                                    </select>
-                                </div>
                             </Form.Group>
                         </Col>
                     </ Form.Row>
