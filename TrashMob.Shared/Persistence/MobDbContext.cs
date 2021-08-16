@@ -31,6 +31,8 @@
 
         public virtual DbSet<EventPartner> EventPartners { get; set; }
 
+        public virtual DbSet<EventSummary> EventSummaries { get; set; }
+
         public virtual DbSet<User> Users { get; set; }
 
         public virtual DbSet<Event> Events { get; set; }
@@ -437,6 +439,34 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EventPartners_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<EventSummary>(entity =>
+            {
+                entity.HasKey(e => new { e.EventId });
+
+                entity.Property(e => e.EventId)
+                    .IsRequired();
+
+                entity.Property(e => e.Notes).HasMaxLength(2048);
+
+                entity.HasOne(d => d.Event)
+                    .WithMany()
+                    .HasForeignKey(d => d.EventId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventSummary_Events");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.EventSummariesCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventSummaries_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.EventSummariesUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventSummaries_User_LastUpdatedBy");
             });
 
             modelBuilder.Entity<EventAttendee>(entity =>
