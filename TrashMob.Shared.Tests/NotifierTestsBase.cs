@@ -148,7 +148,6 @@ namespace TrashMob.Shared.Tests
         {
             var relevantEvent = new Event()
             {
-                ActualNumberOfParticipants = 0,
                 City = "Seattle",
                 Country = "United States",
                 CreatedByUserId = createdById,
@@ -181,7 +180,6 @@ namespace TrashMob.Shared.Tests
         {
             var relevantEvent1 = new Event()
             {
-                ActualNumberOfParticipants = 0,
                 City = "Seattle",
                 Country = "United States",
                 CreatedByUserId = createdById,
@@ -204,7 +202,6 @@ namespace TrashMob.Shared.Tests
 
             var relevantEvent2 = new Event()
             {
-                ActualNumberOfParticipants = 0,
                 City = "Seattle",
                 Country = "United States",
                 CreatedByUserId = createdById,

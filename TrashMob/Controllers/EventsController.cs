@@ -172,7 +172,6 @@ namespace TrashMob.Controllers
             return Ok();
         }
 
-        // DELETE: api/Events/5
         [HttpDelete("{id}")]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
