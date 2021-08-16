@@ -48,10 +48,11 @@ namespace TrashMob
             services.AddScoped<IEmailManager, EmailManager>();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
-            services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IEventPartnerRepository, EventPartnerRepository>();
+            services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IEventPartnerStatusRepository, EventPartnerStatusRepository>();
             services.AddScoped<IEventStatusRepository, EventStatusRepository>();
+            services.AddScoped<IEventSummaryRepository, EventSummaryRepository>();
             services.AddScoped<IEventTypeRepository, EventTypeRepository>();
             services.AddScoped<IMapRepository, MapRepository>();
             services.AddScoped<IPartnerLocationRepository, PartnerLocationRepository>();

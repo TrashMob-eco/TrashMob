@@ -61,4 +61,8 @@ export const PartnerLocationPrimaryPhone = "Enter the primary phone number for t
 export const PartnerLocationSecondaryPhone = "Enter the secondary phone number for the location. We recommend making this the switchboard or main office number, in case the primary phone number becomes invalid in the future."
 export const PartnerLocationNotes = "Enter information regarding the services provided. This will be shown to event leads so they can contact the right partner."
 export const PartnerLocationIsPartnerLocationActive = "Use this to temporarily disable a partner location."
-
+export const EventSummaryActualNumberOfAttendees = "How many people actually showed up for the event?"
+export const EventSummaryNumberOfBags = "If you gathered all the trash into large trash bags at the end of the event, how many filled bags did you collect?"
+export const EventSummaryNumberOfBuckets = "If you were dumping buckets of trash into dumpsters, how many buckets did you gather?"
+export const EventSummaryDurationInMinutes = "How long did the event last in minutes"
+export const EventSummaryNotes = "Record any notes about what went well or what could have gone better, or reminders for the next time at this location."
