@@ -10,7 +10,6 @@ import { ManageEventMedia } from './ManageEventMedia';
 import { ManageEventAttendees } from './ManageEventAttendees';
 import { Guid } from 'guid-typescript';
 import { Button } from 'reactstrap';
-import { EventName } from '../../store/ToolTips';
 
 export interface ManageEventDashboardMatchParams {
     eventId?: string;
