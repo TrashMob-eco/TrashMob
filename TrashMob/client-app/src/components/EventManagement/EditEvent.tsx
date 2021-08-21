@@ -14,7 +14,7 @@ import UserData from '../Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
-import { Button, Col, Form } from 'react-bootstrap';
+import { Button, Col, Form, ToggleButton } from 'react-bootstrap';
 import { Guid } from 'guid-typescript';
 
 export interface EditEventProps {
@@ -42,6 +42,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [latitude, setLatitude] = React.useState<number>(0);
     const [longitude, setLongitude] = React.useState<number>(0);
     const [maxNumberOfParticipants, setMaxNumberOfParticipants] = React.useState<number>(0);
+    const [isEventPublic, setIsEventPublic] = React.useState<boolean>(true);
     const [createdByUserId, setCreatedByUserId] = React.useState<string>();
     const [eventStatusId, setEventStatusId] = React.useState<number>(0);
     const [eventTypeList, setEventTypeList] = React.useState<EventTypeData[]>([]);
@@ -91,6 +92,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     setLatitude(eventData.latitude);
                     setLongitude(eventData.longitude);
                     setMaxNumberOfParticipants(eventData.maxNumberOfParticipants);
+                    setIsEventPublic(eventData.isEventPublic);
                     setCreatedByUserId(eventData.createdByUserId);
                     setEventStatusId(eventData.eventStatusId);
                     setCenter(new data.Position(eventData.longitude, eventData.latitude));
@@ -270,6 +272,10 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.EventDate}</Tooltip>
     }
 
+    function renderIsEventPublicToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.EventIsEventPublic}</Tooltip>
+    }
+
     function handleLocationChange(point: data.Position) {
         // In an Azure Map point, the longitude is the first position, and latitude is second
         setLatitude(point[1]);
@@ -296,8 +302,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     }
 
     function handleEventDateChange(passedDate: Date) {
-        if (passedDate < new Date()) {
-            setEventDateErrors("Event cannot be in the past");
+        if (isEventPublic && passedDate < new Date()) {
+            setEventDateErrors("Public event cannot be in the past");
         }
         else {
             setEventDateErrors("");
@@ -306,9 +312,21 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         setEventDate(passedDate);
     }
 
+    function handleIsEventPublicChanged(value: boolean) {
+        setIsEventPublic(value);
+
+        if (value && eventDate < new Date()) {
+            setEventDateErrors("Public event cannot be in the past");
+        }
+        else {
+            setEventDateErrors("");
+        }
+    }
+
     // This will handle Cancel button click event.
     function handleCancel(event: any) {
         event.preventDefault();
+
         props.onEditCancel();
     }
 
@@ -342,6 +360,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         eventData.latitude = latitude ?? 0;
         eventData.longitude = longitude ?? 0;
         eventData.maxNumberOfParticipants = maxNumberOfParticipants ?? 0;
+        eventData.isEventPublic = isEventPublic;
         eventData.createdByUserId = createdByUserId ?? props.currentUser.id;
         eventData.lastUpdatedByUserId = props.currentUser.id;
         eventData.eventStatusId = eventStatusId;
@@ -400,6 +419,22 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                         )}
                                     </select>
                                 </div>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderIsEventPublicToolTip}>
+                                    <Form.Label htmlFor="IsEventPublic">Event is Public:</Form.Label>
+                                </OverlayTrigger >
+                                <ToggleButton
+                                    type="checkbox"
+                                    variant="outline-dark"
+                                    checked={isEventPublic}
+                                    value="1"
+                                    onChange={(e) => handleIsEventPublicChanged(e.currentTarget.checked)}
+                                >
+                                    Event is Public
+                                    </ToggleButton>
                             </Form.Group>
                         </Col>
                     </Form.Row>
