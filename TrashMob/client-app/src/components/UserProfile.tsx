@@ -63,7 +63,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
 
     React.useEffect(() => {
 
-        if (props.isUserLoaded && !isDataLoaded)  {
+        if (props.isUserLoaded && !isDataLoaded) {
             const account = msalClient.getAllAccounts()[0];
             setEventName("User's Base Location");
 
@@ -75,7 +75,6 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
 
                 fetch('/api/users/' + userId, {
                     method: 'GET',
@@ -279,7 +278,35 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
     }
 
     function handleUserNameChanged(val: string) {
-        setUserName(val);
+
+        const account = msalClient.getAllAccounts()[0];
+
+        // Verify that this username is unique
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = getDefaultHeaders('GET');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+            fetch('/api/users/verifyunique/' + userId + '/' + val, {
+                method: 'GET',
+                headers: headers,
+            }).then(response => {
+                if (response.status == 200) {
+                    setUserNameErrors("");
+                    setUserName(val);
+                }
+                else if (response.status == 409) {
+                    setUserNameErrors("This username is already in use. Please choose a different name.");
+                }
+                else {
+                    setUserNameErrors("Unknown error occured while hecking user name. Please try again. Error Code: " + response.status);
+                }
+            })
+        })
     }
 
     function handleGivenNameChanged(val: string) {
@@ -663,7 +690,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                                 variant="outline-dark"
                                                 checked={pref.isOptedOut}
                                                 value="1"
-                                                onChange={(e) => setIsOptedOut(pref.userNotificationTypeId)}                                                
+                                                onChange={(e) => setIsOptedOut(pref.userNotificationTypeId)}
                                             >{pref.userFriendlyName}</ToggleButton>
                                         </Form.Group>
                                     ))}

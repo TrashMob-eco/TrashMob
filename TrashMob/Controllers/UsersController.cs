@@ -47,6 +47,24 @@ namespace TrashMob.Controllers
             return Ok(user);
         }
 
+        [HttpGet("verifyunique/{userId}/{userName}")]
+        public async Task<IActionResult> VerifyUnique(Guid userId, string userName)
+        {
+            var user = await userRepository.GetUserByUserName(userName).ConfigureAwait(false);
+
+            if (user == null)
+            {
+                return Ok();
+            }
+            
+            if (user.Id != userId)
+            {
+                return Conflict();
+            }
+
+            return Ok();
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserByUserName(Guid id)
         {
