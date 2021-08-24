@@ -424,17 +424,16 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderIsEventPublicToolTip}>
-                                    <Form.Label htmlFor="IsEventPublic">Event is Public:</Form.Label>
-                                </OverlayTrigger >
-                                <ToggleButton
-                                    type="checkbox"
-                                    variant="outline-dark"
-                                    checked={isEventPublic}
-                                    value="1"
-                                    onChange={(e) => handleIsEventPublicChanged(e.currentTarget.checked)}
-                                >
-                                    Event is Public
+                                    <ToggleButton
+                                        type="checkbox"
+                                        variant="outline-dark"
+                                        checked={isEventPublic}
+                                        value="1"
+                                        onChange={(e) => handleIsEventPublicChanged(e.currentTarget.checked)}
+                                    >
+                                        Event is Public
                                     </ToggleButton>
+                                </OverlayTrigger >
                             </Form.Group>
                         </Col>
                     </Form.Row>
