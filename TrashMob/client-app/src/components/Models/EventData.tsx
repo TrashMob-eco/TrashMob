@@ -21,6 +21,7 @@ class EventData {
     maxNumberOfParticipants: number = 0;
     lastUpdatedByUserId: string = "";
     lastUpdatedDate: Date = new Date();
+    isEventPublic: boolean = true;
 }
 
 export default EventData;

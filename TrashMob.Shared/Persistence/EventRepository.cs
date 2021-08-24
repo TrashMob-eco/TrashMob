@@ -29,7 +29,7 @@
         public async Task<IEnumerable<Event>> GetActiveEvents()
         {
             return await mobDbContext.Events
-                .Where(e => (e.EventStatusId == (int)EventStatusEnum.Active || e.EventStatusId == (int)EventStatusEnum.Full) && e.EventDate >= DateTimeOffset.UtcNow.AddMinutes(-1 * StandardEventWindowInMinutes))
+                .Where(e => (e.EventStatusId == (int)EventStatusEnum.Active || e.EventStatusId == (int)EventStatusEnum.Full) && e.IsEventPublic && e.EventDate >= DateTimeOffset.UtcNow.AddMinutes(-1 * StandardEventWindowInMinutes))
                 .AsNoTracking()
                 .ToListAsync().ConfigureAwait(false);
         }
