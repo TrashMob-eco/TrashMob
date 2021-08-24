@@ -295,11 +295,11 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 method: 'GET',
                 headers: headers,
             }).then(response => {
-                if (response.status == 200) {
+                if (response.status === 200) {
                     setUserNameErrors("");
                     setUserName(val);
                 }
-                else if (response.status == 409) {
+                else if (response.status === 409) {
                     setUserNameErrors("This username is already in use. Please choose a different name.");
                 }
                 else {
