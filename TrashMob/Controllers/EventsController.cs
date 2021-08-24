@@ -157,7 +157,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            await eventRepository.AddEvent(mobEvent).ConfigureAwait(false);
+            var eventId = await eventRepository.AddEvent(mobEvent).ConfigureAwait(false);
 
             var email = new Email
             {
@@ -169,10 +169,9 @@ namespace TrashMob.Controllers
 
             await emailManager.SendSystemEmail(email, CancellationToken.None).ConfigureAwait(false);
 
-            return Ok();
+            return Ok(eventId);
         }
 
-        // DELETE: api/Events/5
         [HttpDelete("{id}")]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]

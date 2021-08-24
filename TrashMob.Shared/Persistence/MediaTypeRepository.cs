@@ -6,18 +6,18 @@
     using Microsoft.EntityFrameworkCore;
     using TrashMob.Shared.Models;
 
-    public class EventTypeRepository : IEventTypeRepository
+    public class MediaTypeRepository : IMediaTypeRepository
     {
         private readonly MobDbContext mobDbContext;
 
-        public EventTypeRepository(MobDbContext mobDbContext)
+        public MediaTypeRepository(MobDbContext mobDbContext)
         {
             this.mobDbContext = mobDbContext;
         }
 
-        public async Task<IEnumerable<EventType>> GetAllEventTypes()
+        public async Task<IEnumerable<MediaType>> GetAllMediaTypes()
         {
-            return await mobDbContext.EventTypes.Where(e => e.IsActive == true)
+            return await mobDbContext.MediaTypes.Where(e => e.IsActive == true)
                 .AsNoTracking()
                 .ToListAsync().ConfigureAwait(false);
         }

@@ -6,3 +6,6 @@ export const EventPartnerStatusNone = 0;
 export const EventPartnerStatusRequested = 1;
 export const EventPartnerStatusAccepted = 2;
 export const EventPartnerStatusDeclined = 3;
+
+export const MediaTypeInstagram = 1;
+export const MediaTypeYouTube = 2;

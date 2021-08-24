@@ -48,10 +48,11 @@ namespace TrashMob
             services.AddScoped<IEmailManager, EmailManager>();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
-            services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IEventPartnerRepository, EventPartnerRepository>();
+            services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IEventPartnerStatusRepository, EventPartnerStatusRepository>();
             services.AddScoped<IEventStatusRepository, EventStatusRepository>();
+            services.AddScoped<IEventSummaryRepository, EventSummaryRepository>();
             services.AddScoped<IEventTypeRepository, EventTypeRepository>();
             services.AddScoped<IMapRepository, MapRepository>();
             services.AddScoped<IPartnerLocationRepository, PartnerLocationRepository>();
@@ -64,6 +65,9 @@ namespace TrashMob
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
             services.AddScoped<IUserNotificationPreferenceRepository, UserNotificationPreferenceRepository>();
+            services.AddScoped<IEventMediaRepository, EventMediaRepository>();
+            services.AddScoped<IMediaTypeRepository, MediaTypeRepository>();
+            services.AddScoped<ISecretRepository, SecretRepository>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 

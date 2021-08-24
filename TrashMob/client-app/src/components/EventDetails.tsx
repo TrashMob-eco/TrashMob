@@ -9,7 +9,10 @@ import { data } from 'azure-maps-control';
 import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from '@ambientlight/react-azure-maps';
 import MapController from './MapController';
-import { Col, Form } from 'react-bootstrap';
+import { Carousel, Col, Form } from 'react-bootstrap';
+import EventMediaData from './Models/EventMediaData';
+import YouTubeEmbed from "./YouTubeEmbed";
+import * as Constants from './Models/Constants';
 
 export interface DetailsMatchParams {
     eventId: string;
@@ -47,7 +50,9 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
     const [eventUrl, setEventUrl] = React.useState<string>();
     const [twitterUrl, setTwitterUrl] = React.useState<string>();
     const [facebookUrl, setFacebookUrl] = React.useState<string>();
-
+    const [mediaList, setMediaList] = React.useState<EventMediaData[]>([]);
+    const [isEventMediaDataLoaded, setIsEventMediaDataLoaded] = React.useState<boolean>(false);
+    
     React.useEffect(() => {
 
         const headers = getDefaultHeaders('GET');
@@ -93,11 +98,22 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     setPostalCode(eventData.postalCode);
                     setLatitude(eventData.latitude);
                     setLongitude(eventData.longitude);
-                    var shareMessage = "Help clean up Planet Earth! Sign up for this TrashMob.eco event in " + eventData.city + ", " + eventData.region + " on " + (new Date(eventData.eventDate)).toLocaleDateString() +"! via @TrashMobEco";
+                    var shareMessage = "Help clean up Planet Earth! Sign up for this TrashMob.eco event in " + eventData.city + ", " + eventData.region + " on " + (new Date(eventData.eventDate)).toLocaleDateString() + "! via @TrashMobEco";
                     setTwitterUrl("https://twitter.com/intent/tweet?text=" + encodeURI(shareMessage) + "&ref_src=twsrc%5Etfw");
                     setFacebookUrl("https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.trashmob.eco%2Feventdetails%2" + eventId + "&amp;src=sdkpreparse");
                     setMaxNumberOfParticipants(eventData.maxNumberOfParticipants);
                     setCenter(new data.Position(eventData.longitude, eventData.latitude));
+                }).then(() => {
+                    fetch('/api/eventmedias/' + eventId, {
+                        method: 'GET',
+                        headers: headers
+                    })
+                        .then(response => response.json() as Promise<Array<EventMediaData>>)
+                        .then(mediaData => {
+                            setMediaList(mediaData);
+                            setIsEventMediaDataLoaded(true);
+                        })
+
                     setIsDataLoaded(true);
                 });
         }
@@ -141,6 +157,30 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     </tbody>
                 </table>
             </div>
+        );
+    }
+
+    function renderMedia(mediaList: EventMediaData[]) {
+        return (
+            <Carousel className="carousel slide carousel-fade">
+                { mediaList.map(media => {
+                    if (media.mediaTypeId === Constants.MediaTypeYouTube) {
+                        return (
+                            <Carousel.Item className="carousel-inner">
+                                <YouTubeEmbed embedId={media.mediaUrl} />
+                            </Carousel.Item>
+                        );
+                    }
+                    else {
+                        return (
+                            <Carousel.Item className="carousel-inner">
+                                Media Type not available
+                            </Carousel.Item>
+                        )
+                    }
+                })
+                }
+            </Carousel>
         );
     }
 
@@ -257,11 +297,15 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                         </>
                     </AzureMapsProvider>
                 </div>
+                <div>
+                    <h2>Media</h2>
+                    {renderMedia(mediaList)}
+                </div>
             </div>
         )
     }
 
-    let contents = isDataLoaded
+    let contents = isDataLoaded && isEventMediaDataLoaded
         ? renderEvent()
         : <p><em>Loading...</em></p>;
 

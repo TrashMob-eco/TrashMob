@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrashMob.Shared.Persistence;
 
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    partial class MobDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210815232706_AddEventSummary")]
+    partial class AddEventSummary
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,9 +88,6 @@ namespace TrashMob.Migrations
 
                     b.Property<int>("EventTypeId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsEventPublic")
-                        .HasColumnType("bit");
 
                     b.Property<Guid>("LastUpdatedByUserId")
                         .HasColumnType("uniqueidentifier");
@@ -203,9 +202,6 @@ namespace TrashMob.Migrations
                     b.Property<int>("EventTypeId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsEventPublic")
-                        .HasColumnType("bit");
-
                     b.Property<Guid>("LastUpdatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -244,46 +240,6 @@ namespace TrashMob.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("EventHistory");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.EventMedia", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("MediaTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MediaUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MediaUsageTypeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("MediaTypeId");
-
-                    b.HasIndex("MediaUsageTypeId");
-
-                    b.ToTable("EventMedias");
                 });
 
             modelBuilder.Entity("TrashMob.Shared.Models.EventPartner", b =>
@@ -606,90 +562,6 @@ namespace TrashMob.Migrations
                             DisplayOrder = 14,
                             IsActive = true,
                             Name = "Other"
-                        });
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.MediaType", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MediaType");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Instagram Image or Video",
-                            DisplayOrder = 1,
-                            IsActive = true,
-                            Name = "Instagram"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "YouTube Video",
-                            DisplayOrder = 2,
-                            IsActive = true,
-                            Name = "YouTube"
-                        });
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.MediaUsageType", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MediaUsageType");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Before a cleanup event",
-                            DisplayOrder = 1,
-                            IsActive = true,
-                            Name = "BeforeEvent"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "After a cleanup event",
-                            DisplayOrder = 2,
-                            IsActive = true,
-                            Name = "AfterEvent"
                         });
                 });
 
@@ -1107,10 +979,6 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserName")
-                        .IsUnique()
-                        .HasFilter("[UserName] IS NOT NULL");
-
                     b.ToTable("Users");
                 });
 
@@ -1305,41 +1173,6 @@ namespace TrashMob.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.EventMedia", b =>
-                {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
-                        .WithMany("EventMedias")
-                        .HasForeignKey("CreatedByUserId")
-                        .HasConstraintName("FK_EventMedias_User_Id")
-                        .IsRequired();
-
-                    b.HasOne("TrashMob.Shared.Models.Event", "Event")
-                        .WithMany("EventMedias")
-                        .HasForeignKey("EventId")
-                        .HasConstraintName("FK_EventMedia_Event_Id")
-                        .IsRequired();
-
-                    b.HasOne("TrashMob.Shared.Models.MediaType", "MediaType")
-                        .WithMany("EventMedias")
-                        .HasForeignKey("MediaTypeId")
-                        .HasConstraintName("FK_EventMedias_MediaTypes")
-                        .IsRequired();
-
-                    b.HasOne("TrashMob.Shared.Models.MediaUsageType", "MediaUsageType")
-                        .WithMany("EventMedias")
-                        .HasForeignKey("MediaUsageTypeId")
-                        .HasConstraintName("FK_EventMedias_MediaUsageTypes")
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("Event");
-
-                    b.Navigation("MediaType");
-
-                    b.Navigation("MediaUsageType");
                 });
 
             modelBuilder.Entity("TrashMob.Shared.Models.EventPartner", b =>
@@ -1585,8 +1418,6 @@ namespace TrashMob.Migrations
 
             modelBuilder.Entity("TrashMob.Shared.Models.Event", b =>
                 {
-                    b.Navigation("EventMedias");
-
                     b.Navigation("UserNotifications");
                 });
 
@@ -1605,16 +1436,6 @@ namespace TrashMob.Migrations
                     b.Navigation("Events");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.MediaType", b =>
-                {
-                    b.Navigation("EventMedias");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.MediaUsageType", b =>
-                {
-                    b.Navigation("EventMedias");
-                });
-
             modelBuilder.Entity("TrashMob.Shared.Models.PartnerRequestStatus", b =>
                 {
                     b.Navigation("PartnerRequests");
@@ -1627,8 +1448,6 @@ namespace TrashMob.Migrations
 
             modelBuilder.Entity("TrashMob.Shared.Models.User", b =>
                 {
-                    b.Navigation("EventMedias");
-
                     b.Navigation("EventPartnersCreated");
 
                     b.Navigation("EventPartnersUpdated");

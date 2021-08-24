@@ -26,7 +26,7 @@
                 Latitude = originalEvent.Latitude,
                 Longitude = originalEvent.Longitude,
                 MaxNumberOfParticipants = originalEvent.MaxNumberOfParticipants,
-                ActualNumberOfParticipants = originalEvent.ActualNumberOfParticipants,
+                IsEventPublic = originalEvent.IsEventPublic,
                 CreatedByUserId = originalEvent.CreatedByUserId,
                 CreatedDate = originalEvent.CreatedDate,
                 LastUpdatedByUserId = originalEvent.LastUpdatedByUserId,

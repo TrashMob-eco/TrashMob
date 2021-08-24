@@ -105,10 +105,22 @@ If a browser does not open, open one for yourself and go to https://localhost:44
 The project uses Entity Framework Core V6 Model-First database updates.
 
 1. Update the models / MobDbContext as needed in the repo.
-2. In VS Code, run the following commands from the TrashMob.Shared folder
+2. To create the migration, do either of the following steps
 
+In VS Code
 ```
 dotnet ef migrations add <YourMigrationName>
+
+```
+
+or in Visual Studio Package Manager Console
+```
+  EntityFrameworkCore\Add-Migration <YourMigrationName>
+```
+
+3. In VS Code in the TrashMob Folder, run the following command
+
+```
 dotnet ef database update
 ```
 
