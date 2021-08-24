@@ -238,6 +238,8 @@
 
             modelBuilder.Entity<User>(entity =>
             {
+                entity.HasIndex(e => e.UserName).IsUnique();
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.UserName).HasMaxLength(32);
