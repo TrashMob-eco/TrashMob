@@ -40,6 +40,8 @@ namespace TrashMob.Shared.Models
 
         public int? MaxNumberOfParticipants { get; set; }
 
+        public bool IsEventPublic { get; set; }
+
         public Guid CreatedByUserId { get; set; }
 
         public DateTimeOffset? CreatedDate { get; set; }

@@ -1,6 +1,7 @@
 ﻿namespace TrashMob.Shared.Persistence
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using TrashMob.Shared.Models;
@@ -16,7 +17,7 @@
 
         public async Task<IEnumerable<EventType>> GetAllEventTypes()
         {
-            return await mobDbContext.EventTypes
+            return await mobDbContext.EventTypes.Where(e => e.IsActive == true)
                 .AsNoTracking()
                 .ToListAsync().ConfigureAwait(false);
         }
