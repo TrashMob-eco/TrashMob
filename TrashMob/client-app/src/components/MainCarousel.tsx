@@ -6,6 +6,7 @@ import styrofoam from "./assets/brian-yurasits-0G2jF-c704s-unsplash.jpg"
 import woman from "./assets/paige-cody-G8VOA-BrnHo-unsplash.jpg"
 
 import { Carousel } from 'react-bootstrap';
+import Stats from './Stats';
 
 export const MainCarousel: React.FC = () => {
     return (
@@ -14,6 +15,11 @@ export const MainCarousel: React.FC = () => {
                 <Carousel.Caption className="carousel-caption d-none d-md-block">
                     <h5>Meet up. Clean up. Feel good!</h5>
                     <p>Get out and start with your neighborhood and expand from there. Every bit matters!</p>
+                </Carousel.Caption>
+            </Carousel.Item>
+            <Carousel.Item className="carousel-inner">
+                <Carousel.Caption className="carousel-caption d-none d-md-block">
+                    <Stats />
                 </Carousel.Caption>
             </Carousel.Item>
             <Carousel.Item className="carousel-inner" style={{backgroundImage: 'url(' + styrofoam + ')'}}  >
