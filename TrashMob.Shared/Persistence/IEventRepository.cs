@@ -2,11 +2,14 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
     public interface IEventRepository
     {
+        IQueryable<Event> GetEvents();
+
         Task<IEnumerable<Event>> GetAllEvents();
  
         Task<IEnumerable<Event>> GetActiveEvents();
