@@ -2,6 +2,7 @@
 {
     using Microsoft.EntityFrameworkCore;
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
@@ -17,6 +18,11 @@
         public async Task<EventSummary> GetEventSummary(Guid eventId)
         {
             return await mobDbContext.EventSummaries.FirstOrDefaultAsync(es => es.EventId == eventId).ConfigureAwait(false);
+        }
+
+        public IQueryable<EventSummary> GetEventSummaries()
+        {
+            return mobDbContext.EventSummaries.AsQueryable();
         }
 
         // Add new EventSummary record     

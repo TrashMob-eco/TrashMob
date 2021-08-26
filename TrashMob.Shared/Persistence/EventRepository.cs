@@ -97,5 +97,10 @@
             mobDbContext.Entry(mobEvent).State = EntityState.Modified;
             return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
         }
+
+        public IQueryable<Event> GetEvents()
+        {
+            return mobDbContext.Events.AsQueryable();
+        }
     }
 }
