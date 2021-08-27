@@ -335,14 +335,19 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
 
     function handleLatitudeChanged(val: string) {
         try {
-            var floatVal = parseFloat(val);
+            if (val) {
+                var floatVal = parseFloat(val);
 
-            if (floatVal < -90 || floatVal > 90) {
-                setLatitudeErrors("Latitude must be => -90 and <= 90");
+                if (floatVal < -90 || floatVal > 90) {
+                    setLatitudeErrors("Latitude must be => -90 and <= 90");
+                }
+                else {
+                    setLatitude(floatVal);
+                    setLatitudeErrors("");
+                }
             }
             else {
-                setLatitude(floatVal);
-                setLatitudeErrors("");
+                setLatitudeErrors("Latitude must be => -90 and <= 90");
             }
         }
         catch { }
@@ -350,28 +355,38 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
 
     function handleLongitudeChanged(val: string) {
         try {
-            var floatVal = parseFloat(val);
+            if (val) {
+                var floatVal = parseFloat(val);
 
-            if (floatVal < -180 || floatVal > 180) {
-                setLongitudeErrors("Longitude must be >= -180 and <= 180");
+                if (floatVal < -180 || floatVal > 180) {
+                    setLongitudeErrors("Longitude must be >= -180 and <= 180");
+                }
+                else {
+                    setLongitude(floatVal);
+                    setLongitudeErrors("");
+                }
             }
             else {
-                setLongitude(floatVal);
-                setLongitudeErrors("");
+                setLongitudeErrors("Longitude must be >= -180 and <= 180");
             }
         }
         catch { }
     }
 
     function handleTravelLimitForLocalEventsChanged(val: string) {
-        var intVal = parseInt(val);
+        if (val) {
+            var intVal = parseInt(val);
 
-        if (intVal <= 0 || intVal > 1000) {
-            setTravelLimitForLocalEventsErrors("Travel limit must be greater than or equal to 0 and less than 1000.")
+            if (intVal <= 0 || intVal > 1000) {
+                setTravelLimitForLocalEventsErrors("Travel limit must be greater than or equal to 0 and less than 1000.")
+            }
+            else {
+                setTravelLimitForLocalEvents(intVal);
+                setTravelLimitForLocalEventsErrors("");
+            }
         }
         else {
-            setTravelLimitForLocalEvents(intVal);
-            setTravelLimitForLocalEventsErrors("");
+            setTravelLimitForLocalEvents(1);
         }
     }
 

@@ -3,19 +3,22 @@
     using AzureMapsToolkit.Spatial;
     using AzureMapsToolkit.Timezone;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Threading.Tasks;
 
     public class MapRepository : IMapRepository
     {
         private readonly IConfiguration configuration;
+        private readonly ILogger<MapRepository> logger;
         private const string AzureMapKeyName = "AzureMapsKey";
         private const int MetersPerKilometer = 1000;
         private const int MetersPerMile = 1609;
 
-        public MapRepository(IConfiguration configuration)
+        public MapRepository(IConfiguration configuration, ILogger<MapRepository> logger)
         {
             this.configuration = configuration;
+            this.logger = logger;
         }
 
         public string GetMapKey()
@@ -50,13 +53,23 @@
         {
             var azureMaps = new AzureMapsToolkit.AzureMapsServices(GetMapKey());
 
+            if (azureMaps == null)
+            {
+                logger.LogError("Failed to get instance of azuremaps.");
+                throw new Exception("Failed to get instance of azuremaps");
+            }
+
             var timezoneRequest = new TimeZoneRequest
             {
                 Query = $"{pointA.Item1},{pointA.Item2}",
                 TimeStamp = dateTimeOffset.ToString()
             };
 
+            logger.LogInformation("Getting time for timezoneRequest: {0}", timezoneRequest);
+
             var response = await azureMaps.GetTimezoneByCoordinates(timezoneRequest).ConfigureAwait(false);
+
+            logger.LogInformation("Response from getting time for timezoneRequest: {0}", response);
 
             return response.Result.TimeZones[0].ReferenceTime.WallTime;
         }
