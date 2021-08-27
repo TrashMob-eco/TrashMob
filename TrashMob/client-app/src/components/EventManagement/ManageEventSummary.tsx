@@ -89,32 +89,52 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
 
     function handleActualNumberOfAttendeesChanged(val: string) {
         try {
-            var attendees = parseInt(val);
-            setActualNumberOfAttendees(attendees);
+            if (val) {
+                var attendees = parseInt(val);
+                setActualNumberOfAttendees(attendees);
+            }
+            else {
+                setActualNumberOfAttendees(0);
+            }
         }
         catch { }
     }
 
     function handleNumberOfBagsChanged(val: string) {
         try {
-            var bags = parseInt(val);
-            setNumberOfBags(bags);
+            if (val) {
+                var bags = parseInt(val);
+                setNumberOfBags(bags);
+            }
+            else {
+                setNumberOfBags(0);
+            }
         }
         catch { }
     }
 
     function handleNumberOfBucketsChanged(val: string) {
         try {
-            var buckets = parseInt(val);
-            setNumberOfBuckets(buckets);
+            if (val) {
+                var buckets = parseInt(val);
+                setNumberOfBuckets(buckets);
+            }
+            else {
+                setNumberOfBuckets(0);
+            }
         }
         catch { }
     }
 
     function handleDurationInMinutesChanged(val: string) {
         try {
-            var duration = parseInt(val);
-            setDurationInMinutes(duration);
+            if (val) {
+                var duration = parseInt(val);
+                setDurationInMinutes(duration);
+            }
+            else {
+                setDurationInMinutes(0);
+            }
         }
         catch { }
     }
