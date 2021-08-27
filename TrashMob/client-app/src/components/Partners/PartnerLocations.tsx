@@ -125,14 +125,19 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
 
     function handleLatitudeChanged(val: string) {
         try {
-            var floatVal = parseFloat(val);
+            if (val) {
+                var floatVal = parseFloat(val);
 
-            if (floatVal < -90 || floatVal > 90) {
-                setLatitudeErrors("Latitude must be => -90 and <= 90");
+                if (floatVal < -90 || floatVal > 90) {
+                    setLatitudeErrors("Latitude must be => -90 and <= 90");
+                }
+                else {
+                    setLatitude(floatVal);
+                    setLatitudeErrors("");
+                }
             }
             else {
-                setLatitude(floatVal);
-                setLatitudeErrors("");
+                setLatitudeErrors("Latitude must be => -90 and <= 90");
             }
         }
         catch { }
@@ -140,14 +145,19 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
 
     function handleLongitudeChanged(val: string) {
         try {
-            var floatVal = parseFloat(val);
+            if (val) {
+                var floatVal = parseFloat(val);
 
-            if (floatVal < -180 || floatVal > 180) {
-                setLongitudeErrors("Longitude must be >= -180 and <= 180");
+                if (floatVal < -180 || floatVal > 180) {
+                    setLongitudeErrors("Longitude must be >= -180 and <= 180");
+                }
+                else {
+                    setLongitude(floatVal);
+                    setLongitudeErrors("");
+                }
             }
             else {
-                setLongitude(floatVal);
-                setLongitudeErrors("");
+                setLongitudeErrors("Longitude must be >= -180 and <= 180");
             }
         }
         catch { }
