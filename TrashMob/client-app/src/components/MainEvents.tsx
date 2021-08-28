@@ -120,10 +120,10 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {events.sort((a, b) => (a.eventDate < b.eventDate) ? 1 : -1).map(mobEvent =>
+                        {events.sort((a, b) => (a.eventDate > b.eventDate) ? 1 : -1).map(mobEvent =>
                             <tr key={mobEvent.id.toString()}>
                                 <td>{mobEvent.name}</td>
-                                <td>{new Date(mobEvent.eventDate).toLocaleDateString("en-US", {month:"long", day:"numeric", hour: 'numeric', minute: 'numeric' })}</td>
+                                <td>{new Date(mobEvent.eventDate).toLocaleDateString("en-US", {month:"long", day:"numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' })}</td>
                                 <td>{getEventType(props.eventTypeList, mobEvent.eventTypeId)}</td>
                                 {/* <td>{mobEvent.city}</td> */}
                                 {/* <td>{mobEvent.region}</td> */}
