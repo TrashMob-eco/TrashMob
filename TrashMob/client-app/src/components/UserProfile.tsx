@@ -15,6 +15,7 @@ import { data } from 'azure-maps-control';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapController from './MapController';
 import UserNotificationPreferenceData, { UserNotificationPreferenceDefaults } from './Models/UserNotificationPreferenceData';
+import * as Constants from './Models/Constants';
 
 interface UserProfileProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -278,6 +279,21 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
     }
 
     function handleUserNameChanged(val: string) {
+
+        if (!val || val.length === 0) {
+            setUserNameErrors("Username cannot be empty. Username can consist of Letters A-Z (upper or lowercase), Numbers (0-9), and underscores (_)");
+            return;
+        }
+
+        var pattern = new RegExp(Constants.RegexUserName);
+
+        if (!pattern.test(val)) {
+            setUserNameErrors("Please enter a valid Username. Username can consist of Letters A-Z (upper or lowercase), Numbers (0-9), and underscores (_)");
+            return;
+        }
+        else {
+            setUserNameErrors("");
+        }
 
         const account = msalClient.getAllAccounts()[0];
 
