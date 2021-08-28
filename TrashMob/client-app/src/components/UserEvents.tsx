@@ -83,7 +83,7 @@ export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {events.map(mobEvent => {
+                        {events.sort((a, b) => (a.eventDate < b.eventDate) ? 1 : -1).map(mobEvent => {
                             var isOwner = mobEvent.createdByUserId === props.currentUser.id;
 
                             return (

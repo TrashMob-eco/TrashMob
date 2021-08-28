@@ -73,7 +73,7 @@
             return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid attendeeId)
+        public async Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid attendeeId, bool futureEventsOnly = false)
         {
             // TODO: There are better ways to do this.
             var eventAttendees = await mobDbContext.EventAttendees
@@ -82,7 +82,9 @@
                 .ToListAsync().ConfigureAwait(false);
 
             var events = await mobDbContext.Events
-                .Where(e => e.EventStatusId != (int)EventStatusEnum.Canceled && eventAttendees.Select(ea => ea.EventId).Contains(e.Id))
+                .Where(e => e.EventStatusId != (int)EventStatusEnum.Canceled
+                         && (!futureEventsOnly || e.EventDate >= DateTimeOffset.UtcNow)
+                         && eventAttendees.Select(ea => ea.EventId).Contains(e.Id))
                 .AsNoTracking()
                 .ToListAsync().ConfigureAwait(false);
             return events;

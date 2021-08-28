@@ -37,7 +37,7 @@ namespace TrashMob.Shared.Tests
             events[0].CreatedByUserId = users[0].Id;
 
             // The user is attending all available events
-            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(events);
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
@@ -62,7 +62,7 @@ namespace TrashMob.Shared.Tests
             events[1].CreatedByUserId = users[0].Id;
 
             // The user is attending all available events
-            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(events);
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
@@ -86,7 +86,7 @@ namespace TrashMob.Shared.Tests
             events[0].CreatedByUserId = users[0].Id;
 
             // The users are attending all available events
-            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(events);
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
@@ -136,7 +136,7 @@ namespace TrashMob.Shared.Tests
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
             // The user is attending all available events
-            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(events);
 
             // Act
             await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
@@ -158,7 +158,7 @@ namespace TrashMob.Shared.Tests
             events[0].CreatedByUserId = users[0].Id;
 
             // The user is attending all available events
-            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(events);
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
@@ -195,7 +195,7 @@ namespace TrashMob.Shared.Tests
             events[0].CreatedByUserId = users[0].Id;
 
             // The user is attending all available events
-            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(events);
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
@@ -225,7 +225,7 @@ namespace TrashMob.Shared.Tests
             users[0].IsOptedOutOfAllEmails = true;
 
             // The user is attending all available events
-            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(events);
             EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
             UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
 
@@ -249,7 +249,7 @@ namespace TrashMob.Shared.Tests
             events[0].CreatedByUserId = users[0].Id;
 
             // The user is attending all available events
-            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(events);
 
             List<UserNotificationPreference> userNotificationPreferences = GetUserNotificationPreferences();
             var unIndex = userNotificationPreferences.FindIndex(unp => unp.UserNotificationTypeId == (int)NotificationType);
@@ -279,7 +279,7 @@ namespace TrashMob.Shared.Tests
             events[0].CreatedByUserId = users[0].Id;
 
             // The user is attending all available events
-            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>())).ReturnsAsync(events);
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(events);
 
             events[0].EventDate = DateTimeOffset.UtcNow.AddDays(NumberOfDaysToAddForEventOutOfWindow);
 

@@ -48,22 +48,6 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
-        [Authorize]
-        [RequiredScope(Constants.TrashMobReadScope)]
-        [Route("eventsowned/{userId}")]
-        public async Task<IActionResult> GetEventsUserOwns(Guid userId)
-        {
-            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
-            if (user == null || !ValidateUser(user.NameIdentifier))
-            {
-                return Forbid();
-            }
-
-            var result = await eventRepository.GetUserEvents(userId).ConfigureAwait(false);
-            return Ok(result);
-        }
-
-        [HttpGet]
         [Route("eventsuserisattending/{userId}")]
         [Authorize]
         [RequiredScope(Constants.TrashMobReadScope)]
@@ -82,8 +66,8 @@ namespace TrashMob.Controllers
         [HttpGet]
         [Authorize]
         [RequiredScope(Constants.TrashMobReadScope)]
-        [Route("userevents/{userId}")]
-        public async Task<IActionResult> GetUserEvents(Guid userId)
+        [Route("userevents/{userId}/{futureEventsOnly}")]
+        public async Task<IActionResult> GetUserEvents(Guid userId, bool futureEventsOnly)
         {
             var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
             if (user == null || !ValidateUser(user.NameIdentifier))
@@ -91,8 +75,8 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var result1 = await eventRepository.GetUserEvents(userId).ConfigureAwait(false);
-            var result2 = await eventAttendeeRepository.GetEventsUserIsAttending(userId).ConfigureAwait(false);
+            var result1 = await eventRepository.GetUserEvents(userId, futureEventsOnly).ConfigureAwait(false);
+            var result2 = await eventAttendeeRepository.GetEventsUserIsAttending(userId, futureEventsOnly).ConfigureAwait(false);
 
             var allResults = result1.Union(result2, new EventComparer());
             return Ok(allResults);
