@@ -280,7 +280,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
 
     function handleUserNameChanged(val: string) {
 
-        if (!val || val.length == 0) {
+        if (!val || val.length === 0) {
             setUserNameErrors("Username cannot be empty. Username can consist of Letters A-Z (upper or lowercase), Numbers (0-9), and underscores (_)");
             return;
         }
