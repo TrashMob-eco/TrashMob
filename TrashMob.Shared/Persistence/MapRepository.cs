@@ -5,6 +5,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using System;
+    using System.Net;
     using System.Text.Json;
     using System.Threading.Tasks;
 
@@ -63,7 +64,7 @@
             var timezoneRequest = new TimeZoneRequest
             {
                 Query = $"{pointA.Item1},{pointA.Item2}",
-                TimeStamp = dateTimeOffset.ToString()
+                TimeStamp = dateTimeOffset.ToString("o")
             };
 
             logger.LogInformation("Getting time for timezoneRequest: {0}", JsonSerializer.Serialize(timezoneRequest));
@@ -71,6 +72,11 @@
             var response = await azureMaps.GetTimezoneByCoordinates(timezoneRequest).ConfigureAwait(false);
 
             logger.LogInformation("Response from getting time for timezoneRequest: {0}", JsonSerializer.Serialize(response));
+
+            if (response.HttpResponseCode != (int)HttpStatusCode.OK)
+            {
+                throw new Exception($"Error getting timezonebycoordinates: {response.Error.Error}");
+            }
 
             return response?.Result?.TimeZones[0]?.ReferenceTime?.WallTime;
         }
