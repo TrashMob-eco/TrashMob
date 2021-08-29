@@ -97,12 +97,5 @@ namespace TrashMob.Controllers
 
             return Ok(displayPartnerEvents);
         }
-
-        // Ensure the user calling in is the owner of the record
-        private bool ValidateUser(string userId)
-        {
-            var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            return userId == nameIdentifier;
-        }
     }
 }
