@@ -133,6 +133,11 @@ This is a pay-per-use feature, so, for the most part, we're going to try to limi
 
 To test sending email, copy the "sendGridApiKey" fron the dev keyvault to your machine and repeat the above, sustituting in the real key. 
 
+## A note on Azure Maps usage
+The call to find the distance between two points in Azure Maps is only available in S1 (Gen 1) or Gen2 Maps. This is significantly more expensive than the S0 maps, so for now, we default to S0 for all dev deployments, and have manually set Prod to Gen2. It is not recommended to rerun the infrastructure deployments to Prod, as this will overwrite this setting.
+
+In the future, we may want to optimize the use of this function to reduce costs.
+
 ## How do I deploy the Azure Web App from GitHub?
 The Dev site is automatically deployed with each push to the Main branch via a GitHub action. This is the preferred method of updating the Development Server. If you need to push an update from your development machine instead, please let the team know that there are changes in the environment pending checkin.
 
