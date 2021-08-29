@@ -42,6 +42,12 @@ namespace TrashMob.Shared.Engine
                     continue;
                 }
 
+                // If the user has not set their latitude and longitude, skip user
+                if (user.Latitude == 0 && user.Longitude == 0)
+                {
+                    continue;
+                }
+
                 var eventsToNotifyUserFor = new List<Event>();
 
                 // Get list of active events
@@ -53,8 +59,20 @@ namespace TrashMob.Shared.Engine
                 // Limit the list of events to process to those in the next window UTC
                 foreach (var mobEvent in events.Where(e => e.EventDate <= DateTimeOffset.UtcNow.AddHours(NumberOfHoursInWindow)))
                 {
+                    // Skip private events
+                    if (!mobEvent.IsEventPublic)
+                    {
+                        continue;
+                    }
+
                     // Verify that the user is not already attending the event. No need to remind them to attend
                     if (eventsUserIsAttending.Any(ea => ea.Id == mobEvent.Id))
+                    {
+                        continue;
+                    }
+
+                    // Only check distance if the user's country and region match the event
+                    if (user.Country != mobEvent.Country || user.Region != mobEvent.Region)
                     {
                         continue;
                     }
