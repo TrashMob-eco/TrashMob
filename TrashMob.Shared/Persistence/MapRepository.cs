@@ -5,6 +5,8 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using System;
+    using System.Net;
+    using System.Text.Json;
     using System.Threading.Tasks;
 
     public class MapRepository : IMapRepository
@@ -31,13 +33,23 @@
             var azureMaps = new AzureMapsToolkit.AzureMapsServices(GetMapKey());
             var distanceRequest = new GreatCircleDistanceRequest
             {
+                Query = $"{pointA.Item1},{pointA.Item2}:{pointB.Item1},{pointB.Item2}",
                 Start = new Coordinate() { Lat = pointA.Item1, Lon = pointA.Item2 },
                 End = new Coordinate() { Lat = pointB.Item1, Lon = pointB.Item2 }
             };
 
+            logger.LogInformation("Getting distance between two points: {0}", JsonSerializer.Serialize(distanceRequest));
+
             var response = await azureMaps.GetGreatCircleDistance(distanceRequest).ConfigureAwait(false);
 
-            var distanceInMeters = (long)response.Result.Result.DistanceInMeters;
+            logger.LogInformation("Response from getting distance between two points: {0}", JsonSerializer.Serialize(response));
+
+            if (response.HttpResponseCode != (int)HttpStatusCode.OK)
+            {
+                throw new Exception($"Error getting GetGreatCircleDistance: {response.Error.Error}");
+            }
+
+            var distanceInMeters = (long)response?.Result?.Result?.DistanceInMeters;
 
             if (IsMetric)
             {
@@ -62,16 +74,21 @@
             var timezoneRequest = new TimeZoneRequest
             {
                 Query = $"{pointA.Item1},{pointA.Item2}",
-                TimeStamp = dateTimeOffset.ToString()
+                TimeStamp = dateTimeOffset.ToString("o")
             };
 
-            logger.LogInformation("Getting time for timezoneRequest: {0}", timezoneRequest);
+            logger.LogInformation("Getting time for timezoneRequest: {0}", JsonSerializer.Serialize(timezoneRequest));
 
             var response = await azureMaps.GetTimezoneByCoordinates(timezoneRequest).ConfigureAwait(false);
 
-            logger.LogInformation("Response from getting time for timezoneRequest: {0}", response);
+            logger.LogInformation("Response from getting time for timezoneRequest: {0}", JsonSerializer.Serialize(response));
 
-            return response.Result.TimeZones[0].ReferenceTime.WallTime;
+            if (response.HttpResponseCode != (int)HttpStatusCode.OK)
+            {
+                throw new Exception($"Error getting timezonebycoordinates: {response.Error.Error}");
+            }
+
+            return response?.Result?.TimeZones[0]?.ReferenceTime?.WallTime;
         }
     }
 }
