@@ -5,6 +5,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using System;
+    using System.Text.Json;
     using System.Threading.Tasks;
 
     public class MapRepository : IMapRepository
@@ -65,13 +66,13 @@
                 TimeStamp = dateTimeOffset.ToString()
             };
 
-            logger.LogInformation("Getting time for timezoneRequest: {0}", timezoneRequest);
+            logger.LogInformation("Getting time for timezoneRequest: {0}", JsonSerializer.Serialize(timezoneRequest));
 
             var response = await azureMaps.GetTimezoneByCoordinates(timezoneRequest).ConfigureAwait(false);
 
-            logger.LogInformation("Response from getting time for timezoneRequest: {0}", response);
+            logger.LogInformation("Response from getting time for timezoneRequest: {0}", JsonSerializer.Serialize(response));
 
-            return response.Result.TimeZones[0].ReferenceTime.WallTime;
+            return response?.Result?.TimeZones[0]?.ReferenceTime?.WallTime;
         }
     }
 }

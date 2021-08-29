@@ -135,10 +135,11 @@
 
         public async Task<string> PopulateTemplate(string template, User user, Event mobEvent)
         {
+            var localTime = await MapRepository.GetTimeForPoint(new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false);
             var populatedTemplate = template;
             populatedTemplate.Replace("{UserName}", user.UserName);
             populatedTemplate.Replace("{EventName}", mobEvent.Name);
-            populatedTemplate.Replace("{EventDate}", await MapRepository.GetTimeForPoint(new System.Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false));
+            populatedTemplate.Replace("{EventDate}", localTime ?? mobEvent.EventDate.ToString("o"));
             populatedTemplate.Replace("{EventStreet}", mobEvent.StreetAddress);
             populatedTemplate.Replace("{EventCity}", mobEvent.City);
             populatedTemplate.Replace("{EventRegion}", mobEvent.Region);
@@ -180,13 +181,14 @@
 
             foreach (var mobEvent in mobEvents)
             {
+                var localTime = await MapRepository.GetTimeForPoint(new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false);
                 eventGrid.AppendLine("<tr>");
                 eventGrid.AppendLine("<td>");
                 var link = $"<a target='_blank' href='https://www.trashmob.eco/eventdetails/{mobEvent.Id}'>{mobEvent.Name}</a>";
                 eventGrid.AppendLine(link);
                 eventGrid.AppendLine("</td>");
                 eventGrid.AppendLine("<td>");
-                populatedTemplate.Replace("{EventDate}", await MapRepository.GetTimeForPoint(new System.Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false));
+                populatedTemplate.Replace("{EventDate}", localTime ?? mobEvent.EventDate.ToString("o"));
                 eventGrid.AppendLine("</td>");
                 eventGrid.AppendLine("<td>");
                 eventGrid.AppendLine(mobEvent.StreetAddress);
