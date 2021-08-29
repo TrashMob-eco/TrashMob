@@ -5,12 +5,14 @@ namespace TrashMob.Controllers
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Poco;
     using TrashMob.Shared;
+    using TrashMob.Shared.Engine;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
@@ -23,18 +25,21 @@ namespace TrashMob.Controllers
         private readonly IPartnerRepository partnerRepository;
         private readonly IPartnerLocationRepository partnerLocationRepository;
         private readonly IPartnerUserRepository partnerUserRepository;
+        private readonly IEmailManager emailManager;
 
         public EventPartnersController(IEventPartnerRepository eventPartnerRepository, 
                                        IUserRepository userRepository, 
                                        IPartnerRepository partnerRepository, 
                                        IPartnerLocationRepository partnerLocationRepository,
-                                       IPartnerUserRepository partnerUserRepository)
+                                       IPartnerUserRepository partnerUserRepository,
+                                       IEmailManager emailManager)
         {
             this.eventPartnerRepository = eventPartnerRepository;
             this.userRepository = userRepository;
             this.partnerRepository = partnerRepository;
             this.partnerLocationRepository = partnerLocationRepository;
             this.partnerUserRepository = partnerUserRepository;
+            this.emailManager = emailManager;
         }
 
         [HttpGet("{eventId}")]
@@ -112,6 +117,35 @@ namespace TrashMob.Controllers
             eventPartner.LastUpdatedByUserId = currentUser.Id;
 
             var updatedEventPartner = await eventPartnerRepository.UpdateEventPartner(eventPartner).ConfigureAwait(false);
+
+            var user = await userRepository.GetUserByInternalId(eventPartner.CreatedByUserId);
+
+            // Notify Admins that a partner request has been responded to
+            var subject = "A partner request for an event has been responded to!";
+            var message = $"A partner request for an event has been responded to for event {eventPartner.EventId}!";
+
+            var recipients = new List<EmailAddress>
+            {
+                new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
+            };
+
+            await emailManager.SendSystemEmail(subject, message, recipients, CancellationToken.None).ConfigureAwait(false);
+
+            // Send welcome email to new User
+            var partnerMessage = emailManager.GetEmailTemplate(NotificationTypeEnum.EventPartnerResponse.ToString());
+            var partnerSubject = "A TrashMob.eco Partner has responded to your request!";
+
+            partnerMessage = partnerMessage.Replace("{UserName}", user.UserName);
+            var dashboardLink = string.Format("https://www.trashmob.eco/manageeventdashboard/{0}", eventPartner.EventId);
+            partnerMessage = partnerMessage.Replace("{PartnerResponseUrl}", dashboardLink);
+
+            var partnerRecipients = new List<EmailAddress>
+            {
+                new EmailAddress { Name = user.UserName, Email = user.Email },
+            };
+
+            await emailManager.SendSystemEmail(partnerSubject, partnerMessage, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
+
             return Ok(updatedEventPartner);
         }
 
@@ -131,6 +165,33 @@ namespace TrashMob.Controllers
             eventPartner.CreatedDate = DateTimeOffset.UtcNow;
             eventPartner.LastUpdatedDate = DateTimeOffset.UtcNow;
             await eventPartnerRepository.AddEventPartner(eventPartner).ConfigureAwait(false);
+
+            var partnerLocation = partnerLocationRepository.GetPartnerLocations().FirstOrDefault(pl => pl.Id == eventPartner.PartnerLocationId);
+
+            // Notify Admins that a new partner request has been made
+            var subject = "A New Partner Request for an Event has been made!";
+            var message = $"A new partner request for an event has been made for event {eventPartner.EventId}!";
+
+            var recipients = new List<EmailAddress>
+            {
+                new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
+            };
+
+            await emailManager.SendSystemEmail(subject, message, recipients, CancellationToken.None).ConfigureAwait(false);
+
+            // Send welcome email to new User
+            var partnerMessage = emailManager.GetEmailTemplate(NotificationTypeEnum.EventPartnerRequest.ToString());
+            var partnerSubject = "A TrashMob.eco Event would like to Partner with you!";
+
+            partnerMessage = partnerMessage.Replace("{PartnerLocationName}", partnerLocation.Name);
+
+            var partnerRecipients = new List<EmailAddress>
+            {
+                new EmailAddress { Name = partnerLocation.Name, Email = partnerLocation.PrimaryEmail },
+                new EmailAddress { Name = partnerLocation.Name, Email = partnerLocation.SecondaryEmail }
+            };
+
+            await emailManager.SendSystemEmail(partnerSubject, partnerMessage, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
 
             return Ok();
         }
