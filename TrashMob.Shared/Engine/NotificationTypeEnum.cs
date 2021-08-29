@@ -10,5 +10,7 @@
         UpcomingEventHostingToday = 6,
         UpcomingEventsInYourAreaThisWeek = 7,
         UpcomingEventsInYourAreaToday = 8,
+        Generic = 9,
+        WelcomeToTrashMob = 10,
     }
 }
