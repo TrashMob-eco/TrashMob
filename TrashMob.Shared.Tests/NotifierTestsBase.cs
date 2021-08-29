@@ -73,8 +73,8 @@ namespace TrashMob.Shared.Tests
                 TermsOfServiceVersion = "1.0",
                 UserName = "BlegD",
                 TravelLimitForLocalEvents = 25,
-                Longitude = 0,
-                Latitude = 0,
+                Longitude = 1,
+                Latitude = 1,
             };
 
             var users = new List<User>
@@ -107,8 +107,8 @@ namespace TrashMob.Shared.Tests
                 UserName = "BlegD",
                 IsOptedOutOfAllEmails = false,
                 TravelLimitForLocalEvents = 25,
-                Longitude = 0,
-                Latitude = 0,
+                Longitude = 1,
+                Latitude = 1,
             };
 
             var user2 = new User()
@@ -131,8 +131,8 @@ namespace TrashMob.Shared.Tests
                 UserName = "BlegD2",
                 IsOptedOutOfAllEmails = false,
                 TravelLimitForLocalEvents = 25,
-                Longitude = 0,
-                Latitude = 0,
+                Longitude = 1,
+                Latitude = 1,
             };
 
             var users = new List<User>
@@ -165,7 +165,8 @@ namespace TrashMob.Shared.Tests
                 Name = "Test Event",
                 PostalCode = "98040",
                 Region = "Washington",
-                StreetAddress = "1 King Street"
+                StreetAddress = "1 King Street",
+                IsEventPublic = true,
             };
 
             var events = new List<Event>
@@ -197,7 +198,8 @@ namespace TrashMob.Shared.Tests
                 Name = "Test Event",
                 PostalCode = "98040",
                 Region = "Washington",
-                StreetAddress = "1 King Street"
+                StreetAddress = "1 King Street",
+                IsEventPublic = true,
             };
 
             var relevantEvent2 = new Event()
@@ -219,7 +221,8 @@ namespace TrashMob.Shared.Tests
                 Name = "Test Event 2",
                 PostalCode = "98040",
                 Region = "Washington",
-                StreetAddress = "1 Queen Street"
+                StreetAddress = "1 Queen Street",
+                IsEventPublic = true,
             };
 
             var events = new List<Event>
