@@ -37,9 +37,18 @@
                 End = new Coordinate() { Lat = pointB.Item1, Lon = pointB.Item2 }
             };
 
+            logger.LogInformation("Getting distance between two points: {0}", JsonSerializer.Serialize(distanceRequest));
+
             var response = await azureMaps.GetGreatCircleDistance(distanceRequest).ConfigureAwait(false);
 
-            var distanceInMeters = (long)response.Result.Result.DistanceInMeters;
+            logger.LogInformation("Response from getting distance between two points: {0}", JsonSerializer.Serialize(response));
+
+            if (response.HttpResponseCode != (int)HttpStatusCode.OK)
+            {
+                throw new Exception($"Error getting GetGreatCircleDistance: {response.Error.Error}");
+            }
+
+            var distanceInMeters = (long)response?.Result?.Result?.DistanceInMeters;
 
             if (IsMetric)
             {
