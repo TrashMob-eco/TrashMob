@@ -14,6 +14,7 @@ namespace TrashMob.Controllers
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
     using TrashMob.Shared;
+    using System.Collections.Generic;
 
     [ApiController]
     [Route("api/events")]
@@ -143,15 +144,15 @@ namespace TrashMob.Controllers
 
             var eventId = await eventRepository.AddEvent(mobEvent).ConfigureAwait(false);
 
-            var email = new Email
+            var message = $"A new event: {mobEvent.Name} in {mobEvent.City} has been created on TrashMob.eco!";
+            var subject = "New Event Alert";
+
+            var recipients = new List<EmailAddress>
             {
-                Message = $"A new event: {mobEvent.Name} in {mobEvent.City} has been created on TrashMob.eco!",
-                Subject = "New Event Alert"
+                new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
             };
 
-            email.Addresses.Add(new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress });
-
-            await emailManager.SendSystemEmail(email, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendGenericSystemEmail(subject, message, recipients, CancellationToken.None).ConfigureAwait(false);
 
             return Ok(eventId);
         }

@@ -13,6 +13,8 @@ namespace TrashMob.Controllers
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
     using TrashMob.Shared;
+    using System.Collections.Generic;
+    using TrashMob.Shared.Engine;
 
     [ApiController]
     [Route("api/users")]
@@ -132,15 +134,28 @@ namespace TrashMob.Controllers
 
             var newUser = await userRepository.AddUser(user).ConfigureAwait(false);
 
-            var email = new Email
+            // Notify Admins that a new user has joined
+            var message = $"A new user: {user.Email} has joined TrashMob.eco!";
+            var subject = "New User Alert";
+
+            var recipients = new List<EmailAddress>
             {
-                Message = $"A new user: {user.Email} has joined TrashMob.eco!",
-                Subject = "New User Alert"
+                new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
             };
 
-            email.Addresses.Add(new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress });
+            await emailManager.SendSystemEmail(subject, message, recipients, CancellationToken.None).ConfigureAwait(false);
 
-            await emailManager.SendSystemEmail(email, CancellationToken.None).ConfigureAwait(false);
+            // Send welcome email to new User
+            var welcomeMessage = emailManager.GetEmailTemplate(NotificationTypeEnum.WelcomeToTrashMob.ToString());
+            var welcomeSubject = "Welcome to TrashMob.eco!";
+            welcomeMessage = welcomeMessage.Replace("{UserName}", user.UserName);
+
+            var welcomeRecipients = new List<EmailAddress>
+            {
+                new EmailAddress { Name = user.UserName, Email = user.Email }
+            };
+
+            await emailManager.SendSystemEmail(welcomeSubject, welcomeMessage, welcomeRecipients, CancellationToken.None).ConfigureAwait(false);
 
             return Ok(newUser);
         }
