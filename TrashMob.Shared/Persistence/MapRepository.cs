@@ -33,6 +33,7 @@
             var azureMaps = new AzureMapsToolkit.AzureMapsServices(GetMapKey());
             var distanceRequest = new GreatCircleDistanceRequest
             {
+                Query = $"{pointA.Item1},{pointA.Item2}:{pointB.Item1},{pointB.Item2}",
                 Start = new Coordinate() { Lat = pointA.Item1, Lon = pointA.Item2 },
                 End = new Coordinate() { Lat = pointB.Item1, Lon = pointB.Item2 }
             };
