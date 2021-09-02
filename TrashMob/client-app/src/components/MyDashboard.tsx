@@ -10,6 +10,7 @@ import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from '@ambientlight/react-azure-maps';
 import MapController from './MapController';
 import UserData from './Models/UserData';
+import { Col, Form, ToggleButton } from 'react-bootstrap';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -25,6 +26,8 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
     const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
     const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
+    const [showFutureEventsOnly, setShowFutureEventsOnly] = React.useState<boolean>(false);
+    const [reloadEvents, setReloadEvents] = React.useState<number>(0);
 
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
@@ -54,33 +57,9 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
         } else {
             console.log("Not Available");
         }
-
-        if (props.isUserLoaded) {
-            const account = msalClient.getAllAccounts()[0];
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/events/userevents/' + props.currentUser.id, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<EventData[]>)
-                    .then(data => {
-                        setMyEventList(data);
-                        setIsEventDataLoaded(true);
-                    });
-            });
-        }
     }, [props.currentUser, props.isUserLoaded]);
 
-    function loadEvents() {
+    React.useEffect(() => {
         if (props.isUserLoaded) {
             setIsEventDataLoaded(false);
             const account = msalClient.getAllAccounts()[0];
@@ -94,7 +73,7 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/events/userevents/' + currentUser.id, {
+                fetch('/api/events/userevents/' + currentUser.id + '/' + showFutureEventsOnly, {
                     method: 'GET',
                     headers: headers
                 })
@@ -105,10 +84,15 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
                     });
             });
         }
-    };
+    }, [showFutureEventsOnly, reloadEvents, currentUser.id, props.isUserLoaded]);
 
     function handleLocationChange(point: data.Position) {
         // do nothing
+    }
+
+    function handleReloadEvents() {
+        // A trick to force the reload as needed.
+        setReloadEvents(reloadEvents + 1);
     }
 
     return (
@@ -117,8 +101,27 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
                 <Link to="/manageeventdashboard">Create a New Event</Link>
             </div>
             <div>
+                <Form>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group>
+                                <ToggleButton
+                                    type="checkbox"
+                                    variant="outline-dark"
+                                    checked={showFutureEventsOnly}
+                                    value="1"
+                                    onChange={(e) => setShowFutureEventsOnly(e.currentTarget.checked)}
+                                >
+                                    Show Future Events Only:
+                                    </ToggleButton>
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                </Form>
+            </div>
+            <div>
                 <div>
-                    <UserEvents history={props.history} location={props.location} match={props.match} eventList={myEventList} eventTypeList={eventTypeList} isEventDataLoaded={isEventDataLoaded} onEventListChanged={loadEvents} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                    <UserEvents history={props.history} location={props.location} match={props.match} eventList={myEventList} eventTypeList={eventTypeList} isEventDataLoaded={isEventDataLoaded} onEventListChanged={handleReloadEvents} currentUser={currentUser} isUserLoaded={isUserLoaded} />
                 </div>
             </div>
             <div>

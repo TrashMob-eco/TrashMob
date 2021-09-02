@@ -13,6 +13,7 @@ import { Carousel, Col, Form } from 'react-bootstrap';
 import EventMediaData from './Models/EventMediaData';
 import YouTubeEmbed from "./YouTubeEmbed";
 import * as Constants from './Models/Constants';
+import EventSummaryData from './Models/EventSummaryData';
 
 export interface DetailsMatchParams {
     eventId: string;
@@ -52,7 +53,10 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
     const [facebookUrl, setFacebookUrl] = React.useState<string>();
     const [mediaList, setMediaList] = React.useState<EventMediaData[]>([]);
     const [isEventMediaDataLoaded, setIsEventMediaDataLoaded] = React.useState<boolean>(false);
-    
+    const [isEventSummaryDataLoaded, setIsEventSummaryDataLoaded] = React.useState<boolean>(false);
+    const [eventSummary, setEventSummary] = React.useState<EventSummaryData>();
+    const [createdById, setCreatedById] = React.useState<string>("");
+
     React.useEffect(() => {
 
         const headers = getDefaultHeaders('GET');
@@ -98,6 +102,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     setPostalCode(eventData.postalCode);
                     setLatitude(eventData.latitude);
                     setLongitude(eventData.longitude);
+                    setCreatedById(eventData.createdByUserId);
                     var shareMessage = "Help clean up Planet Earth! Sign up for this TrashMob.eco event in " + eventData.city + ", " + eventData.region + " on " + (new Date(eventData.eventDate)).toLocaleDateString() + "! via @TrashMobEco";
                     setTwitterUrl("https://twitter.com/intent/tweet?text=" + encodeURI(shareMessage) + "&ref_src=twsrc%5Etfw");
                     setFacebookUrl("https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.trashmob.eco%2Feventdetails%2" + eventId + "&amp;src=sdkpreparse");
@@ -112,6 +117,17 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                         .then(mediaData => {
                             setMediaList(mediaData);
                             setIsEventMediaDataLoaded(true);
+                        })
+                })
+                .then(() => {
+                    fetch('/api/eventsummaries/' + eventId, {
+                        method: 'GET',
+                        headers: headers
+                    })
+                        .then(response => response.json() as Promise<EventSummaryData>)
+                        .then(summaryData => {
+                            setEventSummary(summaryData);
+                            setIsEventSummaryDataLoaded(true);
                         })
 
                     setIsDataLoaded(true);
@@ -146,13 +162,21 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {users.map(user =>
-                            <tr key={user.id.toString()}>
-                                <td>{user.userName ? user.userName : user.sourceSystemUserName}</td>
-                                <td>{user.city}</td>
-                                <td>{user.country}</td>
-                                <td>{new Date(user.memberSince).toLocaleDateString()}</td>
-                            </tr>
+                        {users.map(user => {
+                            var uName = user.userName ? user.userName : user.sourceSystemUserName;
+                            if (user.id === createdById) {
+                                uName += " (Lead)";
+                            }
+
+                            return (
+                                <tr key={user.id.toString()}>
+                                    <td>{uName}</td>
+                                    <td>{user.city}</td>
+                                    <td>{user.country}</td>
+                                    <td>{new Date(user.memberSince).toLocaleDateString()}</td>
+                                </tr>
+                            )
+                        }
                         )}
                     </tbody>
                 </table>
@@ -182,6 +206,54 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                 }
             </Carousel>
         );
+    }
+
+    function renderEventSummary(eventSummary: EventSummaryData | undefined) {
+        if (isEventSummaryDataLoaded && eventSummary) {
+            return (
+                <table className='table table-striped' aria-labelledby="tableLabel">
+                    <thead>
+                        <th>
+                            Actual Participants
+                        </th>
+                        <th>
+                            Bags Collected
+                        </th>
+                        <th>
+                            Buckets Collected
+                        </th>
+                        <th>
+                            Duration in Minutes
+                        </th>
+                        <th>
+                            Notes
+                        </th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                {eventSummary.actualNumberOfAttendees}
+                            </td>
+                            <td>
+                                {eventSummary.numberOfBags}
+                            </td>
+                            <td>
+                                {eventSummary.numberOfBuckets}
+                            </td>
+                            <td>
+                                {eventSummary.durationInMinutes}
+                            </td>
+                            <td>
+                                {eventSummary.notes}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            )
+        }
+        else {
+            return ("The Event Summary has not yet been entered by the event lead.");
+        }
     }
 
     function renderEvent() {
@@ -287,10 +359,11 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     </Form.Row>
                 </Form >
                 <div>
-                    <h2>Attendees</h2>
-                    {renderUsersTable(userList)}
+                    <h2>Event Summary</h2>
+                    {renderEventSummary(eventSummary)}
                 </div>
                 <div>
+                    <h2>Event Location</h2>
                     <AzureMapsProvider>
                         <>
                             <MapController center={center} multipleEvents={[]} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} />
@@ -298,7 +371,11 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     </AzureMapsProvider>
                 </div>
                 <div>
-                    <h2>Media</h2>
+                    <h2>Event Attendees</h2>
+                    {renderUsersTable(userList)}
+                </div>
+                <div>
+                    <h2>Event Media</h2>
                     {renderMedia(mediaList)}
                 </div>
             </div>

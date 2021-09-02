@@ -3,6 +3,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System;
+    using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
@@ -43,14 +44,16 @@
             }
 
             await partnerRequestRepository.AddPartnerRequest(partnerRequest);
-            var email = new Email
+
+            var message = $"From Email: {partnerRequest.PrimaryEmail}\nFrom Name:{partnerRequest.Name}\nMessage:\n{partnerRequest.Notes}";
+            var subject = "Partner Request";
+
+            var recipients = new List<EmailAddress>
             {
-                Message = $"From Email: {partnerRequest.PrimaryEmail}\nFrom Name:{partnerRequest.Name}\nMessage:\n{partnerRequest.Notes}",
-                Subject = "Partner Request"
+                new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
             };
-            email.Addresses.Add(new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress });
-           
-            await emailManager.SendSystemEmail(email, CancellationToken.None).ConfigureAwait(false);
+
+            await emailManager.SendGenericSystemEmail(subject, message, recipients, CancellationToken.None).ConfigureAwait(false);
             
             return Ok();
         }

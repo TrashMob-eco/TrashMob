@@ -42,10 +42,12 @@
                 .ToListAsync().ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<Event>> GetUserEvents(Guid userId)
+        public async Task<IEnumerable<Event>> GetUserEvents(Guid userId, bool futureEventsOnly)
         {
             return await mobDbContext.Events
-                .Where(e => e.CreatedByUserId == userId && e.EventStatusId != (int)EventStatusEnum.Canceled)
+                .Where(e => e.CreatedByUserId == userId
+                            && e.EventStatusId != (int)EventStatusEnum.Canceled 
+                            && (!futureEventsOnly || e.EventDate >= DateTimeOffset.UtcNow))
                 .AsNoTracking()
                 .ToListAsync().ConfigureAwait(false);
         }
@@ -96,6 +98,11 @@
             mobEvent.EventStatusId = (int)EventStatusEnum.Canceled;
             mobDbContext.Entry(mobEvent).State = EntityState.Modified;
             return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        public IQueryable<Event> GetEvents()
+        {
+            return mobDbContext.Events.AsQueryable();
         }
     }
 }

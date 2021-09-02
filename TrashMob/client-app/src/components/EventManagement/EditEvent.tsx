@@ -126,14 +126,19 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
     function handleDurationHoursChanged(val: string) {
         try {
-            var hours = parseInt(val);
+            if (val) {
+                var hours = parseInt(val);
 
-            if (hours < 0 || hours > 10) {
-                setDurationHoursErrors("Duration Hours must be > 0 and less than 10");
+                if (hours < 0 || hours > 10) {
+                    setDurationHoursErrors("Duration Hours must be greater than 0 and less than 10");
+                }
+                else {
+                    setDurationHoursErrors("");
+                    setDurationHours(hours);
+                }
             }
             else {
-                setDurationHoursErrors("");
-                setDurationHours(hours);
+                setDurationHours(0);
             }
         }
         catch { }
@@ -141,14 +146,19 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
     function handleDurationMinutesChanged(val: string) {
         try {
-            var minutes = parseInt(val);
+            if (val) {
+                var minutes = parseInt(val);
 
-            if (minutes < 0 || minutes > 59) {
-                setDurationMinutesErrors("Duration Minutes must be > 0 and less than 60");
+                if (minutes < 0 || minutes > 59) {
+                    setDurationMinutesErrors("Duration Minutes must be greater than 0 and less than 60");
+                }
+                else {
+                    setDurationMinutesErrors("");
+                    setDurationMinutes(minutes);
+                }
             }
             else {
-                setDurationMinutesErrors("");
-                setDurationMinutes(minutes);
+                setDurationMinutes(0);
             }
         }
         catch { }
@@ -184,14 +194,19 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
     function handleLatitudeChanged(val: string) {
         try {
-            var floatVal = parseFloat(val);
+            if (val) {
+                var floatVal = parseFloat(val);
 
-            if (floatVal < -90 || floatVal > 90) {
-                setLatitudeErrors("Latitude must be => -90 and <= 90");
+                if (floatVal < -90 || floatVal > 90) {
+                    setLatitudeErrors("Latitude must be => -90 and <= 90");
+                }
+                else {
+                    setLatitude(floatVal);
+                    setLatitudeErrors("");
+                }
             }
             else {
-                setLatitude(floatVal);
-                setLatitudeErrors("");
+                setLatitudeErrors("Latitude must be => -90 and <= 90");
             }
         }
         catch { }
@@ -199,14 +214,19 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
     function handleLongitudeChanged(val: string) {
         try {
-            var floatVal = parseFloat(val);
+            if (val) {
+                var floatVal = parseFloat(val);
 
-            if (floatVal < -180 || floatVal > 180) {
-                setLongitudeErrors("Longitude must be >= -180 and <= 180");
+                if (floatVal < -180 || floatVal > 180) {
+                    setLongitudeErrors("Longitude must be >= -180 and <= 180");
+                }
+                else {
+                    setLongitude(floatVal);
+                    setLongitudeErrors("");
+                }
             }
             else {
-                setLongitude(floatVal);
-                setLongitudeErrors("");
+                setLongitudeErrors("Longitude must be >= -180 and <= 180");
             }
         }
         catch { }

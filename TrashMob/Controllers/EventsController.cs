@@ -14,6 +14,7 @@ namespace TrashMob.Controllers
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
     using TrashMob.Shared;
+    using System.Collections.Generic;
 
     [ApiController]
     [Route("api/events")]
@@ -48,22 +49,6 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
-        [Authorize]
-        [RequiredScope(Constants.TrashMobReadScope)]
-        [Route("eventsowned/{userId}")]
-        public async Task<IActionResult> GetEventsUserOwns(Guid userId)
-        {
-            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
-            if (user == null || !ValidateUser(user.NameIdentifier))
-            {
-                return Forbid();
-            }
-
-            var result = await eventRepository.GetUserEvents(userId).ConfigureAwait(false);
-            return Ok(result);
-        }
-
-        [HttpGet]
         [Route("eventsuserisattending/{userId}")]
         [Authorize]
         [RequiredScope(Constants.TrashMobReadScope)]
@@ -82,8 +67,8 @@ namespace TrashMob.Controllers
         [HttpGet]
         [Authorize]
         [RequiredScope(Constants.TrashMobReadScope)]
-        [Route("userevents/{userId}")]
-        public async Task<IActionResult> GetUserEvents(Guid userId)
+        [Route("userevents/{userId}/{futureEventsOnly}")]
+        public async Task<IActionResult> GetUserEvents(Guid userId, bool futureEventsOnly)
         {
             var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
             if (user == null || !ValidateUser(user.NameIdentifier))
@@ -91,8 +76,8 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var result1 = await eventRepository.GetUserEvents(userId).ConfigureAwait(false);
-            var result2 = await eventAttendeeRepository.GetEventsUserIsAttending(userId).ConfigureAwait(false);
+            var result1 = await eventRepository.GetUserEvents(userId, futureEventsOnly).ConfigureAwait(false);
+            var result2 = await eventAttendeeRepository.GetEventsUserIsAttending(userId, futureEventsOnly).ConfigureAwait(false);
 
             var allResults = result1.Union(result2, new EventComparer());
             return Ok(allResults);
@@ -159,15 +144,15 @@ namespace TrashMob.Controllers
 
             var eventId = await eventRepository.AddEvent(mobEvent).ConfigureAwait(false);
 
-            var email = new Email
+            var message = $"A new event: {mobEvent.Name} in {mobEvent.City} has been created on TrashMob.eco!";
+            var subject = "New Event Alert";
+
+            var recipients = new List<EmailAddress>
             {
-                Message = $"A new event: {mobEvent.Name} in {mobEvent.City} has been created on TrashMob.eco!",
-                Subject = "New Event Alert"
+                new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
             };
 
-            email.Addresses.Add(new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress });
-
-            await emailManager.SendSystemEmail(email, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendGenericSystemEmail(subject, message, recipients, CancellationToken.None).ConfigureAwait(false);
 
             return Ok(eventId);
         }

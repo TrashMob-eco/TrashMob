@@ -83,7 +83,7 @@ export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {events.map(mobEvent => {
+                        {events.sort((a, b) => (a.eventDate < b.eventDate) ? 1 : -1).map(mobEvent => {
                             var isOwner = mobEvent.createdByUserId === props.currentUser.id;
 
                             return (
@@ -98,7 +98,7 @@ export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
                                     <td>
                                         <Button hidden={!isOwner} className="action" onClick={() => props.history.push('/manageeventdashboard/' + mobEvent.id)}>Manage Event</Button>
                                         <Button hidden={!isOwner} className="action" onClick={() => handleDelete(mobEvent.id, mobEvent.name)}>Delete Event</Button>
-                                        <Button hidden={isOwner} className="action" onClick={() => props.history.push('/eventdetails/' + mobEvent.id)}>View Details</Button>
+                                        <Button className="action" onClick={() => props.history.push('/eventdetails/' + mobEvent.id)}>View Details</Button>
                                         <Button hidden={isOwner} className="action" onClick={() => handleRemove(mobEvent.id, mobEvent.name)}>Remove Me from Event</Button>
                                     </td>
                                 </tr>)

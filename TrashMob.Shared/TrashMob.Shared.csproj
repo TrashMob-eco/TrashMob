@@ -6,17 +6,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Engine\EmailTemplates\EventPartnerRequest.html" />
+    <None Remove="Engine\EmailTemplates\EventPartnerResponse.html" />
     <None Remove="Engine\EmailTemplates\EventSummaryAttendee.html" />
     <None Remove="Engine\EmailTemplates\EventSummaryHostReminder.html" />
+    <None Remove="Engine\EmailTemplates\Generic.html" />
     <None Remove="Engine\EmailTemplates\UpcomingEventAttendingThisWeek.html" />
     <None Remove="Engine\EmailTemplates\UpcomingEventAttendingToday.html" />
     <None Remove="Engine\EmailTemplates\UpcomingEventHostingThisWeek.html" />
     <None Remove="Engine\EmailTemplates\UpcomingEventHostingToday.html" />
     <None Remove="Engine\EmailTemplates\UpcomingEventsInYourAreaThisWeek.html" />
     <None Remove="Engine\EmailTemplates\UpcomingEventsInYourAreaToday.html" />
+    <None Remove="Engine\EmailTemplates\WelcomeToTrashMob.html" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Engine\EmailTemplates\EventPartnerRequest.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\EventPartnerResponse.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\WelcomeToTrashMob.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\Generic.html" />
     <EmbeddedResource Include="Engine\EmailTemplates\EventSummaryAttendee.html" />
     <EmbeddedResource Include="Engine\EmailTemplates\EventSummaryHostReminder.html" />
     <EmbeddedResource Include="Engine\EmailTemplates\UpcomingEventAttendingThisWeek.html" />
