@@ -1,4 +1,4 @@
-﻿import { HtmlMarker, layer, Shape, source } from 'azure-maps-control';
+import { HtmlMarker, layer, Shape, source } from 'azure-maps-control';
 
 const { BubbleLayer } = layer;
 /**
@@ -92,11 +92,11 @@ export class HtmlMarkerLayer extends BubbleLayer {
             this._options.visible = options.visible;
             newBaseOptions.visible = options.visible;
         }
-        if (options.markerRenderCallback && this._options.markerRenderCallback != options.markerRenderCallback) {
+        if (options.markerRenderCallback && this._options.markerRenderCallback !== options.markerRenderCallback) {
             this._options.markerRenderCallback = options.markerRenderCallback;
             cc = true;
         }
-        if (options.clusterRenderCallback && this._options.clusterRenderCallback != options.clusterRenderCallback) {
+        if (options.clusterRenderCallback && this._options.clusterRenderCallback !== options.clusterRenderCallback) {
             this._options.clusterRenderCallback = options.clusterRenderCallback;
             cc = true;
         }
@@ -257,10 +257,10 @@ export class HtmlMarkerLayer extends BubbleLayer {
                 }
             }
             //Remove all markers that are no longer in view.
-            for (var i = this._markers.length - 1; i >= 0; i--) {
-                if (!this._markers[i].id || newMarkerIds.indexOf(this._markers[i].id) === -1) {
-                    this._map.markers.remove(this._markers[i]);
-                    this._markers.splice(i, 1);
+            for (var j = this._markers.length - 1; j >= 0; j--) {
+                if (!this._markers[j].id || newMarkerIds.indexOf(this._markers[j].id) === -1) {
+                    this._map.markers.remove(this._markers[j]);
+                    this._markers.splice(j, 1);
                 }
             }
             this._markers = this._markers.concat(newMarkers);

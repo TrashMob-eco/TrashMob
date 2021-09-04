@@ -7,6 +7,8 @@ import EventData from './Models/EventData';
 import * as MapStore from '../store/MapStore'
 import UserData from './Models/UserData';
 import { HtmlMarkerLayer } from './HtmlMarkerLayer/SimpleHtmlMarkerLayer'
+import MarkerPopUp from './MarkerPopUp';
+import { renderToStaticMarkup } from "react-dom/server"
 
 interface MapControllerProps {
     mapOptions: IAzureMapOptions | undefined
@@ -54,12 +56,13 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
 
                     mapRef.events.add('mouseover', marker, (event: any) => {
                         const marker = event.target as HtmlMarker & { properties: any };
+                        var evt: EventData = marker.properties.mobEvent;
                         const content = marker.properties.cluster
                             ? `Cluster of ${marker.properties.point_count_abbreviated} markers`
-                            : marker.properties.name;
+                            : renderToStaticMarkup(getPopUpContent(marker.properties.name, marker.properties.eventDate, marker.properties.streetAddress, marker.properties.city, marker.properties.region, marker.properties.country, marker.properties.postalCode));
 
                         popup.setOptions({
-                            content: `<div style="padding:10px;">${content}</div>`,
+                            content: content,
                             position: marker.getOptions().position
                         });
 
@@ -97,9 +100,36 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
                 var position = new data.Point(new data.Position(mobEvent.longitude, mobEvent.latitude));
                 var properties = {
                     name: mobEvent.name,
+                    eventDate: new Date(mobEvent.eventDate),
+                    streetAddress: mobEvent.streetAddress,
+                    city: mobEvent.city,
+                    region: mobEvent.region,
+                    country: mobEvent.country,
+                    postalCode: mobEvent.postalCode,
+                    mobEvent: mobEvent
                 }
                 dataSourceRef.add(new data.Feature(position, properties));
             })
+
+            function getPopUpContent(eventName: string, eventDate: Date, streetAddress: string, city: string, region: string, country: string, postalCode: string) {
+                return (
+                    <div className="container-fluid card">
+                        <h1>{eventName}</h1>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>Event Date:</td>
+                                    <td>{eventDate}</td>
+                                </tr>
+                                <tr>
+                                    <td>Location:</td>
+                                    <td>{streetAddress}, {city}, {region}, {country}, {postalCode}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                );
+            }
         }
     }, [mapRef,
         props.center,
@@ -114,6 +144,7 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
     function handleLocationChange(e: any) {
         props.onLocationChange(e);
     }
+
 
     return (
         <>
