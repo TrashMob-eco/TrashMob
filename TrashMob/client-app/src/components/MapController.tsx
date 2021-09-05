@@ -7,7 +7,6 @@ import EventData from './Models/EventData';
 import * as MapStore from '../store/MapStore'
 import UserData from './Models/UserData';
 import { HtmlMarkerLayer } from './HtmlMarkerLayer/SimpleHtmlMarkerLayer'
-import MarkerPopUp from './MarkerPopUp';
 import { renderToStaticMarkup } from "react-dom/server"
 
 interface MapControllerProps {
