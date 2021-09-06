@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AzureMap, IAzureMapOptions } from 'react-azure-maps';
+import { AzureMap, IAzureMapOptions } from '@ambientlight/react-azure-maps';
 
 interface MapComponentProps {
     mapOptions: IAzureMapOptions | undefined
