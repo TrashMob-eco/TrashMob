@@ -123,6 +123,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
         props.latitude,
         isDataSourceLoaded,
         props.isDraggable,
+        handleLocationChange,
         isMapReady]);
 
     function handleLocationChange(e: any) {
