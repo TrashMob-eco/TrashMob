@@ -9,13 +9,13 @@ import { getKey } from '../../store/MapStore';
 import AddressData from '../Models/AddressData';
 import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from '@ambientlight/react-azure-maps';
-import MapController from '../MapController';
 import UserData from '../Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
 import { Button, Col, Form, ToggleButton } from 'react-bootstrap';
 import { Guid } from 'guid-typescript';
+import MapControllerSinglePoint from '../MapControllerSinglePoint';
 
 export interface EditEventProps {
     eventId: string;
@@ -594,7 +594,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     <Form.Row>
                         <AzureMapsProvider>
                             <>
-                                <MapController center={center} multipleEvents={[]} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                                <MapControllerSinglePoint center={center} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} eventDate={eventDate} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
                             </>
                         </AzureMapsProvider>
                     </Form.Row>
