@@ -23,7 +23,7 @@ interface MapControllerProps {
     isUserLoaded: boolean;
 }
 
-export const MapController: React.FC<MapControllerProps> = (props) => {
+export const EventCollectionMapController: React.FC<MapControllerProps> = (props) => {
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     const [isDataSourceLoaded, setIsDataSourceLoaded] = React.useState(false);
@@ -55,11 +55,9 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
 
                     mapRef.events.add('mouseover', marker, (event: any) => {
                         const marker = event.target as HtmlMarker & { properties: any };
-                        var evt: EventData = marker.properties.mobEvent;
                         const content = marker.properties.cluster
                             ? `Cluster of ${marker.properties.point_count_abbreviated} markers`
-                            : renderToStaticMarkup(getPopUpContent(marker.properties.name, marker.properties.eventDate, marker.properties.streetAddress, marker.properties.city, marker.properties.region, marker.properties.country, marker.properties.postalCode));
-
+                            : marker.properties.content;
                         popup.setOptions({
                             content: content,
                             position: marker.getOptions().position
@@ -98,14 +96,8 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
             props.multipleEvents.forEach(mobEvent => {
                 var position = new data.Point(new data.Position(mobEvent.longitude, mobEvent.latitude));
                 var properties = {
+                    content: renderToStaticMarkup(getPopUpContent(mobEvent.name, mobEvent.eventDate, mobEvent.streetAddress, mobEvent.city, mobEvent.region, mobEvent.country, mobEvent.postalCode)),
                     name: mobEvent.name,
-                    eventDate: new Date(mobEvent.eventDate),
-                    streetAddress: mobEvent.streetAddress,
-                    city: mobEvent.city,
-                    region: mobEvent.region,
-                    country: mobEvent.country,
-                    postalCode: mobEvent.postalCode,
-                    mobEvent: mobEvent
                 }
                 dataSourceRef.add(new data.Feature(position, properties));
             })
@@ -152,4 +144,4 @@ export const MapController: React.FC<MapControllerProps> = (props) => {
     );
 };
 
-export default MapController;
+export default EventCollectionMapController;
