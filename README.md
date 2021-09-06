@@ -38,6 +38,24 @@ ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want
 1. You must install the .net 5 SDK
 1. Install Visual Studio Code
 1. Connect to github and clone the repo
+
+### To use the Shared Dev Environment
+If you are not doing any database changes (i.e. design work, error handling, etc) you can save yourself time and money by doing the following and using the shared Dev environment:
+1. Send the email address you use on GitHub to Joe Beernink
+1. Joe will add you as a contributor to the Sandbox subscription
+1. Joe will add you to the Dev KeyVault with Secret Get and List permissions
+1. Log in to the Sandbox subscription, and go to the [Dev Azure SQL Database](https://portal.azure.com/#@jobeedevids.onmicrosoft.com/resource/subscriptions/39a254b7-c01a-45ab-bebd-4038ea4adea9/resourceGroups/rg-trashmob-dev-westus2/providers/Microsoft.Sql/servers/sql-tm-dev-westus2/overview)
+1. Click on Firewalls and Virtual Networks
+1. Add a new Rule with your email address as the name, with the start and end ip address set as your Client IP Address (see the line above the form for what Azure thinks your IP address is)
+1. Save changes
+1. Run the following script on your machine from the TrashMob folder in the project to set up your dev machine to run the project locally. You must be logged into Azure in your PowerShell window in the correct subscription
+```
+.\setupdev.ps1 -environment dev -region westus2
+```
+
+### To set up your own environment to test in:
+You must use this if you are making database changes to ensure you do not break the back end for everyone else:
+
 1. Follow the Infrastructure Deployment Steps (here)[.\Deploy\readme.md].
 1. Run the following script on your machine from the TrashMob folder in the project to set up your dev machine to run the project locally. You must be logged into Azure in your PowerShell window in the correct subscription
 ```
