@@ -49,8 +49,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
                 markerRenderCallback: (id: any, position: data.Position, properties: any) => {
                     // Create an HtmlMarker.
                     const marker = new HtmlMarker({
-                        position: position,
-                        text: properties.name
+                        position: position
                     });
 
                     mapRef.events.add('mouseover', marker, (event: any) => {
@@ -77,6 +76,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
                         position: position,
                         color: 'DarkViolet',
                         text: properties.point_count_abbreviated,
+                        
                     });
 
                     return markerCluster;
@@ -105,7 +105,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
             function getPopUpContent(eventName: string, eventDate: Date, streetAddress: string, city: string, region: string, country: string, postalCode: string) {
                 return (
                     <div className="container-fluid card">
-                        <h1>{eventName}</h1>
+                        <h4>{eventName}</h4>
                         <table>
                             <tbody>
                                 <tr>

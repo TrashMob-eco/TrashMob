@@ -6,7 +6,6 @@ import MapComponent from './MapComponent';
 import * as MapStore from '../store/MapStore'
 import UserData from './Models/UserData';
 import { HtmlMarkerLayer } from './HtmlMarkerLayer/SimpleHtmlMarkerLayer'
-import { renderToStaticMarkup } from "react-dom/server"
 
 interface MapControllerProps {
     mapOptions: IAzureMapOptions | undefined
@@ -20,6 +19,7 @@ interface MapControllerProps {
     onLocationChange: any;
     currentUser: UserData;
     isUserLoaded: boolean;
+    isDraggable: boolean;
 }
 
 export const EventCollectionMapController: React.FC<MapControllerProps> = (props) => {
@@ -49,7 +49,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
                     // Create an HtmlMarker.
                     const marker = new HtmlMarker({
                         position: position,
-                        text: properties.name
+                        draggable: props.isDraggable                                                
                     });
 
                     mapRef.events.add('mouseover', marker, (event: any) => {
@@ -57,7 +57,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
                         const content = marker.properties.cluster
                             ? `Cluster of ${marker.properties.point_count_abbreviated} markers`
                             : `<div className="container-fluid card">
-                                <h1>${marker.properties.name}</h1>
+                                <h4>${marker.properties.name}</h4>
                                 <table>
                                     <tbody>
                                         <tr>
@@ -78,7 +78,13 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
                         }
                     });
 
-                    mapRef.events.add('mouseout', marker, (event: any) => popup.close());
+                    mapRef.events.add('drag', marker, (e: any) => {
+                        var pos = e.target.options.position;
+                        handleLocationChange(pos);
+                    });
+
+                    mapRef.events.add('mouseout', marker, () => popup.close());
+
                     return marker
                 },
                 clusterRenderCallback: function (id: any, position: any, properties: any) {
@@ -93,7 +99,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
                 source: dataSourceRef
             });
 
-            //Add marker layer to the map.
+            // Add marker layer to the map.
             mapRef.layers.add(markerLayer);
 
             var position = new data.Point(new data.Position(props.longitude, props.latitude));
@@ -116,6 +122,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
         props.longitude,
         props.latitude,
         isDataSourceLoaded,
+        props.isDraggable,
         isMapReady]);
 
     function handleLocationChange(e: any) {

@@ -66,39 +66,40 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             .then(response => response.json() as Promise<Array<any>>)
             .then(data => {
                 setEventTypeList(data);
-            });
-
-        // This will set state for Edit Event  
-        if (eventId !== null && eventId !== "" && eventId !== Guid.EMPTY) {
-            setTitle("Edit Event");
-            fetch('/api/Events/' + eventId, {
-                method: 'GET',
-                headers: headers
             })
-                .then(response => response.json() as Promise<EventData>)
-                .then(eventData => {
-                    setEventId(eventData.id);
-                    setEventName(eventData.name);
-                    setDescription(eventData.description);
-                    setEventDate(new Date(eventData.eventDate));
-                    setDurationHours(eventData.durationHours);
-                    setDurationMinutes(eventData.durationMinutes);
-                    setEventTypeId(eventData.eventTypeId);
-                    setStreetAddress(eventData.streetAddress);
-                    setCity(eventData.city);
-                    setCountry(eventData.country);
-                    setRegion(eventData.region);
-                    setPostalCode(eventData.postalCode);
-                    setLatitude(eventData.latitude);
-                    setLongitude(eventData.longitude);
-                    setMaxNumberOfParticipants(eventData.maxNumberOfParticipants);
-                    setIsEventPublic(eventData.isEventPublic);
-                    setCreatedByUserId(eventData.createdByUserId);
-                    setEventStatusId(eventData.eventStatusId);
-                    setCenter(new data.Position(eventData.longitude, eventData.latitude));
-                    setIsDataLoaded(true);
-                });
-        }
+            .then(() => {
+                // This will set state for Edit Event  
+                if (eventId !== null && eventId !== "" && eventId !== Guid.EMPTY) {
+                    setTitle("Edit Event");
+                    fetch('/api/Events/' + eventId, {
+                        method: 'GET',
+                        headers: headers
+                    })
+                        .then(response => response.json() as Promise<EventData>)
+                        .then(eventData => {
+                            setEventId(eventData.id);
+                            setEventName(eventData.name);
+                            setDescription(eventData.description);
+                            setEventDate(new Date(eventData.eventDate));
+                            setDurationHours(eventData.durationHours);
+                            setDurationMinutes(eventData.durationMinutes);
+                            setEventTypeId(eventData.eventTypeId);
+                            setStreetAddress(eventData.streetAddress);
+                            setCity(eventData.city);
+                            setCountry(eventData.country);
+                            setRegion(eventData.region);
+                            setPostalCode(eventData.postalCode);
+                            setLatitude(eventData.latitude);
+                            setLongitude(eventData.longitude);
+                            setMaxNumberOfParticipants(eventData.maxNumberOfParticipants);
+                            setIsEventPublic(eventData.isEventPublic);
+                            setCreatedByUserId(eventData.createdByUserId);
+                            setEventStatusId(eventData.eventStatusId);
+                            setCenter(new data.Position(eventData.longitude, eventData.latitude));
+                            setIsDataLoaded(true);
+                        });
+                }
+            });
 
         if (eventId === Guid.EMPTY) {
             setIsDataLoaded(true);
@@ -594,7 +595,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     <Form.Row>
                         <AzureMapsProvider>
                             <>
-                                <MapControllerSinglePoint center={center} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} eventDate={eventDate} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                                <MapControllerSinglePoint center={center} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} eventDate={eventDate} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isDraggable={true} />
                             </>
                         </AzureMapsProvider>
                     </Form.Row>
