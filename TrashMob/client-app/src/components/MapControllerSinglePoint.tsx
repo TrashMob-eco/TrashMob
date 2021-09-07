@@ -80,7 +80,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
 
                     mapRef.events.add('drag', marker, (e: any) => {
                         var pos = e.target.options.position;
-                        handleLocationChange(pos);
+                        onLocationChange(pos);
                     });
 
                     mapRef.events.add('mouseout', marker, () => popup.close());
@@ -110,6 +110,10 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
             });
 
             dataSourceRef.add(new data.Feature(position, featureProperties));
+
+            function onLocationChange(e: any) {
+                props.onLocationChange(e);
+            }
         }
     }, [mapRef,
         props.center,
@@ -123,7 +127,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
         props.latitude,
         isDataSourceLoaded,
         props.isDraggable,
-        handleLocationChange,
+        props.onLocationChange,
         isMapReady]);
 
     function handleLocationChange(e: any) {
