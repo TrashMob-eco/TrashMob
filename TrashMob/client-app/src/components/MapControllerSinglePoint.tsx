@@ -26,6 +26,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     const [isDataSourceLoaded, setIsDataSourceLoaded] = React.useState(false);
+    const { onLocationChange } = props.onLocationChange;
 
     useEffect(() => {
         if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && !isDataSourceLoaded && isMapReady) {
@@ -110,10 +111,6 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
             });
 
             dataSourceRef.add(new data.Feature(position, featureProperties));
-
-            function onLocationChange(e: any) {
-                props.onLocationChange(e);
-            }
         }
     }, [mapRef,
         props.center,
@@ -127,7 +124,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
         props.latitude,
         isDataSourceLoaded,
         props.isDraggable,
-        props.onLocationChange,
+        onLocationChange,
         isMapReady]);
 
     function handleLocationChange(e: any) {
