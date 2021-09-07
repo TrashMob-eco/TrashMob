@@ -12,13 +12,13 @@ namespace TrashMob.Shared.Tests
         protected override int NumberOfDaysToAddForEventOutOfWindow => 2;
 
         [Fact]
-        public void GetEmailTemplate_Succeeds()
+        public void GetHtmlEmailTemplate_Succeeds()
         {
             // Arrange
             var engine = new UpcomingEventHostingTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
             // Act
-            var template = engine.GetEmailTemplate();
+            var template = engine.GetHtmlEmailTemplate();
 
             // Assert
             Assert.False(string.IsNullOrWhiteSpace(template));

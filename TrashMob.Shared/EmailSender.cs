@@ -27,12 +27,10 @@
                 tos.Add(new SendGrid.Helpers.Mail.EmailAddress(address.Email, address.Name));
             }
 
-            var body = email.Message;
-
             try
             {
                 var client = new SendGridClient(ApiKey);
-                var message = MailHelper.CreateSingleEmailToMultipleRecipients(from, tos, email.Subject, body, "");
+                var message = MailHelper.CreateSingleEmailToMultipleRecipients(from, tos, email.Subject, email.Message, email.HtmlMessage);
                 var response = await client.SendEmailAsync(message, cancellationToken);
                 Console.WriteLine(response);
             }

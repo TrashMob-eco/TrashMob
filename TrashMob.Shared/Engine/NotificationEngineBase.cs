@@ -59,6 +59,22 @@
         public string GetEmailTemplate()
         {
             var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.txt", NotificationType);
+            Logger.LogInformation("Getting email template: {0}", resourceName);
+            string result;
+
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                result = reader.ReadToEnd();
+            }
+
+            return result;
+        }
+
+        public string GetHtmlEmailTemplate()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
             var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.html", NotificationType);
             Logger.LogInformation("Getting email template: {0}", resourceName);
             string result;
@@ -111,10 +127,13 @@
 
                 var emailTemplate = GetEmailTemplate();
                 var content = await PopulateTemplate(emailTemplate, user, eventsToNotifyUserFor).ConfigureAwait(false);
+                var htmlEmailTemplate = GetHtmlEmailTemplate();
+                var htmlContent = await PopulateTemplate(htmlEmailTemplate, user, eventsToNotifyUserFor).ConfigureAwait(false);
                 var email = new Email();
                 email.Addresses.Add(new EmailAddress() { Email = user.Email, Name = $"{user.GivenName} {user.SurName}" });
                 email.Subject = EmailSubject;
                 email.Message = content;
+                email.HtmlMessage = htmlContent;
 
                 // send email
                 await EmailSender.SendEmailAsync(email, cancellationToken);
