@@ -123,28 +123,33 @@ namespace TrashMob.Controllers
             // Notify Admins that a partner request has been responded to
             var subject = "A partner request for an event has been responded to!";
             var message = $"A partner request for an event has been responded to for event {eventPartner.EventId}!";
+            var htmlMessage = $"A partner request for an event has been responded to for event {eventPartner.EventId}!";
 
             var recipients = new List<EmailAddress>
             {
                 new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
             };
 
-            await emailManager.SendSystemEmail(subject, message, recipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendSystemEmail(subject, message, htmlMessage, recipients, CancellationToken.None).ConfigureAwait(false);
 
             // Send welcome email to new User
             var partnerMessage = emailManager.GetEmailTemplate(NotificationTypeEnum.EventPartnerResponse.ToString());
+            var partnerHtmlMessage = emailManager.GetHtmlEmailTemplate(NotificationTypeEnum.EventPartnerResponse.ToString());
             var partnerSubject = "A TrashMob.eco Partner has responded to your request!";
 
             partnerMessage = partnerMessage.Replace("{UserName}", user.UserName);
+            partnerHtmlMessage = partnerHtmlMessage.Replace("{UserName}", user.UserName);
+
             var dashboardLink = string.Format("https://www.trashmob.eco/manageeventdashboard/{0}", eventPartner.EventId);
             partnerMessage = partnerMessage.Replace("{PartnerResponseUrl}", dashboardLink);
+            partnerHtmlMessage = partnerHtmlMessage.Replace("{PartnerResponseUrl}", dashboardLink);
 
             var partnerRecipients = new List<EmailAddress>
             {
                 new EmailAddress { Name = user.UserName, Email = user.Email },
             };
 
-            await emailManager.SendSystemEmail(partnerSubject, partnerMessage, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendSystemEmail(partnerSubject, partnerMessage, partnerHtmlMessage, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
 
             return Ok(updatedEventPartner);
         }
@@ -171,19 +176,22 @@ namespace TrashMob.Controllers
             // Notify Admins that a new partner request has been made
             var subject = "A New Partner Request for an Event has been made!";
             var message = $"A new partner request for an event has been made for event {eventPartner.EventId}!";
+            var htmlMessage = $"A new partner request for an event has been made for event {eventPartner.EventId}!";
 
             var recipients = new List<EmailAddress>
             {
                 new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
             };
 
-            await emailManager.SendSystemEmail(subject, message, recipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendSystemEmail(subject, message, htmlMessage, recipients, CancellationToken.None).ConfigureAwait(false);
 
             // Send welcome email to new User
             var partnerMessage = emailManager.GetEmailTemplate(NotificationTypeEnum.EventPartnerRequest.ToString());
+            var htmlPartnerMessage = emailManager.GetHtmlEmailTemplate(NotificationTypeEnum.EventPartnerRequest.ToString());
             var partnerSubject = "A TrashMob.eco Event would like to Partner with you!";
 
             partnerMessage = partnerMessage.Replace("{PartnerLocationName}", partnerLocation.Name);
+            htmlPartnerMessage = htmlPartnerMessage.Replace("{PartnerLocationName}", partnerLocation.Name);
 
             var partnerRecipients = new List<EmailAddress>
             {
@@ -191,7 +199,7 @@ namespace TrashMob.Controllers
                 new EmailAddress { Name = partnerLocation.Name, Email = partnerLocation.SecondaryEmail }
             };
 
-            await emailManager.SendSystemEmail(partnerSubject, partnerMessage, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendSystemEmail(partnerSubject, partnerMessage, htmlPartnerMessage, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
 
             return Ok();
         }

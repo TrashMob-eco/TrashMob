@@ -1,0 +1,18 @@
+﻿        Hey {UserName},
+
+        Just a quick reminder that you are scheduled to attend a TrashMob.eco event today!
+
+        {EventName}
+
+        {EventDate}
+
+        {EventStreet},{EventCity},{EventRegion},{EventCountry}
+
+        {EventDetailsLink}
+
+        Thanks
+
+        The Team at TrashMob.eco
+        https://www.trashmob.eco
+
+        Go to https://www.trashmob.eco/userprofile to manage your notification preferences for TrashMob.eco.
