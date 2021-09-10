@@ -145,6 +145,7 @@ namespace TrashMob.Controllers
             var eventId = await eventRepository.AddEvent(mobEvent).ConfigureAwait(false);
 
             var message = $"A new event: {mobEvent.Name} in {mobEvent.City} has been created on TrashMob.eco!";
+            var htmlMessage = $"A new event: {mobEvent.Name} in {mobEvent.City} has been created on TrashMob.eco!";
             var subject = "New Event Alert";
 
             var recipients = new List<EmailAddress>
@@ -152,7 +153,7 @@ namespace TrashMob.Controllers
                 new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
             };
 
-            await emailManager.SendGenericSystemEmail(subject, message, recipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendGenericSystemEmail(subject, message, htmlMessage, recipients, CancellationToken.None).ConfigureAwait(false);
 
             return Ok(eventId);
         }

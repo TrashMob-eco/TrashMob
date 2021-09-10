@@ -12,7 +12,7 @@ import * as MapStore from '../store/MapStore';
 import { getKey } from '../store/MapStore';
 import AddressData from './Models/AddressData';
 import { data } from 'azure-maps-control';
-import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
+import { AzureMapsProvider, IAzureMapOptions } from '@ambientlight/react-azure-maps';
 import MapController from './MapController';
 import UserNotificationPreferenceData, { UserNotificationPreferenceDefaults } from './Models/UserNotificationPreferenceData';
 import * as Constants from './Models/Constants';

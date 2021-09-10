@@ -7,13 +7,13 @@ import { getDefaultHeaders } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../store/MapStore';
-import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import MapController from './MapController';
+import { AzureMapsProvider, IAzureMapOptions } from '@ambientlight/react-azure-maps';
 import { Carousel, Col, Form } from 'react-bootstrap';
 import EventMediaData from './Models/EventMediaData';
 import YouTubeEmbed from "./YouTubeEmbed";
 import * as Constants from './Models/Constants';
 import EventSummaryData from './Models/EventSummaryData';
+import MapControllerSinglePoint from './MapControllerSinglePoint';
 
 export interface DetailsMatchParams {
     eventId: string;
@@ -366,7 +366,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     <h2>Event Location</h2>
                     <AzureMapsProvider>
                         <>
-                            <MapController center={center} multipleEvents={[]} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                            <MapControllerSinglePoint center={center} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} eventDate={eventDate} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} isDraggable={false} />
                         </>
                     </AzureMapsProvider>
                 </div>

@@ -1,6 +1,6 @@
 import { AuthenticationType, SymbolLayerOptions, data } from 'azure-maps-control'
 import { getDefaultHeaders } from './AuthStore';
-import {IAzureMapOptions} from 'react-azure-maps';
+import {IAzureMapOptions} from '@ambientlight/react-azure-maps';
 
 export async function getOption(): Promise<IAzureMapOptions> {
     var authOptions = {

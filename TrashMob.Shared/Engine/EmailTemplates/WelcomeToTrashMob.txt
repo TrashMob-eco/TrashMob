@@ -1,0 +1,10 @@
+﻿        Hey {UserName},
+
+        Welcome to TrashMob.eco! We're so happy to have you join the team!
+
+
+        The Team at TrashMob.eco
+        https://www.trashmob.eco
+
+
+        Go to https://www.trashmob.eco/userprofile to manage your notification preferences for TrashMob.eco.

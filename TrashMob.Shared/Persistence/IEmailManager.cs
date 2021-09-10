@@ -7,10 +7,12 @@
 
     public interface IEmailManager
     {
-        Task SendGenericSystemEmail(string subject, string message, List<EmailAddress> recipients, CancellationToken cancellationToken);
+        Task SendGenericSystemEmail(string subject, string message,  string htmlMessage, List<EmailAddress> recipients, CancellationToken cancellationToken);
 
-        Task SendSystemEmail(string subject, string message, List<EmailAddress> recipients, CancellationToken cancellationToken);
+        Task SendSystemEmail(string subject, string message, string htmlMessage, List<EmailAddress> recipients, CancellationToken cancellationToken);
 
         string GetEmailTemplate(string notificationType);
+        
+        string GetHtmlEmailTemplate(string notificationType);
     }
 }

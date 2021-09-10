@@ -12,5 +12,7 @@
         UpcomingEventsInYourAreaToday = 8,
         Generic = 9,
         WelcomeToTrashMob = 10,
+        EventPartnerRequest = 11,
+        EventPartnerResponse = 12,
     }
 }

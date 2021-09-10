@@ -3,30 +3,30 @@ import * as React from 'react';
 import { AzureMapsContext, IAzureMapOptions, IAzureMapsContextProps } from '@ambientlight/react-azure-maps';
 import { data, source, Popup, HtmlMarker } from 'azure-maps-control';
 import MapComponent from './MapComponent';
-import EventData from './Models/EventData';
 import * as MapStore from '../store/MapStore'
 import UserData from './Models/UserData';
 import { HtmlMarkerLayer } from './HtmlMarkerLayer/SimpleHtmlMarkerLayer'
-import { renderToStaticMarkup } from "react-dom/server"
 
 interface MapControllerProps {
     mapOptions: IAzureMapOptions | undefined
     center: data.Position;
-    multipleEvents: EventData[],
     isEventDataLoaded: boolean,
     isMapKeyLoaded: boolean
     eventName: string;
+    eventDate: Date;
     latitude: number;
     longitude: number;
     onLocationChange: any;
     currentUser: UserData;
     isUserLoaded: boolean;
+    isDraggable: boolean;
 }
 
 export const EventCollectionMapController: React.FC<MapControllerProps> = (props) => {
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     const [isDataSourceLoaded, setIsDataSourceLoaded] = React.useState(false);
+    const { onLocationChange } = props.onLocationChange;
 
     useEffect(() => {
         if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && !isDataSourceLoaded && isMapReady) {
@@ -49,14 +49,25 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
                 markerRenderCallback: (id: any, position: data.Position, properties: any) => {
                     // Create an HtmlMarker.
                     const marker = new HtmlMarker({
-                        position: position
+                        position: position,
+                        draggable: props.isDraggable                                                
                     });
 
                     mapRef.events.add('mouseover', marker, (event: any) => {
                         const marker = event.target as HtmlMarker & { properties: any };
                         const content = marker.properties.cluster
                             ? `Cluster of ${marker.properties.point_count_abbreviated} markers`
-                            : marker.properties.content;
+                            : `<div className="container-fluid card">
+                                <h4>${marker.properties.name}</h4>
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td>Event Date:</td>
+                                            <td>${new Date(marker.properties.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' })}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>`;
                         popup.setOptions({
                             content: content,
                             position: marker.getOptions().position
@@ -68,7 +79,13 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
                         }
                     });
 
-                    mapRef.events.add('mouseout', marker, (event: any) => popup.close());
+                    mapRef.events.add('drag', marker, (e: any) => {
+                        var pos = e.target.options.position;
+                        onLocationChange(pos);
+                    });
+
+                    mapRef.events.add('mouseout', marker, () => popup.close());
+
                     return marker
                 },
                 clusterRenderCallback: function (id: any, position: any, properties: any) {
@@ -76,7 +93,6 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
                         position: position,
                         color: 'DarkViolet',
                         text: properties.point_count_abbreviated,
-                        
                     });
 
                     return markerCluster;
@@ -84,58 +100,36 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
                 source: dataSourceRef
             });
 
-            // markerLayer.setOptions(MapStore.memoizedOptions);
-
-            // Add mouse events to the layer to show/hide a popup when hovering over a marker.
-            // mapRef.events.add('mouseover', markerLayer, onHover);
-            // mapRef.events.add('mouseout', markerLayer, closePopup);
-
-            //Add marker layer to the map.
+            // Add marker layer to the map.
             mapRef.layers.add(markerLayer);
 
-            props.multipleEvents.forEach(mobEvent => {
-                var position = new data.Point(new data.Position(mobEvent.longitude, mobEvent.latitude));
-                var properties = {
-                    content: renderToStaticMarkup(getPopUpContent(mobEvent.name, new Date(mobEvent.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' }), mobEvent.streetAddress, mobEvent.city, mobEvent.region, mobEvent.country, mobEvent.postalCode)),
-                    name: mobEvent.name,
-                }
-                dataSourceRef.add(new data.Feature(position, properties));
-            })
+            var position = new data.Point(new data.Position(props.longitude, props.latitude));
 
-            function getPopUpContent(eventName: string, eventDate: string, streetAddress: string, city: string, region: string, country: string, postalCode: string) {
-                return (
-                    <div className="container-fluid card">
-                        <h4>{eventName}</h4>
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>Event Date:</td>
-                                    <td>{eventDate}</td>
-                                </tr>
-                                <tr>
-                                    <td>Location:</td>
-                                    <td>{streetAddress}, {city}, {region}, {country}, {postalCode}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                );
-            }
+            var featureProperties = ({
+                name: props.eventName,
+                eventDate: props.eventDate,
+            });
+
+            dataSourceRef.add(new data.Feature(position, featureProperties));
         }
     }, [mapRef,
         props.center,
         props.isEventDataLoaded,
         props.isMapKeyLoaded,
-        props.multipleEvents,
         props.currentUser,
         props.isUserLoaded,
+        props.eventName,
+        props.eventDate,
+        props.longitude,
+        props.latitude,
         isDataSourceLoaded,
+        props.isDraggable,
+        onLocationChange,
         isMapReady]);
 
     function handleLocationChange(e: any) {
         props.onLocationChange(e);
     }
-
 
     return (
         <>

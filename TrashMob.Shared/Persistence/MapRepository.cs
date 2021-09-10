@@ -49,7 +49,12 @@
                 throw new Exception($"Error getting GetGreatCircleDistance: {response.Error.Error}");
             }
 
-            var distanceInMeters = (long)response?.Result?.Result?.DistanceInMeters;
+            if (response.Result?.Result == null)
+            {
+                throw new Exception($"Error getting GetGreatCircleDistance. Results was null. {response}");
+            }
+
+            var distanceInMeters = (long)response.Result.Result.DistanceInMeters;
 
             if (IsMetric)
             {
