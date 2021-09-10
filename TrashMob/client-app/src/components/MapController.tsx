@@ -110,7 +110,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
                             <tbody>
                                 <tr>
                                     <td>Event Date:</td>
-                                    <td>{eventDate}</td>
+                                    <td>{eventDate.toLocaleString()}</td>
                                 </tr>
                                 <tr>
                                     <td>Location:</td>
