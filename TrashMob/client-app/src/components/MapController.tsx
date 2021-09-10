@@ -96,13 +96,13 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
             props.multipleEvents.forEach(mobEvent => {
                 var position = new data.Point(new data.Position(mobEvent.longitude, mobEvent.latitude));
                 var properties = {
-                    content: renderToStaticMarkup(getPopUpContent(mobEvent.name, mobEvent.eventDate, mobEvent.streetAddress, mobEvent.city, mobEvent.region, mobEvent.country, mobEvent.postalCode)),
+                    content: renderToStaticMarkup(getPopUpContent(mobEvent.name, new Date(mobEvent.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' }), mobEvent.streetAddress, mobEvent.city, mobEvent.region, mobEvent.country, mobEvent.postalCode)),
                     name: mobEvent.name,
                 }
                 dataSourceRef.add(new data.Feature(position, properties));
             })
 
-            function getPopUpContent(eventName: string, eventDate: Date, streetAddress: string, city: string, region: string, country: string, postalCode: string) {
+            function getPopUpContent(eventName: string, eventDate: string, streetAddress: string, city: string, region: string, country: string, postalCode: string) {
                 return (
                     <div className="container-fluid card">
                         <h4>{eventName}</h4>
@@ -110,7 +110,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
                             <tbody>
                                 <tr>
                                     <td>Event Date:</td>
-                                    <td>{eventDate.toLocaleString()}</td>
+                                    <td>{eventDate}</td>
                                 </tr>
                                 <tr>
                                     <td>Location:</td>
