@@ -488,6 +488,14 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
         setUserNotificationPreferences(updatedPrefs);
     }
 
+    function handleAttendanceChanged() {
+        // Do nothing
+    }
+
+    function handleDetailsSelected(eventId: string) {
+        // Do nothing
+    }
+
     function handleLocationChange(point: data.Position) {
         // In an Azure Map point, the longitude is the first position, and latitude is second
         setLatitude(point[1]);
@@ -598,7 +606,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                         <Form.Row>
                             <AzureMapsProvider>
                                 <>
-                                    <MapController center={center} multipleEvents={[]} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                                    <MapController center={center} multipleEvents={[]} myAttendanceList={[]} isUserEventDataLoaded={true} onAttendanceChanged={handleAttendanceChanged()} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onDetailsSelected={handleDetailsSelected} />
                                 </>
                             </AzureMapsProvider>
                         </Form.Row>

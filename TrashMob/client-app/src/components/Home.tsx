@@ -167,6 +167,10 @@ const Home: React.FC<HomeProps> = (props) => {
         setIsOpen(!isOpen);
     }
 
+    function handleDetailsSelected(eventId: string) {
+        props.history.push("eventdetails/" + eventId);
+    }
+
     function updateAgreements(tosVersion: string, privacyVersion: string) {
 
         const account = msalClient.getAllAccounts()[0];
@@ -253,7 +257,7 @@ const Home: React.FC<HomeProps> = (props) => {
                 <div style={{ width: 100 + '%', margin: '0' }}>
                     <AzureMapsProvider>
                         <>
-                            <MapController center={center} multipleEvents={eventList} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                            <MapController center={center} multipleEvents={eventList} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={handleAttendanceChanged} onDetailsSelected={handleDetailsSelected} />
                         </>
                     </AzureMapsProvider>
                 </div>
