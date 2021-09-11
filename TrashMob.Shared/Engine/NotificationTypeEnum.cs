@@ -16,5 +16,6 @@
         EventPartnerResponse = 12,
         PartnerRequestAccepted = 13,
         PartnerRequestDeclined = 14,
+        EventCancelledNotice = 15,
     }
 }

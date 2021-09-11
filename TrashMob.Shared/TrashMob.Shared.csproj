@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Engine\EmailTemplates\EventCancelledNotice.html" />
+    <None Remove="Engine\EmailTemplates\EventCancelledNotice.txt" />
     <None Remove="Engine\EmailTemplates\EventPartnerRequest.html" />
     <None Remove="Engine\EmailTemplates\EventPartnerRequest.txt" />
     <None Remove="Engine\EmailTemplates\EventPartnerResponse.html" />
@@ -37,6 +39,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Engine\EmailTemplates\EventCancelledNotice.txt" />
+    <EmbeddedResource Include="Engine\EmailTemplates\EventCancelledNotice.html" />
     <EmbeddedResource Include="Engine\EmailTemplates\PartnerRequestDeclined.txt" />
     <EmbeddedResource Include="Engine\EmailTemplates\PartnerRequestDeclined.html" />
     <EmbeddedResource Include="Engine\EmailTemplates\PartnerRequestAccepted.txt" />
