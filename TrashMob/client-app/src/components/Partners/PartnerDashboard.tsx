@@ -1,5 +1,4 @@
 import * as React from 'react'
-
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import UserData from '../Models/UserData';

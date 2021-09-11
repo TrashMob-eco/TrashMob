@@ -59,7 +59,6 @@
             mobEvent.EventStatusId = (int)EventStatusEnum.Active;
             mobDbContext.Events.Add(mobEvent);
 
-
             var eventHistory = mobEvent.ToEventHistory();
             mobDbContext.EventHistories.Add(eventHistory);
 

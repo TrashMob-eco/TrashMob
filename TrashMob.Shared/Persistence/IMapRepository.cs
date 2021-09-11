@@ -1,8 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-
+﻿
 namespace TrashMob.Shared.Persistence
 {
+    using System;
+    using System.Threading.Tasks;
+
     public interface IMapRepository
     {
         string GetMapKey();
