@@ -144,18 +144,18 @@ namespace TrashMobJobs
             var id = Guid.NewGuid();
             var processedTime = DateTimeOffset.Now;
             var sql = "INSERT INTO dbo.SiteMetrics (id, processedtime, metricType, metricValue) VALUES (@id, @processedTime, @metricType, @metricValue)";
-            using (var command = new SqlCommand(sql, conn))
+            using var command = new SqlCommand(sql, conn);
+            command.Parameters.AddWithValue("@id", id);
+            command.Parameters.AddWithValue("@processedTime", processedTime);
+            command.Parameters.AddWithValue("@metricType", metricType);
+            command.Parameters.AddWithValue("@metricValue", metricValue);
+
+            int result = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+
+            // Check Error
+            if (result < 0)
             {
-                command.Parameters.AddWithValue("@id", id);
-                command.Parameters.AddWithValue("@processedTime", processedTime);
-                command.Parameters.AddWithValue("@metricType", metricType);
-                command.Parameters.AddWithValue("@metricValue", metricValue);
-
-                int result = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
-
-                // Check Error
-                if (result < 0)
-                    log.LogError("Error inserting data into Database!");
+                log.LogError("Error inserting data into Database!");
             }
         }
 
