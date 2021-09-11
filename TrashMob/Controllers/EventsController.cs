@@ -157,7 +157,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteEvent(Guid id)
         {
-            var mobEvent = await eventRepository.GetEvent(id);
+            var mobEvent = await eventRepository.GetEvent(id).ConfigureAwait(false);
             var user = await userRepository.GetUserByInternalId(mobEvent.CreatedByUserId).ConfigureAwait(false);
 
             if (user == null || !ValidateUser(user.NameIdentifier))

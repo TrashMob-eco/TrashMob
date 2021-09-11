@@ -21,7 +21,7 @@
 
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
 
-            return await mobDbContext.ContactRequests.FindAsync(contactRequest.Id);
+            return await mobDbContext.ContactRequests.FindAsync(contactRequest.Id).ConfigureAwait(false);
         }
     }
 }

@@ -71,7 +71,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteEventMedia(Guid id)
         {
-            var eventMedia = await eventMediaRepository.GetEventMediaById(id);
+            var eventMedia = await eventMediaRepository.GetEventMediaById(id).ConfigureAwait(false);
             var user = await userRepository.GetUserByInternalId(eventMedia.CreatedByUserId).ConfigureAwait(false);
 
             if (!ValidateUser(user.NameIdentifier))

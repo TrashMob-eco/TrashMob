@@ -127,7 +127,7 @@ namespace TrashMob.Controllers
 
                 originalUser.Email = user.Email;
                 originalUser.SourceSystemUserName = user.SourceSystemUserName;
-                await userRepository.UpdateUser(originalUser);
+                await userRepository.UpdateUser(originalUser).ConfigureAwait(false);
                 var returnedUser = await userRepository.GetUserByNameIdentifier(user.NameIdentifier).ConfigureAwait(false);
                 return Ok(returnedUser);
             }

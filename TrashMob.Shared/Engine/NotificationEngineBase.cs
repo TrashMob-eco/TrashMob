@@ -136,7 +136,7 @@
                 email.HtmlMessage = htmlContent;
 
                 // send email
-                await EmailSender.SendEmailAsync(email, cancellationToken);
+                await EmailSender.SendEmailAsync(email, cancellationToken).ConfigureAwait(false);
                 return 1;
             }
 

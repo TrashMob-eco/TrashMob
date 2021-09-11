@@ -43,7 +43,7 @@
                 return Forbid();
             }
 
-            await partnerRequestRepository.AddPartnerRequest(partnerRequest);
+            await partnerRequestRepository.AddPartnerRequest(partnerRequest).ConfigureAwait(false);
 
             var message = $"From Email: {partnerRequest.PrimaryEmail}\nFrom Name:{partnerRequest.Name}\nMessage:\n{partnerRequest.Notes}";
             var htmlMessage = $"From Email: {partnerRequest.PrimaryEmail}\nFrom Name:{partnerRequest.Name}\nMessage:\n{partnerRequest.Notes}";
@@ -72,9 +72,9 @@
             var partnerRequest = await partnerRequestRepository.GetPartnerRequest(partnerRequestId).ConfigureAwait(false);
             partnerRequest.PartnerRequestStatusId = (int)PartnerRequestStatusEnum.Approved;
 
-            await partnerRequestRepository.UpdatePartnerRequest(partnerRequest);
+            await partnerRequestRepository.UpdatePartnerRequest(partnerRequest).ConfigureAwait(false);
 
-            await partnerManager.CreatePartner(partnerRequest);
+            await partnerManager.CreatePartner(partnerRequest).ConfigureAwait(false);
 
             // Update this to notify user when their request has been approved and what to do next
             //var email = new Email
@@ -103,7 +103,7 @@
             
             partnerRequest.PartnerRequestStatusId = (int)PartnerRequestStatusEnum.Denied;
 
-            await partnerRequestRepository.UpdatePartnerRequest(partnerRequest);
+            await partnerRequestRepository.UpdatePartnerRequest(partnerRequest).ConfigureAwait(false);
 
             // Update this to notify user when their request has been denied and what to do next
             //var email = new Email

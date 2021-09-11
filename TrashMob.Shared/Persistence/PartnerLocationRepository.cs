@@ -43,7 +43,7 @@
         {
             mobDbContext.Entry(partnerLocation).State = EntityState.Modified;
             partnerLocation.LastUpdatedDate = DateTimeOffset.UtcNow;
-            await mobDbContext.SaveChangesAsync();
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
 
             return await mobDbContext.PartnerLocations.FindAsync(partnerLocation.Id).ConfigureAwait(false);
         }

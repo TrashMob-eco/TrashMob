@@ -56,7 +56,7 @@ namespace TrashMob.Shared.Persistence
 
                 email.Addresses.Add(address);
 
-                await emailSender.SendEmailAsync(email, cancellationToken);
+                await emailSender.SendEmailAsync(email, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -74,7 +74,7 @@ namespace TrashMob.Shared.Persistence
 
             email.Addresses.AddRange(recipients);
 
-            await emailSender.SendEmailAsync(email, cancellationToken);
+            await emailSender.SendEmailAsync(email, cancellationToken).ConfigureAwait(false);
         }
 
         public string GetEmailTemplate(string notificationType)

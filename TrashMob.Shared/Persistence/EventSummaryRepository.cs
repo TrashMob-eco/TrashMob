@@ -40,7 +40,7 @@
         {
             eventSummary.LastUpdatedDate = DateTimeOffset.UtcNow;
             mobDbContext.Entry(eventSummary).State = EntityState.Modified;
-            await mobDbContext.SaveChangesAsync();
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
             return await mobDbContext.EventSummaries.FindAsync(eventSummary.EventId).ConfigureAwait(false);
         }
 

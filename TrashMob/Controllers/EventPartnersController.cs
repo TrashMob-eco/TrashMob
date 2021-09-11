@@ -118,7 +118,7 @@ namespace TrashMob.Controllers
 
             var updatedEventPartner = await eventPartnerRepository.UpdateEventPartner(eventPartner).ConfigureAwait(false);
 
-            var user = await userRepository.GetUserByInternalId(eventPartner.CreatedByUserId);
+            var user = await userRepository.GetUserByInternalId(eventPartner.CreatedByUserId).ConfigureAwait(false);
 
             // Notify Admins that a partner request has been responded to
             var subject = "A partner request for an event has been responded to!";

@@ -76,7 +76,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteEventSummary(Guid eventId)
         {
-            var eventSummary = await eventSummaryRepository.GetEventSummary(eventId);
+            var eventSummary = await eventSummaryRepository.GetEventSummary(eventId).ConfigureAwait(false);
             var user = await userRepository.GetUserByInternalId(eventSummary.CreatedByUserId).ConfigureAwait(false);
 
             if (user == null || !ValidateUser(user.NameIdentifier))
