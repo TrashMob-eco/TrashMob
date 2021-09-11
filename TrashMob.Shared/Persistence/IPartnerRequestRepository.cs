@@ -11,7 +11,7 @@
 
         Task<PartnerRequest> GetPartnerRequest(Guid id);
 
-        Task AddPartnerRequest(PartnerRequest partnerRequest);
+        Task<PartnerRequest> AddPartnerRequest(PartnerRequest partnerRequest);
 
         Task<PartnerRequest> UpdatePartnerRequest(PartnerRequest partnerRequest);
     }

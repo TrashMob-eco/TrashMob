@@ -118,7 +118,7 @@ namespace TrashMob.Controllers
 
             var updatedEventPartner = await eventPartnerRepository.UpdateEventPartner(eventPartner).ConfigureAwait(false);
 
-            var user = await userRepository.GetUserByInternalId(eventPartner.CreatedByUserId);
+            var user = await userRepository.GetUserByInternalId(eventPartner.CreatedByUserId).ConfigureAwait(false);
 
             // Notify Admins that a partner request has been responded to
             var subject = "A partner request for an event has been responded to!";
@@ -132,7 +132,6 @@ namespace TrashMob.Controllers
 
             await emailManager.SendSystemEmail(subject, message, htmlMessage, recipients, CancellationToken.None).ConfigureAwait(false);
 
-            // Send welcome email to new User
             var partnerMessage = emailManager.GetEmailTemplate(NotificationTypeEnum.EventPartnerResponse.ToString());
             var partnerHtmlMessage = emailManager.GetHtmlEmailTemplate(NotificationTypeEnum.EventPartnerResponse.ToString());
             var partnerSubject = "A TrashMob.eco Partner has responded to your request!";

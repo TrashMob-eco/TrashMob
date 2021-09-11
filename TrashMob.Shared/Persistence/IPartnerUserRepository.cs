@@ -9,7 +9,7 @@
     {
         IQueryable<PartnerUser> GetPartnerUsers();
 
-        Task AddPartnerUser(PartnerUser partnerUser);
+        Task<PartnerUser> AddPartnerUser(PartnerUser partnerUser);
 
         Task<PartnerUser> UpdatePartnerUser(PartnerUser partnerUser);
 

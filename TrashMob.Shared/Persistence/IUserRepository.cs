@@ -11,7 +11,7 @@
 
         Task<User> AddUser(User user);
 
-        Task<int> UpdateUser(User user);
+        Task<User> UpdateUser(User user);
 
         Task<User> GetUserByInternalId(Guid id);
 

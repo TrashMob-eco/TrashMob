@@ -37,20 +37,21 @@
             return eventPartners;
         }
 
-        public Task<int> AddEventPartner(EventPartner eventPartner)
+        public async Task<EventPartner> AddEventPartner(EventPartner eventPartner)
         {
             try
             {
                 eventPartner.CreatedDate = DateTimeOffset.UtcNow;
                 eventPartner.LastUpdatedDate = DateTimeOffset.UtcNow;
                 mobDbContext.EventPartners.Add(eventPartner);
-                return mobDbContext.SaveChangesAsync();
+                await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+                return await mobDbContext.EventPartners.FindAsync(eventPartner.EventId, eventPartner.PartnerId, eventPartner.PartnerLocationId).ConfigureAwait(false);
             }
             catch (DbUpdateException ex)
             {
                 if ((ex.InnerException.InnerException is SqlException innerException) && (innerException.Number == 2627 || innerException.Number == 2601))
                 { 
-                    return Task.FromResult(0);
+                    return null;
                 }
                 else
                 {
@@ -59,7 +60,7 @@
             }
         }
 
-        public Task<int> UpdateEventPartner(EventPartner eventPartner)
+        public async Task<EventPartner> UpdateEventPartner(EventPartner eventPartner)
         {
             var originalEventPartner = mobDbContext.EventPartners
                 .FirstOrDefault(ep => ep.EventId == eventPartner.EventId && ep.PartnerId == eventPartner.PartnerId && ep.PartnerLocationId == eventPartner.PartnerLocationId);
@@ -68,7 +69,8 @@
             originalEventPartner.LastUpdatedByUserId = eventPartner.LastUpdatedByUserId;
             originalEventPartner.EventPartnerStatusId = eventPartner.EventPartnerStatusId;
 
-            return mobDbContext.SaveChangesAsync();
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+            return await mobDbContext.EventPartners.FindAsync(eventPartner.EventId, eventPartner.PartnerId, eventPartner.PartnerLocationId).ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<EventPartner>> GetEventsForPartnerLocation(Guid partnerLocationId)

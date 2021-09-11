@@ -24,7 +24,7 @@
         [HttpPost]
         public async Task<IActionResult> SaveContactRequest(ContactRequest contactRequest)
         {
-            await contactRequestRepository.AddContactRequest(contactRequest);
+            await contactRequestRepository.AddContactRequest(contactRequest).ConfigureAwait(false);
             var message = $"From Email: {contactRequest.Email}\nFrom Name:{contactRequest.Name}\nMessage:\n{contactRequest.Message}";
             var htmlMessage = $"From Email: {contactRequest.Email}\nFrom Name:{contactRequest.Name}\nMessage:\n{contactRequest.Message}";
             var subject = "Contact Request";

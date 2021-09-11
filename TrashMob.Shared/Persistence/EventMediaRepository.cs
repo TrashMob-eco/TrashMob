@@ -43,7 +43,7 @@
         }
 
         // Add new EventMedia record     
-        public async Task AddUpdateEventMedia(EventMedia eventMedia)
+        public async Task<EventMedia> AddUpdateEventMedia(EventMedia eventMedia)
         {
             if (eventMedia.Id == Guid.Empty)
             {
@@ -59,6 +59,7 @@
             }
 
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+            return await mobDbContext.EventMedias.FindAsync(eventMedia.Id).ConfigureAwait(false);
         }
 
         // Delete the record of a particular Mob Event    

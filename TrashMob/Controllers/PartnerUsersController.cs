@@ -115,7 +115,7 @@
 
             await partnerUserRepository.AddPartnerUser(partnerUser).ConfigureAwait(false);
 
-            return Ok();
+            return CreatedAtAction(nameof(GetPartnerUser), new { partnerId, userId });
         }
     }
 }

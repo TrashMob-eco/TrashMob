@@ -13,9 +13,9 @@
 
         Task<IEnumerable<PartnerLocation>> GetPotentialEventPartners(Guid eventId);
 
-        Task<int> AddEventPartner(EventPartner eventPartner);
+        Task<EventPartner> AddEventPartner(EventPartner eventPartner);
 
-        Task<int> UpdateEventPartner(EventPartner eventPartner);
+        Task<EventPartner> UpdateEventPartner(EventPartner eventPartner);
 
         Task<IEnumerable<EventPartner>> GetEventsForPartnerLocation(Guid partnerLocationId);
     }

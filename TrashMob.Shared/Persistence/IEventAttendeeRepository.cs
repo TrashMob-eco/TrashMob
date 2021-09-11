@@ -9,9 +9,9 @@
     {
         Task<IEnumerable<User>> GetEventAttendees(Guid eventId);
 
-        Task<int> AddEventAttendee(Guid eventId, Guid attendeeId);
+        Task<EventAttendee> AddEventAttendee(Guid eventId, Guid attendeeId);
 
-        Task<int> UpdateEventAttendee(EventAttendee eventAttendee);
+        Task<EventAttendee> UpdateEventAttendee(EventAttendee eventAttendee);
 
         Task<int> DeleteEventAttendee(Guid eventId, Guid attendeeId);
 

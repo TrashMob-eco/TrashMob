@@ -62,7 +62,7 @@
 
             await partnerLocationRepository.AddPartnerLocation(partnerLocation).ConfigureAwait(false);
 
-            return Ok();
+            return CreatedAtAction(nameof(GetPartnerLocation), new { partnerId = partnerLocation.PartnerId, locationId = partnerLocation.Id });
         }
 
         [HttpPut]
@@ -83,7 +83,7 @@
 
             await partnerLocationRepository.UpdatePartnerLocation(partnerLocation).ConfigureAwait(false);
 
-            return Ok();
+            return Ok(partnerLocation);
         }
 
         [HttpDelete("{partnerId}/{partnerLocationId}")]
@@ -104,7 +104,7 @@
 
             await partnerLocationRepository.DeletePartnerLocation(partnerLocationId).ConfigureAwait(false);
 
-            return Ok();
+            return Ok(partnerLocationId);
         }
     }
 }

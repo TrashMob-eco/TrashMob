@@ -49,7 +49,7 @@ namespace TrashMobJobs
                 log.LogInformation("There are currently '{numberOfUsers}' Users.", numberOfUsers);
             }
 
-            await AddSiteMetrics(log, conn, "TotalSiteUsers", numberOfUsers);
+            await AddSiteMetrics(log, conn, "TotalSiteUsers", numberOfUsers).ConfigureAwait(false);
 
             return numberOfUsers;
         }
@@ -66,7 +66,7 @@ namespace TrashMobJobs
                 log.LogInformation("There are currently '{numberOfEvents}' Events.", numberOfEvents);
             }
 
-            await AddSiteMetrics(log, conn, "TotalEvents", numberOfEvents);
+            await AddSiteMetrics(log, conn, "TotalEvents", numberOfEvents).ConfigureAwait(false);
 
             return numberOfEvents;
         }
@@ -83,7 +83,7 @@ namespace TrashMobJobs
                 log.LogInformation("There are currently '{numberOfEvents}' Future Events.", numberOfEvents);
             }
 
-            await AddSiteMetrics(log, conn, "TotalFutureEvents", numberOfEvents);
+            await AddSiteMetrics(log, conn, "TotalFutureEvents", numberOfEvents).ConfigureAwait(false);
 
             return numberOfEvents;
         }
@@ -100,7 +100,7 @@ namespace TrashMobJobs
                 log.LogInformation("There are currently '{numberOfEventAttendees}' EventAttendees.", numberOfEventAttendees);
             }
 
-            await AddSiteMetrics(log, conn, "TotalEventAttendees", numberOfEventAttendees);
+            await AddSiteMetrics(log, conn, "TotalEventAttendees", numberOfEventAttendees).ConfigureAwait(false);
 
             return numberOfEventAttendees;
         }
@@ -117,7 +117,7 @@ namespace TrashMobJobs
                 log.LogInformation("There are currently '{numberOfEventAttendees}' EventAttendees.", numberOfEventAttendees);
             }
 
-            await AddSiteMetrics(log, conn, "TotalFutureEventAttendees", numberOfEventAttendees);
+            await AddSiteMetrics(log, conn, "TotalFutureEventAttendees", numberOfEventAttendees).ConfigureAwait(false);
 
             return numberOfEventAttendees;
         }
@@ -134,7 +134,7 @@ namespace TrashMobJobs
                 log.LogInformation("There are currently '{numberOfContactRequests}' Future Events.", numberOfContactRequests);
             }
 
-            await AddSiteMetrics(log, conn, "TotalContactRequests", numberOfContactRequests);
+            await AddSiteMetrics(log, conn, "TotalContactRequests", numberOfContactRequests).ConfigureAwait(false);
 
             return numberOfContactRequests;
         }

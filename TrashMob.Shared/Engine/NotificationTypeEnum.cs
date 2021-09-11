@@ -14,5 +14,7 @@
         WelcomeToTrashMob = 10,
         EventPartnerRequest = 11,
         EventPartnerResponse = 12,
+        PartnerRequestAccepted = 13,
+        PartnerRequestDeclined = 14,
     }
 }

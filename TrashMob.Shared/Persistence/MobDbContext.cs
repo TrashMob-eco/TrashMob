@@ -148,7 +148,7 @@
 
             modelBuilder.Entity<PartnerUser>(entity =>
             {
-                entity.HasKey(e => new { e.UserId, e.PartnerId });
+                entity.HasKey(e => new { e.PartnerId, e.UserId, });
 
                 entity.Property(e => e.UserId)
                     .IsRequired();
@@ -473,7 +473,7 @@
 
             modelBuilder.Entity<EventAttendee>(entity =>
             {
-                entity.HasKey(e => new { e.UserId, e.EventId });
+                entity.HasKey(e => new { e.EventId, e.UserId });
 
                 entity.Property(e => e.UserId)
                     .IsRequired();

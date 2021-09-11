@@ -2,7 +2,6 @@
 {
     using Microsoft.EntityFrameworkCore;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
@@ -16,9 +15,13 @@
             this.mobDbContext = mobDbContext;
         }
 
-
-        public async Task AddPartnerLocation(PartnerLocation partnerLocation)
+        public async Task<PartnerLocation> AddPartnerLocation(PartnerLocation partnerLocation)
         {
+            if (partnerLocation.Id == Guid.Empty)
+            {
+                partnerLocation.Id = Guid.NewGuid();
+            }
+
             partnerLocation.CreatedDate = DateTimeOffset.UtcNow;
             partnerLocation.LastUpdatedByUserId = partnerLocation.CreatedByUserId;
             partnerLocation.LastUpdatedDate = DateTimeOffset.UtcNow;
@@ -26,6 +29,8 @@
             mobDbContext.PartnerLocations.Add(partnerLocation);
 
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+
+            return await mobDbContext.PartnerLocations.FindAsync(partnerLocation.Id).ConfigureAwait(false);
         }
 
         public IQueryable<PartnerLocation> GetPartnerLocations()
@@ -38,9 +43,9 @@
         {
             mobDbContext.Entry(partnerLocation).State = EntityState.Modified;
             partnerLocation.LastUpdatedDate = DateTimeOffset.UtcNow;
-            await mobDbContext.SaveChangesAsync();
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
 
-            return partnerLocation;
+            return await mobDbContext.PartnerLocations.FindAsync(partnerLocation.Id).ConfigureAwait(false);
         }
 
         public async Task<int> DeletePartnerLocation(Guid partnerLocationId)

@@ -17,7 +17,7 @@
 
         public async Task<EventSummary> GetEventSummary(Guid eventId)
         {
-            return await mobDbContext.EventSummaries.FirstOrDefaultAsync(es => es.EventId == eventId).ConfigureAwait(false);
+            return await mobDbContext.EventSummaries.FindAsync(eventId).ConfigureAwait(false);
         }
 
         public IQueryable<EventSummary> GetEventSummaries()
@@ -40,8 +40,8 @@
         {
             eventSummary.LastUpdatedDate = DateTimeOffset.UtcNow;
             mobDbContext.Entry(eventSummary).State = EntityState.Modified;
-            await mobDbContext.SaveChangesAsync();
-            return eventSummary;
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+            return await mobDbContext.EventSummaries.FindAsync(eventSummary.EventId).ConfigureAwait(false);
         }
 
         // Delete the record of a particular EventSummary
@@ -52,7 +52,6 @@
             mobDbContext.EventSummaries.Remove(eventSummary);
 
             return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
-
         }
     }
 }
