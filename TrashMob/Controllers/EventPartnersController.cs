@@ -132,7 +132,6 @@ namespace TrashMob.Controllers
 
             await emailManager.SendSystemEmail(subject, message, htmlMessage, recipients, CancellationToken.None).ConfigureAwait(false);
 
-            // Send welcome email to new User
             var partnerMessage = emailManager.GetEmailTemplate(NotificationTypeEnum.EventPartnerResponse.ToString());
             var partnerHtmlMessage = emailManager.GetHtmlEmailTemplate(NotificationTypeEnum.EventPartnerResponse.ToString());
             var partnerSubject = "A TrashMob.eco Partner has responded to your request!";
