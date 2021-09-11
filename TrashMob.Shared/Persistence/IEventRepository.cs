@@ -18,9 +18,9 @@
 
         Task<IEnumerable<Event>> GetUserEvents(Guid userId, bool futureEventsOnly);
 
-        Task<Guid> AddEvent(Event mobEvent);
+        Task<Event> AddEvent(Event mobEvent);
 
-        Task<int> UpdateEvent(Event mobEvent);
+        Task<Event> UpdateEvent(Event mobEvent);
 
         Task<Event> GetEvent(Guid id);
 

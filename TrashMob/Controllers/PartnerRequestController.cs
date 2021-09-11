@@ -76,6 +76,16 @@
 
             await partnerManager.CreatePartner(partnerRequest);
 
+            // Update this to notify user when their request has been approved and what to do next
+            //var email = new Email
+            //{
+            //    Message = $"From Email: {partnerRequest.PrimaryEmail}\nFrom Name:{partnerRequest.Name}\nMessage:\n{partnerRequest.Notes}",
+            //    Subject = "Partner Request"
+            //};
+            //email.Addresses.Add(new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress });
+
+            //await emailManager.SendSystemEmail(email, CancellationToken.None).ConfigureAwait(false);
+
             return Ok();
         }
 

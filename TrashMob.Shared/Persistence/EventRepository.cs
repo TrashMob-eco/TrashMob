@@ -53,7 +53,7 @@
         }
 
         // Add new Event record     
-        public async Task<Guid> AddEvent(Event mobEvent)
+        public async Task<Event> AddEvent(Event mobEvent)
         {
             mobEvent.Id = Guid.NewGuid();
             mobEvent.EventStatusId = (int)EventStatusEnum.Active;
@@ -73,16 +73,17 @@
             mobDbContext.EventAttendees.Add(newAttendee);
 
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
-            return mobEvent.Id;
+            return await mobDbContext.Events.FindAsync(mobEvent.Id).ConfigureAwait(false);
         }
 
         // Update the records of a particular Event  
-        public Task<int> UpdateEvent(Event mobEvent)
+        public async Task<Event> UpdateEvent(Event mobEvent)
         {
             mobDbContext.Entry(mobEvent).State = EntityState.Modified;
             var eventHistory = mobEvent.ToEventHistory();
             mobDbContext.EventHistories.Add(eventHistory);
-            return mobDbContext.SaveChangesAsync();
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+            return await mobDbContext.Events.FindAsync(mobEvent.Id).ConfigureAwait(false);
         }
 
         // Get the details of a particular Event    

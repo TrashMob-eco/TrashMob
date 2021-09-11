@@ -33,7 +33,7 @@
             return users;
         }
 
-        public Task<int> AddEventAttendee(Guid eventId, Guid attendeeId)
+        public async Task<EventAttendee> AddEventAttendee(Guid eventId, Guid attendeeId)
         {
             var eventAttendee = new EventAttendee
             {
@@ -45,13 +45,14 @@
             try
             {
                 mobDbContext.EventAttendees.Add(eventAttendee);
-                return mobDbContext.SaveChangesAsync();
+                await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+                return await mobDbContext.EventAttendees.FindAsync(eventId, attendeeId).ConfigureAwait(false);
             }
             catch (DbUpdateException ex)
             {
                 if ((ex.InnerException.InnerException is SqlException innerException) && (innerException.Number == 2627 || innerException.Number == 2601))
                 { 
-                    return Task.FromResult(0);
+                    return null;
                 }
                 else
                 {
@@ -60,10 +61,11 @@
             }
         }
 
-        public Task<int> UpdateEventAttendee(EventAttendee eventAttendee)
+        public async Task<EventAttendee> UpdateEventAttendee(EventAttendee eventAttendee)
         {
             mobDbContext.Entry(eventAttendee).State = EntityState.Modified;
-            return mobDbContext.SaveChangesAsync();
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+            return await mobDbContext.EventAttendees.FindAsync(eventAttendee.EventId, eventAttendee.UserId).ConfigureAwait(false);
         }
 
         public async Task<int> DeleteEventAttendee(Guid eventId, Guid userId)

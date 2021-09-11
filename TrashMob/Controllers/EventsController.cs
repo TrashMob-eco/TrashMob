@@ -96,9 +96,6 @@ namespace TrashMob.Controllers
             return Ok(mobEvent);
         }
 
-        // PUT: api/Events/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
@@ -128,9 +125,6 @@ namespace TrashMob.Controllers
             }
         }
 
-        // POST: api/Events
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
@@ -155,7 +149,7 @@ namespace TrashMob.Controllers
 
             await emailManager.SendGenericSystemEmail(subject, message, htmlMessage, recipients, CancellationToken.None).ConfigureAwait(false);
 
-            return Ok(eventId);
+            return CreatedAtAction(nameof(GetEvent), new { eventId });
         }
 
         [HttpDelete("{id}")]

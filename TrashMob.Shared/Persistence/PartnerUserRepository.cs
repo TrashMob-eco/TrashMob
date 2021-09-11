@@ -17,7 +17,7 @@
         }
 
 
-        public async Task AddPartnerUser(PartnerUser partnerUser)
+        public async Task<PartnerUser> AddPartnerUser(PartnerUser partnerUser)
         {
             partnerUser.CreatedDate = DateTimeOffset.UtcNow;
             partnerUser.LastUpdatedByUserId = partnerUser.CreatedByUserId;
@@ -26,6 +26,7 @@
             mobDbContext.PartnerUsers.Add(partnerUser);
 
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+            return await mobDbContext.PartnerUsers.FindAsync(partnerUser.PartnerId, partnerUser.UserId).ConfigureAwait(false);
         }
 
         public IQueryable<PartnerUser> GetPartnerUsers()
@@ -38,9 +39,9 @@
         {
             mobDbContext.Entry(partnerUser).State = EntityState.Modified;
             partnerUser.LastUpdatedDate = DateTimeOffset.UtcNow;
-            await mobDbContext.SaveChangesAsync();
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
 
-            return partnerUser;
+            return await mobDbContext.PartnerUsers.FindAsync(partnerUser.PartnerId, partnerUser.UserId).ConfigureAwait(false);
         }
 
         public async Task<int> DeletePartnerUser(Guid partnerId, Guid userId)

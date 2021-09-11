@@ -68,7 +68,7 @@ namespace TrashMob.Controllers
             eventSummary.LastUpdatedDate = DateTimeOffset.UtcNow;
             await eventSummaryRepository.AddEventSummary(eventSummary).ConfigureAwait(false);
 
-            return Ok();
+            return CreatedAtAction(nameof(GetEventSummary), new { eventId = eventSummary.EventId });
         }
 
         [HttpDelete("{id}")]
@@ -85,7 +85,7 @@ namespace TrashMob.Controllers
             }
 
             await eventSummaryRepository.DeleteEventSummary(eventId).ConfigureAwait(false);
-            return Ok();
+            return Ok(eventId);
         }
 
         // Ensure the user calling in is the owner of the record

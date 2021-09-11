@@ -13,13 +13,15 @@
             this.mobDbContext = mobDbContext;
         }
 
-        public async Task AddContactRequest(ContactRequest contactRequest)
+        public async Task<ContactRequest> AddContactRequest(ContactRequest contactRequest)
         {
             contactRequest.Id = Guid.NewGuid();
             contactRequest.CreatedDate = DateTimeOffset.UtcNow;
             mobDbContext.ContactRequests.Add(contactRequest);
 
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+
+            return await mobDbContext.ContactRequests.FindAsync(contactRequest.Id);
         }
     }
 }

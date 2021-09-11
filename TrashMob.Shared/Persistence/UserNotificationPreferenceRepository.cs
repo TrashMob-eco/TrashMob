@@ -23,7 +23,7 @@
                 .ToListAsync().ConfigureAwait(false);
         }
 
-        public async Task AddUpdateUserNotificationPreference(UserNotificationPreference userNotificationPreference)
+        public async Task<UserNotificationPreference> AddUpdateUserNotificationPreference(UserNotificationPreference userNotificationPreference)
         {
             var unp = mobDbContext.UserNotificationPreferences.Where(u => u.UserId == userNotificationPreference.UserId && u.UserNotificationTypeId == userNotificationPreference.UserNotificationTypeId).FirstOrDefault();
 
@@ -40,6 +40,8 @@
             }
 
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+
+            return await mobDbContext.UserNotificationPreferences.FindAsync(userNotificationPreference.Id).ConfigureAwait(false);
         }
     }
 }

@@ -35,11 +35,11 @@
             user.IsSiteAdmin = false;
             mobDbContext.Users.Add(user);
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
-            return user;
+            return await mobDbContext.Users.FindAsync(user.Id).ConfigureAwait(false);
         }
 
         // Update the records of a particular user
-        public async Task<int> UpdateUser(User user)
+        public async Task<User> UpdateUser(User user)
         {
             mobDbContext.Entry(user).State = EntityState.Modified;
 
@@ -47,7 +47,8 @@
             var matchedUser = await GetUserByInternalId(user.Id).ConfigureAwait(false);
             user.IsSiteAdmin = matchedUser.IsSiteAdmin;
 
-            return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+            return await mobDbContext.Users.FindAsync(user.Id).ConfigureAwait(false);
         }
 
         // Get the details of a particular User
