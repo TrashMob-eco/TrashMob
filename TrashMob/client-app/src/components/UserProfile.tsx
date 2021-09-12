@@ -13,9 +13,9 @@ import { getKey } from '../store/MapStore';
 import AddressData from './Models/AddressData';
 import { data } from 'azure-maps-control';
 import { AzureMapsProvider, IAzureMapOptions } from '@ambientlight/react-azure-maps';
-import MapController from './MapController';
 import UserNotificationPreferenceData, { UserNotificationPreferenceDefaults } from './Models/UserNotificationPreferenceData';
 import * as Constants from './Models/Constants';
+import MapControllerSinglePoint from './MapControllerSinglePoint';
 
 interface UserProfileProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -598,7 +598,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                         <Form.Row>
                             <AzureMapsProvider>
                                 <>
-                                    <MapController center={center} multipleEvents={[]} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                                    <MapControllerSinglePoint center={center} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isDraggable={true} eventDate={new Date()} />
                                 </>
                             </AzureMapsProvider>
                         </Form.Row>
