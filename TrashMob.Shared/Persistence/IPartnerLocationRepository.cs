@@ -9,7 +9,7 @@
     {
         IQueryable<PartnerLocation> GetPartnerLocations();
 
-        Task AddPartnerLocation(PartnerLocation partnerLocation);
+        Task<PartnerLocation> AddPartnerLocation(PartnerLocation partnerLocation);
 
         Task<PartnerLocation> UpdatePartnerLocation(PartnerLocation partnerLocation);
 

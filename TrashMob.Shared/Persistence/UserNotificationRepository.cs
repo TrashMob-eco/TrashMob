@@ -29,7 +29,7 @@
             userNotification.SentDate = DateTimeOffset.UtcNow;
             mobDbContext.UserNotifications.Add(userNotification);
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
-            return userNotification;
+            return await mobDbContext.UserNotifications.FindAsync(userNotification.Id).ConfigureAwait(false);
         }
     }
 }

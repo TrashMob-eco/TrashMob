@@ -92,7 +92,7 @@ namespace TrashMob.Controllers
             }
 
             await eventAttendeeRepository.DeleteEventAttendee(eventId, userId).ConfigureAwait(false);
-            return NoContent();
+            return Ok();
         }
 
         private async Task<bool> EventAttendeeExists(Guid eventId, Guid userId)

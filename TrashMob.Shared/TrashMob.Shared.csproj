@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Engine\EmailTemplates\ContactRequestReceived.html" />
+    <None Remove="Engine\EmailTemplates\ContactRequestReceived.txt" />
+    <None Remove="Engine\EmailTemplates\EventCancelledNotice.html" />
+    <None Remove="Engine\EmailTemplates\EventCancelledNotice.txt" />
     <None Remove="Engine\EmailTemplates\EventPartnerRequest.html" />
     <None Remove="Engine\EmailTemplates\EventPartnerRequest.txt" />
     <None Remove="Engine\EmailTemplates\EventPartnerResponse.html" />
@@ -16,6 +20,10 @@
     <None Remove="Engine\EmailTemplates\EventSummaryHostReminder.txt" />
     <None Remove="Engine\EmailTemplates\Generic.html" />
     <None Remove="Engine\EmailTemplates\Generic.txt" />
+    <None Remove="Engine\EmailTemplates\PartnerRequestAccepted.html" />
+    <None Remove="Engine\EmailTemplates\PartnerRequestAccepted.txt" />
+    <None Remove="Engine\EmailTemplates\PartnerRequestDeclined.html" />
+    <None Remove="Engine\EmailTemplates\PartnerRequestDeclined.txt" />
     <None Remove="Engine\EmailTemplates\UpcomingEventAttendingThisWeek.html" />
     <None Remove="Engine\EmailTemplates\UpcomingEventAttendingThisWeek.txt" />
     <None Remove="Engine\EmailTemplates\UpcomingEventAttendingToday.html" />
@@ -33,6 +41,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Engine\EmailTemplates\ContactRequestReceived.txt" />
+    <EmbeddedResource Include="Engine\EmailTemplates\ContactRequestReceived.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\EventCancelledNotice.txt" />
+    <EmbeddedResource Include="Engine\EmailTemplates\EventCancelledNotice.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\PartnerRequestDeclined.txt" />
+    <EmbeddedResource Include="Engine\EmailTemplates\PartnerRequestDeclined.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\PartnerRequestAccepted.txt" />
+    <EmbeddedResource Include="Engine\EmailTemplates\PartnerRequestAccepted.html" />
     <EmbeddedResource Include="Engine\EmailTemplates\EventPartnerRequest.txt" />
     <EmbeddedResource Include="Engine\EmailTemplates\EventPartnerRequest.html" />
     <EmbeddedResource Include="Engine\EmailTemplates\EventPartnerResponse.txt" />

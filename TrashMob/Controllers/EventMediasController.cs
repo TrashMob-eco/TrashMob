@@ -46,8 +46,6 @@ namespace TrashMob.Controllers
             return Ok(result);
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{userId}")]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
@@ -73,7 +71,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteEventMedia(Guid id)
         {
-            var eventMedia = await eventMediaRepository.GetEventMediaById(id);
+            var eventMedia = await eventMediaRepository.GetEventMediaById(id).ConfigureAwait(false);
             var user = await userRepository.GetUserByInternalId(eventMedia.CreatedByUserId).ConfigureAwait(false);
 
             if (!ValidateUser(user.NameIdentifier))

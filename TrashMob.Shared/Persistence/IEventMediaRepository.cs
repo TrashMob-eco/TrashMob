@@ -15,7 +15,7 @@
 
         Task<EventMedia> GetEventMediaById(Guid eventMediaId);
 
-        Task AddUpdateEventMedia(EventMedia eventMedia);
+        Task<EventMedia> AddUpdateEventMedia(EventMedia eventMedia);
 
         Task<int> DeleteEventMedia(Guid id);
     }

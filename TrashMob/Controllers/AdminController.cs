@@ -35,7 +35,7 @@
                 return Forbid();
             }
 
-            return Ok(await partnerRequestRepository.UpdatePartnerRequest(partnerRequest));
+            return Ok(await partnerRequestRepository.UpdatePartnerRequest(partnerRequest).ConfigureAwait(false));
         }
 
         private bool ValidateUser(string userId)

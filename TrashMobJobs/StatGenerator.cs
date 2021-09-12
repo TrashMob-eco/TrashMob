@@ -49,7 +49,7 @@ namespace TrashMobJobs
                 log.LogInformation("There are currently '{numberOfUsers}' Users.", numberOfUsers);
             }
 
-            await AddSiteMetrics(log, conn, "TotalSiteUsers", numberOfUsers);
+            await AddSiteMetrics(log, conn, "TotalSiteUsers", numberOfUsers).ConfigureAwait(false);
 
             return numberOfUsers;
         }
@@ -66,7 +66,7 @@ namespace TrashMobJobs
                 log.LogInformation("There are currently '{numberOfEvents}' Events.", numberOfEvents);
             }
 
-            await AddSiteMetrics(log, conn, "TotalEvents", numberOfEvents);
+            await AddSiteMetrics(log, conn, "TotalEvents", numberOfEvents).ConfigureAwait(false);
 
             return numberOfEvents;
         }
@@ -83,7 +83,7 @@ namespace TrashMobJobs
                 log.LogInformation("There are currently '{numberOfEvents}' Future Events.", numberOfEvents);
             }
 
-            await AddSiteMetrics(log, conn, "TotalFutureEvents", numberOfEvents);
+            await AddSiteMetrics(log, conn, "TotalFutureEvents", numberOfEvents).ConfigureAwait(false);
 
             return numberOfEvents;
         }
@@ -100,7 +100,7 @@ namespace TrashMobJobs
                 log.LogInformation("There are currently '{numberOfEventAttendees}' EventAttendees.", numberOfEventAttendees);
             }
 
-            await AddSiteMetrics(log, conn, "TotalEventAttendees", numberOfEventAttendees);
+            await AddSiteMetrics(log, conn, "TotalEventAttendees", numberOfEventAttendees).ConfigureAwait(false);
 
             return numberOfEventAttendees;
         }
@@ -117,7 +117,7 @@ namespace TrashMobJobs
                 log.LogInformation("There are currently '{numberOfEventAttendees}' EventAttendees.", numberOfEventAttendees);
             }
 
-            await AddSiteMetrics(log, conn, "TotalFutureEventAttendees", numberOfEventAttendees);
+            await AddSiteMetrics(log, conn, "TotalFutureEventAttendees", numberOfEventAttendees).ConfigureAwait(false);
 
             return numberOfEventAttendees;
         }
@@ -134,7 +134,7 @@ namespace TrashMobJobs
                 log.LogInformation("There are currently '{numberOfContactRequests}' Future Events.", numberOfContactRequests);
             }
 
-            await AddSiteMetrics(log, conn, "TotalContactRequests", numberOfContactRequests);
+            await AddSiteMetrics(log, conn, "TotalContactRequests", numberOfContactRequests).ConfigureAwait(false);
 
             return numberOfContactRequests;
         }
@@ -144,18 +144,18 @@ namespace TrashMobJobs
             var id = Guid.NewGuid();
             var processedTime = DateTimeOffset.Now;
             var sql = "INSERT INTO dbo.SiteMetrics (id, processedtime, metricType, metricValue) VALUES (@id, @processedTime, @metricType, @metricValue)";
-            using (var command = new SqlCommand(sql, conn))
+            using var command = new SqlCommand(sql, conn);
+            command.Parameters.AddWithValue("@id", id);
+            command.Parameters.AddWithValue("@processedTime", processedTime);
+            command.Parameters.AddWithValue("@metricType", metricType);
+            command.Parameters.AddWithValue("@metricValue", metricValue);
+
+            int result = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+
+            // Check Error
+            if (result < 0)
             {
-                command.Parameters.AddWithValue("@id", id);
-                command.Parameters.AddWithValue("@processedTime", processedTime);
-                command.Parameters.AddWithValue("@metricType", metricType);
-                command.Parameters.AddWithValue("@metricValue", metricValue);
-
-                int result = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
-
-                // Check Error
-                if (result < 0)
-                    log.LogError("Error inserting data into Database!");
+                log.LogError("Error inserting data into Database!");
             }
         }
 

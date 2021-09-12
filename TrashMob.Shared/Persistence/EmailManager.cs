@@ -56,7 +56,7 @@ namespace TrashMob.Shared.Persistence
 
                 email.Addresses.Add(address);
 
-                await emailSender.SendEmailAsync(email, cancellationToken);
+                await emailSender.SendEmailAsync(email, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -74,13 +74,13 @@ namespace TrashMob.Shared.Persistence
 
             email.Addresses.AddRange(recipients);
 
-            await emailSender.SendEmailAsync(email, cancellationToken);
+            await emailSender.SendEmailAsync(email, cancellationToken).ConfigureAwait(false);
         }
 
         public string GetEmailTemplate(string notificationType)
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.html", notificationType);
+            var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.txt", notificationType);
             logger.LogInformation("Getting email template: {0}", resourceName);
             string result;
 
@@ -96,7 +96,7 @@ namespace TrashMob.Shared.Persistence
         public string GetHtmlEmailTemplate(string notificationType)
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.txt", notificationType);
+            var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.html", notificationType);
             logger.LogInformation("Getting email template: {0}", resourceName);
             string result;
 

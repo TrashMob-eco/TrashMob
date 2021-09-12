@@ -68,7 +68,7 @@ namespace TrashMob.Controllers
             eventSummary.LastUpdatedDate = DateTimeOffset.UtcNow;
             await eventSummaryRepository.AddEventSummary(eventSummary).ConfigureAwait(false);
 
-            return Ok();
+            return CreatedAtAction(nameof(GetEventSummary), new { eventId = eventSummary.EventId });
         }
 
         [HttpDelete("{id}")]
@@ -76,7 +76,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteEventSummary(Guid eventId)
         {
-            var eventSummary = await eventSummaryRepository.GetEventSummary(eventId);
+            var eventSummary = await eventSummaryRepository.GetEventSummary(eventId).ConfigureAwait(false);
             var user = await userRepository.GetUserByInternalId(eventSummary.CreatedByUserId).ConfigureAwait(false);
 
             if (user == null || !ValidateUser(user.NameIdentifier))
@@ -85,7 +85,7 @@ namespace TrashMob.Controllers
             }
 
             await eventSummaryRepository.DeleteEventSummary(eventId).ConfigureAwait(false);
-            return Ok();
+            return Ok(eventId);
         }
 
         // Ensure the user calling in is the owner of the record

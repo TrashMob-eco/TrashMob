@@ -43,9 +43,9 @@ export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
         }
     }
 
-    // Handle Delete request for an event  
-    function handleDelete(id: string, name: string) {
-        if (!window.confirm("Do you want to delete event with name: " + name))
+    // Handle Cancel request for an event  
+    function handleCancel(id: string, name: string) {
+        if (!window.confirm("Do you want to cancel event with name: " + name))
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
@@ -97,7 +97,7 @@ export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
                                     <td>{mobEvent.postalCode}</td>
                                     <td>
                                         <Button hidden={!isOwner} className="action" onClick={() => props.history.push('/manageeventdashboard/' + mobEvent.id)}>Manage Event</Button>
-                                        <Button hidden={!isOwner} className="action" onClick={() => handleDelete(mobEvent.id, mobEvent.name)}>Delete Event</Button>
+                                        <Button hidden={!isOwner} className="action" onClick={() => handleCancel(mobEvent.id, mobEvent.name)}>Cancel Event</Button>
                                         <Button className="action" onClick={() => props.history.push('/eventdetails/' + mobEvent.id)}>View Details</Button>
                                         <Button hidden={isOwner} className="action" onClick={() => handleRemove(mobEvent.id, mobEvent.name)}>Remove Me from Event</Button>
                                     </td>

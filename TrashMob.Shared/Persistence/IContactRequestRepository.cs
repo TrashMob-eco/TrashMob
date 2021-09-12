@@ -5,6 +5,6 @@
 
     public interface IContactRequestRepository
     {
-        Task AddContactRequest(ContactRequest contactRequest);
+        Task<ContactRequest> AddContactRequest(ContactRequest contactRequest);
     }
 }

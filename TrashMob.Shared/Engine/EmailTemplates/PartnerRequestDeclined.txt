@@ -1,0 +1,12 @@
+﻿        Hey {PartnerName},
+
+        We're sorry, your request to become a TrashMob.eco Partner has been declined. Thank you for your interest in TrashMob.eco. If you provided a
+        valid contact email when you registered, someone fromt he TrashMob.eco team will be reaching out to you shortly to talk about next steps.
+
+
+        The Team at TrashMob.eco
+
+
+        https://www.trashmob.eco
+        Go to https://www.trashmob.eco/userprofile to manage your notification preferences for TrashMob.eco.
+

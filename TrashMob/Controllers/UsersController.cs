@@ -68,7 +68,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserByUserName(Guid id)
+        public async Task<IActionResult> GetUserByInternalId(Guid id)
         {
             var user = await userRepository.GetUserByInternalId(id).ConfigureAwait(false);
 
@@ -127,7 +127,7 @@ namespace TrashMob.Controllers
 
                 originalUser.Email = user.Email;
                 originalUser.SourceSystemUserName = user.SourceSystemUserName;
-                await userRepository.UpdateUser(originalUser);
+                await userRepository.UpdateUser(originalUser).ConfigureAwait(false);
                 var returnedUser = await userRepository.GetUserByNameIdentifier(user.NameIdentifier).ConfigureAwait(false);
                 return Ok(returnedUser);
             }
@@ -161,7 +161,7 @@ namespace TrashMob.Controllers
 
             await emailManager.SendSystemEmail(welcomeSubject, welcomeMessage, welcomeHtmlMessage, welcomeRecipients, CancellationToken.None).ConfigureAwait(false);
 
-            return Ok(newUser);
+            return CreatedAtAction(nameof(GetUserByInternalId), new { id = newUser.Id }, newUser);
         }
 
         [HttpDelete("{id}")]
@@ -177,7 +177,7 @@ namespace TrashMob.Controllers
             }
 
             await userRepository.DeleteUserByInternalId(id).ConfigureAwait(false);
-            return NoContent();
+            return Ok(id);
         }
 
         private async Task<bool> UserExists(Guid id)

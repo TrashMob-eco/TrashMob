@@ -8,6 +8,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared;
+    using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
@@ -43,7 +44,7 @@
                 return Forbid();
             }
 
-            await partnerRequestRepository.AddPartnerRequest(partnerRequest);
+            await partnerRequestRepository.AddPartnerRequest(partnerRequest).ConfigureAwait(false);
 
             var message = $"From Email: {partnerRequest.PrimaryEmail}\nFrom Name:{partnerRequest.Name}\nMessage:\n{partnerRequest.Notes}";
             var htmlMessage = $"From Email: {partnerRequest.PrimaryEmail}\nFrom Name:{partnerRequest.Name}\nMessage:\n{partnerRequest.Notes}";
@@ -72,9 +73,23 @@
             var partnerRequest = await partnerRequestRepository.GetPartnerRequest(partnerRequestId).ConfigureAwait(false);
             partnerRequest.PartnerRequestStatusId = (int)PartnerRequestStatusEnum.Approved;
 
-            await partnerRequestRepository.UpdatePartnerRequest(partnerRequest);
+            await partnerRequestRepository.UpdatePartnerRequest(partnerRequest).ConfigureAwait(false);
 
-            await partnerManager.CreatePartner(partnerRequest);
+            await partnerManager.CreatePartner(partnerRequest).ConfigureAwait(false);
+
+            var partnerMessage = emailManager.GetEmailTemplate(NotificationTypeEnum.PartnerRequestAccepted.ToString());
+            partnerMessage = partnerMessage.Replace("{PartnerName}", partnerRequest.Name);
+            var partnerHtmlMessage = emailManager.GetHtmlEmailTemplate(NotificationTypeEnum.PartnerRequestAccepted.ToString());
+            partnerHtmlMessage = partnerHtmlMessage.Replace("{PartnerName}", partnerRequest.Name);
+            var partnerSubject = "Your request to become a TrashMob.eco Partner has been accepted!";
+
+            var partnerRecipients = new List<EmailAddress>
+            {
+                new EmailAddress { Name = partnerRequest.Name, Email = partnerRequest.PrimaryEmail },
+                new EmailAddress { Name = partnerRequest.Name, Email = partnerRequest.SecondaryEmail },
+            };
+            
+            await emailManager.SendSystemEmail(partnerSubject, partnerMessage, partnerHtmlMessage, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
 
             return Ok();
         }
@@ -93,17 +108,21 @@
             
             partnerRequest.PartnerRequestStatusId = (int)PartnerRequestStatusEnum.Denied;
 
-            await partnerRequestRepository.UpdatePartnerRequest(partnerRequest);
+            await partnerRequestRepository.UpdatePartnerRequest(partnerRequest).ConfigureAwait(false);
 
-            // Update this to notify user when their request has been denied and what to do next
-            //var email = new Email
-            //{
-            //    Message = $"From Email: {partnerRequest.PrimaryEmail}\nFrom Name:{partnerRequest.Name}\nMessage:\n{partnerRequest.Notes}",
-            //    Subject = "Partner Request"
-            //};
-            //email.Addresses.Add(new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress });
+            var partnerMessage = emailManager.GetEmailTemplate(NotificationTypeEnum.PartnerRequestDeclined.ToString());
+            partnerMessage = partnerMessage.Replace("{PartnerName}", partnerRequest.Name);
+            var partnerHtmlMessage = emailManager.GetHtmlEmailTemplate(NotificationTypeEnum.PartnerRequestDeclined.ToString());
+            partnerHtmlMessage = partnerHtmlMessage.Replace("{PartnerName}", partnerRequest.Name);
+            var partnerSubject = "Your request to become a TrashMob.eco Partner has been declined";
 
-            //await emailManager.SendSystemEmail(email, CancellationToken.None).ConfigureAwait(false);
+            var partnerRecipients = new List<EmailAddress>
+            {
+                new EmailAddress { Name = partnerRequest.Name, Email = partnerRequest.PrimaryEmail },
+                new EmailAddress { Name = partnerRequest.Name, Email = partnerRequest.SecondaryEmail },
+            };
+
+            await emailManager.SendSystemEmail(partnerSubject, partnerMessage, partnerHtmlMessage, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
 
             return Ok();
         }

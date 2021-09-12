@@ -14,7 +14,6 @@
         {
             this.mobDbContext = mobDbContext;
         }
-
         
         public async Task<Partner> AddPartner(Partner partner)
         {
@@ -27,7 +26,7 @@
 
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
 
-            return partner;
+            return await mobDbContext.Partners.FindAsync(partner.Id).ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<Partner>> GetPartners()
@@ -39,7 +38,7 @@
 
         public async Task<Partner> GetPartner(Guid id)
         {
-            return await mobDbContext.Partners.FirstOrDefaultAsync(p => p.Id == id);
+            return await mobDbContext.Partners.FindAsync(id).ConfigureAwait(false);
         }
 
         // Update the records of a particular Partner
@@ -47,9 +46,9 @@
         {
             mobDbContext.Entry(partner).State = EntityState.Modified;
             partner.LastUpdatedDate = DateTimeOffset.UtcNow;
-            await mobDbContext.SaveChangesAsync();
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
 
-            return partner;
+            return await mobDbContext.Partners.FindAsync(partner.Id).ConfigureAwait(false);
         }
     }
 }

@@ -6,12 +6,8 @@ namespace TrashMob.Controllers
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Identity.Web.Resource;
     using TrashMob.Poco;
-    using TrashMob.Shared;
-    using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
     [ApiController]
