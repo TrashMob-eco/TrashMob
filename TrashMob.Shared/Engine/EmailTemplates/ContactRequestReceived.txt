@@ -1,0 +1,11 @@
+﻿        Hey TrashMobInfo,
+
+        A TrashMob.eco contact x request has been received from  {UserName} ({UserEmail}).
+
+        Message:
+
+        {Message}
+
+        The Team at TrashMob.eco
+        https://www.trashmob.eco
+        Go to https://www.trashmob.eco/userprofile to manage your notification preferences for TrashMob.eco.
