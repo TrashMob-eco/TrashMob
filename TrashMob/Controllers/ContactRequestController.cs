@@ -5,6 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared;
+    using TrashMob.Shared.Engine;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
@@ -25,16 +26,25 @@
         public async Task<IActionResult> SaveContactRequest(ContactRequest contactRequest)
         {
             await contactRequestRepository.AddContactRequest(contactRequest).ConfigureAwait(false);
-            var message = $"From Email: {contactRequest.Email}\nFrom Name:{contactRequest.Name}\nMessage:\n{contactRequest.Message}";
-            var htmlMessage = $"From Email: {contactRequest.Email}\nFrom Name:{contactRequest.Name}\nMessage:\n{contactRequest.Message}";
-            var subject = "Contact Request";
+
+            var message = emailManager.GetEmailTemplate(NotificationTypeEnum.ContactRequestReceived.ToString());
+            var htmlMessage = emailManager.GetHtmlEmailTemplate(NotificationTypeEnum.ContactRequestReceived.ToString());
+            var subject = "A Contact Request has been received on TrashMob.eco!";
+
+            message = message.Replace("{UserName}", contactRequest.Name);
+            htmlMessage = htmlMessage.Replace("{UserName}", contactRequest.Name);
+            message = message.Replace("{UserEmail}", contactRequest.Email);
+            htmlMessage = htmlMessage.Replace("{UserEmail}", contactRequest.Email);
+            message = message.Replace("{Message}", contactRequest.Message);
+            htmlMessage = htmlMessage.Replace("{Message}", contactRequest.Message);
+
             var recipients = new List<EmailAddress>
             {
                 new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
             };
 
-            await emailManager.SendGenericSystemEmail(subject, message, htmlMessage, recipients, CancellationToken.None).ConfigureAwait(false);
-            
+            await emailManager.SendSystemEmail(subject, message, htmlMessage, recipients, CancellationToken.None).ConfigureAwait(false);
+
             return Ok();
         }
     }
