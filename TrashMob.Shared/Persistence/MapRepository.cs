@@ -46,9 +46,9 @@
 
             try
             {
-                if (response.HttpResponseCode != (int)HttpStatusCode.OK)
+                if (response.HttpResponseCode != (int)HttpStatusCode.OK && response.HttpResponseCode != 0)
                 {
-                    throw new Exception($"Error getting GetGreatCircleDistance: {JsonSerializer.Serialize(response.Error)}");
+                    throw new Exception($"Error getting GetGreatCircleDistance: {JsonSerializer.Serialize(response)}");
                 }
 
                 var result1 = response.Result;
@@ -76,7 +76,7 @@
                     return res;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.LogError(ex, "Exception encountered");
                 throw;
@@ -96,7 +96,7 @@
             var timezoneRequest = new TimeZoneRequest
             {
                 Query = $"{pointA.Item1},{pointA.Item2}",
-                TimeStamp =  dateTimeOffset.ToString("O")
+                TimeStamp = dateTimeOffset.ToString("O")
             };
 
             logger.LogInformation("Getting time for timezoneRequest: {0}", JsonSerializer.Serialize(timezoneRequest));
@@ -105,9 +105,9 @@
 
             logger.LogInformation("Response from getting time for timezoneRequest: {0}", JsonSerializer.Serialize(response));
 
-            if (response.HttpResponseCode != (int)HttpStatusCode.OK)
+            if (response.HttpResponseCode != (int)HttpStatusCode.OK && response.HttpResponseCode != 0)
             {
-                throw new Exception($"Error getting timezonebycoordinates: {response.Error.Error}");
+                throw new Exception($"Error getting timezonebycoordinates: {response}");
             }
 
             return response?.Result?.TimeZones[0]?.ReferenceTime?.WallTime;
