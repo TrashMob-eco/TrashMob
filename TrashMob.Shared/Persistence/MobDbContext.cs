@@ -2,6 +2,7 @@
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
+    using System;
     using TrashMob.Shared;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Models;
@@ -261,6 +262,9 @@
                 entity.Property(e => e.PrivacyPolicyVersion).HasMaxLength(50);
 
                 entity.Property(e => e.TermsOfServiceVersion).HasMaxLength(50);
+
+                entity.HasData(
+                    new User { Id = Guid.Empty, City = "Anytown", Country = "AnyCountry", Email="info@trashmob.eco", GivenName = "TrashMob", Region = "AnyState", SurName = "Eco", UserName = "TrashMob" });
             });
 
             modelBuilder.Entity<UserNotification>(entity =>

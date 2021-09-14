@@ -10,6 +10,7 @@
     public class UserRepository : IUserRepository
     {
         private readonly MobDbContext mobDbContext;
+        private readonly Guid TrashMobUserId = Guid.Empty;
 
         public UserRepository(MobDbContext mobDbContext)
         {
@@ -98,32 +99,144 @@
                 mobDbContext.EventMedias.Remove(eventMedia);
             }
 
-            // Remove the history records where the user created or updated the event
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+
+            // Update the history records where the user created or updated the event to set the User to the TrashMob User
             var eventHistories = mobDbContext.EventHistories.Where(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id);
 
             foreach (var mobEvent in eventHistories)
             {
-                mobDbContext.EventHistories.Remove(mobEvent);
+                if (mobEvent.CreatedByUserId == id)
+                {
+                    mobEvent.CreatedByUserId = TrashMobUserId;
+                }
+
+                if (mobEvent.LastUpdatedByUserId == id)
+                {
+                    mobEvent.LastUpdatedByUserId = TrashMobUserId;
+                }
+            }
+
+            // Remove the Partner Requests
+            var partnerRequests = mobDbContext.PartnerRequests.Where(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id);
+
+            foreach (var partnerRequest in partnerRequests)
+            {
+                if (partnerRequest.CreatedByUserId == id)
+                {
+                    partnerRequest.CreatedByUserId = TrashMobUserId;
+                }
+
+                if (partnerRequest.LastUpdatedByUserId == id)
+                {
+                    partnerRequest.LastUpdatedByUserId = TrashMobUserId;
+                }
             }
 
             // Remove the first set of records
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
 
             // Remove the records where the user created or updated the event
+            var eventSummaries = mobDbContext.EventSummaries.Where(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToList();
+
+            foreach (var eventSummary in eventSummaries)
+            {
+                if (eventSummary.CreatedByUserId == id)
+                {
+                    eventSummary.CreatedByUserId = TrashMobUserId;
+                }
+
+                if (eventSummary.LastUpdatedByUserId == id)
+                {
+                    eventSummary.LastUpdatedByUserId = TrashMobUserId;
+                }
+            }
+
+            // Remove the event partner records for this event
+            var eventPartners = mobDbContext.EventPartners.Where(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id);
+
+            foreach (var eventPartner in eventPartners)
+            {
+                if (eventPartner.CreatedByUserId == id)
+                {
+                    eventPartner.CreatedByUserId = TrashMobUserId;
+                }
+
+                if (eventPartner.LastUpdatedByUserId == id)
+                {
+                    eventPartner.LastUpdatedByUserId = TrashMobUserId;
+                }
+            }
+
             var events = mobDbContext.Events.Where(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToList();
 
             foreach (var mobEvent in events)
             {
-                // Remove the records where other users are attending an event created by this user
-                var eventAttendees = mobDbContext.EventAttendees.Where(ea => ea.EventId == mobEvent.Id && ea.UserId != id);
-
-                foreach (var attendee in eventAttendees)
+                if (mobEvent.CreatedByUserId == id)
                 {
-                    mobDbContext.EventAttendees.Remove(attendee);
+                    mobEvent.CreatedByUserId = TrashMobUserId;
                 }
 
-                mobDbContext.Events.Remove(mobEvent);
+                if (mobEvent.LastUpdatedByUserId == id)
+                {
+                    mobEvent.LastUpdatedByUserId = TrashMobUserId;
+                }
             }
+
+            var partners = mobDbContext.Partners.Where(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToList();
+
+            foreach (var partner in partners)
+            {
+                if (partner.CreatedByUserId == id)
+                {
+                    partner.CreatedByUserId = TrashMobUserId;
+                }
+
+                if (partner.LastUpdatedByUserId == id)
+                {
+                    partner.LastUpdatedByUserId = TrashMobUserId;
+                }
+            }
+
+            var partnerUsers = mobDbContext.PartnerUsers.Where(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id || e.UserId == id);
+
+            foreach (var partnerUser in partnerUsers)
+            {
+                if (partnerUser.UserId == id)
+                {
+                    mobDbContext.PartnerUsers.Remove(partnerUser);
+                }
+                else
+                {
+                    if (partnerUser.CreatedByUserId == id)
+                    {
+                        partnerUser.CreatedByUserId = TrashMobUserId;
+                    }
+
+                    if (partnerUser.LastUpdatedByUserId == id)
+                    {
+                        partnerUser.LastUpdatedByUserId = TrashMobUserId;
+                    }
+                }
+            }
+
+            // Remove the Partner Locations
+            var partnerLocations = mobDbContext.PartnerLocations.Where(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id);
+
+            foreach (var partnerLocation in partnerLocations)
+            {
+                if (partnerLocation.CreatedByUserId == id)
+                {
+                    partnerLocation.CreatedByUserId = TrashMobUserId;
+                }
+
+                if (partnerLocation.LastUpdatedByUserId == id)
+                {
+                    partnerLocation.LastUpdatedByUserId = TrashMobUserId;
+                }
+            }
+
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
 
             // Remove the user's profile
             var user = await mobDbContext.Users.FindAsync(id).ConfigureAwait(false);

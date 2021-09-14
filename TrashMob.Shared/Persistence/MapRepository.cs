@@ -44,34 +44,42 @@
 
             logger.LogInformation("Response from getting distance between two points: {0}", JsonSerializer.Serialize(response));
 
-            if (response.HttpResponseCode != (int)HttpStatusCode.OK)
+            try
             {
-                throw new Exception($"Error getting GetGreatCircleDistance: {response.Error.Error}");
+                if (response.HttpResponseCode != (int)HttpStatusCode.OK)
+                {
+                    throw new Exception($"Error getting GetGreatCircleDistance: {JsonSerializer.Serialize(response.Error)}");
+                }
+
+                var result1 = response.Result;
+
+                logger.LogInformation("Result 1: {0}", JsonSerializer.Serialize(result1));
+
+                var result2 = result1.Result;
+
+                logger.LogInformation("Result 2: {0}", JsonSerializer.Serialize(result2));
+
+                var distanceInMeters = (long)result2.DistanceInMeters;
+
+                logger.LogInformation("Distance in Meters: {0}", distanceInMeters);
+
+                if (IsMetric)
+                {
+                    var res = distanceInMeters / MetersPerKilometer;
+                    logger.LogInformation("Kilometers : {0}", res);
+                    return res;
+                }
+                else
+                {
+                    var res = distanceInMeters / MetersPerMile;
+                    logger.LogInformation("Miles : {0}", res);
+                    return res;
+                }
             }
-
-            var result1 = response.Result;
-
-            logger.LogInformation("Result 1: {0}", JsonSerializer.Serialize(result1));
-
-            var result2 = result1.Result;
-
-            logger.LogInformation("Result 2: {0}", JsonSerializer.Serialize(result2));
-
-            var distanceInMeters = (long)result2.DistanceInMeters;
-
-            logger.LogInformation("Distance in Meters: {0}", distanceInMeters);
-
-            if (IsMetric)
+            catch(Exception ex)
             {
-                var res = distanceInMeters / MetersPerKilometer;
-                logger.LogInformation("Kilometers : {0}", res);
-                return res;
-            }
-            else
-            {
-                var res = distanceInMeters / MetersPerMile;
-                logger.LogInformation("Miles : {0}", res);
-                return res;
+                logger.LogError(ex, "Exception encountered");
+                throw;
             }
         }
 
