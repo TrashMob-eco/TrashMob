@@ -49,20 +49,29 @@
                 throw new Exception($"Error getting GetGreatCircleDistance: {response.Error.Error}");
             }
 
-            if (response.Result?.Result == null)
-            {
-                throw new Exception($"Error getting GetGreatCircleDistance. Results was null. {response}");
-            }
+            var result1 = response.Result;
 
-            var distanceInMeters = (long)response.Result.Result.DistanceInMeters;
+            logger.LogInformation("Result 1: {0}", JsonSerializer.Serialize(result1));
+
+            var result2 = result1.Result;
+
+            logger.LogInformation("Result 2: {0}", JsonSerializer.Serialize(result2));
+
+            var distanceInMeters = (long)result2.DistanceInMeters;
+
+            logger.LogInformation("Distance in Meters: {0}", distanceInMeters);
 
             if (IsMetric)
             {
-                return distanceInMeters / MetersPerKilometer;
+                var res = distanceInMeters / MetersPerKilometer;
+                logger.LogInformation("Kilometers : {0}", res);
+                return res;
             }
             else
             {
-                return distanceInMeters / MetersPerMile;
+                var res = distanceInMeters / MetersPerMile;
+                logger.LogInformation("Miles : {0}", res);
+                return res;
             }
         }
 
