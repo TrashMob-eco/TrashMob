@@ -32,6 +32,21 @@ namespace TrashMob.Controllers
             return Ok(result);
         }
 
+        [HttpGet("byUserId/{userId}")]
+        [Authorize]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        public async Task<IActionResult> GetEventMediasByUserId(Guid userId)
+        {
+            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
+            if (user == null || !ValidateUser(user.NameIdentifier))
+            {
+                return Forbid();
+            }
+
+            var result = await eventMediaRepository.GetEventMediasByUser(userId).ConfigureAwait(false);
+            return Ok(result);
+        }
+
         [HttpGet()]
         public async Task<IActionResult> GetEventMedias()
         {

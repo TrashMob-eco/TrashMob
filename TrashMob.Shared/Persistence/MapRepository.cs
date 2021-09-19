@@ -51,15 +51,7 @@
                     throw new Exception($"Error getting GetGreatCircleDistance: {JsonSerializer.Serialize(response)}");
                 }
 
-                var result1 = response.Result;
-
-                logger.LogInformation("Result 1: {0}", JsonSerializer.Serialize(result1));
-
-                var result2 = result1.Result;
-
-                logger.LogInformation("Result 2: {0}", JsonSerializer.Serialize(result2));
-
-                var distanceInMeters = (long)result2.DistanceInMeters;
+                var distanceInMeters = (long)response.Result.Result.DistanceInMeters;
 
                 logger.LogInformation("Distance in Meters: {0}", distanceInMeters);
 
