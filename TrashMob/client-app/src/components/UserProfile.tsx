@@ -16,6 +16,9 @@ import { AzureMapsProvider, IAzureMapOptions } from '@ambientlight/react-azure-m
 import UserNotificationPreferenceData, { UserNotificationPreferenceDefaults } from './Models/UserNotificationPreferenceData';
 import * as Constants from './Models/Constants';
 import MapControllerSinglePoint from './MapControllerSinglePoint';
+import EventMediaData from './Models/EventMediaData';
+import MediaTypeData from './Models/MediaTypeData';
+import { getMediaType } from '../store/mediaTypeHelper';
 
 interface UserProfileProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -61,6 +64,8 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
     const [eventName, setEventName] = React.useState<string>("User's Base Location");
     const [userNotificationPreferences, setUserNotificationPreferences] = React.useState<UserNotificationPreferenceData[]>(UserNotificationPreferenceDefaults);
+    const [eventMedias, setEventMedias] = React.useState<EventMediaData[]>([]);
+    const [mediaTypeList, setMediaTypeList] = React.useState<MediaTypeData[]>([]);
 
     React.useEffect(() => {
 
@@ -137,8 +142,30 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
 
                             setUserNotificationPreferences(mergedPrefs);
                         }
-                        setIsDataLoaded(true);
+                    })
+                    .then(() =>
+                        fetch('/api/mediatypes', {
+                            method: 'GET',
+                            headers: headers,
+                        })
+                            .then(response => response.json() as Promise<Array<any>>)
+                            .then(data => {
+                                setMediaTypeList(data);
+                                setIsDataLoaded(true);
+                            })
+                    )
+                    .then(() => {
+                    }).then(() => {
+                        fetch('/api/eventmedias/byUserId/' + userId, {
+                            method: 'GET',
+                            headers: headers,
+                        })
+                            .then(response => response.json() as Promise<Array<EventMediaData>>)
+                            .then(data => {
+                                setEventMedias(data);
+                            });
                     });
+                setIsDataLoaded(true);
             });
         }
 
@@ -512,6 +539,54 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
             )
     }
 
+    function onEventMediasUpdated() {
+        const account = msalClient.getAllAccounts()[0];
+
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = getDefaultHeaders('POST');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+            fetch('/api/eventmedias/byUserId/' + userId, {
+                method: 'GET',
+                headers: headers,
+            })
+                .then(response => response.json() as Promise<Array<EventMediaData>>)
+                .then(data => {
+                    setEventMedias(data);
+                });
+        })
+    }
+
+    function removeEventMedia(eventMediaId: string, mediaUrl: string) {
+        if (!window.confirm("Please confirm that you want to remove Event Media with Url: '" + mediaUrl + "' as a media from this Event?"))
+            return;
+        else {
+            const account = msalClient.getAllAccounts()[0];
+
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = getDefaultHeaders('DELETE');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                fetch('/api/eventMedias/' + eventMediaId, {
+                    method: 'DELETE',
+                    headers: headers,
+                })
+                    .then(() => {
+                        onEventMediasUpdated()
+                    });
+            });
+        }
+    }
+
     return (
         !isDataLoaded ? <div>Loading</div> :
             <div>
@@ -790,6 +865,28 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             </Col>
                         </Form.Row>
                     </Form >
+                </div>
+                <div>
+                    <h2>User Media</h2>
+                    <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
+                        <thead>
+                            <tr>
+                                <th>Media Type</th>
+                                <th>Media</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {eventMedias.map(eventMedia =>
+                                <tr key={eventMedia.id.toString()}>
+                                    <td>{eventMedia.mediaUrl}</td>
+                                    <td>{getMediaType(mediaTypeList, eventMedia.mediaTypeId)}</td>
+                                    <td>
+                                        <Button className="action" onClick={() => removeEventMedia(eventMedia.id, eventMedia.mediaUrl)}>Remove Media</Button>
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div >
     );
