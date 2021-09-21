@@ -7,7 +7,7 @@ import EventData from './Models/EventData';
 import * as MapStore from '../store/MapStore'
 import UserData from './Models/UserData';
 import { HtmlMarkerLayer } from './HtmlMarkerLayer/SimpleHtmlMarkerLayer'
-import { renderToStaticMarkup } from "react-dom/server"
+import { renderToStaticMarkup, renderToString } from "react-dom/server"
 import { Button } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import EventAttendeeData from './Models/EventAttendeeData';
@@ -105,13 +105,22 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
                 }
 
                 var properties = {
-                    content: renderToStaticMarkup(getPopUpContent(mobEvent.id, mobEvent.name, new Date(mobEvent.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' }), mobEvent.streetAddress, mobEvent.city, mobEvent.region, mobEvent.country, mobEvent.postalCode, isAtt)),
+                    content: renderToString(getPopUpContent(mobEvent.id, mobEvent.name, new Date(mobEvent.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' }), mobEvent.streetAddress, mobEvent.city, mobEvent.region, mobEvent.country, mobEvent.postalCode, isAtt, vd)),
                     name: mobEvent.name,
                 }
                 dataSourceRef.add(new data.Feature(position, properties));
             })
 
-            function getPopUpContent(eventId: string, eventName: string, eventDate: string, streetAddress: string, city: string, region: string, country: string, postalCode: string, isAttending: string) {
+            function vd(eventId: string) {
+                props.onDetailsSelected(eventId);
+            }
+
+            function getPopUpContent(eventId: string, eventName: string, eventDate: string, streetAddress: string, city: string, region: string, country: string, postalCode: string, isAttending: string, onViewDetails: any) {
+
+                function handleClick() {
+                    onViewDetails(eventId)
+                }
+
                 return (
                     <div className="container-fluid card">
                         <h4>{eventName}</h4>
@@ -132,7 +141,9 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
                                         <label hidden={!props.isUserLoaded || isAttending !== 'Yes'}>Yes</label>
                                     </td>
                                     <td>
-                                        <Button className="action" onClick={() => viewDetails(eventId)}>View Details</Button>
+                                        <form>
+                                            <button className="action" type="button" onClick={() => handleClick()}>View Details</button>
+                                        </form>
                                     </td>
                                 </tr>
                             </tbody>
@@ -150,10 +161,6 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
         props.isUserLoaded,
         isDataSourceLoaded,
         isMapReady]);
-
-    function viewDetails(eventId: string) {
-        props.onDetailsSelected(eventId);
-    }
 
     function handleLocationChange(e: any) {
         props.onLocationChange(e);
