@@ -15,6 +15,7 @@ namespace TrashMob.Controllers
     using TrashMob.Shared.Persistence;
     using TrashMob.Shared;
     using System.Collections.Generic;
+    using TrashMob.Shared.Engine;
 
     [ApiController]
     [Route("api/events")]
@@ -165,7 +166,33 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
+            var eventAttendees = await eventAttendeeRepository.GetEventAttendees(id).ConfigureAwait(false);
+            
             await eventRepository.DeleteEvent(id).ConfigureAwait(false);
+
+            var message = emailManager.GetEmailTemplate(NotificationTypeEnum.EventCancelledNotice.ToString());
+            message = message.Replace("{EventName}", mobEvent.Name);
+            // Todo: Verify Utc to Local Date set correctly
+            message = message.Replace("{EventDate}", mobEvent.EventDate.ToString("o"));
+            var htmlMessage = emailManager.GetHtmlEmailTemplate(NotificationTypeEnum.EventCancelledNotice.ToString());
+            htmlMessage = htmlMessage.Replace("{EventName}", mobEvent.Name);
+            // Todo: Verify Utc to Local Date set correctly
+            htmlMessage = htmlMessage.Replace("{EventDate}", mobEvent.EventDate.ToString("o"));
+            var subject = "A TrashMob.eco event you were scheduled to attend has been cancelled!";
+
+            foreach (var attendee in eventAttendees)
+            {
+                var userMessage = message.Replace("{UserName}", attendee.UserName);
+                var userHtmlMessage = htmlMessage.Replace("{UserName}", attendee.UserName);
+
+                var recipients = new List<EmailAddress>
+                {
+                    new EmailAddress { Name = attendee.UserName, Email = attendee.Email },
+                };
+
+                await emailManager.SendSystemEmail(subject, userMessage, userHtmlMessage, recipients, CancellationToken.None).ConfigureAwait(false);
+            }
+
             return Ok(id);
         }
 

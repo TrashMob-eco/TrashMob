@@ -28,11 +28,12 @@
         // Add new EventSummary record     
         public async Task<EventSummary> AddEventSummary(EventSummary eventSummary)
         {
+            var eventId = eventSummary.EventId;
             eventSummary.CreatedDate = DateTimeOffset.UtcNow;
             eventSummary.LastUpdatedDate = DateTimeOffset.UtcNow;
             mobDbContext.EventSummaries.Add(eventSummary);
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
-            return eventSummary;
+            return await mobDbContext.EventSummaries.FindAsync(eventId).ConfigureAwait(false);
         }
 
         // Update the records of a particular EventSummary

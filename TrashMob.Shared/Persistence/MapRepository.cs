@@ -44,25 +44,34 @@
 
             logger.LogInformation("Response from getting distance between two points: {0}", JsonSerializer.Serialize(response));
 
-            if (response.HttpResponseCode != (int)HttpStatusCode.OK)
+            try
             {
-                throw new Exception($"Error getting GetGreatCircleDistance: {response.Error.Error}");
-            }
+                if (response.HttpResponseCode != (int)HttpStatusCode.OK && response.HttpResponseCode != 0)
+                {
+                    throw new Exception($"Error getting GetGreatCircleDistance: {JsonSerializer.Serialize(response)}");
+                }
 
-            if (response.Result?.Result == null)
-            {
-                throw new Exception($"Error getting GetGreatCircleDistance. Results was null. {response}");
-            }
+                var distanceInMeters = (long)response.Result.Result.DistanceInMeters;
 
-            var distanceInMeters = (long)response.Result.Result.DistanceInMeters;
+                logger.LogInformation("Distance in Meters: {0}", distanceInMeters);
 
-            if (IsMetric)
-            {
-                return distanceInMeters / MetersPerKilometer;
+                if (IsMetric)
+                {
+                    var res = distanceInMeters / MetersPerKilometer;
+                    logger.LogInformation("Kilometers : {0}", res);
+                    return res;
+                }
+                else
+                {
+                    var res = distanceInMeters / MetersPerMile;
+                    logger.LogInformation("Miles : {0}", res);
+                    return res;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return distanceInMeters / MetersPerMile;
+                logger.LogError(ex, "Exception encountered");
+                throw;
             }
         }
 
@@ -79,7 +88,7 @@
             var timezoneRequest = new TimeZoneRequest
             {
                 Query = $"{pointA.Item1},{pointA.Item2}",
-                TimeStamp =  dateTimeOffset.ToUniversalTime().ToString("o")
+                TimeStamp = dateTimeOffset.ToString("O")
             };
 
             logger.LogInformation("Getting time for timezoneRequest: {0}", JsonSerializer.Serialize(timezoneRequest));
@@ -88,9 +97,9 @@
 
             logger.LogInformation("Response from getting time for timezoneRequest: {0}", JsonSerializer.Serialize(response));
 
-            if (response.HttpResponseCode != (int)HttpStatusCode.OK)
+            if (response.HttpResponseCode != (int)HttpStatusCode.OK && response.HttpResponseCode != 0)
             {
-                throw new Exception($"Error getting timezonebycoordinates: {response.Error.Error}");
+                throw new Exception($"Error getting timezonebycoordinates: {response}");
             }
 
             return response?.Result?.TimeZones[0]?.ReferenceTime?.WallTime;
