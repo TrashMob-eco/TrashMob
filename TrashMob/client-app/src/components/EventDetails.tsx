@@ -14,6 +14,8 @@ import YouTubeEmbed from "./YouTubeEmbed";
 import * as Constants from './Models/Constants';
 import EventSummaryData from './Models/EventSummaryData';
 import MapControllerSinglePoint from './MapControllerSinglePoint';
+import AddToCalendar from '@culturehq/add-to-calendar';
+import moment from 'moment';
 
 export interface DetailsMatchParams {
     eventId: string;
@@ -56,6 +58,17 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
     const [isEventSummaryDataLoaded, setIsEventSummaryDataLoaded] = React.useState<boolean>(false);
     const [eventSummary, setEventSummary] = React.useState<EventSummaryData>();
     const [createdById, setCreatedById] = React.useState<string>("");
+
+    let startDateTime = moment(eventDate);
+    let endDateTime = moment(startDateTime).add(durationHours, 'hours').add(durationMinutes, 'minutes');
+
+    const event = {
+        name: eventName,
+        details: description,
+        location: streetAddress + ', ' + city,
+        startsAt: moment(eventDate).format(),
+        endsAt: moment(endDateTime).format()
+    }
 
     React.useEffect(() => {
 
@@ -260,6 +273,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
 
         return (
             <div>
+                 <AddToCalendar event={event}/>
                 <Form>
                     <Form.Row>
                         <Col>
