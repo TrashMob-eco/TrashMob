@@ -88,7 +88,7 @@
             var timezoneRequest = new TimeZoneRequest
             {
                 Query = $"{pointA.Item1},{pointA.Item2}",
-                TimeStamp = dateTimeOffset.ToString("O")
+                TimeStamp = dateTimeOffset.UtcDateTime.ToString("O")
             };
 
             logger.LogInformation("Getting time for timezoneRequest: {0}", JsonSerializer.Serialize(timezoneRequest));
