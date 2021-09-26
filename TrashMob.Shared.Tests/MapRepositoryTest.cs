@@ -11,7 +11,7 @@
         //[Fact]
         //public async Task GetTimeForPoint_Succeeds()
         //{
-        //    var azureMaps = new AzureMapsToolkit.AzureMapsServices("8B4iW2WzR4uIsN5H4klEXzSBbt3Ufqp7gfJ85ykoQ7U");
+        //    var azureMaps = new AzureMapsToolkit.AzureMapsServices("<add prod key here>");
 
         //    var checkDate = DateTimeOffset.Now;
         //    var date = checkDate.AddHours(6).UtcDateTime;
