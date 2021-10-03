@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react';
 import * as React from 'react';
-import { AzureMapsContext, IAzureMapOptions, IAzureMapsContextProps } from '@ambientlight/react-azure-maps';
+import { AzureMapsContext, IAzureMapOptions, IAzureMapsContextProps } from 'react-azure-maps';
 import { data, source, Popup, HtmlMarker } from 'azure-maps-control';
 import MapComponent from './MapComponent';
 import * as MapStore from '../store/MapStore'
