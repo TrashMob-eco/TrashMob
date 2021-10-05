@@ -6,7 +6,7 @@ import { getDefaultHeaders } from '../store/AuthStore';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../store/ToolTips";
-import { Button, Col, Form } from 'react-bootstrap';
+import { Button, Col, Form, Modal } from 'react-bootstrap';
 import * as Constants from './Models/Constants';
 
 interface ContactUsProps extends RouteComponentProps<any> { }
@@ -17,6 +17,10 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
     const [emailErrors, setEmailErrors] = React.useState<string>("");
     const [message, setMessage] = React.useState<string>("");
     const [messageErrors, setMessageErrors] = React.useState<string>("");
+    const [show, setShow] = React.useState<boolean>(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
@@ -46,8 +50,10 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
                 body: data,
                 headers: headers,
             }).then(() => {
-                props.history.push("/");
-            })
+                setTimeout(() => props.history.push("/"),2000);
+            });
+
+            handleShow();
         }
 
         else {
@@ -149,6 +155,16 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
                     <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
                 </Form.Group >
             </Form >
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirmation</Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="text-center">
+                    <b>Message was successfully sent !</b>
+                    <br/>
+                    <small>You're being redirected to Homepage ...</small>
+                </Modal.Body>
+            </Modal>
         </div>
     )
 }
