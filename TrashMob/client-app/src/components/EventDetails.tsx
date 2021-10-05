@@ -366,8 +366,8 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                         </Col>
                         <Col>
                             <Form.Group>
-                                <Form.Label hidden={maxNumberOfParticipants == 0} htmlFor="MaxNumberOfParticipants">Max Number Of Participants:</Form.Label>
-                                <Form.Control hidden={maxNumberOfParticipants == 0} disabled type="text" defaultValue={maxNumberOfParticipants} />
+                                <Form.Label hidden={maxNumberOfParticipants === 0} htmlFor="MaxNumberOfParticipants">Max Number Of Participants:</Form.Label>
+                                <Form.Control hidden={maxNumberOfParticipants === 0} disabled type="text" defaultValue={maxNumberOfParticipants} />
                             </Form.Group>
                         </Col>
                     </Form.Row>
