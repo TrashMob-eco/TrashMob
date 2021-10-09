@@ -30,7 +30,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
     const [isDataLoaded, setIsDataLoaded] = React.useState<boolean>(false);
     const [eventId, setEventId] = React.useState<string>(props.match.params["eventId"]);
     const [eventName, setEventName] = React.useState<string>("New Event");
-    const [description, setDescription] = React.useState<string>();
+    const [description, setDescription] = React.useState<string>("");
     const [eventDate, setEventDate] = React.useState<Date>(new Date());
     const [durationHours, setDurationHours] = React.useState<number>(1);
     const [durationMinutes, setDurationMinutes] = React.useState<number>(0);
