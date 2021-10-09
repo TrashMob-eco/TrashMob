@@ -8,7 +8,7 @@ import { data } from 'azure-maps-control';
 import { getKey } from '../../store/MapStore';
 import AddressData from '../Models/AddressData';
 import * as MapStore from '../../store/MapStore';
-import { AzureMapsProvider, IAzureMapOptions } from '@ambientlight/react-azure-maps';
+import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import UserData from '../Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";

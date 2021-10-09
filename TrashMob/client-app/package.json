@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@ambientlight/react-azure-maps": "^0.3.3",
     "@azure/msal-browser": "^2.14.2",
     "@azure/msal-react": "^1.0.0",
     "@fluentui/react": "^8.14.13",
@@ -28,6 +27,7 @@
     "node-sass": "^6.0.0",
     "oidc-client": "^1.11.5",
     "react": "^17.0.2",
+    "react-azure-maps": "^0.3.0",
     "react-bootstrap": "^1.6.0",
     "react-country-region-selector": "^3.1.0",
     "react-datepicker": "^3.8.0",

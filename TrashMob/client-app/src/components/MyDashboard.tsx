@@ -6,7 +6,7 @@ import EventTypeData from './Models/EventTypeData';
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../store/MapStore';
-import { AzureMapsProvider, IAzureMapOptions } from '@ambientlight/react-azure-maps';
+import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapController from './MapController';
 import UserData from './Models/UserData';
 import { Col, Form, ToggleButton } from 'react-bootstrap';

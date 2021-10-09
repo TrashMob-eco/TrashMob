@@ -5,7 +5,7 @@ import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore'
 import * as ToolTips from "../../store/ToolTips";
 import PartnerLocationData from '../Models/PartnerLocationData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import { AzureMapsProvider, IAzureMapOptions } from '@ambientlight/react-azure-maps';
+import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import * as MapStore from '../../store/MapStore';
 import { data } from 'azure-maps-control';
 import { Guid } from 'guid-typescript';

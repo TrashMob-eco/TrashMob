@@ -33,3 +33,18 @@ hr.rounded {
     width: 100%;
     position: absolute;
 }
+
+.chq-atc--dropdown {
+  display: flex;
+  flex-direction: column;
+  margin: .5rem 0 .5rem .5rem;
+}
+
+.chq-atc--button {
+  background-color: unset !important;
+  border: 1px solid #96ba00 !important;
+}
+
+.chq-atc--dropdown {
+  color: #96ba00 !important;
+}
