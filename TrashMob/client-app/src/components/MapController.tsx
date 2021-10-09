@@ -7,7 +7,7 @@ import EventData from './Models/EventData';
 import * as MapStore from '../store/MapStore'
 import UserData from './Models/UserData';
 import { HtmlMarkerLayer } from './HtmlMarkerLayer/SimpleHtmlMarkerLayer'
-import { renderToStaticMarkup, renderToString } from "react-dom/server"
+import { renderToString } from "react-dom/server"
 import { Button } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import EventAttendeeData from './Models/EventAttendeeData';
@@ -153,6 +153,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
             }
         }
     }, [mapRef,
+        props,
         props.center,
         props.isEventDataLoaded,
         props.isMapKeyLoaded,
@@ -160,7 +161,8 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
         props.currentUser,
         props.isUserLoaded,
         isDataSourceLoaded,
-        isMapReady]);
+        isMapReady,
+        handleAttend]);
 
     function handleLocationChange(e: any) {
         props.onLocationChange(e);
