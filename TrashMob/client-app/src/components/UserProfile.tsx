@@ -515,6 +515,14 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
         setUserNotificationPreferences(updatedPrefs);
     }
 
+    function handleAttendanceChanged() {
+        // Do nothing
+    }
+
+    function handleDetailsSelected(eventId: string) {
+        // Do nothing
+    }
+
     function handleLocationChange(point: data.Position) {
         // In an Azure Map point, the longitude is the first position, and latitude is second
         setLatitude(point[1]);
