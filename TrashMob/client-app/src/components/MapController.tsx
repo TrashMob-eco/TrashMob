@@ -115,6 +115,50 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
                 props.onDetailsSelected(eventId);
             }
 
+            function handleAttend(eventId: string) {
+
+                var accounts = msalClient.getAllAccounts();
+
+                if (accounts === null || accounts.length === 0) {
+                    msalClient.loginRedirect().then(() => {
+                        addAttendee(eventId);
+                    })
+                }
+                else {
+                    addAttendee(eventId);
+                }
+            }
+
+            function addAttendee(eventId: string) {
+
+                const account = msalClient.getAllAccounts()[0];
+
+                var request = {
+                    scopes: apiConfig.b2cScopes,
+                    account: account
+                };
+
+                msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                    var eventAttendee = new EventAttendeeData();
+                    eventAttendee.userId = props.currentUser.id;
+                    eventAttendee.eventId = eventId;
+
+                    var data = JSON.stringify(eventAttendee);
+
+                    const headers = getDefaultHeaders('POST');
+                    headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                    // POST request for Add EventAttendee.  
+                    fetch('/api/EventAttendees', {
+                        method: 'POST',
+                        body: data,
+                        headers: headers,
+                    }).then((response) => response.json())
+                        .then(props.onAttendanceChanged())
+                })
+            }
+
             function getPopUpContent(eventId: string, eventName: string, eventDate: string, streetAddress: string, city: string, region: string, country: string, postalCode: string, isAttending: string, onViewDetails: any) {
 
                 function handleClick() {
@@ -162,54 +206,10 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
         props.isUserLoaded,
         isDataSourceLoaded,
         isMapReady,
-        handleAttend]);
+        props.onAttendanceChanged]);
 
     function handleLocationChange(e: any) {
         props.onLocationChange(e);
-    }
-
-    function addAttendee(eventId: string) {
-
-        const account = msalClient.getAllAccounts()[0];
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            var eventAttendee = new EventAttendeeData();
-            eventAttendee.userId = props.currentUser.id;
-            eventAttendee.eventId = eventId;
-
-            var data = JSON.stringify(eventAttendee);
-
-            const headers = getDefaultHeaders('POST');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            // POST request for Add EventAttendee.  
-            fetch('/api/EventAttendees', {
-                method: 'POST',
-                body: data,
-                headers: headers,
-            }).then((response) => response.json())
-                .then(props.onAttendanceChanged())
-        })
-    }
-
-    function handleAttend(eventId: string) {
-
-        var accounts = msalClient.getAllAccounts();
-
-        if (accounts === null || accounts.length === 0) {
-            msalClient.loginRedirect().then(() => {
-                addAttendee(eventId);
-            })
-        }
-        else {
-            addAttendee(eventId);
-        }
     }
 
     return (
