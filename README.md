@@ -38,6 +38,7 @@ ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want
 1. You must install the .net 5 SDK
 1. Install Visual Studio Code
 1. Connect to github and clone the repo
+1. Install the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli)
 
 ### To use the Shared Dev Environment
 If you are not doing any database changes (i.e. design work, error handling, etc) you can save yourself time and money by doing the following and using the shared Dev environment:
@@ -47,10 +48,10 @@ If you are not doing any database changes (i.e. design work, error handling, etc
 1. Log in to the Sandbox subscription, and go to the [Dev Azure SQL Database](https://portal.azure.com/#@jobeedevids.onmicrosoft.com/resource/subscriptions/39a254b7-c01a-45ab-bebd-4038ea4adea9/resourceGroups/rg-trashmob-dev-westus2/providers/Microsoft.Sql/servers/sql-tm-dev-westus2/overview)
 1. Click on Firewalls and Virtual Networks
 1. Add a new Rule with your email address as the name, with the start and end ip address set as your Client IP Address (see the line above the form for what Azure thinks your IP address is)
-1. Save changes
+1. **Save** changes
 1. Run the following script on your machine from the TrashMob folder in the project to set up your dev machine to run the project locally. You must be logged into Azure in your PowerShell window in the correct subscription
 ```
-.\setupdev.ps1 -environment dev -region westus2
+.\setupdev.ps1 -environment dev -region westus2 -subscription 39a254b7-c01a-45ab-bebd-4038ea4adea9
 ```
 
 ### To set up your own environment to test in:
@@ -59,16 +60,19 @@ You must use this if you are making database changes to ensure you do not break 
 1. Follow the Infrastructure Deployment Steps (here)[.\Deploy\readme.md].
 1. Run the following script on your machine from the TrashMob folder in the project to set up your dev machine to run the project locally. You must be logged into Azure in your PowerShell window in the correct subscription
 ```
-.\setupdev.ps1 -environment <yourenv> -region <yourregion>
+.\setupdev.ps1 -environment <yourenv> -region <yourregion> -subscription <yourazuresubscription>
 
 i.e.
-.\setupdev.ps1 -environment jb -region westus2
+.\setupdev.ps1 -environment jb -region westus2 -subscription <insert guid here>
 
 ```
 
 ## Setting up your launchsettings.json
 
-Because of RedirectUrls, life is a lot easier if you stick with the same ports as everyone else. In the TrashMob folder, under Properties, add the following launchsettings.json file: 
+Because of RedirectUrls, life is a lot easier if you stick with the same ports as everyone else. 
+
+cd to the TrashMob/Properties folder:
+Add the following launchsettings.json file (may need to create it if you don't have it already): 
 
 ```
 {
@@ -118,6 +122,13 @@ dotnet run
 or if using Visual Studio, set the TrashMob project as the start up project and hit F5.
 
 If a browser does not open, open one for yourself and go to https://localhost:44332
+
+If the app loads, but data does not, it is likely that the firewall rule is not set up correctly. Sometimes the IP address the Web Portal displays is different from the IP address of your machine. If you run into this issue, look in the debug window of VSCode. It will report a failure, and show that your actual IP Address is not enabled to access the database.
+1. Copy the IP Address from the error in VS Code
+1. Log in to the Sandbox subscription, and go to the [Dev Azure SQL Database](https://portal.azure.com/#@jobeedevids.onmicrosoft.com/resource/subscriptions/39a254b7-c01a-45ab-bebd-4038ea4adea9/resourceGroups/rg-trashmob-dev-westus2/providers/Microsoft.Sql/servers/sql-tm-dev-westus2/overview)
+1. Click on Firewalls and Virtual Networks
+1. Add a new Rule with your email address as the name, with the start and end ip address set as your Client IP Address (see the line above the form for what Azure thinks your IP address is)
+1. **Save** changes
 
 ## To Update the Database Model
 The project uses Entity Framework Core V6 Model-First database updates.
