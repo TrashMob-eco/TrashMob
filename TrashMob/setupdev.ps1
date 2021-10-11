@@ -1,4 +1,6 @@
-param ($environment, $region)
+param ($subscription, $environment, $region)
+
+az account set --subscription $subscription
 
 $keyVaultName = "kv-tm-$environment-$region"
 
@@ -14,5 +16,8 @@ dotnet user-secrets set "sendGridApiKey" "x"
 # Build the project
 dotnet build -c Debug
 
-# Set up the Database
-dotnet ef database update
+# Don't need to do this when running against the generic dev environment
+if ($environment -ne "dev")
+{
+    dotnet ef database update
+}
