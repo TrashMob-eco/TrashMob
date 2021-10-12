@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react"
-import { RootStore } from "./root-store"
+import { RootStore, RootStoreModel } from "./root-store"
 
 /**
  * Create a context we can use to
@@ -7,7 +7,7 @@ import { RootStore } from "./root-store"
  * - Consume stores in our screens (or other components, though it's
  *   preferable to just connect screens)
  */
-const RootStoreContext = createContext<RootStore>({} as RootStore)
+const RootStoreContext = createContext<RootStore>(RootStoreModel.create())
 
 /**
  * The provider our root component will use to expose the root store

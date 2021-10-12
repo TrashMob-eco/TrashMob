@@ -483,8 +483,8 @@ exports[`Storyshots Button Style Presets 1`] = `
                   "borderRadius": 4,
                   "justifyContent": "center",
                   "opacity": 1,
-                  "paddingHorizontal": 8,
-                  "paddingVertical": 8,
+                  "paddingHorizontal": undefined,
+                  "paddingVertical": undefined,
                 }
               }
             >
@@ -500,7 +500,7 @@ exports[`Storyshots Button Style Presets 1`] = `
                       Object {
                         "color": "#ffffff",
                         "fontSize": 9,
-                        "paddingHorizontal": 12,
+                        "paddingHorizontal": undefined,
                       },
                       undefined,
                     ],
@@ -607,8 +607,8 @@ exports[`Storyshots Button Style Presets 1`] = `
                   "borderRadius": 4,
                   "justifyContent": "center",
                   "opacity": 1,
-                  "paddingHorizontal": 8,
-                  "paddingVertical": 8,
+                  "paddingHorizontal": undefined,
+                  "paddingVertical": undefined,
                 }
               }
             >
@@ -624,7 +624,7 @@ exports[`Storyshots Button Style Presets 1`] = `
                       Object {
                         "color": "#ffffff",
                         "fontSize": 9,
-                        "paddingHorizontal": 12,
+                        "paddingHorizontal": undefined,
                       },
                       undefined,
                     ],
@@ -731,7 +731,7 @@ exports[`Storyshots Button Style Presets 1`] = `
                   "borderRadius": 0,
                   "justifyContent": "center",
                   "opacity": 1,
-                  "paddingHorizontal": 8,
+                  "paddingHorizontal": undefined,
                   "paddingVertical": 100,
                 }
               }
@@ -748,7 +748,7 @@ exports[`Storyshots Button Style Presets 1`] = `
                       Object {
                         "color": "#ffffff",
                         "fontSize": 9,
-                        "paddingHorizontal": 12,
+                        "paddingHorizontal": undefined,
                       },
                       Array [
                         Object {
@@ -892,7 +892,7 @@ exports[`Storyshots Checkbox Behaviour 1`] = `
                   "alignSelf": "flex-start",
                   "flexDirection": "row",
                   "opacity": 1,
-                  "paddingVertical": 4,
+                  "paddingVertical": undefined,
                 }
               }
             >
@@ -923,7 +923,7 @@ exports[`Storyshots Checkbox Behaviour 1`] = `
                       "fontSize": 15,
                     },
                     Object {
-                      "paddingLeft": 8,
+                      "paddingLeft": undefined,
                     },
                   ]
                 }
@@ -1026,7 +1026,7 @@ exports[`Storyshots Checkbox Behaviour 1`] = `
                   "alignSelf": "flex-start",
                   "flexDirection": "row",
                   "opacity": 1,
-                  "paddingVertical": 4,
+                  "paddingVertical": undefined,
                 }
               }
             >
@@ -1070,7 +1070,7 @@ exports[`Storyshots Checkbox Behaviour 1`] = `
                       "fontSize": 15,
                     },
                     Object {
-                      "paddingLeft": 8,
+                      "paddingLeft": undefined,
                     },
                   ]
                 }
@@ -1173,7 +1173,7 @@ exports[`Storyshots Checkbox Behaviour 1`] = `
                   "alignSelf": "flex-start",
                   "flexDirection": "row",
                   "opacity": 1,
-                  "paddingVertical": 4,
+                  "paddingVertical": undefined,
                 }
               }
             >
@@ -1204,7 +1204,7 @@ exports[`Storyshots Checkbox Behaviour 1`] = `
                       "fontSize": 15,
                     },
                     Object {
-                      "paddingLeft": 8,
+                      "paddingLeft": undefined,
                     },
                   ]
                 }
@@ -1340,7 +1340,7 @@ exports[`Storyshots Checkbox Styling 1`] = `
                     "alignSelf": "flex-start",
                     "flexDirection": "row",
                     "opacity": 1,
-                    "paddingVertical": 4,
+                    "paddingVertical": undefined,
                   }
                 }
               >
@@ -1371,7 +1371,7 @@ exports[`Storyshots Checkbox Styling 1`] = `
                         "fontSize": 15,
                       },
                       Object {
-                        "paddingLeft": 8,
+                        "paddingLeft": undefined,
                       },
                     ]
                   }
@@ -1510,7 +1510,7 @@ exports[`Storyshots Checkbox Styling 1`] = `
                         "fontSize": 15,
                       },
                       Object {
-                        "paddingLeft": 8,
+                        "paddingLeft": undefined,
                       },
                     ]
                   }
@@ -1615,7 +1615,7 @@ exports[`Storyshots Checkbox Styling 1`] = `
                     "alignSelf": "flex-start",
                     "flexDirection": "row",
                     "opacity": 1,
-                    "paddingVertical": 4,
+                    "paddingVertical": undefined,
                   }
                 }
               >
@@ -1652,7 +1652,7 @@ exports[`Storyshots Checkbox Styling 1`] = `
                         "fontSize": 15,
                       },
                       Object {
-                        "paddingLeft": 8,
+                        "paddingLeft": undefined,
                       },
                     ]
                   }
@@ -1757,7 +1757,7 @@ exports[`Storyshots Checkbox Styling 1`] = `
                     "alignSelf": "flex-start",
                     "flexDirection": "row",
                     "opacity": 1,
-                    "paddingVertical": 4,
+                    "paddingVertical": undefined,
                   }
                 }
               >
@@ -1788,7 +1788,7 @@ exports[`Storyshots Checkbox Styling 1`] = `
                         "fontSize": 15,
                       },
                       Object {
-                        "paddingLeft": 8,
+                        "paddingLeft": undefined,
                       },
                     ]
                   }
@@ -1931,7 +1931,7 @@ exports[`Storyshots Checkbox Styling 1`] = `
                         "fontSize": 15,
                       },
                       Object {
-                        "paddingLeft": 8,
+                        "paddingLeft": undefined,
                       },
                     ]
                   }
@@ -2061,7 +2061,7 @@ exports[`Storyshots FormRow Assembled 1`] = `
                     "borderTopLeftRadius": 8,
                     "borderTopRightRadius": 8,
                     "borderWidth": 1,
-                    "padding": 8,
+                    "padding": undefined,
                   },
                   undefined,
                 ]
@@ -2091,7 +2091,7 @@ exports[`Storyshots FormRow Assembled 1`] = `
                     "borderBottomWidth": 0,
                     "borderColor": "#e6e6e6",
                     "borderWidth": 1,
-                    "padding": 8,
+                    "padding": undefined,
                   },
                   undefined,
                 ]
@@ -2121,7 +2121,7 @@ exports[`Storyshots FormRow Assembled 1`] = `
                     "borderBottomWidth": 0,
                     "borderColor": "#e6e6e6",
                     "borderWidth": 1,
-                    "padding": 8,
+                    "padding": undefined,
                   },
                   undefined,
                 ]
@@ -2152,7 +2152,7 @@ exports[`Storyshots FormRow Assembled 1`] = `
                     "borderBottomRightRadius": 8,
                     "borderColor": "#e6e6e6",
                     "borderWidth": 1,
-                    "padding": 8,
+                    "padding": undefined,
                   },
                   undefined,
                 ]
@@ -2261,7 +2261,7 @@ exports[`Storyshots FormRow Assembled 1`] = `
                   Object {
                     "borderColor": "rgba(0, 0, 0, 0)",
                     "borderWidth": 1,
-                    "padding": 8,
+                    "padding": undefined,
                   },
                   undefined,
                 ]
@@ -2291,7 +2291,7 @@ exports[`Storyshots FormRow Assembled 1`] = `
                     "borderColor": "#e6e6e6",
                     "borderRadius": 8,
                     "borderWidth": 1,
-                    "padding": 8,
+                    "padding": undefined,
                   },
                   undefined,
                 ]
@@ -2320,7 +2320,7 @@ exports[`Storyshots FormRow Assembled 1`] = `
                   Object {
                     "borderColor": "#e6e6e6",
                     "borderWidth": 1,
-                    "padding": 8,
+                    "padding": undefined,
                   },
                   Object {
                     "backgroundColor": "#ffe",
@@ -2467,7 +2467,7 @@ exports[`Storyshots FormRow Presets 1`] = `
                     "borderTopLeftRadius": 8,
                     "borderTopRightRadius": 8,
                     "borderWidth": 1,
-                    "padding": 8,
+                    "padding": undefined,
                   },
                   undefined,
                 ]
@@ -2593,7 +2593,7 @@ exports[`Storyshots FormRow Presets 1`] = `
                     "borderBottomWidth": 0,
                     "borderColor": "#e6e6e6",
                     "borderWidth": 1,
-                    "padding": 8,
+                    "padding": undefined,
                   },
                   undefined,
                 ]
@@ -2704,7 +2704,7 @@ exports[`Storyshots FormRow Presets 1`] = `
                     "borderBottomRightRadius": 8,
                     "borderColor": "#e6e6e6",
                     "borderWidth": 1,
-                    "padding": 8,
+                    "padding": undefined,
                   },
                   undefined,
                 ]
@@ -2830,7 +2830,7 @@ exports[`Storyshots FormRow Presets 1`] = `
                     "borderColor": "#e6e6e6",
                     "borderRadius": 8,
                     "borderWidth": 1,
-                    "padding": 8,
+                    "padding": undefined,
                   },
                   undefined,
                 ]
@@ -2939,7 +2939,7 @@ exports[`Storyshots FormRow Presets 1`] = `
                   Object {
                     "borderColor": "#e6e6e6",
                     "borderWidth": 1,
-                    "padding": 8,
+                    "padding": undefined,
                   },
                   undefined,
                 ]
@@ -3048,7 +3048,7 @@ exports[`Storyshots FormRow Presets 1`] = `
                   Object {
                     "borderColor": "rgba(0, 0, 0, 0)",
                     "borderWidth": 1,
-                    "padding": 8,
+                    "padding": undefined,
                   },
                   undefined,
                 ]
@@ -3189,7 +3189,7 @@ exports[`Storyshots FormRow Styling 1`] = `
                   Object {
                     "borderColor": "#e6e6e6",
                     "borderWidth": 1,
-                    "padding": 8,
+                    "padding": undefined,
                   },
                   Array [
                     Object {
@@ -3480,9 +3480,9 @@ exports[`Storyshots Header Behavior 1`] = `
                       "alignItems": "center",
                       "flexDirection": "row",
                       "justifyContent": "flex-start",
-                      "paddingBottom": 24,
-                      "paddingHorizontal": 16,
-                      "paddingTop": 24,
+                      "paddingBottom": undefined,
+                      "paddingHorizontal": undefined,
+                      "paddingTop": undefined,
                     },
                     undefined,
                   ]
@@ -3627,9 +3627,9 @@ exports[`Storyshots Header Behavior 1`] = `
                       "alignItems": "center",
                       "flexDirection": "row",
                       "justifyContent": "flex-start",
-                      "paddingBottom": 24,
-                      "paddingHorizontal": 16,
-                      "paddingTop": 24,
+                      "paddingBottom": undefined,
+                      "paddingHorizontal": undefined,
+                      "paddingTop": undefined,
                     },
                     undefined,
                   ]
@@ -3813,9 +3813,9 @@ exports[`Storyshots Header Behavior 1`] = `
                       "alignItems": "center",
                       "flexDirection": "row",
                       "justifyContent": "flex-start",
-                      "paddingBottom": 24,
-                      "paddingHorizontal": 16,
-                      "paddingTop": 24,
+                      "paddingBottom": undefined,
+                      "paddingHorizontal": undefined,
+                      "paddingTop": undefined,
                     },
                     undefined,
                   ]
@@ -5995,7 +5995,7 @@ exports[`Storyshots TextField Labelling 1`] = `
               style={
                 Array [
                   Object {
-                    "paddingVertical": 12,
+                    "paddingVertical": undefined,
                   },
                   Object {},
                   undefined,
@@ -6122,7 +6122,7 @@ exports[`Storyshots TextField Labelling 1`] = `
               style={
                 Array [
                   Object {
-                    "paddingVertical": 12,
+                    "paddingVertical": undefined,
                   },
                   Object {},
                   undefined,
@@ -6270,7 +6270,7 @@ exports[`Storyshots TextField Ref Forwarding 1`] = `
               style={
                 Array [
                   Object {
-                    "paddingVertical": 12,
+                    "paddingVertical": undefined,
                   },
                   Object {},
                   undefined,
@@ -6450,7 +6450,7 @@ exports[`Storyshots TextField Style Overrides 1`] = `
               style={
                 Array [
                   Object {
-                    "paddingVertical": 12,
+                    "paddingVertical": undefined,
                   },
                   Object {},
                   Object {
@@ -6499,7 +6499,7 @@ exports[`Storyshots TextField Style Overrides 1`] = `
               style={
                 Array [
                   Object {
-                    "paddingVertical": 12,
+                    "paddingVertical": undefined,
                   },
                   Object {},
                   Object {
@@ -6627,7 +6627,7 @@ exports[`Storyshots TextField Style Overrides 1`] = `
               style={
                 Array [
                   Object {
-                    "paddingVertical": 12,
+                    "paddingVertical": undefined,
                   },
                   Object {},
                   undefined,
@@ -6774,7 +6774,7 @@ exports[`Storyshots TextField Style Overrides 1`] = `
               style={
                 Array [
                   Object {
-                    "paddingVertical": 12,
+                    "paddingVertical": undefined,
                   },
                   Object {},
                   Array [
