@@ -17,7 +17,6 @@
     "lint": "eslint App.js app storybook test --fix --ext .js,.ts,.tsx && yarn format",
     "patch": "patch-package",
     "storybook": "start-storybook -p 9001 -c ./storybook",
-    "test": "jest",
     "adb": "adb reverse tcp:9090 tcp:9090 && adb reverse tcp:3000 tcp:3000 && adb reverse tcp:9001 tcp:9001 && adb reverse tcp:8081 tcp:8081",
     "postinstall": "node ./bin/postInstall",
     "build-ios": "react-native bundle --entry-file index.js --platform ios --dev false --bundle-output ios/main.jsbundle --assets-dest ios",
@@ -25,7 +24,9 @@
     "clean": "react-native-clean-project",
     "clean-all": "npx react-native clean-project-auto",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "test": "node_modules/.bin/jest",
+    "test:debug": "node --inspect-brk node_modules/jest/bin/jest.js --runInBand"
   },
   "dependencies": {
     "@expo/webpack-config": "^0.12.71",
@@ -88,7 +89,7 @@
     "fbjs-scripts": "3.0.0",
     "jest": "^25.5.4",
     "jest-circus": "25.5.4",
-    "jest-expo": "^40.0.1",
+    "jest-expo": "^40.0.2",
     "jetifier": "1.6.6",
     "npm-run-all": "4.1.5",
     "patch-package": "6.2.2",
