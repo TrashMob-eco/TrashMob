@@ -25,7 +25,7 @@
     "clean-all": "npx react-native clean-project-auto",
     "web": "expo start --web",
     "eject": "expo eject",
-    "test": "node_modules/.bin/jest",
+    "test": "node node_modules/jest/bin/jest.js",
     "test:debug": "node --inspect-brk node_modules/jest/bin/jest.js --runInBand"
   },
   "dependencies": {
