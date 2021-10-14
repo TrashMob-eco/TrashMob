@@ -127,7 +127,15 @@ namespace TrashMob.Controllers
 
                 originalUser.Email = user.Email;
                 originalUser.SourceSystemUserName = user.SourceSystemUserName;
+
+                // On insert we need a random user name to avoid duplicates, but we don't want to show the full email address ever, so take a subset
+                // of their email and then add a random number to the end.
+                Random rnd = new Random();
+                var userNum = rnd.Next(1000000, 9999999).ToString();
+
+                originalUser.UserName = user.Email.Split("@")[0].Substring(0, 8) + userNum;
                 await userRepository.UpdateUser(originalUser).ConfigureAwait(false);
+
                 var returnedUser = await userRepository.GetUserByNameIdentifier(user.NameIdentifier).ConfigureAwait(false);
                 return Ok(returnedUser);
             }
