@@ -5,7 +5,7 @@ import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore'
 import * as ToolTips from "../../store/ToolTips";
 import PartnerLocationData from '../Models/PartnerLocationData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import { AzureMapsProvider, IAzureMapOptions } from '@ambientlight/react-azure-maps';
+import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import * as MapStore from '../../store/MapStore';
 import { data } from 'azure-maps-control';
 import { Guid } from 'guid-typescript';
@@ -430,6 +430,13 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
             })
     }
 
+    function handleAttendanceChanged() {
+        // Do nothing
+    }
+
+    function handleDetailsSelected(e: any) {
+        // Do nothing
+    }
 
     function renderEditLocation() {
         return (
@@ -586,7 +593,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     <Form.Row>
                         <AzureMapsProvider>
                             <>
-                                <MapController center={center} multipleEvents={[]} isEventDataLoaded={isLocationDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={locationName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                                <MapController center={center} multipleEvents={[]} isEventDataLoaded={isLocationDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={locationName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} myAttendanceList={[]} isUserEventDataLoaded={true} onAttendanceChanged={handleAttendanceChanged} onDetailsSelected={handleDetailsSelected} />
                             </>
                         </AzureMapsProvider>
                     </Form.Row>
