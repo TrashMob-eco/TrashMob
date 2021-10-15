@@ -3,14 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TrashMobMobile.Views.WelomePage"
              BackgroundImage="welcome_background.png">
-    <!--
+    
     <ContentPage.Resources>
         <StyleSheet Source="/Assets/welcome.css" />
     </ContentPage.Resources>
-    -->
+    
     <ContentPage.Content>
         <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" VerticalOptions="CenterAndExpand">
+            <StackLayout Orientation="Vertical" HorizontalOptions="Center" VerticalOptions="CenterAndExpand">
                 <Button Text="Sign in" StyleClass="welcomePageButton" />
                 <Button Text="Sign up" StyleClass="welcomePageButton" />
             </StackLayout>

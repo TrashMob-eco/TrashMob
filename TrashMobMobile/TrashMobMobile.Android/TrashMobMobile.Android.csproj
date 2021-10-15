@@ -95,9 +95,6 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\welcome_background.png" />
   </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\welcome.css" />
-  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
