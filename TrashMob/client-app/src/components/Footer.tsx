@@ -1,7 +1,7 @@
 import * as React from 'react'
 import logo from './assets/logo.svg'
-import twitter from './assets/twitter.svg'
-import facebook from './assets/facebook.svg'
+//import twitter from './assets/twitter.svg'
+//import facebook from './assets/facebook.svg'
 import { Link } from 'react-router-dom';
 
 import '../custom.css';

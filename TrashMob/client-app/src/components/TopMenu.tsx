@@ -3,7 +3,7 @@ import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
 import { msalClient } from '../store/AuthStore';
 import UserData from './Models/UserData';
 import logo from './assets/logo.svg'
-import { Button, Navbar, Nav } from 'react-bootstrap';
+import { Button, Nav } from 'react-bootstrap';
 import './assets/styles/header.css';
 
 interface TopMenuProps extends RouteComponentProps<any> {
