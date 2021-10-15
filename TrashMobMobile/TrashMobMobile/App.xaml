@@ -27,6 +27,7 @@
                     </VisualStateGroupList>
                 </Setter>
             </Style>
+            <StyleSheet Source="/Assets/welcome.css"  x:Key="Welcome"/>
         </ResourceDictionary>        
     </Application.Resources>
 </Application>

@@ -11794,7 +11794,10 @@ namespace TrashMobMobile.Droid
 			public const int tooltip_frame_light = 2131165329;
 			
 			// aapt resource value: 0x7F070092
-			public const int xamarin_logo = 2131165330;
+			public const int welcome_background = 2131165330;
+			
+			// aapt resource value: 0x7F070093
+			public const int xamarin_logo = 2131165331;
 			
 			static Drawable()
 			{

@@ -14,7 +14,7 @@
             InitializeComponent();
 
             DependencyService.Register<MockDataStore>();
-            MainPage = new AppShell();
+            MainPage = new WelomePage();
         }
 
         protected override void OnStart()
