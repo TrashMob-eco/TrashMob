@@ -1,0 +1,23 @@
+﻿
+
+.welcomePageButton {
+    width: 150;
+    height: 40;
+    font-style: bold;
+    font-size: 12;
+    font-family: Segoe UI;
+    color: #18510A;
+    background: #F4F4F4;
+    border-radius: 3;
+    margin: 20;
+}
+
+.needHelpButton {
+    width: 100;
+    height: 40;
+    font-style: normal;
+    font-size: 12;
+    color: #FFFFFF;
+    background: transparent;
+    margin: 10;
+}
