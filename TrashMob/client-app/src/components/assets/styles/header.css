@@ -1,0 +1,98 @@
+/* #main_wrapper, #navbar {
+    height: 114px;
+} */
+
+.tm-header {
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.collapse:is(.show) {
+    z-index: 1000;
+}
+
+#navbar a {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 17px;
+    line-height: 25px;
+    font-style: normal;
+    margin-right: 41px;
+}
+
+#logo {
+    margin-top: 8px;
+    width: 200px;
+    height: 30px;
+}
+
+#navbarBrand {
+    margin-right: 0 !important;
+}
+
+#basic-nav-dropdown {
+    background-color: unset !important;
+    color: #212529 !important;
+}
+
+#basic-nav-dropdown:hover {
+    color: #96ba00 !important;
+}
+
+#basic-nav-dropdown::after {
+    border-top: 0.3em solid #96ba00 !important;
+}
+
+#loginBtn, #registerBtn {
+    width: 115px;
+    height: 45px;
+    border-radius: 5px !important;
+    font-family: 'Poppins', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 22.5px;
+}
+
+#loginBtn {
+    background-color: unset !important;
+    color: #96ba00 !important;
+    border: 1px solid #96ba00 !important;
+    transition: all ease .5s;
+    margin-right: 9px;
+}
+
+#loginBtn:hover {
+    background-color: #96ba00 !important;
+    color: #fff !important;
+    border: none;
+    transition: all ease .5s;
+}
+
+#registerBtn {
+    transition: all ease .5s;
+}
+
+#registerBtn:hover {
+    background-color: unset !important;
+    color: #96ba00 !important;
+    border: 1px solid #96ba00 !important;
+    transition: all ease .5s;
+}
+
+.dropdown-menu {
+    border: 1px solid #96ba00 !important;
+    margin-left: -8px !important;
+}
+
+.dropdown-menu a:hover {
+    color: #96ba00 !important;
+    background-color: unset !important;
+}
+
+.dropdown-menu a {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 17px;
+    line-height: 25px;
+    font-style: normal;
+}
