@@ -3,7 +3,8 @@ import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
 import { msalClient } from '../store/AuthStore';
 import UserData from './Models/UserData';
 import logo from './assets/logo.svg'
-import { Button, Navbar, Nav, NavDropdown } from 'react-bootstrap';
+import { Button, Navbar, Nav } from 'react-bootstrap';
+import './assets/styles/header.css';
 
 interface TopMenuProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -24,10 +25,10 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
     }, [props.currentUser, props.isUserLoaded])
 
     const mainNavItems = [
-        { name: "What is TrashMob?", url: "/aboutus" },
-        { name: "Getting Started", url: "/gettingstarted" },
-        { name: "My Dashboard", url: "/mydashboard" },
-        { name: "Shop", url: "/shop" }
+        { name: "Home", url: '/' },
+        // { name: "What is TrashMob?", url: "/aboutus" },
+        { name: "Get Started", url: "/gettingstarted" },
+        { name: "My Dashboard", url: "/mydashboard" }
     ];
 
     function signOut(e: any) {
@@ -52,33 +53,34 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
 
     return (
         <header className="tm-header">
-            <div className="container-fluid bg-light tm-mainNav">
-                <Navbar className="container navbar navbar-expand-lg navbar-light">
-
-                    <div className="collapse navbar-collapse" id="navbarsExample09">
-                        <Navbar.Brand href="/"><img src={logo} alt="TrashMob Logo" /></Navbar.Brand>
-                        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                        <Navbar.Collapse id="basic-navbar-nav">
-                            <Nav className="mr-auto">
+            <div className="container bg-light tm-mainNav">
+                <div className="navbar navbar-expand-lg navbar-light navbar-static-top" id="navbar">
+                    <a className="navbar-brand" href="/" id="navbarBrand"><img src={logo} alt="TrashMob Logo" id="logo"/></a>
+                    <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span className="navbar-toggler-icon"></span>
+                    </button>
+                    <div className="navbar-collapse collapse" id="navbarNav">
+                            {/* <Navbar.Toggle aria-controls="basic-navbar-nav" /> */}
+                            <ul className="nav navbar-nav">
                                 {mainNavItems.map(item => (
-                                    <Nav.Link className="nav-link" href={item.url} key={item.name}>{item.name}</Nav.Link>
+                                    <li><Nav.Link href={item.url} key={item.name}>{item.name}</Nav.Link></li>
                                 ))}
-                                <NavDropdown title="Learn More" id="basic-nav-dropdown">
-                                    <NavDropdown.Item className="dropdown-item" href="/mediagallery">Media Gallery</NavDropdown.Item>
-                                    <NavDropdown.Item className="dropdown-item" href="/partners">Partners</NavDropdown.Item>
-                                    <NavDropdown.Item className="dropdown-item" href="/becomeapartner">Become a Partner</NavDropdown.Item>
-                                    <NavDropdown.Item className="dropdown-item" hidden={!isUserLoaded} href="/partnerdashboard">Partner Dashboard</NavDropdown.Item>
-                                    <NavDropdown.Item className="dropdown-item" href="/contactus">Contact Us</NavDropdown.Item>
-                                    <NavDropdown.Item className="dropdown-item" href="/faq">FAQ</NavDropdown.Item>
-                                    <NavDropdown.Item className="dropdown-item" hidden={!isUserLoaded || !props.currentUser.isSiteAdmin} href="/siteadmin">SiteAdmin</NavDropdown.Item>
-                                </NavDropdown>
-                            </Nav>
-                            <Button hidden={!isUserLoaded} className="btn btn-link" style={{ color: "#ffffff" }} onClick={(e) => viewUserProfile(e)}>Welcome{userName ? ", " + userName : ""}!</Button>
-                            <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)}>Sign Up/Log In</Button>
-                            <Button hidden={!isUserLoaded} className="btn btn-outline-primary" style={{ color: "#ffffff" }} onClick={(e) => signOut(e)}>Log Out</Button>
-                        </Navbar.Collapse>
+                            </ul>
+                            {/* <NavDropdown title="Learn More" id="basic-nav-dropdown">
+                                <NavDropdown.Item className="dropdown-item" href="/mediagallery">Media Gallery</NavDropdown.Item>
+                                <NavDropdown.Item className="dropdown-item" href="/partners">Partners</NavDropdown.Item>
+                                <NavDropdown.Item className="dropdown-item" href="/becomeapartner">Become a Partner</NavDropdown.Item>
+                                <NavDropdown.Item className="dropdown-item" hidden={!isUserLoaded} href="/partnerdashboard">Partner Dashboard</NavDropdown.Item>
+                                <NavDropdown.Item className="dropdown-item" href="/contactus">Contact Us</NavDropdown.Item>
+                                <NavDropdown.Item className="dropdown-item" href="/faq">FAQ</NavDropdown.Item>
+                                <NavDropdown.Item className="dropdown-item" hidden={!isUserLoaded || !props.currentUser.isSiteAdmin} href="/siteadmin">SiteAdmin</NavDropdown.Item>
+                            </NavDropdown> */}
+                        <Button hidden={!isUserLoaded} className="btn btn-link" style={{ color: "#ffffff" }} onClick={(e) => viewUserProfile(e)}>Welcome{userName ? ", " + userName : ""}!</Button>
+                        <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="loginBtn">Sign in</Button>
+                        <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="registerBtn">Sign up</Button>
+                        <Button hidden={!isUserLoaded} className="btn btn-outline-primary" style={{ color: "#ffffff" }} onClick={(e) => signOut(e)}>Log Out</Button>
                     </div>
-                </Navbar>
+                </div>
             </div>
         </header>
     )

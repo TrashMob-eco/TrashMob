@@ -48,3 +48,82 @@ hr.rounded {
 .chq-atc--dropdown {
   color: #96ba00 !important;
 }
+
+#pageFooter {
+  background-color: #212529;
+  height: auto;
+}
+
+#logo_footer {
+  width: 350px;
+  height: 50px;
+  margin-left: -15px;
+  margin-bottom: 40px;
+}
+
+#footerWrapper {
+  margin-top: 70px;
+}
+
+#pageFooter a{
+  text-decoration: none;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 17px;
+  line-height: 25.5px;
+  text-transform: uppercase;
+  display: block !important;
+  margin-bottom: 15px;
+}
+
+.horizontalLine {
+  margin-top: 15px;
+  background-color: #fff;
+}
+
+#copyright {
+  margin-bottom: 30px;
+}
+
+#copyright p{
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 21px;
+  color: #fff;
+}
+
+.iconWrapper {
+  background-color: #fff;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+}
+
+#firstWrapper {
+  margin-right: 15px;
+}
+
+.fa-facebook-f, .fa-twitter {
+  color: black;
+  font-size: 24px;
+  align-self: center;
+  margin-top: 3px;
+}
+
+#iconsOrigWrapper {
+  justify-content: end;
+  margin-right: 1px;
+}
+
+@media only screen and (min-width:375px) {
+  #iconsOrigWrapper {
+    justify-content: unset;
+    margin-left: 2px;
+  }
+}
