@@ -1,10 +1,9 @@
 ﻿namespace TrashMobMobile
 {
-    using System;
     using TrashMobMobile.Services;
     using TrashMobMobile.Views;
+    using TrashMobMobile.Features.LogOn;
     using Xamarin.Forms;
-    using Xamarin.Forms.Xaml;
 
     public partial class App : Application
     {
@@ -14,6 +13,8 @@
             InitializeComponent();
 
             DependencyService.Register<MockDataStore>();
+            DependencyService.Register<B2CAuthenticationService>();
+
             MainPage = new WelomePage();
         }
 

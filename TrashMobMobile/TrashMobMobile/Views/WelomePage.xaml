@@ -11,8 +11,11 @@
     <ContentPage.Content>
         <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
             <StackLayout Orientation="Vertical" HorizontalOptions="Center" VerticalOptions="CenterAndExpand">
-                <Button Text="Sign in" StyleClass="welcomePageButton" />
-                <Button Text="Sign up" StyleClass="welcomePageButton" />
+                <StackLayout Orientation="Horizontal">
+                    <Label Text="Name: " FontAttributes="Bold" />
+                    <Label FontAttributes="Bold" x:Name="lblName" />
+                </StackLayout>
+                <Button x:Name="btnSignInSignOut" Text="Sign in" Clicked="OnSignInSignOut" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
             </StackLayout>
             <StackLayout Orientation="Horizontal" HorizontalOptions="Center" VerticalOptions="End">
                 <Button Text="Need help?" StyleClass="needHelpButton"/>

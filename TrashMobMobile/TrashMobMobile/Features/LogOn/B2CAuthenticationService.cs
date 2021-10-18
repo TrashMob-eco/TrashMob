@@ -1,4 +1,4 @@
-﻿namespace UserDetailsClient.Core.Features.LogOn
+﻿namespace TrashMobMobile.Features.LogOn
 {
     using Microsoft.Identity.Client;
     using Newtonsoft.Json.Linq;
@@ -117,8 +117,10 @@
                 accounts = await _pca.GetAccountsAsync();
             }
 
-            var signedOutContext = new UserContext();
-            signedOutContext.IsLoggedOn = false;
+            var signedOutContext = new UserContext
+            {
+                IsLoggedOn = false
+            };
             return signedOutContext;
         }
 
@@ -147,8 +149,11 @@
 
         public UserContext UpdateUserInfo(AuthenticationResult ar)
         {
-            var newContext = new UserContext();
-            newContext.IsLoggedOn = false;
+            var newContext = new UserContext
+            {
+                IsLoggedOn = false
+            };
+
             JObject user = ParseIdToken(ar.IdToken);
 
             newContext.AccessToken = ar.AccessToken;
@@ -166,8 +171,7 @@
 
             newContext.JobTitle = user["jobTitle"]?.ToString();
 
-            var emails = user["emails"] as JArray;
-            if (emails != null)
+            if (user["emails"] is JArray emails)
             {
                 newContext.EmailAddress = emails[0].ToString();
             }

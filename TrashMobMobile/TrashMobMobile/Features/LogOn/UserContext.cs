@@ -1,4 +1,4 @@
-﻿namespace UserDetailsClient.Core.Features.LogOn
+﻿namespace TrashMobMobile.Features.LogOn
 {
     public class UserContext
     {
