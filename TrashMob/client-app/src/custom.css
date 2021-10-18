@@ -51,47 +51,47 @@ hr.rounded {
 
 #pageFooter {
   background-color: #212529;
-  height: auto;
+  height: 300px;
 }
 
 #logo_footer {
-  width: 350px;
+  width: 300px;
   height: 50px;
   margin-left: -15px;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
-#footerWrapper {
+/* #footerWrapper {
   margin-top: 70px;
-}
+} */
 
-#pageFooter a{
+#pageFooter a {
   text-decoration: none;
   color: #fff;
   font-family: 'Poppins', sans-serif;
   font-style: normal;
   font-weight: 500;
-  font-size: 17px;
+  font-size: 13px;
   line-height: 25.5px;
   text-transform: uppercase;
   display: block !important;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+}
+
+#pageFooter a:hover {
+  color: #96ba00;
 }
 
 .horizontalLine {
-  margin-top: 15px;
   background-color: #fff;
-}
-
-#copyright {
-  margin-bottom: 30px;
+  margin-bottom: 0 !important;
 }
 
 #copyright p{
   font-family: 'Montserrat', sans-serif;
   font-style: normal;
   font-weight: 500;
-  font-size: 18px;
+  font-size: 13px;
   line-height: 21px;
   color: #fff;
 }
@@ -101,8 +101,8 @@ hr.rounded {
   border-radius: 8px;
   display: flex;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
 }
 
 #firstWrapper {
@@ -111,19 +111,25 @@ hr.rounded {
 
 .fa-facebook-f, .fa-twitter {
   color: black;
-  font-size: 24px;
+  font-size: 20px;
   align-self: center;
   margin-top: 3px;
 }
 
 #iconsOrigWrapper {
   justify-content: end;
+  align-items: center;
   margin-right: 1px;
+  height: 50px;
 }
 
-@media only screen and (min-width:375px) {
+@media only screen and (max-width: 414px) {
   #iconsOrigWrapper {
     justify-content: unset;
     margin-left: 2px;
+  }
+
+  #pageFooter {
+    height: auto !important;
   }
 }
