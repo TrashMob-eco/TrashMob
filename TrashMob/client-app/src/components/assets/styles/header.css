@@ -42,7 +42,7 @@
     border-top: 0.3em solid #96ba00 !important;
 }
 
-#loginBtn, #registerBtn {
+#loginBtn, #registerBtn, #logoutBtn {
     width: 115px;
     height: 45px;
     border-radius: 5px !important;
@@ -53,7 +53,20 @@
     line-height: 22.5px;
 }
 
-#loginBtn {
+#welcomeBtn {
+    width: auto;
+    height: 45px;
+    border-radius: 5px !important;
+    font-family: 'Poppins', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 22.5px;
+    padding: 0 !important;
+    text-decoration: none;
+}
+
+#loginBtn, #welcomeBtn {
     background-color: unset !important;
     color: #96ba00 !important;
     border: 1px solid #96ba00 !important;
@@ -61,18 +74,18 @@
     margin-right: 9px;
 }
 
-#loginBtn:hover {
+#loginBtn:hover, #welcomeBtn:hover {
     background-color: #96ba00 !important;
     color: #fff !important;
     border: none;
     transition: all ease .5s;
 }
 
-#registerBtn {
+#registerBtn, #logoutBtn {
     transition: all ease .5s;
 }
 
-#registerBtn:hover {
+#registerBtn:hover, #logoutBtn:hover {
     background-color: unset !important;
     color: #96ba00 !important;
     border: 1px solid #96ba00 !important;
