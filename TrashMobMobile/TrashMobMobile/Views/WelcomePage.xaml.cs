@@ -7,9 +7,9 @@
     using Xamarin.Forms.Xaml;
 
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class WelomePage : ContentPage
+    public partial class WelcomePage : ContentPage
     {
-        public WelomePage()
+        public WelcomePage()
         {
             InitializeComponent();
         }

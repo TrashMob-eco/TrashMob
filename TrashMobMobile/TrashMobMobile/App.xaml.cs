@@ -15,7 +15,7 @@
             DependencyService.Register<MockDataStore>();
             DependencyService.Register<B2CAuthenticationService>();
 
-            MainPage = new WelomePage();
+            MainPage = new WelcomePage();
         }
 
         protected override void OnStart()

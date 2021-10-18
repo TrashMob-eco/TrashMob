@@ -9,6 +9,7 @@
         public static string PolicySignUpSignIn = "B2C_1_signupsignin1";
         public static string PolicyEditProfile = "B2C_1_editprofile1";
         public static string PolicyResetPassword = "B2C_1_passwordreset1";
+        public static string RedirectUri = "msauth://com.trashmobeco.trashmobmobile/EjFLkitZ%2BGotx7AfSESspVmDL3o%3D";
 
         public static string[] Scopes = { "https://Trashmob.onmicrosoft.com/mobileapi/TrashMob.Writes", "https://Trashmob.onmicrosoft.com/mobileapi/TrashMob.Reads" };
 

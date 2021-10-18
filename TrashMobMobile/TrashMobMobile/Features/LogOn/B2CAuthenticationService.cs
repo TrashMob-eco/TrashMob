@@ -28,7 +28,8 @@
             var builder = PublicClientApplicationBuilder.Create(B2CConstants.ClientID)
                 .WithB2CAuthority(B2CConstants.AuthoritySignInSignUp)
                 .WithIosKeychainSecurityGroup(B2CConstants.IOSKeyChainGroup)
-                .WithRedirectUri($"msal{B2CConstants.ClientID}://auth");
+                // .WithRedirectUri("http://localhost");
+                .WithRedirectUri(B2CConstants.RedirectUri);
 
             // Android implementation is based on https://github.com/jamesmontemagno/CurrentActivityPlugin
             // iOS implementation would require to expose the current ViewControler - not currently implemented as it is not required
@@ -100,11 +101,37 @@
 
         private async Task<UserContext> SignInInteractively()
         {
-            AuthenticationResult authResult = await _pca.AcquireTokenInteractive(B2CConstants.Scopes)
-                .ExecuteAsync();
+            var useEmbeddedWebview = true;
+            try
+            {
+                // Android implementation is based on https://github.com/jamesmontemagno/CurrentActivityPlugin
+                // iOS implementation would require to expose the current ViewControler - not currently implemented as it is not required
+                // UWP does not require this
+                var windowLocatorService = DependencyService.Get<IParentWindowLocatorService>();
 
-            var newContext = UpdateUserInfo(authResult);
-            return newContext;
+                AuthenticationResult authResult;
+
+                if (windowLocatorService == null)
+                {
+                    authResult = await _pca.AcquireTokenInteractive(B2CConstants.Scopes)
+                                        .WithUseEmbeddedWebView(useEmbeddedWebview)
+                                        .ExecuteAsync();
+                }
+                else
+                {
+                    authResult = await _pca.AcquireTokenInteractive(B2CConstants.Scopes)
+                                        .WithParentActivityOrWindow(windowLocatorService?.GetCurrentParentWindow())
+                                        .WithUseEmbeddedWebView(useEmbeddedWebview)
+                                        .ExecuteAsync();
+                }
+
+                var newContext = UpdateUserInfo(authResult);
+                return newContext;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<UserContext> SignOutAsync()
