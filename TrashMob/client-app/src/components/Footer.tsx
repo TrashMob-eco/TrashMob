@@ -29,7 +29,7 @@ export const Footer: React.FC = () => {
                 <hr className="horizontalLine"/>
                 <div className="row" id="copyright">
                     <div className="col-md-8">
-                        <p>Copyright 2021 TRASHMOB.ECO - All Rights Reserved.</p>
+                        <p>Copyright &copy; 2021 TRASHMOB.ECO - All Rights Reserved.</p>
                     </div>
                     <div className="col-md-4">
                         <div className="row" id="iconsOrigWrapper">
