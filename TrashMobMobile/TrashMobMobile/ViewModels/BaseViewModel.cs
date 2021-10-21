@@ -11,6 +11,7 @@
     public class BaseViewModel : INotifyPropertyChanged
     {
         public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>();
+        public MobEventManager MobEventManager => DependencyService.Get<MobEventManager>();
 
         bool isBusy = false;
         public bool IsBusy
