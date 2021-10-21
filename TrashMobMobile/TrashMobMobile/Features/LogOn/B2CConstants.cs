@@ -11,7 +11,7 @@
         public static string PolicyResetPassword = "B2C_1_passwordreset1";
         public static string RedirectUri = "msauth://com.trashmobeco.trashmobmobile/EjFLkitZ%2BGotx7AfSESspVmDL3o%3D";
 
-        public static string[] Scopes = { "https://Trashmob.onmicrosoft.com/mobileapi/TrashMob.Writes", "https://Trashmob.onmicrosoft.com/mobileapi/TrashMob.Reads" };
+        public static string[] Scopes = { "https://Trashmob.onmicrosoft.com/api/TrashMob.Writes", "https://Trashmob.onmicrosoft.com/api/TrashMob.Read" };
 
         public static string AuthorityBase = $"https://{AzureADB2CHostname}/tfp/{Tenant}/";
         public static string AuthoritySignInSignUp = $"{AuthorityBase}{PolicySignUpSignIn}";
