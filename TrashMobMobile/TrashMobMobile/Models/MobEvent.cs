@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TrashMobMobile.Models
 {
-    class MobEvent
+    public class MobEvent
     {
         public Guid Id { get; set; }
         public Guid CreatedByUserId { get; set; }

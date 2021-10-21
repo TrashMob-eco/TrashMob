@@ -1,12 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TrashMobMobile.Views.MobEventsPage">
-    <ContentPage.Content>
-        <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
-        </StackLayout>
-    </ContentPage.Content>
+             x:Class="TrashMobMobile.Views.MobEventsPage"
+             Title="{Binding Title}"
+             xmlns:local="clr-namespace:TrashMobMobile.ViewModels"  
+             xmlns:model="clr-namespace:TrashMobMobile.Models"  >
+    <RefreshView x:DataType="local:MobEventsViewModel" Command="{Binding LoadItemsCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+        <CollectionView x:Name="MobEventsListView"
+                ItemsSource="{Binding MobEvents}"
+                SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout Padding="10" x:DataType="model:MobEvent">
+                        <Label Text="{Binding Name}" 
+                                LineBreakMode="NoWrap" 
+                                Style="{DynamicResource ListItemTextStyle}" 
+                                FontSize="16" />
+                        <Label Text="{Binding Description}" 
+                                Style="{DynamicResource ListItemDetailTextStyle}"
+                                FontSize="13" />
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </RefreshView>
 </ContentPage>

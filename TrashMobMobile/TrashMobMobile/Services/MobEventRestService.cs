@@ -8,7 +8,7 @@ using TrashMobMobile.Models;
 
 namespace TrashMobMobile.Services
 {
-    class MobEventRestService
+    public class MobEventRestService
     {
         HttpClient client;
         JsonSerializerOptions serializerOptions;

@@ -4,7 +4,7 @@ using TrashMobMobile.Models;
 
 namespace TrashMobMobile.Services
 {
-    class MobEventManager
+    public class MobEventManager
     {
         MobEventRestService mobEventRestService;
         public MobEventManager(MobEventRestService service)
@@ -12,7 +12,7 @@ namespace TrashMobMobile.Services
             mobEventRestService = service;
         }
 
-        public Task<List<MobEvent>> GetTasksAsync()
+        public Task<List<MobEvent>> GetEventsAsync()
         {
             return mobEventRestService.RefreshMobEventsAsync();
         }
