@@ -7,6 +7,7 @@
 
     public partial class App : Application
     {
+        public static string ApiEndpoint = "https://www.trashmob.eco/api/";
 
         public App()
         {

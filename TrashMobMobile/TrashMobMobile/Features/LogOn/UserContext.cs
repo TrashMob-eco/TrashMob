@@ -15,5 +15,10 @@
         public string StreetAddress { get; internal set; }
         public string City { get; internal set; }
         public string AccessToken { get; internal set; }
+
+        
+        public string NameIdentifier { get; set; }
+
+        public string SourceSystemUserName { get; set; }
     }
 }

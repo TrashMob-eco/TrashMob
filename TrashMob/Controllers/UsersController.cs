@@ -139,7 +139,7 @@ namespace TrashMob.Controllers
             {
                 // On insert we need a random user name to avoid duplicates, but we don't want to show the full email address ever, so take a subset
                 // of their email and then add a random number to the end.
-                Random rnd = new Random();
+                Random rnd = new();
                 var userNum = rnd.Next(1000000, 9999999).ToString();
                 user.UserName = user.Email.Split("@")[0].Substring(0, 8) + userNum;
             }

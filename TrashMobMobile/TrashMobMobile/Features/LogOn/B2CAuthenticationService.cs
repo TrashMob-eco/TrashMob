@@ -183,6 +183,9 @@
 
             JObject user = ParseIdToken(ar.IdToken);
 
+            newContext.NameIdentifier = ar.ClaimsPrincipal?.Claims?.FirstOrDefault(c => c.Type == "sub")?.Value;
+            newContext.SourceSystemUserName = ar.ClaimsPrincipal?.Claims?.FirstOrDefault(c => c.Type == "username")?.Value;
+
             newContext.AccessToken = ar.AccessToken;
             newContext.Name = user["name"]?.ToString();
             newContext.UserIdentifier = user["oid"]?.ToString();
