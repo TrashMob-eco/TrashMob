@@ -7,14 +7,15 @@ namespace TrashMobMobile.Services
     class MobEventManager
     {
         MobEventRestService mobEventRestService;
-		public MobEventManager(MobEventRestService service)
-		{
-			mobEventRestService = service;
-		}
+        public MobEventManager(MobEventRestService service)
+        {
+            mobEventRestService = service;
+        }
 
         public Task<List<MobEvent>> GetTasksAsync()
-		{
-			return mobEventRestService.RefreshMobEventsAsync();
-		}
-	}
+        {
+            return mobEventRestService.RefreshMobEventsAsync();
+        }
+    }
 }
+
