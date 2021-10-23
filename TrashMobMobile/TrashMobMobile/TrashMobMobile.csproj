@@ -19,8 +19,9 @@
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="System.Text.Json" Version="6.0.0-rc.2.21480.5" />
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
-    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
-    <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
+    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2196" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.7.0" />
+    <PackageReference Include="Xamarin.Forms.Maps" Version="5.0.0.2196" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,6 +44,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\EventsMap.xaml.cs">
+      <DependentUpon>EventsMap.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\WelcomePage.xaml.cs">
       <DependentUpon>WelcomePage.xaml</DependentUpon>
     </Compile>

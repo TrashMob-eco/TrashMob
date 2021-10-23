@@ -17,7 +17,7 @@
             DependencyService.Register<B2CAuthenticationService>();
             DependencyService.Register<MobEventManager>();
 
-            MainPage = new WelcomePage();
+            MainPage = new NavigationPage(new WelcomePage());
         }
 
         protected override void OnStart()

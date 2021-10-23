@@ -4,11 +4,11 @@
     using Xamarin.Essentials;
     using Xamarin.Forms;
 
-    public class AboutViewModel : BaseViewModel
+    public class EventsMapViewModel : BaseViewModel
     {
-        public AboutViewModel()
+        public EventsMapViewModel()
         {
-            Title = "About";
+            Title = "Events Map";
             OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://aka.ms/xamarin-quickstart"));
         }
 

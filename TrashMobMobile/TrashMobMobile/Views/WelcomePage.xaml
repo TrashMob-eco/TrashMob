@@ -3,11 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TrashMobMobile.Views.WelcomePage"
              BackgroundImage="welcome_background.png">
-    
+
     <ContentPage.Resources>
         <StyleSheet Source="/Assets/welcome.css" />
     </ContentPage.Resources>
-    
+
     <ContentPage.Content>
         <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
             <StackLayout Orientation="Vertical" HorizontalOptions="Center" VerticalOptions="CenterAndExpand">
@@ -16,6 +16,7 @@
                     <Label FontAttributes="Bold" x:Name="lblName" />
                 </StackLayout>
                 <Button x:Name="btnSignInSignOut" Text="Sign in" Clicked="OnSignInSignOut" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+                <Button x:Name="btnViewEventsMap" Text="Events Map" Clicked="OnViewEventsMap" StyleClass="needHelpButton" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
             </StackLayout>
             <StackLayout Orientation="Horizontal" HorizontalOptions="Center" VerticalOptions="End">
                 <Button Text="Need help?" StyleClass="needHelpButton"/>

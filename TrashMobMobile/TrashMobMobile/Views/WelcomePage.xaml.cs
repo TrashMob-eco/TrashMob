@@ -59,6 +59,11 @@
             }
         }
 
+        private async void OnViewEventsMap(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new EventsMapPage());
+        }
+
         private HttpRequestMessage GetDefaultHeaders(HttpRequestMessage httpRequestMessage)
         {
             httpRequestMessage.Headers.Add("Accept", "application/json, text/plain");
