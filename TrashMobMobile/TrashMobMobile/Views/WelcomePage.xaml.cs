@@ -59,7 +59,7 @@
             }
         }
 
-        private HttpRequestMessage GetDefaultHeaders(HttpRequestMessage httpRequestMessage, string method)
+        private HttpRequestMessage GetDefaultHeaders(HttpRequestMessage httpRequestMessage)
         {
             httpRequestMessage.Headers.Add("Accept", "application/json, text/plain");
             return httpRequestMessage;
@@ -74,7 +74,7 @@
         private async Task VerifyAccount(UserContext userContext)
         {
             var httpRequestMessage = new HttpRequestMessage();
-            httpRequestMessage = GetDefaultHeaders(httpRequestMessage, "POST");
+            httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
             httpRequestMessage.Method = HttpMethod.Post;
 
             httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);

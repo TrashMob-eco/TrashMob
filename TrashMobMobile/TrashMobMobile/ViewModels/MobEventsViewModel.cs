@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using Xamarin.Forms;
-using TrashMobMobile.Models;
-using TrashMobMobile.Services;
-
+﻿
 namespace TrashMobMobile.ViewModels
 {
-    class MobEventsViewModel : BaseViewModel
+    using System;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics;
+    using System.Threading.Tasks;
+    using System.Windows.Input;
+    using Xamarin.Forms;
+    using TrashMobMobile.Models;
+    using TrashMobMobile.Services;
+
+    internal class MobEventsViewModel : BaseViewModel
     {
         public ObservableCollection<MobEvent> MobEvents { get; }
         public Command LoadMobEventsCommand { get; }
@@ -40,6 +42,25 @@ namespace TrashMobMobile.ViewModels
             {
                 IsBusy = false;
             }
+        }
+
+        private Command loadItemsCommand;
+
+        public ICommand LoadItemsCommand
+        {
+            get
+            {
+                if (loadItemsCommand == null)
+                {
+                    loadItemsCommand = new Command(LoadItems);
+                }
+
+                return loadItemsCommand;
+            }
+        }
+
+        private void LoadItems()
+        {
         }
     }
 }
