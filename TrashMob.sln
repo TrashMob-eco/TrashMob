@@ -15,7 +15,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrashMobMobile.Android", "T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrashMobMobile.iOS", "TrashMobMobile\TrashMobMobile.iOS\TrashMobMobile.iOS.csproj", "{D66BF99B-9729-4997-87DA-85A6668347E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrashMobMobile", "TrashMobMobile\TrashMobMobile\TrashMobMobile.csproj", "{7BC88F01-FF14-4458-9BDB-DDFCC100D2C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrashMobMobile", "TrashMobMobile\TrashMobMobile\TrashMobMobile.csproj", "{7BC88F01-FF14-4458-9BDB-DDFCC100D2C6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4478AB77-33C6-46FE-8CC9-C1D6BB4556B5}"
+	ProjectSection(SolutionItems) = preProject
+		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
+		CONTRIBUTING.md = CONTRIBUTING.md
+		LICENSE = LICENSE
+		NuGet.Config = NuGet.Config
+		README.md = README.md
+		TrashMob_Logo1.svg = TrashMob_Logo1.svg
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
