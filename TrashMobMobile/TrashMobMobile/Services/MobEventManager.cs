@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using TrashMobMobile.Models;
-
-namespace TrashMobMobile.Services
+﻿namespace TrashMobMobile.Services
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using TrashMobMobile.Models;
+
     public class MobEventManager
     {
-        MobEventRestService mobEventRestService;
+        private readonly MobEventRestService mobEventRestService;
+
         public MobEventManager(MobEventRestService service)
         {
             mobEventRestService = service;

@@ -10,10 +10,12 @@
 
     public class BaseViewModel : INotifyPropertyChanged
     {
-        public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>();
+        public IDataStore<ContactRequest> DataStore => DependencyService.Get<IDataStore<ContactRequest>>();
+
         public MobEventManager MobEventManager => DependencyService.Get<MobEventManager>();
 
-        bool isBusy = false;
+        private bool isBusy = false;
+
         public bool IsBusy
         {
             get { return isBusy; }
@@ -21,6 +23,7 @@
         }
 
         string title = string.Empty;
+        
         public string Title
         {
             get { return title; }
@@ -32,7 +35,9 @@
             Action onChanged = null)
         {
             if (EqualityComparer<T>.Default.Equals(backingStore, value))
+            {
                 return false;
+            }
 
             backingStore = value;
             onChanged?.Invoke();
@@ -46,7 +51,9 @@
         {
             var changed = PropertyChanged;
             if (changed == null)
+            {
                 return;
+            }
 
             changed.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

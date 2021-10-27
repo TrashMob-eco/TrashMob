@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
-using TrashMobMobile.Models;
-
-namespace TrashMobMobile.Services
+﻿namespace TrashMobMobile.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Net.Http;
+    using System.Text.Json;
+    using System.Threading.Tasks;
+    using TrashMobMobile.Models;
+
     public class MobEventRestService
     {
         HttpClient client;
@@ -46,6 +46,5 @@ namespace TrashMobMobile.Services
 
             return MobEvents;
         }
-
     }
 }
