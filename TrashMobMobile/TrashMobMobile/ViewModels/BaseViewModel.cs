@@ -4,13 +4,12 @@
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Runtime.CompilerServices;
-    using TrashMobMobile.Models;
     using TrashMobMobile.Services;
     using Xamarin.Forms;
 
     public class BaseViewModel : INotifyPropertyChanged
     {
-        public IDataStore<ContactRequest> DataStore => DependencyService.Get<IDataStore<ContactRequest>>();
+        public ContactRequestManager ContactRequestManager => DependencyService.Get<ContactRequestManager>();
 
         public MobEventManager MobEventManager => DependencyService.Get<MobEventManager>();
 

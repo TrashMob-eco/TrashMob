@@ -55,7 +55,7 @@
 
         private async void OnSave()
         {
-            ContactRequest newItem = new ContactRequest()
+            ContactRequest contactRequest = new ContactRequest()
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = Name,
@@ -63,7 +63,7 @@
                 Message = Message
             };
 
-            await DataStore.AddItemAsync(newItem);
+            await ContactRequestManager.AddContactRequestAsync(contactRequest);
 
             // This will pop the current page off the navigation stack
             await Shell.Current.GoToAsync("..");
