@@ -135,8 +135,11 @@
                 email.Message = content;
                 email.HtmlMessage = htmlContent;
 
+                Logger.LogInformation("Sending email to {0}, Subject {0}", email.Addresses[0].Email, email.Subject);
+
                 // send email
                 await EmailSender.SendEmailAsync(email, cancellationToken).ConfigureAwait(false);
+
                 return 1;
             }
 
