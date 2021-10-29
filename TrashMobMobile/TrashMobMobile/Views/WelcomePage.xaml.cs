@@ -63,6 +63,10 @@
         {
             await Navigation.PushAsync(new EventsMapPage());
         }
+        private async void OnContactUs(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new ContactUsPage());
+        }
 
         private HttpRequestMessage GetDefaultHeaders(HttpRequestMessage httpRequestMessage)
         {

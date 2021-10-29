@@ -15,7 +15,9 @@
 
             DependencyService.Register<MockDataStore>();
             DependencyService.Register<B2CAuthenticationService>();
+            DependencyService.Register<ContactRequestRestService>();
             DependencyService.Register<ContactRequestManager>();
+            DependencyService.Register<MobEventRestService>();
             DependencyService.Register<MobEventManager>();
 
             MainPage = new NavigationPage(new WelcomePage());
