@@ -3,8 +3,8 @@
     using System.Threading.Tasks;
     using TrashMobMobile.Models;
 
-    public interface IContactRequestRestService
+    public interface IUserRestService
     {
-        Task AddContactRequest(ContactRequest contactRequest);
+        Task<User> AddUser(User user);
     }
 }

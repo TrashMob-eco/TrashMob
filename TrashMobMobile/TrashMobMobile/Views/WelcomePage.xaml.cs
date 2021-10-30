@@ -1,26 +1,25 @@
 ﻿namespace TrashMobMobile.Views
 {
     using Microsoft.Identity.Client;
-    using Newtonsoft.Json;
     using System;
     using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Net.Http.Json;
     using System.Text.Json;
     using System.Threading.Tasks;
     using TrashMobMobile.Features.LogOn;
     using TrashMobMobile.Models;
+    using TrashMobMobile.Services;
     using Xamarin.Forms;
     using Xamarin.Forms.Xaml;
 
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class WelcomePage : ContentPage
     {
-        public UserData CurrentUser { get; set; }
+        public User CurrentUser { get; set; }
 
-        public WelcomePage()
+        public WelcomePage(IUserManager userManager)
         {
             InitializeComponent();
+            this.userManager = userManager;
         }
 
         private async void OnSignInSignOut(object sender, EventArgs e)
@@ -79,17 +78,11 @@
             PropertyNameCaseInsensitive = true,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
+        private readonly IUserManager userManager;
 
         private async Task VerifyAccount(UserContext userContext)
         {
-            var httpRequestMessage = new HttpRequestMessage();
-            httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
-            httpRequestMessage.Method = HttpMethod.Post;
-
-            httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
-            httpRequestMessage.RequestUri = new Uri(App.ApiEndpoint + "Users");
-
-            var user = new UserData
+            var user = new User
             {
                 Id = Guid.Empty.ToString(),
                 NameIdentifier = userContext.NameIdentifier,
@@ -97,16 +90,7 @@
                 Email = userContext.EmailAddress ?? ""
             };
 
-            httpRequestMessage.Content = JsonContent.Create(user, typeof(UserData), null, jsonSerializerOptions);
-
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
-            string responseString = await response.Content.ReadAsStringAsync();
-
-            if (!string.IsNullOrWhiteSpace(responseString))
-            {
-                CurrentUser = JsonConvert.DeserializeObject<UserData>(responseString);
-            }
+            CurrentUser = await userManager.AddUserAsync(user);
         }
 
         //private async void OnCallApi(object sender, EventArgs e)

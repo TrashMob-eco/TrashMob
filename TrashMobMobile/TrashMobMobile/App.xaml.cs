@@ -21,7 +21,7 @@
 
             SetupServices(addPlatformServices);
 
-            MainPage = new NavigationPage(new WelcomePage());
+            MainPage = new NavigationPage(new WelcomePage(ServiceProvider.GetService<IUserManager>()));
         }
 
         void SetupServices(Action<IServiceCollection> addPlatformServices = null)
@@ -42,12 +42,14 @@
             services.AddTransient<NewItemViewModel>();
 
             // Add Services
-            _ = services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
-            _ = services.AddSingleton<IContactRequestManager, ContactRequestManager>();
-            _ = services.AddSingleton<IMobEventRestService, MobEventRestService>();
-            _ = services.AddSingleton<IMobEventManager, MobEventManager>();
-            _ = services.AddSingleton<IDataStore<Item>, MockDataStore>();
             _ = services.AddSingleton<IB2CAuthenticationService, B2CAuthenticationService>();
+            _ = services.AddSingleton<IContactRequestManager, ContactRequestManager>();
+            _ = services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
+            _ = services.AddSingleton<IDataStore<Item>, MockDataStore>();
+            _ = services.AddSingleton<IMobEventManager, MobEventManager>();
+            _ = services.AddSingleton<IMobEventRestService, MobEventRestService>();
+            _ = services.AddSingleton<IUserManager, UserManager>();
+            _ = services.AddSingleton<IUserRestService, UserRestService>();
 
             ServiceProvider = services.BuildServiceProvider();
         }
