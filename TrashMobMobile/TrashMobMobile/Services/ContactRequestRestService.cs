@@ -9,7 +9,7 @@
 
     public class ContactRequestRestService : RestServiceBase, IContactRequestRestService
     {
-        private readonly Uri ContactRequestApi = new Uri(TrashMobServiceUrlBase + "contactrequests");
+        private readonly Uri ContactRequestApi = new Uri(TrashMobServiceUrlBase + "contactrequest");
 
         public async Task AddContactRequest(ContactRequest contactRequest)
         {
@@ -29,10 +29,7 @@
                 HttpClient client = new HttpClient();
                 HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    string content = await response.Content.ReadAsStringAsync();
-                }
+                // Handle message sent successfully
             }
             catch (Exception ex)
             {
