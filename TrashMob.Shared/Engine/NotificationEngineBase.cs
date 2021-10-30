@@ -54,6 +54,9 @@
             EmailSender = emailSender;
             MapRepository = mapRepository;
             Logger = logger;
+
+            // Set the Api Key Here
+            EmailSender.ApiKey = Environment.GetEnvironmentVariable("SendGridApiKey");
         }
 
         public string GetEmailTemplate()
@@ -135,8 +138,11 @@
                 email.Message = content;
                 email.HtmlMessage = htmlContent;
 
+                Logger.LogInformation("Sending email to {0}, Subject {0}", email.Addresses[0].Email, email.Subject);
+
                 // send email
                 await EmailSender.SendEmailAsync(email, cancellationToken).ConfigureAwait(false);
+
                 return 1;
             }
 
@@ -226,7 +232,7 @@
             
             eventGrid.AppendLine("</table>");
 
-            populatedTemplate.Replace("{EventGrid}", eventGrid.ToString());
+            populatedTemplate = populatedTemplate.Replace("{EventGrid}", eventGrid.ToString());
 
             return populatedTemplate;
         }

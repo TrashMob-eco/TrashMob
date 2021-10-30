@@ -56,7 +56,7 @@ namespace TrashMobJobs
 
         private static async Task<int> CountEvents(ILogger log, SqlConnection conn)
         {
-            var sql = "SELECT count(*) FROM dbo.Events";
+            var sql = "SELECT count(*) FROM dbo.Events where eventstatusid != 3";
             var numberOfEvents = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
@@ -73,7 +73,7 @@ namespace TrashMobJobs
 
         private static async Task<int> CountFutureEvents(ILogger log, SqlConnection conn)
         {
-            var sql = "SELECT count(*) FROM dbo.Events WHERE EventDate > GetDate()";
+            var sql = "SELECT count(*) FROM dbo.Events WHERE EventDate > GetDate() and eventstatusid != 3";
             var numberOfEvents = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
@@ -90,7 +90,7 @@ namespace TrashMobJobs
 
         private static async Task<int> CountEventAttendees(ILogger log, SqlConnection conn)
         {
-            var sql = "SELECT count(*) FROM dbo.EventAttendees";
+            var sql = "SELECT count(*) FROM dbo.EventAttendees ea inner join dbo.Events e on ea.EventId = e.id WHERE eventstatusid != 3";
             var numberOfEventAttendees = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
@@ -107,7 +107,7 @@ namespace TrashMobJobs
 
         private static async Task<int> CountFutureEventAttendees(ILogger log, SqlConnection conn)
         {
-            var sql = "  Select count(*) from dbo.EventAttendees ea inner join dbo.Events e on ea.EventId = e.id  WHERE e.EventDate > GetDate() ";
+            var sql = "  Select count(*) from dbo.EventAttendees ea inner join dbo.Events e on ea.EventId = e.id WHERE e.EventDate > GetDate() and eventstatusid != 3";
             var numberOfEventAttendees = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
