@@ -232,7 +232,7 @@
             
             eventGrid.AppendLine("</table>");
 
-            populatedTemplate.Replace("{EventGrid}", eventGrid.ToString());
+            populatedTemplate = populatedTemplate.Replace("{EventGrid}", eventGrid.ToString());
 
             return populatedTemplate;
         }
