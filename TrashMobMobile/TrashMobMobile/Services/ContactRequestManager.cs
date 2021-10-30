@@ -3,11 +3,11 @@
     using System.Threading.Tasks;
     using TrashMobMobile.Models;
 
-    public class ContactRequestManager
+    public class ContactRequestManager : IContactRequestManager
     {
-        private readonly ContactRequestRestService contactRequestRestService;
+        private readonly IContactRequestRestService contactRequestRestService;
 
-        public ContactRequestManager(ContactRequestRestService service)
+        public ContactRequestManager(IContactRequestRestService service)
         {
             contactRequestRestService = service;
         }

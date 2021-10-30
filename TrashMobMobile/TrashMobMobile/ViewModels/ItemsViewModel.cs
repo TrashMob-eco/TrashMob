@@ -5,19 +5,21 @@
     using System.Diagnostics;
     using System.Threading.Tasks;
     using TrashMobMobile.Models;
+    using TrashMobMobile.Services;
     using TrashMobMobile.Views;
     using Xamarin.Forms;
 
     public class ItemsViewModel : BaseViewModel
     {
         private Item _selectedItem;
+        private readonly IDataStore<Item> dataStore;
 
         public ObservableCollection<Item> Items { get; }
         public Command LoadItemsCommand { get; }
         public Command AddItemCommand { get; }
         public Command<Item> ItemTapped { get; }
 
-        public ItemsViewModel()
+        public ItemsViewModel(IDataStore<Item> dataStore)
         {
             Title = "Browse";
             Items = new ObservableCollection<Item>();
@@ -26,6 +28,7 @@
             ItemTapped = new Command<Item>(OnItemSelected);
 
             AddItemCommand = new Command(OnAddItem);
+            this.dataStore = dataStore;
         }
 
         async Task ExecuteLoadItemsCommand()
@@ -35,7 +38,7 @@
             try
             {
                 Items.Clear();
-                var items = await DataStore.GetItemsAsync(true);
+                var items = await dataStore.GetItemsAsync(true);
                 foreach (var item in items)
                 {
                     Items.Add(item);

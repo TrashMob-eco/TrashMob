@@ -1,6 +1,5 @@
 ﻿namespace TrashMobMobile.Views
 {
-    using System.ComponentModel;
     using TrashMobMobile.ViewModels;
     using Xamarin.Forms;
 
@@ -9,7 +8,7 @@
         public ItemDetailPage()
         {
             InitializeComponent();
-            BindingContext = new ItemDetailViewModel();
+            BindingContext = App.GetViewModel<ItemDetailViewModel>();
         }
     }
 }

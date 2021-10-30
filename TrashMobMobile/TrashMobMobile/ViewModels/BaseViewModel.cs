@@ -4,16 +4,9 @@
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Runtime.CompilerServices;
-    using TrashMobMobile.Models;
-    using TrashMobMobile.Services;
-    using Xamarin.Forms;
 
     public class BaseViewModel : INotifyPropertyChanged
     {
-        public ContactRequestManager ContactRequestManager => DependencyService.Get<ContactRequestManager>();
-        public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>();
-        public MobEventManager MobEventManager => DependencyService.Get<MobEventManager>();
-
         private bool isBusy = false;
 
         public bool IsBusy

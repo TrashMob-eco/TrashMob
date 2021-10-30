@@ -12,8 +12,7 @@
         public MobEventsPage()
         {
             InitializeComponent();
-
-            BindingContext = _viewModel = new MobEventsViewModel();
+            BindingContext = App.GetViewModel<MobEventsViewModel>();
         }
     }
 }

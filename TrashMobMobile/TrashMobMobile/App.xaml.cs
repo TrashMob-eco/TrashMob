@@ -4,24 +4,55 @@
     using TrashMobMobile.Views;
     using TrashMobMobile.Features.LogOn;
     using Xamarin.Forms;
+    using System;
+    using Microsoft.Extensions.DependencyInjection;
+    using TrashMobMobile.Models;
+    using TrashMobMobile.ViewModels;
 
     public partial class App : Application
     {
         public static string ApiEndpoint = "https://www.trashmob.eco/api/";
 
-        public App()
+        protected static IServiceProvider ServiceProvider { get; set; }
+
+        public App(Action<IServiceCollection> addPlatformServices = null)
         {
             InitializeComponent();
 
-            DependencyService.Register<MockDataStore>();
-            DependencyService.Register<B2CAuthenticationService>();
-            DependencyService.Register<ContactRequestRestService>();
-            DependencyService.Register<ContactRequestManager>();
-            DependencyService.Register<MobEventRestService>();
-            DependencyService.Register<MobEventManager>();
+            SetupServices(addPlatformServices);
 
             MainPage = new NavigationPage(new WelcomePage());
         }
+
+        void SetupServices(Action<IServiceCollection> addPlatformServices = null)
+        {
+            var services = new ServiceCollection();
+
+            // Add platform specific services
+            addPlatformServices?.Invoke(services);
+
+            // Add View Models
+            services.AddTransient<AboutViewModel>();
+            services.AddTransient<ContactUsViewModel>();
+            services.AddTransient<EventsMapViewModel>();
+            services.AddTransient<ItemDetailViewModel>();
+            services.AddTransient<ItemsViewModel>();
+            services.AddTransient<LoginViewModel>();
+            services.AddTransient<MobEventsViewModel>();
+            services.AddTransient<NewItemViewModel>();
+
+            // Add Services
+            _ = services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
+            _ = services.AddSingleton<IContactRequestManager, ContactRequestManager>();
+            _ = services.AddSingleton<IMobEventRestService, MobEventRestService>();
+            _ = services.AddSingleton<IMobEventManager, MobEventManager>();
+            _ = services.AddSingleton<IDataStore<Item>, MockDataStore>();
+            _ = services.AddSingleton<IB2CAuthenticationService, B2CAuthenticationService>();
+
+            ServiceProvider = services.BuildServiceProvider();
+        }
+        public static BaseViewModel GetViewModel<TViewModel>() where TViewModel : BaseViewModel
+                => ServiceProvider.GetService<TViewModel>();
 
         protected override void OnStart()
         {

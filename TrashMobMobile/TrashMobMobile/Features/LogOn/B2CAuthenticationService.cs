@@ -12,7 +12,7 @@
     /// <summary>
     ///  For simplicity, we'll have this as a singleton. 
     /// </summary>
-    public class B2CAuthenticationService
+    public class B2CAuthenticationService : IB2CAuthenticationService
     {
         private readonly IPublicClientApplication _pca;
 

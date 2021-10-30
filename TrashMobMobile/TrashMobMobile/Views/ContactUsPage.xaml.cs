@@ -6,12 +6,10 @@
 
     public partial class ContactUsPage : ContentPage
     {
-        public Item Item { get; set; }
-
         public ContactUsPage()
         {
             InitializeComponent();
-            BindingContext = new ContactUsViewModel();
+            BindingContext = App.GetViewModel<ContactUsViewModel>();
         }
     }
 }

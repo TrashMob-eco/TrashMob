@@ -2,8 +2,8 @@
 {
     using System;
     using System.Diagnostics;
-    using System.Threading.Tasks;
     using TrashMobMobile.Models;
+    using TrashMobMobile.Services;
     using Xamarin.Forms;
 
     [QueryProperty(nameof(ItemId), nameof(ItemId))]
@@ -12,7 +12,14 @@
         private string itemId;
         private string text;
         private string description;
+        private readonly IDataStore<Item> dataStore;
+
         public string Id { get; set; }
+
+        public ItemDetailViewModel(IDataStore<Item> dataStore)
+        {
+            this.dataStore = dataStore;
+        }
 
         public string Text
         {
@@ -43,7 +50,7 @@
         {
             try
             {
-                var item = await DataStore.GetItemAsync(itemId);
+                var item = await dataStore.GetItemAsync(itemId);
                 Id = item.Id;
                 Text = item.Text;
                 Description = item.Description;

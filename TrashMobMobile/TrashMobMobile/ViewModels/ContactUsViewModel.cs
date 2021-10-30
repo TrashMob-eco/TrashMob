@@ -2,6 +2,7 @@
 {
     using System;
     using TrashMobMobile.Models;
+    using TrashMobMobile.Services;
     using Xamarin.Forms;
 
     public class ContactUsViewModel : BaseViewModel
@@ -9,13 +10,15 @@
         private string name;
         private string email;
         private string message;
+        private readonly IContactRequestManager contactRequestManager;
 
-        public ContactUsViewModel()
+        public ContactUsViewModel(IContactRequestManager contactRequestManager)
         {
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
             PropertyChanged +=
                 (_, __) => SaveCommand.ChangeCanExecute();
+            this.contactRequestManager = contactRequestManager;
         }
 
         private bool ValidateSave()
@@ -63,7 +66,7 @@
                 Message = Message
             };
 
-            await ContactRequestManager.AddContactRequestAsync(contactRequest);
+            await contactRequestManager.AddContactRequestAsync(contactRequest);
 
             // This will pop the current page off the navigation stack
             await Shell.Current.GoToAsync("..");

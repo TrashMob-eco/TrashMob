@@ -5,19 +5,22 @@
     using System.Text;
     using System.Windows.Input;
     using TrashMobMobile.Models;
+    using TrashMobMobile.Services;
     using Xamarin.Forms;
 
     public class NewItemViewModel : BaseViewModel
     {
         private string text;
         private string description;
+        private readonly IDataStore<Item> dataStore;
 
-        public NewItemViewModel()
+        public NewItemViewModel(IDataStore<Item> dataStore)
         {
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
             this.PropertyChanged +=
                 (_, __) => SaveCommand.ChangeCanExecute();
+            this.dataStore = dataStore;
         }
 
         private bool ValidateSave()
@@ -56,7 +59,7 @@
                 Description = Description
             };
 
-            await DataStore.AddItemAsync(newItem);
+            await dataStore.AddItemAsync(newItem);
 
             // This will pop the current page off the navigation stack
             await Shell.Current.GoToAsync("..");

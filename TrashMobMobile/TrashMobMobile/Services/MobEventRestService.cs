@@ -8,7 +8,7 @@
     using System.Threading.Tasks;
     using TrashMobMobile.Models;
 
-    public class MobEventRestService : RestServiceBase
+    public class MobEventRestService : RestServiceBase, IMobEventRestService
     {
         private readonly Uri EventsApi = new Uri(TrashMobServiceUrlBase + "events");
 

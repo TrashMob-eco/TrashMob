@@ -4,11 +4,11 @@
     using System.Threading.Tasks;
     using TrashMobMobile.Models;
 
-    public class MobEventManager
+    public class MobEventManager : IMobEventManager
     {
-        private readonly MobEventRestService mobEventRestService;
+        private readonly IMobEventRestService mobEventRestService;
 
-        public MobEventManager(MobEventRestService service)
+        public MobEventManager(IMobEventRestService service)
         {
             mobEventRestService = service;
         }

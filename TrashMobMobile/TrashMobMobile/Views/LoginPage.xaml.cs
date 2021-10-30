@@ -1,10 +1,5 @@
 ﻿namespace TrashMobMobile.Views
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using TrashMobMobile.ViewModels;
     using Xamarin.Forms;
     using Xamarin.Forms.Xaml;
@@ -15,7 +10,7 @@
         public LoginPage()
         {
             InitializeComponent();
-            this.BindingContext = new LoginViewModel();
+            BindingContext = App.GetViewModel<LoginViewModel>();
         }
     }
 }

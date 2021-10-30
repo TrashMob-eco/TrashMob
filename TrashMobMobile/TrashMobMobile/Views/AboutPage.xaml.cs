@@ -1,15 +1,14 @@
 ﻿namespace TrashMobMobile.Views
 {
-    using System;
-    using System.ComponentModel;
+    using TrashMobMobile.ViewModels;
     using Xamarin.Forms;
-    using Xamarin.Forms.Xaml;
 
     public partial class AboutPage : ContentPage
     {
         public AboutPage()
         {
             InitializeComponent();
+            BindingContext = App.GetViewModel<AboutViewModel>();
         }
     }
 }

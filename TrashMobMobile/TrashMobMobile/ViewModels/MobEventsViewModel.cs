@@ -15,20 +15,21 @@ namespace TrashMobMobile.ViewModels
         public ObservableCollection<MobEvent> MobEvents { get; }
         public Command LoadMobEventsCommand { get; }
 
-        public MobEventsViewModel()
+        public MobEventsViewModel(IMobEventManager mobEventManager)
         {
             Title = "Browse events";
             MobEvents = new ObservableCollection<MobEvent>();
+            this.mobEventManager = mobEventManager;
         }
 
-        async Task ExecuteLoadItemsCommand()
+        private async Task ExecuteLoadItemsCommand()
         {
             IsBusy = true;
 
             try
             {
                 MobEvents.Clear();
-                var mobEvents = await MobEventManager.GetEventsAsync();
+                var mobEvents = await mobEventManager.GetEventsAsync();
                 foreach (var mobEvent in mobEvents)
                 {
                     MobEvents.Add(mobEvent);
@@ -45,6 +46,7 @@ namespace TrashMobMobile.ViewModels
         }
 
         private Command loadItemsCommand;
+        private readonly IMobEventManager mobEventManager;
 
         public ICommand LoadItemsCommand
         {

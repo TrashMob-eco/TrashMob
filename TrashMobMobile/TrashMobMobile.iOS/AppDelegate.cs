@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobile.iOS
 {
     using Foundation;
+    using Microsoft.Extensions.DependencyInjection;
     using UIKit;
 
     // The UIApplicationDelegate for the application. This class is responsible for launching the 
@@ -9,6 +10,10 @@
     [Register("AppDelegate")]
     public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate
     {
+        static void AddServices(IServiceCollection services)
+        {
+        }
+
         //
         // This method is invoked when the application has loaded and is ready to run. In this 
         // method you should instantiate the window, load the UI into it and then make the window
@@ -20,7 +25,7 @@
         {
             global::Xamarin.Forms.Forms.Init();
             Xamarin.FormsMaps.Init();
-            LoadApplication(new App());
+            LoadApplication(new App(AddServices));
 
             return base.FinishedLaunching(app, options);
         }

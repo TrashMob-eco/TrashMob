@@ -11,6 +11,7 @@ namespace TrashMobMobile.Droid
     using Microsoft.Identity.Client;
     using Android.Content;
     using Android;
+    using Microsoft.Extensions.DependencyInjection;
 
     [Activity(Label = "TrashMobMobile", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
@@ -23,6 +24,10 @@ namespace TrashMobMobile.Droid
             Manifest.Permission.AccessFineLocation
         };
 
+        static void AddServices(IServiceCollection services)
+        {
+        }
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
 
@@ -34,7 +39,7 @@ namespace TrashMobMobile.Droid
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             Forms.Init(this, savedInstanceState);
             Xamarin.FormsMaps.Init(this, savedInstanceState);
-            LoadApplication(new App());
+            LoadApplication(new App(AddServices));
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
