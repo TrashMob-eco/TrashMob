@@ -54,6 +54,9 @@
             EmailSender = emailSender;
             MapRepository = mapRepository;
             Logger = logger;
+
+            // Set the Api Key Here
+            EmailSender.ApiKey = Environment.GetEnvironmentVariable("SendGridApiKey");
         }
 
         public string GetEmailTemplate()
