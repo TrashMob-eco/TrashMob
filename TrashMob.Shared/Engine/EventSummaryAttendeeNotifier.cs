@@ -12,19 +12,19 @@ namespace TrashMob.Shared.Engine
     public class EventSummaryAttendeeNotifier : NotificationEngineBase, INotificationEngine
     {
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.EventSummaryAttendee;
-        
+
         protected override int NumberOfHoursInWindow => -24;
 
-        protected override string EmailSubject => "Upcoming TrashMob.eco events in your area today!";
+        protected override string EmailSubject => "Thank you for attending a TrashMob.eco event!";
 
-        public EventSummaryAttendeeNotifier(IEventRepository eventRepository, 
-                                            IUserRepository userRepository, 
-                                            IEventAttendeeRepository eventAttendeeRepository, 
+        public EventSummaryAttendeeNotifier(IEventRepository eventRepository,
+                                            IUserRepository userRepository,
+                                            IEventAttendeeRepository eventAttendeeRepository,
                                             IUserNotificationRepository userNotificationRepository,
                                             IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
                                             IEmailSender emailSender,
                                             IMapRepository mapRepository,
-                                            ILogger logger) : 
+                                            ILogger logger) :
             base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository, logger)
         {
         }
@@ -55,8 +55,16 @@ namespace TrashMob.Shared.Engine
                 // Get list of events user has attended
                 var eventsUserIsAttending = await EventAttendeeRepository.GetEventsUserIsAttending(user.Id).ConfigureAwait(false);
 
+                // For all completed events where the user was not the lead
                 foreach (var mobEvent in events.Where(e => e.CreatedByUserId != user.Id))
                 {
+                    // Did the user attend this event?
+                    if (!eventsUserIsAttending.Any(ea => ea.Id == mobEvent.Id))
+                    {
+                        continue;
+                    }
+
+                    // Has the user already received the notification for this event?
                     if (await UserHasAlreadyReceivedNotification(user, mobEvent).ConfigureAwait(false))
                     {
                         continue;
