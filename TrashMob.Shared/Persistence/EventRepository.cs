@@ -37,7 +37,7 @@
         public async Task<IEnumerable<Event>> GetCompletedEvents()
         {
             return await mobDbContext.Events
-                .Where(e => e.EventDate < DateTimeOffset.UtcNow)
+                .Where(e => e.EventDate < DateTimeOffset.UtcNow && e.EventStatusId != (int)EventStatusEnum.Canceled)
                 .AsNoTracking()
                 .ToListAsync().ConfigureAwait(false);
         }
