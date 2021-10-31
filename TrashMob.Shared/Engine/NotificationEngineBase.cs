@@ -183,26 +183,26 @@
 
             var eventGrid = new StringBuilder();
             eventGrid.AppendLine("<table>");
+            eventGrid.AppendLine("<tr>");
             eventGrid.AppendLine("<th>");
-            eventGrid.AppendLine("<td>");
-            eventGrid.AppendLine("Event Name");
-            eventGrid.AppendLine("</td>");
-            eventGrid.AppendLine("<td>");
-            eventGrid.AppendLine("Event Date");
-            eventGrid.AppendLine("</td>");
-            eventGrid.AppendLine("<td>");
-            eventGrid.AppendLine("Event Address");
-            eventGrid.AppendLine("</td>");
-            eventGrid.AppendLine("<td>");
-            eventGrid.AppendLine("Event City");
-            eventGrid.AppendLine("</td>");
-            eventGrid.AppendLine("<td>");
-            eventGrid.AppendLine("Event Region");
-            eventGrid.AppendLine("</td>");
-            eventGrid.AppendLine("<td>");
-            eventGrid.AppendLine("Event Country");
-            eventGrid.AppendLine("</td>");
+            eventGrid.AppendLine("<b>Event Name</b>");
             eventGrid.AppendLine("</th>");
+            eventGrid.AppendLine("<th>");
+            eventGrid.AppendLine("<b>Event Date</b>");
+            eventGrid.AppendLine("</th>");
+            eventGrid.AppendLine("<th>");
+            eventGrid.AppendLine("<b>Event Address</b>");
+            eventGrid.AppendLine("</th>");
+            eventGrid.AppendLine("<th>");
+            eventGrid.AppendLine("<b>Event City</b>");
+            eventGrid.AppendLine("</th>");
+            eventGrid.AppendLine("<th>");
+            eventGrid.AppendLine("<b>Event Region</b>");
+            eventGrid.AppendLine("</th>");
+            eventGrid.AppendLine("<th>");
+            eventGrid.AppendLine("<b>Event Country</b>");
+            eventGrid.AppendLine("</th>");
+            eventGrid.AppendLine("</tr>");
 
             foreach (var mobEvent in mobEvents)
             {
