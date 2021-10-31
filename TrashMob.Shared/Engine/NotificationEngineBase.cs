@@ -162,24 +162,24 @@
         {
             var localTime = await MapRepository.GetTimeForPoint(new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false);
             var populatedTemplate = template;
-            populatedTemplate.Replace("{UserName}", user.UserName);
-            populatedTemplate.Replace("{EventName}", mobEvent.Name);
-            populatedTemplate.Replace("{EventDate}", localTime ?? mobEvent.EventDate.ToString("o"));
-            populatedTemplate.Replace("{EventStreet}", mobEvent.StreetAddress);
-            populatedTemplate.Replace("{EventCity}", mobEvent.City);
-            populatedTemplate.Replace("{EventRegion}", mobEvent.Region);
-            populatedTemplate.Replace("{EventCountry}", mobEvent.Country);
+            populatedTemplate = populatedTemplate.Replace("{UserName}", user.UserName);
+            populatedTemplate = populatedTemplate.Replace("{EventName}", mobEvent.Name);
+            populatedTemplate = populatedTemplate.Replace("{EventDate}", localTime ?? mobEvent.EventDate.ToString("o"));
+            populatedTemplate = populatedTemplate.Replace("{EventStreet}", mobEvent.StreetAddress);
+            populatedTemplate = populatedTemplate.Replace("{EventCity}", mobEvent.City);
+            populatedTemplate = populatedTemplate.Replace("{EventRegion}", mobEvent.Region);
+            populatedTemplate = populatedTemplate.Replace("{EventCountry}", mobEvent.Country);
             var summaryLink = $"<a target='_blank' href='https://www.trashmob.eco/eventsummary/{mobEvent.Id}'>Event Summary</a>";
-            populatedTemplate.Replace("{EventSummaryLink}", summaryLink);
+            populatedTemplate = populatedTemplate.Replace("{EventSummaryLink}", summaryLink);
             var detailsLink = $"<a target='_blank' href='https://www.trashmob.eco/eventdetails/{mobEvent.Id}'>Event Details</a>";
-            populatedTemplate.Replace("{EventDetailsLink}", detailsLink);
+            populatedTemplate = populatedTemplate.Replace("{EventDetailsLink}", detailsLink);
             return populatedTemplate;
         }
 
         public async Task<string> PopulateTemplate(string template, User user, IEnumerable<Event> mobEvents)
         {
             var populatedTemplate = template;
-            populatedTemplate.Replace("{UserName}", user.UserName);
+            populatedTemplate = populatedTemplate.Replace("{UserName}", user.UserName);
 
             var eventGrid = new StringBuilder();
             eventGrid.AppendLine("<table>");
