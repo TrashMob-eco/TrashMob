@@ -5,6 +5,10 @@
 
     public interface IUserRestService
     {
-        Task<User> AddUser(User user);
+        Task<User> GetUserAsync(string userId);
+
+        Task<User> AddUserAsync(User user);
+
+        Task<User> UpdateUserAsync(User user);
     }
 }

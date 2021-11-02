@@ -15,6 +15,8 @@
 
         protected static IServiceProvider ServiceProvider { get; set; }
 
+        public static User CurrentUser { get; set; }
+
         public App(Action<IServiceCollection> addPlatformServices = null)
         {
             InitializeComponent();
@@ -40,6 +42,7 @@
             services.AddTransient<LoginViewModel>();
             services.AddTransient<MobEventsViewModel>();
             services.AddTransient<NewItemViewModel>();
+            services.AddTransient<UserProfileViewModel>();
 
             // Add Services
             _ = services.AddSingleton<IB2CAuthenticationService, B2CAuthenticationService>();

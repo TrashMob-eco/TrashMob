@@ -5,6 +5,10 @@
 
     public interface IUserManager
     {
+        Task<User> GetUserAsync(string userId);
+
         Task<User> AddUserAsync(User user);
+
+        Task<User> UpdateUserAsync(User user);
     }
 }

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TrashMobMobile.Views.UserProfilePage"
+             xmlns:vm="clr-namespace:TrashMobMobile.ViewModels" xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps"
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="Accent">#96d1ff</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView Orientation="Vertical">
+        <StackLayout Orientation="Vertical" Padding="30,24,30,24" Spacing="10">
+            <Label Text="UserName" FontSize="Medium"/>
+            <Entry Text="{Binding UserName, Mode=TwoWay}" FontSize="Medium" />
+            <Label Text="Given Name" FontSize="Medium"/>
+            <Entry Text="{Binding GivenName, Mode=TwoWay}" FontSize="Medium" />
+            <Label Text="Surname" FontSize="Medium"/>
+            <Entry Text="{Binding Surname, Mode=TwoWay}" FontSize="Medium" />
+            <Label Text="City" FontSize="Medium"/>
+            <Entry Text="{Binding City, Mode=TwoWay}" FontSize="Medium" />
+            <Label Text="Region" FontSize="Medium"/>
+            <Entry Text="{Binding Region, Mode=TwoWay}" FontSize="Medium" />
+            <Label Text="Country" FontSize="Medium"/>
+            <Entry Text="{Binding Country, Mode=TwoWay}" FontSize="Medium" />
+            <Label Text="Postal Code" FontSize="Medium"/>
+            <Entry Text="{Binding PostalCode, Mode=TwoWay}" FontSize="Medium" />
+            <Label Text="User Location" FontSize="Title"/>
+            <ContentView Content="{Binding Map}" HeightRequest="500"/>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

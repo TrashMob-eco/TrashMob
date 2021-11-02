@@ -45,6 +45,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\UserProfilePage.xaml.cs">
+      <DependentUpon>UserProfilePage.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\EventsMap.xaml.cs">
       <DependentUpon>EventsMap.xaml</DependentUpon>
     </Compile>

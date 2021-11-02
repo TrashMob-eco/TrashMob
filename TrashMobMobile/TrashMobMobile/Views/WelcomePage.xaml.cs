@@ -14,8 +14,6 @@
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class WelcomePage : ContentPage
     {
-        public User CurrentUser { get; set; }
-
         public WelcomePage(IUserManager userManager)
         {
             InitializeComponent();
@@ -62,22 +60,17 @@
         {
             await Navigation.PushAsync(new EventsMapPage());
         }
+
         private async void OnContactUs(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new ContactUsPage());
         }
 
-        private HttpRequestMessage GetDefaultHeaders(HttpRequestMessage httpRequestMessage)
+        private async void OnUserProfile(object sender, EventArgs e)
         {
-            httpRequestMessage.Headers.Add("Accept", "application/json, text/plain");
-            return httpRequestMessage;
+            await Navigation.PushAsync(new UserProfilePage());
         }
 
-        private static readonly JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
         private readonly IUserManager userManager;
 
         private async Task VerifyAccount(UserContext userContext)
@@ -90,7 +83,7 @@
                 Email = userContext.EmailAddress ?? ""
             };
 
-            CurrentUser = await userManager.AddUserAsync(user);
+            App.CurrentUser = await userManager.AddUserAsync(user);
         }
 
         //private async void OnCallApi(object sender, EventArgs e)
