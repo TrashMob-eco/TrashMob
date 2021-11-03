@@ -8,8 +8,8 @@ class DisplayEventSummary {
     region: string = "";
     country: string = "";
     postalCode: string = "";
-    totalAttendees: number = 0;
-    totalBags: number = 0;
+    actualNumberOfAttendees: number = 0;
+    numberOfBags: number = 0;
     durationInMinutes: number = 0;
 }
 
