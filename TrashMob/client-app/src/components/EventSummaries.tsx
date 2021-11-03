@@ -116,12 +116,12 @@ export const EventSummaries: React.FC = () => {
                             <th>Country</th>
                             <th>Postal Code</th>
                             <th>Attendees</th>
-                            <th>Total Bags</th>
+                            <th>Number of Bags</th>
                             <th>Duration in Minutes</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {events.sort((a, b) => (a.eventDate > b.eventDate) ? 1 : -1).map(mobEvent =>
+                        {events.sort((a, b) => (a.eventDate < b.eventDate) ? 1 : -1).map(mobEvent =>
                             <tr key={mobEvent.id}>
                                 <td>{mobEvent.name}</td>
                                 <td>{new Date(mobEvent.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' })}</td>
@@ -131,8 +131,8 @@ export const EventSummaries: React.FC = () => {
                                 <td>{mobEvent.region}</td>
                                 <td>{mobEvent.country}</td>
                                 <td>{mobEvent.postalCode}</td>
-                                <td>{mobEvent.totalAttendees}</td>
-                                <td>{mobEvent.totalBags}</td>
+                                <td>{mobEvent.actualNumberOfAttendees}</td>
+                                <td>{mobEvent.numberOfBags}</td>
                                 <td>{mobEvent.durationInMinutes}</td>
                             </tr>
                         )}
