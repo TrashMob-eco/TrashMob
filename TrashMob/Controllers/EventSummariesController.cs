@@ -21,12 +21,15 @@ namespace TrashMob.Controllers
     {
         private readonly IEventSummaryRepository eventSummaryRepository;
         private readonly IUserRepository userRepository;
+        private readonly IEventRepository eventRepository;
 
         public EventSummariesController(IEventSummaryRepository eventSummaryRepository,
-                                       IUserRepository userRepository)
+                                       IUserRepository userRepository,
+                                       IEventRepository eventRepository)
         {
             this.eventSummaryRepository = eventSummaryRepository;
             this.userRepository = userRepository;
+            this.eventRepository = eventRepository;
         }
 
         [HttpGet("{eventId}")]
@@ -34,6 +37,47 @@ namespace TrashMob.Controllers
         {
             var eventSummary = await eventSummaryRepository.GetEventSummary(eventId).ConfigureAwait(false);
             return Ok(eventSummary);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetEventSummaries([FromQuery] string country = "", [FromQuery] string region = "", [FromQuery] string city = "", [FromQuery] string postalCode = "")
+        {
+            // Todo make this more efficient
+            var eventSummaries = eventSummaryRepository.GetEventSummaries().ToList();
+            var displaySummaries = new List<DisplayEventSummary>();
+            foreach (var eventSummary in eventSummaries)
+            {
+                var mobEvent = await eventRepository.GetEvent(eventSummary.EventId).ConfigureAwait(false);
+
+                if (mobEvent != null)
+                {
+                    if ((string.IsNullOrWhiteSpace(country) || string.Equals(mobEvent.Country, country, StringComparison.OrdinalIgnoreCase)) &&
+                        (string.IsNullOrWhiteSpace(region) || string.Equals(mobEvent.Region, region, StringComparison.OrdinalIgnoreCase)) &&
+                        (string.IsNullOrWhiteSpace(city) || mobEvent.City.Contains(city, StringComparison.OrdinalIgnoreCase)) &&
+                        (string.IsNullOrWhiteSpace(postalCode) || mobEvent.PostalCode.Contains(postalCode, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        var displayEvent = new DisplayEventSummary()
+                        {
+                            ActualNumberOfAttendees = eventSummary.ActualNumberOfAttendees,
+                            City = mobEvent.City,
+                            Country = mobEvent.Country,
+                            DurationInMinutes = eventSummary.DurationInMinutes,
+                            EventDate = mobEvent.EventDate,
+                            EventId = mobEvent.Id,
+                            EventTypeId = mobEvent.EventTypeId,
+                            Name = mobEvent.Name,
+                            NumberOfBags = eventSummary.NumberOfBags + eventSummary.NumberOfBuckets / 3,
+                            PostalCode = mobEvent.PostalCode,
+                            Region = mobEvent.Region,
+                            StreetAddress = mobEvent.StreetAddress
+                        };
+
+                        displaySummaries.Add(displayEvent);
+                    }
+                }
+            }
+
+            return Ok(displaySummaries);
         }
 
         [HttpPut]

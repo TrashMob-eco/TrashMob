@@ -4,7 +4,6 @@ import StatsData from './Models/StatsData';
 
 export const Stats: React.FC = () => {
     const [totalBags, setTotalBags] = React.useState<number>(0);
-    const [totalBuckets, setTotalBuckets] = React.useState<number>(0);
     const [totalHours, setTotalHours] = React.useState<number>(0);
     const [totalEvents, setTotalEvents] = React.useState<number>(0);
     const [totalParticipants, setTotalParticipants] = React.useState<number>(0);
@@ -21,7 +20,6 @@ export const Stats: React.FC = () => {
             .then(response => response.json() as Promise<StatsData>)
             .then(data => {
                 setTotalBags(data.totalBags);
-                setTotalBuckets(data.totalBuckets);
                 setTotalHours(data.totalHours);
                 setTotalEvents(data.totalEvents);
                 setTotalParticipants(data.totalParticipants);
@@ -44,10 +42,6 @@ export const Stats: React.FC = () => {
                             <td>{totalBags}</td>
                         </tr>
                         <tr>
-                            <td>Total Number of Buckets Collected:</td>
-                            <td>{totalBuckets}</td>
-                        </tr>
-                        <tr>
                             <td>Total Number of Event Participants:</td>
                             <td>{totalParticipants}</td>
                         </tr>
@@ -57,7 +51,6 @@ export const Stats: React.FC = () => {
                         </tr>
                     </tbody>
                 </table>
-                <h6>1 bag = approximately 3 buckets</h6>
             </div>
         )
     }

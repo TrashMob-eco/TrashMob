@@ -22,7 +22,7 @@
 
         public IQueryable<EventSummary> GetEventSummaries()
         {
-            return mobDbContext.EventSummaries.AsQueryable();
+            return mobDbContext.EventSummaries.AsNoTracking().AsQueryable();
         }
 
         // Add new EventSummary record     
