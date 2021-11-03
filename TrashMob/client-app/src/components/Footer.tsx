@@ -15,6 +15,7 @@ export const Footer: React.FC = () => {
             <p>
                 <Link to="/privacypolicy">Privacy Policy</Link>
                 <Link to="/termsofservice">Terms of Service</Link>
+                <Link to="/eventsummaries">Event Summaries</Link>
             </p>
         </footer>
     );
