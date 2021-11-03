@@ -40,8 +40,9 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEventSummaries()
+        public async Task<IActionResult> GetEventSummaries([FromQuery] string country = "", [FromQuery] string region = "", [FromQuery] string city = "", [FromQuery] string postalCode = "")
         {
+            // Todo make this more efficient
             var eventSummaries = eventSummaryRepository.GetEventSummaries().ToList();
             var displaySummaries = new List<DisplayEventSummary>();
             foreach (var eventSummary in eventSummaries)
@@ -50,23 +51,29 @@ namespace TrashMob.Controllers
 
                 if (mobEvent != null)
                 {
-                    var displayEvent = new DisplayEventSummary()
+                    if ((string.IsNullOrWhiteSpace(country) || string.Equals(mobEvent.Country, country, StringComparison.OrdinalIgnoreCase)) &&
+                        (string.IsNullOrWhiteSpace(region) || string.Equals(mobEvent.Region, region, StringComparison.OrdinalIgnoreCase)) &&
+                        (string.IsNullOrWhiteSpace(city) || mobEvent.City.Contains(city, StringComparison.OrdinalIgnoreCase)) &&
+                        (string.IsNullOrWhiteSpace(postalCode) || mobEvent.PostalCode.Contains(postalCode, StringComparison.OrdinalIgnoreCase)))
                     {
-                        ActualNumberOfAttendees = eventSummary.ActualNumberOfAttendees,
-                        City = mobEvent.City,
-                        Country = mobEvent.Country,
-                        DurationInMinutes = eventSummary.DurationInMinutes,
-                        EventDate = mobEvent.EventDate,
-                        EventId = mobEvent.Id,
-                        EventTypeId = mobEvent.EventTypeId,
-                        Name = mobEvent.Name,
-                        NumberOfBags = eventSummary.NumberOfBags + eventSummary.NumberOfBuckets / 3,
-                        PostalCode = mobEvent.PostalCode,
-                        Region = mobEvent.Region,
-                        StreetAddress = mobEvent.StreetAddress
-                    };
+                        var displayEvent = new DisplayEventSummary()
+                        {
+                            ActualNumberOfAttendees = eventSummary.ActualNumberOfAttendees,
+                            City = mobEvent.City,
+                            Country = mobEvent.Country,
+                            DurationInMinutes = eventSummary.DurationInMinutes,
+                            EventDate = mobEvent.EventDate,
+                            EventId = mobEvent.Id,
+                            EventTypeId = mobEvent.EventTypeId,
+                            Name = mobEvent.Name,
+                            NumberOfBags = eventSummary.NumberOfBags + eventSummary.NumberOfBuckets / 3,
+                            PostalCode = mobEvent.PostalCode,
+                            Region = mobEvent.Region,
+                            StreetAddress = mobEvent.StreetAddress
+                        };
 
-                    displaySummaries.Add(displayEvent);
+                        displaySummaries.Add(displayEvent);
+                    }
                 }
             }
 
