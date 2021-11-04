@@ -23,10 +23,12 @@ namespace TrashMob.Poco
 
         public string PostalCode { get; set; }
 
-        public int NumberOfBags { get; set; }
+        public double NumberOfBags { get; set; }
 
         public int DurationInMinutes { get; set; }
 
         public int ActualNumberOfAttendees { get; set; }
+
+        public double TotalWorkHours { get; set; }
     }
 }

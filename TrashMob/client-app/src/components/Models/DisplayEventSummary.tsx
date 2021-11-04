@@ -11,6 +11,7 @@ class DisplayEventSummary {
     actualNumberOfAttendees: number = 0;
     numberOfBags: number = 0;
     durationInMinutes: number = 0;
+    totalWorkHours: number = 0;
 }
 
 export default DisplayEventSummary;

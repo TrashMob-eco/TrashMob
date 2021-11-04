@@ -118,6 +118,7 @@ export const EventSummaries: React.FC = () => {
                             <th>Attendees</th>
                             <th>Number of Bags</th>
                             <th>Duration in Minutes</th>
+                            <th>Total Work Hours</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -134,6 +135,7 @@ export const EventSummaries: React.FC = () => {
                                 <td>{mobEvent.actualNumberOfAttendees}</td>
                                 <td>{mobEvent.numberOfBags}</td>
                                 <td>{mobEvent.durationInMinutes}</td>
+                                <td>{mobEvent.totalWorkHours}</td>
                             </tr>
                         )}
                     </tbody>
