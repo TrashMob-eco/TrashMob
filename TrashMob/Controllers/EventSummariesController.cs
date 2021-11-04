@@ -66,10 +66,11 @@ namespace TrashMob.Controllers
                             EventId = mobEvent.Id,
                             EventTypeId = mobEvent.EventTypeId,
                             Name = mobEvent.Name,
-                            NumberOfBags = eventSummary.NumberOfBags + eventSummary.NumberOfBuckets / 3,
+                            NumberOfBags = eventSummary.NumberOfBags + eventSummary.NumberOfBuckets / 3.0,
                             PostalCode = mobEvent.PostalCode,
                             Region = mobEvent.Region,
-                            StreetAddress = mobEvent.StreetAddress
+                            StreetAddress = mobEvent.StreetAddress,
+                            TotalWorkHours = eventSummary.ActualNumberOfAttendees * eventSummary.DurationInMinutes / 60.0
                         };
 
                         displaySummaries.Add(displayEvent);
