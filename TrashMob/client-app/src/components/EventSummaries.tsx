@@ -133,9 +133,9 @@ export const EventSummaries: React.FC = () => {
                                 <td>{mobEvent.country}</td>
                                 <td>{mobEvent.postalCode}</td>
                                 <td>{mobEvent.actualNumberOfAttendees}</td>
-                                <td>{mobEvent.numberOfBags}</td>
+                                <td>{Math.round(mobEvent.numberOfBags * 100) / 100}</td>
                                 <td>{mobEvent.durationInMinutes}</td>
-                                <td>{mobEvent.totalWorkHours}</td>
+                                <td>{Math.round(mobEvent.totalWorkHours * 100) / 100}</td>
                             </tr>
                         )}
                     </tbody>
