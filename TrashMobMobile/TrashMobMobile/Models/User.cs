@@ -14,7 +14,7 @@
 
         public string GivenName { get; set; }
 
-        public string SurName { get; set; }
+        public string Surname { get; set; }
 
         public string City { get; set; }
 

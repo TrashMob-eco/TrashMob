@@ -13,22 +13,44 @@
 
     <ScrollView Orientation="Vertical">
         <StackLayout Orientation="Vertical" Padding="30,24,30,24" Spacing="10">
-            <Label Text="UserName" FontSize="Medium"/>
-            <Entry Text="{Binding UserName, Mode=TwoWay}" FontSize="Medium" />
-            <Label Text="Given Name" FontSize="Medium"/>
-            <Entry Text="{Binding GivenName, Mode=TwoWay}" FontSize="Medium" />
-            <Label Text="Surname" FontSize="Medium"/>
-            <Entry Text="{Binding Surname, Mode=TwoWay}" FontSize="Medium" />
-            <Label Text="City" FontSize="Medium"/>
-            <Entry Text="{Binding City, Mode=TwoWay}" FontSize="Medium" />
-            <Label Text="Region" FontSize="Medium"/>
-            <Entry Text="{Binding Region, Mode=TwoWay}" FontSize="Medium" />
-            <Label Text="Country" FontSize="Medium"/>
-            <Entry Text="{Binding Country, Mode=TwoWay}" FontSize="Medium" />
-            <Label Text="Postal Code" FontSize="Medium"/>
-            <Entry Text="{Binding PostalCode, Mode=TwoWay}" FontSize="Medium" />
+            <Label Text="UserName" FontSize="Small"/>
+            <Entry Text="{Binding UserName, Mode=TwoWay}" FontSize="Small" />
+            <Label Text="Given Name" FontSize="Small"/>
+            <Entry Text="{Binding GivenName, Mode=TwoWay}" FontSize="Small" />
+            <Label Text="Surname" FontSize="Small"/>
+            <Entry Text="{Binding Surname, Mode=TwoWay}" FontSize="Small" />
+            <Label Text="Email" FontSize="Small"/>
+            <Entry Text="{Binding Email, Mode=TwoWay}" FontSize="Small" />
+            <Label Text="City" FontSize="Small"/>
+            <Entry Text="{Binding City, Mode=TwoWay}" FontSize="Small" />
+            <Label Text="Region" FontSize="Small"/>
+            <Entry Text="{Binding Region, Mode=TwoWay}" FontSize="Small" />
+            <Label Text="Country" FontSize="Small"/>
+            <Entry Text="{Binding Country, Mode=TwoWay}" FontSize="Small" />
+            <Label Text="Postal Code" FontSize="Small"/>
+            <Entry Text="{Binding PostalCode, Mode=TwoWay}" FontSize="Small" />
+            <Label Text="Prefers Metric" FontSize="Small"/>
+            <CheckBox IsChecked="{Binding PrefersMetric, Mode=TwoWay}" />
+            <Label Text="Travel Limits for Local Events" FontSize="Small"/>
+            <Entry Text="{Binding TravelLimitsForLocalEvents, Mode=TwoWay}" FontSize="Small" />
+            <Label Text="Opt out of All Emails" FontSize="Small"/>
+            <CheckBox IsChecked="{Binding IsOptedOutOfAllEmails, Mode=TwoWay}" />
             <Label Text="User Location" FontSize="Title"/>
             <ContentView Content="{Binding Map}" HeightRequest="500"/>
+            <Label Text="Member Since" FontSize="Micro"/>
+            <Label Text="{Binding MemberSince}" FontSize="Micro" />
+            <Label Text="Date Agreed To Terms Of Service" FontSize="Micro"/>
+            <Label Text="{Binding DateAgreedToTermsOfService}" FontSize="Micro"/>
+            <Label Text="Terms Of Service Version" FontSize="Micro"/>
+            <Label Text="{Binding TermsOfServiceVersion}" FontSize="Micro" />
+            <Label Text="Date Agreed To Privacy Policy" FontSize="Micro"/>
+            <Label Text="{Binding DateAgreedToPrivacyPolicy}" FontSize="Micro" />
+            <Label Text="Privacy Policy Version" FontSize="Micro"/>
+            <Label Text="{Binding PrivacyPolicyVersion}" FontSize="Micro" />
+            <Label Text="Name Identifier" FontSize="Micro"/>
+            <Label Text="{Binding NameIdentifier}" FontSize="Micro" />
+            <Label Text="Source System UserName" FontSize="Micro"/>
+            <Label Text="{Binding SourceSystemUserName}" FontSize="Micro" />
         </StackLayout>
     </ScrollView>
 </ContentPage>

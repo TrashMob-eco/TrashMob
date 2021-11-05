@@ -1,5 +1,6 @@
 ﻿namespace TrashMobMobile.ViewModels
 {
+    using System;
     using System.Collections.ObjectModel;
     using TrashMobMobile.Models;
     using TrashMobMobile.Services;
@@ -8,16 +9,27 @@
 
     public class UserProfileViewModel : BaseViewModel
     {
-        private string id;
+        private string nameIdentifier;
         private string userName;
+        private string sourceSystemUserName;
         private string givenName;
         private string surname;
+        private string email;
         private string city;
         private string region;
         private string country;
         private string postalCode;
+        private DateTimeOffset dateAgreedToPrivacyPolicy;
+        private DateTimeOffset dateAgreedToTermsOfService;
+        private string privacyPolicyVersion;
+        private string termsOfServiceVersion;
+        private DateTimeOffset memberSince;
         private double latitude;
         private double longitude;
+        private bool prefersMetric;
+        private bool isOptedOutOfAllEmails;
+        private int travelLimitForLocalEvents;
+        private bool isSiteAdmin = false;
         private readonly IUserManager userManager;
         private Position center;
 
@@ -34,18 +46,29 @@
 
         private void LoadUser()
         {
-            id = App.CurrentUser.Id;
             var user = App.CurrentUser;
 
             UserName = user.UserName;
             GivenName = user.GivenName;
-            Surname = user.SurName;
+            Surname = user.Surname;
             City = user.City;
             Region = user.Region;
             Country = user.Country;
             PostalCode = user.PostalCode;
             Latitude = user.Latitude;
             Longitude = user.Longitude;
+            NameIdentifier = user.NameIdentifier;
+            SourceSystemUserName = user.SourceSystemUserName;
+            Email = user.Email;
+            DateAgreedToPrivacyPolicy = user.DateAgreedToPrivacyPolicy;
+            PrivacyPolicyVersion = user.PrivacyPolicyVersion;
+            DateAgreedToTermsOfService = user.DateAgreedToTermsOfService;
+            TermsOfServiceVersion = user.TermsOfServiceVersion;
+            MemberSince = user.MemberSince;
+            PrefersMetric = user.PrefersMetric;
+            IsOptedOutOfAllEmails = user.IsOptedOutOfAllEmails;
+            TravelLimitForLocalEvents = user.TravelLimitForLocalEvents;
+            IsSiteAdmin = user.IsSiteAdmin;
 
             var pin = new Pin
             {
@@ -71,10 +94,28 @@
 
         public Map Map { get; private set; }
 
+        public string NameIdentifier
+        {
+            get => nameIdentifier;
+            set => SetProperty(ref nameIdentifier, value);
+        }
+
         public string UserName
         {
             get => userName;
             set => SetProperty(ref userName, value);
+        }
+
+        public string SourceSystemUserName
+        {
+            get => sourceSystemUserName;
+            set => SetProperty(ref sourceSystemUserName, value);
+        }
+
+        public string Email
+        {
+            get => email;
+            set => SetProperty(ref email, value);
         }
 
         public string GivenName
@@ -125,6 +166,60 @@
             set => SetProperty(ref longitude, value);
         }
 
+        public DateTimeOffset DateAgreedToPrivacyPolicy
+        {
+            get => dateAgreedToPrivacyPolicy;
+            set => SetProperty(ref dateAgreedToPrivacyPolicy, value);
+        }
+
+        public DateTimeOffset DateAgreedToTermsOfService
+        {
+            get => dateAgreedToTermsOfService;
+            set => SetProperty(ref dateAgreedToTermsOfService, value);
+        }
+
+        public string PrivacyPolicyVersion
+        {
+            get => privacyPolicyVersion;
+            set => SetProperty(ref privacyPolicyVersion, value);
+        }
+
+        public string TermsOfServiceVersion
+        {
+            get => termsOfServiceVersion;
+            set => SetProperty(ref termsOfServiceVersion, value);
+        }
+
+        public DateTimeOffset MemberSince
+        {
+            get => memberSince;
+            set => SetProperty(ref memberSince, value);
+        }
+
+        public int TravelLimitForLocalEvents
+        {
+            get => travelLimitForLocalEvents;
+            set => SetProperty(ref travelLimitForLocalEvents, value);
+        }
+
+        public bool PrefersMetric
+        {
+            get => prefersMetric;
+            set => SetProperty(ref prefersMetric, value);
+        }
+
+        public bool IsOptedOutOfAllEmails
+        {
+            get => isOptedOutOfAllEmails;
+            set => SetProperty(ref isOptedOutOfAllEmails, value);
+        }
+
+        public bool IsSiteAdmin
+        {
+            get => isSiteAdmin;
+            set => SetProperty(ref isSiteAdmin, value);
+        }
+
         public Position Center
         {
             get => center;
@@ -145,15 +240,27 @@
         {
             User user = new User()
             {
-                Id = id,
                 UserName = UserName,
                 GivenName = GivenName,
+                Surname = Surname,
                 City = City,
                 Region = Region,
                 Country = Country,
                 PostalCode = PostalCode,
                 Latitude = Latitude,
                 Longitude = Longitude,
+                NameIdentifier = NameIdentifier,
+                SourceSystemUserName = SourceSystemUserName,
+                Email = Email,
+                DateAgreedToPrivacyPolicy = DateAgreedToPrivacyPolicy,
+                PrivacyPolicyVersion = PrivacyPolicyVersion,
+                DateAgreedToTermsOfService = DateAgreedToTermsOfService,
+                TermsOfServiceVersion = TermsOfServiceVersion,
+                MemberSince = MemberSince,
+                PrefersMetric = PrefersMetric,
+                IsOptedOutOfAllEmails = IsOptedOutOfAllEmails,
+                TravelLimitForLocalEvents = TravelLimitForLocalEvents,
+                IsSiteAdmin = IsSiteAdmin,
             };
 
             await userManager.UpdateUserAsync(user);
