@@ -11,7 +11,7 @@
 
     public partial class App : Application
     {
-        public static string ApiEndpoint = "https://www.trashmob.eco/api/";
+        public static string ApiEndpoint = "https://as-tm-dev-westus2.azurewebsites.net/api/";
 
         protected static IServiceProvider ServiceProvider { get; set; }
 

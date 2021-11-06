@@ -1,7 +1,6 @@
 ﻿namespace TrashMobMobile.ViewModels
 {
     using System;
-    using System.Collections.ObjectModel;
     using TrashMobMobile.Models;
     using TrashMobMobile.Services;
     using Xamarin.Forms;
@@ -55,8 +54,17 @@
             Region = user.Region;
             Country = user.Country;
             PostalCode = user.PostalCode;
-            Latitude = user.Latitude;
-            Longitude = user.Longitude;
+
+            if (user.Latitude.HasValue)
+            {
+                Latitude = user.Latitude.Value;
+            }
+
+            if (user.Longitude.HasValue)
+            {
+                Longitude = user.Longitude.Value;
+            }
+
             NameIdentifier = user.NameIdentifier;
             SourceSystemUserName = user.SourceSystemUserName;
             Email = user.Email;
@@ -70,21 +78,13 @@
             TravelLimitForLocalEvents = user.TravelLimitForLocalEvents;
             IsSiteAdmin = user.IsSiteAdmin;
 
-            var pin = new Pin
-            {
-                Address = user.City + ", " + user.Region,
-                Label = "User's Base Location",
-                Type = PinType.Place,
-                Position = new Position(user.Latitude, user.Longitude)
-            };
+            Map = new Map();
+            Map.MapClicked += Map_MapClicked;
 
-            var mapSpan = new MapSpan(pin.Position, 0.01, 0.01);
-            Map = new Map(mapSpan)
+            if (user.Latitude.HasValue && user.Longitude.HasValue)
             {
-                MinimumHeightRequest = 500
-            };
-
-            Map.Pins.Add(pin);
+                SetUserPin(user.Region, user.City, user.Latitude.Value, user.Longitude.Value);
+            }
         }
 
         private bool ValidateSave()
@@ -229,6 +229,42 @@
         public Command SaveCommand { get; }
 
         public Command CancelCommand { get; }
+
+        private void SetUserPin(string region, string city, double latitude, double longitude)
+        {
+            var pin = new Pin
+            {
+                Address = city + ", " + region,
+                Label = "User's Base Location",
+                Type = PinType.Place,
+                Position = new Position(latitude, longitude)
+            };
+
+            var mapSpan = new MapSpan(pin.Position, 0.01, 0.01);
+
+            Map.MoveToRegion(mapSpan);
+
+            Map.Pins.Add(pin);
+        }
+
+        private void Map_MapClicked(object sender, MapClickedEventArgs e)
+        {
+            if (e != null)
+            {
+                var position = e.Position;
+                Latitude = position.Latitude;
+                Longitude = position.Longitude;
+
+                if (Map.Pins.Count > 0)
+                {
+                    Map.Pins[0].Position = new Position(position.Latitude, position.Longitude);
+                }
+                else
+                {
+                    SetUserPin(Region, City, position.Latitude, position.Longitude);
+                }
+            }
+        }
 
         private async void OnCancel()
         {
