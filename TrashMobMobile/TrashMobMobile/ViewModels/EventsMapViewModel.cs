@@ -1,17 +1,47 @@
 ﻿namespace TrashMobMobile.ViewModels
 {
-    using System.Windows.Input;
-    using Xamarin.Essentials;
+    using System.Threading.Tasks;
+    using TrashMobMobile.Services;
     using Xamarin.Forms;
+    using Xamarin.Forms.Maps;
 
     public class EventsMapViewModel : BaseViewModel
     {
-        public EventsMapViewModel()
+        private readonly IMobEventManager mobEventManager;
+        public Command ReloadEventsCommand { get; }
+
+        public EventsMapViewModel(IMobEventManager mobEventManager)
         {
             Title = "Events Map";
-            OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://aka.ms/xamarin-quickstart"));
+            this.mobEventManager = mobEventManager;
+            Map = new Map();
+            ReloadEventsCommand = new Command(OnReloadEvents);
+            Task.Run(async () => await LoadEvents());
         }
 
-        public ICommand OpenWebCommand { get; }
+        private async void OnReloadEvents()
+        {
+            await LoadEvents();
+        }
+
+        private async Task LoadEvents()
+        {
+            var events = await mobEventManager.GetEventsAsync();
+
+            foreach (var mobEvent in events)
+            {
+                var pin = new Pin
+                {
+                    Address = mobEvent.City + ", " + mobEvent.Region,
+                    Label = mobEvent.Name,
+                    Type = PinType.Place,
+                    Position = new Position(mobEvent.Latitude, mobEvent.Longitude)
+                };
+
+                Map.Pins.Add(pin);
+            }
+        }
+
+        public Map Map { get; private set; }
     }
 }

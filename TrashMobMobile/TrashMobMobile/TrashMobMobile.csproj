@@ -48,8 +48,8 @@
     <Compile Update="Views\UserProfilePage.xaml.cs">
       <DependentUpon>UserProfilePage.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\EventsMap.xaml.cs">
-      <DependentUpon>EventsMap.xaml</DependentUpon>
+    <Compile Update="Views\EventsMapPage.xaml.cs">
+      <DependentUpon>EventsMapPage.xaml</DependentUpon>
     </Compile>
     <Compile Update="Views\ContactUsPage.xaml.cs">
       <DependentUpon>ContactUsPage.xaml</DependentUpon>

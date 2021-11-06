@@ -11,7 +11,7 @@
 
         protected JsonSerializerOptions SerializerOptions { get; private set; }
 
-        protected const string TrashMobServiceUrlBase = "https://www.trashmob.eco/api/";
+        protected const string TrashMobServiceUrlBase = "https://as-tm-dev-westus2.azurewebsites.net/api/";
 
         protected RestServiceBase()
         {

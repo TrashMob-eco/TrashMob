@@ -10,7 +10,7 @@
 
     public class MobEventRestService : RestServiceBase, IMobEventRestService
     {
-        private readonly Uri EventsApi = new Uri(TrashMobServiceUrlBase + "events");
+        private readonly string EventsApi = TrashMobServiceUrlBase + "events";
 
         public List<MobEvent> MobEvents { get; private set; }
 
@@ -20,7 +20,17 @@
 
             try
             {
-                HttpResponseMessage response = await Client.GetAsync(EventsApi);
+                var userContext = await GetUserContext().ConfigureAwait(false);
+
+                var httpRequestMessage = new HttpRequestMessage();
+                httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
+
+                httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
+                httpRequestMessage.Method = HttpMethod.Get;
+                httpRequestMessage.RequestUri = new Uri(EventsApi);
+
+                HttpClient client = new HttpClient();
+                HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
 
                 if (response.IsSuccessStatusCode)
                 {
