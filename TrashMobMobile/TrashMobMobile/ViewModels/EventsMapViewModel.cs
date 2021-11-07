@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobile.ViewModels
 {
     using System.Threading.Tasks;
+    using TrashMobMobile.Controls;
     using TrashMobMobile.Services;
     using Xamarin.Forms;
     using Xamarin.Forms.Maps;
@@ -9,12 +10,13 @@
     {
         private readonly IMobEventManager mobEventManager;
         public Command ReloadEventsCommand { get; }
+        public EventMap Map { get; private set; }
 
         public EventsMapViewModel(IMobEventManager mobEventManager)
         {
             Title = "Events Map";
             this.mobEventManager = mobEventManager;
-            Map = new Map();
+            Map = new EventMap();
             ReloadEventsCommand = new Command(OnReloadEvents);
             Task.Run(async () => await LoadEvents());
         }
@@ -30,18 +32,17 @@
 
             foreach (var mobEvent in events)
             {
-                var pin = new Pin
+                var pin = new EventPin
                 {
+                    EventId = mobEvent.Id,
                     Address = mobEvent.City + ", " + mobEvent.Region,
                     Label = mobEvent.Name,
                     Type = PinType.Place,
                     Position = new Position(mobEvent.Latitude, mobEvent.Longitude)
                 };
 
-                Map.Pins.Add(pin);
+                Map.EventPins.Add(pin);
             }
         }
-
-        public Map Map { get; private set; }
     }
 }

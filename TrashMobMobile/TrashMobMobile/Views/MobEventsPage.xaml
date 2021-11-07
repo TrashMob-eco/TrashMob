@@ -5,7 +5,7 @@
              Title="{Binding Title}"
              xmlns:local="clr-namespace:TrashMobMobile.ViewModels"  
              xmlns:model="clr-namespace:TrashMobMobile.Models"  >
-    <RefreshView x:DataType="local:MobEventsViewModel" Command="{Binding LoadItemsCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+    <RefreshView x:DataType="local:MobEventsViewModel" Command="{Binding ReloadEventsCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
         <CollectionView x:Name="MobEventsListView"
                 ItemsSource="{Binding MobEvents}"
                 SelectionMode="None">

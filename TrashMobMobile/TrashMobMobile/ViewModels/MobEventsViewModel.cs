@@ -1,68 +1,42 @@
 ﻿
 namespace TrashMobMobile.ViewModels
 {
-    using System;
     using System.Collections.ObjectModel;
-    using System.Diagnostics;
     using System.Threading.Tasks;
-    using System.Windows.Input;
     using Xamarin.Forms;
     using TrashMobMobile.Models;
     using TrashMobMobile.Services;
 
     internal class MobEventsViewModel : BaseViewModel
     {
+        private readonly IMobEventManager mobEventManager;
+
         public ObservableCollection<MobEvent> MobEvents { get; }
-        public Command LoadMobEventsCommand { get; }
+        
+        public Command ReloadEventsCommand { get; }
 
         public MobEventsViewModel(IMobEventManager mobEventManager)
         {
             Title = "Browse events";
             MobEvents = new ObservableCollection<MobEvent>();
             this.mobEventManager = mobEventManager;
+            ReloadEventsCommand = new Command(OnReloadEvents);
+            Task.Run(async () => await LoadEvents());
         }
 
-        private async Task ExecuteLoadItemsCommand()
+        private async void OnReloadEvents()
         {
-            IsBusy = true;
-
-            try
-            {
-                MobEvents.Clear();
-                var mobEvents = await mobEventManager.GetEventsAsync();
-                foreach (var mobEvent in mobEvents)
-                {
-                    MobEvents.Add(mobEvent);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            await LoadEvents();
         }
 
-        private Command loadItemsCommand;
-        private readonly IMobEventManager mobEventManager;
-
-        public ICommand LoadItemsCommand
+        private async Task LoadEvents()
         {
-            get
+            MobEvents.Clear();
+            var mobEvents = await mobEventManager.GetEventsAsync();
+            foreach (var mobEvent in mobEvents)
             {
-                if (loadItemsCommand == null)
-                {
-                    loadItemsCommand = new Command(LoadItems);
-                }
-
-                return loadItemsCommand;
+                MobEvents.Add(mobEvent);
             }
-        }
-
-        private void LoadItems()
-        {
         }
     }
 }
