@@ -1,5 +1,6 @@
 ﻿namespace TrashMobMobile.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using TrashMobMobile.Models;
@@ -13,9 +14,19 @@
             mobEventRestService = service;
         }
 
-        public Task<List<MobEvent>> GetEventsAsync()
+        public Task<IEnumerable<MobEvent>> GetEventsAsync()
         {
-            return mobEventRestService.RefreshMobEventsAsync();
+            return mobEventRestService.GetEventsAsync();
+        }
+
+        public Task<MobEvent> GetEventAsync(Guid eventId)
+        {
+            return mobEventRestService.GetEventAsync(eventId);
+        }
+
+        public Task<MobEvent> UpdateEventAsync(MobEvent mobEvent)
+        {
+            return mobEventRestService.UpdateEventAsync(mobEvent);
         }
     }
 }

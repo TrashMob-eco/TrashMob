@@ -82,9 +82,6 @@
     <FlyoutItem Title="About" Icon="icon_about.png">
         <ShellContent Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
     </FlyoutItem>
-    <FlyoutItem Title="Browse" Icon="icon_feed.png">
-        <ShellContent Route="ItemsPage" ContentTemplate="{DataTemplate local:ItemsPage}" />
-    </FlyoutItem>
     <FlyoutItem Title="MobEbents" Icon="icon_feed.png">
         <ShellContent Route="MobEventsPage" ContentTemplate="{DataTemplate local:MobEventsPage}" />
     </FlyoutItem>

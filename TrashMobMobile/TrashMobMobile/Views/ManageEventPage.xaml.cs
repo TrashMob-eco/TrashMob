@@ -3,12 +3,12 @@
     using TrashMobMobile.ViewModels;
     using Xamarin.Forms;
 
-    public partial class ItemDetailPage : ContentPage
+    public partial class ManageEventPage : ContentPage
     {
-        public ItemDetailPage()
+        public ManageEventPage()
         {
             InitializeComponent();
-            BindingContext = App.GetViewModel<ItemDetailViewModel>();
+            BindingContext = App.GetViewModel<EventDetailViewModel>();
         }
     }
 }

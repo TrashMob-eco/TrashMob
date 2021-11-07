@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TrashMobMobile.Models
+﻿namespace TrashMobMobile.Models
 {
+    using System;
+
     public class MobEvent
     {
         public Guid Id { get; set; }

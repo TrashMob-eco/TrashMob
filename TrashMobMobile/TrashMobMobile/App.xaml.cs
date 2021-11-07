@@ -38,12 +38,11 @@
             // Add View Models
             services.AddTransient<AboutViewModel>();
             services.AddTransient<ContactUsViewModel>();
+            services.AddTransient<EventDetailViewModel>();
             services.AddTransient<EventsMapViewModel>();
-            services.AddTransient<ItemDetailViewModel>();
-            services.AddTransient<ItemsViewModel>();
             services.AddTransient<LoginViewModel>();
             services.AddTransient<MobEventsViewModel>();
-            services.AddTransient<NewItemViewModel>();
+            services.AddTransient<TermsAndConditionsViewModel>();
             services.AddTransient<UserProfileViewModel>();
 
             // Add Services
