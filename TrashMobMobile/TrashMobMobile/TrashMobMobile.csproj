@@ -45,6 +45,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\TermsAndConditionsPage.xaml.cs">
+      <DependentUpon>TermsAndConditionsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\UserProfilePage.xaml.cs">
       <DependentUpon>UserProfilePage.xaml</DependentUpon>
     </Compile>

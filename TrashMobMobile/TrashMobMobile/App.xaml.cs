@@ -12,6 +12,8 @@
     public partial class App : Application
     {
         public static string ApiEndpoint = "https://as-tm-dev-westus2.azurewebsites.net/api/";
+        public static string CurrentTermsOfServiceVersion = "0.3";
+        public static string CurrentPrivacyPolicyVersion = "0.3";
 
         protected static IServiceProvider ServiceProvider { get; set; }
 
