@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TrashMobMobile.Views.WelcomePage"
-             BackgroundImage="welcome_background.png">
+             x:Class="TrashMobMobile.Views.WelcomePage">
 
     <ContentPage.Resources>
         <StyleSheet Source="/Assets/welcome.css" />
@@ -11,17 +10,8 @@
     <ContentPage.Content>
         <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
             <StackLayout Orientation="Vertical" HorizontalOptions="Center" VerticalOptions="CenterAndExpand">
-                <StackLayout Orientation="Horizontal">
-                    <Label Text="Name: " FontAttributes="Bold" />
-                    <Label FontAttributes="Bold" x:Name="lblName" />
-                </StackLayout>
+                <Image Source="TME_BusinessCard_front.png" />
                 <Button x:Name="btnSignInSignOut" Text="Sign in" Clicked="OnSignInSignOut" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
-                <Button x:Name="btnViewEventsMap" Text="Events Map" Clicked="OnViewEventsMap" StyleClass="needHelpButton" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
-                <Button x:Name="btnContactUs" Text="Contact Us" Clicked="OnContactUs" StyleClass="needHelpButton" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
-                <Button x:Name="btnUserProfile" Text="User Profile" Clicked="OnUserProfile" StyleClass="needHelpButton" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
-            </StackLayout>
-            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" VerticalOptions="End">
-                <Button Text="Need help?" StyleClass="needHelpButton"/>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>

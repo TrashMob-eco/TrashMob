@@ -24,8 +24,16 @@
             InitializeComponent();
 
             SetupServices(addPlatformServices);
+            var isLoggedIn = Xamarin.Essentials.SecureStorage.GetAsync("isLogged").Result;
 
-            MainPage = new NavigationPage(new WelcomePage(ServiceProvider.GetService<IUserManager>()));
+            if (isLoggedIn == "1")
+            {
+                MainPage = new AppShell();
+            }
+            else
+            {
+                MainPage = new WelcomePage(ServiceProvider.GetService<IUserManager>());
+            }
         }
 
         void SetupServices(Action<IServiceCollection> addPlatformServices = null)
@@ -40,7 +48,6 @@
             services.AddTransient<ContactUsViewModel>();
             services.AddTransient<EventDetailViewModel>();
             services.AddTransient<EventsMapViewModel>();
-            services.AddTransient<LoginViewModel>();
             services.AddTransient<MobEventsViewModel>();
             services.AddTransient<TermsAndConditionsViewModel>();
             services.AddTransient<UserProfileViewModel>();

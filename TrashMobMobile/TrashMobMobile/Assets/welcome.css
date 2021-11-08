@@ -12,12 +12,12 @@
     margin: 20;
 }
 
-.needHelpButton {
+.contactUsButton {
     width: 100;
     height: 40;
     font-style: normal;
     font-size: 12;
-    color: #FFFFFF;
+    color: #000000;
     background: transparent;
     margin: 10;
 }

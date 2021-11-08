@@ -6,10 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\TME_BusinessCard_front.png" />
     <None Remove="Resources\welcome_background.PNG" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\TME_BusinessCard_front.png" />
     <EmbeddedResource Include="Resources\welcome_background.png" />
   </ItemGroup>
 
@@ -45,6 +47,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Themes\LightTheme.xaml.cs">
+      <DependentUpon>LightTheme.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\ManageEventPage.xaml.cs">
       <DependentUpon>ManageEventPage.xaml</DependentUpon>
     </Compile>
