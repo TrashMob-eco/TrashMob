@@ -7,12 +7,10 @@
 
   <ItemGroup>
     <None Remove="Resources\TME_BusinessCard_front.png" />
-    <None Remove="Resources\welcome_background.PNG" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\TME_BusinessCard_front.png" />
-    <EmbeddedResource Include="Resources\welcome_background.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,13 +29,9 @@
     <EmbeddedResource Update="Views\MobEventsPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Views\WelcomePage.xaml">
+    <EmbeddedResource Update="Views\LoginPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Assets\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -68,8 +62,8 @@
     <Compile Update="Views\ContactUsPage.xaml.cs">
       <DependentUpon>ContactUsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\WelcomePage.xaml.cs">
-      <DependentUpon>WelcomePage.xaml</DependentUpon>
+    <Compile Update="Views\LoginPage.xaml.cs">
+      <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

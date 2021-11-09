@@ -91,8 +91,8 @@
         </Tab>
     </TabBar>
 
-    <ShellItem Route="Welcome">
-        <ShellContent ContentTemplate="{DataTemplate local:WelcomePage}" />
+    <ShellItem Route="Login">
+        <ShellContent ContentTemplate="{DataTemplate local:LoginPage}" />
     </ShellItem>
     
     <!--<FlyoutItem Title="About" Icon="icon_about.png">

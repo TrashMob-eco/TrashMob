@@ -2,8 +2,6 @@
 {
     using Microsoft.Identity.Client;
     using System;
-    using System.Net.Http;
-    using System.Text.Json;
     using System.Threading.Tasks;
     using TrashMobMobile.Features.LogOn;
     using TrashMobMobile.Models;
@@ -12,9 +10,9 @@
     using Xamarin.Forms.Xaml;
 
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class WelcomePage : ContentPage
+    public partial class LoginPage : ContentPage
     {
-        public WelcomePage(IUserManager userManager)
+        public LoginPage(IUserManager userManager)
         {
             InitializeComponent();
             this.userManager = userManager;
@@ -31,6 +29,17 @@
                     await VerifyAccount(userContext);
                     UpdateSignInState(userContext);
                     await Xamarin.Essentials.SecureStorage.SetAsync("isLogged", "1");
+
+                    var isPrivacyPolicyOutOfDate = App.CurrentUser.DateAgreedToPrivacyPolicy == null || App.CurrentUser.DateAgreedToPrivacyPolicy.Value < Constants.PrivacyPolicyDate;
+                    var isTermsOfServiceOutOfDate = App.CurrentUser.DateAgreedToTermsOfService == null || App.CurrentUser.DateAgreedToTermsOfService.Value < Constants.TermsOfServiceDate;
+
+                    if (isPrivacyPolicyOutOfDate || isTermsOfServiceOutOfDate || string.IsNullOrWhiteSpace(App.CurrentUser.TermsOfServiceVersion) || string.IsNullOrWhiteSpace(App.CurrentUser.PrivacyPolicyVersion))
+                    {
+                        // Redirect to Terms of Service Page
+                        var termsPage = new TermsAndConditionsPage();
+                        await Navigation.PushModalAsync(termsPage);
+                    }
+
                     Application.Current.MainPage = new AppShell();
                     await Shell.Current.GoToAsync("//main");
                 }
@@ -79,42 +88,6 @@
             App.CurrentUser = await userManager.AddUserAsync(user);
         }
 
-        //private async void OnEditProfile(object sender, EventArgs e)
-        //{
-        //    try
-        //    {
-        //        var userContext = await B2CAuthenticationService.Instance.EditProfileAsync();
-        //        UpdateSignInState(userContext);
-        //        UpdateUserInfo(userContext);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Alert if any exception excluding user canceling sign-in dialog
-        //        if ((ex as MsalException)?.ErrorCode != "authentication_canceled")
-        //        {
-        //            await DisplayAlert($"Exception:", ex.ToString(), "Dismiss");
-        //        }
-        //    }
-        //}
-
-        //private async void OnResetPassword(object sender, EventArgs e)
-        //{
-        //    try
-        //    {
-        //        var userContext = await B2CAuthenticationService.Instance.ResetPasswordAsync();
-        //        UpdateSignInState(userContext);
-        //        UpdateUserInfo(userContext);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Alert if any exception excluding user canceling sign-in dialog
-        //        if ((ex as MsalException)?.ErrorCode != "authentication_canceled")
-        //        {
-        //            await DisplayAlert($"Exception:", ex.ToString(), "Dismiss");
-        //        }
-        //    }
-        //}
-
         private async void OnPasswordReset()
         {
             try
@@ -136,10 +109,6 @@
         {
             var isSignedIn = userContext.IsLoggedOn;
             btnSignInSignOut.Text = isSignedIn ? "Sign out" : "Sign in";
-            //btnEditProfile.IsVisible = isSignedIn;
-            //btnCallApi.IsVisible = isSignedIn;
-            //slUser.IsVisible = isSignedIn;
-            //lblApi.Text = "";
         }
     }
 }

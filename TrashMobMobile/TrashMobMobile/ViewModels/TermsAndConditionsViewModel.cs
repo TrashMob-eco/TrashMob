@@ -50,8 +50,8 @@
         {
             var user = App.CurrentUser;
 
-            user.TermsOfServiceVersion = App.CurrentTermsOfServiceVersion;
-            user.PrivacyPolicyVersion = App.CurrentPrivacyPolicyVersion;
+            user.TermsOfServiceVersion = Constants.TermsOfServiceVersion;
+            user.PrivacyPolicyVersion = Constants.PrivacyPolicyVersion;
             user.DateAgreedToPrivacyPolicy = DateTimeOffset.UtcNow;
             user.DateAgreedToTermsOfService = DateTimeOffset.UtcNow;
 

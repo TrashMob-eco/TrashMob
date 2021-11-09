@@ -26,15 +26,15 @@
 
         public string Email { get; set; }
 
-        public DateTimeOffset DateAgreedToPrivacyPolicy { get; set; }
+        public DateTimeOffset? DateAgreedToPrivacyPolicy { get; set; }
 
         public string PrivacyPolicyVersion { get; set; }
 
-        public DateTimeOffset DateAgreedToTermsOfService { get; set; }
+        public DateTimeOffset? DateAgreedToTermsOfService { get; set; }
 
         public string TermsOfServiceVersion { get; set; }
 
-        public DateTimeOffset MemberSince { get; set; }
+        public DateTimeOffset? MemberSince { get; set; }
 
         public double? Latitude { get; set; }
 

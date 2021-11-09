@@ -68,11 +68,11 @@
             NameIdentifier = user.NameIdentifier;
             SourceSystemUserName = user.SourceSystemUserName;
             Email = user.Email;
-            DateAgreedToPrivacyPolicy = user.DateAgreedToPrivacyPolicy;
+            DateAgreedToPrivacyPolicy = user.DateAgreedToPrivacyPolicy ?? DateTimeOffset.MinValue;
             PrivacyPolicyVersion = user.PrivacyPolicyVersion;
-            DateAgreedToTermsOfService = user.DateAgreedToTermsOfService;
+            DateAgreedToTermsOfService = user.DateAgreedToTermsOfService ?? DateTimeOffset.MinValue;
             TermsOfServiceVersion = user.TermsOfServiceVersion;
-            MemberSince = user.MemberSince;
+            MemberSince = user.MemberSince ?? DateTimeOffset.MinValue;
             PrefersMetric = user.PrefersMetric;
             IsOptedOutOfAllEmails = user.IsOptedOutOfAllEmails;
             TravelLimitForLocalEvents = user.TravelLimitForLocalEvents;
