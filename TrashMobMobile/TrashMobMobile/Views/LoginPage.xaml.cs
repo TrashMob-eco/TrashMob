@@ -69,8 +69,23 @@
 
                 termsPage.Disappearing += async (sender2, e2) =>
                 {
-                    Application.Current.MainPage = new AppShell();
-                    await Shell.Current.GoToAsync("//main");
+                    // If the user name is not present, redirect to User Profile Page to allow user to fill it in
+                    if (string.IsNullOrWhiteSpace(App.CurrentUser.UserName) || App.CurrentUser.UserName.Contains("joe"))
+                    {
+                        var userProfilePage = new UserProfilePage();
+                        userProfilePage.Disappearing += async (sender3, e3) =>
+                        {
+                            Application.Current.MainPage = new AppShell();
+                            await Shell.Current.GoToAsync("//main");
+                        };
+
+                        await Navigation.PushModalAsync(userProfilePage);
+                    }
+                    else
+                    {
+                        Application.Current.MainPage = new AppShell();
+                        await Shell.Current.GoToAsync("//main");
+                    }
                 };
 
                 await Navigation.PushModalAsync(termsPage);
