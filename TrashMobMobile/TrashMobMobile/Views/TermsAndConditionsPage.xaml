@@ -7,9 +7,9 @@
 
     <StackLayout>
         <Label Text="I agree to the Terms of Use:" FontSize="Small" />
-        <CheckBox IsChecked="{Binding isTermsOfUseAgreed}" />
+        <CheckBox IsChecked="{Binding IsTermsOfUseAgreed}" />
         <Label Text="I agree to the Privacy Policy:" FontSize="Small" />
-        <CheckBox IsChecked="{Binding isPrivacyPolicyAgreed}" />
+        <CheckBox IsChecked="{Binding IsPrivacyPolicyAgreed}" />
         <StackLayout Orientation="Horizontal">
             <Button Text="Cancel" Command="{Binding CancelCommand}" HorizontalOptions="FillAndExpand"></Button>
             <Button Text="Save" Command="{Binding SaveCommand}" HorizontalOptions="FillAndExpand"></Button>

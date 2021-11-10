@@ -13,7 +13,7 @@
         public TermsAndConditionsViewModel(IUserManager userManager)
         {
             SaveCommand = new Command(OnSave, ValidateSave);
-            CancelCommand = new Command(OnCancel);
+            CancelCommand = new Command(async () => await App.Current.MainPage.Navigation.PopModalAsync());
             PropertyChanged +=
                 (_, __) => SaveCommand.ChangeCanExecute();
             this.userManager = userManager;
@@ -40,12 +40,6 @@
 
         public Command CancelCommand { get; }
 
-        private async void OnCancel()
-        {
-            // This will pop the current page off the navigation stack
-            await Shell.Current.GoToAsync("..");
-        }
-
         private async void OnSave()
         {
             var user = App.CurrentUser;
@@ -58,7 +52,7 @@
             await userManager.UpdateUserAsync(user);
 
             // This will pop the current page off the navigation stack
-            await Shell.Current.GoToAsync("..");
+            await App.Current.MainPage.Navigation.PopModalAsync();
         }
     }
 }

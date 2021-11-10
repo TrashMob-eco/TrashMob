@@ -30,18 +30,7 @@
                     UpdateSignInState(userContext);
                     await Xamarin.Essentials.SecureStorage.SetAsync("isLogged", "1");
 
-                    var isPrivacyPolicyOutOfDate = App.CurrentUser.DateAgreedToPrivacyPolicy == null || App.CurrentUser.DateAgreedToPrivacyPolicy.Value < Constants.PrivacyPolicyDate;
-                    var isTermsOfServiceOutOfDate = App.CurrentUser.DateAgreedToTermsOfService == null || App.CurrentUser.DateAgreedToTermsOfService.Value < Constants.TermsOfServiceDate;
-
-                    if (isPrivacyPolicyOutOfDate || isTermsOfServiceOutOfDate || string.IsNullOrWhiteSpace(App.CurrentUser.TermsOfServiceVersion) || string.IsNullOrWhiteSpace(App.CurrentUser.PrivacyPolicyVersion))
-                    {
-                        // Redirect to Terms of Service Page
-                        var termsPage = new TermsAndConditionsPage();
-                        await Navigation.PushModalAsync(termsPage);
-                    }
-
-                    Application.Current.MainPage = new AppShell();
-                    await Shell.Current.GoToAsync("//main");
+                    await CheckTermsOfService();
                 }
                 else
                 {
@@ -68,9 +57,24 @@
             }
         }
 
-        private async void OnContactUs(object sender, EventArgs e)
+        private async Task CheckTermsOfService()
         {
-            await Navigation.PushAsync(new ContactUsPage());
+            var isPrivacyPolicyOutOfDate = App.CurrentUser.DateAgreedToPrivacyPolicy == null || App.CurrentUser.DateAgreedToPrivacyPolicy.Value < Constants.PrivacyPolicyDate;
+            var isTermsOfServiceOutOfDate = App.CurrentUser.DateAgreedToTermsOfService == null || App.CurrentUser.DateAgreedToTermsOfService.Value < Constants.TermsOfServiceDate;
+
+            if (isPrivacyPolicyOutOfDate || isTermsOfServiceOutOfDate || string.IsNullOrWhiteSpace(App.CurrentUser.TermsOfServiceVersion) || string.IsNullOrWhiteSpace(App.CurrentUser.PrivacyPolicyVersion))
+            {
+                // Redirect to Terms of Service Page
+                var termsPage = new TermsAndConditionsPage();
+
+                termsPage.Disappearing += async (sender2, e2) =>
+                {
+                    Application.Current.MainPage = new AppShell();
+                    await Shell.Current.GoToAsync("//main");
+                };
+
+                await Navigation.PushModalAsync(termsPage);
+            }
         }
 
         private readonly IUserManager userManager;
@@ -93,7 +97,11 @@
             try
             {
                 var userContext = await B2CAuthenticationService.Instance.ResetPasswordAsync();
+
+                await VerifyAccount(userContext);
                 UpdateSignInState(userContext);
+                await Xamarin.Essentials.SecureStorage.SetAsync("isLogged", "1");
+                await CheckTermsOfService();
             }
             catch (Exception ex)
             {
