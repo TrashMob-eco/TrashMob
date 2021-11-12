@@ -7,8 +7,6 @@
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MobEventsPage : ContentPage
     {
-        private readonly MobEventsViewModel _viewModel;
-
         public MobEventsPage()
         {
             InitializeComponent();

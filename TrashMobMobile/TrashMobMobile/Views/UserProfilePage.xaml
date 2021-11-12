@@ -35,6 +35,10 @@
             <Entry Text="{Binding TravelLimitsForLocalEvents, Mode=TwoWay}" FontSize="Small" />
             <Label Text="Opt out of All Emails" FontSize="Small"/>
             <CheckBox IsChecked="{Binding IsOptedOutOfAllEmails, Mode=TwoWay}" />
+            <StackLayout Orientation="Horizontal">
+                <Button Text="Cancel" Command="{Binding CancelCommand}" HorizontalOptions="FillAndExpand"></Button>
+                <Button Text="Save" Command="{Binding SaveCommand}" HorizontalOptions="FillAndExpand"></Button>
+            </StackLayout>
             <Label Text="User Location" FontSize="Title"/>
             <ContentView Content="{Binding Map}" HeightRequest="500"/>
             <Label Text="Member Since" FontSize="Micro"/>
