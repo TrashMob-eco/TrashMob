@@ -77,7 +77,7 @@
                 httpRequestMessage.Method = HttpMethod.Put;
 
                 httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
-                httpRequestMessage.RequestUri = new Uri(UserApi + "/" + user.Id);
+                httpRequestMessage.RequestUri = new Uri(UserApi);
 
                 httpRequestMessage.Content = JsonContent.Create(user, typeof(User), null, SerializerOptions);
 

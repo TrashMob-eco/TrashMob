@@ -47,5 +47,24 @@
         public int TravelLimitForLocalEvents { get; set; }
 
         public bool IsSiteAdmin { get; set; }
+
+        public bool IsTermsOfServiceAgreedTo
+        {
+            get
+            {
+                var isTermsOfServiceOutOfDate = DateAgreedToTermsOfService == null || DateAgreedToTermsOfService.Value < Constants.TermsOfServiceDate;
+
+                return !isTermsOfServiceOutOfDate && !string.IsNullOrWhiteSpace(TermsOfServiceVersion);
+            }
+        }
+        public bool IsPrivacyPolicyAgreedTo
+        {
+            get
+            {
+                var isPrivacyPolicyOutOfDate = DateAgreedToPrivacyPolicy == null || DateAgreedToPrivacyPolicy.Value < Constants.PrivacyPolicyDate;
+
+                return !isPrivacyPolicyOutOfDate && !string.IsNullOrWhiteSpace(PrivacyPolicyVersion);
+            }
+        }
     }
 }

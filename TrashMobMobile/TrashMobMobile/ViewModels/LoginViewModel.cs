@@ -60,36 +60,17 @@
 
         private async Task CheckTermsOfService()
         {
-            var isPrivacyPolicyOutOfDate = App.CurrentUser.DateAgreedToPrivacyPolicy == null || App.CurrentUser.DateAgreedToPrivacyPolicy.Value < Constants.PrivacyPolicyDate;
-            var isTermsOfServiceOutOfDate = App.CurrentUser.DateAgreedToTermsOfService == null || App.CurrentUser.DateAgreedToTermsOfService.Value < Constants.TermsOfServiceDate;
-
-            if (isPrivacyPolicyOutOfDate || isTermsOfServiceOutOfDate || string.IsNullOrWhiteSpace(App.CurrentUser.TermsOfServiceVersion) || string.IsNullOrWhiteSpace(App.CurrentUser.PrivacyPolicyVersion))
+            if (!App.CurrentUser.IsPrivacyPolicyAgreedTo || !App.CurrentUser.IsTermsOfServiceAgreedTo)
             {
-                // Redirect to Terms of Service Page
-                var termsPage = new TermsAndConditionsPage();
-
-                termsPage.Disappearing += async (sender2, e2) =>
-                {
-                    // If the user name is not present, redirect to User Profile Page to allow user to fill it in
-                    if (string.IsNullOrWhiteSpace(App.CurrentUser.UserName) || App.CurrentUser.UserName.Contains("joe"))
-                    {
-                        var userProfilePage = new UserProfilePage();
-                        userProfilePage.Disappearing += async (sender3, e3) =>
-                        {
-                            Application.Current.MainPage = new AppShell();
-                            await Shell.Current.GoToAsync("//main");
-                        };
-
-                        // await Navigation.PushModalAsync(userProfilePage);
-                    }
-                    else
-                    {
-                        Application.Current.MainPage = new AppShell();
-                        await Shell.Current.GoToAsync("//main");
-                    }
-                };
-
-                // await Navigation.PushModalAsync(termsPage);
+                await Shell.Current.GoToAsync($"//{nameof(TermsAndConditionsPage)}");
+            }
+            else if (string.IsNullOrEmpty(App.CurrentUser.UserName))
+            {
+                await Shell.Current.GoToAsync($"//{nameof(UserProfilePage)}");
+            }
+            else
+            {
+                await Shell.Current.GoToAsync($"//{nameof(MobEventsPage)}");
             }
         }
 

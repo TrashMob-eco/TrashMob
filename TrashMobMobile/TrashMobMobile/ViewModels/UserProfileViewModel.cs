@@ -3,6 +3,7 @@
     using System;
     using TrashMobMobile.Models;
     using TrashMobMobile.Services;
+    using TrashMobMobile.Views;
     using Xamarin.Forms;
     using Xamarin.Forms.Maps;
 
@@ -302,7 +303,7 @@
             await userManager.UpdateUserAsync(user);
 
             // This will pop the current page off the navigation stack
-            await Shell.Current.GoToAsync("..");
+            await Shell.Current.GoToAsync($"//{nameof(MobEventsPage)}");
         }
     }
 }

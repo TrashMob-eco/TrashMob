@@ -2,6 +2,7 @@
 {
     using System;
     using TrashMobMobile.Services;
+    using TrashMobMobile.Views;
     using Xamarin.Forms;
 
     public class TermsAndConditionsViewModel : BaseViewModel
@@ -17,6 +18,8 @@
             PropertyChanged +=
                 (_, __) => SaveCommand.ChangeCanExecute();
             this.userManager = userManager;
+            IsTermsOfUseAgreed = App.CurrentUser.DateAgreedToTermsOfService != null && App.CurrentUser.DateAgreedToTermsOfService != DateTimeOffset.MinValue;
+            IsPrivacyPolicyAgreed = App.CurrentUser.DateAgreedToPrivacyPolicy != null && App.CurrentUser.DateAgreedToPrivacyPolicy != DateTimeOffset.MinValue;
         }
 
         private bool ValidateSave()
@@ -49,10 +52,19 @@
             user.DateAgreedToPrivacyPolicy = DateTimeOffset.UtcNow;
             user.DateAgreedToTermsOfService = DateTimeOffset.UtcNow;
 
+            // Todo fix this so that Update User returns the updated user
             await userManager.UpdateUserAsync(user);
+            App.CurrentUser = await userManager.GetUserAsync(user.Id);
 
-            // This will pop the current page off the navigation stack
-            await App.Current.MainPage.Navigation.PopModalAsync();
+            // If the user name is not present, redirect to User Profile Page to allow user to fill it in
+            if (string.IsNullOrWhiteSpace(App.CurrentUser.UserName) || App.CurrentUser.UserName.Contains("joe"))
+            {
+                await Shell.Current.GoToAsync($"//{nameof(UserProfilePage)}");
+            }
+            else
+            {
+                await Shell.Current.GoToAsync($"//{nameof(MobEventsPage)}");
+            }
         }
     }
 }

@@ -20,16 +20,8 @@
             InitializeComponent();
 
             SetupServices(addPlatformServices);
-            //var isLoggedIn = Xamarin.Essentials.SecureStorage.GetAsync("isLogged").Result;
 
-            //if (isLoggedIn == "1")
-            //{
             MainPage = new AppShell();
-            //}
-            //else
-            //{
-            //    MainPage = new LoginPage(ServiceProvider.GetService<IUserManager>());
-            //}
         }
 
         void SetupServices(Action<IServiceCollection> addPlatformServices = null)
