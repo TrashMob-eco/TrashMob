@@ -79,30 +79,54 @@
         https://docs.microsoft.com/dotnet/api/xamarin.forms.shellgroupitem.flyoutdisplayoptions?view=xamarin-forms
     -->
 
-    <TabBar Route="main">
-        <Tab Title="Browse Events">
-            <ShellContent ContentTemplate="{DataTemplate local:MobEventsPage}" />
-        </Tab>
-        <Tab Title="Events Map">
-            <ShellContent ContentTemplate="{DataTemplate local:EventsMapPage}" />
-        </Tab>
-        <Tab Title="Contact Us">
-            <ShellContent ContentTemplate="{DataTemplate local:ContactUsPage}" />
-        </Tab>
-    </TabBar>
-
-    <ShellItem Route="Login">
+    <ShellItem Route="LoginPage" FlyoutItemIsVisible="False">
         <ShellContent ContentTemplate="{DataTemplate local:LoginPage}" />
     </ShellItem>
-    
-    <!--<FlyoutItem Title="About" Icon="icon_about.png">
-        <ShellContent Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
+
+    <FlyoutItem Title="About" Icon="icon_about.png">
+        <Tab>
+            <ShellContent Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
+        </Tab>
     </FlyoutItem>
-    <FlyoutItem Title="MobEbents" Icon="icon_feed.png">
-        <ShellContent Route="MobEventsPage" ContentTemplate="{DataTemplate local:MobEventsPage}" />
+    <FlyoutItem Title="Contact Us" Icon="icon_feed.png">
+        <Tab>
+            <ShellContent Route="ContactUsPage" ContentTemplate="{DataTemplate local:ContactUsPage}" />
+        </Tab>
+    </FlyoutItem>
+    <FlyoutItem Title="Event Details" Icon="icon_feed.png">
+        <Tab>
+            <ShellContent Route="EventDetailPage" ContentTemplate="{DataTemplate local:EventDetailPage}" />
+        </Tab>
+    </FlyoutItem>
+    <FlyoutItem Title="Events Map" Icon="icon_feed.png">
+        <Tab>
+            <ShellContent Route="EventsMapPage" ContentTemplate="{DataTemplate local:EventsMapPage}" />
+        </Tab>
+    </FlyoutItem>
+    <FlyoutItem Title="Manage Event" Icon="icon_feed.png">
+        <Tab>
+            <ShellContent Route="ManageEventPage" ContentTemplate="{DataTemplate local:ManageEventPage}" />
+        </Tab>
+    </FlyoutItem>
+    <FlyoutItem Title="MobEvents" Icon="icon_feed.png">
+        <Tab>
+            <ShellContent Route="MobEventsPage" ContentTemplate="{DataTemplate local:MobEventsPage}" />
+        </Tab>
+    </FlyoutItem>
+    <FlyoutItem Title="Terms and Conditions" Icon="icon_feed.png">
+        <Tab>
+            <ShellContent Route="TermsAndConditionsPage" ContentTemplate="{DataTemplate local:TermsAndConditionsPage}" />
+        </Tab>
+    </FlyoutItem>
+    <FlyoutItem Title="User Profile" Icon="icon_feed.png">
+        <Tab>
+            <ShellContent Route="UserProfilePage" ContentTemplate="{DataTemplate local:UserProfilePage}" />
+        </Tab>
     </FlyoutItem>
 
-    --><!-- When the Flyout is visible this will be a menu item you can tie a click behavior to  --><!--
+
+    <!-- When the Flyout is visible this will be a menu item you can tie a click behavior to  -->
+    <!--
     <MenuItem Text="Logout" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuItemClicked">
     </MenuItem>-->
 
