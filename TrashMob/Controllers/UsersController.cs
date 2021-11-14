@@ -92,7 +92,6 @@ namespace TrashMob.Controllers
 
             try
             {
-                // ToDo: Verify can't have duplicate usernames
                 var updatedUser = await userRepository.UpdateUser(user).ConfigureAwait(false);
                 var returnedUser = await userRepository.GetUserByNameIdentifier(user.NameIdentifier).ConfigureAwait(false);
                 return Ok(returnedUser);

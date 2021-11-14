@@ -52,9 +52,7 @@
             user.DateAgreedToPrivacyPolicy = DateTimeOffset.UtcNow;
             user.DateAgreedToTermsOfService = DateTimeOffset.UtcNow;
 
-            // Todo fix this so that Update User returns the updated user
-            await userManager.UpdateUserAsync(user);
-            App.CurrentUser = await userManager.GetUserAsync(user.Id);
+            App.CurrentUser = await userManager.UpdateUserAsync(user);
 
             // If the user name is not present, redirect to User Profile Page to allow user to fill it in
             if (string.IsNullOrWhiteSpace(App.CurrentUser.UserName) || App.CurrentUser.UserName.Contains("joe"))
