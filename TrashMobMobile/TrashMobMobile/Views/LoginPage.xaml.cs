@@ -12,5 +12,16 @@
             InitializeComponent();
             BindingContext = App.GetViewModel<LoginViewModel>();
         }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            var isLoggedIn = await Xamarin.Essentials.SecureStorage.GetAsync("isLogged");
+
+            if (isLoggedIn == "1")
+            {
+                await Shell.Current.GoToAsync($"//{nameof(MobEventsPage)}");
+            }
+        }
     }
 }

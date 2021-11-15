@@ -27,5 +27,13 @@
         public DateTime CreatedDate { get; set; }
         public DateTime LastUpdatedDate { get; set; }
         public bool IsEventPublic { get; set; }
+
+        public string DisplayLocation
+        {
+            get
+            {
+                return $"{City}, {Region}, {Country}";
+            }
+        }
     }
 }

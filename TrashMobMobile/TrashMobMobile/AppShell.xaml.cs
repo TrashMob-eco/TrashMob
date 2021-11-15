@@ -12,6 +12,7 @@
             Routing.RegisterRoute(nameof(ContactUsPage), typeof(ContactUsPage));
             Routing.RegisterRoute(nameof(EventDetailPage), typeof(EventDetailPage));
             Routing.RegisterRoute(nameof(EventsMapPage), typeof(EventsMapPage));
+            Routing.RegisterRoute(nameof(LogoutPage), typeof(LogoutPage));
             Routing.RegisterRoute(nameof(ManageEventPage), typeof(ManageEventPage));
             Routing.RegisterRoute(nameof(MobEventsPage), typeof(MobEventsPage));
             Routing.RegisterRoute(nameof(TermsAndConditionsPage), typeof(TermsAndConditionsPage));

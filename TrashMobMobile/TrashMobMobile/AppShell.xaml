@@ -83,47 +83,41 @@
         <ShellContent ContentTemplate="{DataTemplate local:LoginPage}" />
     </ShellItem>
 
-    <FlyoutItem Title="About" Icon="icon_about.png">
+    <FlyoutItem Title="About">
         <Tab>
             <ShellContent Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
         </Tab>
     </FlyoutItem>
-    <FlyoutItem Title="Contact Us" Icon="icon_feed.png">
+    <FlyoutItem Title="Add Event">
+        <Tab>
+            <ShellContent Route="AddEventPage" ContentTemplate="{DataTemplate local:ManageEventPage}" />
+        </Tab>
+    </FlyoutItem>
+    <FlyoutItem Title="Contact Us">
         <Tab>
             <ShellContent Route="ContactUsPage" ContentTemplate="{DataTemplate local:ContactUsPage}" />
         </Tab>
     </FlyoutItem>
-    <FlyoutItem Title="Event Details" Icon="icon_feed.png">
-        <Tab>
-            <ShellContent Route="EventDetailPage" ContentTemplate="{DataTemplate local:EventDetailPage}" />
-        </Tab>
-    </FlyoutItem>
-    <FlyoutItem Title="Events Map" Icon="icon_feed.png">
+    <FlyoutItem Title="Events Map">
         <Tab>
             <ShellContent Route="EventsMapPage" ContentTemplate="{DataTemplate local:EventsMapPage}" />
         </Tab>
     </FlyoutItem>
-    <FlyoutItem Title="Manage Event" Icon="icon_feed.png">
-        <Tab>
-            <ShellContent Route="ManageEventPage" ContentTemplate="{DataTemplate local:ManageEventPage}" />
-        </Tab>
-    </FlyoutItem>
-    <FlyoutItem Title="MobEvents" Icon="icon_feed.png">
+    <FlyoutItem Title="MobEvents">
         <Tab>
             <ShellContent Route="MobEventsPage" ContentTemplate="{DataTemplate local:MobEventsPage}" />
         </Tab>
     </FlyoutItem>
-    <FlyoutItem Title="Terms and Conditions" Icon="icon_feed.png">
-        <Tab>
-            <ShellContent Route="TermsAndConditionsPage" ContentTemplate="{DataTemplate local:TermsAndConditionsPage}" />
-        </Tab>
-    </FlyoutItem>
-    <FlyoutItem Title="User Profile" Icon="icon_feed.png">
+    <FlyoutItem Title="User Profile">
         <Tab>
             <ShellContent Route="UserProfilePage" ContentTemplate="{DataTemplate local:UserProfilePage}" />
         </Tab>
     </FlyoutItem>
-
+    <FlyoutItem Title="Logout">
+        <Tab>
+            <ShellContent Route="LogoutPage" ContentTemplate="{DataTemplate local:LogoutPage}" />
+        </Tab>
+    </FlyoutItem>
 
     <!-- When the Flyout is visible this will be a menu item you can tie a click behavior to  -->
     <!--
