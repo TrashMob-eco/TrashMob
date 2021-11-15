@@ -1,27 +1,78 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+<ContentPage 
              x:Class="TrashMobMobile.Views.MobEventsPage"
-             Title="{Binding Title}"
-             xmlns:local="clr-namespace:TrashMobMobile.ViewModels"  
-             xmlns:model="clr-namespace:TrashMobMobile.Models"  >
-    <RefreshView x:DataType="local:MobEventsViewModel" Command="{Binding ReloadEventsCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
-        <CollectionView x:Name="MobEventsListView"
-                ItemsSource="{Binding MobEvents}"
-                SelectionMode="None">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <StackLayout Padding="10" x:DataType="model:MobEvent">
-                        <Label Text="{Binding Name}" 
+             xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <xct:ItemSelectedEventArgsConverter x:Key="ItemSelectedEventArgsConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Add" Command="{Binding AddCommand}"/>
+    </ContentPage.ToolbarItems>
+
+    <ListView 
+                ItemsSource="{Binding Events}"
+                SelectionMode="Single"
+                IsRefreshing="{Binding IsBusy, Mode=OneWay}"
+                RefreshCommand="{Binding RefreshCommand}"
+                CachingStrategy="RecycleElement"
+                HasUnevenRows="True">
+        <ListView.Behaviors>
+            <xct:EventToCommandBehavior EventName="ItemSelected"
+                                              Command="{Binding SelectedCommand}"
+                                              EventArgsConverter="{StaticResource ItemSelectedEventArgsConverter}" />
+        </ListView.Behaviors>
+        <ListView.ItemTemplate>
+            <DataTemplate>
+                <ViewCell>
+                    <ViewCell.View>
+                        <StackLayout Padding="10">
+                            <StackLayout Orientation="Horizontal" >
+                                <Label Text="Event Name:" 
                                 LineBreakMode="NoWrap" 
                                 Style="{DynamicResource ListItemTextStyle}" 
-                                FontSize="16" />
-                        <Label Text="{Binding Description}" 
+                                FontSize="Small"
+                                FontAttributes="Bold"/>
+                                <Label Text="{Binding Name}" 
+                                LineBreakMode="NoWrap" 
+                                Style="{DynamicResource ListItemTextStyle}" 
+                                FontSize="Small" />
+                            </StackLayout>
+                            <StackLayout Orientation="Horizontal" >
+                                <Label Text="Date:" 
+                                LineBreakMode="NoWrap" 
+                                Style="{DynamicResource ListItemTextStyle}" 
+                                FontSize="Small"
+                                FontAttributes="Bold"/>
+                                <Label Text="{Binding EventDate, StringFormat='{0:MMMM dd, yyyy hh:mm tt}'}" 
+                                LineBreakMode="NoWrap" 
+                                Style="{DynamicResource ListItemTextStyle}" 
+                                FontSize="Small" />
+                            </StackLayout>
+                            <StackLayout Orientation="Horizontal" >
+                                <Label Text="Location:" 
+                                LineBreakMode="NoWrap" 
+                                Style="{DynamicResource ListItemTextStyle}" 
+                                FontSize="Small"
+                                FontAttributes="Bold"/>
+                                <Label Text="{Binding DisplayLocation}" 
+                                LineBreakMode="NoWrap" 
+                                Style="{DynamicResource ListItemTextStyle}" 
+                                FontSize="Small" />
+                            </StackLayout>
+                            <Label Text="{Binding Description}" 
                                 Style="{DynamicResource ListItemDetailTextStyle}"
-                                FontSize="13" />
-                    </StackLayout>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </RefreshView>
+                                FontSize="Micro" />
+                        </StackLayout>
+                    </ViewCell.View>
+                </ViewCell>
+            </DataTemplate>
+        </ListView.ItemTemplate>
+    </ListView>
 </ContentPage>

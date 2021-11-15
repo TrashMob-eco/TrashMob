@@ -6,37 +6,63 @@ namespace TrashMobMobile.ViewModels
     using Xamarin.Forms;
     using TrashMobMobile.Models;
     using TrashMobMobile.Services;
+    using TrashMobMobile.Views;
+    using MvvmHelpers;
+    using MvvmHelpers.Commands;
 
     internal class MobEventsViewModel : BaseViewModel
     {
-        private readonly IMobEventManager mobEventManager;
+        public ObservableRangeCollection<MobEvent> Events { get; }
 
-        public ObservableCollection<MobEvent> MobEvents { get; }
-        
-        public Command ReloadEventsCommand { get; }
+        public AsyncCommand RefreshCommand { get; }
+
+        public AsyncCommand AddCommand { get; }
+
+        public AsyncCommand<MobEvent> SelectedCommand { get; }
+
+        public AsyncCommand<MobEvent> AttendCommand { get; }
+
+        private readonly IMobEventManager mobEventManager;
 
         public MobEventsViewModel(IMobEventManager mobEventManager)
         {
-            Title = "Browse events";
-            MobEvents = new ObservableCollection<MobEvent>();
+            Title = "Upcoming Events";
+            Events = new ObservableRangeCollection<MobEvent>();
             this.mobEventManager = mobEventManager;
-            ReloadEventsCommand = new Command(OnReloadEvents);
-            Task.Run(async () => await LoadEvents());
+            RefreshCommand = new AsyncCommand(Refresh);
+            AddCommand = new AsyncCommand(Add);
+            AttendCommand = new AsyncCommand<MobEvent>(Attend);
+            SelectedCommand = new AsyncCommand<MobEvent>(Selected);
         }
 
-        private async void OnReloadEvents()
+        private async Task Refresh()
         {
             await LoadEvents();
         }
 
+        private async Task Selected(MobEvent mobEvent)
+        {
+            var route = $"{nameof(EventDetailPage)}?id={mobEvent.Id}";
+            await Shell.Current.GoToAsync(route);
+        }
+
+        private async Task Add()
+        {
+            await Shell.Current.GoToAsync($"{nameof(ManageEventPage)}");
+        }
+
+        private async Task Attend(MobEvent mobEvent)
+        {
+            // Todo
+        }
+
         private async Task LoadEvents()
         {
-            MobEvents.Clear();
+            IsBusy = true;
+            Events.Clear();
             var mobEvents = await mobEventManager.GetEventsAsync();
-            foreach (var mobEvent in mobEvents)
-            {
-                MobEvents.Add(mobEvent);
-            }
+            Events.AddRange(mobEvents);
+            IsBusy = false;
         }
     }
 }
