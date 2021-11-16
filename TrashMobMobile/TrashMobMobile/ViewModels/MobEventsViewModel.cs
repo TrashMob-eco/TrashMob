@@ -42,13 +42,19 @@ namespace TrashMobMobile.ViewModels
 
         private async Task Selected(MobEvent mobEvent)
         {
-            var route = $"{nameof(EventDetailPage)}?id={mobEvent.Id}";
+            if (mobEvent == null)
+            {
+                return;
+            }
+
+            var route = $"{nameof(EventDetailPage)}?EventId={mobEvent.Id}";
             await Shell.Current.GoToAsync(route);
         }
 
         private async Task Add()
         {
-            await Shell.Current.GoToAsync($"{nameof(ManageEventPage)}");
+            var route = $"{nameof(AddEventPage)}";
+            await Shell.Current.GoToAsync(route);
         }
 
         private async Task Attend(MobEvent mobEvent)

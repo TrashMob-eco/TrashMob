@@ -8,15 +8,10 @@
         {
             InitializeComponent();
 
-            Routing.RegisterRoute(nameof(AboutPage), typeof(AboutPage));
-            Routing.RegisterRoute(nameof(ContactUsPage), typeof(ContactUsPage));
+            Routing.RegisterRoute(nameof(AddEventPage), typeof(AddEventPage));
             Routing.RegisterRoute(nameof(EventDetailPage), typeof(EventDetailPage));
-            Routing.RegisterRoute(nameof(EventsMapPage), typeof(EventsMapPage));
-            Routing.RegisterRoute(nameof(LogoutPage), typeof(LogoutPage));
             Routing.RegisterRoute(nameof(ManageEventPage), typeof(ManageEventPage));
-            Routing.RegisterRoute(nameof(MobEventsPage), typeof(MobEventsPage));
             Routing.RegisterRoute(nameof(TermsAndConditionsPage), typeof(TermsAndConditionsPage));
-            Routing.RegisterRoute(nameof(UserProfilePage), typeof(UserProfilePage));
         }
     }
 }

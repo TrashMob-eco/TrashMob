@@ -7,8 +7,7 @@
     using Xamarin.Forms;
     using Xamarin.Forms.Maps;
 
-    [QueryProperty(nameof(EventId), nameof(EventId))]
-    public class EventDetailViewModel : BaseViewModel
+    public class AddEventViewModel : BaseViewModel
     {
         private Guid id;
         private Guid createdByUserId;
@@ -37,56 +36,18 @@
         private readonly IMobEventManager mobEventManager;
         private Position center;
 
-        public EventDetailViewModel(IMobEventManager mobEventManager)
+        public AddEventViewModel(IMobEventManager mobEventManager)
         {
-            Title = "Event Details";
+            Title = "Add Event";
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
             PropertyChanged +=
                 (_, __) => SaveCommand.ChangeCanExecute();
             this.mobEventManager = mobEventManager;
-        }
-
-        private async Task LoadEvent(Guid eventId)
-        {
-            var mobEvent = await mobEventManager.GetEventAsync(eventId);
-
-            Id = mobEvent.Id;
-            Name = mobEvent.Name;
-            Description = mobEvent.Description;
-            EventType = mobEvent.EventType;
-            EventTypeId = mobEvent.EventTypeId;
-            EventStatusId = mobEvent.EventStatusId;
-            CreatedByUserId = mobEvent.CreatedByUserId;
-            LastUpdatedByUserId = mobEvent.LastUpdatedByUserId;
-            CreatedDate = mobEvent.CreatedDate;
-            LastUpdatedDate = mobEvent.LastUpdatedDate;
-            EventDate = mobEvent.EventDate;
-            StreetAddress = mobEvent.StreetAddress;
-            City = mobEvent.City;
-            Region = mobEvent.Region;
-            Country = mobEvent.Country;
-            PostalCode = mobEvent.PostalCode;
-            Latitude = mobEvent.Latitude;
-            Longitude = mobEvent.Longitude;
-            DurationHours = mobEvent.DurationHours;
-            DurationMinutes = mobEvent.DurationMinutes;
-            MaxNumberOfParticipants = mobEvent.MaxNumberOfParticipants;
-            IsEventPublic = mobEvent.IsEventPublic;
-
             Map = new Map();
             Map.MapClicked += Map_MapClicked;
-
-            SetEventPin(mobEvent.Name, mobEvent.Region, mobEvent.City, mobEvent.Latitude, mobEvent.Longitude);
         }
 
-        public string EventId
-        {
-            set
-            {
-                Task.Run(async () => await LoadEvent(new Guid(value)));
-            }
-        }
         public Guid Id
         {
             get => id;

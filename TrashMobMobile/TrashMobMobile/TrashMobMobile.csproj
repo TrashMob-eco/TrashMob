@@ -43,6 +43,9 @@
 		<Compile Update="Views\LogoutPage.xaml.cs">
 			<DependentUpon>LogoutPage.xaml</DependentUpon>
 		</Compile>
+		<Compile Update="Views\AddEventPage.xaml.cs">
+		  <DependentUpon>AddEventPage.xaml</DependentUpon>
+		</Compile>
 		<Compile Update="Views\ManageEventPage.xaml.cs">
 			<DependentUpon>ManageEventPage.xaml</DependentUpon>
 		</Compile>

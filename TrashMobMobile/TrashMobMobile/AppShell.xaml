@@ -83,7 +83,7 @@
         <ShellContent ContentTemplate="{DataTemplate local:LoginPage}" />
     </ShellItem>
 
-    <FlyoutItem Title="About">
+    <FlyoutItem Title="About" >
         <Tab>
             <ShellContent Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
         </Tab>
