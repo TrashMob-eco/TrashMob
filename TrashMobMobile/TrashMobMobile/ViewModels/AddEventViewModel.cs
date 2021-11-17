@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobile.ViewModels
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using TrashMobMobile.Models;
     using TrashMobMobile.Services;
@@ -19,24 +20,26 @@
         private string region;
         private string country;
         private string postalCode;
-        private string eventType;
+        private EventType selectedEventType;
         private string eventStatus;
-        private int eventTypeId;
         private int eventStatusId;
         private int durationHours;
         private int durationMinutes;
         private int maxNumberOfParticipants;
         private double latitude;
         private double longitude;
-        private DateTime eventDate;
+        private DateTime eDate;
+        private TimeSpan eTime;
         private DateTime createdDate;
         private DateTime lastUpdatedDate;
         private bool isEventPublic;
+        private List<EventType> eventTypes = new List<EventType>();
 
         private readonly IMobEventManager mobEventManager;
+        private readonly IEventTypeRestService eventTypeRestService;
         private Position center;
 
-        public AddEventViewModel(IMobEventManager mobEventManager)
+        public AddEventViewModel(IMobEventManager mobEventManager, IEventTypeRestService eventTypeRestService)
         {
             Title = "Add Event";
             SaveCommand = new Command(OnSave, ValidateSave);
@@ -44,8 +47,19 @@
             PropertyChanged +=
                 (_, __) => SaveCommand.ChangeCanExecute();
             this.mobEventManager = mobEventManager;
+            this.eventTypeRestService = eventTypeRestService;
             Map = new Map();
             Map.MapClicked += Map_MapClicked;
+            Id = Guid.Empty;
+            Task.Run(async () => await LoadEventTypes());
+        }
+
+        public Command SaveCommand { get; }
+        public Command CancelCommand { get; }
+
+        public List<EventType> EventTypes
+        {
+            get => eventTypes;
         }
 
         public Guid Id
@@ -108,22 +122,16 @@
             set => SetProperty(ref postalCode, value);
         }
 
-        public string EventType
-        {
-            get => eventType;
-            set => SetProperty(ref eventType, value);
-        }
-
         public string EventStatus
         {
             get => eventStatus;
             set => SetProperty(ref eventStatus, value);
         }
 
-        public int EventTypeId
+        public EventType SelectedEventType
         {
-            get => eventTypeId;
-            set => SetProperty(ref eventTypeId, value);
+            get => selectedEventType;
+            set => SetProperty(ref selectedEventType, value);
         }
 
         public int EventStatusId
@@ -162,10 +170,16 @@
             set => SetProperty(ref longitude, value);
         }
 
-        public DateTime EventDate
+        public DateTime EDate
         {
-            get => eventDate;
-            set => SetProperty(ref eventDate, value);
+            get => eDate;
+            set => SetProperty(ref eDate, value);
+        }
+
+        public TimeSpan ETime
+        {
+            get => eTime;
+            set => SetProperty(ref eTime, value);
         }
 
         public DateTime CreatedDate
@@ -188,7 +202,12 @@
 
         private bool ValidateSave()
         {
-            return !string.IsNullOrWhiteSpace(name);
+            return !string.IsNullOrWhiteSpace(name) 
+                && SelectedEventType != null
+                && EDate != null
+                && ETime != null
+                && !string.IsNullOrWhiteSpace(Description) 
+                && Map.Pins.Count == 1;
         }
 
         public Map Map { get; private set; }
@@ -199,16 +218,12 @@
             set => SetProperty(ref center, value);
         }
 
-        public Command SaveCommand { get; }
-
-        public Command CancelCommand { get; }
-
         private void SetEventPin(string name, string region, string city, double latitude, double longitude)
         {
             var pin = new Pin
             {
                 Address = city + ", " + region,
-                Label = name,
+                Label = name ?? "New Event",
                 Type = PinType.Place,
                 Position = new Position(latitude, longitude)
             };
@@ -244,6 +259,11 @@
             await Shell.Current.GoToAsync("..");
         }
 
+        private async Task LoadEventTypes()
+        {
+            EventTypes.AddRange(await eventTypeRestService.GetEventTypesAsync());
+        }
+
         private async void OnSave()
         {
             MobEvent mobEvent = new MobEvent()
@@ -251,14 +271,13 @@
                 Id = Id,
                 Name = Name,
                 Description = Description,
-                EventType = EventType,
-                EventTypeId = EventTypeId,
+                EventTypeId = SelectedEventType.Id,
                 EventStatusId = EventStatusId,
                 CreatedByUserId = CreatedByUserId,
                 LastUpdatedByUserId = LastUpdatedByUserId,
                 CreatedDate = CreatedDate,
                 LastUpdatedDate = LastUpdatedDate,
-                EventDate = EventDate,
+                EventDate = EDate + ETime,
                 StreetAddress = StreetAddress,
                 City = City,
                 Region = Region,

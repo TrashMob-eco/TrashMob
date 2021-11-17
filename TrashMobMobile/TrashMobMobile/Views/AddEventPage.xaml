@@ -13,38 +13,91 @@
 
     <ScrollView Orientation="Vertical">
         <StackLayout Orientation="Vertical" Padding="30,24,30,24" Spacing="10">
-            <Label Text="Event Name" FontSize="Small"/>
-            <Entry Text="{Binding Name, Mode=TwoWay}" FontSize="Small" />
-            <Label Text="Event Date" FontSize="Small"/>
-            <Entry Text="{Binding EventDate, Mode=TwoWay}" FontSize="Small" />
-            <Label Text="Event Type" FontSize="Small"/>
-            <Entry Text="{Binding EventTypeId, Mode=TwoWay}" FontSize="Small" />
-            <Label Text="Description" FontSize="Small"/>
-            <Entry Text="{Binding Description, Mode=TwoWay}" FontSize="Small" />
-            <Label Text="Street Address" FontSize="Small"/>
-            <Entry Text="{Binding StreetAddress, Mode=TwoWay}" FontSize="Small" />
-            <Label Text="City" FontSize="Small"/>
-            <Entry Text="{Binding City, Mode=TwoWay}" FontSize="Small" />
-            <Label Text="Region" FontSize="Small"/>
-            <Entry Text="{Binding Region, Mode=TwoWay}" FontSize="Small" />
-            <Label Text="Country" FontSize="Small"/>
-            <Entry Text="{Binding Country, Mode=TwoWay}" FontSize="Small" />
-            <Label Text="Postal Code" FontSize="Small"/>
-            <Entry Text="{Binding PostalCode, Mode=TwoWay}" FontSize="Small" />
-            <Label Text="Is Event Public" FontSize="Small"/>
-            <CheckBox IsChecked="{Binding IsEventPublic, Mode=TwoWay}" />
-            <Label Text="Duration Hours" FontSize="Small"/>
-            <Entry Text="{Binding DurationHours, Mode=TwoWay}" FontSize="Small" />
-            <Label Text="Duration Minutes" FontSize="Small"/>
-            <Entry Text="{Binding DurationMinutes, Mode=TwoWay}" FontSize="Small" />
-            <Label Text="Max Number of Participants" FontSize="Small"/>
-            <Entry Text="{Binding MaxNumberOfParticipants, Mode=TwoWay}" FontSize="Small" />
-            <Label Text="Event Location" FontSize="Title"/>
-            <ContentView Content="{Binding Map}" HeightRequest="500"/>
-            <Label Text="Created Date" FontSize="Micro"/>
-            <Label Text="{Binding CreatedDate}" FontSize="Micro" />
-            <Label Text="Last Updated Date" FontSize="Micro"/>
-            <Label Text="{Binding LastUpdatedDate}" FontSize="Micro"/>
+            <StackLayout Orientation="Horizontal">
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Event Name" FontSize="Small"/>
+                    <Entry Text="{Binding Name, Mode=TwoWay}" FontSize="Small" />
+                </StackLayout>
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Event Type" FontSize="Small"/>
+                    <Picker ItemsSource="{Binding EventTypes, Mode=TwoWay}" Title="Select an Event Type" ItemDisplayBinding="{Binding Name}" SelectedItem="{Binding SelectedEventType}" FontSize="Small" />
+                </StackLayout>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Event Date" FontSize="Small"/>
+                    <DatePicker Date="{Binding EDate, Mode=TwoWay}" MinimumDate="05/15/2021" FontSize="Small" />
+                </StackLayout>
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Event Time" FontSize="Small"/>
+                    <TimePicker Time="{Binding ETime, Mode=TwoWay}" FontSize="Small" />
+                </StackLayout>
+            </StackLayout>
+            <StackLayout Orientation="Vertical">
+                <Label Text="Description" FontSize="Small"/>
+                <Entry Text="{Binding Description, Mode=TwoWay}" FontSize="Small" />
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Is Event Public" FontSize="Small"/>
+                    <CheckBox IsChecked="{Binding IsEventPublic, Mode=TwoWay}" />
+                </StackLayout>
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Duration Hours" FontSize="Small"/>
+                    <Entry Text="{Binding DurationHours, Mode=TwoWay}" FontSize="Small" />
+                </StackLayout>
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Duration Minutes" FontSize="Small"/>
+                    <Entry Text="{Binding DurationMinutes, Mode=TwoWay}" FontSize="Small" />
+                </StackLayout>
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Max Number of Participants" FontSize="Small"/>
+                    <Entry Text="{Binding MaxNumberOfParticipants, Mode=TwoWay}" FontSize="Small" />
+                </StackLayout>
+            </StackLayout>
+            <StackLayout Orientation="Vertical">
+                <Label Text="Event Location" FontSize="Small"/>
+                <Label Text="Select point on map to set event location" FontSize="Micro"/>
+                <ContentView Content="{Binding Map}" HeightRequest="300"/>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Button Text="Cancel" Command="{Binding CancelCommand}" HorizontalOptions="FillAndExpand"></Button>
+                <Button Text="Save" Command="{Binding SaveCommand}" HorizontalOptions="FillAndExpand"></Button>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Street Address" FontSize="Small"/>
+                    <Label Text="{Binding StreetAddress, Mode=TwoWay}" FontSize="Small" />
+                </StackLayout>
+                <StackLayout Orientation="Vertical">
+                    <Label Text="City" FontSize="Small"/>
+                    <Label Text="{Binding City, Mode=TwoWay}" FontSize="Small" />
+                </StackLayout>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Region" FontSize="Small"/>
+                    <Label Text="{Binding Region, Mode=TwoWay}" FontSize="Small" />
+                </StackLayout>
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Country" FontSize="Small"/>
+                    <Label Text="{Binding Country, Mode=TwoWay}" FontSize="Small" />
+                </StackLayout>
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Postal Code" FontSize="Small"/>
+                    <Label Text="{Binding PostalCode, Mode=TwoWay}" FontSize="Small" />
+                </StackLayout>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Created Date" FontSize="Micro"/>
+                    <Label Text="{Binding CreatedDate}" FontSize="Micro" />
+                </StackLayout>
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Last Updated Date" FontSize="Micro"/>
+                    <Label Text="{Binding LastUpdatedDate}" FontSize="Micro"/>
+                </StackLayout>
+            </StackLayout>
         </StackLayout>
     </ScrollView>
 </ContentPage>

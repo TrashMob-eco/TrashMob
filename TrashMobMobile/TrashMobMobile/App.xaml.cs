@@ -33,6 +33,7 @@
 
             // Add View Models
             services.AddTransient<AboutViewModel>();
+            services.AddTransient<AddEventViewModel>();
             services.AddTransient<ContactUsViewModel>();
             services.AddTransient<EventDetailViewModel>();
             services.AddTransient<EventsMapViewModel>();
@@ -46,6 +47,7 @@
             _ = services.AddSingleton<IContactRequestManager, ContactRequestManager>();
             _ = services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
             _ = services.AddSingleton<IDataStore<Item>, MockDataStore>();
+            _ = services.AddSingleton<IEventTypeRestService, EventTypeRestService>();
             _ = services.AddSingleton<IMobEventManager, MobEventManager>();
             _ = services.AddSingleton<IMobEventRestService, MobEventRestService>();
             _ = services.AddSingleton<IUserManager, UserManager>();
