@@ -37,9 +37,10 @@
 
         private readonly IMobEventManager mobEventManager;
         private readonly IEventTypeRestService eventTypeRestService;
+        private readonly IMapRestService mapRestService;
         private Position center;
 
-        public AddEventViewModel(IMobEventManager mobEventManager, IEventTypeRestService eventTypeRestService)
+        public AddEventViewModel(IMobEventManager mobEventManager, IEventTypeRestService eventTypeRestService, IMapRestService mapRestService)
         {
             Title = "Add Event";
             SaveCommand = new Command(OnSave, ValidateSave);
@@ -48,6 +49,7 @@
                 (_, __) => SaveCommand.ChangeCanExecute();
             this.mobEventManager = mobEventManager;
             this.eventTypeRestService = eventTypeRestService;
+            this.mapRestService = mapRestService;
             Map = new Map();
             Map.MapClicked += Map_MapClicked;
             Id = Guid.Empty;
@@ -235,7 +237,7 @@
             Map.Pins.Add(pin);
         }
 
-        private void Map_MapClicked(object sender, MapClickedEventArgs e)
+        private async void Map_MapClicked(object sender, MapClickedEventArgs e)
         {
             if (e != null)
             {
@@ -243,13 +245,20 @@
                 Latitude = position.Latitude;
                 Longitude = position.Longitude;
 
+                var address = await mapRestService.GetAddressAsync(position.Latitude, position.Longitude);
+                StreetAddress = address.StreetAddress;
+                City = address.City;
+                Country = address.Country;
+                Region = address.Region;
+                PostalCode = address.PostalCode;
+
                 if (Map.Pins.Count > 0)
                 {
                     Map.Pins[0].Position = new Position(position.Latitude, position.Longitude);
                 }
                 else
                 {
-                    SetEventPin(Name, Region, City, position.Latitude, position.Longitude);
+                    SetEventPin(Name, address.Region, address.City, position.Latitude, position.Longitude);
                 }
             }
         }

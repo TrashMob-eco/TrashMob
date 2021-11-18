@@ -4,7 +4,7 @@
              x:Class="TrashMobMobile.Views.AddEventPage"
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels" xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps"
              Title="{Binding Title}"
-             Shell.PresentationMode="Modal" >
+             Shell.PresentationMode="Animated" >
     <ContentPage.Resources>
         <ResourceDictionary>
             <Color x:Key="Accent">#96d1ff</Color>
