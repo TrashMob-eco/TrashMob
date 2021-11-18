@@ -20,7 +20,7 @@ namespace TrashMobMobile.ViewModels
 
         public AsyncCommand<MobEvent> SelectedCommand { get; }
 
-        public AsyncCommand<MobEvent> AttendCommand { get; }
+        //public AsyncCommand<MobEvent> AttendCommand { get; }
 
         private readonly IMobEventManager mobEventManager;
 
@@ -31,7 +31,7 @@ namespace TrashMobMobile.ViewModels
             this.mobEventManager = mobEventManager;
             RefreshCommand = new AsyncCommand(Refresh);
             AddCommand = new AsyncCommand(Add);
-            AttendCommand = new AsyncCommand<MobEvent>(Attend);
+            //AttendCommand = new AsyncCommand<MobEvent>(Attend);
             SelectedCommand = new AsyncCommand<MobEvent>(Selected);
         }
 
@@ -57,10 +57,10 @@ namespace TrashMobMobile.ViewModels
             await Shell.Current.GoToAsync(route);
         }
 
-        private async Task Attend(MobEvent mobEvent)
-        {
-            // Todo
-        }
+        //private async Task Attend(MobEvent mobEvent)
+        //{
+        //    // Todo
+        //}
 
         private async Task LoadEvents()
         {
