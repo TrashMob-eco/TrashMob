@@ -1,5 +1,6 @@
 ﻿namespace TrashMob.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
     using TrashMob.Shared.Persistence;
@@ -20,6 +21,14 @@
         {
             var mapKey = await Task.FromResult(mapRepository.GetMapKey());
             return Ok(mapKey);
+        }
+
+        [HttpGet("GetAddress")]
+        [Authorize]
+        public async Task<IActionResult> GetAddress([FromQuery] double latitude, [FromQuery] double longitude)
+        {
+            var address = await mapRepository.GetAddress(latitude, longitude);
+            return Ok(address);
         }
     }
 }

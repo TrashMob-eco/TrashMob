@@ -25,15 +25,15 @@ https://as-tm-dev-westus2.azurewebsites.net/
 # FAQ 
 ## What is the current state of this project?
 
-As of 5/26/2021, we are now in Beta launch. We'll hold at Beta until a few more key features are complete so we can do a grand-relaunch when those features go in. Beta alsop means that if things really go wrong, we may have to delete data manually and depending on load, site availability is not guaranteed.
+As of 5/26/2021, we are now in Beta launch. We'll hold at Beta until a few more key features are complete so we can do a grand-relaunch when those features go in. Beta also means that if things really go wrong, we may have to delete data manually and depending on load, site availability is not guaranteed.
 
 ## Are you looking for contributors?
 
-ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want to get involved. All kinds of skills needed, from logo design to reactjs, to website design, to aspnet core, to deployment / github skills.
+ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want to get involved. All kinds of skills needed, from logo design to reactjs, to website design, to aspnet core, to Xamarin, to deployment / github skills.
  
 # Development Notes
 
-## Getting Started
+## Getting Started - Development
 
 1. You must install the .net 5 SDK
 1. Install Visual Studio Code
@@ -105,14 +105,34 @@ Add the following launchsettings.json file (may need to create it if you don't h
 
 ```
 
-## To Build the app:
+## Getting Started - Mobile Development
+
+The mobile app is written using Xamarin. It requires a few prerequisites in order to get it compiling and running.
+
+1. Ensure you have installed the Xamarin components to Visual Studio
+2. Install Android Studio https://developer.android.com/studio 
+3. Create an Android Emulator device in Android Studio
+4. Start the TrashMobMobile Project in Visual Studio.
+5. In order to have the maps feature work, you will need to do the following:
+    1. Create a Google Maps account: https://developers.google.com/maps/gmp-get-started
+    2. Get your Google API Key from your Google Project
+    3. Create a gradle.properties file in your GRADLE_USER_HOME (i.e. c:\users\<username>\.gradle)
+    4. Add the following line to your gradle properties file: 
+    ```
+    GOOGLE_API_KEY = "<Your api key>"
+    ```
+    5. Restart your emulator. Maps shoould work now
+
+    Never check in any file that contains your real api key.
+
+## To Build the Web App:
 
 In the Trashmob project folder, run the following command:
 ```
 dotnet build
 ```
 
-## To Run the app:
+## To Run the Web App:
 
 In the Trashmob project folder, run the following command:
 ```

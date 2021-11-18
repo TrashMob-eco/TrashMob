@@ -1,5 +1,6 @@
 ﻿namespace TrashMob.Shared.Persistence
 {
+    using AzureMapsToolkit.Search;
     using AzureMapsToolkit.Spatial;
     using AzureMapsToolkit.Timezone;
     using Microsoft.Extensions.Configuration;
@@ -8,6 +9,7 @@
     using System.Net;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using TrashMob.Shared.Models;
 
     public class MapRepository : IMapRepository
     {
@@ -103,6 +105,43 @@
             }
 
             return response?.Result?.TimeZones[0]?.ReferenceTime?.WallTime;
+        }
+
+        public async Task<Address> GetAddress(double latitude, double longitude)
+        {
+            var azureMaps = new AzureMapsToolkit.AzureMapsServices(GetMapKey());
+
+            if (azureMaps == null)
+            {
+                logger.LogError("Failed to get instance of azuremaps.");
+                throw new Exception("Failed to get instance of azuremaps");
+            }
+
+            var searchAddressReverseRequest = new SearchAddressReverseRequest();
+            searchAddressReverseRequest.Query = $"{latitude},{longitude}";
+
+            logger.LogInformation("Getting address for searchAddressReverseRequest: {0}", JsonSerializer.Serialize(searchAddressReverseRequest));
+
+            var response = await azureMaps.GetSearchAddressReverse(searchAddressReverseRequest).ConfigureAwait(false);
+
+            logger.LogInformation("Response from getting address for searcAddressReverseRequest: {0}", JsonSerializer.Serialize(response));
+
+            if (response.HttpResponseCode != (int)HttpStatusCode.OK && response.HttpResponseCode != 0)
+            {
+                throw new Exception($"Error getting address: {response}");
+            }
+
+            var address = new Address
+            {
+                StreetAddress = response?.Result?.Addresses[0].Address.StreetName,
+                City = response?.Result?.Addresses[0].Address.Municipality,
+                Country = response?.Result?.Addresses[0].Address.Country,
+                Region = response?.Result?.Addresses[0].Address.CountrySubdivisionName,
+                PostalCode = response?.Result?.Addresses[0].Address.PostalCode,
+                County = response?.Result?.Addresses[0].Address.CountrySecondarySubdivision,
+            };
+
+            return address;
         }
     }
 }
