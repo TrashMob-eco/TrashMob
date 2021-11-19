@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:TrashMobMobile.Views"
+             x:Class="TrashMobMobile.Views.FlyoutMenuPage"
+             Title="Flyout">
+    <ContentPage.Content>
+        <StackLayout>
+            <ListView x:Name="listView" x:FieldModifier="public">
+                <ListView.ItemsSource>
+                    <x:Array Type="{x:Type local:FlyoutMenuItem}">
+                        <local:FlyoutMenuItem Title="Events" IconSource="calendar-event.png" TargetType="{x:Type local:MobEventsPage}" />
+                        <local:FlyoutMenuItem Title="My Profile" IconSource="user-regular.png" TargetType="{x:Type local:UserProfilePage}" />
+                        <local:FlyoutMenuItem Title="Contact Us" IconSource="message-dots.png" TargetType="{x:Type local:AboutPage}" />
+                        <local:FlyoutMenuItem Title="About" IconSource="info-circle.png" TargetType="{x:Type local:AboutPage}" />
+                        <local:FlyoutMenuItem Title="Log out" IconSource="log-out.png" TargetType="{x:Type local:LogoutPage}" />
+                    </x:Array>
+                </ListView.ItemsSource>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid Padding="5,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30"/>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Image Source="{Binding IconSource}" />
+                                <Label Grid.Column="1" Text="{Binding Title}" />
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
