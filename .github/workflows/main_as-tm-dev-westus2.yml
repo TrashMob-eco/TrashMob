@@ -68,7 +68,7 @@ jobs:
       run: nuget restore TrashMob.sln
 
     - name: Build
-      run: msbuild TrashMobMobile\\TrashMobMobile.csproj /p:Configuration=Debug /p:Platform=iPhoneSimulator /t:Rebuild
+      run: msbuild TrashMobMobile/TrashMobMobile.csproj /p:Configuration=Debug /p:Platform=iPhoneSimulator /t:Rebuild
 
   build-android:
 
@@ -90,7 +90,7 @@ jobs:
       run: nuget restore TrashMob.sln
 
     - name: Build
-      run: msbuild TrashMobMobile\\TrashMobMobile.csproj /t:PackageForAndroid /p:Configuration=Debug
+      run: msbuild TrashMobMobile/TrashMobMobile.csproj /t:PackageForAndroid /p:Configuration=Debug
 
   deploy:
     runs-on: windows-latest
