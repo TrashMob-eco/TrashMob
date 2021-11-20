@@ -23,7 +23,7 @@
 
                 httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
                 httpRequestMessage.Method = HttpMethod.Get;
-                httpRequestMessage.RequestUri = new Uri(MapsApi + "/GetAddress?latitude={latitude}&longitude={longitude}");
+                httpRequestMessage.RequestUri = new Uri(MapsApi + $"/GetAddress?latitude={latitude}&longitude={longitude}");
 
                 HttpClient client = new HttpClient();
                 HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
