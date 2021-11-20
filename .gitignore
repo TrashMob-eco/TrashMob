@@ -59,3 +59,5 @@ packages
 # Node
 node_modules
 
+/TrashMobMobile/TrashMobMobile.Android/.idea
+/TrashMobMobile/TrashMobMobile.Android/TrashMobMobile.Android.iml

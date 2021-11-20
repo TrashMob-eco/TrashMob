@@ -48,6 +48,7 @@
             _ = services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
             _ = services.AddSingleton<IDataStore<Item>, MockDataStore>();
             _ = services.AddSingleton<IEventTypeRestService, EventTypeRestService>();
+            _ = services.AddSingleton<IMapRestService, MapRestService>();
             _ = services.AddSingleton<IMobEventManager, MobEventManager>();
             _ = services.AddSingleton<IMobEventRestService, MobEventRestService>();
             _ = services.AddSingleton<IUserManager, UserManager>();
