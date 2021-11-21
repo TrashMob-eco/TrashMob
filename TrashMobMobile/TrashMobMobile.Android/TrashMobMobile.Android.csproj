@@ -71,6 +71,9 @@
     <PackageReference Include="Xamarin.Forms.Maps">
       <Version>5.0.0.2196</Version>
     </PackageReference>
+    <PackageReference Include="Xamarin.GooglePlayServices.Maps">
+      <Version>117.0.1.2</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AndroidParentWindowLocatorService.cs" />
