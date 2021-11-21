@@ -12,5 +12,7 @@
         Task<MobEvent> GetEventAsync(Guid eventId);
 
         Task<MobEvent> UpdateEventAsync(MobEvent mobEvent);
+
+        Task<MobEvent> AddEventAsync(MobEvent mobEvent);
     }
 }

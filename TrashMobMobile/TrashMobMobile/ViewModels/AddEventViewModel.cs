@@ -54,6 +54,10 @@
             Map.MapClicked += Map_MapClicked;
             Id = Guid.Empty;
             Task.Run(async () => await LoadEventTypes());
+
+            // Set default start time
+            EDate = DateTime.Now;
+            ETime = TimeSpan.FromHours(9);
         }
 
         public Command SaveCommand { get; }
@@ -300,7 +304,7 @@
                 IsEventPublic = IsEventPublic,
             };
 
-            await mobEventManager.UpdateEventAsync(mobEvent);
+            await mobEventManager.AddEventAsync(mobEvent);
 
             await Shell.Current.GoToAsync("..");
         }

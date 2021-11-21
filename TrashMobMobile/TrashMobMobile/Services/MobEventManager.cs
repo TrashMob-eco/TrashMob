@@ -28,6 +28,11 @@
         {
             return mobEventRestService.UpdateEventAsync(mobEvent);
         }
+
+        public Task<MobEvent> AddEventAsync(MobEvent mobEvent)
+        {
+            return mobEventRestService.AddEventAsync(mobEvent);
+        }
     }
 }
 

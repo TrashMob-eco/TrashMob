@@ -76,13 +76,39 @@
             try
             {
                 var userContext = await GetUserContext().ConfigureAwait(false);
-
                 var httpRequestMessage = new HttpRequestMessage();
                 httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
                 httpRequestMessage.Method = HttpMethod.Put;
 
                 httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
                 httpRequestMessage.RequestUri = new Uri(EventsApi + "/" + mobEvent.Id);
+
+                httpRequestMessage.Content = JsonContent.Create(mobEvent, typeof(MobEvent), null, SerializerOptions);
+
+                HttpClient client = new HttpClient();
+                HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
+                string responseString = await response.Content.ReadAsStringAsync();
+
+                return JsonConvert.DeserializeObject<MobEvent>(responseString);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(@"\tERROR {0}", ex.Message);
+                throw;
+            }
+        }
+
+        public async Task<MobEvent> AddEventAsync(MobEvent mobEvent)
+        {
+            try
+            {
+                var userContext = await GetUserContext().ConfigureAwait(false);
+                var httpRequestMessage = new HttpRequestMessage();
+                httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
+                httpRequestMessage.Method = HttpMethod.Post;
+
+                httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
+                httpRequestMessage.RequestUri = new Uri(EventsApi);
 
                 httpRequestMessage.Content = JsonContent.Create(mobEvent, typeof(MobEvent), null, SerializerOptions);
 
