@@ -1,14 +1,15 @@
 ﻿namespace TrashMobMobile
 {
     using TrashMobMobile.Services;
-    using TrashMobMobile.Views;
     using TrashMobMobile.Features.LogOn;
     using Xamarin.Forms;
     using System;
     using Microsoft.Extensions.DependencyInjection;
     using TrashMobMobile.Models;
     using TrashMobMobile.ViewModels;
-
+    using Microsoft.AppCenter;
+    using Microsoft.AppCenter.Analytics;
+    using Microsoft.AppCenter.Crashes;
     public partial class App : Application
     {
         protected static IServiceProvider ServiceProvider { get; set; }
@@ -61,6 +62,9 @@
 
         protected override void OnStart()
         {
+            AppCenter.Start("android=5cb8f69e-d5af-4f5c-9b7b-80fd9cc12a7d;" +
+                  "ios=9b6b51bd-d13e-47d7-b5f6-bf019340391a;",
+                  typeof(Analytics), typeof(Crashes));
         }
 
         protected override void OnSleep()

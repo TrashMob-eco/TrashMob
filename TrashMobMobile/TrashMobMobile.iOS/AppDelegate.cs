@@ -3,9 +3,6 @@
     using Foundation;
     using Microsoft.Extensions.DependencyInjection;
     using UIKit;
-    using Microsoft.AppCenter;
-    using Microsoft.AppCenter.Analytics;
-    using Microsoft.AppCenter.Crashes;
 
     // The UIApplicationDelegate for the application. This class is responsible for launching the 
     // User Interface of the application, as well as listening (and optionally responding) to 
@@ -29,9 +26,6 @@
             global::Xamarin.Forms.Forms.Init();
             Xamarin.FormsMaps.Init();
 
-            AppCenter.Start("9b6b51bd-d13e-47d7-b5f6-bf019340391a",
-                   typeof(Analytics), typeof(Crashes));
-            
             LoadApplication(new App(AddServices));
 
             return base.FinishedLaunching(app, options);

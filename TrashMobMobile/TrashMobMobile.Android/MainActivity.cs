@@ -12,9 +12,6 @@ namespace TrashMobMobile.Droid
     using Android.Content;
     using Android;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.AppCenter;
-    using Microsoft.AppCenter.Analytics;
-    using Microsoft.AppCenter.Crashes;
 
     [Activity(Label = "TrashMobMobile", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
@@ -42,9 +39,6 @@ namespace TrashMobMobile.Droid
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             Forms.Init(this, savedInstanceState);
             Xamarin.FormsMaps.Init(this, savedInstanceState);
-
-            AppCenter.Start("5cb8f69e-d5af-4f5c-9b7b-80fd9cc12a7d",
-                   typeof(Analytics), typeof(Crashes));
 
             LoadApplication(new App(AddServices));
         }
