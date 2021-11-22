@@ -54,6 +54,10 @@
             Map.MapClicked += Map_MapClicked;
             Id = Guid.Empty;
             Task.Run(async () => await LoadEventTypes());
+
+            // Set default start time
+            EDate = DateTime.Now;
+            ETime = TimeSpan.FromHours(9);            
         }
 
         public Command SaveCommand { get; }
@@ -282,16 +286,16 @@
                 Description = Description,
                 EventTypeId = SelectedEventType.Id,
                 EventStatusId = EventStatusId,
-                CreatedByUserId = CreatedByUserId,
-                LastUpdatedByUserId = LastUpdatedByUserId,
+                CreatedByUserId = new Guid(App.CurrentUser.Id),
+                LastUpdatedByUserId = new Guid(App.CurrentUser.Id),
                 CreatedDate = CreatedDate,
                 LastUpdatedDate = LastUpdatedDate,
                 EventDate = EDate + ETime,
-                StreetAddress = StreetAddress,
-                City = City,
-                Region = Region,
-                Country = Country,
-                PostalCode = PostalCode,
+                StreetAddress = StreetAddress ?? string.Empty,
+                City = City ?? string.Empty,
+                Region = Region ?? string.Empty,
+                Country = Country ?? string.Empty,
+                PostalCode = PostalCode ?? string.Empty,
                 Latitude = Latitude,
                 Longitude = Longitude,
                 DurationHours = DurationHours,
@@ -300,7 +304,7 @@
                 IsEventPublic = IsEventPublic,
             };
 
-            await mobEventManager.UpdateEventAsync(mobEvent);
+            await mobEventManager.AddEventAsync(mobEvent);
 
             await Shell.Current.GoToAsync("..");
         }

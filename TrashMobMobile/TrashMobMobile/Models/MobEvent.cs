@@ -14,8 +14,6 @@
         public string Region { get; set; }
         public string Country { get; set; }
         public string PostalCode { get; set; }
-        public string EventType { get; set; }
-        public string EventStatus { get; set; }
         public int EventTypeId { get; set; }
         public int EventStatusId { get; set; }
         public int DurationHours { get; set; }

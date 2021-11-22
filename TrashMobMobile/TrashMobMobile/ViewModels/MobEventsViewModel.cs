@@ -1,7 +1,6 @@
 ﻿
 namespace TrashMobMobile.ViewModels
 {
-    using System.Collections.ObjectModel;
     using System.Threading.Tasks;
     using Xamarin.Forms;
     using TrashMobMobile.Models;
@@ -9,6 +8,7 @@ namespace TrashMobMobile.ViewModels
     using TrashMobMobile.Views;
     using MvvmHelpers;
     using MvvmHelpers.Commands;
+    using TrashMobMobile.Features.LogOn;
 
     internal class MobEventsViewModel : BaseViewModel
     {
@@ -23,12 +23,14 @@ namespace TrashMobMobile.ViewModels
         //public AsyncCommand<MobEvent> AttendCommand { get; }
 
         private readonly IMobEventManager mobEventManager;
+        private readonly IUserManager userManager;
 
-        public MobEventsViewModel(IMobEventManager mobEventManager)
+        public MobEventsViewModel(IMobEventManager mobEventManager, IUserManager userManager)
         {
             Title = "Upcoming Events";
             Events = new ObservableRangeCollection<MobEvent>();
             this.mobEventManager = mobEventManager;
+            this.userManager = userManager;
             RefreshCommand = new AsyncCommand(Refresh);
             AddCommand = new AsyncCommand(Add);
             //AttendCommand = new AsyncCommand<MobEvent>(Attend);
@@ -53,6 +55,11 @@ namespace TrashMobMobile.ViewModels
 
         private async Task Add()
         {
+            if (App.CurrentUser == null)
+            {
+                await B2CAuthenticationService.Instance.SignInAsync(userManager);
+            }
+
             var route = $"{nameof(AddEventPage)}";
             await Shell.Current.GoToAsync(route);
         }

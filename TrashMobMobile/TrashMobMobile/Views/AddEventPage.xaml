@@ -35,7 +35,7 @@
             </StackLayout>
             <StackLayout Orientation="Vertical">
                 <Label Text="Description" FontSize="Small"/>
-                <Entry Text="{Binding Description, Mode=TwoWay}" FontSize="Small" />
+                <Editor Text="{Binding Description, Mode=TwoWay}" FontSize="Small" />
             </StackLayout>
             <StackLayout Orientation="Horizontal">
                 <StackLayout Orientation="Vertical">

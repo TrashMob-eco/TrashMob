@@ -4,7 +4,6 @@
     using System;
     using System.Threading.Tasks;
     using TrashMobMobile.Features.LogOn;
-    using TrashMobMobile.Models;
     using TrashMobMobile.Services;
     using TrashMobMobile.Views;
     using Xamarin.Forms;
@@ -33,9 +32,8 @@
         {
             try
             {
-                var userContext = await B2CAuthenticationService.Instance.SignInAsync();
+                var userContext = await B2CAuthenticationService.Instance.SignInAsync(userManager);
 
-                await VerifyAccount(userContext);
                 await Xamarin.Essentials.SecureStorage.SetAsync("isLogged", "1");
 
                 await CheckTermsOfService();
@@ -74,26 +72,12 @@
             }
         }
 
-        private async Task VerifyAccount(UserContext userContext)
-        {
-            var user = new User
-            {
-                Id = Guid.Empty.ToString(),
-                NameIdentifier = userContext.NameIdentifier,
-                SourceSystemUserName = userContext.SourceSystemUserName ?? "",
-                Email = userContext.EmailAddress ?? ""
-            };
-
-            App.CurrentUser = await userManager.AddUserAsync(user);
-        }
-
         private async void OnPasswordReset()
         {
             try
             {
-                var userContext = await B2CAuthenticationService.Instance.ResetPasswordAsync();
+                var userContext = await B2CAuthenticationService.Instance.ResetPasswordAsync(userManager);
 
-                await VerifyAccount(userContext);
                 await Xamarin.Essentials.SecureStorage.SetAsync("isLogged", "1");
                 await CheckTermsOfService();
             }

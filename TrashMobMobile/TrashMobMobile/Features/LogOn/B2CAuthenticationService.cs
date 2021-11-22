@@ -7,6 +7,8 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using TrashMobMobile.Models;
+    using TrashMobMobile.Services;
     using Xamarin.Forms;
 
     /// <summary>
@@ -61,6 +63,28 @@
             return newContext;
         }
 
+        public async Task<UserContext> SignInAsync(IUserManager userManager)             
+        {
+            var userContext = await SignInAsync();
+
+            await VerifyAccount(userContext, userManager);
+
+            return userContext;
+        }
+
+        private async Task VerifyAccount(UserContext userContext, IUserManager userManager)
+        {
+            var user = new User
+            {
+                Id = Guid.Empty.ToString(),
+                NameIdentifier = userContext.NameIdentifier,
+                SourceSystemUserName = userContext.SourceSystemUserName ?? "",
+                Email = userContext.EmailAddress ?? ""
+            };
+
+            App.CurrentUser = await userManager.AddUserAsync(user);
+        }
+
         private async Task<UserContext> AcquireTokenSilent()
         {
             IEnumerable<IAccount> accounts = await _pca.GetAccountsAsync();
@@ -72,7 +96,7 @@
             return newContext;
         }
 
-        public async Task<UserContext> ResetPasswordAsync()
+        public async Task<UserContext> ResetPasswordAsync(IUserManager userManager)
         {
             AuthenticationResult authResult = await _pca.AcquireTokenInteractive(B2CConstants.Scopes)
                 .WithPrompt(Prompt.NoPrompt)
@@ -80,6 +104,7 @@
                 .ExecuteAsync();
 
             var userContext = UpdateUserInfo(authResult);
+            await VerifyAccount(userContext, userManager);
 
             return userContext;
         }
