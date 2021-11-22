@@ -54,7 +54,6 @@
             Id = mobEvent.Id;
             Name = mobEvent.Name;
             Description = mobEvent.Description;
-            EventType = mobEvent.EventType;
             EventTypeId = mobEvent.EventTypeId;
             EventStatusId = mobEvent.EventStatusId;
             CreatedByUserId = mobEvent.CreatedByUserId;
@@ -290,7 +289,6 @@
                 Id = Id,
                 Name = Name,
                 Description = Description,
-                EventType = EventType,
                 EventTypeId = EventTypeId,
                 EventStatusId = EventStatusId,
                 CreatedByUserId = CreatedByUserId,
