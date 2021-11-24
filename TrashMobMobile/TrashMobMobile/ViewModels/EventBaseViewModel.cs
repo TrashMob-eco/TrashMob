@@ -38,6 +38,7 @@
         private Position center;
         private List<EventType> eventTypes = new List<EventType>();
         private readonly IEventTypeRestService eventTypeRestService;
+        private EventType selectedEventType;
 
         protected IMobEventManager MobEventManager { get; private set; }
         
@@ -95,11 +96,18 @@
             }
 
             EventType = eventTypes.FirstOrDefault(et => et.Id == mobEvent.EventTypeId).Name;
+            SelectedEventType = eventTypes.FirstOrDefault(et => et.Id == mobEvent.EventTypeId);
         }
 
         private async Task LoadEventTypes()
         {
             EventTypes.AddRange(await eventTypeRestService.GetEventTypesAsync());
+        }
+
+        public EventType SelectedEventType
+        {
+            get => selectedEventType;
+            set => SetProperty(ref selectedEventType, value);
         }
 
         public List<EventType> EventTypes
