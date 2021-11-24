@@ -123,7 +123,7 @@ The mobile app is written using Xamarin. It requires a few prerequisites in orde
     ```
     5. Restart your emulator. Maps should work now
 
-    Never check in any file that contains your real api key.
+    <b>Never check in any file that contains your real api key.</b>
 
 ## To Build the Web App:
 
@@ -199,3 +199,14 @@ If setting up a new environment, you will need to add the IP Address of the App 
 
 ## The site is asking me to login
 If you try to access a secure page, you will need a user id on the site. When you hit a secured page, the site will redirect you to a sign in page. Click the Sign up now link on the bottom of the login box. Multiple identity providers are now available, including Facebook, Twitter, Google, and Microsoft, along with the TrashMob tenant itself if you prefer not to use an integrated signup.
+
+## How do I get a test distribution of the Mobile App?
+We currently use Microsoft App Center for building and distributing the Mobile apps. In order to get notified of a new distribution (or to download it). 
+1. Send a note to info@trashmob.eco requesting access to App Center. Please include the email address you wish to use to access App Center in the request and why you want to use a dev build.
+2. A TrashMob.eco admin will review your request and if approved, will add you to the testers group.
+3. You will receive an email notification when your request has been approved.
+4. Click on the link to complete your onboarding.
+5. You can either download the latest package at that point, or wait for the next build to be completed. You will be notified when a new version is available.
+
+## How do I get a production distribution of the Mobile App?
+The mobile app is not yet in production, but when it is, it will be available in Google Play and the Apple Store.
