@@ -42,14 +42,14 @@
 		<Compile Update="Themes\LightTheme.xaml.cs">
 			<DependentUpon>LightTheme.xaml</DependentUpon>
 		</Compile>
+		<Compile Update="Views\EditEventPage.xaml.cs">
+		  <DependentUpon>EditEventPage.xaml</DependentUpon>
+		</Compile>
 		<Compile Update="Views\LogoutPage.xaml.cs">
 			<DependentUpon>LogoutPage.xaml</DependentUpon>
 		</Compile>
 		<Compile Update="Views\AddEventPage.xaml.cs">
 		  <DependentUpon>AddEventPage.xaml</DependentUpon>
-		</Compile>
-		<Compile Update="Views\ManageEventPage.xaml.cs">
-			<DependentUpon>ManageEventPage.xaml</DependentUpon>
 		</Compile>
 		<Compile Update="Views\TermsAndConditionsPage.xaml.cs">
 			<DependentUpon>TermsAndConditionsPage.xaml</DependentUpon>

@@ -49,7 +49,16 @@ namespace TrashMobMobile.ViewModels
                 return;
             }
 
-            var route = $"{nameof(EventDetailPage)}?EventId={mobEvent.Id}";
+            string route;
+            if (App.CurrentUser.Id == mobEvent.CreatedByUserId)
+            {
+                route = $"{nameof(EditEventPage)}?EventId={mobEvent.Id}";
+            }
+            else
+            {
+                route = $"{nameof(EventDetailPage)}?EventId={mobEvent.Id}";
+            }
+
             await Shell.Current.GoToAsync(route);
         }
 
@@ -71,6 +80,11 @@ namespace TrashMobMobile.ViewModels
 
         private async Task LoadEvents()
         {
+            if (App.CurrentUser == null)
+            {
+                await B2CAuthenticationService.Instance.SignInAsync(userManager);
+            }
+
             IsBusy = true;
             Events.Clear();
             var mobEvents = await mobEventManager.GetEventsAsync();

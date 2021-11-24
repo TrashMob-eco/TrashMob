@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TrashMobMobile.Views.UserProfilePage"
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels" xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps"
+             xmlns:local="clr-namespace:TrashMobMobile.Controls"
              Title="{Binding Title}">
 
     <ContentPage.Resources>
@@ -15,52 +16,56 @@
         <StackLayout Orientation="Vertical" Padding="30,24,30,24" Spacing="10">
             <StackLayout Orientation="Horizontal">
                 <StackLayout>
-                    <Label Text="UserName" FontSize="Small"/>
-                    <Entry Text="{Binding UserName, Mode=TwoWay}" FontSize="Small" />
+                    <Label Text="UserName" FontSize="Small" FontAttributes="Bold"/>
+                    <Entry Text="{Binding UserName, Mode=TwoWay}" FontSize="Small" MaxLength="32" />
                 </StackLayout>
                 <StackLayout>
-                    <Label Text="Email" FontSize="Small"/>
-                    <Entry Text="{Binding Email, Mode=TwoWay}" FontSize="Small" />
-                </StackLayout>
-            </StackLayout>
-            <StackLayout Orientation="Horizontal">
-                <StackLayout>
-                    <Label Text="Given Name" FontSize="Small"/>
-                    <Entry Text="{Binding GivenName, Mode=TwoWay}" FontSize="Small" />
-                </StackLayout>
-                <StackLayout>
-                    <Label Text="Surname" FontSize="Small"/>
-                    <Entry Text="{Binding Surname, Mode=TwoWay}" FontSize="Small" />
+                    <Label Text="Email" FontSize="Small" FontAttributes="Bold"/>
+                    <Entry Text="{Binding Email, Mode=TwoWay}" FontSize="Small" MaxLength="64" />
                 </StackLayout>
             </StackLayout>
             <StackLayout Orientation="Horizontal">
                 <StackLayout>
-                    <Label Text="City" FontSize="Small"/>
-                    <Entry Text="{Binding City, Mode=TwoWay}" FontSize="Small" />
+                    <Label Text="Given Name" FontSize="Small" FontAttributes="Bold"/>
+                    <Entry Text="{Binding GivenName, Mode=TwoWay}" FontSize="Small" MaxLength="32" />
                 </StackLayout>
                 <StackLayout>
-                    <Label Text="Region" FontSize="Small"/>
+                    <Label Text="Surname" FontSize="Small" FontAttributes="Bold"/>
+                    <Entry Text="{Binding Surname, Mode=TwoWay}" FontSize="Small" MaxLength="32"/>
+                </StackLayout>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <StackLayout>
+                    <Label Text="City" FontSize="Small" FontAttributes="Bold"/>
+                    <Entry Text="{Binding City, Mode=TwoWay}" FontSize="Small" MaxLength="64" />
+                </StackLayout>
+                <StackLayout>
+                    <Label Text="Region" FontSize="Small" FontAttributes="Bold"/>
                     <Entry Text="{Binding Region, Mode=TwoWay}" FontSize="Small" />
                 </StackLayout>
             </StackLayout>
             <StackLayout Orientation="Horizontal">
                 <StackLayout>
-                    <Label Text="Country" FontSize="Small"/>
+                    <Label Text="Country" FontSize="Small" FontAttributes="Bold"/>
                     <Entry Text="{Binding Country, Mode=TwoWay}" FontSize="Small" />
                 </StackLayout>
                 <StackLayout>
-                    <Label Text="Postal Code" FontSize="Small"/>
-                    <Entry Text="{Binding PostalCode, Mode=TwoWay}" FontSize="Small" />
+                    <Label Text="Postal Code" FontSize="Small" FontAttributes="Bold"/>
+                    <Entry Text="{Binding PostalCode, Mode=TwoWay}" FontSize="Small" MaxLength="25" />
                 </StackLayout>
             </StackLayout>
             <StackLayout Orientation="Horizontal">
                 <StackLayout>
-                    <Label Text="Prefers Metric" FontSize="Small"/>
+                    <Label Text="Prefers Metric" FontSize="Small" FontAttributes="Bold"/>
                     <CheckBox IsChecked="{Binding PrefersMetric, Mode=TwoWay}" />
                 </StackLayout>
                 <StackLayout>
-                    <Label Text="Travel Limits for Local Events" FontSize="Small"/>
-                    <Entry Text="{Binding TravelLimitsForLocalEvents, Mode=TwoWay}" FontSize="Small" />
+                    <Label Text="Travel Limits for Local Events" FontSize="Small" FontAttributes="Bold" />
+                    <Entry Text="{Binding TravelLimitsForLocalEvents, Mode=TwoWay}" FontSize="Small" Keyboard="Numeric">
+                        <Entry.Behaviors>
+                            <local:NumericValidationBehavior />
+                        </Entry.Behaviors>
+                    </Entry>
                 </StackLayout>
             </StackLayout>
             <Label Text="Opt out of All Emails" FontSize="Small"/>
@@ -71,35 +76,35 @@
             </StackLayout>
             <Label Text="User Location" FontSize="Title"/>
             <ContentView Content="{Binding Map}" HeightRequest="500"/>
-            <Label Text="Member Since" FontSize="Micro"/>
+            <Label Text="Member Since" FontSize="Micro" FontAttributes="Bold"/>
             <Label Text="{Binding MemberSince}" FontSize="Micro" />
             <StackLayout Orientation="Horizontal">
                 <StackLayout>
-                    <Label Text="Date Agreed To Terms Of Service" FontSize="Micro"/>
+                    <Label Text="Date Agreed To Terms Of Service" FontSize="Micro" FontAttributes="Bold" />
                     <Label Text="{Binding DateAgreedToTermsOfService}" FontSize="Micro"/>
                 </StackLayout>
                 <StackLayout>
-                    <Label Text="Terms Of Service Version" FontSize="Micro"/>
+                    <Label Text="Terms Of Service Version" FontSize="Micro" FontAttributes="Bold" />
                     <Label Text="{Binding TermsOfServiceVersion}" FontSize="Micro" />
                 </StackLayout>
             </StackLayout>
             <StackLayout Orientation="Horizontal">
                 <StackLayout>
-                    <Label Text="Date Agreed To Privacy Policy" FontSize="Micro"/>
+                    <Label Text="Date Agreed To Privacy Policy" FontSize="Micro" FontAttributes="Bold" />
                     <Label Text="{Binding DateAgreedToPrivacyPolicy}" FontSize="Micro" />
                 </StackLayout>
                 <StackLayout>
-                    <Label Text="Privacy Policy Version" FontSize="Micro"/>
+                    <Label Text="Privacy Policy Version" FontSize="Micro" FontAttributes="Bold" />
                     <Label Text="{Binding PrivacyPolicyVersion}" FontSize="Micro" />
                 </StackLayout>
             </StackLayout>
             <StackLayout Orientation="Horizontal">
                 <StackLayout>
-                    <Label Text="Name Identifier" FontSize="Micro"/>
+                    <Label Text="Name Identifier" FontSize="Micro" FontAttributes="Bold"/>
                     <Label Text="{Binding NameIdentifier}" FontSize="Micro" />
                 </StackLayout>
                 <StackLayout>
-                    <Label Text="Source System UserName" FontSize="Micro"/>
+                    <Label Text="Source System UserName" FontSize="Micro" FontAttributes="Bold"/>
                     <Label Text="{Binding SourceSystemUserName}" FontSize="Micro" />
                 </StackLayout>
             </StackLayout>

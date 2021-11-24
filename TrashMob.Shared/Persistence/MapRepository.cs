@@ -133,7 +133,7 @@
 
             var address = new Address
             {
-                StreetAddress = response?.Result?.Addresses[0].Address.StreetName,
+                StreetAddress = response?.Result?.Addresses[0].Address.StreetNameAndNumber,
                 City = response?.Result?.Addresses[0].Address.Municipality,
                 Country = response?.Result?.Addresses[0].Address.Country,
                 Region = response?.Result?.Addresses[0].Address.CountrySubdivisionName,
