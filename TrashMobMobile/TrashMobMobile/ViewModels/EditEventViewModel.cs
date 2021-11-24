@@ -1,12 +1,15 @@
 ﻿namespace TrashMobMobile.ViewModels
 {
     using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using TrashMobMobile.Models;
     using TrashMobMobile.Services;
     using Xamarin.Forms;
     using Xamarin.Forms.Maps;
 
-    public class AddEventViewModel : EventBaseViewModel
+    [QueryProperty(nameof(EventId), nameof(EventId))]
+    public class EditEventViewModel : EventBaseViewModel
     {
         private DateTime eDate;
         private TimeSpan eTime;
@@ -14,22 +17,26 @@
 
         private readonly IMapRestService mapRestService;
 
-        public AddEventViewModel(IMobEventManager mobEventManager, IUserManager userManager, IEventTypeRestService eventTypeRestService, IMapRestService mapRestService) : base(mobEventManager, userManager, eventTypeRestService)
+        public EditEventViewModel(IMobEventManager mobEventManager, IUserManager userManager, IEventTypeRestService eventTypeRestService, IMapRestService mapRestService) : base(mobEventManager, userManager, eventTypeRestService)
         {
-            Title = "Add Event";
+            Title = "Edit Event";
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
             PropertyChanged +=
                 (_, __) => SaveCommand.ChangeCanExecute();
             this.mapRestService = mapRestService;
-            Id = Guid.Empty;
+        }
 
-            // Set default start time
-            EDate = DateTime.Now;
-            ETime = TimeSpan.FromHours(9);            
+        public string EventId
+        {
+            set
+            {
+                Task.Run(async () => await LoadEvent(new Guid(value)));
+            }
         }
 
         public Command SaveCommand { get; }
+
         public Command CancelCommand { get; }
 
         public EventType SelectedEventType
@@ -118,7 +125,7 @@
                 IsEventPublic = IsEventPublic,
             };
 
-            await MobEventManager.AddEventAsync(mobEvent);
+            await MobEventManager.UpdateEventAsync(mobEvent);
 
             await Shell.Current.GoToAsync("..");
         }

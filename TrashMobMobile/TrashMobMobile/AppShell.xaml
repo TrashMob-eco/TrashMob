@@ -90,7 +90,7 @@
     </FlyoutItem>
     <FlyoutItem Title="Add Event">
         <Tab>
-            <ShellContent Route="AddEventPage" ContentTemplate="{DataTemplate local:ManageEventPage}" />
+            <ShellContent Route="AddEventPage" ContentTemplate="{DataTemplate local:AddEventPage}" />
         </Tab>
     </FlyoutItem>
     <FlyoutItem Title="Contact Us">

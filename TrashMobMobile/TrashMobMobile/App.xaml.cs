@@ -36,6 +36,7 @@
             services.AddTransient<AboutViewModel>();
             services.AddTransient<AddEventViewModel>();
             services.AddTransient<ContactUsViewModel>();
+            services.AddTransient<EditEventViewModel>();
             services.AddTransient<EventDetailViewModel>();
             services.AddTransient<EventsMapViewModel>();
             services.AddTransient<LoginViewModel>();
