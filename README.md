@@ -116,12 +116,12 @@ The mobile app is written using Xamarin. It requires a few prerequisites in orde
 5. In order to have the maps feature work, you will need to do the following:
     1. Create a Google Maps account: https://developers.google.com/maps/gmp-get-started
     2. Get your Google API Key from your Google Project
-    3. Create a gradle.properties file in your GRADLE_USER_HOME (i.e. c:\users\<username>\.gradle)
+    3. Create a gradle.properties file in your GRADLE_USER_HOME (i.e. c:\users\\<username>\.gradle)
     4. Add the following line to your gradle properties file: 
     ```
     GOOGLE_API_KEY = "<Your api key>"
     ```
-    5. Restart your emulator. Maps shoould work now
+    5. Restart your emulator. Maps should work now
 
     Never check in any file that contains your real api key.
 
