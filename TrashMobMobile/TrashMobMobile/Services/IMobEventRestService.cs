@@ -14,5 +14,7 @@
         Task<MobEvent> UpdateEventAsync(MobEvent mobEvent);
 
         Task<MobEvent> AddEventAsync(MobEvent mobEvent);
+
+        Task<IEnumerable<MobEvent>> GetEventsUserIsAttending(Guid userId);
     }
 }

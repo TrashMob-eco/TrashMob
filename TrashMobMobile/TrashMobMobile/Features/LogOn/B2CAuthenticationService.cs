@@ -76,7 +76,7 @@
         {
             var user = new User
             {
-                Id = Guid.Empty.ToString(),
+                Id = Guid.Empty,
                 NameIdentifier = userContext.NameIdentifier,
                 SourceSystemUserName = userContext.SourceSystemUserName ?? "",
                 Email = userContext.EmailAddress ?? ""

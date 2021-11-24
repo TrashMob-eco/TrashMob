@@ -124,5 +124,37 @@
                 throw;
             }
         }
+
+        public async Task<IEnumerable<MobEvent>> GetEventsUserIsAttending(Guid userId)
+        {
+            var mobEvents = new List<MobEvent>();
+
+            try
+            {
+                var userContext = await GetUserContext().ConfigureAwait(false);
+
+                var httpRequestMessage = new HttpRequestMessage();
+                httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
+
+                httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
+                httpRequestMessage.Method = HttpMethod.Get;
+                httpRequestMessage.RequestUri = new Uri(EventsApi + $"/eventsuserisattending/{userId}");
+
+                HttpClient client = new HttpClient();
+                HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string content = await response.Content.ReadAsStringAsync();
+                    mobEvents = JsonConvert.DeserializeObject<List<MobEvent>>(content);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(@"\tERROR {0}", ex.Message);
+            }
+
+            return mobEvents;
+        }
     }
 }

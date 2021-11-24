@@ -71,6 +71,11 @@ namespace TrashMobMobile.ViewModels
 
         private async Task LoadEvents()
         {
+            if (App.CurrentUser == null)
+            {
+                await B2CAuthenticationService.Instance.SignInAsync(userManager);
+            }
+
             IsBusy = true;
             Events.Clear();
             var mobEvents = await mobEventManager.GetEventsAsync();

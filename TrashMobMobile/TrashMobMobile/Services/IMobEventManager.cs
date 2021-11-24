@@ -14,5 +14,11 @@
         Task<MobEvent> UpdateEventAsync(MobEvent mobEvent);
 
         Task<MobEvent> AddEventAsync(MobEvent mobEvent);
+
+        Task AddEventAttendeeAsync(EventAttendee eventAttendee);
+
+        Task RemoveEventAttendeeAsync(EventAttendee eventAttendee);
+ 
+        Task<bool> IsUserAttendingAsync(Guid eventId, Guid userId);
     }
 }

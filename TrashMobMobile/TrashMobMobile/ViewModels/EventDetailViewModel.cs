@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using TrashMobMobile.Features.LogOn;
     using TrashMobMobile.Models;
     using TrashMobMobile.Services;
     using Xamarin.Forms;
@@ -33,18 +34,23 @@
         private DateTime createdDate;
         private DateTime lastUpdatedDate;
         private bool isEventPublic;
+        private bool isUserAttending;
+        private bool isUserLoggedIn = false;
 
         private readonly IMobEventManager mobEventManager;
+        private readonly IUserManager userManager;
         private Position center;
 
-        public EventDetailViewModel(IMobEventManager mobEventManager)
+        public EventDetailViewModel(IMobEventManager mobEventManager, IUserManager userManager)
         {
             Title = "Event Details";
-            SaveCommand = new Command(OnSave, ValidateSave);
+            AttendCommand = new Command(OnAttend);
+            UnattendCommand = new Command(OnUnattend);
             CancelCommand = new Command(OnCancel);
             PropertyChanged +=
-                (_, __) => SaveCommand.ChangeCanExecute();
+                (_, __) => AttendCommand.ChangeCanExecute();
             this.mobEventManager = mobEventManager;
+            this.userManager = userManager;
         }
 
         private async Task LoadEvent(Guid eventId)
@@ -77,6 +83,12 @@
             Map.MapClicked += Map_MapClicked;
 
             SetEventPin(mobEvent.Name, mobEvent.Region, mobEvent.City, mobEvent.Latitude, mobEvent.Longitude);
+
+            if (App.CurrentUser != null)
+            {
+                IsUserLoggedIn = true;
+                IsUserAttending = await mobEventManager.IsUserAttendingAsync(id, App.CurrentUser.Id);
+            }
         }
 
         public string EventId
@@ -224,9 +236,16 @@
             set => SetProperty(ref isEventPublic, value);
         }
 
-        private bool ValidateSave()
+        public bool IsUserAttending
         {
-            return !string.IsNullOrWhiteSpace(name);
+            get => isUserAttending;
+            set => SetProperty(ref isUserAttending, value);
+        }
+
+        public bool IsUserLoggedIn
+        {
+            get => isUserLoggedIn;
+            set => SetProperty(ref isUserLoggedIn, value);
         }
 
         public Map Map { get; private set; }
@@ -237,7 +256,9 @@
             set => SetProperty(ref center, value);
         }
 
-        public Command SaveCommand { get; }
+        public Command AttendCommand { get; }
+
+        public Command UnattendCommand { get; }
 
         public Command CancelCommand { get; }
 
@@ -282,34 +303,40 @@
             await Shell.Current.GoToAsync("..");
         }
 
-        private async void OnSave()
+        private async void OnAttend()
         {
-            MobEvent mobEvent = new MobEvent()
+            if (App.CurrentUser == null)
             {
-                Id = Id,
-                Name = Name,
-                Description = Description,
-                EventTypeId = EventTypeId,
-                EventStatusId = EventStatusId,
-                CreatedByUserId = CreatedByUserId,
-                LastUpdatedByUserId = LastUpdatedByUserId,
-                CreatedDate = CreatedDate,
-                LastUpdatedDate = LastUpdatedDate,
-                EventDate = EventDate,
-                StreetAddress = StreetAddress,
-                City = City,
-                Region = Region,
-                Country = Country,
-                PostalCode = PostalCode,
-                Latitude = Latitude,
-                Longitude = Longitude,
-                DurationHours = DurationHours,
-                DurationMinutes = DurationMinutes,
-                MaxNumberOfParticipants = MaxNumberOfParticipants,
-                IsEventPublic = IsEventPublic,
+                await B2CAuthenticationService.Instance.SignInAsync(userManager);
+                IsUserLoggedIn = true;
+            }
+
+            var eventAttendee = new EventAttendee
+            {
+                EventId = id,
+                UserId = App.CurrentUser.Id
             };
 
-            await mobEventManager.UpdateEventAsync(mobEvent);
+            await mobEventManager.AddEventAttendeeAsync(eventAttendee);
+
+            await Shell.Current.GoToAsync("..");
+        }
+
+        private async void OnUnattend()
+        {
+            if (App.CurrentUser == null)
+            {
+                await B2CAuthenticationService.Instance.SignInAsync(userManager);
+                IsUserLoggedIn = true;
+            }
+
+            var eventAttendee = new EventAttendee
+            {
+                EventId = id,
+                UserId = App.CurrentUser.Id
+            };
+
+            await mobEventManager.RemoveEventAttendeeAsync(eventAttendee);
 
             await Shell.Current.GoToAsync("..");
         }
