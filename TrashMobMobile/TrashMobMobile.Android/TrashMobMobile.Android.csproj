@@ -44,6 +44,10 @@
     <AndroidManagedSymbols>true</AndroidManagedSymbols>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
     <AndroidKeyStore>true</AndroidKeyStore>
+    <AndroidSigningKeyStore>C:\Users\joe_b\AppData\Local\Xamarin\Mono for Android\Keystore\trashmob\trashmob.keystore</AndroidSigningKeyStore>
+    <AndroidSigningStorePass>LitterPicking</AndroidSigningStorePass>
+    <AndroidSigningKeyAlias>trashmob</AndroidSigningKeyAlias>
+    <AndroidSigningKeyPass>LitterPicking</AndroidSigningKeyPass>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
