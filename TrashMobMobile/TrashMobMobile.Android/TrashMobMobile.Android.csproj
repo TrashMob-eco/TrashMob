@@ -33,6 +33,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidLinkMode>None</AndroidLinkMode>
+    <AndroidKeyStore>true</AndroidKeyStore>
+    <AndroidSigningKeyStore>C:\Users\joe_b\AppData\Local\Xamarin\Mono for Android\Keystore\trashmob\trashmob.keystore</AndroidSigningKeyStore>
+    <AndroidSigningStorePass>LitterPicking</AndroidSigningStorePass>
+    <AndroidSigningKeyAlias>TrashMob</AndroidSigningKeyAlias>
+    <AndroidSigningKeyPass>LitterPicking</AndroidSigningKeyPass>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -44,6 +49,10 @@
     <AndroidManagedSymbols>true</AndroidManagedSymbols>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
     <AndroidKeyStore>true</AndroidKeyStore>
+    <AndroidSigningKeyStore>C:\Users\joe_b\AppData\Local\Xamarin\Mono for Android\Keystore\trashmob\trashmob.keystore</AndroidSigningKeyStore>
+    <AndroidSigningStorePass>LitterPicking</AndroidSigningStorePass>
+    <AndroidSigningKeyAlias>trashmob</AndroidSigningKeyAlias>
+    <AndroidSigningKeyPass>LitterPicking</AndroidSigningKeyPass>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />

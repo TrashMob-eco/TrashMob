@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using TrashMobMobile.Models;
     using TrashMobMobile.Services;
@@ -13,7 +14,6 @@
     {
         private DateTime eDate;
         private TimeSpan eTime;
-        private EventType selectedEventType;
 
         private readonly IMapRestService mapRestService;
 
@@ -38,12 +38,6 @@
         public Command SaveCommand { get; }
 
         public Command CancelCommand { get; }
-
-        public EventType SelectedEventType
-        {
-            get => selectedEventType;
-            set => SetProperty(ref selectedEventType, value);
-        }
 
         public DateTime EDate
         {

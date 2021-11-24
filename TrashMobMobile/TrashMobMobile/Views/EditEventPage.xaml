@@ -20,7 +20,7 @@
                     <Entry Text="{Binding Name, Mode=TwoWay}" FontSize="Small" MaxLength="64"/>
                 </StackLayout>
                 <StackLayout Orientation="Vertical">
-                    <Label Text="Event Type" FontSize="Small"/>
+                    <Label Text="Event Type" FontSize="Small" FontAttributes="Bold" />
                     <Picker ItemsSource="{Binding EventTypes, Mode=TwoWay}" Title="Select an Event Type" ItemDisplayBinding="{Binding Name}" SelectedItem="{Binding SelectedEventType}" FontSize="Small" />
                 </StackLayout>
             </StackLayout>
