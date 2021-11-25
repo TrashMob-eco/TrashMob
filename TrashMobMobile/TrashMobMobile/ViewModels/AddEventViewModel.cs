@@ -29,6 +29,7 @@
         }
 
         public Command SaveCommand { get; }
+
         public Command CancelCommand { get; }
 
         public DateTime EDate

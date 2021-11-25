@@ -8,13 +8,18 @@
     public class EventsMapViewModel : BaseViewModel
     {
         private readonly IMobEventManager mobEventManager;
+
         public EventMap Map { get; private set; }
 
         public EventsMapViewModel(IMobEventManager mobEventManager)
         {
             Title = "Events Map";
             this.mobEventManager = mobEventManager;
-            Map = new EventMap();
+            Map = new EventMap()
+            {
+                MapType = MapType.Street
+            };
+            
             Task.Run(async () => await LoadEvents());
         }
 
