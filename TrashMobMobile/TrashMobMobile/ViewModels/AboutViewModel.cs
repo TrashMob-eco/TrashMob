@@ -8,8 +8,8 @@
     {
         public AboutViewModel()
         {
-            Title = "About";
-            OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://aka.ms/xamarin-quickstart"));
+            Title = "About TrashMob.eco";
+            OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://www.trashmob.eco"));
         }
 
         public ICommand OpenWebCommand { get; }
