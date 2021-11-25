@@ -32,13 +32,19 @@
                 var pin = new EventPin
                 {
                     EventId = mobEvent.Id,
-                    Address = mobEvent.City + ", " + mobEvent.Region,
+                    Address = $"{mobEvent.StreetAddress}, {mobEvent.City}, {mobEvent.Region}, {mobEvent.Country} {mobEvent.PostalCode}",
                     Label = mobEvent.Name,
+                    Name = mobEvent.Name,
+                    EventDate = mobEvent.EventDate,
                     Type = PinType.Place,
-                    Position = new Position(mobEvent.Latitude, mobEvent.Longitude)
+                    Position = new Position(mobEvent.Latitude, mobEvent.Longitude),
+                    // Todo: replace this with a link to a page here
+                    Url = $"https://www.trashmob.eco/eventdetails/{mobEvent.Id}",
                 };
 
+                // Need to add the pin to both lists
                 Map.EventPins.Add(pin);
+                Map.Pins.Add(pin);
             }
         }
     }

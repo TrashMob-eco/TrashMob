@@ -6,6 +6,7 @@ using Android.Gms.Maps.Model;
 using Android.Widget;
 using TrashMobMobile.Controls;
 using TrashMobMobile.Droid;
+using TrashMobMobile.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
 using Xamarin.Forms.Maps.Android;
@@ -51,6 +52,7 @@ namespace TrashMobMobile.Droid
             marker.SetPosition(new LatLng(pin.Position.Latitude, pin.Position.Longitude));
             marker.SetTitle(pin.Label);
             marker.SetSnippet(pin.Address);
+
             marker.SetIcon(BitmapDescriptorFactory.FromResource(Resource.Drawable.pin));
             return marker;
         }
@@ -63,13 +65,14 @@ namespace TrashMobMobile.Droid
                 throw new Exception("Event pin not found");
             }
 
-            //if (!string.IsNullOrWhiteSpace(eventPin.Url))
-            //{
-            //    var url = Android.Net.Uri.Parse(eventPin.Url);
-            //    var intent = new Intent(Intent.ActionView, url);
-            //    intent.AddFlags(ActivityFlags.NewTask);
-            //    Android.App.Application.Context.StartActivity(intent);
-            //}
+            // Todo: Figure out how to redirect back to the Event Details / Event Edit page from Android
+            if (!string.IsNullOrWhiteSpace(eventPin.Url))
+            {
+                var url = Android.Net.Uri.Parse(eventPin.Url);
+                var intent = new Intent(Intent.ActionView, url);
+                intent.AddFlags(ActivityFlags.NewTask);
+                Android.App.Application.Context.StartActivity(intent);
+            }
         }
 
         public Android.Views.View GetInfoContents(Marker marker)
@@ -78,34 +81,31 @@ namespace TrashMobMobile.Droid
 
             if (inflater != null)
             {
-                Android.Views.View view;
-
                 var eventPin = GetEventPin(marker);
                 if (eventPin == null)
                 {
                     throw new Exception("Event pin not found");
                 }
 
-                if (eventPin.EventId.Equals(Guid.Empty))
-                {
-                    view = inflater.Inflate(Resource.Layout.XamarinMapInfoWindow, null);
-                }
-                else
-                {
-                    view = inflater.Inflate(Resource.Layout.MapInfoWindow, null);
-                }
+                Android.Views.View view = inflater.Inflate(Resource.Layout.MapInfoWindow, null);
 
-                var infoTitle = view.FindViewById<TextView>(Resource.Id.InfoWindowTitle);
-                var infoSubtitle = view.FindViewById<TextView>(Resource.Id.InfoWindowSubtitle);
+                var infoTitle = view.FindViewById<TextView>(Resource.Id.EventName);
+                var infoSubtitle = view.FindViewById<TextView>(Resource.Id.EventDate);
+                var infoAddress = view.FindViewById<TextView>(Resource.Id.EventAddress);
 
                 if (infoTitle != null)
                 {
-                    infoTitle.Text = marker.Title;
+                    infoTitle.Text = eventPin.Name;
                 }
 
                 if (infoSubtitle != null)
                 {
-                    infoSubtitle.Text = marker.Snippet;
+                    infoSubtitle.Text = eventPin.EventDate.ToString("MMMM dd, yyyy H:mm tt");
+                }
+
+                if (infoAddress != null)
+                {
+                    infoAddress.Text = eventPin.Address;
                 }
 
                 return view;
