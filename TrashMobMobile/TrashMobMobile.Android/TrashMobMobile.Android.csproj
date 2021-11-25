@@ -116,9 +116,6 @@
     <AndroidResource Include="Resources\layout\MapInfoWindow.axml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\XamarinMapInfoWindow.axml" />
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\drawable-hdpi\info.png">
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
     </AndroidResource>

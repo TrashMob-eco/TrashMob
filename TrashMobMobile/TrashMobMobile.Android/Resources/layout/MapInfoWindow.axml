@@ -4,32 +4,35 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
         android:layout_gravity="center"
-        android:src="@drawable/trashmobeco_circlelogo" />
+        android:src="@drawable/trashmobeco_circlelogo"
+        android:layout_marginBottom="0.0dp"
+        android:contentDescription="TrashMob Logo"/>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_margin="10dp">
         <TextView
-            android:id="@+id/InfoWindowTitle"
+            android:id="@+id/EventName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="InfoWindowTitle"
+            android:text="EventName"
             android:textColor="@android:color/black"
             android:textStyle="bold" />
         <TextView
-            android:id="@+id/InfoWindowSubtitle"
+            android:id="@+id/EventDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="InfoWindowSubtitle"
+            android:text="EventDate"
+            android:textColor="@android:color/black" />
+        <TextView
+            android:id="@+id/EventAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="EventAddress"
             android:textColor="@android:color/black" />
     </LinearLayout>
-    <ImageButton
-        android:id="@+id/InfoWindowButton"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:src="@drawable/info" />
 </LinearLayout>

@@ -28399,6 +28399,15 @@ namespace TrashMobMobile.Droid
 			// aapt resource value: 0x7F0800BF
 			public const int enterAlwaysCollapsed = 2131230911;
 			
+			// aapt resource value: 0x7F080004
+			public const int EventAddress = 2131230724;
+			
+			// aapt resource value: 0x7F080005
+			public const int EventDate = 2131230725;
+			
+			// aapt resource value: 0x7F080006
+			public const int EventName = 2131230726;
+			
 			// aapt resource value: 0x7F0800C0
 			public const int exitUntilCollapsed = 2131230912;
 			
@@ -28447,8 +28456,8 @@ namespace TrashMobMobile.Droid
 			// aapt resource value: 0x7F0800CF
 			public const int frost = 2131230927;
 			
-			// aapt resource value: 0x7F080004
-			public const int FUNCTION = 2131230724;
+			// aapt resource value: 0x7F080007
+			public const int FUNCTION = 2131230727;
 			
 			// aapt resource value: 0x7F0800D0
 			public const int ghost_view = 2131230928;
@@ -28530,15 +28539,6 @@ namespace TrashMobMobile.Droid
 			
 			// aapt resource value: 0x7F0800EA
 			public const int info = 2131230954;
-			
-			// aapt resource value: 0x7F080005
-			public const int InfoWindowButton = 2131230725;
-			
-			// aapt resource value: 0x7F080006
-			public const int InfoWindowSubtitle = 2131230726;
-			
-			// aapt resource value: 0x7F080007
-			public const int InfoWindowTitle = 2131230727;
 			
 			// aapt resource value: 0x7F0800EB
 			public const int invisible = 2131230955;
@@ -30000,9 +30000,6 @@ namespace TrashMobMobile.Droid
 			
 			// aapt resource value: 0x7F0B0096
 			public const int Toolbar = 2131427478;
-			
-			// aapt resource value: 0x7F0B0097
-			public const int XamarinMapInfoWindow = 2131427479;
 			
 			static Layout()
 			{

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CoreGraphics;
 using MapKit;
 using TrashMobMobile.Controls;
+using TrashMobMobile.iOS;
 using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;

@@ -5,6 +5,6 @@
 
     public class EventMap : Map
     {
-        public List<EventPin> EventPins { get; set; }
+        public List<EventPin> EventPins { get; set; } = new List<EventPin>();
     }
 }

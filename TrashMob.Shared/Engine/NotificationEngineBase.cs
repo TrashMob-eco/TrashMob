@@ -164,7 +164,7 @@
             var populatedTemplate = template;
             populatedTemplate = populatedTemplate.Replace("{UserName}", user.UserName);
             populatedTemplate = populatedTemplate.Replace("{EventName}", mobEvent.Name);
-            populatedTemplate = populatedTemplate.Replace("{EventDate}", localTime ?? mobEvent.EventDate.ToString("o"));
+            populatedTemplate = populatedTemplate.Replace("{EventDate}", localTime ?? mobEvent.EventDate.ToString("MMMM dd, yyyy H:mm tt"));
             populatedTemplate = populatedTemplate.Replace("{EventStreet}", mobEvent.StreetAddress);
             populatedTemplate = populatedTemplate.Replace("{EventCity}", mobEvent.City);
             populatedTemplate = populatedTemplate.Replace("{EventRegion}", mobEvent.Region);
@@ -213,7 +213,7 @@
                 eventGrid.AppendLine(link);
                 eventGrid.AppendLine("</td>");
                 eventGrid.AppendLine("<td>");
-                populatedTemplate.Replace("{EventDate}", localTime ?? mobEvent.EventDate.ToString("o"));
+                populatedTemplate.Replace("{EventDate}", localTime ?? mobEvent.EventDate.ToString("MMMM dd, yyyy H:mm tt"));
                 eventGrid.AppendLine("</td>");
                 eventGrid.AppendLine("<td>");
                 eventGrid.AppendLine(mobEvent.StreetAddress);
