@@ -8,7 +8,7 @@
         {
             InitializeComponent();
 
-            Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
+            //Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
             Routing.RegisterRoute(nameof(AddEventPage), typeof(AddEventPage));
             Routing.RegisterRoute(nameof(EditEventPage), typeof(EditEventPage));
             Routing.RegisterRoute(nameof(EventDetailPage), typeof(EventDetailPage));

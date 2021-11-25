@@ -20,8 +20,7 @@
 
             if (isLoggedIn == "1")
             {
-                // await Shell.Current.GoToAsync($"//{nameof(MobEventsPage)}");
-                await Shell.Current.GoToAsync("MainPage");
+                await Shell.Current.GoToAsync($"//{nameof(MobEventsPage)}");
             }
         }
     }

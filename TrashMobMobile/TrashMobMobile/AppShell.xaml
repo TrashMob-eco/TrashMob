@@ -83,89 +83,25 @@
         <ShellContent ContentTemplate="{DataTemplate local:LoginPage}" />
     </ShellItem>
 
-    <FlyoutItem Title="About" >
-        <Tab>
-            <ShellContent Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
-        </Tab>
-    </FlyoutItem>
-    <FlyoutItem Title="Add Event">
-        <Tab>
-            <ShellContent Route="AddEventPage" ContentTemplate="{DataTemplate local:AddEventPage}" />
-        </Tab>
-    </FlyoutItem>
-    <FlyoutItem Title="Contact Us">
-        <Tab>
-            <ShellContent Route="ContactUsPage" ContentTemplate="{DataTemplate local:ContactUsPage}" />
-        </Tab>
-    </FlyoutItem>
-    <FlyoutItem Title="Events Map">
-        <Tab>
-            <ShellContent Route="EventsMapPage" ContentTemplate="{DataTemplate local:EventsMapPage}" />
-        </Tab>
-    </FlyoutItem>
-    <FlyoutItem Title="MobEvents">
-        <Tab>
-            <ShellContent Route="MobEventsPage" ContentTemplate="{DataTemplate local:MobEventsPage}" />
-        </Tab>
-    </FlyoutItem>
-    <FlyoutItem Title="User Profile">
-        <Tab>
-            <ShellContent Route="UserProfilePage" ContentTemplate="{DataTemplate local:UserProfilePage}" />
-        </Tab>
-    </FlyoutItem>
-    <FlyoutItem Title="Logout">
-        <Tab>
-            <ShellContent Route="LogoutPage" ContentTemplate="{DataTemplate local:LogoutPage}" />
-        </Tab>
-    </FlyoutItem>
+    <ShellContent Title="About" Icon="info-circle.png" Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
+    <ShellContent Title="Add Event" Icon="calendar-event.png" Route="AddEventPage" ContentTemplate="{DataTemplate local:AddEventPage}" />
+    <ShellContent Title="Contact Us" Icon="message-dots.png" Route="ContactUsPage" ContentTemplate="{DataTemplate local:ContactUsPage}" />
+    <ShellContent Title="Events Map" Icon="info-circle.png" Route="EventsMapPage" ContentTemplate="{DataTemplate local:EventsMapPage}" />
+    <ShellContent Title="Upcoming Events" Icon="calendar-event.png" Route="MobEventsPage" ContentTemplate="{DataTemplate local:MobEventsPage}" />
+    <ShellContent Title="User Profile" Icon="user-regular.png" Route="UserProfilePage" ContentTemplate="{DataTemplate local:UserProfilePage}" />
+    <ShellContent Title="Logout" Icon="log-out.png" Route="LogoutPage" ContentTemplate="{DataTemplate local:LogoutPage}" />
 
-    <!-- When the Flyout is visible this will be a menu item you can tie a click behavior to  -->
-    <!--
-    <MenuItem Text="Logout" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuItemClicked">
-    </MenuItem>-->
-
-    <!--
-        TabBar lets you define content that won't show up in a flyout menu. When this content is active
-        the flyout menu won't be available. This is useful for creating areas of the application where 
-        you don't want users to be able to navigate away from. If you would like to navigate to this 
-        content you can do so by calling 
-        await Shell.Current.GoToAsync("//LoginPage");
-    -->
-    <!--<TabBar>
-        <ShellContent Route="LoginPage" ContentTemplate="{DataTemplate local:LoginPage}" />
-    </TabBar>-->
-
-    <!-- Optional Templates 
-    // These may be provided inline as below or as separate classes.
-
-    // This header appears at the top of the Flyout.
-    // https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/flyout#flyout-header
-    <Shell.FlyoutHeaderTemplate>
-        <DataTemplate>
-            <Grid>ContentHere</Grid>
-        </DataTemplate>
-    </Shell.FlyoutHeaderTemplate>
-
-    // ItemTemplate is for ShellItems as displayed in a Flyout
-    // https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/flyout#define-flyoutitem-appearance
     <Shell.ItemTemplate>
         <DataTemplate>
-            <ContentView>
-                Bindable Properties: Title, Icon
-            </ContentView>
+            <Grid>
+                <Image Source="{Binding Icon}"
+                       Margin="5"
+                       HeightRequest="45" />
+                <Label Grid.Column="1"
+                       Text="{Binding Title}"
+                       FontAttributes="Italic"
+                       VerticalTextAlignment="Center" />
+            </Grid>
         </DataTemplate>
     </Shell.ItemTemplate>
-
-    // MenuItemTemplate is for MenuItems as displayed in a Flyout
-    // https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/flyout#define-menuitem-appearance
-    <Shell.MenuItemTemplate>
-        <DataTemplate>
-            <ContentView>
-                Bindable Properties: Text, Icon
-            </ContentView>
-        </DataTemplate>
-    </Shell.MenuItemTemplate>
-
-    -->
-
 </Shell>
