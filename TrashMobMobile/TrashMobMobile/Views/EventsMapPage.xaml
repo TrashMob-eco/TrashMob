@@ -2,7 +2,6 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TrashMobMobile.Views.EventsMapPage"
-             xmlns:vm="clr-namespace:TrashMobMobile.ViewModels" xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps"
              Title="{Binding Title}">
 
     <ContentPage.Resources>
@@ -12,8 +11,6 @@
     </ContentPage.Resources>
 
     <StackLayout Orientation="Vertical" Padding="30,24,30,24" Spacing="10">
-        <Label Text="Events" FontSize="Title"/>
-        <Button Text="Load Events" Command="{Binding ReloadEventsCommand}" HorizontalOptions="FillAndExpand"></Button>
         <ContentView Content="{Binding Map}" HeightRequest="500"/>
     </StackLayout>
 </ContentPage>

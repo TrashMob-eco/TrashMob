@@ -14,6 +14,7 @@
 
         public ContactUsViewModel(IContactRequestManager contactRequestManager)
         {
+            Title = "Contact Us";
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
             PropertyChanged +=

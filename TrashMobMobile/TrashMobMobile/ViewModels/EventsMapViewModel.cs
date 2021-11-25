@@ -3,27 +3,24 @@
     using System.Threading.Tasks;
     using TrashMobMobile.Controls;
     using TrashMobMobile.Services;
-    using Xamarin.Forms;
     using Xamarin.Forms.Maps;
 
     public class EventsMapViewModel : BaseViewModel
     {
         private readonly IMobEventManager mobEventManager;
-        public Command ReloadEventsCommand { get; }
+
         public EventMap Map { get; private set; }
 
         public EventsMapViewModel(IMobEventManager mobEventManager)
         {
             Title = "Events Map";
             this.mobEventManager = mobEventManager;
-            Map = new EventMap();
-            ReloadEventsCommand = new Command(OnReloadEvents);
+            Map = new EventMap()
+            {
+                MapType = MapType.Street
+            };
+            
             Task.Run(async () => await LoadEvents());
-        }
-
-        private async void OnReloadEvents()
-        {
-            await LoadEvents();
         }
 
         private async Task LoadEvents()
