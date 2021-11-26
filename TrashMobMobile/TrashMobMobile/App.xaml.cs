@@ -35,6 +35,7 @@
             // Add View Models
             services.AddTransient<AboutViewModel>();
             services.AddTransient<AddEventViewModel>();
+            services.AddTransient<CancelEventViewModel>();
             services.AddTransient<ContactUsViewModel>();
             services.AddTransient<EditEventViewModel>();
             services.AddTransient<EventDetailViewModel>();

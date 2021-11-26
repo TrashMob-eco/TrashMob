@@ -46,7 +46,6 @@
 
         protected virtual void Map_MapClicked(object sender, MapClickedEventArgs e)
         {
-
         }
 
         public EventBaseViewModel(IMobEventManager mobEventManager, IUserManager userManager, IEventTypeRestService eventTypeRestService)
