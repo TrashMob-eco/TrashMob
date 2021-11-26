@@ -2,7 +2,6 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TrashMobMobile.Views.EditEventPage"
-             xmlns:vm="clr-namespace:TrashMobMobile.ViewModels" xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps"
              xmlns:local="clr-namespace:TrashMobMobile.Controls"
              Title="{Binding Title}"
              Shell.PresentationMode="Animated" >
@@ -111,6 +110,7 @@
                     <Label Text="{Binding LastUpdatedDate}" FontSize="Micro"/>
                 </StackLayout>
             </StackLayout>
+            <Button Text="Cancel Event" Command="{Binding CancelEventCommand}" HorizontalOptions="FillAndExpand"></Button>
         </StackLayout>
     </ScrollView>
 </ContentPage>

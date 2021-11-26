@@ -1,11 +1,10 @@
 ﻿namespace TrashMobMobile.ViewModels
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using TrashMobMobile.Models;
     using TrashMobMobile.Services;
+    using TrashMobMobile.Views;
     using Xamarin.Forms;
     using Xamarin.Forms.Maps;
 
@@ -22,6 +21,7 @@
             Title = "Edit Event";
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
+            CancelEventCommand = new Command(OnCancelEvent);
             PropertyChanged +=
                 (_, __) => SaveCommand.ChangeCanExecute();
             this.mapRestService = mapRestService;
@@ -38,6 +38,8 @@
         public Command SaveCommand { get; }
 
         public Command CancelCommand { get; }
+
+        public Command CancelEventCommand { get; }
 
         public DateTime EDate
         {
@@ -90,6 +92,11 @@
         private async void OnCancel()
         {
             await Shell.Current.GoToAsync("..");
+        }
+
+        private async void OnCancelEvent()
+        {
+            await Shell.Current.GoToAsync($"{nameof(CancelEventPage)}?EventId={Id}");
         }
 
         private async void OnSave()

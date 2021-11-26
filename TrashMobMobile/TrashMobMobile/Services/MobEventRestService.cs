@@ -125,6 +125,28 @@
             }
         }
 
+        public async Task DeleteEventAsync(Guid eventId)
+        {
+            try
+            {
+                var userContext = await GetUserContext().ConfigureAwait(false);
+                var httpRequestMessage = new HttpRequestMessage();
+                httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
+                httpRequestMessage.Method = HttpMethod.Delete;
+
+                httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
+                httpRequestMessage.RequestUri = new Uri($"{EventsApi}/{eventId}");
+
+                HttpClient client = new HttpClient();
+                _ = await client.SendAsync(httpRequestMessage);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(@"\tERROR {0}", ex.Message);
+                throw;
+            }
+        }
+
         public async Task<IEnumerable<MobEvent>> GetEventsUserIsAttending(Guid userId)
         {
             var mobEvents = new List<MobEvent>();
