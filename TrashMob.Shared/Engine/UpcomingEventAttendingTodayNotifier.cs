@@ -10,7 +10,7 @@ namespace TrashMob.Shared.Engine
 
         protected override int NumberOfHoursInWindow => 24;
 
-        protected override string EmailSubject => "Upcoming TrashMob.eco events in your area today!";
+        protected override string EmailSubject => "You're attending a TrashMob.eco event today!";
 
         public UpcomingEventAttendingTodayNotifier(IEventRepository eventRepository,
                                                    IUserRepository userRepository, 
