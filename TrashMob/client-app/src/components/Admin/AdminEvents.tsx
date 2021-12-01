@@ -16,30 +16,6 @@ interface AdminEventsPropsType extends RouteComponentProps {
 
 export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
 
-    // Handle Delete request for an event  
-    function handleDelete(id: string, name: string) {
-        if (!window.confirm("Do you want to delete event with name: " + name))
-            return;
-        else {
-            const account = msalClient.getAllAccounts()[0];
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('DELETE');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('api/Events/' + id, {
-                    method: 'delete',
-                    headers: headers
-                }).then(() => { props.onEventListChanged(); });
-            });
-        }
-    }
-
     function renderEventsTable(events: EventData[]) {
         return (
             <div>
