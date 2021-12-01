@@ -92,10 +92,11 @@
         }
 
         // Delete the record of a particular Mob Event    
-        public async Task<int> DeleteEvent(Guid id)
+        public async Task<int> DeleteEvent(Guid id, string cancellationReason)
         {
             var mobEvent = await mobDbContext.Events.FindAsync(id).ConfigureAwait(false);
             mobEvent.EventStatusId = (int)EventStatusEnum.Canceled;
+            mobEvent.CancellationReason = cancellationReason;
             mobDbContext.Entry(mobEvent).State = EntityState.Modified;
             return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
         }

@@ -67,3 +67,4 @@ export const EventSummaryNumberOfBags = "If you gathered all the trash into larg
 export const EventSummaryNumberOfBuckets = "If you were dumping buckets of trash into dumpsters, how many buckets did you gather?"
 export const EventSummaryDurationInMinutes = "How long did the event last in minutes"
 export const EventSummaryNotes = "Record any notes about what went well or what could have gone better, or reminders for the next time at this location."
+export const EventCancellationReason = "Please specify a reason for cancelling the event. Event Attendess will see this note."

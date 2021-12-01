@@ -25,13 +25,15 @@ namespace TrashMob.Controllers
         private readonly IEventAttendeeRepository eventAttendeeRepository;
         private readonly IUserRepository userRepository;
         private readonly IEmailManager emailManager;
+        private readonly IMapRepository mapRepository;
 
-        public EventsController(IEventRepository eventRepository, IEventAttendeeRepository eventAttendeeRepository, IUserRepository userRepository, IEmailManager emailManager)
+        public EventsController(IEventRepository eventRepository, IEventAttendeeRepository eventAttendeeRepository, IUserRepository userRepository, IEmailManager emailManager, IMapRepository mapRepository)
         {
             this.eventRepository = eventRepository;
             this.eventAttendeeRepository = eventAttendeeRepository;
             this.userRepository = userRepository;
             this.emailManager = emailManager;
+            this.mapRepository = mapRepository;
         }
 
         [HttpGet]
@@ -156,7 +158,7 @@ namespace TrashMob.Controllers
         [HttpDelete("{id}")]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> DeleteEvent(Guid id)
+        public async Task<IActionResult> DeleteEvent(Guid id, [FromBody]string cancellationReason)
         {
             var mobEvent = await eventRepository.GetEvent(id).ConfigureAwait(false);
             var user = await userRepository.GetUserByInternalId(mobEvent.CreatedByUserId).ConfigureAwait(false);
@@ -168,16 +170,23 @@ namespace TrashMob.Controllers
 
             var eventAttendees = await eventAttendeeRepository.GetEventAttendees(id).ConfigureAwait(false);
             
-            await eventRepository.DeleteEvent(id).ConfigureAwait(false);
+            await eventRepository.DeleteEvent(id, cancellationReason).ConfigureAwait(false);
 
             var message = emailManager.GetEmailTemplate(NotificationTypeEnum.EventCancelledNotice.ToString());
             message = message.Replace("{EventName}", mobEvent.Name);
-            // Todo: Verify Utc to Local Date set correctly
-            message = message.Replace("{EventDate}", mobEvent.EventDate.ToString("o"));
+
+            var localTime = await mapRepository.GetTimeForPoint(new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false);
+            DateTime localDate = (!string.IsNullOrWhiteSpace(localTime)) ? DateTime.Parse(localTime) : mobEvent.EventDate.DateTime;
+
+            message = message.Replace("{EventDate}", localDate.ToString("MMMM dd, yyyy HH:mm tt"));
+            message = message.Replace("{CancellationReason}", cancellationReason);
+
             var htmlMessage = emailManager.GetHtmlEmailTemplate(NotificationTypeEnum.EventCancelledNotice.ToString());
             htmlMessage = htmlMessage.Replace("{EventName}", mobEvent.Name);
-            // Todo: Verify Utc to Local Date set correctly
-            htmlMessage = htmlMessage.Replace("{EventDate}", mobEvent.EventDate.ToString("o"));
+
+            htmlMessage = htmlMessage.Replace("{EventDate}", localDate.ToString("MMMM dd, yyyy HH:mm tt"));
+            htmlMessage = htmlMessage.Replace("{CancellationReason}", cancellationReason);
+
             var subject = "A TrashMob.eco event you were scheduled to attend has been cancelled!";
 
             foreach (var attendee in eventAttendees)

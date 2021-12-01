@@ -161,10 +161,12 @@
         public async Task<string> PopulateTemplate(string template, User user, Event mobEvent)
         {
             var localTime = await MapRepository.GetTimeForPoint(new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false);
+            DateTime localDate = (!string.IsNullOrWhiteSpace(localTime)) ? DateTime.Parse(localTime) : mobEvent.EventDate.DateTime;
+
             var populatedTemplate = template;
             populatedTemplate = populatedTemplate.Replace("{UserName}", user.UserName);
             populatedTemplate = populatedTemplate.Replace("{EventName}", mobEvent.Name);
-            populatedTemplate = populatedTemplate.Replace("{EventDate}", localTime ?? mobEvent.EventDate.ToString("o"));
+            populatedTemplate = populatedTemplate.Replace("{EventDate}", localDate.ToString("MMMM dd, yyyy HH:mm tt"));
             populatedTemplate = populatedTemplate.Replace("{EventStreet}", mobEvent.StreetAddress);
             populatedTemplate = populatedTemplate.Replace("{EventCity}", mobEvent.City);
             populatedTemplate = populatedTemplate.Replace("{EventRegion}", mobEvent.Region);
@@ -207,13 +209,15 @@
             foreach (var mobEvent in mobEvents)
             {
                 var localTime = await MapRepository.GetTimeForPoint(new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false);
+                DateTime localDate = (!string.IsNullOrWhiteSpace(localTime)) ? DateTime.Parse(localTime) : mobEvent.EventDate.DateTime;
+
                 eventGrid.AppendLine("<tr>");
                 eventGrid.AppendLine("<td>");
                 var link = $"<a target='_blank' href='https://www.trashmob.eco/eventdetails/{mobEvent.Id}'>{mobEvent.Name}</a>";
                 eventGrid.AppendLine(link);
                 eventGrid.AppendLine("</td>");
                 eventGrid.AppendLine("<td>");
-                populatedTemplate.Replace("{EventDate}", localTime ?? mobEvent.EventDate.ToString("o"));
+                eventGrid.AppendLine(localDate.ToString("MMMM dd, yyyy HH:mm tt"));
                 eventGrid.AppendLine("</td>");
                 eventGrid.AppendLine("<td>");
                 eventGrid.AppendLine(mobEvent.StreetAddress);

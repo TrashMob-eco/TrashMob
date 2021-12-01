@@ -3,6 +3,7 @@
 
         A TrashMob.eco event {EventName} on {EventDate} has been cancelled. We apologize for any inconvenience this may cause. We hope to see you out at the next TrashMob.eco event in your area.
 
+        Cancellation Reason: {CancellationReason}
 
         The Team at TrashMob.eco
 

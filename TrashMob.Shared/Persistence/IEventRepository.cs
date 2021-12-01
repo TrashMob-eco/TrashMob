@@ -24,6 +24,6 @@
 
         Task<Event> GetEvent(Guid id);
 
-        Task<int> DeleteEvent(Guid id);
+        Task<int> DeleteEvent(Guid id, string cancellationReason);
     }
 }

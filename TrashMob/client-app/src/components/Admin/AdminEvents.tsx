@@ -66,7 +66,7 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
                                     <td>{mobEvent.postalCode}</td>
                                     <td>
                                         <Button className="action" onClick={() => props.history.push('/manageeventdashboard/' + mobEvent.id)}>Edit Event</Button>
-                                        <Button className="action" onClick={() => handleDelete(mobEvent.id, mobEvent.name)}>Delete Event</Button>
+                                        <Button className="action" onClick={() => props.history.push('/cancelevent/' + mobEvent.id)}>Delete Event</Button>
                                         <Button className="action" onClick={() => props.history.push('/eventdetails/' + mobEvent.id)}>View Details</Button>
                                     </td>
                                 </tr>)

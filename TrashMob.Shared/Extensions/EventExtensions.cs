@@ -31,6 +31,7 @@
                 CreatedDate = originalEvent.CreatedDate,
                 LastUpdatedByUserId = originalEvent.LastUpdatedByUserId,
                 LastUpdatedDate = originalEvent.LastUpdatedDate,
+                CancellationReason = originalEvent.CancellationReason,
             };
         }
     }

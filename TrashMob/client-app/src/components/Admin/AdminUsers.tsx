@@ -15,7 +15,7 @@ interface AdminUsersPropsType extends RouteComponentProps {
 
 export const AdminUsers: React.FC<AdminUsersPropsType> = (props) => {
 
-    // Handle Delete request for an event  
+    // Handle Delete request for a user  
     function handleDelete(id: string, name: string) {
         if (!window.confirm("Do you want to delete user with name: " + name))
             return;
