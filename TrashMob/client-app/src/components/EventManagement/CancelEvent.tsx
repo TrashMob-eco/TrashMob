@@ -5,7 +5,7 @@ import UserData from '../Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
-import { Button, Col, Form, ToggleButton } from 'react-bootstrap';
+import { Button, Col, Form } from 'react-bootstrap';
 
 export interface CancelEventProps {
     eventId: string;
