@@ -5,8 +5,6 @@ namespace TrashMob.Poco
     {
         public int TotalBags { get; set; }
 
-        public int TotalBuckets { get; set; }
-
         public int TotalHours { get; set; }
 
         public int TotalEvents { get; set; }

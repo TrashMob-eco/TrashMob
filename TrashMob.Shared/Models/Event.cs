@@ -55,6 +55,8 @@ namespace TrashMob.Shared.Models
 
         public DateTimeOffset? LastUpdatedDate { get; set; }
 
+        public string CancellationReason { get; set; }
+
         public virtual EventStatus EventStatus { get; set; }
 
         public virtual EventType EventType { get; set; }

@@ -1,19 +1,9 @@
 ﻿
 namespace TrashMob.Controllers
 {
-    using System;
     using System.Linq;
-    using System.Security.Claims;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Identity.Web.Resource;
-    using TrashMob.Common;
-    using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
-    using TrashMob.Shared;
     using TrashMob.Poco;
 
     [ApiController]
@@ -37,8 +27,7 @@ namespace TrashMob.Controllers
             stats.TotalEvents = events.Count();
 
             var eventSummaries = eventSummaryRepository.GetEventSummaries();
-            stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags);
-            stats.TotalBuckets = eventSummaries.Sum(es => es.NumberOfBuckets);
+            stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) + (eventSummaries.Sum(es => es.NumberOfBuckets) / 3);
             stats.TotalHours = eventSummaries.Sum(es => es.DurationInMinutes * es.ActualNumberOfAttendees / 60);
             stats.TotalParticipants = eventSummaries.Sum(es => es.ActualNumberOfAttendees);
 

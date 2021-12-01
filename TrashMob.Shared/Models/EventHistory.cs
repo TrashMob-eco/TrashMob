@@ -49,5 +49,7 @@ namespace TrashMob.Shared.Models
         public Guid LastUpdatedByUserId { get; set; }
 
         public DateTimeOffset? LastUpdatedDate { get; set; }
+
+        public string CancellationReason { get; set; }
     }
 }
