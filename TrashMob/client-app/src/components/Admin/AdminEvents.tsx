@@ -2,7 +2,6 @@ import * as React from 'react'
 
 import { RouteComponentProps } from 'react-router-dom';
 import EventData from '../Models/EventData';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Button } from 'react-bootstrap';
 
