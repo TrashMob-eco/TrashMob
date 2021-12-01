@@ -43,30 +43,6 @@ export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
         }
     }
 
-    // Handle Cancel request for an event  
-    function handleCancel(id: string, name: string) {
-        if (!window.confirm("Do you want to cancel event with name: " + name))
-            return;
-        else {
-            const account = msalClient.getAllAccounts()[0];
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('DELETE');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('api/Events/' + id, {
-                    method: 'delete',
-                    headers: headers
-                }).then(() => { props.onEventListChanged(); });
-            });
-        }
-    }
-
     function renderEventsTable(events: EventData[]) {
         return (
             <div>
@@ -97,7 +73,7 @@ export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
                                     <td>{mobEvent.postalCode}</td>
                                     <td>
                                         <Button hidden={!isOwner} className="action" onClick={() => props.history.push('/manageeventdashboard/' + mobEvent.id)}>Manage Event</Button>
-                                        <Button hidden={!isOwner} className="action" onClick={() => handleCancel(mobEvent.id, mobEvent.name)}>Cancel Event</Button>
+                                        <Button hidden={!isOwner} className="action" onClick={() => props.history.push('/cancelevent/' + mobEvent.id)}>Cancel Event</Button>
                                         <Button className="action" onClick={() => props.history.push('/eventdetails/' + mobEvent.id)}>View Details</Button>
                                         <Button hidden={isOwner} className="action" onClick={() => handleRemove(mobEvent.id, mobEvent.name)}>Remove Me from Event</Button>
                                     </td>
