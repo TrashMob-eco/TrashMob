@@ -34,9 +34,12 @@ import SiteAdmin from './components/Admin/SiteAdmin';
 import ManageEventDashboard, { ManageEventDashboardMatchParams } from './components/EventManagement/ManageEventDashboard';
 import { Shop } from './components/Shop';
 import { EventSummaries } from './components/EventSummaries';
-import { CancelEvent } from './components/EventManagement/CancelEvent';
+import { CancelEvent, CancelEventMatchParams } from './components/EventManagement/CancelEvent';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
+}
+
+interface CancelProps extends RouteComponentProps<CancelEventMatchParams> {
 }
 
 export const App: React.FC = () => {
@@ -82,6 +85,16 @@ export const App: React.FC = () => {
                 errorComponent={ErrorComponent}
                 loadingComponent={LoadingComponent}>
                 <ManageEventDashboard {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+            </MsalAuthenticationTemplate >);
+    }
+
+    function renderCancelEvent(inp: CancelProps) {
+        return (
+            <MsalAuthenticationTemplate
+                interactionType={InteractionType.Redirect}
+                errorComponent={ErrorComponent}
+                loadingComponent={LoadingComponent}>
+                <CancelEvent {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </MsalAuthenticationTemplate >);
     }
 
@@ -171,7 +184,7 @@ export const App: React.FC = () => {
                         <Switch>
                             <Route path="/manageeventdashboard/:eventId?" render={(props: AppProps) => renderEditEvent(props)} />
                             <Route path="/eventdetails/:eventId" component={EventDetails} />
-                            <Route path="/cancelevent/:eventId" component={CancelEvent} />
+                            <Route path="/cancelevent/:eventId" render={(props: CancelProps) => renderCancelEvent(props)} />
                             <Route exact path="/mydashboard">
                                 <MsalAuthenticationTemplate
                                     interactionType={InteractionType.Redirect}
