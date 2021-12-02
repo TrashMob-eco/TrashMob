@@ -6,18 +6,20 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
 import { Button, Col, Form } from 'react-bootstrap';
+import { RouteComponentProps } from 'react-router-dom';
 
-export interface CancelEventProps {
+export interface CancelEventMatchParams {
     eventId: string;
+}
+
+export interface CancelEventProps extends RouteComponentProps<CancelEventMatchParams>{
     isUserLoaded: boolean;
     currentUser: UserData;
-    onCancelCancel: any;
-    onCancelSave: any;
 }
 
 export const CancelEvent: React.FC<CancelEventProps> = (props) => {
     const [isDataLoaded, setIsDataLoaded] = React.useState<boolean>(false);
-    const [eventId, setEventId] = React.useState<string>(props.eventId);
+    const [eventId, setEventId] = React.useState<string>(props.match.params["eventId"]);
     const [eventName, setEventName] = React.useState<string>("New Event");
     const [cancellationReason, setCancellationReason] = React.useState<string>("");
 
@@ -36,7 +38,6 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
             });
     }, [eventId])
 
-
     function handleCancellationReasonChanged(val: string) {
         setCancellationReason(val);
     }
@@ -49,7 +50,7 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
     function handleCancel(event: any) {
         event.preventDefault();
 
-        props.onCancelCancel();
+        props.history.goBack();
     }
 
     // This will handle the submit form event.  
@@ -66,6 +67,8 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
             account: account
         };
 
+        var content = { eventId: eventId, cancellationReason: cancellationReason };
+
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
@@ -73,9 +76,9 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
             fetch('/api/Events', {
                 method: method,
                 headers: headers,
-                body: cancellationReason,
+                body: JSON.stringify(content),
             }).then(() => {
-                props.onCancelSave();
+                props.history.goBack();
             });
         })
     }
@@ -92,11 +95,14 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderCancellationReasonToolTip}>
-                                    <Form.Label htmlFor="Name">Cancellation Reason:</Form.Label>
+                                    <Form.Label htmlFor="Name">Reason for Cancelling the Event?</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="cancellationReason" defaultValue={cancellationReason} onChange={(val) => handleCancellationReasonChanged(val.target.value)} maxLength={parseInt('200')} required />
                             </Form.Group>
                         </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <h4>Are you sure you want to cancel the Event {eventName}?</h4>
                     </Form.Row>
                     <Form.Row>
                         <Form.Group>
@@ -115,7 +121,6 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
 
     return <div>
         <h3>Cancel Event</h3>
-        <h4>Are you sure you want to cancel the Event {eventName}?</h4>
         <hr />
         {contents}
     </div>;
