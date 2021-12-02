@@ -16,6 +16,7 @@ namespace TrashMob.Controllers
     using TrashMob.Shared;
     using System.Collections.Generic;
     using TrashMob.Shared.Engine;
+    using TrashMob.Poco;
 
     [ApiController]
     [Route("api/events")]
@@ -155,12 +156,12 @@ namespace TrashMob.Controllers
             return CreatedAtAction(nameof(GetEvent), new { eventId });
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> DeleteEvent(Guid id, [FromBody]string cancellationReason)
+        public async Task<IActionResult> DeleteEvent(EventCancellationRequest eventCancellationRequest)
         {
-            var mobEvent = await eventRepository.GetEvent(id).ConfigureAwait(false);
+            var mobEvent = await eventRepository.GetEvent(eventCancellationRequest.EventId).ConfigureAwait(false);
             var user = await userRepository.GetUserByInternalId(mobEvent.CreatedByUserId).ConfigureAwait(false);
 
             if (user == null || !ValidateUser(user.NameIdentifier))
@@ -168,9 +169,9 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var eventAttendees = await eventAttendeeRepository.GetEventAttendees(id).ConfigureAwait(false);
+            var eventAttendees = await eventAttendeeRepository.GetEventAttendees(eventCancellationRequest.EventId).ConfigureAwait(false);
             
-            await eventRepository.DeleteEvent(id, cancellationReason).ConfigureAwait(false);
+            await eventRepository.DeleteEvent(eventCancellationRequest.EventId, eventCancellationRequest.CancellationReason).ConfigureAwait(false);
 
             var message = emailManager.GetEmailTemplate(NotificationTypeEnum.EventCancelledNotice.ToString());
             message = message.Replace("{EventName}", mobEvent.Name);
@@ -179,13 +180,13 @@ namespace TrashMob.Controllers
             DateTime localDate = (!string.IsNullOrWhiteSpace(localTime)) ? DateTime.Parse(localTime) : mobEvent.EventDate.DateTime;
 
             message = message.Replace("{EventDate}", localDate.ToString("MMMM dd, yyyy HH:mm tt"));
-            message = message.Replace("{CancellationReason}", cancellationReason);
+            message = message.Replace("{CancellationReason}", eventCancellationRequest.CancellationReason);
 
             var htmlMessage = emailManager.GetHtmlEmailTemplate(NotificationTypeEnum.EventCancelledNotice.ToString());
             htmlMessage = htmlMessage.Replace("{EventName}", mobEvent.Name);
 
             htmlMessage = htmlMessage.Replace("{EventDate}", localDate.ToString("MMMM dd, yyyy HH:mm tt"));
-            htmlMessage = htmlMessage.Replace("{CancellationReason}", cancellationReason);
+            htmlMessage = htmlMessage.Replace("{CancellationReason}", eventCancellationRequest.CancellationReason);
 
             var subject = "A TrashMob.eco event you were scheduled to attend has been cancelled!";
 
@@ -202,7 +203,7 @@ namespace TrashMob.Controllers
                 await emailManager.SendSystemEmail(subject, userMessage, userHtmlMessage, recipients, CancellationToken.None).ConfigureAwait(false);
             }
 
-            return Ok(id);
+            return Ok(eventCancellationRequest.EventId);
         }
 
         private async Task<bool> EventExists(Guid id)
