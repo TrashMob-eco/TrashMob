@@ -6,6 +6,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
 import { Button, Col, Form } from 'react-bootstrap';
+import { Label } from '@fluentui/react';
 
 export interface CancelEventProps {
     eventId: string;
@@ -100,8 +101,8 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
                     </Form.Row>
                     <Form.Row>
                         <Form.Group>
-                            <Button type="submit" className="btn btn-default">Save</Button>
-                            <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
+                            <Button type="submit" className="btn btn-default">Yes</Button>
+                            <Button className="action" onClick={(e: any) => handleCancel(e)}>No</Button>
                         </Form.Group>
                     </Form.Row>
                 </Form >
