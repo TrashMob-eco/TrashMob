@@ -13,7 +13,7 @@
     {
         private readonly string EventsApi = TrashMobServiceUrlBase + "events";
 
-        public async Task<IEnumerable<MobEvent>> GetEventsAsync()
+        public async Task<IEnumerable<MobEvent>> GetActiveEventsAsync()
         {
             var mobEvents = new List<MobEvent>();
 
@@ -26,7 +26,7 @@
 
                 httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
                 httpRequestMessage.Method = HttpMethod.Get;
-                httpRequestMessage.RequestUri = new Uri(EventsApi);
+                httpRequestMessage.RequestUri = new Uri($"{EventsApi}/active");
 
                 HttpClient client = new HttpClient();
                 HttpResponseMessage response = await client.SendAsync(httpRequestMessage);

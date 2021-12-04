@@ -25,7 +25,7 @@
 
         private async Task LoadEvents()
         {
-            var events = await mobEventManager.GetEventsAsync();
+            var events = await mobEventManager.GetActiveEventsAsync();
 
             foreach (var mobEvent in events)
             {

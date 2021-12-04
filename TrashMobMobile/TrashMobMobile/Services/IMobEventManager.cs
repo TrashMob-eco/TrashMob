@@ -7,7 +7,7 @@
 
     public interface IMobEventManager
     {
-        Task<IEnumerable<MobEvent>> GetEventsAsync();
+        Task<IEnumerable<MobEvent>> GetActiveEventsAsync();
 
         Task<MobEvent> GetEventAsync(Guid eventId);
 
