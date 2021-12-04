@@ -83,12 +83,12 @@
         <ShellContent ContentTemplate="{DataTemplate local:LoginPage}" />
     </ShellItem>
 
-    <ShellContent Title="About" Icon="info-circle.png" Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
+    <ShellContent Title="Upcoming Events List" Icon="calendar-event.png" Route="MobEventsPage" ContentTemplate="{DataTemplate local:MobEventsPage}" />
+    <ShellContent Title="Upcoming Events Map" Icon="info-circle.png" Route="EventsMapPage" ContentTemplate="{DataTemplate local:EventsMapPage}" />
     <ShellContent Title="Add Event" Icon="calendar-event.png" Route="AddEventPage" ContentTemplate="{DataTemplate local:AddEventPage}" />
-    <ShellContent Title="Contact Us" Icon="message-dots.png" Route="ContactUsPage" ContentTemplate="{DataTemplate local:ContactUsPage}" />
-    <ShellContent Title="Events Map" Icon="info-circle.png" Route="EventsMapPage" ContentTemplate="{DataTemplate local:EventsMapPage}" />
-    <ShellContent Title="Upcoming Events" Icon="calendar-event.png" Route="MobEventsPage" ContentTemplate="{DataTemplate local:MobEventsPage}" />
     <ShellContent Title="User Profile" Icon="user-regular.png" Route="UserProfilePage" ContentTemplate="{DataTemplate local:UserProfilePage}" />
+    <ShellContent Title="Contact Us" Icon="message-dots.png" Route="ContactUsPage" ContentTemplate="{DataTemplate local:ContactUsPage}" />
+    <ShellContent Title="About TrashMob.eco" Icon="info-circle.png" Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
     <ShellContent Title="Logout" Icon="log-out.png" Route="LogoutPage" ContentTemplate="{DataTemplate local:LogoutPage}" />
 
     <Shell.ItemTemplate>

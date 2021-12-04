@@ -87,7 +87,7 @@ namespace TrashMobMobile.ViewModels
 
             IsBusy = true;
             Events.Clear();
-            var mobEvents = await mobEventManager.GetEventsAsync();
+            var mobEvents = await mobEventManager.GetActiveEventsAsync();
             Events.AddRange(mobEvents);
             IsBusy = false;
         }

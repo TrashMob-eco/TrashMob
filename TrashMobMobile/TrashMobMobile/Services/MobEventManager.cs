@@ -17,9 +17,9 @@
             this.eventAttendeeRestService = eventAttendeeRestService;
         }
 
-        public Task<IEnumerable<MobEvent>> GetEventsAsync()
+        public Task<IEnumerable<MobEvent>> GetActiveEventsAsync()
         {
-            return mobEventRestService.GetEventsAsync();
+            return mobEventRestService.GetActiveEventsAsync();
         }
 
         public Task<MobEvent> GetEventAsync(Guid eventId)
