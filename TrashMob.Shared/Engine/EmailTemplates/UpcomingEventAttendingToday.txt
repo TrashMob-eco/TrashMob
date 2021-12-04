@@ -1,14 +1,8 @@
 ﻿        Hey {UserName},
 
-        Just a quick reminder that you are scheduled to attend a TrashMob.eco event today!
+        Just a quick reminder that you are scheduled to attend a TrashMob.eco event(s) today!
 
-        {EventName}
-
-        {EventDate}
-
-        {EventStreet},{EventCity},{EventRegion},{EventCountry}
-
-        {EventDetailsLink}
+        {EventGrid}
 
         Thanks
 
