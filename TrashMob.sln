@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31005.135
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrashMob", "TrashMob\TrashMob.csproj", "{9B6F74CF-96C1-41F1-80BD-301ADDE01883}"
 EndProject
@@ -25,6 +25,32 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		NuGet.Config = NuGet.Config
 		README.md = README.md
 		TrashMob_Logo1.svg = TrashMob_Logo1.svg
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{63452333-3221-4570-B976-B5861E90C603}"
+	ProjectSection(SolutionItems) = preProject
+		Images\favicon.ico = Images\favicon.ico
+		Images\logo192.png = Images\logo192.png
+		Images\logo512.png = Images\logo512.png
+		Images\qrcode.png = Images\qrcode.png
+		Images\TME_AppIcon2_512x512.png = Images\TME_AppIcon2_512x512.png
+		Images\TME_AppIcon_512x512.png = Images\TME_AppIcon_512x512.png
+		Images\TME_FB_SharedImage2_1200x630.png = Images\TME_FB_SharedImage2_1200x630.png
+		Images\TME_FB_SharedImage3_1200x630.png = Images\TME_FB_SharedImage3_1200x630.png
+		Images\TME_FB_SharedImage4_1200x630.png = Images\TME_FB_SharedImage4_1200x630.png
+		Images\TME_FeatureGraphic_1024x500.png = Images\TME_FeatureGraphic_1024x500.png
+		Images\TME_YT_ Banner2_1024x576.png = Images\TME_YT_ Banner2_1024x576.png
+		Images\TME_YT_ Banner3_1024x576.png = Images\TME_YT_ Banner3_1024x576.png
+		Images\TME_YT_ Banner_1024x576.png = Images\TME_YT_ Banner_1024x576.png
+		Images\TME_YT_ Banner_2560x1440.png = Images\TME_YT_ Banner_2560x1440.png
+		Images\TME_YT_ Banner_2560x430.png = Images\TME_YT_ Banner_2560x430.png
+		Images\TME_YT_ Banner_2560x576.png = Images\TME_YT_ Banner_2560x576.png
+		Images\TME_YT_ChannelIcon_800x800.png = Images\TME_YT_ChannelIcon_800x800.png
+		Images\TME_YT_VideoWatermark.png = Images\TME_YT_VideoWatermark.png
+		Images\TrashMobEco_CircleLogo.png = Images\TrashMobEco_CircleLogo.png
+		Images\TrashMobEco_HorizontalLogo.png = Images\TrashMobEco_HorizontalLogo.png
+		Images\TrashMobEco_StackedLogo.png = Images\TrashMobEco_StackedLogo.png
+		Images\TrashMobEco_StackedLogo2.png = Images\TrashMobEco_StackedLogo2.png
 	EndProjectSection
 EndProject
 Global
