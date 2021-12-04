@@ -125,7 +125,7 @@
             }
         }
 
-        public async Task DeleteEventAsync(Guid eventId)
+        public async Task DeleteEventAsync(CancelEvent cancelEvent)
         {
             try
             {
@@ -135,7 +135,9 @@
                 httpRequestMessage.Method = HttpMethod.Delete;
 
                 httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
-                httpRequestMessage.RequestUri = new Uri($"{EventsApi}/{eventId}");
+                httpRequestMessage.RequestUri = new Uri(EventsApi);
+
+                httpRequestMessage.Content = JsonContent.Create(cancelEvent, typeof(CancelEvent), null, SerializerOptions);
 
                 HttpClient client = new HttpClient();
                 _ = await client.SendAsync(httpRequestMessage);

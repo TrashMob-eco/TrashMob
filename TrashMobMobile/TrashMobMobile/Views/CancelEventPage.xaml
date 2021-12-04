@@ -8,6 +8,8 @@
              Shell.PresentationMode="ModalAnimated" >
 
     <StackLayout>
+        <Label Text="Reason for Cancelling the Event?" FontSize="Small" FontAttributes="Bold" />
+        <Editor Text="{Binding CancellationReason, Mode=TwoWay}" AutoSize="TextChanges" FontSize="Small" Margin="0" MaxLength="2000" />
         <Label Text="{Binding CancelMessage}" FontSize="Small" />
         <StackLayout Orientation="Horizontal">
             <Button Text="No" Command="{Binding CancelCommand}" HorizontalOptions="FillAndExpand"></Button>

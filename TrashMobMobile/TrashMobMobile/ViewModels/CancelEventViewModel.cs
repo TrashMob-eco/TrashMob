@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using TrashMobMobile.Models;
     using TrashMobMobile.Services;
     using TrashMobMobile.Views;
     using Xamarin.Forms;
@@ -10,6 +11,7 @@
     public class CancelEventViewModel : EventBaseViewModel
     {
         private string cancelMessage;
+        private string cancellationReason;
 
         public CancelEventViewModel(IMobEventManager mobEventManager, IUserManager userManager, IEventTypeRestService eventTypeRestService) : base(mobEventManager, userManager, eventTypeRestService)
         {
@@ -32,6 +34,12 @@
             }
         }
 
+        public string CancellationReason
+        {
+            get => cancellationReason;
+            set => SetProperty(ref cancellationReason, value);
+        }
+
         public Command SaveCommand { get; }
 
         public Command CancelCommand { get; }
@@ -49,7 +57,13 @@
 
         private async void OnSave()
         {
-            await MobEventManager.DeleteEventAsync(Id);
+            var cancelEvent = new CancelEvent()
+            {
+                EventId = Id,
+                CancellationReason = cancellationReason
+            };
+
+            await MobEventManager.DeleteEventAsync(cancelEvent);
 
             await Shell.Current.GoToAsync($"//{nameof(MobEventsPage)}");
         }
