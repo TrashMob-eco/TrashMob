@@ -15,7 +15,7 @@
 
         Task<MobEvent> AddEventAsync(MobEvent mobEvent);
 
-        Task DeleteEventAsync(Guid eventId);
+        Task DeleteEventAsync(CancelEvent cancelEvent);
 
         Task AddEventAttendeeAsync(EventAttendee eventAttendee);
 

@@ -37,9 +37,9 @@
             return mobEventRestService.AddEventAsync(mobEvent);
         }
 
-        public Task DeleteEventAsync(Guid eventId)
+        public Task DeleteEventAsync(CancelEvent cancelEvent)
         {
-            return mobEventRestService.DeleteEventAsync(eventId);
+            return mobEventRestService.DeleteEventAsync(cancelEvent);
         }
 
         public Task AddEventAttendeeAsync(EventAttendee eventAttendee)
