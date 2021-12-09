@@ -10,6 +10,8 @@
     using Microsoft.AppCenter;
     using Microsoft.AppCenter.Analytics;
     using Microsoft.AppCenter.Crashes;
+    using TrashMobMobile.Views;
+
     public partial class App : Application
     {
         protected static IServiceProvider ServiceProvider { get; set; }
@@ -21,6 +23,11 @@
             InitializeComponent();
 
             SetupServices(addPlatformServices);
+
+            MessagingCenter.Subscribe<MobEvent, Guid> (this, "EventDetails", async (sender, arg) =>
+            {
+                await Shell.Current.GoToAsync($"{nameof(EventDetailPage)}?EventId={arg}");
+            });
 
             MainPage = new AppShell();
         }
