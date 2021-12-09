@@ -6,6 +6,7 @@ using Android.Gms.Maps.Model;
 using Android.Widget;
 using TrashMobMobile.Controls;
 using TrashMobMobile.Droid;
+using TrashMobMobile.Models;
 using TrashMobMobile.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
@@ -65,13 +66,10 @@ namespace TrashMobMobile.Droid
                 throw new Exception("Event pin not found");
             }
 
-            // Todo: Figure out how to redirect back to the Event Details / Event Edit page from Android
             if (!string.IsNullOrWhiteSpace(eventPin.Url))
             {
-                var url = Android.Net.Uri.Parse(eventPin.Url);
-                var intent = new Intent(Intent.ActionView, url);
-                intent.AddFlags(ActivityFlags.NewTask);
-                Android.App.Application.Context.StartActivity(intent);
+                var mobEvent = new MobEvent();
+                MessagingCenter.Send(mobEvent, "EventDetails", eventPin.EventId);
             }
         }
 
