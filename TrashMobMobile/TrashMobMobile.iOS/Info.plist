@@ -25,7 +25,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>TrashMobMobile</string>
 	<key>CFBundleIdentifier</key>
-	<string>eco.TrashMob</string>
+	<string>eco.trashmob</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>UILaunchStoryboardName</key>
