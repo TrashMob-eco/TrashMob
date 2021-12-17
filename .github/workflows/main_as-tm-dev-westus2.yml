@@ -10,8 +10,8 @@ on:
   workflow_dispatch:
 
 env:
-  DOTNET_VERSION: '3.1.x'  # set this to the dotnet version to use
-  DOTNET_VERSION2: '5.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION: '6.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION2: '6.0.x'  # set this to the dotnet version to use
   
 jobs:
   build:
