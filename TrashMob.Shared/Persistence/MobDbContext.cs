@@ -684,11 +684,11 @@
                     new UserNotificationType { Id = (int)NotificationTypeEnum.EventSummaryAttendee, Name = "EventSummaryAttendee", Description = "Opt out of Post Event Summary", DisplayOrder = 1 },
                     new UserNotificationType { Id = (int)NotificationTypeEnum.EventSummaryHostReminder, Name = "EventSummaryHostReminder", Description = "Opt out of Event Summary Reminder for events you have lead", DisplayOrder = 2 },
                     new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventAttendingThisWeek, Name = "UpcomingEventAttendingThisWeek", Description = "Opt out of notifications for events upcoming this week you are attending", DisplayOrder = 3 },
-                    new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventAttendingToday, Name = "UpcomingEventAttendingToday", Description = "Opt out of notifications for events happening today you are attending", DisplayOrder = 4 },
+                    new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventAttendingSoon, Name = "UpcomingEventAttendingSoon", Description = "Opt out of notifications for events happening soon you are attending", DisplayOrder = 4 },
                     new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventHostingThisWeek, Name = "UpcomingEventHostingThisWeek", Description = "Opt out of notifications for events upcoming this week you are leading", DisplayOrder = 5 },
-                    new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventHostingToday, Name = "UpcomingEventHostingToday", Description = "Opt out of notifications for events happening today you are leading", DisplayOrder = 6 },
+                    new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventHostingSoon, Name = "UpcomingEventHostingSoon", Description = "Opt out of notifications for events happening soon you are leading", DisplayOrder = 6 },
                     new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventsInYourAreaThisWeek, Name = "UpcomingEventsInYourAreaThisWeek", Description = "Opt out of notification for new events upcoming in your area this week", DisplayOrder = 7 },
-                    new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventsInYourAreaToday, Name = "UpcomingEventsInYourAreaToday", Description = "Opt out of notification for new events happening in your area today", DisplayOrder = 8 });
+                    new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventsInYourAreaSoon, Name = "UpcomingEventsInYourAreaSoon", Description = "Opt out of notification for new events happening in your area soon", DisplayOrder = 8 });
         });
 
         }
