@@ -1,6 +1,6 @@
 ﻿        Hey {UserName},
 
-        Just a quick reminder that you are scheduled to attend a TrashMob.eco event(s) today!
+        Just a quick reminder that you are scheduled to attend a TrashMob.eco event(s) soon!
 
         {EventGrid}
 
