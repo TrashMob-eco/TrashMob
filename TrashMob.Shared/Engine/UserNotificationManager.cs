@@ -47,20 +47,20 @@
             var upcomingEventAttendingThisWeekNotifier = new UpcomingEventAttendingThisWeekNotifier(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository, logger);
             await upcomingEventAttendingThisWeekNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
-            var upcomingEventAttendingTodayNotifier = new UpcomingEventAttendingTodayNotifier(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository, logger);
-            await upcomingEventAttendingTodayNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
+            var upcomingEventAttendingSoonNotifier = new UpcomingEventAttendingSoonNotifier(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository, logger);
+            await upcomingEventAttendingSoonNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
             var upcomingEventHostingThisWeekNotifier = new UpcomingEventHostingThisWeekNotifier(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository, logger);
             await upcomingEventHostingThisWeekNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
-            var upcomingEventHostingTodayNotifier = new UpcomingEventHostingTodayNotifier(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository, logger);
-            await upcomingEventHostingTodayNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
+            var upcomingEventHostingSoonNotifier = new UpcomingEventHostingSoonNotifier(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository, logger);
+            await upcomingEventHostingSoonNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
             var upcomingEventsInYourAreaThisWeekNotifier = new UpcomingEventsInYourAreaThisWeekNotifier(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository, logger);
             await upcomingEventsInYourAreaThisWeekNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
-            var upcomingEventsInYourAreaTodayNotifier = new UpcomingEventsInYourAreaTodayNotifier(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository, logger);
-            await upcomingEventsInYourAreaTodayNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
+            var upcomingEventsInYourAreaSoonNotifier = new UpcomingEventsInYourAreaSoonNotifier(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, mapRepository, logger);
+            await upcomingEventsInYourAreaSoonNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
             logger.LogInformation("Completed RunAllNotifications");
         }

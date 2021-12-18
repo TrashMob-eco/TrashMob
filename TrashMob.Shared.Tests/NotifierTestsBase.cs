@@ -264,7 +264,7 @@ namespace TrashMob.Shared.Tests
                     UserId = userId1,
                     IsOptedOut = false,
                     LastUpdatedDate = DateTimeOffset.UtcNow.AddHours(-1),
-                    UserNotificationTypeId = (int)NotificationTypeEnum.UpcomingEventAttendingToday,
+                    UserNotificationTypeId = (int)NotificationTypeEnum.UpcomingEventAttendingSoon,
                 },
                 new UserNotificationPreference
                 {
@@ -278,7 +278,7 @@ namespace TrashMob.Shared.Tests
                     UserId = userId1,
                     IsOptedOut = false,
                     LastUpdatedDate = DateTimeOffset.UtcNow.AddHours(-1),
-                    UserNotificationTypeId = (int)NotificationTypeEnum.UpcomingEventHostingToday,
+                    UserNotificationTypeId = (int)NotificationTypeEnum.UpcomingEventHostingSoon,
                 },
                 new UserNotificationPreference
                 {
@@ -292,7 +292,7 @@ namespace TrashMob.Shared.Tests
                     UserId = userId1,
                     IsOptedOut = false,
                     LastUpdatedDate = DateTimeOffset.UtcNow.AddHours(-1),
-                    UserNotificationTypeId = (int)NotificationTypeEnum.UpcomingEventsInYourAreaToday,
+                    UserNotificationTypeId = (int)NotificationTypeEnum.UpcomingEventsInYourAreaSoon,
                 },
             };
 

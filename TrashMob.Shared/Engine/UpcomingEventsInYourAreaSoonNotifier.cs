@@ -4,15 +4,15 @@ namespace TrashMob.Shared.Engine
     using Microsoft.Extensions.Logging;
     using TrashMob.Shared.Persistence;
 
-    public class UpcomingEventsInYourAreaTodayNotifier : UpcomingEventsInYourAreaBaseNotifier, INotificationEngine
+    public class UpcomingEventsInYourAreaSoonNotifier : UpcomingEventsInYourAreaBaseNotifier, INotificationEngine
     {
-        protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UpcomingEventsInYourAreaToday;
+        protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UpcomingEventsInYourAreaSoon;
 
-        protected override string EmailSubject => "Upcoming TrashMob.eco events in your area today!";
+        protected override string EmailSubject => "Upcoming TrashMob.eco events in your area soon!";
 
         protected override int NumberOfHoursInWindow => 24;
 
-        public UpcomingEventsInYourAreaTodayNotifier(IEventRepository eventRepository, 
+        public UpcomingEventsInYourAreaSoonNotifier(IEventRepository eventRepository, 
                                                      IUserRepository userRepository, 
                                                      IEventAttendeeRepository eventAttendeeRepository, 
                                                      IUserNotificationRepository userNotificationRepository,
