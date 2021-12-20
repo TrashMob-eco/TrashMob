@@ -33,7 +33,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidLinkMode>None</AndroidLinkMode>
-    <AndroidKeyStore>true</AndroidKeyStore>
+    <AndroidKeyStore>false</AndroidKeyStore>
     <AndroidSigningKeyStore>C:\Users\joe_b\AppData\Local\Xamarin\Mono for Android\Keystore\trashmob\trashmob.keystore</AndroidSigningKeyStore>
     <AndroidSigningStorePass>LitterPicking</AndroidSigningStorePass>
     <AndroidSigningKeyAlias>TrashMob</AndroidSigningKeyAlias>
