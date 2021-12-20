@@ -5,9 +5,9 @@ namespace TrashMob.Shared.Tests
 
     public class UpcomingEventsInYourAreaTodayNotifierTests : UpcomingEventsInYourAreaNotifierTestsBase
     {
-        protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UpcomingEventsInYourAreaToday;
+        protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UpcomingEventsInYourAreaSoon;
 
-        protected override INotificationEngine Engine => new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
+        protected override INotificationEngine Engine => new UpcomingEventsInYourAreaSoonNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
         protected override int NumberOfDaysToAddForEventOutOfWindow => 3;
 
@@ -15,7 +15,7 @@ namespace TrashMob.Shared.Tests
         public void GetHtmlEmailTemplate_Succeeds()
         {
             // Arrange
-            var engine = new UpcomingEventsInYourAreaTodayNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
+            var engine = new UpcomingEventsInYourAreaSoonNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
 
             // Act
             var template = engine.GetHtmlEmailTemplate();

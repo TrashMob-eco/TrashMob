@@ -163,6 +163,9 @@ dotnet ef migrations add <YourMigrationName>
 ```
 
 or in Visual Studio Package Manager Console
+
+First, set the Default Project to **TrashMob.Shared**, then run the following command:
+
 ```
   EntityFrameworkCore\Add-Migration <YourMigrationName>
 ```

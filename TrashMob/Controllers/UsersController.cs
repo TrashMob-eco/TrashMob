@@ -140,7 +140,8 @@ namespace TrashMob.Controllers
                 // of their email and then add a random number to the end.
                 Random rnd = new();
                 var userNum = rnd.Next(1000000, 9999999).ToString();
-                user.UserName = user.Email.Split("@")[0].Substring(0, 8) + userNum;
+                var first = user.Email.Split("@")[0];
+                user.UserName = first.Substring(0, Math.Min(first.Length - 1, 8)) + userNum;
             }
 
             var newUser = await userRepository.AddUser(user).ConfigureAwait(false);
