@@ -2,6 +2,7 @@
 {
     using Foundation;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Identity.Client;
     using UIKit;
 
     // The UIApplicationDelegate for the application. This class is responsible for launching the 
@@ -29,6 +30,12 @@
             LoadApplication(new App(AddServices));
 
             return base.FinishedLaunching(app, options);
+        }
+
+        public override bool OpenUrl(UIApplication app, NSUrl url, NSDictionary options)
+        {
+            AuthenticationContinuationHelper.SetAuthenticationContinuationEventArgs(url);
+            return true;
         }
     }
 }
