@@ -83,18 +83,18 @@
         <ShellContent ContentTemplate="{DataTemplate local:LoginPage}" />
     </ShellItem>
 
-    <ShellContent Title="Upcoming Events List" Icon="calendar-event.png" Route="MobEventsPage" ContentTemplate="{DataTemplate local:MobEventsPage}" />
-    <ShellContent Title="Upcoming Events Map" Icon="info-circle.png" Route="EventsMapPage" ContentTemplate="{DataTemplate local:EventsMapPage}" />
-    <ShellContent Title="Add Event" Icon="calendar-event.png" Route="AddEventPage" ContentTemplate="{DataTemplate local:AddEventPage}" />
-    <ShellContent Title="User Profile" Icon="user-regular.png" Route="UserProfilePage" ContentTemplate="{DataTemplate local:UserProfilePage}" />
-    <ShellContent Title="Contact Us" Icon="message-dots.png" Route="ContactUsPage" ContentTemplate="{DataTemplate local:ContactUsPage}" />
-    <ShellContent Title="About TrashMob.eco" Icon="info-circle.png" Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
-    <ShellContent Title="Logout" Icon="log-out.png" Route="LogoutPage" ContentTemplate="{DataTemplate local:LogoutPage}" />
+    <ShellContent Title="Upcoming Events List" Icon="calendar_event.png" Route="MobEventsPage" ContentTemplate="{DataTemplate local:MobEventsPage}" />
+    <ShellContent Title="Upcoming Events Map" Icon="info_circle.png" Route="EventsMapPage" ContentTemplate="{DataTemplate local:EventsMapPage}" />
+    <ShellContent Title="Add Event" Icon="calendar_event.png" Route="AddEventPage" ContentTemplate="{DataTemplate local:AddEventPage}" />
+    <ShellContent Title="User Profile" Icon="user_regular.png" Route="UserProfilePage" ContentTemplate="{DataTemplate local:UserProfilePage}" />
+    <ShellContent Title="Contact Us" Icon="message_dots.png" Route="ContactUsPage" ContentTemplate="{DataTemplate local:ContactUsPage}" />
+    <ShellContent Title="About TrashMob.eco" Icon="info_circle.png" Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
+    <ShellContent Title="Logout" Icon="log_out.png" Route="LogoutPage" ContentTemplate="{DataTemplate local:LogoutPage}" />
 
     <Shell.ItemTemplate>
         <DataTemplate>
             <Grid>
-                <Image Source="{Binding Icon}"
+                <Image Source="{Binding FlyoutIcon}"
                        Margin="5"
                        HeightRequest="45" />
                 <Label Grid.Column="1"
