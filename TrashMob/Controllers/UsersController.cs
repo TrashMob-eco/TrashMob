@@ -58,7 +58,7 @@ namespace TrashMob.Controllers
             {
                 return Ok();
             }
-            
+
             if (user.Id != userId)
             {
                 return Conflict();
@@ -95,6 +95,36 @@ namespace TrashMob.Controllers
                 var updatedUser = await userRepository.UpdateUser(user).ConfigureAwait(false);
                 var returnedUser = await userRepository.GetUserByNameIdentifier(user.NameIdentifier).ConfigureAwait(false);
                 return Ok(returnedUser);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await UserExists(user.Id).ConfigureAwait(false))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        [HttpPut("updateemailoptout/{userId}/{isOptedOutOfAllEmails}")]
+        public async Task<IActionResult> PutUserEmailOptOut(Guid userId, bool isOptedOutOfAllEmails)
+        {
+            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
+
+            if (user == null || !ValidateUser(user.NameIdentifier))
+            {
+                return Forbid();
+            }
+
+            try
+            {
+                user.IsOptedOutOfAllEmails = isOptedOutOfAllEmails;
+                await userRepository.UpdateUser(user);
+
+                return Ok(user);
             }
             catch (DbUpdateConcurrencyException)
             {
