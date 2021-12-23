@@ -51,6 +51,11 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
         history.push("/userprofile");
     }
 
+    function viewNotificationPreferences(e: any) {
+        e.preventDefault();
+        history.push("/notificationpreferences");
+    }
+
     return (
         <header className="tm-header">
             <div className="container bg-light tm-mainNav">
@@ -76,6 +81,7 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 <NavDropdown.Item className="dropdown-item" hidden={!isUserLoaded || !props.currentUser.isSiteAdmin} href="/siteadmin">SiteAdmin</NavDropdown.Item>
                             </NavDropdown> */}
                         <Button hidden={!isUserLoaded} className="btn btn-link" style={{ color: "#ffffff" }} onClick={(e) => viewUserProfile(e)} id="welcomeBtn">Welcome{userName ? ", " + userName : ""}!</Button>
+                        <Button hidden={!isUserLoaded} className="btn btn-link" style={{ color: "#ffffff" }} onClick={(e) => viewNotificationPreferences(e)} id="notificationBtn">Notification Preferences</Button>
                         <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="loginBtn">Sign in</Button>
                         <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="registerBtn">Sign up</Button>
                         <Button hidden={!isUserLoaded} className="btn btn-outline-primary" style={{ color: "#ffffff" }} onClick={(e) => signOut(e)} id="logoutBtn">Log Out</Button>

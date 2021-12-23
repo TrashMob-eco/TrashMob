@@ -35,6 +35,7 @@ import ManageEventDashboard, { ManageEventDashboardMatchParams } from './compone
 import { Shop } from './components/Shop';
 import { EventSummaries } from './components/EventSummaries';
 import { CancelEvent, CancelEventMatchParams } from './components/EventManagement/CancelEvent';
+import NotificationPreferences from './components/NotificationPreferences';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }
@@ -199,6 +200,14 @@ export const App: React.FC = () => {
                                     errorComponent={ErrorComponent}
                                     loadingComponent={LoadingComponent}>
                                     <BecomeAPartner currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                </MsalAuthenticationTemplate >
+                            </Route>
+                            <Route exact path="/notificationpreferences">
+                                <MsalAuthenticationTemplate
+                                    interactionType={InteractionType.Redirect}
+                                    errorComponent={ErrorComponent}
+                                    loadingComponent={LoadingComponent}>
+                                    <NotificationPreferences currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
                             </Route>
                             <Route exact path="/partnerdashboard">

@@ -6,14 +6,13 @@ import * as ToolTips from "../store/ToolTips";
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import { Button, Col, Form, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
+import { Button, Col, Form, ToggleButton } from 'react-bootstrap';
 import { Modal } from 'reactstrap';
 import * as MapStore from '../store/MapStore';
 import { getKey } from '../store/MapStore';
 import AddressData from './Models/AddressData';
 import { data } from 'azure-maps-control';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import UserNotificationPreferenceData, { UserNotificationPreferenceDefaults } from './Models/UserNotificationPreferenceData';
 import * as Constants from './Models/Constants';
 import MapControllerSinglePoint from './MapControllerSinglePoint';
 import EventMediaData from './Models/EventMediaData';
@@ -63,7 +62,6 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
     const [eventName, setEventName] = React.useState<string>("User's Base Location");
-    const [userNotificationPreferences, setUserNotificationPreferences] = React.useState<UserNotificationPreferenceData[]>(UserNotificationPreferenceDefaults);
     const [eventMedias, setEventMedias] = React.useState<EventMediaData[]>([]);
     const [mediaTypeList, setMediaTypeList] = React.useState<MediaTypeData[]>([]);
 
@@ -123,37 +121,15 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                         setIsDataLoaded(true);
                     });
 
-                fetch('/api/usernotificationpreferences/' + userId, {
+                fetch('/api/mediatypes', {
                     method: 'GET',
                     headers: headers,
                 })
-                    .then(response => response.json() as Promise<UserNotificationPreferenceData[]>)
+                    .then(response => response.json() as Promise<Array<any>>)
                     .then(data => {
-                        if (data) {
-                            var mergedPrefs: UserNotificationPreferenceData[] = userNotificationPreferences.map((userpref) => {
-                                var loadedPref = data.find((p) => p.userNotificationTypeId === userpref.userNotificationTypeId);
-                                if (loadedPref) {
-                                    loadedPref.userFriendlyName = userpref.userFriendlyName;
-                                    return loadedPref;
-                                }
-
-                                return userpref;
-                            });
-
-                            setUserNotificationPreferences(mergedPrefs);
-                        }
+                        setMediaTypeList(data);
+                        setIsDataLoaded(true);
                     })
-                    .then(() =>
-                        fetch('/api/mediatypes', {
-                            method: 'GET',
-                            headers: headers,
-                        })
-                            .then(response => response.json() as Promise<Array<any>>)
-                            .then(data => {
-                                setMediaTypeList(data);
-                                setIsDataLoaded(true);
-                            })
-                    )
                     .then(() => {
                     }).then(() => {
                         fetch('/api/eventmedias/byUserId/' + userId, {
@@ -180,7 +156,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 setCenter(point)
             });
         }
-    }, [userId, userNotificationPreferences, props.isUserLoaded, isDataLoaded])
+    }, [userId, props.isUserLoaded, isDataLoaded])
 
     function togglemodal() {
         setIsOpen(!isOpen);
@@ -272,18 +248,6 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
             account: account
         };
 
-        var userprefs: UserNotificationPreferenceData[] = userNotificationPreferences.map((userpref) => {
-            var val = new UserNotificationPreferenceData();
-            val.id = userpref.id;
-            val.isOptedOut = userpref.isOptedOut;
-            val.userId = userId;
-            val.userNotificationTypeId = userpref.userNotificationTypeId;
-
-            return val;
-        });
-
-        var usrprefdata = JSON.stringify(userprefs);
-
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
 
             const headers = getDefaultHeaders('PUT');
@@ -293,15 +257,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 method: 'PUT',
                 headers: headers,
                 body: usrdata,
-            }).then(() => {
-                fetch('/api/usernotificationpreferences/' + userId, {
-                    method: 'PUT',
-                    headers: headers,
-                    body: usrprefdata,
-                }).then(() => {
-                    props.history.push("/");
-                });
-            })
+            });
         })
     }
 
@@ -505,16 +461,6 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.UserProfilePreferMetric}</Tooltip>
     }
 
-    function setIsOptedOut(userNotificationId: number) {
-        const updatedPrefs: UserNotificationPreferenceData[] = userNotificationPreferences.map((item, index) => {
-            if (item.userNotificationTypeId === userNotificationId)
-                item.isOptedOut = !item.isOptedOut;
-            return item;
-        });
-
-        setUserNotificationPreferences(updatedPrefs);
-    }
-
     function handleLocationChange(point: data.Position) {
         // In an Azure Map point, the longitude is the first position, and latitude is second
         setLatitude(point[1]);
@@ -604,13 +550,13 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                 }
                                 }>
                                     Yes, Delete My Account
-                            </Button>
+                                </Button>
                                 <Button className="action" onClick={() => {
                                     togglemodal();
                                 }
                                 }>
                                     Cancel
-                            </Button>
+                                </Button>
                             </Form.Row>
                         </Form>
                     </Modal>
@@ -762,45 +708,6 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                         Prefer Metric over Imperial
                                     </ToggleButton>
                                 </Form.Group>
-                            </Col>
-                        </Form.Row>
-                        <Form.Row>
-                            <h3>Email Notification Preferences</h3>
-                        </Form.Row>
-                        <Form.Row>
-                            <Form.Label>Email Notification</Form.Label>
-                            <Col>
-                                <Form.Group>
-                                    <Form.Label>Check the box below to opt out of all email notifications</Form.Label>
-                                    <ToggleButton
-                                        type="checkbox"
-                                        variant="outline-dark"
-                                        checked={isOptedOutOfAllEmails}
-                                        value="1"
-                                        size="sm"
-                                        onChange={(e) => setIsOptedOutOfAllEmails(e.currentTarget.checked)}
-                                        block
-                                    >Opt Out of All Emails</ToggleButton>
-                                </Form.Group>
-                            </Col>
-                            <Col xs="2" >
-                                <h4>- OR -</h4>
-                            </Col>
-                            <Col>
-                                <Form.Label>Check the box below to opt out of certain types of email notifications</Form.Label>
-                                <ToggleButtonGroup size="sm" type="checkbox" vertical>
-                                    {userNotificationPreferences.map((pref) => (
-                                        <Form.Group>
-                                            <ToggleButton
-                                                type="checkbox"
-                                                variant="outline-dark"
-                                                checked={pref.isOptedOut}
-                                                value="1"
-                                                onChange={(e) => setIsOptedOut(pref.userNotificationTypeId)}
-                                            >{pref.userFriendlyName}</ToggleButton>
-                                        </Form.Group>
-                                    ))}
-                                </ToggleButtonGroup>
                             </Col>
                         </Form.Row>
                         <Form.Row>
