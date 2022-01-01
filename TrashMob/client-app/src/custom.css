@@ -133,3 +133,8 @@ hr.rounded {
     height: auto !important;
   }
 }
+
+.form-group.required .control-label:after {
+    content: "*";
+    color: red;
+}

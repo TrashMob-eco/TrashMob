@@ -448,26 +448,26 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     <Button className="action" onClick={(e) => handleSave(e)}>Save</Button>
                     <Form.Row>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderPartnerLocationNameToolTip}>
-                                    <Form.Label htmlFor="LocationName">Location Name:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="LocationName">Location Name:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="locationName" defaultValue={locationName} onChange={val => handleLocationNameChanged(val.target.value)} maxLength={parseInt('64')} required />
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderPrimaryEmailToolTip}>
-                                    <Form.Label>Primary Email:</Form.Label>
+                                    <Form.Label className="control-label">Primary Email:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={primaryEmail} maxLength={parseInt('64')} onChange={(val) => handlePrimaryEmailChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{primaryEmailErrors}</span>
                             </Form.Group >
                         </Col>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderSecondaryEmailToolTip}>
-                                    <Form.Label>Secondary Email:</Form.Label>
+                                    <Form.Label className="control-label">Secondary Email:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={secondaryEmail} maxLength={parseInt('64')} onChange={(val) => handleSecondaryEmailChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{secondaryEmailErrors}</span>
@@ -492,18 +492,18 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     </Form.Row>
                     <Form.Row>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderPrimaryPhoneToolTip}>
-                                    <Form.Label>Primary Phone:</Form.Label>
+                                    <Form.Label className="control-label">Primary Phone:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={primaryPhone} maxLength={parseInt('64')} onChange={(val) => handlePrimaryPhoneChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{primaryPhoneErrors}</span>
                             </Form.Group >
                         </Col>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderSecondaryPhoneToolTip}>
-                                    <Form.Label>Secondary Phone:</Form.Label>
+                                    <Form.Label className="control-label">Secondary Phone:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={secondaryPhone} maxLength={parseInt('64')} onChange={(val) => handleSecondaryPhoneChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{secondaryPhoneErrors}</span>
@@ -514,15 +514,15 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
-                                    <Form.Label htmlFor="StreetAddress">Street Address:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="StreetAddress">Street Address:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="streetAddress" value={streetAddress} onChange={(val) => handleStreetAddressChanged(val.target.value)} maxLength={parseInt('256')} />
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderCityToolTip}>
-                                    <Form.Label htmlFor="City">City:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
                                 </OverlayTrigger >
                                 <Form.Control type="text" name="city" value={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
                             </Form.Group>
@@ -530,7 +530,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                    <Form.Label htmlFor="PostalCode">Postal Code:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="PostalCode">Postal Code:</Form.Label>
                                 </OverlayTrigger >
                                 <Form.Control type="text" name="postalCode" value={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
                             </Form.Group>
@@ -538,9 +538,9 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     </Form.Row>
                     <Form.Row>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
-                                    <Form.Label htmlFor="Country">Country:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
                                 </OverlayTrigger >
                                 <div>
                                     <CountryDropdown name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
@@ -548,9 +548,9 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
-                                    <Form.Label htmlFor="Region">Region:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="Region">Region:</Form.Label>
                                 </OverlayTrigger >
                                 <div>
                                     <RegionDropdown
@@ -565,7 +565,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderLatitudeToolTip}>
-                                    <Form.Label htmlFor="Latitude">Latitude:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="Latitude">Latitude:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
                                 <span style={{ color: "red" }}>{latitudeErrors}</span>
@@ -574,16 +574,16 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderLongitudeToolTip}>
-                                    <Form.Label htmlFor="Longitude">Longitude:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="Longitude">Longitude:</Form.Label>
                                 </OverlayTrigger >
                                 <Form.Control type="text" name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
                                 <span style={{ color: "red" }}>{longitudeErrors}</span>
                             </Form.Group>
                         </Col>
                     </Form.Row>
-                    <Form.Group>
+                    <Form.Group className="required">
                         <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                            <Form.Label>Notes:</Form.Label>
+                            <Form.Label className="control-label">Notes:</Form.Label>
                         </OverlayTrigger>
                         <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} required />
                     </Form.Group >

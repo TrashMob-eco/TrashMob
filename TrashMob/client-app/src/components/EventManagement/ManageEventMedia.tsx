@@ -249,16 +249,16 @@ export const ManageEventMedia: React.FC<ManageEventMediaProps> = (props) => {
                     </Col>
                     <Form.Row>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 {() => {
                                     if (eventMediaTypeId === Constants.MediaTypeYouTube) {
                                         <OverlayTrigger placement="top" overlay={renderEventMediaYouTubeVideoIdToolTip}>
-                                            <Form.Label htmlFor="EventMediaUrl">YouTube Video Id:</Form.Label>
+                                            <Form.Label className="control-label" htmlFor="EventMediaUrl">YouTube Video Id:</Form.Label>
                                         </OverlayTrigger>
                                     }
                                     else {
                                         <OverlayTrigger placement="top" overlay={renderEventMediaInstagramUrlToolTip}>
-                                            <Form.Label htmlFor="EventMediaUrl">Instagram Url:</Form.Label>
+                                            <Form.Label className="control-label" htmlFor="EventMediaUrl">Instagram Url:</Form.Label>
                                         </OverlayTrigger>
                                     }
                                 }

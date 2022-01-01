@@ -420,17 +420,17 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     </Form.Row>
                     <Form.Row>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderEventNameToolTip}>
-                                    <Form.Label htmlFor="Name">Name:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="Name">Name:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="name" defaultValue={eventName} onChange={(val) => handleEventNameChanged(val.target.value)} maxLength={parseInt('64')} required />
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderEventTypeToolTip}>
-                                    <Form.Label htmlFor="EventType">Event Type:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="EventType">Event Type:</Form.Label>
                                 </OverlayTrigger>
                                 <div>
                                     <select data-val="true" name="eventTypeId" defaultValue={eventTypeId} onChange={(val) => selectEventType(val.target.value)} required>
@@ -460,9 +460,9 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     </Form.Row>
                     <Form.Row>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderEventDateToolTip}>
-                                    <Form.Label htmlFor="EventDate">EventDate:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="EventDate">EventDate:</Form.Label>
                                 </OverlayTrigger>
                                 <div>
                                     <DateTimePicker name="eventDate" onChange={handleEventDateChange} value={eventDate} />
@@ -471,9 +471,9 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderDurationHoursToolTip}>
-                                    <Form.Label htmlFor="DurationHours">Duration in Hours:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="DurationHours">Duration in Hours:</Form.Label>
                                 </OverlayTrigger>
                                 <div>
                                     <Form.Control type="text" size="sm" name="durationHours" defaultValue={durationHours} onChange={(val) => handleDurationHoursChanged(val.target.value)} />
@@ -495,9 +495,9 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     </Form.Row>
                     <Form.Row>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderDescriptionToolTip}>
-                                    <Form.Label htmlFor="Description">Description:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="Description">Description:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control as="textarea" name="description" defaultValue={description} onChange={(val) => handleDescriptionChanged(val.target.value)} maxLength={parseInt('2048')} rows={5} cols={5} required />
                             </Form.Group>
@@ -513,11 +513,11 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderCityToolTip}>
                                     <Form.Label htmlFor="City">City:</Form.Label>
                                 </OverlayTrigger >
-                                <Form.Control type="text" name="city" value={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
+                                <Form.Control className="control-label" type="text" name="city" value={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
                             </Form.Group>
                         </Col>
                         <Col>
@@ -531,9 +531,9 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     </Form.Row>
                     <Form.Row>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
-                                    <Form.Label htmlFor="Country">Country:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
                                 </OverlayTrigger >
                                 <div>
                                     <CountryDropdown name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
@@ -541,9 +541,9 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
-                                    <Form.Label htmlFor="Region">Region:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="Region">Region:</Form.Label>
                                 </OverlayTrigger >
                                 <div>
                                     <RegionDropdown
