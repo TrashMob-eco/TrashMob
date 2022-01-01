@@ -576,9 +576,9 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                         </Form.Row>
                         <Form.Row>
                             <Col>
-                                <Form.Group>
+                                <Form.Group className="required">
                                     <OverlayTrigger placement="top" overlay={renderUserNameToolTip}>
-                                        <Form.Label htmlFor="UserName">User Name:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="UserName">User Name:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" name="userName" defaultValue={userName} onChange={(val) => handleUserNameChanged(val.target.value)} maxLength={parseInt('32')} required />
                                     <span style={{ color: "red" }}>{userNameErrors}</span>

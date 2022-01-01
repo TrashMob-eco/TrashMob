@@ -115,30 +115,30 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
             <h1>Contact Us</h1>
             <div>
                 Have a question for the TrashMob team? Or an idea to make this site better? Or just want to tell us you love us? Drop us a note!
-                </div>
+            </div>
             <Form onSubmit={handleSave} >
                 <Form.Row>
                     <Col>
-                        <Form.Group>
+                        <Form.Group className="required">
                             <OverlayTrigger placement="top" overlay={renderNameToolTip}>
-                                <Form.Label>Name:</Form.Label>
+                                <Form.Label className="control-label">Name:</Form.Label>
                             </OverlayTrigger>
                             <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
                         </Form.Group>
                     </Col>
                     <Col>
-                        <Form.Group>
+                        <Form.Group className="required">
                             <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
-                                <Form.Label>Email:</Form.Label>
+                                <Form.Label className="control-label">Email:</Form.Label>
                             </OverlayTrigger>
                             <Form.Control type="text" defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required />
                             <span style={{ color: "red" }}>{emailErrors}</span>
                         </Form.Group >
                     </Col>
                 </Form.Row>
-                <Form.Group>
+                <Form.Group className="required">
                     <OverlayTrigger placement="top" overlay={renderMessageToolTip}>
-                        <Form.Label>Message:</Form.Label>
+                        <Form.Label className="control-label">Message:</Form.Label>
                     </OverlayTrigger>
                     <Form.Control as="textarea" defaultValue={message} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleMessageChanged(val.target.value)} required />
                     <span style={{ color: "red" }}>{messageErrors}</span>
@@ -146,8 +146,8 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
                 <Form.Group>
                     <LoadCanvasTemplateNoReload />
                 </Form.Group>
-                <Form.Group>
-                    <Form.Label>CAPTCHA Value:</Form.Label>
+                <Form.Group className="required">
+                    <Form.Label className="control-label">CAPTCHA Value:</Form.Label>
                     <Form.Control type="text" required name="user_captcha_input" />
                 </Form.Group >
                 <Form.Group className="form-group">

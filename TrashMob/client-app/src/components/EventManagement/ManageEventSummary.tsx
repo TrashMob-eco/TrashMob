@@ -174,9 +174,9 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
             <Form onSubmit={handleSave} >
                 <Form.Row>
                     <Col>
-                        <Form.Group>
+                        <Form.Group className="required">
                             <OverlayTrigger placement="top" overlay={renderActualNumberOfAttendeesToolTip}>
-                                <Form.Label>Actual Number of Attendees:</Form.Label>
+                                <Form.Label className="control-label">Actual Number of Attendees:</Form.Label>
                             </OverlayTrigger>
                             <Form.Control type="text" value={actualNumberOfAttendees} maxLength={parseInt('3')} onChange={(val) => handleActualNumberOfAttendeesChanged(val.target.value)} required />
                         </Form.Group>
@@ -198,11 +198,11 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
                             </Form.Group >
                         </Col>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderDurationInMinutesToolTip}>
-                                    <Form.Label>Actual Duration in Minutes:</Form.Label>
+                                <Form.Label className="control-label">Actual Duration in Minutes:</Form.Label>
                                 </OverlayTrigger>
-                                <Form.Control type="text" value={durationInMinutes} maxLength={parseInt('3')} onChange={(val) => handleDurationInMinutesChanged(val.target.value)} />
+                                <Form.Control type="text" value={durationInMinutes} maxLength={parseInt('3')} onChange={(val) => handleDurationInMinutesChanged(val.target.value)} required />
                             </Form.Group >
                         </Col>
                 </Form.Row>
