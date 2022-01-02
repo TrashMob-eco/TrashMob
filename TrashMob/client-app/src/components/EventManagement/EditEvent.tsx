@@ -47,6 +47,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [eventStatusId, setEventStatusId] = React.useState<number>(0);
     const [eventTypeList, setEventTypeList] = React.useState<EventTypeData[]>([]);
     const [eventDateErrors, setEventDateErrors] = React.useState<string>("");
+    const [maxNumberOfParticipantsErrors, setMaxNumberOfParticipantsErrors] = React.useState<string>("");
     const [durationHoursErrors, setDurationHoursErrors] = React.useState<string>("");
     const [durationMinutesErrors, setDurationMinutesErrors] = React.useState<string>("");
     const [latitudeErrors, setLatitudeErrors] = React.useState<string>("");
@@ -55,6 +56,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
     const [title, setTitle] = React.useState<string>("Create Event");
+    const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
@@ -123,6 +125,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
     function handleEventNameChanged(val: string) {
         setEventName(val);
+
+        validateForm();
     }
 
     function handleDurationHoursChanged(val: string) {
@@ -143,6 +147,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             }
         }
         catch { }
+
+        validateForm();
     }
 
     function handleDurationMinutesChanged(val: string) {
@@ -163,34 +169,66 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             }
         }
         catch { }
+
+        validateForm();
     }
 
     function handleDescriptionChanged(val: string) {
         setDescription(val);
+
+        validateForm();
     }
 
     function handleStreetAddressChanged(val: string) {
         setStreetAddress(val);
+
+        validateForm();
     }
 
     function handleCityChanged(val: string) {
         setCity(val);
+
+        validateForm();
     }
 
     function selectCountry(val: string) {
         setCountry(val);
+
+        validateForm();
     }
 
     function selectRegion(val: string) {
         setRegion(val);
+
+        validateForm();
     }
 
     function handlePostalCodeChanged(val: string) {
         setPostalCode(val);
+
+        validateForm();
     }
 
     function handleMaxNumberOfParticipantsChanged(val: string) {
-        setMaxNumberOfParticipants(parseInt(val));
+
+        try {
+            if (val) {
+                var intVal = parseInt(val);
+
+                if (intVal < 0) {
+                    setMaxNumberOfParticipantsErrors("Max number of participants must be greater than or equal to zero.");
+                }
+                else {
+                    setMaxNumberOfParticipantsErrors("")
+                    setMaxNumberOfParticipants(parseInt(val));
+                }
+            }
+        }
+        catch {
+            setMaxNumberOfParticipantsErrors("Invalid value specified for Max Number of Participants.");
+        }
+
+        validateForm();
     }
 
     function handleLatitudeChanged(val: string) {
@@ -210,7 +248,11 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                 setLatitudeErrors("Latitude must be => -90 and <= 90");
             }
         }
-        catch { }
+        catch {
+            setLatitudeErrors("Invalid value specified for Latitude.");
+        }
+
+        validateForm();
     }
 
     function handleLongitudeChanged(val: string) {
@@ -230,7 +272,11 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                 setLongitudeErrors("Longitude must be >= -180 and <= 180");
             }
         }
-        catch { }
+        catch {
+            setLongitudeErrors("Invalid value specified for Longitude.")
+        }
+
+        validateForm();
     }
 
     function renderDescriptionToolTip(props: any) {
@@ -320,6 +366,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     })
             }
             )
+
+        validateForm();
     }
 
     function handleEventDateChange(passedDate: Date) {
@@ -331,6 +379,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         }
 
         setEventDate(passedDate);
+
+        validateForm();
     }
 
     function handleIsEventPublicChanged(value: boolean) {
@@ -342,22 +392,35 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         else {
             setEventDateErrors("");
         }
+
+        validateForm();
     }
 
     // This will handle Cancel button click event.
     function handleCancel(event: any) {
         event.preventDefault();
-
         props.onEditCancel();
     }
+
+    function validateForm() {
+        if (eventName === "" || eventDateErrors !== "" || description === "" || durationHoursErrors !== "" || durationMinutesErrors !== "" || latitudeErrors !== "" || longitudeErrors !== "" || city === "" ) {
+            setIsSaveEnabled(false);
+        }
+        else {
+            setIsSaveEnabled(true);
+        }
+    }
+
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
         event.preventDefault();
 
-        if (eventDateErrors !== "") {
+        if (!isSaveEnabled) {
             return;
         }
+
+        setIsSaveEnabled(false);
 
         var eventData = new EventData();
         var method = "POST";
@@ -579,13 +642,13 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     <Form.Label htmlFor="MaxNumberOfParticipants">Max Number Of Participants:</Form.Label>
                                 </OverlayTrigger >
                                 <Form.Control type="text" name="maxNumberOfParticipants" defaultValue={maxNumberOfParticipants} onChange={(val) => handleMaxNumberOfParticipantsChanged(val.target.value)} />
-
+                                <span style={{ color: "red" }}>{maxNumberOfParticipantsErrors}</span>
                             </Form.Group>
                         </Col>
                     </Form.Row>
                     <Form.Row>
                         <Form.Group>
-                            <Button type="submit" className="btn btn-default">Save</Button>
+                            <Button disabled={!isSaveEnabled} type="submit" className="btn btn-default">Save</Button>
                             <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
                         </Form.Group>
                     </Form.Row>

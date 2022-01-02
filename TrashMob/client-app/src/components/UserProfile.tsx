@@ -64,6 +64,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
     const [eventName, setEventName] = React.useState<string>("User's Base Location");
     const [eventMedias, setEventMedias] = React.useState<EventMediaData[]>([]);
     const [mediaTypeList, setMediaTypeList] = React.useState<MediaTypeData[]>([]);
+    const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
     React.useEffect(() => {
 
@@ -198,11 +199,9 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
         })
     }
 
-    // This will handle the submit form event.  
-    function handleSave(event: any) {
-        event.preventDefault();
-
-        if (userNameErrors !== "" ||
+    function validateForm() {
+        if (userName === "" ||
+            userNameErrors !== "" ||
             givenNameErrors !== "" ||
             surNameErrors !== "" ||
             cityErrors !== "" ||
@@ -212,8 +211,22 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
             longitudeErrors !== "" ||
             travelLimitForLocalEventsErrors !== "" ||
             postalCodeErrors !== "") {
+            setIsSaveEnabled(false);
+        }
+        else {
+            setIsSaveEnabled(true);
+        }
+    }
+
+    // This will handle the submit form event.  
+    function handleSave(event: any) {
+        event.preventDefault();
+
+        if (!isSaveEnabled) {
             return;
         }
+
+        setIsSaveEnabled(false);
 
         var userData = new UserData();
 
@@ -265,6 +278,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
 
         if (!val || val.length === 0) {
             setUserNameErrors("Username cannot be empty. Username can consist of Letters A-Z (upper or lowercase), Numbers (0-9), and underscores (_)");
+            validateForm();
             return;
         }
 
@@ -272,6 +286,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
 
         if (!pattern.test(val)) {
             setUserNameErrors("Please enter a valid Username. Username can consist of Letters A-Z (upper or lowercase), Numbers (0-9), and underscores (_)");
+            validateForm();
             return;
         }
         else {
@@ -304,32 +319,40 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 else {
                     setUserNameErrors("Unknown error occured while hecking user name. Please try again. Error Code: " + response.status);
                 }
+
+                validateForm();
             })
         })
     }
 
     function handleGivenNameChanged(val: string) {
         setGivenName(val);
+        validateForm();
     }
 
     function handleSurNameChanged(val: string) {
         setSurName(val);
+        validateForm();
     }
 
     function handleCityChanged(val: string) {
         setCity(val);
+        validateForm();
     }
 
     function selectCountry(val: string) {
         setCountry(val);
+        validateForm();
     }
 
     function selectRegion(val: string) {
         setRegion(val);
+        validateForm();
     }
 
     function handlePostalCodeChanged(val: string) {
         setPostalCode(val);
+        validateForm();
     }
 
     function handleLatitudeChanged(val: string) {
@@ -349,7 +372,11 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 setLatitudeErrors("Latitude must be => -90 and <= 90");
             }
         }
-        catch { }
+        catch {
+            setLatitudeErrors("Latitude must be a valid number.");
+        }
+
+        validateForm();
     }
 
     function handleLongitudeChanged(val: string) {
@@ -369,24 +396,35 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 setLongitudeErrors("Longitude must be >= -180 and <= 180");
             }
         }
-        catch { }
+        catch {
+            setLongitudeErrors("Longitude must be a valid number.");
+        }
+
+        validateForm();
     }
 
     function handleTravelLimitForLocalEventsChanged(val: string) {
-        if (val) {
-            var intVal = parseInt(val);
+        try {
+            if (val) {
+                var intVal = parseInt(val);
 
-            if (intVal <= 0 || intVal > 1000) {
-                setTravelLimitForLocalEventsErrors("Travel limit must be greater than or equal to 0 and less than 1000.")
+                if (intVal <= 0 || intVal > 1000) {
+                    setTravelLimitForLocalEventsErrors("Travel limit must be greater than or equal to 0 and less than 1000.")
+                }
+                else {
+                    setTravelLimitForLocalEvents(intVal);
+                    setTravelLimitForLocalEventsErrors("");
+                }
             }
             else {
-                setTravelLimitForLocalEvents(intVal);
-                setTravelLimitForLocalEventsErrors("");
+                setTravelLimitForLocalEvents(1);
             }
         }
-        else {
-            setTravelLimitForLocalEvents(1);
+        catch {
+            setTravelLimitForLocalEventsErrors("Travel limit must be a valid number.");
         }
+
+        validateForm();
     }
 
     function renderUserNameToolTip(props: any) {
@@ -480,9 +518,10 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                         setCountry(data.addresses[0].address.country);
                         setRegion(data.addresses[0].address.countrySubdivisionName);
                         setPostalCode(data.addresses[0].address.postalCode);
+                        validateForm();
                     })
             }
-            )
+        )
     }
 
     function onEventMediasUpdated() {
@@ -566,7 +605,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                         <Form.Row>
                             <Col>
                                 <Form.Group>
-                                    <Button disabled={userNameErrors !== ""} type="submit" className="action btn-default">Save</Button>
+                                    <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Save</Button>
                                     <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
                                 </Form.Group>
                             </Col>
