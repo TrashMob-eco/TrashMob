@@ -16,5 +16,7 @@
         Task<int> DeleteEventAttendee(Guid eventId, Guid attendeeId);
 
         Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid attendeeId, bool futureEventsOnly = false);
+
+        Task<IEnumerable<Event>> GetCanceledEventsUserIsAttending(Guid attendeeId, bool futureEventsOnly = false);
     }
 }

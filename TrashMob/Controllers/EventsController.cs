@@ -87,6 +87,25 @@ namespace TrashMob.Controllers
             return Ok(allResults);
         }
 
+        [HttpGet]
+        [Authorize]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [Route("canceleduserevents/{userId}/{futureEventsOnly}")]
+        public async Task<IActionResult> GetCanceledUserEvents(Guid userId, bool futureEventsOnly)
+        {
+            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
+            if (user == null || !ValidateUser(user.NameIdentifier))
+            {
+                return Forbid();
+            }
+
+            var result1 = await eventRepository.GetCanceledUserEvents(userId, futureEventsOnly).ConfigureAwait(false);
+            var result2 = await eventAttendeeRepository.GetCanceledEventsUserIsAttending(userId, futureEventsOnly).ConfigureAwait(false);
+
+            var allResults = result1.Union(result2, new EventComparer());
+            return Ok(allResults);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEvent(Guid id)
         {

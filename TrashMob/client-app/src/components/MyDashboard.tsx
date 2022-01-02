@@ -26,6 +26,7 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
     const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
     const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
     const [showFutureEventsOnly, setShowFutureEventsOnly] = React.useState<boolean>(false);
+    const [showCanceledEventsOnly, setShowCanceledEventsOnly] = React.useState<boolean>(false);
     const [reloadEvents, setReloadEvents] = React.useState<number>(0);
 
     React.useEffect(() => {
@@ -72,18 +73,31 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/events/userevents/' + currentUser.id + '/' + showFutureEventsOnly, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<EventData[]>)
-                    .then(data => {
-                        setMyEventList(data);
-                        setIsEventDataLoaded(true);
-                    });
+                if (!showCanceledEventsOnly) {
+                    fetch('/api/events/userevents/' + currentUser.id + '/' + showFutureEventsOnly, {
+                        method: 'GET',
+                        headers: headers
+                    })
+                        .then(response => response.json() as Promise<EventData[]>)
+                        .then(data => {
+                            setMyEventList(data);
+                            setIsEventDataLoaded(true);
+                        });
+                }
+                else {
+                    fetch('/api/events/canceleduserevents/' + currentUser.id + '/' + showFutureEventsOnly, {
+                        method: 'GET',
+                        headers: headers
+                    })
+                        .then(response => response.json() as Promise<EventData[]>)
+                        .then(data => {
+                            setMyEventList(data);
+                            setIsEventDataLoaded(true);
+                        });
+                }
             });
         }
-    }, [showFutureEventsOnly, reloadEvents, currentUser.id, props.isUserLoaded]);
+    }, [showFutureEventsOnly, showCanceledEventsOnly, reloadEvents, currentUser.id, props.isUserLoaded]);
 
     function handleLocationChange(point: data.Position) {
         // do nothing
@@ -121,6 +135,19 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
                                 >
                                     Show Future Events Only:
                                     </ToggleButton>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <ToggleButton
+                                    type="checkbox"
+                                    variant="outline-dark"
+                                    checked={showCanceledEventsOnly}
+                                    value="1"
+                                    onChange={(e) => setShowCanceledEventsOnly(e.currentTarget.checked)}
+                                >
+                                    Show Canceled Events Only:
+                                </ToggleButton>
                             </Form.Group>
                         </Col>
                     </Form.Row>

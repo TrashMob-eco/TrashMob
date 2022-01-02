@@ -52,6 +52,16 @@
                 .ToListAsync().ConfigureAwait(false);
         }
 
+        public async Task<IEnumerable<Event>> GetCanceledUserEvents(Guid userId, bool futureEventsOnly)
+        {
+            return await mobDbContext.Events
+                .Where(e => e.CreatedByUserId == userId
+                            && e.EventStatusId == (int)EventStatusEnum.Canceled
+                            && (!futureEventsOnly || e.EventDate >= DateTimeOffset.UtcNow))
+                .AsNoTracking()
+                .ToListAsync().ConfigureAwait(false);
+        }
+
         // Add new Event record     
         public async Task<Event> AddEvent(Event mobEvent)
         {
