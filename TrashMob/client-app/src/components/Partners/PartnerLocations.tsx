@@ -27,7 +27,9 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
 
     const [partnerLocationId, setPartnerLocationId] = React.useState<string>(Guid.createEmpty().toString());
     const [locationName, setLocationName] = React.useState<string>("");
+    const [locationNameErrors, setLocationNameErrors] = React.useState<string>("");
     const [notes, setNotes] = React.useState<string>();
+    const [notesErrors, setNotesErrors] = React.useState<string>();
     const [isPartnerLocationActive, setIsPartnerLocationActive] = React.useState<boolean>(true);
     const [streetAddress, setStreetAddress] = React.useState<string>();
     const [city, setCity] = React.useState<string>();
@@ -51,6 +53,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isLocationDataLoaded, setIsLocationDataLoaded] = React.useState<boolean>(false);
+    const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
     React.useEffect(() => {
 
@@ -96,31 +99,57 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     }
 
     function handleLocationNameChanged(locationName: string) {
-        setLocationName(locationName);
+
+        if (locationName === "") {
+            setLocationNameErrors("Location Name cannot be empty.")
+        }
+        else {
+            setLocationName(locationName);
+            setLocationNameErrors("");
+        }
+
+        validateForm();
     }
 
     function handleNotesChanged(notes: string) {
-        setNotes(notes);
+        if (notes === "") {
+            setNotesErrors("Notes cannot be empty.");
+        }
+        else {
+            setNotes(notes);
+            setNotesErrors("");
+        }
+
+        validateForm();
     }
 
     function handleStreetAddressChanged(val: string) {
         setStreetAddress(val);
+
+        validateForm();
     }
 
     function handleCityChanged(val: string) {
         setCity(val);
+
+        validateForm();
     }
 
     function selectCountry(val: string) {
         setCountry(val);
+
+        validateForm();
     }
 
     function selectRegion(val: string) {
         setRegion(val);
+
+        validateForm();
     }
 
     function handlePostalCodeChanged(val: string) {
         setPostalCode(val);
+        validateForm();
     }
 
     function handleLatitudeChanged(val: string) {
@@ -140,7 +169,11 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                 setLatitudeErrors("Latitude must be => -90 and <= 90");
             }
         }
-        catch { }
+        catch {
+            setLatitudeErrors("Latitude must be a valid number.");
+        }
+
+        validateForm();
     }
 
     function handleLongitudeChanged(val: string) {
@@ -160,7 +193,11 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                 setLongitudeErrors("Longitude must be >= -180 and <= 180");
             }
         }
-        catch { }
+        catch {
+            setLongitudeErrors("Longitude must be a valid number");
+        }
+
+        validateForm();
     }
 
     function handlePrimaryEmailChanged(val: string) {
@@ -173,6 +210,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
             setPrimaryEmailErrors("");
             setPrimaryEmail(val);
         }
+
+        validateForm();
     }
 
     function handleSecondaryEmailChanged(val: string) {
@@ -185,6 +224,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
             setSecondaryEmailErrors("");
             setSecondaryEmail(val);
         }
+
+        validateForm();
     }
 
     function handlePrimaryPhoneChanged(val: string) {
@@ -197,6 +238,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
             setPrimaryPhoneErrors("");
             setPrimaryPhone(val);
         }
+
+        validateForm();
     }
 
     function handleSecondaryPhoneChanged(val: string) {
@@ -209,6 +252,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
             setSecondaryPhoneErrors("");
             setSecondaryPhone(val);
         }
+
+        validateForm();
     }
 
     function renderPartnerLocationNameToolTip(props: any) {
@@ -311,17 +356,34 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
         });
     }
 
+    function validateForm() {
+        if (notes === "" ||
+            notesErrors !== "" ||
+            primaryEmail === "" ||
+            primaryEmailErrors !== "" ||
+            secondaryEmail === "" ||
+            secondaryEmailErrors !== "" ||
+            primaryPhone === "" ||
+            primaryPhoneErrors !== "" ||
+            secondaryPhone === "" ||
+            secondaryPhoneErrors !== "" ||
+            latitudeErrors !== "" ||
+            longitudeErrors !== "") {
+            setIsSaveEnabled(false);
+        }
+        else {
+            setIsSaveEnabled(true);
+        }
+    }
+
     function handleSave(event: any) {
         event.preventDefault();
 
-        if (latitudeErrors !== "" ||
-            longitudeErrors !== "" ||
-            primaryEmailErrors !== "" ||
-            secondaryEmailErrors !== "" ||
-            primaryPhoneErrors !== "" ||
-            secondaryPhoneErrors !== "") {
+        if (!isSaveEnabled) {
             return;
         }
+
+        setIsSaveEnabled(false);
 
         var partnerLocationData = new PartnerLocationData();
         partnerLocationData.id = partnerLocationId;
@@ -426,6 +488,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                         setCountry(data.addresses[0].address.country);
                         setRegion(data.addresses[0].address.countrySubdivisionName);
                         setPostalCode(data.addresses[0].address.postalCode);
+                        validateForm();
                     })
             })
     }
@@ -445,7 +508,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     <Form.Row>
                         <input type="hidden" name="Id" value={partnerLocationId.toString()} />
                     </Form.Row>
-                    <Button className="action" onClick={(e) => handleSave(e)}>Save</Button>
+                    <Button disabled={!isSaveEnabled} className="action" onClick={(e) => handleSave(e)}>Save</Button>
                     <Form.Row>
                         <Col>
                             <Form.Group className="required">
@@ -453,6 +516,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                                     <Form.Label className="control-label" htmlFor="LocationName">Location Name:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="locationName" defaultValue={locationName} onChange={val => handleLocationNameChanged(val.target.value)} maxLength={parseInt('64')} required />
+                                <span style={{ color: "red" }}>{locationNameErrors}</span>
                             </Form.Group>
                         </Col>
                         <Col>
@@ -586,6 +650,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                             <Form.Label className="control-label">Notes:</Form.Label>
                         </OverlayTrigger>
                         <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} required />
+                        <span style={{ color: "red" }}>{notesErrors}</span>
                     </Form.Group >
                     <Form.Row>
                         <Form.Label>Click on the map to set the location for your Partner. The location fields above will be automatically populated.</Form.Label>
