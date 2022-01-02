@@ -65,7 +65,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
     }
 
     function validateForm() {
-        if (nameErrors != "" || emailErrors != "" || messageErrors != "" || name == "" || email == "" || message == "") {
+        if (nameErrors !== "" || emailErrors !== "" || messageErrors !== "" || name === "" || email === "" || message === "") {
             setIsSaveEnabled(false);
         }
         else {
