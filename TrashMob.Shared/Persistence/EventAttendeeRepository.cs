@@ -91,5 +91,22 @@
                 .ToListAsync().ConfigureAwait(false);
             return events;
         }
+
+        public async Task<IEnumerable<Event>> GetCanceledEventsUserIsAttending(Guid attendeeId, bool futureEventsOnly = false)
+        {
+            // TODO: There are better ways to do this.
+            var eventAttendees = await mobDbContext.EventAttendees
+                .Where(ea => ea.UserId == attendeeId)
+                .AsNoTracking()
+                .ToListAsync().ConfigureAwait(false);
+
+            var events = await mobDbContext.Events
+                .Where(e => e.EventStatusId == (int)EventStatusEnum.Canceled
+                         && (!futureEventsOnly || e.EventDate >= DateTimeOffset.UtcNow)
+                         && eventAttendees.Select(ea => ea.EventId).Contains(e.Id))
+                .AsNoTracking()
+                .ToListAsync().ConfigureAwait(false);
+            return events;
+        }
     }
 }

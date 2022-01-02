@@ -18,6 +18,8 @@
 
         Task<IEnumerable<Event>> GetUserEvents(Guid userId, bool futureEventsOnly);
 
+        Task<IEnumerable<Event>> GetCanceledUserEvents(Guid userId, bool futureEventsOnly);
+
         Task<Event> AddEvent(Event mobEvent);
 
         Task<Event> UpdateEvent(Event mobEvent);
