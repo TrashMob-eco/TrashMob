@@ -184,7 +184,7 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
                     <Col>
                         <Form.Group>
                             <OverlayTrigger placement="top" overlay={renderNumberOfBagsToolTip}>
-                                <Form.Label>Number of Bags:</Form.Label>
+                                <Form.Label className="control-label">Number of Bags:</Form.Label>
                             </OverlayTrigger>
                             <Form.Control type="text" value={numberOfBags} maxLength={parseInt('3')} onChange={(val) => handleNumberOfBagsChanged(val.target.value)} />
                         </Form.Group >
@@ -192,7 +192,7 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderNumberOfBucketsToolTip}>
-                                    <Form.Label>Number of Buckets:</Form.Label>
+                                <Form.Label className="control-label">Number of Buckets:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" value={numberOfBuckets} maxLength={parseInt('3')} onChange={(val) => handleNumberOfBucketsChanged(val.target.value)} />
                             </Form.Group >
@@ -208,7 +208,7 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
                 </Form.Row>
                 <Form.Group>
                     <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                        <Form.Label>Notes:</Form.Label>
+                        <Form.Label className="control-label">Notes:</Form.Label>
                     </OverlayTrigger>
                     <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} />
                     <span style={{ color: "red" }}>{notesErrors}</span>

@@ -144,7 +144,7 @@ const NotificationPreferences: React.FC<NotificationPreferencesProps> = (props) 
                             </Col>
                         </Form.Row>
                         <Form.Row>
-                            <Form.Label>Email Notification</Form.Label>
+                            <Form.Label className="control-label">Email Notification</Form.Label>
                             <Col>
                                 <Form.Group>
                                     <Form.Label>Check the box below to opt out of all email notifications</Form.Label>

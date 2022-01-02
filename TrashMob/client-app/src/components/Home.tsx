@@ -221,7 +221,7 @@ const Home: React.FC<HomeProps> = (props) => {
                         <Form>
                             <Form.Row>
                                 <Form.Group>
-                                    <Form.Label>I have reviewed and I agree to the TrashMob.eco <Link to='./termsofservice'>Terms of Use</Link> and the TrashMob.eco <Link to='./privacypolicy'>Privacy Policy</Link>.</Form.Label>
+                                    <Form.Label className="control-label">I have reviewed and I agree to the TrashMob.eco <Link to='./termsofservice'>Terms of Use</Link> and the TrashMob.eco <Link to='./privacypolicy'>Privacy Policy</Link>.</Form.Label>
                                     <Form.Check id="agree" onChange={checkboxhandler} label="Yes" />
                                 </Form.Group>
                             </Form.Row>
