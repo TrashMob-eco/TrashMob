@@ -25,12 +25,12 @@
             var eventAttendees = await mobDbContext.EventAttendees
                 .Where(ea => ea.EventId == eventId)
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var users = await mobDbContext.Users
                 .Where(u => eventAttendees.Select(ea => ea.UserId).Contains(u.Id))
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             return users;
         }
 
@@ -82,14 +82,14 @@
             var eventAttendees = await mobDbContext.EventAttendees
                 .Where(ea => ea.UserId == attendeeId)                
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var events = await mobDbContext.Events
                 .Where(e => e.EventStatusId != (int)EventStatusEnum.Canceled
                          && (!futureEventsOnly || e.EventDate >= DateTimeOffset.UtcNow)
                          && eventAttendees.Select(ea => ea.EventId).Contains(e.Id))
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             return events;
         }
 
@@ -99,14 +99,14 @@
             var eventAttendees = await mobDbContext.EventAttendees
                 .Where(ea => ea.UserId == attendeeId)
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var events = await mobDbContext.Events
                 .Where(e => e.EventStatusId == (int)EventStatusEnum.Canceled
                          && (!futureEventsOnly || e.EventDate >= DateTimeOffset.UtcNow)
                          && eventAttendees.Select(ea => ea.EventId).Contains(e.Id))
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             return events;
         }
     }

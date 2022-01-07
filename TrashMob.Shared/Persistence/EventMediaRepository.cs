@@ -21,26 +21,26 @@
         {
             return await mobDbContext.EventMedias
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<EventMedia>> GetEventMediasByEvent(Guid eventId, CancellationToken cancellationToken = default)
         {
             return await mobDbContext.EventMedias.Where(em => em.EventId == eventId)
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<EventMedia>> GetEventMediasByUser(Guid userId, CancellationToken cancellationToken = default)
         {
             return await mobDbContext.EventMedias.Where(em => em.CreatedByUserId == userId)
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<EventMedia> GetEventMediaById(Guid eventMediaId, CancellationToken cancellationToken = default)
         {
-            return await mobDbContext.EventMedias.FirstOrDefaultAsync(em => em.Id == eventMediaId).ConfigureAwait(false);
+            return await mobDbContext.EventMedias.FirstOrDefaultAsync(em => em.Id == eventMediaId, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         // Add new EventMedia record     

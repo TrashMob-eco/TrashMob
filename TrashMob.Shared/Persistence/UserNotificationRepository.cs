@@ -21,7 +21,7 @@
         {
             return await mobDbContext.UserNotifications.Where(un => un.EventId == eventId && un.UserId == userId)
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<UserNotification> AddUserNotification(UserNotification userNotification)

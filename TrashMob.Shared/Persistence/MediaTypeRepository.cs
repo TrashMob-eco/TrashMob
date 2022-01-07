@@ -20,7 +20,7 @@
         {
             return await mobDbContext.MediaTypes.Where(e => e.IsActive == true)
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }
 }

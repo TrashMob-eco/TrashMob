@@ -19,7 +19,7 @@
         {
             return await mobDbContext.PartnerRequestStatus
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }
 }

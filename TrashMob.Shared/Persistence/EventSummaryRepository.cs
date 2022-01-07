@@ -18,7 +18,7 @@
 
         public async Task<EventSummary> GetEventSummary(Guid eventId, CancellationToken cancellationToken = default)
         {
-            return await mobDbContext.EventSummaries.FindAsync(eventId).ConfigureAwait(false);
+            return await mobDbContext.EventSummaries.FindAsync(new object[] { eventId }, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         public IQueryable<EventSummary> GetEventSummaries(CancellationToken cancellationToken = default)

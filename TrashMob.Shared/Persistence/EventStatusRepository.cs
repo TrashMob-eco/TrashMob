@@ -19,7 +19,7 @@
         {
             return await mobDbContext.EventStatuses
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }
 }

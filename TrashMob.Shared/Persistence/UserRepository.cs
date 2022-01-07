@@ -22,7 +22,7 @@
         {
             return await mobDbContext.Users
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         // Add new User record     
@@ -56,13 +56,13 @@
         // Get the details of a particular User
         public async Task<User> GetUserByInternalId(Guid id, CancellationToken cancellationToken = default)
         {
-            return await mobDbContext.Users.FindAsync(id).ConfigureAwait(false);
+            return await mobDbContext.Users.FindAsync(new object[] { id }, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         // Get the details of a particular User
         public async Task<User> GetUserByUserName(string userName, CancellationToken cancellationToken = default)
         {
-            return await mobDbContext.Users.FirstOrDefaultAsync(u => u.UserName == userName).ConfigureAwait(false);
+            return await mobDbContext.Users.FirstOrDefaultAsync(u => u.UserName == userName, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         // Delete the record of a particular User
@@ -249,7 +249,7 @@
 
         public Task<User> GetUserByNameIdentifier(string nameIdentifier, CancellationToken cancellationToken = default)
         {
-            return mobDbContext.Users.FirstOrDefaultAsync(u => u.NameIdentifier == nameIdentifier);
+            return mobDbContext.Users.FirstOrDefaultAsync(u => u.NameIdentifier == nameIdentifier, cancellationToken: cancellationToken);
         }
     }
 }

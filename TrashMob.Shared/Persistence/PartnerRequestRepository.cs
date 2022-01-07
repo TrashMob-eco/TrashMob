@@ -34,12 +34,12 @@
         {
             return await mobDbContext.PartnerRequests
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<PartnerRequest> GetPartnerRequest(Guid id, CancellationToken cancellationToken = default)
         {
-            return await mobDbContext.PartnerRequests.FindAsync(id).ConfigureAwait(false);
+            return await mobDbContext.PartnerRequests.FindAsync(new object[] { id }, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         // Update the records of a particular Partner Request

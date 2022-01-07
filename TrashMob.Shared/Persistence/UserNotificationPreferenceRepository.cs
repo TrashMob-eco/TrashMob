@@ -21,7 +21,7 @@
         {
             return await mobDbContext.UserNotificationPreferences.Where(unp => unp.UserId == userId)
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<UserNotificationPreference> AddUpdateUserNotificationPreference(UserNotificationPreference userNotificationPreference)

@@ -29,7 +29,7 @@ namespace TrashMob.Shared.Engine
             Logger.LogInformation("Generating Notifications for {0}", NotificationType);
 
             // Get list of users who have notifications turned on for locations
-            var users = await UserRepository.GetAllUsers().ConfigureAwait(false);
+            var users = await UserRepository.GetAllUsers(cancellationToken).ConfigureAwait(false);
             int notificationCounter = 0;
 
             Logger.LogInformation("Generating {0} Notifications for {1} total users", NotificationType, users.Count());
@@ -45,10 +45,10 @@ namespace TrashMob.Shared.Engine
                 var eventsToNotifyUserFor = new List<Event>();
 
                 // Get list of active events
-                var events = await EventRepository.GetActiveEvents().ConfigureAwait(false);
+                var events = await EventRepository.GetActiveEvents(cancellationToken).ConfigureAwait(false);
 
                 // Get list of events user is already attending
-                var eventsUserIsAttending = await EventAttendeeRepository.GetEventsUserIsAttending(user.Id).ConfigureAwait(false);
+                var eventsUserIsAttending = await EventAttendeeRepository.GetEventsUserIsAttending(user.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 // Limit the list of events to process to those in the next window UTC
                 foreach (var mobEvent in events.Where(e => e.CreatedByUserId != user.Id && e.EventDate >= DateTimeOffset.UtcNow && e.EventDate <= DateTimeOffset.UtcNow.AddHours(NumberOfHoursInWindow)))

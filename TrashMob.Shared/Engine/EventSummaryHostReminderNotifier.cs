@@ -30,13 +30,12 @@ namespace TrashMob.Shared.Engine
         {
         }
 
-
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
             Logger.LogInformation("Generating Notifications for {0}", NotificationType);
 
             // Get list of users who have notifications turned on for locations
-            var users = await UserRepository.GetAllUsers().ConfigureAwait(false);
+            var users = await UserRepository.GetAllUsers(cancellationToken).ConfigureAwait(false);
             int notificationCounter = 0;
 
             Logger.LogInformation("Generating {0} Notifications for {1} total users", NotificationType, users.Count());
@@ -52,7 +51,7 @@ namespace TrashMob.Shared.Engine
                 var eventsToNotifyUserFor = new List<Event>();
 
                 // Get list of active events
-                var events = await EventRepository.GetCompletedEvents().ConfigureAwait(false);
+                var events = await EventRepository.GetCompletedEvents(cancellationToken).ConfigureAwait(false);
 
                 foreach (var mobEvent in events.Where(e => e.CreatedByUserId == user.Id))
                 {
