@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using TrashMob.Shared.Models;
@@ -15,7 +16,7 @@
             this.mobDbContext = mobDbContext;
         }
 
-        public async Task<IEnumerable<EventType>> GetAllEventTypes()
+        public async Task<IEnumerable<EventType>> GetAllEventTypes(CancellationToken cancellationToken = default)
         {
             return await mobDbContext.EventTypes.Where(e => e.IsActive == true)
                 .AsNoTracking()

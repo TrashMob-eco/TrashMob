@@ -2,12 +2,13 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
     public interface IEventAttendeeRepository
     {
-        Task<IEnumerable<User>> GetEventAttendees(Guid eventId);
+        Task<IEnumerable<User>> GetEventAttendees(Guid eventId, CancellationToken cancellationToken = default);
 
         Task<EventAttendee> AddEventAttendee(Guid eventId, Guid attendeeId);
 
@@ -15,8 +16,8 @@
 
         Task<int> DeleteEventAttendee(Guid eventId, Guid attendeeId);
 
-        Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid attendeeId, bool futureEventsOnly = false);
+        Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid attendeeId, bool futureEventsOnly = false, CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<Event>> GetCanceledEventsUserIsAttending(Guid attendeeId, bool futureEventsOnly = false);
+        Task<IEnumerable<Event>> GetCanceledEventsUserIsAttending(Guid attendeeId, bool futureEventsOnly = false, CancellationToken cancellationToken = default);
     }
 }

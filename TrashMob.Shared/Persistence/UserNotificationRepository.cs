@@ -4,6 +4,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
@@ -16,7 +17,7 @@
             this.mobDbContext = mobDbContext;
         }
 
-        public async Task<IEnumerable<UserNotification>> GetUserNotifications(Guid userId, Guid eventId)
+        public async Task<IEnumerable<UserNotification>> GetUserNotifications(Guid userId, Guid eventId, CancellationToken cancellationToken = default)
         {
             return await mobDbContext.UserNotifications.Where(un => un.EventId == eventId && un.UserId == userId)
                 .AsNoTracking()

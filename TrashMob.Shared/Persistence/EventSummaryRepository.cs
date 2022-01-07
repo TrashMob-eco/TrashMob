@@ -3,6 +3,7 @@
     using Microsoft.EntityFrameworkCore;
     using System;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
@@ -15,12 +16,12 @@
             this.mobDbContext = mobDbContext;
         }
 
-        public async Task<EventSummary> GetEventSummary(Guid eventId)
+        public async Task<EventSummary> GetEventSummary(Guid eventId, CancellationToken cancellationToken = default)
         {
             return await mobDbContext.EventSummaries.FindAsync(eventId).ConfigureAwait(false);
         }
 
-        public IQueryable<EventSummary> GetEventSummaries()
+        public IQueryable<EventSummary> GetEventSummaries(CancellationToken cancellationToken = default)
         {
             return mobDbContext.EventSummaries.AsNoTracking().AsQueryable();
         }

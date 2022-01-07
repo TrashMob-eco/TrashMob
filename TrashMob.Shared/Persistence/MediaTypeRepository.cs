@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using TrashMob.Shared.Models;
@@ -15,7 +16,7 @@
             this.mobDbContext = mobDbContext;
         }
 
-        public async Task<IEnumerable<MediaType>> GetAllMediaTypes()
+        public async Task<IEnumerable<MediaType>> GetAllMediaTypes(CancellationToken cancellationToken = default)
         {
             return await mobDbContext.MediaTypes.Where(e => e.IsActive == true)
                 .AsNoTracking()

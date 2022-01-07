@@ -128,16 +128,16 @@
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPartnerRequests()
+        public async Task<IActionResult> GetPartnerRequests(CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var user = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value, cancellationToken).ConfigureAwait(false);
 
             if (!user.IsSiteAdmin)
             {
                 return Forbid();
             }
 
-            return Ok(await partnerRequestRepository.GetPartnerRequests().ConfigureAwait(false));
+            return Ok(await partnerRequestRepository.GetPartnerRequests(cancellationToken).ConfigureAwait(false));
         }
 
         private bool ValidateUser(string userId)

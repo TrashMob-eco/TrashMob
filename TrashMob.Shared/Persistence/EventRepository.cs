@@ -8,6 +8,7 @@
     using TrashMob.Shared.Extensions;
     using TrashMob.Shared.Models;
     using TrashMob.Shared;
+    using System.Threading;
 
     public class EventRepository : IEventRepository
     {
@@ -19,14 +20,14 @@
             this.mobDbContext = mobDbContext;
         }
 
-        public async Task<IEnumerable<Event>> GetAllEvents()
+        public async Task<IEnumerable<Event>> GetAllEvents(CancellationToken cancellationToken = default)
         {
             return await mobDbContext.Events
                 .AsNoTracking()
                 .ToListAsync().ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<Event>> GetActiveEvents()
+        public async Task<IEnumerable<Event>> GetActiveEvents(CancellationToken cancellationToken = default)
         {
             return await mobDbContext.Events
                 .Where(e => (e.EventStatusId == (int)EventStatusEnum.Active || e.EventStatusId == (int)EventStatusEnum.Full) && e.IsEventPublic && e.EventDate >= DateTimeOffset.UtcNow.AddMinutes(-1 * StandardEventWindowInMinutes))
@@ -34,7 +35,7 @@
                 .ToListAsync().ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<Event>> GetCompletedEvents()
+        public async Task<IEnumerable<Event>> GetCompletedEvents(CancellationToken cancellationToken = default)
         {
             return await mobDbContext.Events
                 .Where(e => e.EventDate < DateTimeOffset.UtcNow && e.EventStatusId != (int)EventStatusEnum.Canceled)
@@ -42,7 +43,7 @@
                 .ToListAsync().ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<Event>> GetUserEvents(Guid userId, bool futureEventsOnly)
+        public async Task<IEnumerable<Event>> GetUserEvents(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken = default)
         {
             return await mobDbContext.Events
                 .Where(e => e.CreatedByUserId == userId
@@ -52,7 +53,7 @@
                 .ToListAsync().ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<Event>> GetCanceledUserEvents(Guid userId, bool futureEventsOnly)
+        public async Task<IEnumerable<Event>> GetCanceledUserEvents(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken = default)
         {
             return await mobDbContext.Events
                 .Where(e => e.CreatedByUserId == userId
@@ -96,7 +97,7 @@
         }
 
         // Get the details of a particular Event    
-        public async Task<Event> GetEvent(Guid id)
+        public async Task<Event> GetEvent(Guid id, CancellationToken cancellationToken = default)
         {
             return await mobDbContext.Events.AsNoTracking().SingleOrDefaultAsync(e => e.Id == id).ConfigureAwait(false);
         }
@@ -111,7 +112,7 @@
             return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public IQueryable<Event> GetEvents()
+        public IQueryable<Event> GetEvents(CancellationToken cancellationToken = default)
         {
             return mobDbContext.Events.AsQueryable();
         }

@@ -22,7 +22,7 @@ namespace TrashMob.Shared.Tests
 
             // Assert
             Assert.False(string.IsNullOrWhiteSpace(template));
-            Assert.Contains("You're hosting a TrashMob.eco event today!", template);
+            Assert.Contains("You're hosting a TrashMob.eco event soon!", template);
         }
     }
 }

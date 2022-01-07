@@ -5,6 +5,7 @@ namespace TrashMob.Controllers
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Poco;
@@ -37,14 +38,14 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("{partnerId}")]
-        public async Task<IActionResult> GetPartnerEvents(Guid partnerId)
+        public async Task<IActionResult> GetPartnerEvents(Guid partnerId, CancellationToken cancellationToken)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value, cancellationToken).ConfigureAwait(false);
 
             if (!currentUser.IsSiteAdmin)
             {
-                var currentUserPartner = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == partnerId && pu.UserId == currentUser.Id);
+                var currentUserPartner = partnerUserRepository.GetPartnerUsers(cancellationToken).FirstOrDefault(pu => pu.PartnerId == partnerId && pu.UserId == currentUser.Id);
 
                 if (currentUserPartner == null)
                 {
@@ -53,11 +54,11 @@ namespace TrashMob.Controllers
             }
 
             var displayPartnerEvents = new List<DisplayPartnerEvent>();
-            var currentPartners = await eventPartnerRepository.GetPartnerEvents(partnerId).ConfigureAwait(false);
+            var currentPartners = await eventPartnerRepository.GetPartnerEvents(partnerId, cancellationToken).ConfigureAwait(false);
 
             if (currentPartners.Any())
             {
-                var partner = await partnerRepository.GetPartner(partnerId).ConfigureAwait(false);
+                var partner = await partnerRepository.GetPartner(partnerId, cancellationToken).ConfigureAwait(false);
 
                 // Convert the current list of partner events for the event to a display partner (reduces round trips)
                 foreach (var cp in currentPartners.ToList())
@@ -72,11 +73,11 @@ namespace TrashMob.Controllers
 
                     displayPartnerEvent.PartnerName = partner.Name;
 
-                    var partnerLocation = partnerLocationRepository.GetPartnerLocations().FirstOrDefault(pl => pl.PartnerId == cp.PartnerId && pl.Id == cp.PartnerLocationId);
+                    var partnerLocation = partnerLocationRepository.GetPartnerLocations(cancellationToken).FirstOrDefault(pl => pl.PartnerId == cp.PartnerId && pl.Id == cp.PartnerLocationId);
 
                     displayPartnerEvent.PartnerLocationName = partnerLocation.Name;
 
-                    var mobEvent = await eventRepository.GetEvent(cp.EventId).ConfigureAwait(false);
+                    var mobEvent = await eventRepository.GetEvent(cp.EventId, cancellationToken).ConfigureAwait(false);
 
                     displayPartnerEvent.EventName = mobEvent.Name;
                     displayPartnerEvent.EventStreetAddress = mobEvent.StreetAddress;

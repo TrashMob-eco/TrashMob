@@ -5,6 +5,7 @@
     using System;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
@@ -25,15 +26,15 @@
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPartners()
+        public async Task<IActionResult> GetPartners(CancellationToken cancellationToken)
         {
-            return Ok(await partnerRepository.GetPartners().ConfigureAwait(false));
+            return Ok(await partnerRepository.GetPartners(cancellationToken).ConfigureAwait(false));
         }
 
         [HttpGet("{partnerId}")]
-        public async Task<IActionResult> GetPartner(Guid partnerId)
+        public async Task<IActionResult> GetPartner(Guid partnerId, CancellationToken cancellationToken)
         {
-            return Ok(await partnerRepository.GetPartner(partnerId).ConfigureAwait(false));
+            return Ok(await partnerRepository.GetPartner(partnerId, cancellationToken).ConfigureAwait(false));
         }
 
         [HttpPut]

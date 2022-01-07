@@ -8,6 +8,7 @@
     using TrashMob.Shared.Models;
     using TrashMob.Shared;
     using System.Data.SqlClient;
+    using System.Threading;
 
     public class EventAttendeeRepository : IEventAttendeeRepository
     {
@@ -18,7 +19,7 @@
             this.mobDbContext = mobDbContext;
         }
 
-        public async Task<IEnumerable<User>> GetEventAttendees(Guid eventId)
+        public async Task<IEnumerable<User>> GetEventAttendees(Guid eventId, CancellationToken cancellationToken = default)
         {
             // TODO: There are better ways to do this.
             var eventAttendees = await mobDbContext.EventAttendees
@@ -75,7 +76,7 @@
             return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid attendeeId, bool futureEventsOnly = false)
+        public async Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid attendeeId, bool futureEventsOnly = false, CancellationToken cancellationToken = default)
         {
             // TODO: There are better ways to do this.
             var eventAttendees = await mobDbContext.EventAttendees
@@ -92,7 +93,7 @@
             return events;
         }
 
-        public async Task<IEnumerable<Event>> GetCanceledEventsUserIsAttending(Guid attendeeId, bool futureEventsOnly = false)
+        public async Task<IEnumerable<Event>> GetCanceledEventsUserIsAttending(Guid attendeeId, bool futureEventsOnly = false, CancellationToken cancellationToken = default)
         {
             // TODO: There are better ways to do this.
             var eventAttendees = await mobDbContext.EventAttendees

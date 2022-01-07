@@ -4,6 +4,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
@@ -17,7 +18,7 @@
             this.mobDbContext = mobDbContext;
         }
 
-        public async Task<IEnumerable<User>> GetAllUsers()
+        public async Task<IEnumerable<User>> GetAllUsers(CancellationToken cancellationToken = default)
         {
             return await mobDbContext.Users
                 .AsNoTracking()
@@ -53,13 +54,13 @@
         }
 
         // Get the details of a particular User
-        public async Task<User> GetUserByInternalId(Guid id)
+        public async Task<User> GetUserByInternalId(Guid id, CancellationToken cancellationToken = default)
         {
             return await mobDbContext.Users.FindAsync(id).ConfigureAwait(false);
         }
 
         // Get the details of a particular User
-        public async Task<User> GetUserByUserName(string userName)
+        public async Task<User> GetUserByUserName(string userName, CancellationToken cancellationToken = default)
         {
             return await mobDbContext.Users.FirstOrDefaultAsync(u => u.UserName == userName).ConfigureAwait(false);
         }
@@ -246,7 +247,7 @@
             return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public Task<User> GetUserByNameIdentifier(string nameIdentifier)
+        public Task<User> GetUserByNameIdentifier(string nameIdentifier, CancellationToken cancellationToken = default)
         {
             return mobDbContext.Users.FirstOrDefaultAsync(u => u.NameIdentifier == nameIdentifier);
         }

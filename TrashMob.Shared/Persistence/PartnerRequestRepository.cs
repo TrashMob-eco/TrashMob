@@ -3,6 +3,7 @@
     using Microsoft.EntityFrameworkCore;
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
@@ -29,14 +30,14 @@
             return await mobDbContext.PartnerRequests.FindAsync(partnerRequest.Id).ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<PartnerRequest>> GetPartnerRequests()
+        public async Task<IEnumerable<PartnerRequest>> GetPartnerRequests(CancellationToken cancellationToken = default)
         {
             return await mobDbContext.PartnerRequests
                 .AsNoTracking()
                 .ToListAsync().ConfigureAwait(false);
         }
 
-        public async Task<PartnerRequest> GetPartnerRequest(Guid id)
+        public async Task<PartnerRequest> GetPartnerRequest(Guid id, CancellationToken cancellationToken = default)
         {
             return await mobDbContext.PartnerRequests.FindAsync(id).ConfigureAwait(false);
         }
