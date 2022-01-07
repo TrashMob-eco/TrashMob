@@ -11,6 +11,7 @@ namespace TrashMob.Controllers
     using TrashMob.Shared.Persistence;
     using TrashMob.Shared;
     using System.Collections.Generic;
+    using System.Threading;
 
     [ApiController]
     [Route("api/usernotificationpreferences")]
@@ -28,9 +29,9 @@ namespace TrashMob.Controllers
         [HttpGet("{userId}")]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> GetUserNotificationPreferences(Guid userId)
+        public async Task<IActionResult> GetUserNotificationPreferences(Guid userId, CancellationToken cancellationToken)
         {
-            var result = await userNotificationPreferenceRepository.GetUserNotificationPreferences(userId).ConfigureAwait(false);
+            var result = await userNotificationPreferenceRepository.GetUserNotificationPreferences(userId, cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 

@@ -6,6 +6,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Poco;
     using TrashMob.Shared.Models;
@@ -28,15 +29,15 @@
         }
 
         [HttpGet("{partnerId}")]
-        public IActionResult GetPartnerUsers(Guid partnerId)
+        public IActionResult GetPartnerUsers(Guid partnerId, CancellationToken cancellationToken)
         {
-            return Ok(partnerUserRepository.GetPartnerUsers().Where(pu => pu.PartnerId == partnerId).ToList());
+            return Ok(partnerUserRepository.GetPartnerUsers(cancellationToken).Where(pu => pu.PartnerId == partnerId).ToList());
         }
 
         [HttpGet("getpartnersforuser/{userId}")]
-        public async Task<IActionResult> GetPartnersForUser(Guid userId)
+        public async Task<IActionResult> GetPartnersForUser(Guid userId, CancellationToken cancellationToken)
         {
-            var partnerUsers = partnerUserRepository.GetPartnerUsers().Where(pu => pu.UserId == userId).ToList();
+            var partnerUsers = partnerUserRepository.GetPartnerUsers(cancellationToken).Where(pu => pu.UserId == userId).ToList();
 
             if (!partnerUsers.Any())
             { 
@@ -47,7 +48,7 @@
 
             foreach (var pu in partnerUsers)
             {
-                var partner = await partnerRepository.GetPartner(pu.PartnerId).ConfigureAwait(false);
+                var partner = await partnerRepository.GetPartner(pu.PartnerId, cancellationToken).ConfigureAwait(false);
                 partners.Add(partner);
             }
 
@@ -55,9 +56,9 @@
         }
 
         [HttpGet("{partnerId}/{userId}")]
-        public IActionResult GetPartnerUser(Guid partnerId, Guid userId)
+        public IActionResult GetPartnerUser(Guid partnerId, Guid userId, CancellationToken cancellationToken)
         {
-            var partnerUser = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == partnerId && pu.UserId == userId);
+            var partnerUser = partnerUserRepository.GetPartnerUsers(cancellationToken).FirstOrDefault(pu => pu.PartnerId == partnerId && pu.UserId == userId);
 
             if (partnerUser == null)
             {
@@ -68,9 +69,9 @@
         }
 
         [HttpGet("users/{partnerId}")]
-        public async Task<IActionResult> GetUsers(Guid partnerId)
+        public async Task<IActionResult> GetUsers(Guid partnerId, CancellationToken cancellationToken)
         {
-            var partnerUsers = partnerUserRepository.GetPartnerUsers().Where(pu => pu.PartnerId == partnerId).ToList();
+            var partnerUsers = partnerUserRepository.GetPartnerUsers(cancellationToken).Where(pu => pu.PartnerId == partnerId).ToList();
 
             if (partnerUsers == null || !partnerUsers.Any())
             {
@@ -81,7 +82,7 @@
 
             foreach (var pu in partnerUsers)
             {
-                var user = await userRepository.GetUserByInternalId(pu.UserId).ConfigureAwait(false);
+                var user = await userRepository.GetUserByInternalId(pu.UserId, cancellationToken).ConfigureAwait(false);
                 users.Add(user.ToDisplayUser());
             }
 

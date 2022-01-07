@@ -34,17 +34,17 @@ namespace TrashMob.Shared.Tests
             List<Event> events = GetEventList1();
             List<User> users = GetUserList1();
 
-            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            EventRepository.Setup(e => e.GetActiveEvents(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // Act
             await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
-            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
-            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>()), Times.Once);
+            EventRepository.Verify(_ => _.GetActiveEvents(It.IsAny<CancellationToken>()), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            UserRepository.Verify(_ => _.GetAllUsers(It.IsAny<CancellationToken>()), Times.Once);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
             UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Once);
             EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -56,17 +56,17 @@ namespace TrashMob.Shared.Tests
             List<Event> events = GetEventList2();
             List<User> users = GetUserList1();
 
-            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            EventRepository.Setup(e => e.GetActiveEvents(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // Act
             await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
-            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
-            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>()), Times.Once);
+            EventRepository.Verify(_ => _.GetActiveEvents(It.IsAny<CancellationToken>()), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            UserRepository.Verify(_ => _.GetAllUsers(It.IsAny<CancellationToken>()), Times.Once);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
             UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Exactly(2));
             EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -78,17 +78,17 @@ namespace TrashMob.Shared.Tests
             List<Event> events = GetEventList1();
             List<User> users = GetUserList2();
 
-            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            EventRepository.Setup(e => e.GetActiveEvents(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // Act
             await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Exactly(2));
-            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Exactly(2));
-            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>()), Times.Exactly(2));
+            UserRepository.Verify(_ => _.GetAllUsers(It.IsAny<CancellationToken>()), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+            EventRepository.Verify(_ => _.GetActiveEvents(It.IsAny<CancellationToken>()), Times.Exactly(2));
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
             UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Exactly(2));
             EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
         }
@@ -100,20 +100,20 @@ namespace TrashMob.Shared.Tests
             List<Event> events = GetEventList1();
             List<User> users = GetUserList1();
 
-            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            EventRepository.Setup(e => e.GetActiveEvents(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // The user is attending all available events
-            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(events);
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(events);
 
             // Act
             await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
-            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
-            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>()), Times.Once);
+            UserRepository.Verify(_ => _.GetAllUsers(It.IsAny<CancellationToken>()), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            EventRepository.Verify(_ => _.GetActiveEvents(It.IsAny<CancellationToken>()), Times.Once);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
             UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
             EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
         }
@@ -127,20 +127,20 @@ namespace TrashMob.Shared.Tests
             List<Event> alternateEvents = GetEventList1();
             alternateEvents[0].Id = new Guid();
 
-            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            EventRepository.Setup(e => e.GetActiveEvents(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // The user is attending all available events
-            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(alternateEvents);
+            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(alternateEvents);
 
             // Act
             await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
-            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
-            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>()), Times.Once);
+            UserRepository.Verify(_ => _.GetAllUsers(It.IsAny<CancellationToken>()), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            EventRepository.Verify(_ => _.GetActiveEvents(It.IsAny<CancellationToken>()), Times.Once);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
             UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Once);
             EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -152,8 +152,8 @@ namespace TrashMob.Shared.Tests
             List<Event> events = GetEventList1();
             List<User> users = GetUserList1();
 
-            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            EventRepository.Setup(e => e.GetActiveEvents(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // The user has already received notifications for all events
             var userNotification = new UserNotification()
@@ -166,16 +166,16 @@ namespace TrashMob.Shared.Tests
 
             var userNotifications = new List<UserNotification>() { userNotification };
 
-            UserNotificationRepository.Setup(ea => ea.GetUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(userNotifications);
+            UserNotificationRepository.Setup(ea => ea.GetUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(userNotifications);
 
             // Act
             await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
-            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
-            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>()), Times.Once);
+            UserRepository.Verify(_ => _.GetAllUsers(It.IsAny<CancellationToken>()), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            EventRepository.Verify(_ => _.GetActiveEvents(It.IsAny<CancellationToken>()), Times.Once);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
             UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
             EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
         }
@@ -187,21 +187,21 @@ namespace TrashMob.Shared.Tests
             List<Event> events = GetEventList1();
             List<User> users = GetUserList1();
 
-            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            EventRepository.Setup(e => e.GetActiveEvents(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             var userNotifications = new List<UserNotification>();
 
-            UserNotificationRepository.Setup(ea => ea.GetUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(userNotifications);
+            UserNotificationRepository.Setup(ea => ea.GetUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(userNotifications);
 
             // Act
             await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
-            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
-            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>()), Times.Once);
+            UserRepository.Verify(_ => _.GetAllUsers(It.IsAny<CancellationToken>()), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            EventRepository.Verify(_ => _.GetActiveEvents(It.IsAny<CancellationToken>()), Times.Once);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
             UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Once);
             EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -215,17 +215,17 @@ namespace TrashMob.Shared.Tests
 
             users[0].IsOptedOutOfAllEmails = true;
 
-            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            EventRepository.Setup(e => e.GetActiveEvents(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // Act
             await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Never);
-            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Never);
-            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>()), Times.Never);
+            UserRepository.Verify(_ => _.GetAllUsers(It.IsAny<CancellationToken>()), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
+            EventRepository.Verify(_ => _.GetActiveEvents(It.IsAny<CancellationToken>()), Times.Never);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never);
             UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
             EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
         }
@@ -240,18 +240,18 @@ namespace TrashMob.Shared.Tests
             var unIndex = userNotificationPreferences.FindIndex(unp => unp.UserNotificationTypeId == (int)NotificationType);
             userNotificationPreferences[unIndex].IsOptedOut = true;
 
-            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
-            UserNotificationPreferenceRepository.Setup(unp => unp.GetUserNotificationPreferences(It.IsAny<Guid>())).ReturnsAsync(userNotificationPreferences);
+            EventRepository.Setup(e => e.GetActiveEvents(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers(It.IsAny<CancellationToken>())).ReturnsAsync(users);
+            UserNotificationPreferenceRepository.Setup(unp => unp.GetUserNotificationPreferences(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(userNotificationPreferences);
 
             // Act
             await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Never);
-            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
-            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>()), Times.Never);
+            UserRepository.Verify(_ => _.GetAllUsers(It.IsAny<CancellationToken>()), Times.Once);
+            EventRepository.Verify(_ => _.GetActiveEvents(It.IsAny<CancellationToken>()), Times.Never);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never);
             UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
             EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
         }
@@ -264,17 +264,17 @@ namespace TrashMob.Shared.Tests
             List<User> users = GetUserList1();
             events[0].EventDate = DateTimeOffset.UtcNow.AddDays(NumberOfDaysToAddForEventOutOfWindow);
 
-            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            EventRepository.Setup(e => e.GetActiveEvents(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // Act
             await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
-            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
-            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>()), Times.Once);
+            UserRepository.Verify(_ => _.GetAllUsers(It.IsAny<CancellationToken>()), Times.Once);
+            EventRepository.Verify(_ => _.GetActiveEvents(It.IsAny<CancellationToken>()), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
             UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
             EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
         }
@@ -287,8 +287,8 @@ namespace TrashMob.Shared.Tests
             List<User> users = GetUserList1();
             events[0].EventDate = DateTimeOffset.UtcNow.AddDays(3);
 
-            EventRepository.Setup(e => e.GetActiveEvents()).ReturnsAsync(events);
-            UserRepository.Setup(u => u.GetAllUsers()).ReturnsAsync(users);
+            EventRepository.Setup(e => e.GetActiveEvents(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            UserRepository.Setup(u => u.GetAllUsers(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // Setup a return of distance between User and Event of 50 (in whatever units)
             MapRepository.Setup(mr => mr.GetDistanceBetweenTwoPoints(It.IsAny<Tuple<double, double>>(), It.IsAny<Tuple<double, double>>(), It.IsAny<bool>())).ReturnsAsync(50);
@@ -297,10 +297,10 @@ namespace TrashMob.Shared.Tests
             await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            UserRepository.Verify(_ => _.GetAllUsers(), Times.Once);
-            EventRepository.Verify(_ => _.GetActiveEvents(), Times.Once);
-            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>()), Times.Once);
-            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>()), Times.Once);
+            UserRepository.Verify(_ => _.GetAllUsers(It.IsAny<CancellationToken>()), Times.Once);
+            EventRepository.Verify(_ => _.GetActiveEvents(It.IsAny<CancellationToken>()), Times.Once);
+            UserNotificationPreferenceRepository.Verify(_ => _.GetUserNotificationPreferences(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            EventAttendeeRepository.Verify(_ => _.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
             UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
             EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
         }

@@ -13,6 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrashMobJobs", "TrashMobJob
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4478AB77-33C6-46FE-8CC9-C1D6BB4556B5}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
 		CONTRIBUTING.md = CONTRIBUTING.md
 		LICENSE = LICENSE

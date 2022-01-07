@@ -4,6 +4,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
@@ -16,11 +17,11 @@
             this.mobDbContext = mobDbContext;
         }
 
-        public async Task<IEnumerable<UserNotificationPreference>> GetUserNotificationPreferences(Guid userId)
+        public async Task<IEnumerable<UserNotificationPreference>> GetUserNotificationPreferences(Guid userId, CancellationToken cancellationToken = default)
         {
             return await mobDbContext.UserNotificationPreferences.Where(unp => unp.UserId == userId)
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<UserNotificationPreference> AddUpdateUserNotificationPreference(UserNotificationPreference userNotificationPreference)

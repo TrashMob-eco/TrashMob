@@ -1,6 +1,7 @@
 ﻿namespace TrashMob.Shared.Persistence
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using TrashMob.Shared.Models;
@@ -14,11 +15,11 @@
             this.mobDbContext = mobDbContext;
         }
 
-        public async Task<IEnumerable<PartnerRequestStatus>> GetAllPartnerRequestStatuses()
+        public async Task<IEnumerable<PartnerRequestStatus>> GetAllPartnerRequestStatuses(CancellationToken cancellationToken = default)
         {
             return await mobDbContext.PartnerRequestStatus
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }
 }

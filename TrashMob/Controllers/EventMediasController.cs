@@ -11,6 +11,7 @@ namespace TrashMob.Controllers
     using TrashMob.Shared.Persistence;
     using TrashMob.Shared;
     using System.Collections.Generic;
+    using System.Threading;
 
     [ApiController]
     [Route("api/eventmedias")]
@@ -26,38 +27,38 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("{eventId}")]
-        public async Task<IActionResult> GetEventMedias(Guid eventId)
+        public async Task<IActionResult> GetEventMedias(Guid eventId, CancellationToken cancellationToken)
         {
-            var result = await eventMediaRepository.GetEventMediasByEvent(eventId).ConfigureAwait(false);
+            var result = await eventMediaRepository.GetEventMediasByEvent(eventId, cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
         [HttpGet("byUserId/{userId}")]
         [Authorize]
         [RequiredScope(Constants.TrashMobReadScope)]
-        public async Task<IActionResult> GetEventMediasByUserId(Guid userId)
+        public async Task<IActionResult> GetEventMediasByUserId(Guid userId, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
+            var user = await userRepository.GetUserByInternalId(userId, cancellationToken).ConfigureAwait(false);
             if (user == null || !ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }
 
-            var result = await eventMediaRepository.GetEventMediasByUser(userId).ConfigureAwait(false);
+            var result = await eventMediaRepository.GetEventMediasByUser(userId, cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
         [HttpGet()]
-        public async Task<IActionResult> GetEventMedias()
+        public async Task<IActionResult> GetEventMedias(CancellationToken cancellationToken)
         {
-            var result = await eventMediaRepository.GetEventMedias().ConfigureAwait(false);
+            var result = await eventMediaRepository.GetEventMedias(cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
         [HttpGet("bymediaid/{eventMediaId}")]
-        public async Task<IActionResult> GetEventMediaById(Guid eventMediaId)
+        public async Task<IActionResult> GetEventMediaById(Guid eventMediaId, CancellationToken cancellationToken)
         {
-            var result = await eventMediaRepository.GetEventMediaById(eventMediaId).ConfigureAwait(false);
+            var result = await eventMediaRepository.GetEventMediaById(eventMediaId, cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 

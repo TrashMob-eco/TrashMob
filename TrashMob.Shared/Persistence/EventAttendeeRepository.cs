@@ -8,6 +8,7 @@
     using TrashMob.Shared.Models;
     using TrashMob.Shared;
     using System.Data.SqlClient;
+    using System.Threading;
 
     public class EventAttendeeRepository : IEventAttendeeRepository
     {
@@ -18,18 +19,18 @@
             this.mobDbContext = mobDbContext;
         }
 
-        public async Task<IEnumerable<User>> GetEventAttendees(Guid eventId)
+        public async Task<IEnumerable<User>> GetEventAttendees(Guid eventId, CancellationToken cancellationToken = default)
         {
             // TODO: There are better ways to do this.
             var eventAttendees = await mobDbContext.EventAttendees
                 .Where(ea => ea.EventId == eventId)
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var users = await mobDbContext.Users
                 .Where(u => eventAttendees.Select(ea => ea.UserId).Contains(u.Id))
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             return users;
         }
 
@@ -75,37 +76,37 @@
             return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid attendeeId, bool futureEventsOnly = false)
+        public async Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid attendeeId, bool futureEventsOnly = false, CancellationToken cancellationToken = default)
         {
             // TODO: There are better ways to do this.
             var eventAttendees = await mobDbContext.EventAttendees
                 .Where(ea => ea.UserId == attendeeId)                
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var events = await mobDbContext.Events
                 .Where(e => e.EventStatusId != (int)EventStatusEnum.Canceled
                          && (!futureEventsOnly || e.EventDate >= DateTimeOffset.UtcNow)
                          && eventAttendees.Select(ea => ea.EventId).Contains(e.Id))
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             return events;
         }
 
-        public async Task<IEnumerable<Event>> GetCanceledEventsUserIsAttending(Guid attendeeId, bool futureEventsOnly = false)
+        public async Task<IEnumerable<Event>> GetCanceledEventsUserIsAttending(Guid attendeeId, bool futureEventsOnly = false, CancellationToken cancellationToken = default)
         {
             // TODO: There are better ways to do this.
             var eventAttendees = await mobDbContext.EventAttendees
                 .Where(ea => ea.UserId == attendeeId)
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var events = await mobDbContext.Events
                 .Where(e => e.EventStatusId == (int)EventStatusEnum.Canceled
                          && (!futureEventsOnly || e.EventDate >= DateTimeOffset.UtcNow)
                          && eventAttendees.Select(ea => ea.EventId).Contains(e.Id))
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             return events;
         }
     }

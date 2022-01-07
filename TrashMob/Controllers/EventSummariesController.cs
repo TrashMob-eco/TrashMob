@@ -5,6 +5,7 @@ namespace TrashMob.Controllers
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -33,21 +34,21 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("{eventId}")]
-        public async Task<IActionResult> GetEventSummary(Guid eventId)
+        public async Task<IActionResult> GetEventSummary(Guid eventId, CancellationToken cancellationToken)
         {
-            var eventSummary = await eventSummaryRepository.GetEventSummary(eventId).ConfigureAwait(false);
+            var eventSummary = await eventSummaryRepository.GetEventSummary(eventId, cancellationToken).ConfigureAwait(false);
             return Ok(eventSummary);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEventSummaries([FromQuery] string country = "", [FromQuery] string region = "", [FromQuery] string city = "", [FromQuery] string postalCode = "")
+        public async Task<IActionResult> GetEventSummaries([FromQuery] string country = "", [FromQuery] string region = "", [FromQuery] string city = "", [FromQuery] string postalCode = "", CancellationToken cancellationToken = default)
         {
             // Todo make this more efficient
-            var eventSummaries = eventSummaryRepository.GetEventSummaries().ToList();
+            var eventSummaries = eventSummaryRepository.GetEventSummaries(cancellationToken).ToList();
             var displaySummaries = new List<DisplayEventSummary>();
             foreach (var eventSummary in eventSummaries)
             {
-                var mobEvent = await eventRepository.GetEvent(eventSummary.EventId).ConfigureAwait(false);
+                var mobEvent = await eventRepository.GetEvent(eventSummary.EventId, cancellationToken).ConfigureAwait(false);
 
                 if (mobEvent != null)
                 {

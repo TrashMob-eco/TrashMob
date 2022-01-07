@@ -43,11 +43,11 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("{eventId}")]
-        public async Task<IActionResult> GetEventPartners(Guid eventId)
+        public async Task<IActionResult> GetEventPartners(Guid eventId, CancellationToken cancellationToken)
         {
             var displayEventPartners = new List<DisplayEventPartner>();
-            var currentPartners = await eventPartnerRepository.GetEventPartners(eventId).ConfigureAwait(false);
-            var possiblePartners = await eventPartnerRepository.GetPotentialEventPartners(eventId).ConfigureAwait(false);
+            var currentPartners = await eventPartnerRepository.GetEventPartners(eventId, cancellationToken).ConfigureAwait(false);
+            var possiblePartners = await eventPartnerRepository.GetPotentialEventPartners(eventId, cancellationToken).ConfigureAwait(false);
 
             // Convert the current list of partners for the event to a display partner (reduces round trips)
             foreach (var cp in currentPartners.ToList())
@@ -60,10 +60,10 @@ namespace TrashMob.Controllers
                     EventPartnerStatusId = cp.EventPartnerStatusId,
                 };
 
-                var partner = await partnerRepository.GetPartner(cp.PartnerId).ConfigureAwait(false);
+                var partner = await partnerRepository.GetPartner(cp.PartnerId, cancellationToken).ConfigureAwait(false);
                 displayEventPartner.PartnerName = partner.Name;
 
-                var partnerLocation = partnerLocationRepository.GetPartnerLocations().FirstOrDefault(pl => pl.PartnerId == cp.PartnerId && pl.Id == cp.PartnerLocationId);
+                var partnerLocation = partnerLocationRepository.GetPartnerLocations(cancellationToken).FirstOrDefault(pl => pl.PartnerId == cp.PartnerId && pl.Id == cp.PartnerLocationId);
 
                 displayEventPartner.PartnerLocationName = partnerLocation.Name;
                 displayEventPartner.PartnerLocationNotes = partnerLocation.Notes;
@@ -86,7 +86,7 @@ namespace TrashMob.Controllers
                         PartnerLocationNotes = pp.Notes,
                     };
 
-                    var partner = await partnerRepository.GetPartner(pp.PartnerId).ConfigureAwait(false);
+                    var partner = await partnerRepository.GetPartner(pp.PartnerId, cancellationToken).ConfigureAwait(false);
                     displayEventPartner.PartnerName = partner.Name;
 
                     displayEventPartners.Add(displayEventPartner);
