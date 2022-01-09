@@ -310,7 +310,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                     <Col>
                         <Form.Group>
                             <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
-                                <Form.Label htmlFor="createdDate">Created Date:</Form.Label>
+                                <Form.Label className="control-label" htmlFor="createdDate">Created Date:</Form.Label>
                             </OverlayTrigger>
                             <Form.Control type="text" disabled defaultValue={props.partner.createdDate.toString()} />
                         </Form.Group>
@@ -318,7 +318,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                     <Col>
                         <Form.Group>
                             <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
-                                <Form.Label htmlFor="lastUpdatedDate">Last Updated Date:</Form.Label>
+                                <Form.Label className="control-label" htmlFor="lastUpdatedDate">Last Updated Date:</Form.Label>
                             </OverlayTrigger>
                             <Form.Control type="text" disabled defaultValue={props.partner.lastUpdatedDate.toString()} />
                         </Form.Group>
