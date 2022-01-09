@@ -540,7 +540,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderIsPartnerLocationActiveToolTip}>
-                                    <Form.Label htmlFor="IsPartnerLocationActive">Is Partner Location Active:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="IsPartnerLocationActive">Is Partner Location Active:</Form.Label>
                                 </OverlayTrigger >
                                 <ToggleButton
                                     type="checkbox"

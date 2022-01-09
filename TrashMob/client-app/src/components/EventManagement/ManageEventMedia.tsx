@@ -256,7 +256,7 @@ export const ManageEventMedia: React.FC<ManageEventMediaProps> = (props) => {
                     <Col>
                         <Form.Group>
                             <OverlayTrigger placement="top" overlay={renderMediaTypeToolTip}>
-                                <Form.Label htmlFor="MediaType">Media Type:</Form.Label>
+                                <Form.Label className="control-label" htmlFor="MediaType">Media Type:</Form.Label>
                             </OverlayTrigger>
                             <div>
                                 <select data-val="true" name="mediaTypeId" defaultValue={eventMediaTypeId} onChange={(val) => selectMediaType(val.target.value)} required>

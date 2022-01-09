@@ -286,25 +286,25 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     <Form.Row>
                         <Col>
                             <Form.Group>
-                                <Form.Label htmlFor="Name">Name:</Form.Label>
+                                <Form.Label className="control-label" htmlFor="Name">Name:</Form.Label>
                                 <Form.Control disabled type="text" defaultValue={eventName} />
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group>
-                                <Form.Label htmlFor="EventDate">EventDate:</Form.Label>
+                                <Form.Label className="control-label" htmlFor="EventDate">EventDate:</Form.Label>
                                 <Form.Control disabled type="text" defaultValue={eventDate.toLocaleString()} />
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group>
-                                <Form.Label htmlFor="Duration">Duration:</Form.Label>
+                                <Form.Label className="control-label" htmlFor="Duration">Duration:</Form.Label>
                                 <Form.Control disabled type="text" defaultValue={durationHours + "hours, " + durationMinutes + "min"} />
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group>
-                                <Form.Label htmlFor="EventType">Event Type:</Form.Label>
+                                <Form.Label className="control-label" htmlFor="EventType">Event Type:</Form.Label>
                                 <Form.Control disabled type="text" defaultValue={getEventType(eventTypeList, eventTypeId)} />
                             </Form.Group>
                         </Col>
@@ -312,7 +312,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     <Form.Row>
                         <Col>
                             <Form.Group>
-                                <Form.Label htmlFor="Description">Description:</Form.Label>
+                                <Form.Label className="control-label" htmlFor="Description">Description:</Form.Label>
                                 <Form.Control disabled as="textarea" defaultValue={description} rows={5} cols={5} />
                             </Form.Group>
                         </Col>
@@ -320,19 +320,19 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     <Form.Row>
                         <Col>
                             <Form.Group>
-                                <Form.Label htmlFor="StreetAddress">Street Address:</Form.Label>
+                                <Form.Label className="control-label" htmlFor="StreetAddress">Street Address:</Form.Label>
                                 <Form.Control disabled type="text" defaultValue={streetAddress} />
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group>
-                                <Form.Label htmlFor="City">City:</Form.Label>
+                                <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
                                 <Form.Control disabled type="text" defaultValue={city} />
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group>
-                                <Form.Label htmlFor="postalCode">Postal Code:</Form.Label>
+                                <Form.Label className="control-label" htmlFor="postalCode">Postal Code:</Form.Label>
                                 <Form.Control disabled type="text" defaultValue={postalCode} />
                             </Form.Group>
                         </Col>
@@ -340,13 +340,13 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     <Form.Row>
                         <Col>
                             <Form.Group>
-                                <Form.Label htmlFor="stateProvince">Region:</Form.Label>
+                                <Form.Label className="control-label" htmlFor="stateProvince">Region:</Form.Label>
                                 <Form.Control disabled type="text" defaultValue={region} />
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group>
-                                <Form.Label htmlFor="Country">Country:</Form.Label>
+                                <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
                                 <Form.Control disabled type="text" defaultValue={country} />
                             </Form.Group>
                         </Col>
@@ -354,19 +354,19 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     <Form.Row>
                         <Col>
                             <Form.Group>
-                                <Form.Label htmlFor="Latitude">Latitude:</Form.Label>
+                                <Form.Label className="control-label" htmlFor="Latitude">Latitude:</Form.Label>
                                 <Form.Control disabled type="text" defaultValue={latitude} />
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group>
-                                <Form.Label htmlFor="Longitude">Longitude:</Form.Label>
+                                <Form.Label className="control-label" htmlFor="Longitude">Longitude:</Form.Label>
                                 <Form.Control disabled type="text" defaultValue={longitude} />
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group>
-                                <Form.Label hidden={maxNumberOfParticipants === 0} htmlFor="MaxNumberOfParticipants">Max Number Of Participants:</Form.Label>
+                                <Form.Label className="control-label" hidden={maxNumberOfParticipants === 0} htmlFor="MaxNumberOfParticipants">Max Number Of Participants:</Form.Label>
                                 <Form.Control hidden={maxNumberOfParticipants === 0} disabled type="text" defaultValue={maxNumberOfParticipants} />
                             </Form.Group>
                         </Col>

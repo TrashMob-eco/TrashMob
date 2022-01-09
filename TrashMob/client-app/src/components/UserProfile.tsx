@@ -626,7 +626,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
-                                        <Form.Label htmlFor="email">Email:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="email">Email:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" disabled defaultValue={email} />
                                 </Form.Group>
@@ -636,7 +636,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderGivenNameToolTip}>
-                                        <Form.Label htmlFor="GivenName">Given Name:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="GivenName">Given Name:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" name="givenName" defaultValue={givenName} onChange={(val) => handleGivenNameChanged(val.target.value)} maxLength={parseInt('32')} />
                                     <span style={{ color: "red" }}>{givenNameErrors}</span>
@@ -645,7 +645,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderSurNameToolTip}>
-                                        <Form.Label htmlFor="SurName">Surname:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="SurName">Surname:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" name="surName" defaultValue={surName} onChange={(val) => handleSurNameChanged(val.target.value)} maxLength={parseInt('32')} />
                                     <span style={{ color: "red" }}>{surNameErrors}</span>
@@ -666,7 +666,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderCityToolTip}>
-                                        <Form.Label htmlFor="City">City:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control className="form-control" type="text" name="city" defaultValue={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('64')} />
                                     <span style={{ color: "red" }}>{cityErrors}</span>
@@ -675,7 +675,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                        <Form.Label htmlFor="PostalCode">Postal Code:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="PostalCode">Postal Code:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" name="postalCode" defaultValue={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
                                     <span style={{ color: "red" }}>{postalCodeErrors}</span>
@@ -686,7 +686,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
-                                        <Form.Label htmlFor="Country">Country:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
                                     </OverlayTrigger>
                                     <CountryDropdown name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
                                     <span style={{ color: "red" }}>{countryErrors}</span>
@@ -695,7 +695,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
-                                        <Form.Label htmlFor="region">Region:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="region">Region:</Form.Label>
                                     </OverlayTrigger>
                                     <RegionDropdown
                                         country={country ?? ""}
@@ -709,7 +709,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderUserLatitudeToolTip}>
-                                        <Form.Label htmlFor="Latitude">Latitude:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="Latitude">Latitude:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
                                     <span style={{ color: "red" }}>{latitudeErrors}</span>
@@ -718,7 +718,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderUserLongitudeToolTip}>
-                                        <Form.Label htmlFor="Longitude">Longitude:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="Longitude">Longitude:</Form.Label>
                                     </OverlayTrigger >
                                     <Form.Control type="text" name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
                                     <span style={{ color: "red" }}>{longitudeErrors}</span>
@@ -727,7 +727,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderTravelLimitForLocalEventsToolTip}>
-                                        <Form.Label htmlFor="TravelLimitForLocalEvents">Maximum travel distance for events:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="TravelLimitForLocalEvents">Maximum travel distance for events:</Form.Label>
                                     </OverlayTrigger >
                                     <Form.Control type="text" name="travelLimitForLocalEvents" defaultValue={travelLimitForLocalEvents} onChange={(val) => handleTravelLimitForLocalEventsChanged(val.target.value)} />
                                 </Form.Group>
@@ -735,7 +735,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderPreferMetricToolTip}>
-                                        <Form.Label htmlFor="PreferMetric">Use Metric System:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="PreferMetric">Use Metric System:</Form.Label>
                                     </OverlayTrigger >
                                     <ToggleButton
                                         type="checkbox"
@@ -758,7 +758,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderDateAgreedToPrivacyPolicyToolTip}>
-                                        <Form.Label htmlFor="dateAgreedToPrivacyPolicy">Date Agreed To Privacy Policy:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="dateAgreedToPrivacyPolicy">Date Agreed To Privacy Policy:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" disabled defaultValue={dateAgreedToPrivacyPolicy ? dateAgreedToPrivacyPolicy.toString() : ""} />
                                 </Form.Group>
@@ -766,7 +766,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderPrivacyPolicyVersionToolTip}>
-                                        <Form.Label htmlFor="PrivacyPolicyVersion">Privacy Policy Version:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="PrivacyPolicyVersion">Privacy Policy Version:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" disabled defaultValue={privacyPolicyVersion} />
                                 </Form.Group>
@@ -776,7 +776,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderDateAgreedToTermsOfServiceToolTip}>
-                                        <Form.Label htmlFor="dateAgreedToTermsOfService">Date Agreed To Terms of Service:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="dateAgreedToTermsOfService">Date Agreed To Terms of Service:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" disabled defaultValue={dateAgreedToTermsOfService ? dateAgreedToTermsOfService.toString() : ""} />
                                 </Form.Group>
@@ -784,7 +784,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderTermsOfServiceVersionToolTip}>
-                                        <Form.Label htmlFor="TermsOfServiceVersion">Terms Of Service Version:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="TermsOfServiceVersion">Terms Of Service Version:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" disabled defaultValue={termsOfServiceVersion} />
                                 </Form.Group>
@@ -794,7 +794,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderMemberSinceToolTip}>
-                                        <Form.Label htmlFor="memberSince">Member Since:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="memberSince">Member Since:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" disabled defaultValue={memberSince ? memberSince.toLocaleString() : ""} />
                                 </Form.Group>
@@ -804,7 +804,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderSourceSystemUserNameToolTip}>
-                                        <Form.Label htmlFor="memberSince">Source System User Name:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="memberSince">Source System User Name:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" disabled defaultValue={sourceSystemUserName} />
                                 </Form.Group>

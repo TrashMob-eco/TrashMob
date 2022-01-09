@@ -547,7 +547,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderDurationMinutesToolTip}>
-                                    <Form.Label htmlFor="DurationMinutes">Additional Minutes:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="DurationMinutes">Additional Minutes:</Form.Label>
                                 </OverlayTrigger>
                                 <div>
                                     <Form.Control type="text" size="sm" name="durationMinutes" defaultValue={durationMinutes} onChange={(val) => handleDurationMinutesChanged(val.target.value)} />
@@ -570,7 +570,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
-                                    <Form.Label htmlFor="StreetAddress">Street Address:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="StreetAddress">Street Address:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="streetAddress" value={streetAddress} onChange={(val) => handleStreetAddressChanged(val.target.value)} maxLength={parseInt('256')} />
                             </Form.Group>
@@ -578,7 +578,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderCityToolTip}>
-                                    <Form.Label htmlFor="City">City:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
                                 </OverlayTrigger >
                                 <Form.Control className="control-label" type="text" name="city" value={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
                             </Form.Group>
@@ -586,7 +586,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                    <Form.Label htmlFor="PostalCode">Postal Code:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="PostalCode">Postal Code:</Form.Label>
                                 </OverlayTrigger >
                                 <Form.Control type="text" name="postalCode" value={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
                             </Form.Group>
@@ -621,7 +621,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderLatitudeToolTip}>
-                                    <Form.Label htmlFor="Latitude">Latitude:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="Latitude">Latitude:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
                                 <span style={{ color: "red" }}>{latitudeErrors}</span>
@@ -630,7 +630,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderLongitudeToolTip}>
-                                    <Form.Label htmlFor="Longitude">Longitude:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="Longitude">Longitude:</Form.Label>
                                 </OverlayTrigger >
                                 <Form.Control type="text" name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
                                 <span style={{ color: "red" }}>{longitudeErrors}</span>
@@ -639,7 +639,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderMaxNumberOfParticipantsToolTip}>
-                                    <Form.Label htmlFor="MaxNumberOfParticipants">Max Number Of Participants:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="MaxNumberOfParticipants">Max Number Of Participants:</Form.Label>
                                 </OverlayTrigger >
                                 <Form.Control type="text" name="maxNumberOfParticipants" defaultValue={maxNumberOfParticipants} onChange={(val) => handleMaxNumberOfParticipantsChanged(val.target.value)} />
                                 <span style={{ color: "red" }}>{maxNumberOfParticipantsErrors}</span>
