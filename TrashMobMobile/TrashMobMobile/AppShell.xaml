@@ -85,6 +85,7 @@
 
     <ShellContent Title="Upcoming Events List" Icon="calendar_event.png" Route="MobEventsPage" ContentTemplate="{DataTemplate local:MobEventsPage}" />
     <ShellContent Title="Upcoming Events Map" Icon="info_circle.png" Route="EventsMapPage" ContentTemplate="{DataTemplate local:EventsMapPage}" />
+    <ShellContent Title="My Dashboard" Icon="info_circle.png" Route="UserDashboardPage" ContentTemplate="{DataTemplate local:UserDashboardPage}" />
     <ShellContent Title="Add Event" Icon="calendar_event.png" Route="AddEventPage" ContentTemplate="{DataTemplate local:AddEventPage}" />
     <ShellContent Title="User Profile" Icon="user_regular.png" Route="UserProfilePage" ContentTemplate="{DataTemplate local:UserProfilePage}" />
     <ShellContent Title="Contact Us" Icon="message_dots.png" Route="ContactUsPage" ContentTemplate="{DataTemplate local:ContactUsPage}" />

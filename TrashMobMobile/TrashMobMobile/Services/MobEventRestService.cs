@@ -45,6 +45,38 @@
             return mobEvents;
         }
 
+        public async Task<IEnumerable<MobEvent>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly)
+        {
+            var mobEvents = new List<MobEvent>();
+
+            try
+            {
+                var userContext = await GetUserContext().ConfigureAwait(false);
+
+                var httpRequestMessage = new HttpRequestMessage();
+                httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
+
+                httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
+                httpRequestMessage.Method = HttpMethod.Get;
+                httpRequestMessage.RequestUri = new Uri($"{EventsApi}/userevents/{userId}/{showFutureEventsOnly}");
+
+                HttpClient client = new HttpClient();
+                HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string content = await response.Content.ReadAsStringAsync();
+                    mobEvents = JsonConvert.DeserializeObject<List<MobEvent>>(content);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(@"\tERROR {0}", ex.Message);
+            }
+
+            return mobEvents;
+        }
+
         public async Task<MobEvent> GetEventAsync(Guid eventId)
         {
             try

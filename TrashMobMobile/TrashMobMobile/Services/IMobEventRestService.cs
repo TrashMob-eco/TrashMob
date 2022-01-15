@@ -9,6 +9,8 @@
     {
         Task<IEnumerable<MobEvent>> GetActiveEventsAsync();
 
+        Task<IEnumerable<MobEvent>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly);
+
         Task<MobEvent> GetEventAsync(Guid eventId);
 
         Task<MobEvent> UpdateEventAsync(MobEvent mobEvent);
