@@ -17,6 +17,7 @@
             <StackLayout Orientation="Horizontal">
                 <Button Text="Attend" Command="{Binding AttendCommand}" HorizontalOptions="FillAndExpand" IsVisible="{Binding IsUserAttending, Converter={StaticResource InvertedBoolConverter}}" />
                 <Button Text="Unattend" Command="{Binding UnattendCommand}" HorizontalOptions="FillAndExpand" IsVisible="{Binding IsUserAttending} "/>
+                <Button Text="Event Summary" Command="{Binding EventSummaryDetailCommand}" HorizontalOptions="FillAndExpand"></Button>
                 <Button Text="Cancel" Command="{Binding CancelCommand}" HorizontalOptions="FillAndExpand" />
             </StackLayout>
             <StackLayout Orientation="Horizontal">

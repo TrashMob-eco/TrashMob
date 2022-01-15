@@ -9,12 +9,14 @@
     public class MobEventManager : IMobEventManager
     {
         private readonly IMobEventRestService mobEventRestService;
+        private readonly IEventSummaryRestService eventSummaryRestService;
         private readonly IEventAttendeeRestService eventAttendeeRestService;
 
-        public MobEventManager(IMobEventRestService service, IEventAttendeeRestService eventAttendeeRestService)
+        public MobEventManager(IMobEventRestService service, IEventAttendeeRestService eventAttendeeRestService, IEventSummaryRestService eventSummaryRestService)
         {
             mobEventRestService = service;
             this.eventAttendeeRestService = eventAttendeeRestService;
+            this.eventSummaryRestService = eventSummaryRestService;
         }
 
         public Task<IEnumerable<MobEvent>> GetActiveEventsAsync()
@@ -62,6 +64,21 @@
             var events = await mobEventRestService.GetEventsUserIsAttending(userId);
 
             return events != null && events.Any(e => e.Id == eventId);
+        }
+
+        public Task<EventSummary> GetEventSummaryAsync(Guid eventId)
+        {
+            return eventSummaryRestService.GetEventSummaryAsync(eventId);
+        }
+
+        public Task<EventSummary> UpdateEventSummaryAsync(EventSummary eventSummary)
+        {
+            return eventSummaryRestService.UpdateEventSummaryAsync(eventSummary);
+        }
+
+        public Task<EventSummary> AddEventSummaryAsync(EventSummary eventSummary)
+        {
+            return eventSummaryRestService.AddEventSummaryAsync(eventSummary);
         }
     }
 }

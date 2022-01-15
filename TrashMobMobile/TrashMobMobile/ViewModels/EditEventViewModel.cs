@@ -22,6 +22,7 @@
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
             CancelEventCommand = new Command(OnCancelEvent);
+            EventSummaryCommand = new Command(OnEventSummary);
             PropertyChanged +=
                 (_, __) => SaveCommand.ChangeCanExecute();
             this.mapRestService = mapRestService;
@@ -40,6 +41,8 @@
         public Command CancelCommand { get; }
 
         public Command CancelEventCommand { get; }
+
+        public Command EventSummaryCommand { get; }
 
         public DateTime EDate
         {
@@ -97,6 +100,11 @@
         private async void OnCancelEvent()
         {
             await Shell.Current.GoToAsync($"{nameof(CancelEventPage)}?EventId={Id}");
+        }
+
+        private async void OnEventSummary()
+        {
+            await Shell.Current.GoToAsync($"{nameof(EventSummaryPage)}?EventId={Id}");
         }
 
         private async void OnSave()

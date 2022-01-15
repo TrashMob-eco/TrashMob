@@ -75,6 +75,7 @@
             <StackLayout Orientation="Horizontal">
                 <Button Text="Cancel" Command="{Binding CancelCommand}" HorizontalOptions="FillAndExpand"></Button>
                 <Button Text="Save" Command="{Binding SaveCommand}" HorizontalOptions="FillAndExpand"></Button>
+                <Button Text="Event Summary" Command="{Binding EventSummaryCommand}" HorizontalOptions="FillAndExpand"></Button>
             </StackLayout>
             <StackLayout Orientation="Horizontal">
                 <StackLayout Orientation="Vertical">

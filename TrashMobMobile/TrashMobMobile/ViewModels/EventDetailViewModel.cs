@@ -5,6 +5,7 @@
     using TrashMobMobile.Features.LogOn;
     using TrashMobMobile.Models;
     using TrashMobMobile.Services;
+    using TrashMobMobile.Views;
     using Xamarin.Forms;
 
     [QueryProperty(nameof(EventId), nameof(EventId))]
@@ -16,6 +17,7 @@
             AttendCommand = new Command(OnAttend);
             UnattendCommand = new Command(OnUnattend);
             CancelCommand = new Command(OnCancel);
+            EventSummaryDetailCommand = new Command(OnEventSummaryDetail);
             PropertyChanged +=
                 (_, __) => AttendCommand.ChangeCanExecute();
         }
@@ -31,6 +33,8 @@
         public Command AttendCommand { get; }
 
         public Command UnattendCommand { get; }
+
+        public Command EventSummaryDetailCommand { get; }
 
         public Command CancelCommand { get; }
 
@@ -75,6 +79,11 @@
             await MobEventManager.RemoveEventAttendeeAsync(eventAttendee);
 
             await Shell.Current.GoToAsync("..");
+        }
+
+        private async void OnEventSummaryDetail()
+        {
+            await Shell.Current.GoToAsync($"{nameof(EventSummaryDetailPage)}?EventId={Id}");
         }
     }
 }

@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TrashMobMobile.Views.EventSummaryPage"
+             xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+             xmlns:local="clr-namespace:TrashMobMobile.Controls"
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="Accent">#96d1ff</Color>
+            <xct:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView Orientation="Vertical">
+            <StackLayout Orientation="Vertical" Padding="30,24,30,24" Spacing="10">
+            <StackLayout Orientation="Horizontal">
+                <Button Text="Save" Command="{Binding SaveCommand}" HorizontalOptions="FillAndExpand" />
+                <Button Text="Cancel" Command="{Binding CancelCommand}" HorizontalOptions="FillAndExpand" />
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Actual Number of Attendees" FontSize="Small" FontAttributes="Bold" />
+                    <Entry Text="{Binding ActualNumberOfAttendees, Mode=TwoWay}" FontSize="Small" Keyboard="Numeric">
+                        <Entry.Behaviors>
+                            <local:NumericValidationBehavior />
+                        </Entry.Behaviors>
+                    </Entry>
+                </StackLayout>
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Number of Bags" FontSize="Small"  FontAttributes="Bold"/>
+                    <Entry Text="{Binding NumberOfBags, Mode=TwoWay}" FontSize="Small" Keyboard="Numeric">
+                        <Entry.Behaviors>
+                            <local:NumericValidationBehavior />
+                        </Entry.Behaviors>
+                    </Entry>
+                </StackLayout>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Number of Buckets" FontSize="Small" FontAttributes="Bold"/>
+                    <Entry Text="{Binding NumberOfBuckets, Mode=TwoWay}" FontSize="Small" Keyboard="Numeric">
+                        <Entry.Behaviors>
+                            <local:NumericValidationBehavior />
+                        </Entry.Behaviors>
+                    </Entry>
+                </StackLayout>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Duration in Minutes" FontSize="Small" FontAttributes="Bold"/>
+                    <Entry Text="{Binding DurationInMinutes, Mode=TwoWay}" FontSize="Small" Keyboard="Numeric">
+                        <Entry.Behaviors>
+                            <local:NumericValidationBehavior />
+                        </Entry.Behaviors>
+                    </Entry>
+                </StackLayout>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Notes" FontSize="Small" FontAttributes="Bold" />
+                    <Editor Text="{Binding Notes, Mode=TwoWay}" AutoSize="TextChanges" FontSize="Small" Margin="0" MaxLength="2000" />
+                </StackLayout>
+            </StackLayout>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
