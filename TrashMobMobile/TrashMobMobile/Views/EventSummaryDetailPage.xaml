@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TrashMobMobile.Views.EventSummaryDetailPage"
+             xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="Accent">#96d1ff</Color>
+            <xct:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView Orientation="Vertical">
+            <StackLayout Orientation="Vertical" Padding="30,24,30,24" Spacing="10">
+            <StackLayout Orientation="Horizontal">
+                <Button Text="Save" Command="{Binding SaveCommand}" HorizontalOptions="FillAndExpand" />
+                <Button Text="Cancel" Command="{Binding CancelCommand}" HorizontalOptions="FillAndExpand" />
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Actual Number of Attendees" FontSize="Small" FontAttributes="Bold" />
+                    <Label Text="{Binding ActualNumberOfAttendees, Mode=TwoWay}" FontSize="Small" />
+                </StackLayout>
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Number of Bags" FontSize="Small"  FontAttributes="Bold"/>
+                    <Label Text="{Binding NumberOfBags, Mode=TwoWay}" FontSize="Small" />
+                </StackLayout>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Number of Buckets" FontSize="Small" FontAttributes="Bold"/>
+                    <Label Text="{Binding NumberOfBuckets, Mode=TwoWay}" FontSize="Small" />
+                </StackLayout>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Duration in Minutes" FontSize="Small" FontAttributes="Bold"/>
+                    <Label Text="{Binding DurationInMinutes, Mode=TwoWay}" FontSize="Small" />
+                </StackLayout>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Notes" FontSize="Small" FontAttributes="Bold" />
+                    <Label Text="{Binding Notes, Mode=TwoWay}" FontSize="Small" />
+                </StackLayout>
+            </StackLayout>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

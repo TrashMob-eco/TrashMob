@@ -12,6 +12,8 @@
             Routing.RegisterRoute(nameof(CancelEventPage), typeof(CancelEventPage));
             Routing.RegisterRoute(nameof(EditEventPage), typeof(EditEventPage));
             Routing.RegisterRoute(nameof(EventDetailPage), typeof(EventDetailPage));
+            Routing.RegisterRoute(nameof(EventSummaryDetailPage), typeof(EventSummaryDetailPage));
+            Routing.RegisterRoute(nameof(EventSummaryPage), typeof(EventSummaryPage));
             Routing.RegisterRoute(nameof(TermsAndConditionsPage), typeof(TermsAndConditionsPage));
         }
     }

@@ -24,5 +24,11 @@
         Task RemoveEventAttendeeAsync(EventAttendee eventAttendee);
  
         Task<bool> IsUserAttendingAsync(Guid eventId, Guid userId);
+
+        Task<EventSummary> GetEventSummaryAsync(Guid eventId);
+
+        Task<EventSummary> UpdateEventSummaryAsync(EventSummary eventSummary);
+
+        Task<EventSummary> AddEventSummaryAsync(EventSummary eventSummary);
     }
 }
