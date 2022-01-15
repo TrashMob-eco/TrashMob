@@ -22,6 +22,11 @@
             return mobEventRestService.GetActiveEventsAsync();
         }
 
+        public Task<IEnumerable<MobEvent>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly)
+        {
+            return mobEventRestService.GetUserEventsAsync(userId, showFutureEventsOnly);
+        }
+
         public Task<MobEvent> GetEventAsync(Guid eventId)
         {
             return mobEventRestService.GetEventAsync(eventId);

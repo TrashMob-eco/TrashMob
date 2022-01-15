@@ -29,7 +29,7 @@ As of 5/26/2021, we are now in Beta launch. We'll hold at Beta until a few more 
 
 ## Are you looking for contributors?
 
-ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want to get involved. All kinds of skills needed, from logo design to reactjs, to website design, to aspnet core, to Xamarin, to deployment / github skills.
+ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want to get involved. All kinds of skills needed, from reactjs to website design, to aspnet core, to Xamarin, to deployment / github skills.
  
 # Development Notes
 
@@ -67,7 +67,7 @@ i.e.
 
 ```
 
-## Setting up your launchsettings.json
+## Setting up your launchsettings.json for website development
 
 Because of RedirectUrls, life is a lot easier if you stick with the same ports as everyone else. 
 
@@ -112,7 +112,8 @@ The mobile app is written using Xamarin. It requires a few prerequisites in orde
 1. Ensure you have installed the Xamarin components to Visual Studio
 2. Install Android Studio https://developer.android.com/studio 
 3. Create an Android Emulator device in Android Studio
-4. Start the TrashMobMobile Project in Visual Studio.
+4. Load the TrashMobMobile.sln Project in Visual Studio.
+5. Set your startup project to TrashMobMobile.Android
 5. In order to have the maps feature work, you will need to do the following:
     1. Create a Google Maps account: https://developers.google.com/maps/gmp-get-started
     2. Get your Google API Key from your Google Project

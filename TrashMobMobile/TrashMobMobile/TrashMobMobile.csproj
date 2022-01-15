@@ -54,6 +54,9 @@
 		<Compile Update="Views\CancelEventPage.xaml.cs">
 		  <DependentUpon>CancelEventPage.xaml</DependentUpon>
 		</Compile>
+		<Compile Update="Views\UserDashboardPage.xaml.cs">
+		  <DependentUpon>UserDashboardPage.xaml</DependentUpon>
+		</Compile>
 		<Compile Update="Views\TermsAndConditionsPage.xaml.cs">
 			<DependentUpon>TermsAndConditionsPage.xaml</DependentUpon>
 		</Compile>

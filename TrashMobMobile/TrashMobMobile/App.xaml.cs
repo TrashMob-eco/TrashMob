@@ -50,6 +50,7 @@
             services.AddTransient<LoginViewModel>();
             services.AddTransient<MobEventsViewModel>();
             services.AddTransient<TermsAndConditionsViewModel>();
+            services.AddTransient<UserDashboardViewModel>();
             services.AddTransient<UserProfileViewModel>();
 
             // Add Services
