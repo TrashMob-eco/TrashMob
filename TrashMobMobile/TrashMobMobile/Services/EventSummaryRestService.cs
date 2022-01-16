@@ -54,10 +54,9 @@
                 httpRequestMessage.Content = JsonContent.Create(eventSummary, typeof(EventSummary), null, SerializerOptions);
 
                 HttpClient client = new HttpClient();
-                HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
-                string responseString = await response.Content.ReadAsStringAsync();
+                _ = await client.SendAsync(httpRequestMessage);
 
-                return JsonConvert.DeserializeObject<EventSummary>(responseString);
+                return await GetEventSummaryAsync(eventSummary.EventId);
             }
             catch (Exception ex)
             {
@@ -81,10 +80,9 @@
                 httpRequestMessage.Content = JsonContent.Create(eventSummary, typeof(EventSummary), null, SerializerOptions);
 
                 HttpClient client = new HttpClient();
-                HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
-                string responseString = await response.Content.ReadAsStringAsync();
+                _ = await client.SendAsync(httpRequestMessage);
 
-                return JsonConvert.DeserializeObject<EventSummary>(responseString);
+                return await GetEventSummaryAsync(eventSummary.EventId);
             }
             catch (Exception ex)
             {

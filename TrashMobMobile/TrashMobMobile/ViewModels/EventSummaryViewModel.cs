@@ -117,14 +117,16 @@
                 ActualNumberOfAttendees = ActualNumberOfAttendees,
                 DurationInMinutes = DurationInMinutes,
                 Notes = Notes,
-                CreatedByUserId = CreatedByUserId,
-                LastUpdatedByUserId = LastUpdatedByUserId,
-                LastUpdatedDate = LastUpdatedDate,
+                LastUpdatedByUserId = App.CurrentUser.Id,
+                LastUpdatedDate = DateTimeOffset.UtcNow,
                 CreatedDate = CreatedDate,
             };
 
             if (CreatedByUserId == Guid.Empty)
             {
+                eventSummary.CreatedByUserId = App.CurrentUser.Id;
+                CreatedDate = DateTime.UtcNow;
+
                 eventSummary = await mobEventManager.AddEventSummaryAsync(eventSummary);
             }
             else
