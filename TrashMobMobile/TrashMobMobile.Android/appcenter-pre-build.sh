@@ -17,7 +17,7 @@ ConstantsFile=$BUILD_REPOSITORY_LOCALPATH/TrashMobMobile/TrashMobMobile.Shared/C
 
 if [ "$APPCENTER_BRANCH" != "release" ];
     then
-        sed -i '' "s/API_URL/$DevURL/g" "$ConstantsFile"
+        sed -i '' "s/DevURL/$DevURL/g" "$ConstantsFile"
 else
-    sed -i '' "s/API_URL/$ProdURL/g" "$ConstantsFile"  
+    sed -i '' "s/ProdURL/$ProdURL/g" "$ConstantsFile"  
 fi 
