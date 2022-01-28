@@ -14,7 +14,6 @@ cat $IdFile
 echo "Updated secret key!"
 
 ConstantsFile=$BUILD_REPOSITORY_LOCALPATH/TrashMob.Shared/Constants.cs
-TrashMob.Shared\Constants.cs
 
 if [ "$APPCENTER_BRANCH" != "release" ];
     then
