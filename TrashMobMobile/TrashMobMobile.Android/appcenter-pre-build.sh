@@ -13,7 +13,7 @@ cat $IdFile
 
 echo "Updated secret key!"
 
-ConstantsFile=$BUILD_REPOSITORY_LOCALPATH/TrashMob.Shared/Constants.cs
+ConstantsFile=$BUILD_REPOSITORY_LOCALPATH/TrashMobMobile/TrashMobMobile/Constants.cs
 
 if [ "$APPCENTER_BRANCH" == "phcherne/multiple_api_url" ];
     then
