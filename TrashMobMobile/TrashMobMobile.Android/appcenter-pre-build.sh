@@ -18,10 +18,10 @@ ConstantsFile=$BUILD_REPOSITORY_LOCALPATH/TrashMobMobile/TrashMobMobile/Constant
 if [ "$APPCENTER_BRANCH" == "phcherne/multiple_api_url" ];
     then
         # sed -i '' "s/API_ENDPOINT/$DEV_ENDPOINT/g" ~"$ConstantsFile"
-        awk -v repl="$PROD_ENDPOINT" '{sub(/API_ENDPOINT/, repl); print}' "$ConstantsFile"
+        awk -v repl="$PROD_ENDPOINT" '{sub(/API_ENDPOINT/, repl); print}' "$ConstantsFile" > "$ConstantsFile"
 else
     # sed -i '' "s/API_ENDPOINT/$PROD_ENDPOINT/g" ~"$ConstantsFile"  
-    awk -v repl="$DEV_ENDPOINT" '{sub(/API_ENDPOINT/, repl); print}' "$ConstantsFile"
+    awk -v repl="$DEV_ENDPOINT" '{sub(/API_ENDPOINT/, repl); print}' "$ConstantsFile" > "$ConstantsFile"
 
 fi 
 
