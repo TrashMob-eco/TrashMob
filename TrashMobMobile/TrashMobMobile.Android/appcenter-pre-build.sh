@@ -17,7 +17,7 @@ ConstantsFile=$BUILD_REPOSITORY_LOCALPATH/TrashMob.Shared/Constants.cs
 
 if [ "$APPCENTER_BRANCH" != "release" ];
     then
-        sed -i '' "s/API_ENDPOINT/$DEV_ENDPOINT/g" "$ConstantsFile"
+        sed -i '' "s/API_ENDPOINT/$DEV_ENDPOINT/g" ~"$ConstantsFile"
 else
-    sed -i '' "s/API_ENDPOINT/$PROD_ENDPOINT/g" "$ConstantsFile"  
+    sed -i '' "s/API_ENDPOINT/$PROD_ENDPOINT/g" ~"$ConstantsFile"  
 fi 
