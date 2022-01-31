@@ -15,12 +15,14 @@ echo "Updated secret key!"
 
 ConstantsFile=$BUILD_REPOSITORY_LOCALPATH/TrashMob.Shared/Constants.cs
 
-if [ "$APPCENTER_BRANCH" != "release" ];
+if [ "$APPCENTER_BRANCH" == "phcherne/multiple_api_url" ];
     then
         # sed -i '' "s/API_ENDPOINT/$DEV_ENDPOINT/g" ~"$ConstantsFile"
-        awk -v repl="$DEV_ENDPOINT" '{sub(/API_ENDPOINT/, repl); print}' "$ConstantsFile"
+        awk -v repl="$PROD_ENDPOINT" '{sub(/API_ENDPOINT/, repl); print}' "$ConstantsFile"
 else
     # sed -i '' "s/API_ENDPOINT/$PROD_ENDPOINT/g" ~"$ConstantsFile"  
-    awk -v repl="$PROD_ENDPOINT" '{sub(/API_ENDPOINT/, repl); print}' "$ConstantsFile"
+    awk -v repl="$DEV_ENDPOINT" '{sub(/API_ENDPOINT/, repl); print}' "$ConstantsFile"
 
 fi 
+
+cat $ConstantsFile
