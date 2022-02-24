@@ -3,8 +3,9 @@ import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
 import { msalClient } from '../store/AuthStore';
 import UserData from './Models/UserData';
 import logo from './assets/logo.svg'
-import { Button, Nav } from 'react-bootstrap';
+import { Button, ButtonGroup, Dropdown, Nav } from 'react-bootstrap';
 import './assets/styles/header.css';
+import { Person, PersonCircle, PlusLg, Power, Speedometer2 } from 'react-bootstrap-icons';
 
 interface TopMenuProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -60,31 +61,46 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
         <header className="tm-header">
             <div className="container bg-light tm-mainNav">
                 <div className="navbar navbar-expand-lg navbar-light navbar-static-top" id="navbar">
-                    <a className="navbar-brand" href="/" id="navbarBrand"><img src={logo} alt="TrashMob Logo" id="logo"/></a>
+                    <a className="navbar-brand" href="/" id="navbarBrand"><img src={logo} alt="TrashMob Logo" id="logo" /></a>
                     <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
                     <div className="navbar-collapse collapse" id="navbarNav">
-                            {/* <Navbar.Toggle aria-controls="basic-navbar-nav" /> */}
-                            <ul className="nav navbar-nav">
-                                {mainNavItems.map(item => (
-                                    <li><Nav.Link href={item.url} key={item.name}>{item.name}</Nav.Link></li>
-                                ))}
-                            </ul>
-                            {/* <NavDropdown title="Learn More" id="basic-nav-dropdown">
-                                <NavDropdown.Item className="dropdown-item" href="/mediagallery">Media Gallery</NavDropdown.Item>
-                                <NavDropdown.Item className="dropdown-item" href="/partners">Partners</NavDropdown.Item>
-                                <NavDropdown.Item className="dropdown-item" href="/becomeapartner">Become a Partner</NavDropdown.Item>
-                                <NavDropdown.Item className="dropdown-item" hidden={!isUserLoaded} href="/partnerdashboard">Partner Dashboard</NavDropdown.Item>
-                                <NavDropdown.Item className="dropdown-item" href="/contactus">Contact Us</NavDropdown.Item>
-                                <NavDropdown.Item className="dropdown-item" href="/faq">FAQ</NavDropdown.Item>
-                                <NavDropdown.Item className="dropdown-item" hidden={!isUserLoaded || !props.currentUser.isSiteAdmin} href="/siteadmin">SiteAdmin</NavDropdown.Item>
-                            </NavDropdown> */}
+                        {/* <Navbar.Toggle aria-controls="basic-navbar-nav" /> */}
+                        <ul className="nav navbar-nav">
+                            {mainNavItems.map(item => (
+                                <li><Nav.Link href={item.url} key={item.name}>{item.name}</Nav.Link></li>
+                            ))}
+                        </ul>
+                        {/* <NavDropdown title="Learn More" id="basic-nav-dropdown">
+                            <NavDropdown.Item className="dropdown-item" href="/mediagallery">Media Gallery</NavDropdown.Item>
+                            <NavDropdown.Item className="dropdown-item" href="/partners">Partners</NavDropdown.Item>
+                            <NavDropdown.Item className="dropdown-item" href="/becomeapartner">Become a Partner</NavDropdown.Item>
+                            <NavDropdown.Item className="dropdown-item" hidden={!isUserLoaded} href="/partnerdashboard">Partner Dashboard</NavDropdown.Item>
+                            <NavDropdown.Item className="dropdown-item" href="/contactus">Contact Us</NavDropdown.Item>
+                            <NavDropdown.Item className="dropdown-item" href="/faq">FAQ</NavDropdown.Item>
+                            <NavDropdown.Item className="dropdown-item" hidden={!isUserLoaded || !props.currentUser.isSiteAdmin} href="/siteadmin">SiteAdmin</NavDropdown.Item>
+                        </NavDropdown> */}
                         <Button hidden={!isUserLoaded} className="btn btn-link" style={{ color: "#ffffff" }} onClick={(e) => viewUserProfile(e)} id="welcomeBtn">Welcome{userName ? ", " + userName : ""}!</Button>
                         <Button hidden={!isUserLoaded} className="btn btn-link" style={{ color: "#ffffff" }} onClick={(e) => viewNotificationPreferences(e)} id="notificationBtn">Notification Preferences</Button>
                         <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="loginBtn">Sign in</Button>
                         <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="registerBtn">Sign up</Button>
                         <Button hidden={!isUserLoaded} className="btn btn-outline-primary" style={{ color: "#ffffff" }} onClick={(e) => signOut(e)} id="logoutBtn">Log Out</Button>
+                        <Dropdown hidden={!isUserLoaded}>
+                            <Dropdown.Toggle id="userBtn" variant="light">
+                                <PersonCircle className="mr-3" />Richita
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu show>
+                                <Dropdown.Item eventKey="1"><Speedometer2 />Dashboard</Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item eventKey="2"><Person />My profile</Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item eventKey="3"><PlusLg />Add event</Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item eventKey="4"><Power />Sign out</Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
+
                     </div>
                 </div>
             </div>

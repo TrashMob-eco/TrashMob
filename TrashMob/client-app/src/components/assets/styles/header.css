@@ -42,7 +42,7 @@
     border-top: 0.3em solid #96ba00 !important;
 }
 
-#loginBtn, #registerBtn, #logoutBtn {
+#loginBtn, #registerBtn, #logoutBtn, #userBtn {
     width: 115px;
     height: 45px;
     border-radius: 5px !important;
@@ -108,4 +108,18 @@
     font-size: 17px;
     line-height: 25px;
     font-style: normal;
+}
+
+#userBtn {
+    background-color: unset !important;
+    font-size: 17px !important;
+    width: auto !important;
+}
+
+#userBtn:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 1);
+}
+
+#userBtn + .dropdown-menu > .dropdown-item {
+    font-weight: 400;
 }

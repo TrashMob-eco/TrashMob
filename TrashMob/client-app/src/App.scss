@@ -120,6 +120,12 @@ p {
   .navbar-nav {
     width: 100%;
     margin-top: 8px;
+
+    &::after {
+      border-right: 2px solid $primary;
+      content: "";
+      display: inline-block;
+    }
   }
 
   .navbar-light .navbar-nav .nav-link {
@@ -397,7 +403,7 @@ img {
 
 button,
 .dropdown > a.dropdown-toggle {
-  background-color: #96ba00 !important;
+  background-color: $primary !important;
   border: none !important;
   outline: none !important;
 }
@@ -411,6 +417,14 @@ button,
 .dropdown > a:hover,
 button:hover {
   background-color: #546900 !important;
+}
+
+.dropdown-menu {
+  & .dropdown-item {
+    & svg {
+      margin-right: 6px;
+    }
+  }
 }
 
 .card.card-image-left {

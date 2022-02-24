@@ -4,8 +4,6 @@ import logo from './assets/logowhite.svg'
 //import facebook from './assets/facebook.svg'
 import { Link } from 'react-router-dom';
 
-import '../custom.css';
-
 export const Footer: React.FC = () => {
     return (
         <footer id="pageFooter">
