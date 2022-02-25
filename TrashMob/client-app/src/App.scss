@@ -53,19 +53,6 @@ p {
   color: white;
 }
 
-.shadow {
-  user-select: none;
-  pointer-events: none;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1) !important;
-  height: 103px;
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  width: 100%;
-  z-index: 4000;
-  background-color: rgba(255, 255, 255, 0);
-}
-
 .App-link {
   color: #61dafb;
 }

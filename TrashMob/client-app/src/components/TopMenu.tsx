@@ -88,9 +88,10 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                         <Button hidden={!isUserLoaded} className="btn btn-outline-primary" style={{ color: "#ffffff" }} onClick={(e) => signOut(e)} id="logoutBtn">Log Out</Button>
                         <Dropdown hidden={!isUserLoaded}>
                             <Dropdown.Toggle id="userBtn" variant="light">
-                                <PersonCircle className="mr-3" />Richita
+                                <PersonCircle className="mr-3" size={32} color="#96ba00" aria-labelledby="displayName" />
+                                <span id="userName">Richita</span>
                             </Dropdown.Toggle>
-                            <Dropdown.Menu show>
+                            <Dropdown.Menu show className="shadow border-0">
                                 <Dropdown.Item eventKey="1"><Speedometer2 />Dashboard</Dropdown.Item>
                                 <Dropdown.Divider />
                                 <Dropdown.Item eventKey="2"><Person />My profile</Dropdown.Item>
@@ -100,7 +101,6 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 <Dropdown.Item eventKey="4"><Power />Sign out</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
-
                     </div>
                 </div>
             </div>
