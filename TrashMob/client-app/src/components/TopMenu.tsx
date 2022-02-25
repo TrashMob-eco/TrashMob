@@ -47,11 +47,6 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
         msalClient.loginRedirect();
     }
 
-    function viewUserProfile(e: any) {
-        e.preventDefault();
-        history.push("/userprofile");
-    }
-
     function viewNotificationPreferences(e: any) {
         e.preventDefault();
         history.push("/notificationpreferences");
@@ -86,13 +81,13 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                         <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="registerBtn">Sign up</Button>
                         <Dropdown hidden={!isUserLoaded}>
                             <Dropdown.Toggle id="userBtn" variant="light">
-                                <PersonCircle className="mr-3" size={32} color="#96ba00" aria-labelledby="displayName" />
-                                <span id="userName">{userName}</span>
+                                <PersonCircle className="mr-3" size={32} color="#96ba00" aria-labelledby="userName" />
+                                {userName ? userName : 'Welcome'}
                             </Dropdown.Toggle>
-                            <Dropdown.Menu show className="shadow border-0">
-                                <Dropdown.Item eventKey="1"><Speedometer2 />Dashboard</Dropdown.Item>
+                            <Dropdown.Menu className="shadow border-0">
+                                <Dropdown.Item eventKey="1" href="/mydashboard"><Speedometer2 />Dashboard</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="2" onClick={(e) => viewUserProfile(e)}><Person />My profile</Dropdown.Item>
+                                <Dropdown.Item eventKey="2" href="/userprofile"><Person />My profile</Dropdown.Item>
                                 <Dropdown.Divider />
                                 <Dropdown.Item eventKey="3"><PlusLg />Add event</Dropdown.Item>
                                 <Dropdown.Divider />
