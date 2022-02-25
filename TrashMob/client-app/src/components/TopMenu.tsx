@@ -85,13 +85,13 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 {userName ? userName : 'Welcome'}
                             </Dropdown.Toggle>
                             <Dropdown.Menu className="shadow border-0">
-                                <Dropdown.Item eventKey="1" href="/mydashboard"><Speedometer2 />Dashboard</Dropdown.Item>
+                                <Dropdown.Item eventKey="1" href="/mydashboard"><Speedometer2 aria-hidden="true" />Dashboard</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="2" href="/userprofile"><Person />My profile</Dropdown.Item>
+                                <Dropdown.Item eventKey="2" href="/userprofile"><Person aria-hidden="true" />My profile</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="3"><PlusLg />Add event</Dropdown.Item>
+                                <Dropdown.Item eventKey="3"><PlusLg aria-hidden="true" />Add event</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="4" onClick={(e) => signOut(e)}><Power />Sign out</Dropdown.Item>
+                                <Dropdown.Item eventKey="4" onClick={(e) => signOut(e)}><Power aria-hidden="true" />Sign out</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
                     </div>
