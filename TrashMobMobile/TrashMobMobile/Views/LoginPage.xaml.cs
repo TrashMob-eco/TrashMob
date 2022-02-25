@@ -16,6 +16,8 @@
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+            
+            // TODO This logic should be moved to VM
             var isLoggedIn = await Xamarin.Essentials.SecureStorage.GetAsync("isLogged");
 
             if (isLoggedIn == "1")
