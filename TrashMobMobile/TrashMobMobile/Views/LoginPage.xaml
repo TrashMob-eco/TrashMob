@@ -5,16 +5,9 @@
              Shell.FlyoutBehavior="Disabled"
              Shell.NavBarIsVisible="False">
 
-    <ContentPage.Resources>
-        <StyleSheet Source="/Assets/login.css" />
-    </ContentPage.Resources>
+    <StackLayout Orientation="Vertical" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Margin="10">
+        <Image Source="TME_BusinessCard_front.png" />
+        <Button x:Name="btnSignInSignOut" Text="Sign in" Command="{Binding LoginCommand}" HorizontalOptions="FillAndExpand"/>
+    </StackLayout>
 
-    <ContentPage.Content>
-        <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-            <StackLayout Orientation="Vertical" HorizontalOptions="Center" VerticalOptions="CenterAndExpand">
-                <Image Source="TME_BusinessCard_front.png" />
-                <Button x:Name="btnSignInSignOut" Text="Sign in" Command="{Binding LoginCommand}" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
-            </StackLayout>
-        </StackLayout>
-    </ContentPage.Content>
 </ContentPage>

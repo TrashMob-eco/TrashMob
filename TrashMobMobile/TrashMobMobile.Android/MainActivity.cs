@@ -30,7 +30,7 @@ namespace TrashMobMobile.Droid
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
-
+            Window.SetStatusBarColor(Android.Graphics.Color.Argb(255, 150, 186, 0));
             CrossCurrentActivity.Current.Init(this, savedInstanceState);
             DependencyService.Register<IParentWindowLocatorService, AndroidParentWindowLocatorService>();
 
