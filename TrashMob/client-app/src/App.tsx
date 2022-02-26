@@ -37,6 +37,8 @@ import { EventSummaries } from './components/EventSummaries';
 import { CancelEvent, CancelEventMatchParams } from './components/EventManagement/CancelEvent';
 import NotificationPreferences from './components/NotificationPreferences';
 
+import './custom.css';
+
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }
 

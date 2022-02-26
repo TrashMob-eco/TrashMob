@@ -51,7 +51,6 @@ hr.rounded {
 
 #pageFooter {
   background-color: #212529;
-  height: 300px;
 }
 
 #logo_footer {
@@ -137,4 +136,9 @@ hr.rounded {
 .form-group.required .control-label:after {
     content: "*";
     color: red;
+}
+
+.dropdown-divider {
+  margin: 0.5rem 1.25rem !important;
+  border-top: 1px solid #6b6f74 !important;
 }
