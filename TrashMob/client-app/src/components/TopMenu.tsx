@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { msalClient } from '../store/AuthStore';
 import UserData from './Models/UserData';
 import logo from './assets/logo.svg'
@@ -15,7 +15,6 @@ interface TopMenuProps extends RouteComponentProps<any> {
 const TopMenu: React.FC<TopMenuProps> = (props) => {
     const [userName, setUserName] = React.useState<string>("");
     const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
-    const history = useHistory();
 
     React.useEffect(() => {
         if (props.currentUser && props.isUserLoaded) {
