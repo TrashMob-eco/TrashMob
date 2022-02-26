@@ -3,7 +3,7 @@ import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
 import { msalClient } from '../store/AuthStore';
 import UserData from './Models/UserData';
 import logo from './assets/logo.svg'
-import { Button, ButtonGroup, Dropdown, Nav } from 'react-bootstrap';
+import { Button, Dropdown, Nav } from 'react-bootstrap';
 import './assets/styles/header.css';
 import { Person, PersonCircle, PlusLg, Power, Speedometer2 } from 'react-bootstrap-icons';
 
