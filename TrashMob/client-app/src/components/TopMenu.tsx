@@ -47,11 +47,6 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
         msalClient.loginRedirect();
     }
 
-    function viewNotificationPreferences(e: any) {
-        e.preventDefault();
-        history.push("/notificationpreferences");
-    }
-
     return (
         <header className="tm-header">
             <div className="container bg-light tm-mainNav">
