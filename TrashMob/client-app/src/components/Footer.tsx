@@ -14,8 +14,8 @@ export const Footer: React.FC = () => {
                         <div className="col-md-4">
                             <Link to="/aboutus">About us</Link>
                             <Link to="/partners">Partners</Link>
-                            <Link to="/sponsors">Sponsors</Link>
                             <Link to="/contactus">Contact us</Link>
+                            <Link to="/board">Board</Link>
                         </div>
 
                         <div className="col-md-4">
@@ -23,6 +23,7 @@ export const Footer: React.FC = () => {
                             <Link to="/privacypolicy">Privacy Policy</Link>
                             <Link to="/termsofservice">Terms of Service</Link>
                             <Link to="/eventsummaries">Event Summaries</Link>
+                            <Link to="/volunteeropportunities">Volunteer Opportunities</Link>
                         </div>
                     </div>
                     <hr className="horizontalLine" />
