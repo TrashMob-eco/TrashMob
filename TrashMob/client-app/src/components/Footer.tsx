@@ -16,14 +16,14 @@ export const Footer: React.FC = () => {
                     <div className="col-md-4">
                         <Link to="/aboutus">About us</Link>
                         <Link to="/partners">Partners</Link>
-                        <Link to="/sponsors">Sponsors</Link>
                         <Link to="/contactus">Contact us</Link>
+                        <Link to="/faq">FAQ</Link>
                     </div>
 
                     <div className="col-md-4">
-                        <Link to="/faq">FAQ</Link>
                         <Link to="/privacypolicy">Privacy Policy</Link>
                         <Link to="/termsofservice">Terms of Service</Link>
+                        <Link to="/waiver">Waiver</Link>
                         <Link to="/eventsummaries">Event Summaries</Link>
                     </div>
                 </div>

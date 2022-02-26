@@ -29,10 +29,26 @@
             this.waiverRepository = waiverRepository;
         }
 
-        [HttpGet("{userId}")]
-        public IActionResult GetUserWaivers(Guid userId, CancellationToken cancellationToken)
+        [HttpGet("all/{userId}")]
+        public IActionResult GetAllUserWaivers(Guid userId, CancellationToken cancellationToken)
         {
             return Ok(userWaiverRepository.GetUserWaivers(cancellationToken).Where(uw => uw.UserId == userId).ToList());
+        }
+
+        [HttpGet("current/{userId}")]
+        public IActionResult GetCurrentUserWaiver(Guid userId, CancellationToken cancellationToken)
+        {
+            var userWaiver = userWaiverRepository.GetUserWaivers(cancellationToken)
+                .Where(uw => uw.UserId == userId && uw.ExpiryDate > DateTimeOffset.UtcNow)
+                .OrderByDescending(uw => uw.ExpiryDate)
+                .FirstOrDefault();
+
+            if (userWaiver == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(userWaiver);
         }
 
         [HttpGet("{userId}/{waiverId}")]
@@ -49,19 +65,19 @@
         }
 
         [HttpPost("{userId}/{waiverId}")]
-        public async Task<IActionResult> AddUserWaiver(Guid userId, Guid waiverId)
+        public async Task<IActionResult> AddUserWaiver(Guid userId)
         {
             var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
 
-            // Get the waiver details so we can calculate the expiry date.
-            var waiver = await waiverRepository.GetWaiver(waiverId);
+            // Get the most recent TrashMob.eco waiver
+            var waiver = (await waiverRepository.GetWaivers()).OrderByDescending(w => w.EffectiveDate).FirstOrDefault();
 
             var expiryDate = GetExpiryDate(waiver.WaiverDurationTypeId);
 
             var userWaiver = new UserWaiver()
             {
                 UserId = userId,
-                WaiverId = waiverId,
+                WaiverId = waiver.Id,
                 EffectiveDate = DateTimeOffset.UtcNow,
                 ExpiryDate = expiryDate,
                 CreatedByUserId = currentUser.Id,
@@ -70,7 +86,7 @@
 
             await userWaiverRepository.AddUserWaiver(userWaiver).ConfigureAwait(false);
 
-            return CreatedAtAction(nameof(GetUserWaiver), new { userId, waiverId });
+            return CreatedAtAction(nameof(GetUserWaiver), new { userId, waiver.Id });
         }
 
         private DateTimeOffset GetExpiryDate(int waiverDurationId)
