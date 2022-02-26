@@ -76,7 +76,6 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                             <NavDropdown.Item className="dropdown-item" href="/faq">FAQ</NavDropdown.Item>
                             <NavDropdown.Item className="dropdown-item" hidden={!isUserLoaded || !props.currentUser.isSiteAdmin} href="/siteadmin">SiteAdmin</NavDropdown.Item>
                         </NavDropdown> */}
-                        <Button hidden={!isUserLoaded} className="btn btn-link" style={{ color: "#ffffff" }} onClick={(e) => viewNotificationPreferences(e)} id="notificationBtn">Notification Preferences</Button>
                         <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="loginBtn">Sign in</Button>
                         <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="registerBtn">Sign up</Button>
                         <Dropdown hidden={!isUserLoaded}>
@@ -89,9 +88,11 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 <Dropdown.Divider />
                                 <Dropdown.Item eventKey="2" href="/userprofile"><Person aria-hidden="true" />My profile</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="3"><PlusLg aria-hidden="true" />Add event</Dropdown.Item>
+                                <Dropdown.Item eventKey="3" href="/notificationpreferences"><Person aria-hidden="true" />Notification Preferences</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="4" onClick={(e) => signOut(e)}><Power aria-hidden="true" />Sign out</Dropdown.Item>
+                                <Dropdown.Item eventKey="4"><PlusLg aria-hidden="true" />Add event</Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item eventKey="5" onClick={(e) => signOut(e)}><Power aria-hidden="true" />Sign out</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
                     </div>
