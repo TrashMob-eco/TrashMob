@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
@@ -14,8 +15,8 @@
 
         Task<int> DeleteEventSummary(Guid eventId);
 
-        Task<EventSummary> GetEventSummary(Guid eventId);
+        Task<EventSummary> GetEventSummary(Guid eventId, CancellationToken cancellationToken = default);
 
-        IQueryable<EventSummary> GetEventSummaries();
+        IQueryable<EventSummary> GetEventSummaries(CancellationToken cancellationToken = default);
     }
 }

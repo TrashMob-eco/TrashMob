@@ -3,6 +3,7 @@
     using Microsoft.EntityFrameworkCore;
     using System;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
@@ -27,7 +28,7 @@
             return await mobDbContext.PartnerUsers.FindAsync(partnerUser.PartnerId, partnerUser.UserId).ConfigureAwait(false);
         }
 
-        public IQueryable<PartnerUser> GetPartnerUsers()
+        public IQueryable<PartnerUser> GetPartnerUsers(CancellationToken cancellationToken = default)
         {
             return mobDbContext.PartnerUsers.AsQueryable();
         }

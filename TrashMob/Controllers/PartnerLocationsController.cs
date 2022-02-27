@@ -5,6 +5,7 @@
     using System;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
@@ -26,15 +27,15 @@
         }
 
         [HttpGet("{partnerId}")]
-        public IActionResult GetPartnerLocations(Guid partnerId)
+        public IActionResult GetPartnerLocations(Guid partnerId, CancellationToken cancellationToken)
         {
-            return Ok(partnerLocationRepository.GetPartnerLocations().Where(pl => pl.PartnerId == partnerId).ToList());
+            return Ok(partnerLocationRepository.GetPartnerLocations(cancellationToken).Where(pl => pl.PartnerId == partnerId).ToList());
         }
 
         [HttpGet("{partnerId}/{locationId}")]
-        public IActionResult GetPartnerLocation(Guid partnerId, Guid locationId)
+        public IActionResult GetPartnerLocation(Guid partnerId, Guid locationId, CancellationToken cancellationToken)
         {
-            var partnerLocation = partnerLocationRepository.GetPartnerLocations().FirstOrDefault(pl => pl.PartnerId == partnerId && pl.Id == locationId);
+            var partnerLocation = partnerLocationRepository.GetPartnerLocations(cancellationToken).FirstOrDefault(pl => pl.PartnerId == partnerId && pl.Id == locationId);
 
             if (partnerLocation == null)
             {

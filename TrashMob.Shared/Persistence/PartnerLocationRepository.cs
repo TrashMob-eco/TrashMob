@@ -3,6 +3,7 @@
     using Microsoft.EntityFrameworkCore;
     using System;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
@@ -33,7 +34,7 @@
             return await mobDbContext.PartnerLocations.FindAsync(partnerLocation.Id).ConfigureAwait(false);
         }
 
-        public IQueryable<PartnerLocation> GetPartnerLocations()
+        public IQueryable<PartnerLocation> GetPartnerLocations(CancellationToken cancellationToken = default)
         {
             return mobDbContext.PartnerLocations.AsQueryable();
         }

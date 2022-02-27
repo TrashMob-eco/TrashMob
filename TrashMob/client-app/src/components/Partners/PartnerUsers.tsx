@@ -119,9 +119,9 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
                 <Form onSubmit={handleAddUser}>
                     <Form.Row>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderPartnerUserNameToolTip}>
-                                    <Form.Label htmlFor="UserName">Search for User Name to Add:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="UserName">Search for User Name to Add:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="username" defaultValue={userName} onChange={val => handleUserNameChanged(val.target.value)} maxLength={parseInt('64')} required />
                             </Form.Group>

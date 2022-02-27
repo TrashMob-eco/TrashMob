@@ -5,6 +5,7 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Shared.Persistence;
     using TrashMob.Poco;
+    using System.Threading;
 
     [ApiController]
     [Route("api/stats")]
@@ -20,13 +21,13 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetStats()
+        public IActionResult GetStats(CancellationToken cancellationToken)
         {
             var stats = new Stats();
-            var events = eventRepository.GetEvents();
+            var events = eventRepository.GetEvents(cancellationToken);
             stats.TotalEvents = events.Count();
 
-            var eventSummaries = eventSummaryRepository.GetEventSummaries();
+            var eventSummaries = eventSummaryRepository.GetEventSummaries(cancellationToken);
             stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) + (eventSummaries.Sum(es => es.NumberOfBuckets) / 3);
             stats.TotalHours = eventSummaries.Sum(es => es.DurationInMinutes * es.ActualNumberOfAttendees / 60);
             stats.TotalParticipants = eventSummaries.Sum(es => es.ActualNumberOfAttendees);

@@ -38,17 +38,17 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEvents()
+        public async Task<IActionResult> GetEvents(CancellationToken cancellationToken)
         {
-            var result = await eventRepository.GetAllEvents().ConfigureAwait(false);
+            var result = await eventRepository.GetAllEvents(cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
         [HttpGet]
         [Route("active")]
-        public async Task<IActionResult> GetActiveEvents()
+        public async Task<IActionResult> GetActiveEvents(CancellationToken cancellationToken)
         {
-            var result = await eventRepository.GetActiveEvents().ConfigureAwait(false);
+            var result = await eventRepository.GetActiveEvents(cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
@@ -56,15 +56,15 @@ namespace TrashMob.Controllers
         [Route("eventsuserisattending/{userId}")]
         [Authorize]
         [RequiredScope(Constants.TrashMobReadScope)]
-        public async Task<IActionResult> GetEventsUserIsAttending(Guid userId)
+        public async Task<IActionResult> GetEventsUserIsAttending(Guid userId, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
+            var user = await userRepository.GetUserByInternalId(userId, cancellationToken).ConfigureAwait(false);
             if (user == null || !ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }
 
-            var result = await eventAttendeeRepository.GetEventsUserIsAttending(userId).ConfigureAwait(false);
+            var result = await eventAttendeeRepository.GetEventsUserIsAttending(userId, cancellationToken: cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
@@ -72,25 +72,44 @@ namespace TrashMob.Controllers
         [Authorize]
         [RequiredScope(Constants.TrashMobReadScope)]
         [Route("userevents/{userId}/{futureEventsOnly}")]
-        public async Task<IActionResult> GetUserEvents(Guid userId, bool futureEventsOnly)
+        public async Task<IActionResult> GetUserEvents(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
+            var user = await userRepository.GetUserByInternalId(userId, cancellationToken).ConfigureAwait(false);
             if (user == null || !ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }
 
-            var result1 = await eventRepository.GetUserEvents(userId, futureEventsOnly).ConfigureAwait(false);
-            var result2 = await eventAttendeeRepository.GetEventsUserIsAttending(userId, futureEventsOnly).ConfigureAwait(false);
+            var result1 = await eventRepository.GetUserEvents(userId, futureEventsOnly, cancellationToken).ConfigureAwait(false);
+            var result2 = await eventAttendeeRepository.GetEventsUserIsAttending(userId, futureEventsOnly, cancellationToken).ConfigureAwait(false);
+
+            var allResults = result1.Union(result2, new EventComparer());
+            return Ok(allResults);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [Route("canceleduserevents/{userId}/{futureEventsOnly}")]
+        public async Task<IActionResult> GetCanceledUserEvents(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken)
+        {
+            var user = await userRepository.GetUserByInternalId(userId, cancellationToken).ConfigureAwait(false);
+            if (user == null || !ValidateUser(user.NameIdentifier))
+            {
+                return Forbid();
+            }
+
+            var result1 = await eventRepository.GetCanceledUserEvents(userId, futureEventsOnly, cancellationToken).ConfigureAwait(false);
+            var result2 = await eventAttendeeRepository.GetCanceledEventsUserIsAttending(userId, futureEventsOnly, cancellationToken).ConfigureAwait(false);
 
             var allResults = result1.Union(result2, new EventComparer());
             return Ok(allResults);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetEvent(Guid id)
+        public async Task<IActionResult> GetEvent(Guid id, CancellationToken cancellationToken)
         {
-            var mobEvent = await eventRepository.GetEvent(id).ConfigureAwait(false);
+            var mobEvent = await eventRepository.GetEvent(id, cancellationToken).ConfigureAwait(false);
 
             if (mobEvent == null)
             {

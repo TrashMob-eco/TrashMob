@@ -28,6 +28,21 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
     const [primaryPhoneErrors, setPrimaryPhoneErrors] = React.useState<string>("");
     const [secondaryPhoneErrors, setSecondaryPhoneErrors] = React.useState<string>("");
     const [notesErrors, setNotesErrors] = React.useState<string>("");
+    const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
+
+    function validateForm() {
+        if (nameErrors !== "" ||
+            notesErrors !== "" ||
+            primaryEmailErrors !== "" ||
+            secondaryEmailErrors !== "" ||
+            primaryPhoneErrors !== "" ||
+            secondaryPhoneErrors !== "") {
+            setIsSaveEnabled(false);
+        }
+        else {
+            setIsSaveEnabled(true);
+        }
+    }
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
@@ -35,14 +50,11 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
 
         const form = new FormData(event.target);
 
-        if (nameErrors !== "" ||
-            notesErrors !== "" ||
-            primaryEmailErrors !== "" ||
-            secondaryEmailErrors !== "" ||
-            primaryPhoneErrors !== "" ||
-            secondaryPhoneErrors !== "") {
+        if (!isSaveEnabled) {
             return;
         }
+
+        setIsSaveEnabled(false);
 
         var user_captcha_value = form.get("user_captcha_input")?.toString() ?? "";
 
@@ -82,7 +94,6 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
                 })
             });
         }
-
         else {
             alert('Captcha Does Not Match');
         }
@@ -102,6 +113,8 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
             setNameErrors("");
             setName(val);
         }
+
+        validateForm();
     }
 
     function handlePrimaryEmailChanged(val: string) {
@@ -114,6 +127,8 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
             setPrimaryEmailErrors("");
             setPrimaryEmail(val);
         }
+
+        validateForm();
     }
 
     function handleSecondaryEmailChanged(val: string) {
@@ -126,6 +141,8 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
             setSecondaryEmailErrors("");
             setSecondaryEmail(val);
         }
+
+        validateForm();
     }
 
     function handlePrimaryPhoneChanged(val: string) {
@@ -138,6 +155,8 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
             setPrimaryPhoneErrors("");
             setPrimaryPhone(val);
         }
+
+        validateForm();
     }
 
     function handleSecondaryPhoneChanged(val: string) {
@@ -150,6 +169,8 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
             setSecondaryPhoneErrors("");
             setSecondaryPhone(val);
         }
+
+        validateForm();
     }
 
     function handleNotesChanged(val: string) {
@@ -160,6 +181,8 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
             setNotesErrors("");
             setNotes(val);
         }
+
+        validateForm();
     }
 
     React.useEffect(() => {
@@ -197,26 +220,27 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
             <Form onSubmit={handleSave} >
                 <Form.Row>
                     <Col>
-                        <Form.Group>
+                        <Form.Group className="required">
                             <OverlayTrigger placement="top" overlay={renderNameToolTip}>
-                                <Form.Label>Partner Name:</Form.Label>
+                                <Form.Label className="control-label">Partner Name:</Form.Label>
                             </OverlayTrigger>
                             <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
+                            <span style={{ color: "red" }}>{nameErrors}</span>
                         </Form.Group>
                     </Col>
                     <Col>
-                        <Form.Group>
+                        <Form.Group className="required">
                             <OverlayTrigger placement="top" overlay={renderPrimaryEmailToolTip}>
-                                <Form.Label>Primary Email:</Form.Label>
+                                <Form.Label className="control-label">Primary Email:</Form.Label>
                             </OverlayTrigger>
                             <Form.Control type="text" defaultValue={primaryEmail} maxLength={parseInt('64')} onChange={(val) => handlePrimaryEmailChanged(val.target.value)} required />
                             <span style={{ color: "red" }}>{primaryEmailErrors}</span>
                         </Form.Group >
                     </Col>
                     <Col>
-                        <Form.Group>
+                        <Form.Group className="required">
                             <OverlayTrigger placement="top" overlay={renderSecondaryEmailToolTip}>
-                                <Form.Label>Secondary Email:</Form.Label>
+                                <Form.Label className="control-label">Secondary Email:</Form.Label>
                             </OverlayTrigger>
                             <Form.Control type="text" defaultValue={secondaryEmail} maxLength={parseInt('64')} onChange={(val) => handleSecondaryEmailChanged(val.target.value)} required />
                             <span style={{ color: "red" }}>{secondaryEmailErrors}</span>
@@ -225,27 +249,27 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
                 </Form.Row>
                 <Form.Row>
                     <Col>
-                        <Form.Group>
+                        <Form.Group className="required">
                             <OverlayTrigger placement="top" overlay={renderPrimaryPhoneToolTip}>
-                                <Form.Label>Primary Phone:</Form.Label>
+                                <Form.Label className="control-label">Primary Phone:</Form.Label>
                             </OverlayTrigger>
                             <Form.Control type="text" defaultValue={primaryPhone} maxLength={parseInt('64')} onChange={(val) => handlePrimaryPhoneChanged(val.target.value)} required />
                             <span style={{ color: "red" }}>{primaryPhoneErrors}</span>
                         </Form.Group >
                     </Col>
                     <Col>
-                        <Form.Group>
+                        <Form.Group className="required">
                             <OverlayTrigger placement="top" overlay={renderSecondaryPhoneToolTip}>
-                                <Form.Label>Secondary Phone:</Form.Label>
+                                <Form.Label className="control-label">Secondary Phone:</Form.Label>
                             </OverlayTrigger>
                             <Form.Control type="text" defaultValue={secondaryPhone} maxLength={parseInt('64')} onChange={(val) => handleSecondaryPhoneChanged(val.target.value)} required />
                             <span style={{ color: "red" }}>{secondaryPhoneErrors}</span>
                         </Form.Group >
                     </Col>
                 </Form.Row>
-                <Form.Group>
+                <Form.Group className="required">
                     <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                        <Form.Label>Notes:</Form.Label>
+                        <Form.Label className="control-label">Notes:</Form.Label>
                     </OverlayTrigger>
                     <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} required />
                     <span style={{ color: "red" }}>{notesErrors}</span>
@@ -253,12 +277,12 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
                 <Form.Group>
                     <LoadCanvasTemplateNoReload />
                 </Form.Group>
-                <Form.Group>
-                    <Form.Label>CAPTCHA Value:</Form.Label>
+                <Form.Group className="required">
+                    <Form.Label className="control-label">CAPTCHA Value:</Form.Label>
                     <Form.Control type="text" required name="user_captcha_input" />
                 </Form.Group >
                 <Form.Group className="form-group">
-                    <Button disabled={primaryEmailErrors !== "" || secondaryEmailErrors !== "" || primaryPhoneErrors !== "" || secondaryPhoneErrors !== "" || notesErrors !== ""} type="submit" className="action btn-default">Save</Button>
+                    <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Save</Button>
                     <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
                 </Form.Group >
             </Form >

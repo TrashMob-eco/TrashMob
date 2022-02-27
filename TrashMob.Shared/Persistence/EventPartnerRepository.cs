@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
     using System.Data.SqlClient;
+    using System.Threading;
 
     public class EventPartnerRepository : IEventPartnerRepository
     {
@@ -17,22 +18,22 @@
             this.mobDbContext = mobDbContext;
         }
 
-        public async Task<IEnumerable<EventPartner>> GetEventPartners(Guid eventId)
+        public async Task<IEnumerable<EventPartner>> GetEventPartners(Guid eventId, CancellationToken cancellationToken = default)
         {
             var eventPartners = await mobDbContext.EventPartners
                 .Where(ea => ea.EventId == eventId)
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
             return eventPartners;
         }
 
-        public async Task<IEnumerable<EventPartner>> GetPartnerEvents(Guid partnerId)
+        public async Task<IEnumerable<EventPartner>> GetPartnerEvents(Guid partnerId, CancellationToken cancellationToken = default)
         {
             var eventPartners = await mobDbContext.EventPartners
                 .Where(ea => ea.PartnerId == partnerId)
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
             return eventPartners;
         }
@@ -73,20 +74,20 @@
             return await mobDbContext.EventPartners.FindAsync(eventPartner.EventId, eventPartner.PartnerId, eventPartner.PartnerLocationId).ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<EventPartner>> GetEventsForPartnerLocation(Guid partnerLocationId)
+        public async Task<IEnumerable<EventPartner>> GetEventsForPartnerLocation(Guid partnerLocationId, CancellationToken cancellationToken = default)
         {
             // TODO: There are better ways to do this.
             var eventPartnerLocations = await mobDbContext.EventPartners
                 .Where(ea => ea.PartnerLocationId == partnerLocationId)                
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
             return eventPartnerLocations;
         }
 
-        public async Task<IEnumerable<PartnerLocation>> GetPotentialEventPartners(Guid eventId)
+        public async Task<IEnumerable<PartnerLocation>> GetPotentialEventPartners(Guid eventId, CancellationToken cancellationToken = default)
         {
-            var mobEvent = await mobDbContext.Events.FindAsync(eventId).ConfigureAwait(false);
+            var mobEvent = await mobDbContext.Events.FindAsync(new object[] { eventId }, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             // Simple match on postal code or city first. Radius later
             var partnerLocations = mobDbContext.PartnerLocations                

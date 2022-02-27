@@ -25,15 +25,15 @@ https://as-tm-dev-westus2.azurewebsites.net/
 # FAQ 
 ## What is the current state of this project?
 
-As of 5/26/2021, we are now in Beta launch. We'll hold at Beta until a few more key features are complete so we can do a grand-relaunch when those features go in. Beta alsop means that if things really go wrong, we may have to delete data manually and depending on load, site availability is not guaranteed.
+As of 5/26/2021, we are now in Beta launch. We'll hold at Beta until a few more key features are complete so we can do a grand-relaunch when those features go in. Beta also means that if things really go wrong, we may have to delete data manually and depending on load, site availability is not guaranteed.
 
 ## Are you looking for contributors?
 
-ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want to get involved. All kinds of skills needed, from logo design to reactjs, to website design, to aspnet core, to deployment / github skills.
+ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want to get involved. All kinds of skills needed, from reactjs to website design, to aspnet core, to Xamarin, to deployment / github skills.
  
 # Development Notes
 
-## Getting Started
+## Getting Started - Development
 
 1. You must install the .net 5 SDK
 1. Install Visual Studio Code
@@ -67,7 +67,7 @@ i.e.
 
 ```
 
-## Setting up your launchsettings.json
+## Setting up your launchsettings.json for website development
 
 Because of RedirectUrls, life is a lot easier if you stick with the same ports as everyone else. 
 
@@ -105,14 +105,35 @@ Add the following launchsettings.json file (may need to create it if you don't h
 
 ```
 
-## To Build the app:
+## Getting Started - Mobile Development
+
+The mobile app is written using Xamarin. It requires a few prerequisites in order to get it compiling and running.
+
+1. Ensure you have installed the Xamarin components to Visual Studio
+2. Install Android Studio https://developer.android.com/studio 
+3. Create an Android Emulator device in Android Studio
+4. Load the TrashMobMobile.sln Project in Visual Studio.
+5. Set your startup project to TrashMobMobile.Android
+5. In order to have the maps feature work, you will need to do the following:
+    1. Create a Google Maps account: https://developers.google.com/maps/gmp-get-started
+    2. Get your Google API Key from your Google Project
+    3. Create a gradle.properties file in your GRADLE_USER_HOME (i.e. c:\users\\<username>\.gradle)
+    4. Add the following line to your gradle properties file: 
+    ```
+    GOOGLE_API_KEY = "<Your api key>"
+    ```
+    5. Restart your emulator. Maps should work now
+
+    <b>Never check in any file that contains your real api key.</b>
+
+## To Build the Web App:
 
 In the Trashmob project folder, run the following command:
 ```
 dotnet build
 ```
 
-## To Run the app:
+## To Run the Web App:
 
 In the Trashmob project folder, run the following command:
 ```
@@ -182,3 +203,14 @@ If setting up a new environment, you will need to add the IP Address of the App 
 
 ## The site is asking me to login
 If you try to access a secure page, you will need a user id on the site. When you hit a secured page, the site will redirect you to a sign in page. Click the Sign up now link on the bottom of the login box. Multiple identity providers are now available, including Facebook, Twitter, Google, and Microsoft, along with the TrashMob tenant itself if you prefer not to use an integrated signup.
+
+## How do I get a test distribution of the Mobile App?
+We currently use Microsoft App Center for building and distributing the Mobile apps. In order to get notified of a new distribution (or to download it). 
+1. Send a note to info@trashmob.eco requesting access to App Center. Please include the email address you wish to use to access App Center in the request and why you want to use a dev build.
+2. A TrashMob.eco admin will review your request and if approved, will add you to the testers group.
+3. You will receive an email notification when your request has been approved.
+4. Click on the link to complete your onboarding.
+5. You can either download the latest package at that point, or wait for the next build to be completed. You will be notified when a new version is available.
+
+## How do I get a production distribution of the Mobile App?
+The mobile app is not yet in production, but when it is, it will be available in Google Play and the Apple Store.

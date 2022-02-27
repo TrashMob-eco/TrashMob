@@ -214,14 +214,14 @@ const Home: React.FC<HomeProps> = (props) => {
     }
 
     return (
-        <div>
+        <>
             <div>
                 <Modal isOpen={isOpen} onrequestclose={togglemodal} contentlabel="Accept Terms of Use" fade={true} style={{ width: "500px", display: "block" }}>
-                    <div className="container">
+                    <div className="container p-4">
                         <Form>
                             <Form.Row>
                                 <Form.Group>
-                                    <Form.Label>I have reviewed and I agree to the TrashMob.eco <Link to='./termsofservice'>Terms of Use</Link> and the TrashMob.eco <Link to='./privacypolicy'>Privacy Policy</Link>.</Form.Label>
+                                    <Form.Label className="control-label">I have reviewed and I agree to the TrashMob.eco <Link to='./termsofservice'>Terms of Use</Link> and the TrashMob.eco <Link to='./privacypolicy'>Privacy Policy</Link>.</Form.Label>
                                     <Form.Check id="agree" onChange={checkboxhandler} label="Yes" />
                                 </Form.Group>
                             </Form.Row>
@@ -232,7 +232,7 @@ const Home: React.FC<HomeProps> = (props) => {
                                 }
                                 }>
                                     I Agree
-                                    </Button>
+                                </Button>
                             </Form.Row>
                         </Form>
                     </div>
@@ -262,7 +262,7 @@ const Home: React.FC<HomeProps> = (props) => {
                     </AzureMapsProvider>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

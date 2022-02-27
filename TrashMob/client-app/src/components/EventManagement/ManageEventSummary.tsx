@@ -20,6 +20,11 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
     const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
     const [notes, setNotes] = React.useState<string>("");
     const [notesErrors, setNotesErrors] = React.useState<string>("");
+    const [actualNumberOfAttendeesErrors, setactualNumberOfAttendeesErrors] = React.useState<string>("");
+    const [numberOfBagsErrors, setNumberOfBagsErrors] = React.useState<string>("");
+    const [numberOfBucketsErrors, setNumberOfBucketsErrors] = React.useState<string>("");
+    const [durationInMinutesErrors, setDurationInMinutesErrors] = React.useState<string>("");
+    const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
     React.useEffect(() => {
 
@@ -41,13 +46,24 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
             });
     }, [props.eventId]);
 
+    function validateForm() {
+        if (notesErrors !== "" || actualNumberOfAttendeesErrors !== "" || numberOfBagsErrors !== "" || numberOfBucketsErrors !== "" || durationInMinutesErrors !== "") {
+            setIsSaveEnabled(false);
+        }
+        else {
+            setIsSaveEnabled(true);
+        }
+    }
+
     // This will handle the submit form event.  
     function handleSave(event: any) {
         event.preventDefault();
 
-        if (notesErrors !== "") {
+        if (!isSaveEnabled) {
             return;
         }
+
+        setIsSaveEnabled(false);
 
         var method = 'PUT';
 
@@ -91,52 +107,100 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
         try {
             if (val) {
                 var attendees = parseInt(val);
-                setActualNumberOfAttendees(attendees);
+
+                if (attendees < 0) {
+                    setactualNumberOfAttendeesErrors("Actual attendee count must be greater than or equal to zero.");
+                }
+                else {
+                    setactualNumberOfAttendeesErrors("");
+                    setActualNumberOfAttendees(attendees);
+                }
             }
             else {
+                setactualNumberOfAttendeesErrors("");
                 setActualNumberOfAttendees(0);
             }
         }
-        catch { }
+        catch {
+            setactualNumberOfAttendeesErrors("Actual attendee count must be a number.");
+        }
+
+        validateForm();
     }
 
     function handleNumberOfBagsChanged(val: string) {
         try {
             if (val) {
                 var bags = parseInt(val);
-                setNumberOfBags(bags);
+
+                if (bags < 0) {
+                    setNumberOfBagsErrors("Number of bags must be greater than or equal to 0.")
+                }
+                else {
+                    setNumberOfBagsErrors("")
+                    setNumberOfBags(bags);
+                }
             }
             else {
+                setNumberOfBagsErrors("")
                 setNumberOfBags(0);
             }
         }
-        catch { }
+        catch {
+            setNumberOfBagsErrors("Number of bags must be a number.")
+        }
+
+        validateForm();
     }
 
     function handleNumberOfBucketsChanged(val: string) {
         try {
             if (val) {
                 var buckets = parseInt(val);
-                setNumberOfBuckets(buckets);
+
+                if (buckets < 0) {
+                    setNumberOfBagsErrors("Number of buckets must be greater than or equal to 0.")
+                }
+                else {
+                    setNumberOfBagsErrors("")
+                    setNumberOfBuckets(buckets);
+                }
             }
             else {
+                setNumberOfBucketsErrors("")
                 setNumberOfBuckets(0);
             }
         }
-        catch { }
+        catch {
+            setNumberOfBucketsErrors("Number of buckets must be a number.")
+        }
+
+        validateForm();
     }
 
     function handleDurationInMinutesChanged(val: string) {
         try {
             if (val) {
                 var duration = parseInt(val);
-                setDurationInMinutes(duration);
+
+                if (duration < 0) {
+                    setDurationInMinutesErrors("Actual duration in minutes must be greater than or equal to 0.")
+                }
+                else {
+                    setDurationInMinutesErrors("")
+                    setDurationInMinutes(duration);
+                }
             }
             else {
                 setDurationInMinutes(0);
+                setDurationInMinutesErrors("")
             }
         }
-        catch { }
+        catch {
+            setDurationInMinutesErrors("Actual Number of minutes must be a number.")
+        }
+
+        validateForm();
     }
 
     function handleNotesChanged(val: string) {
@@ -147,6 +211,8 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
             setNotesErrors("");
             setNotes(val);
         }
+
+        validateForm();
     }
 
     function renderActualNumberOfAttendeesToolTip(props: any) {
@@ -174,47 +240,51 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
             <Form onSubmit={handleSave} >
                 <Form.Row>
                     <Col>
-                        <Form.Group>
+                        <Form.Group className="required">
                             <OverlayTrigger placement="top" overlay={renderActualNumberOfAttendeesToolTip}>
-                                <Form.Label>Actual Number of Attendees:</Form.Label>
+                                <Form.Label className="control-label">Actual Number of Attendees:</Form.Label>
                             </OverlayTrigger>
                             <Form.Control type="text" value={actualNumberOfAttendees} maxLength={parseInt('3')} onChange={(val) => handleActualNumberOfAttendeesChanged(val.target.value)} required />
+                            <span style={{ color: "red" }}>{actualNumberOfAttendeesErrors}</span>
                         </Form.Group>
                     </Col>
                     <Col>
                         <Form.Group>
                             <OverlayTrigger placement="top" overlay={renderNumberOfBagsToolTip}>
-                                <Form.Label>Number of Bags:</Form.Label>
+                                <Form.Label className="control-label">Number of Bags:</Form.Label>
                             </OverlayTrigger>
                             <Form.Control type="text" value={numberOfBags} maxLength={parseInt('3')} onChange={(val) => handleNumberOfBagsChanged(val.target.value)} />
+                            <span style={{ color: "red" }}>{numberOfBagsErrors}</span>
                         </Form.Group >
                     </Col>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderNumberOfBucketsToolTip}>
-                                    <Form.Label>Number of Buckets:</Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control type="text" value={numberOfBuckets} maxLength={parseInt('3')} onChange={(val) => handleNumberOfBucketsChanged(val.target.value)} />
-                            </Form.Group >
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderDurationInMinutesToolTip}>
-                                    <Form.Label>Actual Duration in Minutes:</Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control type="text" value={durationInMinutes} maxLength={parseInt('3')} onChange={(val) => handleDurationInMinutesChanged(val.target.value)} />
-                            </Form.Group >
-                        </Col>
+                    <Col>
+                        <Form.Group>
+                            <OverlayTrigger placement="top" overlay={renderNumberOfBucketsToolTip}>
+                                <Form.Label className="control-label">Number of Buckets:</Form.Label>
+                            </OverlayTrigger>
+                            <Form.Control type="text" value={numberOfBuckets} maxLength={parseInt('3')} onChange={(val) => handleNumberOfBucketsChanged(val.target.value)} />
+                            <span style={{ color: "red" }}>{numberOfBucketsErrors}</span>
+                        </Form.Group >
+                    </Col>
+                    <Col>
+                        <Form.Group className="required">
+                            <OverlayTrigger placement="top" overlay={renderDurationInMinutesToolTip}>
+                                <Form.Label className="control-label">Actual Duration in Minutes:</Form.Label>
+                            </OverlayTrigger>
+                            <Form.Control type="text" value={durationInMinutes} maxLength={parseInt('3')} onChange={(val) => handleDurationInMinutesChanged(val.target.value)} required />
+                            <span style={{ color: "red" }}>{durationInMinutesErrors}</span>
+                        </Form.Group >
+                    </Col>
                 </Form.Row>
                 <Form.Group>
                     <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                        <Form.Label>Notes:</Form.Label>
+                        <Form.Label className="control-label">Notes:</Form.Label>
                     </OverlayTrigger>
                     <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} />
                     <span style={{ color: "red" }}>{notesErrors}</span>
                 </Form.Group >
                 <Form.Group className="form-group">
-                    <Button disabled={notesErrors !== ""} type="submit" className="action btn-default">Save</Button>
+                    <Button disabled={isSaveEnabled} type="submit" className="action btn-default">Save</Button>
                 </Form.Group >
             </Form >
         </div>

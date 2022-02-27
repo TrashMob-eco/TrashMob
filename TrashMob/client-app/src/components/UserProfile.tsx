@@ -6,14 +6,13 @@ import * as ToolTips from "../store/ToolTips";
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import { Button, Col, Form, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
+import { Button, Col, Form, ToggleButton } from 'react-bootstrap';
 import { Modal } from 'reactstrap';
 import * as MapStore from '../store/MapStore';
 import { getKey } from '../store/MapStore';
 import AddressData from './Models/AddressData';
 import { data } from 'azure-maps-control';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import UserNotificationPreferenceData, { UserNotificationPreferenceDefaults } from './Models/UserNotificationPreferenceData';
 import * as Constants from './Models/Constants';
 import MapControllerSinglePoint from './MapControllerSinglePoint';
 import EventMediaData from './Models/EventMediaData';
@@ -63,9 +62,9 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
     const [eventName, setEventName] = React.useState<string>("User's Base Location");
-    const [userNotificationPreferences, setUserNotificationPreferences] = React.useState<UserNotificationPreferenceData[]>(UserNotificationPreferenceDefaults);
     const [eventMedias, setEventMedias] = React.useState<EventMediaData[]>([]);
     const [mediaTypeList, setMediaTypeList] = React.useState<MediaTypeData[]>([]);
+    const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
     React.useEffect(() => {
 
@@ -123,37 +122,15 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                         setIsDataLoaded(true);
                     });
 
-                fetch('/api/usernotificationpreferences/' + userId, {
+                fetch('/api/mediatypes', {
                     method: 'GET',
                     headers: headers,
                 })
-                    .then(response => response.json() as Promise<UserNotificationPreferenceData[]>)
+                    .then(response => response.json() as Promise<Array<any>>)
                     .then(data => {
-                        if (data) {
-                            var mergedPrefs: UserNotificationPreferenceData[] = userNotificationPreferences.map((userpref) => {
-                                var loadedPref = data.find((p) => p.userNotificationTypeId === userpref.userNotificationTypeId);
-                                if (loadedPref) {
-                                    loadedPref.userFriendlyName = userpref.userFriendlyName;
-                                    return loadedPref;
-                                }
-
-                                return userpref;
-                            });
-
-                            setUserNotificationPreferences(mergedPrefs);
-                        }
+                        setMediaTypeList(data);
+                        setIsDataLoaded(true);
                     })
-                    .then(() =>
-                        fetch('/api/mediatypes', {
-                            method: 'GET',
-                            headers: headers,
-                        })
-                            .then(response => response.json() as Promise<Array<any>>)
-                            .then(data => {
-                                setMediaTypeList(data);
-                                setIsDataLoaded(true);
-                            })
-                    )
                     .then(() => {
                     }).then(() => {
                         fetch('/api/eventmedias/byUserId/' + userId, {
@@ -180,7 +157,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 setCenter(point)
             });
         }
-    }, [userId, userNotificationPreferences, props.isUserLoaded, isDataLoaded])
+    }, [userId, props.isUserLoaded, isDataLoaded])
 
     function togglemodal() {
         setIsOpen(!isOpen);
@@ -222,11 +199,9 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
         })
     }
 
-    // This will handle the submit form event.  
-    function handleSave(event: any) {
-        event.preventDefault();
-
-        if (userNameErrors !== "" ||
+    function validateForm() {
+        if (userName === "" ||
+            userNameErrors !== "" ||
             givenNameErrors !== "" ||
             surNameErrors !== "" ||
             cityErrors !== "" ||
@@ -236,8 +211,22 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
             longitudeErrors !== "" ||
             travelLimitForLocalEventsErrors !== "" ||
             postalCodeErrors !== "") {
+            setIsSaveEnabled(false);
+        }
+        else {
+            setIsSaveEnabled(true);
+        }
+    }
+
+    // This will handle the submit form event.  
+    function handleSave(event: any) {
+        event.preventDefault();
+
+        if (!isSaveEnabled) {
             return;
         }
+
+        setIsSaveEnabled(false);
 
         var userData = new UserData();
 
@@ -272,18 +261,6 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
             account: account
         };
 
-        var userprefs: UserNotificationPreferenceData[] = userNotificationPreferences.map((userpref) => {
-            var val = new UserNotificationPreferenceData();
-            val.id = userpref.id;
-            val.isOptedOut = userpref.isOptedOut;
-            val.userId = userId;
-            val.userNotificationTypeId = userpref.userNotificationTypeId;
-
-            return val;
-        });
-
-        var usrprefdata = JSON.stringify(userprefs);
-
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
 
             const headers = getDefaultHeaders('PUT');
@@ -293,15 +270,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 method: 'PUT',
                 headers: headers,
                 body: usrdata,
-            }).then(() => {
-                fetch('/api/usernotificationpreferences/' + userId, {
-                    method: 'PUT',
-                    headers: headers,
-                    body: usrprefdata,
-                }).then(() => {
-                    props.history.push("/");
-                });
-            })
+            });
         })
     }
 
@@ -309,6 +278,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
 
         if (!val || val.length === 0) {
             setUserNameErrors("Username cannot be empty. Username can consist of Letters A-Z (upper or lowercase), Numbers (0-9), and underscores (_)");
+            validateForm();
             return;
         }
 
@@ -316,6 +286,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
 
         if (!pattern.test(val)) {
             setUserNameErrors("Please enter a valid Username. Username can consist of Letters A-Z (upper or lowercase), Numbers (0-9), and underscores (_)");
+            validateForm();
             return;
         }
         else {
@@ -348,32 +319,40 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 else {
                     setUserNameErrors("Unknown error occured while hecking user name. Please try again. Error Code: " + response.status);
                 }
+
+                validateForm();
             })
         })
     }
 
     function handleGivenNameChanged(val: string) {
         setGivenName(val);
+        validateForm();
     }
 
     function handleSurNameChanged(val: string) {
         setSurName(val);
+        validateForm();
     }
 
     function handleCityChanged(val: string) {
         setCity(val);
+        validateForm();
     }
 
     function selectCountry(val: string) {
         setCountry(val);
+        validateForm();
     }
 
     function selectRegion(val: string) {
         setRegion(val);
+        validateForm();
     }
 
     function handlePostalCodeChanged(val: string) {
         setPostalCode(val);
+        validateForm();
     }
 
     function handleLatitudeChanged(val: string) {
@@ -393,7 +372,11 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 setLatitudeErrors("Latitude must be => -90 and <= 90");
             }
         }
-        catch { }
+        catch {
+            setLatitudeErrors("Latitude must be a valid number.");
+        }
+
+        validateForm();
     }
 
     function handleLongitudeChanged(val: string) {
@@ -413,24 +396,35 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                 setLongitudeErrors("Longitude must be >= -180 and <= 180");
             }
         }
-        catch { }
+        catch {
+            setLongitudeErrors("Longitude must be a valid number.");
+        }
+
+        validateForm();
     }
 
     function handleTravelLimitForLocalEventsChanged(val: string) {
-        if (val) {
-            var intVal = parseInt(val);
+        try {
+            if (val) {
+                var intVal = parseInt(val);
 
-            if (intVal <= 0 || intVal > 1000) {
-                setTravelLimitForLocalEventsErrors("Travel limit must be greater than or equal to 0 and less than 1000.")
+                if (intVal <= 0 || intVal > 1000) {
+                    setTravelLimitForLocalEventsErrors("Travel limit must be greater than or equal to 0 and less than 1000.")
+                }
+                else {
+                    setTravelLimitForLocalEvents(intVal);
+                    setTravelLimitForLocalEventsErrors("");
+                }
             }
             else {
-                setTravelLimitForLocalEvents(intVal);
-                setTravelLimitForLocalEventsErrors("");
+                setTravelLimitForLocalEvents(1);
             }
         }
-        else {
-            setTravelLimitForLocalEvents(1);
+        catch {
+            setTravelLimitForLocalEventsErrors("Travel limit must be a valid number.");
         }
+
+        validateForm();
     }
 
     function renderUserNameToolTip(props: any) {
@@ -505,16 +499,6 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.UserProfilePreferMetric}</Tooltip>
     }
 
-    function setIsOptedOut(userNotificationId: number) {
-        const updatedPrefs: UserNotificationPreferenceData[] = userNotificationPreferences.map((item, index) => {
-            if (item.userNotificationTypeId === userNotificationId)
-                item.isOptedOut = !item.isOptedOut;
-            return item;
-        });
-
-        setUserNotificationPreferences(updatedPrefs);
-    }
-
     function handleLocationChange(point: data.Position) {
         // In an Azure Map point, the longitude is the first position, and latitude is second
         setLatitude(point[1]);
@@ -534,9 +518,10 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                         setCountry(data.addresses[0].address.country);
                         setRegion(data.addresses[0].address.countrySubdivisionName);
                         setPostalCode(data.addresses[0].address.postalCode);
+                        validateForm();
                     })
             }
-            )
+        )
     }
 
     function onEventMediasUpdated() {
@@ -604,13 +589,13 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                 }
                                 }>
                                     Yes, Delete My Account
-                            </Button>
+                                </Button>
                                 <Button className="action" onClick={() => {
                                     togglemodal();
                                 }
                                 }>
                                     Cancel
-                            </Button>
+                                </Button>
                             </Form.Row>
                         </Form>
                     </Modal>
@@ -620,7 +605,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                         <Form.Row>
                             <Col>
                                 <Form.Group>
-                                    <Button disabled={userNameErrors !== ""} type="submit" className="action btn-default">Save</Button>
+                                    <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Save</Button>
                                     <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
                                 </Form.Group>
                             </Col>
@@ -630,9 +615,9 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                         </Form.Row>
                         <Form.Row>
                             <Col>
-                                <Form.Group>
+                                <Form.Group className="required">
                                     <OverlayTrigger placement="top" overlay={renderUserNameToolTip}>
-                                        <Form.Label htmlFor="UserName">User Name:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="UserName">User Name:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" name="userName" defaultValue={userName} onChange={(val) => handleUserNameChanged(val.target.value)} maxLength={parseInt('32')} required />
                                     <span style={{ color: "red" }}>{userNameErrors}</span>
@@ -641,7 +626,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
-                                        <Form.Label htmlFor="email">Email:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="email">Email:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" disabled defaultValue={email} />
                                 </Form.Group>
@@ -651,7 +636,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderGivenNameToolTip}>
-                                        <Form.Label htmlFor="GivenName">Given Name:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="GivenName">Given Name:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" name="givenName" defaultValue={givenName} onChange={(val) => handleGivenNameChanged(val.target.value)} maxLength={parseInt('32')} />
                                     <span style={{ color: "red" }}>{givenNameErrors}</span>
@@ -660,7 +645,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderSurNameToolTip}>
-                                        <Form.Label htmlFor="SurName">Surname:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="SurName">Surname:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" name="surName" defaultValue={surName} onChange={(val) => handleSurNameChanged(val.target.value)} maxLength={parseInt('32')} />
                                     <span style={{ color: "red" }}>{surNameErrors}</span>
@@ -681,7 +666,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderCityToolTip}>
-                                        <Form.Label htmlFor="City">City:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control className="form-control" type="text" name="city" defaultValue={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('64')} />
                                     <span style={{ color: "red" }}>{cityErrors}</span>
@@ -690,7 +675,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                        <Form.Label htmlFor="PostalCode">Postal Code:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="PostalCode">Postal Code:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" name="postalCode" defaultValue={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
                                     <span style={{ color: "red" }}>{postalCodeErrors}</span>
@@ -701,7 +686,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
-                                        <Form.Label htmlFor="Country">Country:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
                                     </OverlayTrigger>
                                     <CountryDropdown name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
                                     <span style={{ color: "red" }}>{countryErrors}</span>
@@ -710,7 +695,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
-                                        <Form.Label htmlFor="region">Region:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="region">Region:</Form.Label>
                                     </OverlayTrigger>
                                     <RegionDropdown
                                         country={country ?? ""}
@@ -724,7 +709,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderUserLatitudeToolTip}>
-                                        <Form.Label htmlFor="Latitude">Latitude:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="Latitude">Latitude:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
                                     <span style={{ color: "red" }}>{latitudeErrors}</span>
@@ -733,7 +718,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderUserLongitudeToolTip}>
-                                        <Form.Label htmlFor="Longitude">Longitude:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="Longitude">Longitude:</Form.Label>
                                     </OverlayTrigger >
                                     <Form.Control type="text" name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
                                     <span style={{ color: "red" }}>{longitudeErrors}</span>
@@ -742,7 +727,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderTravelLimitForLocalEventsToolTip}>
-                                        <Form.Label htmlFor="TravelLimitForLocalEvents">Maximum travel distance for events:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="TravelLimitForLocalEvents">Maximum travel distance for events:</Form.Label>
                                     </OverlayTrigger >
                                     <Form.Control type="text" name="travelLimitForLocalEvents" defaultValue={travelLimitForLocalEvents} onChange={(val) => handleTravelLimitForLocalEventsChanged(val.target.value)} />
                                 </Form.Group>
@@ -750,7 +735,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderPreferMetricToolTip}>
-                                        <Form.Label htmlFor="PreferMetric">Use Metric System:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="PreferMetric">Use Metric System:</Form.Label>
                                     </OverlayTrigger >
                                     <ToggleButton
                                         type="checkbox"
@@ -765,45 +750,6 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             </Col>
                         </Form.Row>
                         <Form.Row>
-                            <h3>Email Notification Preferences</h3>
-                        </Form.Row>
-                        <Form.Row>
-                            <Form.Label>Email Notification</Form.Label>
-                            <Col>
-                                <Form.Group>
-                                    <Form.Label>Check the box below to opt out of all email notifications</Form.Label>
-                                    <ToggleButton
-                                        type="checkbox"
-                                        variant="outline-dark"
-                                        checked={isOptedOutOfAllEmails}
-                                        value="1"
-                                        size="sm"
-                                        onChange={(e) => setIsOptedOutOfAllEmails(e.currentTarget.checked)}
-                                        block
-                                    >Opt Out of All Emails</ToggleButton>
-                                </Form.Group>
-                            </Col>
-                            <Col xs="2" >
-                                <h4>- OR -</h4>
-                            </Col>
-                            <Col>
-                                <Form.Label>Check the box below to opt out of certain types of email notifications</Form.Label>
-                                <ToggleButtonGroup size="sm" type="checkbox" vertical>
-                                    {userNotificationPreferences.map((pref) => (
-                                        <Form.Group>
-                                            <ToggleButton
-                                                type="checkbox"
-                                                variant="outline-dark"
-                                                checked={pref.isOptedOut}
-                                                value="1"
-                                                onChange={(e) => setIsOptedOut(pref.userNotificationTypeId)}
-                                            >{pref.userFriendlyName}</ToggleButton>
-                                        </Form.Group>
-                                    ))}
-                                </ToggleButtonGroup>
-                            </Col>
-                        </Form.Row>
-                        <Form.Row>
                             <Col>
                                 <hr />
                             </Col>
@@ -812,7 +758,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderDateAgreedToPrivacyPolicyToolTip}>
-                                        <Form.Label htmlFor="dateAgreedToPrivacyPolicy">Date Agreed To Privacy Policy:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="dateAgreedToPrivacyPolicy">Date Agreed To Privacy Policy:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" disabled defaultValue={dateAgreedToPrivacyPolicy ? dateAgreedToPrivacyPolicy.toString() : ""} />
                                 </Form.Group>
@@ -820,7 +766,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderPrivacyPolicyVersionToolTip}>
-                                        <Form.Label htmlFor="PrivacyPolicyVersion">Privacy Policy Version:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="PrivacyPolicyVersion">Privacy Policy Version:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" disabled defaultValue={privacyPolicyVersion} />
                                 </Form.Group>
@@ -830,7 +776,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderDateAgreedToTermsOfServiceToolTip}>
-                                        <Form.Label htmlFor="dateAgreedToTermsOfService">Date Agreed To Terms of Service:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="dateAgreedToTermsOfService">Date Agreed To Terms of Service:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" disabled defaultValue={dateAgreedToTermsOfService ? dateAgreedToTermsOfService.toString() : ""} />
                                 </Form.Group>
@@ -838,7 +784,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderTermsOfServiceVersionToolTip}>
-                                        <Form.Label htmlFor="TermsOfServiceVersion">Terms Of Service Version:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="TermsOfServiceVersion">Terms Of Service Version:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" disabled defaultValue={termsOfServiceVersion} />
                                 </Form.Group>
@@ -848,7 +794,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderMemberSinceToolTip}>
-                                        <Form.Label htmlFor="memberSince">Member Since:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="memberSince">Member Since:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" disabled defaultValue={memberSince ? memberSince.toLocaleString() : ""} />
                                 </Form.Group>
@@ -858,7 +804,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             <Col>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderSourceSystemUserNameToolTip}>
-                                        <Form.Label htmlFor="memberSince">Source System User Name:</Form.Label>
+                                        <Form.Label className="control-label" htmlFor="memberSince">Source System User Name:</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" disabled defaultValue={sourceSystemUserName} />
                                 </Form.Group>

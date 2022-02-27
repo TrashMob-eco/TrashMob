@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TrashMobMobile.Views.TermsAndConditionsPage"
+             xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
+             Title="{Binding Title}"
+             Shell.FlyoutBehavior="Disabled"
+             Shell.NavBarIsVisible="False">
+
+    <StackLayout>
+        <Label Text="I agree to the Terms of Use:" FontSize="Small" />
+        <CheckBox IsChecked="{Binding IsTermsOfUseAgreed}" />
+        <Label Text="I agree to the Privacy Policy:" FontSize="Small" />
+        <CheckBox IsChecked="{Binding IsPrivacyPolicyAgreed}" />
+        <StackLayout Orientation="Horizontal">
+            <Button Text="Cancel" Command="{Binding CancelCommand}" HorizontalOptions="FillAndExpand"></Button>
+            <Button Text="Save" Command="{Binding SaveCommand}" HorizontalOptions="FillAndExpand"></Button>
+        </StackLayout>
+    </StackLayout>    
+
+</ContentPage>

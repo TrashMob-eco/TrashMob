@@ -27,7 +27,9 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
 
     const [partnerLocationId, setPartnerLocationId] = React.useState<string>(Guid.createEmpty().toString());
     const [locationName, setLocationName] = React.useState<string>("");
+    const [locationNameErrors, setLocationNameErrors] = React.useState<string>("");
     const [notes, setNotes] = React.useState<string>();
+    const [notesErrors, setNotesErrors] = React.useState<string>();
     const [isPartnerLocationActive, setIsPartnerLocationActive] = React.useState<boolean>(true);
     const [streetAddress, setStreetAddress] = React.useState<string>();
     const [city, setCity] = React.useState<string>();
@@ -51,6 +53,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isLocationDataLoaded, setIsLocationDataLoaded] = React.useState<boolean>(false);
+    const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
     React.useEffect(() => {
 
@@ -96,31 +99,57 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     }
 
     function handleLocationNameChanged(locationName: string) {
-        setLocationName(locationName);
+
+        if (locationName === "") {
+            setLocationNameErrors("Location Name cannot be empty.")
+        }
+        else {
+            setLocationName(locationName);
+            setLocationNameErrors("");
+        }
+
+        validateForm();
     }
 
     function handleNotesChanged(notes: string) {
-        setNotes(notes);
+        if (notes === "") {
+            setNotesErrors("Notes cannot be empty.");
+        }
+        else {
+            setNotes(notes);
+            setNotesErrors("");
+        }
+
+        validateForm();
     }
 
     function handleStreetAddressChanged(val: string) {
         setStreetAddress(val);
+
+        validateForm();
     }
 
     function handleCityChanged(val: string) {
         setCity(val);
+
+        validateForm();
     }
 
     function selectCountry(val: string) {
         setCountry(val);
+
+        validateForm();
     }
 
     function selectRegion(val: string) {
         setRegion(val);
+
+        validateForm();
     }
 
     function handlePostalCodeChanged(val: string) {
         setPostalCode(val);
+        validateForm();
     }
 
     function handleLatitudeChanged(val: string) {
@@ -140,7 +169,11 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                 setLatitudeErrors("Latitude must be => -90 and <= 90");
             }
         }
-        catch { }
+        catch {
+            setLatitudeErrors("Latitude must be a valid number.");
+        }
+
+        validateForm();
     }
 
     function handleLongitudeChanged(val: string) {
@@ -160,7 +193,11 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                 setLongitudeErrors("Longitude must be >= -180 and <= 180");
             }
         }
-        catch { }
+        catch {
+            setLongitudeErrors("Longitude must be a valid number");
+        }
+
+        validateForm();
     }
 
     function handlePrimaryEmailChanged(val: string) {
@@ -173,6 +210,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
             setPrimaryEmailErrors("");
             setPrimaryEmail(val);
         }
+
+        validateForm();
     }
 
     function handleSecondaryEmailChanged(val: string) {
@@ -185,6 +224,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
             setSecondaryEmailErrors("");
             setSecondaryEmail(val);
         }
+
+        validateForm();
     }
 
     function handlePrimaryPhoneChanged(val: string) {
@@ -197,6 +238,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
             setPrimaryPhoneErrors("");
             setPrimaryPhone(val);
         }
+
+        validateForm();
     }
 
     function handleSecondaryPhoneChanged(val: string) {
@@ -209,6 +252,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
             setSecondaryPhoneErrors("");
             setSecondaryPhone(val);
         }
+
+        validateForm();
     }
 
     function renderPartnerLocationNameToolTip(props: any) {
@@ -311,17 +356,34 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
         });
     }
 
+    function validateForm() {
+        if (notes === "" ||
+            notesErrors !== "" ||
+            primaryEmail === "" ||
+            primaryEmailErrors !== "" ||
+            secondaryEmail === "" ||
+            secondaryEmailErrors !== "" ||
+            primaryPhone === "" ||
+            primaryPhoneErrors !== "" ||
+            secondaryPhone === "" ||
+            secondaryPhoneErrors !== "" ||
+            latitudeErrors !== "" ||
+            longitudeErrors !== "") {
+            setIsSaveEnabled(false);
+        }
+        else {
+            setIsSaveEnabled(true);
+        }
+    }
+
     function handleSave(event: any) {
         event.preventDefault();
 
-        if (latitudeErrors !== "" ||
-            longitudeErrors !== "" ||
-            primaryEmailErrors !== "" ||
-            secondaryEmailErrors !== "" ||
-            primaryPhoneErrors !== "" ||
-            secondaryPhoneErrors !== "") {
+        if (!isSaveEnabled) {
             return;
         }
+
+        setIsSaveEnabled(false);
 
         var partnerLocationData = new PartnerLocationData();
         partnerLocationData.id = partnerLocationId;
@@ -426,6 +488,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                         setCountry(data.addresses[0].address.country);
                         setRegion(data.addresses[0].address.countrySubdivisionName);
                         setPostalCode(data.addresses[0].address.postalCode);
+                        validateForm();
                     })
             })
     }
@@ -445,29 +508,30 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     <Form.Row>
                         <input type="hidden" name="Id" value={partnerLocationId.toString()} />
                     </Form.Row>
-                    <Button className="action" onClick={(e) => handleSave(e)}>Save</Button>
+                    <Button disabled={!isSaveEnabled} className="action" onClick={(e) => handleSave(e)}>Save</Button>
                     <Form.Row>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderPartnerLocationNameToolTip}>
-                                    <Form.Label htmlFor="LocationName">Location Name:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="LocationName">Location Name:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="locationName" defaultValue={locationName} onChange={val => handleLocationNameChanged(val.target.value)} maxLength={parseInt('64')} required />
+                                <span style={{ color: "red" }}>{locationNameErrors}</span>
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderPrimaryEmailToolTip}>
-                                    <Form.Label>Primary Email:</Form.Label>
+                                    <Form.Label className="control-label">Primary Email:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={primaryEmail} maxLength={parseInt('64')} onChange={(val) => handlePrimaryEmailChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{primaryEmailErrors}</span>
                             </Form.Group >
                         </Col>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderSecondaryEmailToolTip}>
-                                    <Form.Label>Secondary Email:</Form.Label>
+                                    <Form.Label className="control-label">Secondary Email:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={secondaryEmail} maxLength={parseInt('64')} onChange={(val) => handleSecondaryEmailChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{secondaryEmailErrors}</span>
@@ -476,7 +540,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderIsPartnerLocationActiveToolTip}>
-                                    <Form.Label htmlFor="IsPartnerLocationActive">Is Partner Location Active:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="IsPartnerLocationActive">Is Partner Location Active:</Form.Label>
                                 </OverlayTrigger >
                                 <ToggleButton
                                     type="checkbox"
@@ -492,18 +556,18 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     </Form.Row>
                     <Form.Row>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderPrimaryPhoneToolTip}>
-                                    <Form.Label>Primary Phone:</Form.Label>
+                                    <Form.Label className="control-label">Primary Phone:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={primaryPhone} maxLength={parseInt('64')} onChange={(val) => handlePrimaryPhoneChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{primaryPhoneErrors}</span>
                             </Form.Group >
                         </Col>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderSecondaryPhoneToolTip}>
-                                    <Form.Label>Secondary Phone:</Form.Label>
+                                    <Form.Label className="control-label">Secondary Phone:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={secondaryPhone} maxLength={parseInt('64')} onChange={(val) => handleSecondaryPhoneChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{secondaryPhoneErrors}</span>
@@ -514,15 +578,15 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
-                                    <Form.Label htmlFor="StreetAddress">Street Address:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="StreetAddress">Street Address:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="streetAddress" value={streetAddress} onChange={(val) => handleStreetAddressChanged(val.target.value)} maxLength={parseInt('256')} />
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderCityToolTip}>
-                                    <Form.Label htmlFor="City">City:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
                                 </OverlayTrigger >
                                 <Form.Control type="text" name="city" value={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
                             </Form.Group>
@@ -530,7 +594,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                    <Form.Label htmlFor="PostalCode">Postal Code:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="PostalCode">Postal Code:</Form.Label>
                                 </OverlayTrigger >
                                 <Form.Control type="text" name="postalCode" value={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
                             </Form.Group>
@@ -538,9 +602,9 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     </Form.Row>
                     <Form.Row>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
-                                    <Form.Label htmlFor="Country">Country:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
                                 </OverlayTrigger >
                                 <div>
                                     <CountryDropdown name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
@@ -548,9 +612,9 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
-                                    <Form.Label htmlFor="Region">Region:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="Region">Region:</Form.Label>
                                 </OverlayTrigger >
                                 <div>
                                     <RegionDropdown
@@ -565,7 +629,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderLatitudeToolTip}>
-                                    <Form.Label htmlFor="Latitude">Latitude:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="Latitude">Latitude:</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
                                 <span style={{ color: "red" }}>{latitudeErrors}</span>
@@ -574,18 +638,19 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderLongitudeToolTip}>
-                                    <Form.Label htmlFor="Longitude">Longitude:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="Longitude">Longitude:</Form.Label>
                                 </OverlayTrigger >
                                 <Form.Control type="text" name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
                                 <span style={{ color: "red" }}>{longitudeErrors}</span>
                             </Form.Group>
                         </Col>
                     </Form.Row>
-                    <Form.Group>
+                    <Form.Group className="required">
                         <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                            <Form.Label>Notes:</Form.Label>
+                            <Form.Label className="control-label">Notes:</Form.Label>
                         </OverlayTrigger>
                         <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} required />
+                        <span style={{ color: "red" }}>{notesErrors}</span>
                     </Form.Group >
                     <Form.Row>
                         <Form.Label>Click on the map to set the location for your Partner. The location fields above will be automatically populated.</Form.Label>

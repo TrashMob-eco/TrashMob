@@ -22,6 +22,7 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
     const [eventId, setEventId] = React.useState<string>(props.match.params["eventId"]);
     const [eventName, setEventName] = React.useState<string>("New Event");
     const [cancellationReason, setCancellationReason] = React.useState<string>("");
+    const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
@@ -38,8 +39,18 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
             });
     }, [eventId])
 
+    function validateForm() {
+        if (cancellationReason === "") {
+            setIsSaveEnabled(false);
+        }
+        else {
+            setIsSaveEnabled(true);
+        }
+    }
+
     function handleCancellationReasonChanged(val: string) {
         setCancellationReason(val);
+        validateForm();
     }
 
     function renderCancellationReasonToolTip(props: any) {
@@ -49,13 +60,19 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
     // This will handle Cancel button click event.
     function handleCancel(event: any) {
         event.preventDefault();
-
         props.history.goBack();
     }
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
+
         event.preventDefault();
+
+        if (!isSaveEnabled) {
+            return;
+        }
+
+        setIsSaveEnabled(false);
 
         var method = "DELETE";
 
@@ -93,9 +110,9 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
                     </Form.Row>
                     <Form.Row>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required" >
                                 <OverlayTrigger placement="top" overlay={renderCancellationReasonToolTip}>
-                                    <Form.Label htmlFor="Name">Reason for Cancelling the Event?</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="Name">Reason for Cancelling the Event?</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="cancellationReason" defaultValue={cancellationReason} onChange={(val) => handleCancellationReasonChanged(val.target.value)} maxLength={parseInt('200')} required />
                             </Form.Group>
@@ -106,7 +123,7 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
                     </Form.Row>
                     <Form.Row>
                         <Form.Group>
-                            <Button type="submit" className="btn btn-default">Yes</Button>
+                            <Button disabled={!isSaveEnabled} type="submit" className="btn btn-default">Yes</Button>
                             <Button className="action" onClick={(e: any) => handleCancel(e)}>No</Button>
                         </Form.Group>
                     </Form.Row>

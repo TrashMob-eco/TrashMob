@@ -24,6 +24,7 @@ export const ManageEventMedia: React.FC<ManageEventMediaProps> = (props) => {
     const [mediaTypeList, setMediaTypeList] = React.useState<MediaTypeData[]>([]);
     const [isEditOrAdd, setIsEditOrAdd] = React.useState<boolean>(false);
     const [isEventMediaDataLoaded, setIsEventMediaDataLoaded] = React.useState<boolean>(false);
+    const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
@@ -49,9 +50,24 @@ export const ManageEventMedia: React.FC<ManageEventMediaProps> = (props) => {
             });
     }, [props.eventId])
 
+    function validateForm() {
+        if (eventMediaUrl === "") {
+            setIsSaveEnabled(false);
+        }
+        else {
+            setIsSaveEnabled(true);
+        }
+    }
+
     // This will handle the submit form event.  
     function handleSave(event: any) {
         event.preventDefault();
+
+        if (!isSaveEnabled) {
+            return;
+        }
+
+        setIsSaveEnabled(false);
 
         // PUT request for Edit Event.  
         const account = msalClient.getAllAccounts()[0];
@@ -144,12 +160,17 @@ export const ManageEventMedia: React.FC<ManageEventMediaProps> = (props) => {
 
     function selectMediaType(val: string) {
         setEventMediaTypeId(parseInt(val));
+
         // Todo, change this default
         setEventMediaUsageTypeId(1);
+
+        validateForm();
     }
 
     function handleEventMediaUrlChanged(val: string) {
         setEventMediaUrl(val);
+
+        validateForm();
     }
 
     function renderEventMediaYouTubeVideoIdToolTip(props: any) {
@@ -231,11 +252,11 @@ export const ManageEventMedia: React.FC<ManageEventMediaProps> = (props) => {
                     <Form.Row>
                         <input type="hidden" name="Id" value={eventMediaId.toString()} />
                     </Form.Row>
-                    <Button className="action" onClick={(e) => handleSave(e)}>Save</Button>
+                    <Button disabled={!isSaveEnabled} className="action" onClick={(e) => handleSave(e)}>Save</Button>
                     <Col>
                         <Form.Group>
                             <OverlayTrigger placement="top" overlay={renderMediaTypeToolTip}>
-                                <Form.Label htmlFor="MediaType">Media Type:</Form.Label>
+                                <Form.Label className="control-label" htmlFor="MediaType">Media Type:</Form.Label>
                             </OverlayTrigger>
                             <div>
                                 <select data-val="true" name="mediaTypeId" defaultValue={eventMediaTypeId} onChange={(val) => selectMediaType(val.target.value)} required>
@@ -249,16 +270,16 @@ export const ManageEventMedia: React.FC<ManageEventMediaProps> = (props) => {
                     </Col>
                     <Form.Row>
                         <Col>
-                            <Form.Group>
+                            <Form.Group className="required">
                                 {() => {
                                     if (eventMediaTypeId === Constants.MediaTypeYouTube) {
                                         <OverlayTrigger placement="top" overlay={renderEventMediaYouTubeVideoIdToolTip}>
-                                            <Form.Label htmlFor="EventMediaUrl">YouTube Video Id:</Form.Label>
+                                            <Form.Label className="control-label" htmlFor="EventMediaUrl">YouTube Video Id:</Form.Label>
                                         </OverlayTrigger>
                                     }
                                     else {
                                         <OverlayTrigger placement="top" overlay={renderEventMediaInstagramUrlToolTip}>
-                                            <Form.Label htmlFor="EventMediaUrl">Instagram Url:</Form.Label>
+                                            <Form.Label className="control-label" htmlFor="EventMediaUrl">Instagram Url:</Form.Label>
                                         </OverlayTrigger>
                                     }
                                 }

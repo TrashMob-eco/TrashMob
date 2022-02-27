@@ -3,6 +3,7 @@
     using Microsoft.EntityFrameworkCore;
     using System;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
@@ -15,12 +16,12 @@
             this.mobDbContext = mobDbContext;
         }
 
-        public async Task<EventSummary> GetEventSummary(Guid eventId)
+        public async Task<EventSummary> GetEventSummary(Guid eventId, CancellationToken cancellationToken = default)
         {
-            return await mobDbContext.EventSummaries.FindAsync(eventId).ConfigureAwait(false);
+            return await mobDbContext.EventSummaries.FindAsync(new object[] { eventId }, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
-        public IQueryable<EventSummary> GetEventSummaries()
+        public IQueryable<EventSummary> GetEventSummaries(CancellationToken cancellationToken = default)
         {
             return mobDbContext.EventSummaries.AsNoTracking().AsQueryable();
         }
@@ -28,12 +29,14 @@
         // Add new EventSummary record     
         public async Task<EventSummary> AddEventSummary(EventSummary eventSummary)
         {
-            var eventId = eventSummary.EventId;
             eventSummary.CreatedDate = DateTimeOffset.UtcNow;
             eventSummary.LastUpdatedDate = DateTimeOffset.UtcNow;
             mobDbContext.EventSummaries.Add(eventSummary);
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
-            return await mobDbContext.EventSummaries.FindAsync(eventId).ConfigureAwait(false);
+
+            var summary = await mobDbContext.EventSummaries.FindAsync(eventSummary.EventId).ConfigureAwait(false);
+            mobDbContext.Entry(summary).State = EntityState.Detached;
+            return summary;
         }
 
         // Update the records of a particular EventSummary
@@ -42,7 +45,9 @@
             eventSummary.LastUpdatedDate = DateTimeOffset.UtcNow;
             mobDbContext.Entry(eventSummary).State = EntityState.Modified;
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
-            return await mobDbContext.EventSummaries.FindAsync(eventSummary.EventId).ConfigureAwait(false);
+            var summary = await mobDbContext.EventSummaries.FindAsync(eventSummary.EventId).ConfigureAwait(false);
+            mobDbContext.Entry(summary).State = EntityState.Detached;
+            return summary;
         }
 
         // Delete the record of a particular EventSummary

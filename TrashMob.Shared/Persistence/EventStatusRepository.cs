@@ -2,6 +2,7 @@
 {
     using Microsoft.EntityFrameworkCore;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
@@ -14,11 +15,11 @@
             this.mobDbContext = mobDbContext;
         }
 
-        public async Task<IEnumerable<EventStatus>> GetAllEventStatuses()
+        public async Task<IEnumerable<EventStatus>> GetAllEventStatuses(CancellationToken cancellationToken = default)
         {
             return await mobDbContext.EventStatuses
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }
 }

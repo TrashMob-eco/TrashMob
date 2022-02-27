@@ -53,19 +53,6 @@ p {
   color: white;
 }
 
-.shadow {
-  user-select: none;
-  pointer-events: none;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1) !important;
-  height: 103px;
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  width: 100%;
-  z-index: 4000;
-  background-color: rgba(255, 255, 255, 0);
-}
-
 .App-link {
   color: #61dafb;
 }
@@ -80,9 +67,7 @@ p {
 }
 
 .tm-header {
-  border-bottom: 1px solid #ffff;
   background-color: #fff;
-  margin-bottom: 1em;
 
   .tm-secondaryNav-link {
     color: white;
@@ -115,13 +100,19 @@ p {
   .navbar {
     padding: 1.2rem 1rem;
 
-    .btn:not(:first-of-type) {
-      margin-left: 1rem;
-    }
+    // .btn:not(:first-of-type) {
+    //   margin-left: 1rem;
+    // }
   }
   .navbar-nav {
     width: 100%;
     margin-top: 8px;
+
+    &::after {
+      border-right: 2px solid $primary;
+      content: "";
+      display: inline-block;
+    }
   }
 
   .navbar-light .navbar-nav .nav-link {
@@ -151,7 +142,7 @@ p {
   display: inline-block;
   height: auto;
   left: 0px;
-  width: 290px;
+  width: 230px;
   margin: 1px 20px 0px -8px;
   position: relative;
   flex-wrap: unset;
@@ -222,63 +213,66 @@ nav ul li .dropdown > a:hover {
   color: rgba(255, 255, 255, 1);
 }
 
-footer {
-  margin: 2em 0px 0px;
-  background-color: #333;
-  color: white;
-  padding: 2em 1.5em 1.5em;
-  font-size: 80%;
-  clear: both;
-  text-align: center;
-}
+// was created by William Voss as quick fix but not sufficient anymore so commented out
 
-footer p {
-  text-align: center;
-}
+// footer {
+//   margin: 2em 0px 0px;
+//   background-color: #333;
+//   color: white;
+//   padding: 2em 1.5em 1.5em;
+//   font-size: 80%;
+//   clear: both;
+//   text-align: center;
+// }
 
-footer a {
-  color: white;
-  text-decoration: none;
-}
+// footer p {
+//   text-align: center;
+// }
 
-footer img {
-  all: inherit;
-  max-width: 20px;
-}
+// footer a {
+//   color: white;
+//   text-decoration: none;
+// }
 
-footer a:hover {
-  color: white;
-  text-decoration: underline;
-}
 
-footer iframe.twitter-follow-button {
-  margin-right: 3px !important;
-}
+// footer img {
+//   all: inherit;
+//   max-width: 20px;
+// }
 
-footer a.instagram-button,
-footer p a {
-  display: inline-block;
-  padding: 4px 10px 4px 10px;
-  text-decoration: none;
-}
+// footer a:hover {
+//   color: white;
+//   text-decoration: underline;
+// }
 
-footer a.instagram-button {
-  height: 20px;
-  vertical-align: top;
-  line-height: 100%;
-  font-weight: bold;
-  font-size: 0.9em;
-}
+// footer iframe.twitter-follow-button {
+//   margin-right: 3px !important;
+// }
 
-footer iframe,
-footer span,
-footer div {
-  line-height: 100%;
-  margin: 0px;
-  padding: 0px;
-  height: 20px !important;
-  overflow: hidden;
-}
+// footer a.instagram-button,
+// footer p a {
+//   display: inline-block;
+//   padding: 4px 10px 4px 10px;
+//   text-decoration: none;
+// }
+
+// footer a.instagram-button {
+//   height: 20px;
+//   vertical-align: top;
+//   line-height: 100%;
+//   font-weight: bold;
+//   font-size: 0.9em;
+// }
+
+// footer iframe,
+// footer span,
+// footer div {
+//   line-height: 100%;
+//   margin: 0px;
+//   padding: 0px;
+//   height: 20px !important;
+//   overflow: hidden;
+// }
 
 .carousel-inner,
 .green-flood-image,
@@ -396,7 +390,7 @@ img {
 
 button,
 .dropdown > a.dropdown-toggle {
-  background-color: #96ba00 !important;
+  background-color: $primary !important;
   border: none !important;
   outline: none !important;
 }
@@ -410,6 +404,14 @@ button,
 .dropdown > a:hover,
 button:hover {
   background-color: #546900 !important;
+}
+
+.dropdown-menu {
+  & .dropdown-item {
+    & svg {
+      margin-right: 6px;
+    }
+  }
 }
 
 .card.card-image-left {

@@ -2,14 +2,15 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
     public interface IPartnerRepository
     {
-        Task<IEnumerable<Partner>> GetPartners();
+        Task<IEnumerable<Partner>> GetPartners(CancellationToken cancellationToken = default);
 
-        Task<Partner> GetPartner(Guid id);
+        Task<Partner> GetPartner(Guid id, CancellationToken cancellationToken = default);
 
         Task<Partner> AddPartner(Partner partner);
 

@@ -30,16 +30,16 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
         {
-            var result = await userRepository.GetAllUsers().ConfigureAwait(false);
+            var result = await userRepository.GetAllUsers(cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
         [HttpGet("getUserByUserName/{userName}")]
-        public async Task<IActionResult> GetUser(string userName)
+        public async Task<IActionResult> GetUser(string userName, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByUserName(userName).ConfigureAwait(false);
+            var user = await userRepository.GetUserByUserName(userName, cancellationToken).ConfigureAwait(false);
 
             if (user == null)
             {
@@ -50,15 +50,15 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("verifyunique/{userId}/{userName}")]
-        public async Task<IActionResult> VerifyUnique(Guid userId, string userName)
+        public async Task<IActionResult> VerifyUnique(Guid userId, string userName, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByUserName(userName).ConfigureAwait(false);
+            var user = await userRepository.GetUserByUserName(userName, cancellationToken).ConfigureAwait(false);
 
             if (user == null)
             {
                 return Ok();
             }
-            
+
             if (user.Id != userId)
             {
                 return Conflict();
@@ -68,9 +68,9 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserByInternalId(Guid id)
+        public async Task<IActionResult> GetUserByInternalId(Guid id, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByInternalId(id).ConfigureAwait(false);
+            var user = await userRepository.GetUserByInternalId(id, cancellationToken).ConfigureAwait(false);
 
             if (user == null)
             {
@@ -92,10 +92,39 @@ namespace TrashMob.Controllers
 
             try
             {
-                // ToDo: Verify can't have duplicate usernames
                 var updatedUser = await userRepository.UpdateUser(user).ConfigureAwait(false);
                 var returnedUser = await userRepository.GetUserByNameIdentifier(user.NameIdentifier).ConfigureAwait(false);
                 return Ok(returnedUser);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await UserExists(user.Id).ConfigureAwait(false))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        [HttpPut("updateemailoptout/{userId}/{isOptedOutOfAllEmails}")]
+        public async Task<IActionResult> PutUserEmailOptOut(Guid userId, bool isOptedOutOfAllEmails)
+        {
+            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
+
+            if (user == null || !ValidateUser(user.NameIdentifier))
+            {
+                return Forbid();
+            }
+
+            try
+            {
+                user.IsOptedOutOfAllEmails = isOptedOutOfAllEmails;
+                await userRepository.UpdateUser(user);
+
+                return Ok(user);
             }
             catch (DbUpdateConcurrencyException)
             {

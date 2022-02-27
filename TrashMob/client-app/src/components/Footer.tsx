@@ -1,22 +1,56 @@
 import * as React from 'react'
-
+import logo from './assets/logowhite.svg'
+//import twitter from './assets/twitter.svg'
+//import facebook from './assets/facebook.svg'
 import { Link } from 'react-router-dom';
-
-import '../custom.css';
 
 export const Footer: React.FC = () => {
     return (
-        <footer>
-                <a href="https://twitter.com/TrashMobEco?ref_src=twsrc%5Etfw" className="twitter-follow-button" data-show-count="false">Follow @TrashMobEco</a><script async src="https://platform.twitter.com/widgets.js" charSet="utf-8"></script>
-                <div className="fb-like" data-href="https://www.trashmob.eco" data-width="" data-layout="button_count" data-action="like" data-size="small" data-share="true"></div>
-                <a href="https://profiles.eco/trashmob?ref=tm" rel="noopener"><img className="eco-trustmark" alt=".eco profile for trashmob.eco" src="https://trust.profiles.eco/trashmob/eco-button.svg?color=%2396BA00" /></a>
-                <a className='instagram-button' href="https://www.instagram.com/trashmobinfo">Instagram</a>
-                <div className="g-ytsubscribe" data-channelid="UC2LgFmXFCA8kdkxd4IJ51BA" data-layout="default" data-count="default" />
-            <p>
-                <Link to="/privacypolicy">Privacy Policy</Link>
-                <Link to="/termsofservice">Terms of Service</Link>
-                <Link to="/eventsummaries">Event Summaries</Link>
-            </p>
+        <footer id="pageFooter">
+            <div className="container" id="footerWrapper">
+                <div className="card my-5">
+                    <img src={logo} alt="TrashMob Logo" id="logo_footer" />
+                    <div className="row">
+                        <div className="col-md-4">
+                            <Link to="/aboutus">About us</Link>
+                            <Link to="/board">Board</Link>
+                            <Link to="/partners">Partners</Link>
+                        </div>
+
+                        <div className="col-md-4">
+                            <Link to="/faq">FAQ</Link>
+                            <Link to="/volunteeropportunities">Volunteer Opportunities</Link>
+                            <Link to="/contactus">Contact us</Link>
+                        </div>
+
+                        <div className="col-md-4">
+                            <Link to="/privacypolicy">Privacy Policy</Link>
+                            <Link to="/termsofservice">Terms of Service</Link>
+                            <Link to="/eventsummaries">Event Summaries</Link>
+                        </div>
+                    </div>
+                    <hr className="horizontalLine" />
+                    <div className="row" id="copyright">
+                        <div className="col-md-8">
+                            <p>Copyright &copy; 2021 TRASHMOB.ECO - All Rights Reserved.</p>
+                        </div>
+                        <div className="col-md-4">
+                            <div className="row" id="iconsOrigWrapper">
+                                <div className="iconWrapper" id="firstWrapper">
+                                    <Link to="https://www.facebook.com/trashmob.eco/">
+                                        <i className="fab fa-facebook-f"></i>
+                                    </Link>
+                                </div>
+                                <div className="iconWrapper">
+                                    <Link to="https://twitter.com/TrashMobEco">
+                                        <i className="fab fa-twitter"></i>
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </footer>
     );
 }

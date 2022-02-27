@@ -1,6 +1,7 @@
 ﻿
 namespace TrashMob.Controllers
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Shared.Persistence;
@@ -17,9 +18,9 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPartnerRequestStatuses()
+        public async Task<IActionResult> GetPartnerRequestStatuses(CancellationToken cancellationToken)
         {
-            var result = await partnerRequestStatusRepository.GetAllPartnerRequestStatuses().ConfigureAwait(false);
+            var result = await partnerRequestStatusRepository.GetAllPartnerRequestStatuses(cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
     }

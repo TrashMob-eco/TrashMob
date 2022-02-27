@@ -2,12 +2,13 @@
 {
     using System;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
     public interface IPartnerLocationRepository
     {
-        IQueryable<PartnerLocation> GetPartnerLocations();
+        IQueryable<PartnerLocation> GetPartnerLocations(CancellationToken cancellationToken = default);
 
         Task<PartnerLocation> AddPartnerLocation(PartnerLocation partnerLocation);
 
