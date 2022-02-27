@@ -5,15 +5,7 @@
              Shell.FlyoutBehavior="Disabled"
              Shell.NavBarIsVisible="False">
 
-    <ContentPage.Resources>
-        <StyleSheet Source="/Assets/login.css" />
-    </ContentPage.Resources>
-
-    <ContentPage.Content>
-        <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-            <StackLayout Orientation="Vertical" HorizontalOptions="Center" VerticalOptions="CenterAndExpand">
-                <Image Source="TME_BusinessCard_front.png" />
-            </StackLayout>
-        </StackLayout>
-    </ContentPage.Content>
+    <StackLayout Orientation="Vertical" HorizontalOptions="Center" VerticalOptions="CenterAndExpand">
+        <Image Source="TME_BusinessCard_front.png" />
+    </StackLayout>
 </ContentPage>

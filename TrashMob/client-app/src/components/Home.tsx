@@ -214,10 +214,10 @@ const Home: React.FC<HomeProps> = (props) => {
     }
 
     return (
-        <div>
+        <>
             <div>
                 <Modal isOpen={isOpen} onrequestclose={togglemodal} contentlabel="Accept Terms of Use" fade={true} style={{ width: "500px", display: "block" }}>
-                    <div className="container">
+                    <div className="container p-4">
                         <Form>
                             <Form.Row>
                                 <Form.Group>
@@ -232,7 +232,7 @@ const Home: React.FC<HomeProps> = (props) => {
                                 }
                                 }>
                                     I Agree
-                                    </Button>
+                                </Button>
                             </Form.Row>
                         </Form>
                     </div>
@@ -262,7 +262,7 @@ const Home: React.FC<HomeProps> = (props) => {
                     </AzureMapsProvider>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

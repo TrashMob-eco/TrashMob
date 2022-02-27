@@ -8,6 +8,6 @@
         public static DateTimeOffset PrivacyPolicyDate = new DateTimeOffset(2021, 5, 14, 0, 0, 0, TimeSpan.Zero);
         public const string TermsOfServiceVersion = "0.3";
         public static DateTimeOffset TermsOfServiceDate = new DateTimeOffset(2021, 5, 14, 0, 0, 0, TimeSpan.Zero);
-        public static string ApiEndpoint = "https://as-tm-dev-westus2.azurewebsites.net/api/";
+        public static string ApiEndpoint = "API_ENDPOINT";
     }
 }

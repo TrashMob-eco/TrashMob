@@ -18,6 +18,8 @@ import MyDashboard from './components/MyDashboard';
 import { Partners } from './components/Partners/Partners';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { TermsOfService } from './components/TermsOfService';
+import { Board } from './components/Board';
+import { VolunteerOpportunities } from './components/VolunteerOpportunities';
 import { Waiver } from './components/Waiver';
 import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
@@ -37,6 +39,8 @@ import { Shop } from './components/Shop';
 import { EventSummaries } from './components/EventSummaries';
 import { CancelEvent, CancelEventMatchParams } from './components/EventManagement/CancelEvent';
 import NotificationPreferences from './components/NotificationPreferences';
+
+import './custom.css';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }
@@ -241,6 +245,9 @@ export const App: React.FC = () => {
                             <Route exact path="/aboutus">
                                 <AboutUs />
                             </Route>
+                            <Route exact path="/board">
+                                <Board />
+                            </Route>
                             <Route exact path="/contactus">
                                 <ContactUs />
                             </Route>
@@ -264,6 +271,9 @@ export const App: React.FC = () => {
                             </Route>
                             <Route exact path="/termsofservice">
                                 <TermsOfService />
+                            </Route>
+                            <Route exact path="/volunteeropportunities">
+                                <VolunteerOpportunities />
                             </Route>
                             <Route exact path="/waiver">
                                 <Waiver />
