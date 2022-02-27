@@ -61,15 +61,6 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 <li><Nav.Link href={item.url} key={item.name}>{item.name}</Nav.Link></li>
                             ))}
                         </ul>
-                        {/* <NavDropdown title="Learn More" id="basic-nav-dropdown">
-                            <NavDropdown.Item className="dropdown-item" href="/mediagallery">Media Gallery</NavDropdown.Item>
-                            <NavDropdown.Item className="dropdown-item" href="/partners">Partners</NavDropdown.Item>
-                            <NavDropdown.Item className="dropdown-item" href="/becomeapartner">Become a Partner</NavDropdown.Item>
-                            <NavDropdown.Item className="dropdown-item" hidden={!isUserLoaded} href="/partnerdashboard">Partner Dashboard</NavDropdown.Item>
-                            <NavDropdown.Item className="dropdown-item" href="/contactus">Contact Us</NavDropdown.Item>
-                            <NavDropdown.Item className="dropdown-item" href="/faq">FAQ</NavDropdown.Item>
-                            <NavDropdown.Item className="dropdown-item" hidden={!isUserLoaded || !props.currentUser.isSiteAdmin} href="/siteadmin">SiteAdmin</NavDropdown.Item>
-                        </NavDropdown> */}
                         <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="loginBtn">Sign in</Button>
                         <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="registerBtn">Sign up</Button>
                         <Dropdown hidden={!isUserLoaded}>
@@ -80,13 +71,17 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                             <Dropdown.Menu className="shadow border-0">
                                 <Dropdown.Item eventKey="1" href="/mydashboard"><Speedometer2 aria-hidden="true" />Dashboard</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="2" href="/userprofile"><Person aria-hidden="true" />My profile</Dropdown.Item>
+                                <Dropdown.Item eventKey="2" href="/userprofile"><Person aria-hidden="true" />My Profile</Dropdown.Item>
                                 <Dropdown.Divider />
                                 <Dropdown.Item eventKey="3" href="/notificationpreferences"><Person aria-hidden="true" />Notification Preferences</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="4" href="/manageeventdashboard"><PlusLg aria-hidden="true" />Add event</Dropdown.Item>
+                                <Dropdown.Item eventKey="4" href="/manageeventdashboard"><PlusLg aria-hidden="true" />Add Event</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="5" onClick={(e) => signOut(e)}><Power aria-hidden="true" />Sign out</Dropdown.Item>
+                                <Dropdown.Item eventKey="5" href="/partnerdashboard"><PlusLg aria-hidden="true" />Partner Dashboard</Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item eventKey="6" href="/siteadmin" disabled={!props.currentUser.isSiteAdmin}><PlusLg aria-hidden="true" />Site Administration</Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item eventKey="7" onClick={(e) => signOut(e)}><Power aria-hidden="true" />Sign out</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
                     </div>
