@@ -84,7 +84,7 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 <Dropdown.Divider />
                                 <Dropdown.Item eventKey="3" href="/notificationpreferences"><Person aria-hidden="true" />Notification Preferences</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="4"><PlusLg aria-hidden="true" />Add event</Dropdown.Item>
+                                <Dropdown.Item eventKey="4" href="/manageeventdashboard"><PlusLg aria-hidden="true" />Add event</Dropdown.Item>
                                 <Dropdown.Divider />
                                 <Dropdown.Item eventKey="5" onClick={(e) => signOut(e)}><Power aria-hidden="true" />Sign out</Dropdown.Item>
                             </Dropdown.Menu>
