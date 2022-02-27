@@ -13,17 +13,20 @@ export const Footer: React.FC = () => {
                     <div className="row">
                         <div className="col-md-4">
                             <Link to="/aboutus">About us</Link>
-                            <Link to="/partners">Partners</Link>
-                            <Link to="/contactus">Contact us</Link>
                             <Link to="/board">Board</Link>
+                            <Link to="/partners">Partners</Link>
                         </div>
 
                         <div className="col-md-4">
                             <Link to="/faq">FAQ</Link>
+                            <Link to="/volunteeropportunities">Volunteer Opportunities</Link>
+                            <Link to="/contactus">Contact us</Link>
+                        </div>
+
+                        <div className="col-md-4">
                             <Link to="/privacypolicy">Privacy Policy</Link>
                             <Link to="/termsofservice">Terms of Service</Link>
                             <Link to="/eventsummaries">Event Summaries</Link>
-                            <Link to="/volunteeropportunities">Volunteer Opportunities</Link>
                         </div>
                     </div>
                     <hr className="horizontalLine" />
