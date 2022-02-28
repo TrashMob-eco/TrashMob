@@ -68,3 +68,7 @@ export const EventSummaryNumberOfBuckets = "If you were dumping buckets of trash
 export const EventSummaryDurationInMinutes = "How long did the event last in minutes"
 export const EventSummaryNotes = "Record any notes about what went well or what could have gone better, or reminders for the next time at this location."
 export const EventCancellationReason = "Please specify a reason for cancelling the event. Event Attendess will see this note."
+export const AdminWaiverName = "Please specify a name for this waiver."
+export const AdminWaiverVersion = "Please specify a version for this waiver."
+export const AdminWaiverEffectiveDate = "Please specify the date which this waiver version goes into effect."
+export const AdminWaiverDurationType = "Please specify how long this waiver is valid for."
