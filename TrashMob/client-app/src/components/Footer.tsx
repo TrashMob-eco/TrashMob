@@ -19,20 +19,20 @@ export const Footer: React.FC = () => {
 
                         <div className="col-md-4">
                             <Link to="/faq">FAQ</Link>
-                            <Link to="/volunteeropportunities">Volunteer Opportunities</Link>
+                            <Link to="/volunteeropportunities">Volunteer opportunities</Link>
                             <Link to="/contactus">Contact us</Link>
                         </div>
 
                         <div className="col-md-4">
-                            <Link to="/privacypolicy">Privacy Policy</Link>
-                            <Link to="/termsofservice">Terms of Service</Link>
-                            <Link to="/eventsummaries">Event Summaries</Link>
+                            <Link to="/privacypolicy">Privacy policy</Link>
+                            <Link to="/termsofservice">Terms of service</Link>
+                            <Link to="/eventsummaries">Event summaries</Link>
                         </div>
                     </div>
                     <hr className="horizontalLine" />
                     <div className="row" id="copyright">
                         <div className="col-md-8">
-                            <p>Copyright &copy; 2021 TRASHMOB.ECO - All Rights Reserved.</p>
+                            <p>Copyright &copy; 2021 TRASHMOB.ECO - All rights reserved.</p>
                         </div>
                         <div className="col-md-4">
                             <div className="row" id="iconsOrigWrapper">

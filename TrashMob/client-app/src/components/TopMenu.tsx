@@ -69,17 +69,17 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 {userName ? userName : 'Welcome'}
                             </Dropdown.Toggle>
                             <Dropdown.Menu className="shadow border-0">
-                                <Dropdown.Item eventKey="1" href="/mydashboard"><Speedometer2 aria-hidden="true" />Dashboard</Dropdown.Item>
+                                <Dropdown.Item eventKey="1" href="/mydashboard"><Speedometer2 aria-hidden="true" />My dashboard</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="2" href="/userprofile"><Person aria-hidden="true" />My Profile</Dropdown.Item>
+                                <Dropdown.Item eventKey="2" href="/userprofile"><Person aria-hidden="true" />My profile</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="3" href="/notificationpreferences"><Person aria-hidden="true" />Notification Preferences</Dropdown.Item>
+                                <Dropdown.Item eventKey="3" href="/notificationpreferences"><Person aria-hidden="true" />Notification preferences</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="4" href="/manageeventdashboard"><PlusLg aria-hidden="true" />Add Event</Dropdown.Item>
+                                <Dropdown.Item eventKey="4" href="/manageeventdashboard"><PlusLg aria-hidden="true" />Add event</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="5" href="/partnerdashboard"><PlusLg aria-hidden="true" />Partner Dashboard</Dropdown.Item>
+                                <Dropdown.Item eventKey="5" href="/partnerdashboard"><PlusLg aria-hidden="true" />Partner dashboard</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="6" href="/siteadmin" disabled={!props.currentUser.isSiteAdmin}><PlusLg aria-hidden="true" />Site Administration</Dropdown.Item>
+                                <Dropdown.Item eventKey="6" href="/siteadmin" disabled={!props.currentUser.isSiteAdmin}><PlusLg aria-hidden="true" />Site administration</Dropdown.Item>
                                 <Dropdown.Divider />
                                 <Dropdown.Item eventKey="7" onClick={(e) => signOut(e)}><Power aria-hidden="true" />Sign out</Dropdown.Item>
                             </Dropdown.Menu>
