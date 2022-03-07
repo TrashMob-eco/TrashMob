@@ -6,7 +6,7 @@ import { getDefaultHeaders } from '../store/AuthStore';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../store/ToolTips";
-import { Button, Col, Form, Modal } from 'react-bootstrap';
+import { Button, ButtonGroup, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import * as Constants from './Models/Constants';
 
 interface ContactUsProps extends RouteComponentProps<any> { }
@@ -81,7 +81,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
     }
 
     function handleNameChanged(val: string) {
-       if (val.length <= 0 || val.length > 64) {
+        if (val.length <= 0 || val.length > 64) {
             setNameErrors("Please enter a valid name.");
         }
         else {
@@ -119,7 +119,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
     }
 
     React.useEffect(() => {
-        loadCaptchaEnginge(6);
+        loadCaptchaEnginge(6, 'white', 'black');
     }, []);
 
 
@@ -136,51 +136,63 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
     }
 
     return (
-        <div className="container-fluid card">
-            <h1>Contact Us</h1>
-            <div>
-                Have a question for the TrashMob team? Or an idea to make this site better? Or just want to tell us you love us? Drop us a note!
-            </div>
-            <Form onSubmit={handleSave} >
-                <Form.Row>
-                    <Col>
-                        <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderNameToolTip}>
-                                <Form.Label className="control-label">Name:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{nameErrors}</span>
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
-                                <Form.Label className="control-label">Email:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{emailErrors}</span>
-                        </Form.Group >
-                    </Col>
-                </Form.Row>
-                <Form.Group className="required">
-                    <OverlayTrigger placement="top" overlay={renderMessageToolTip}>
-                        <Form.Label className="control-label">Message:</Form.Label>
-                    </OverlayTrigger>
-                    <Form.Control as="textarea" defaultValue={message} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleMessageChanged(val.target.value)} required />
-                    <span style={{ color: "red" }}>{messageErrors}</span>
-                </Form.Group >
-                <Form.Group>
-                    <LoadCanvasTemplateNoReload />
-                </Form.Group>
-                <Form.Group className="required">
-                    <Form.Label className="control-label">CAPTCHA Value:</Form.Label>
-                    <Form.Control type="text" required name="user_captcha_input" />
-                </Form.Group >
-                <Form.Group className="form-group">
-                    <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Save</Button>
-                    <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
-                </Form.Group >
-            </Form >
+        <Container fluid>
+            <Row className="gx-2 py-5" lg={2}>
+                <Col lg={4} className="d-flex">
+                    <div className="bg-white py-2 px-5 shadow-sm rounded">
+                        <h2 className="color-primary mt-4 mb-5">Contact Us</h2>
+                        <p>
+                            Have a question for the TrashMob team, want to submit a suggestion for improving the website, or just want to tell us you love us? Drop us a note here and we'll be sure to read it.
+                        </p>
+                        <p>
+                            Can't wait to hear from you!
+                        </p>
+                    </div>
+                </Col>
+                <Col lg={{ span: 7, offset: 1 }}>
+                    <div className="bg-white p-5 shadow-sm rounded">
+                        <Form onSubmit={handleSave} >
+
+                            <Form.Group className="required">
+                                <OverlayTrigger placement="top" overlay={renderNameToolTip}>
+                                    <Form.Label className="control-label">Name:</Form.Label>
+                                </OverlayTrigger>
+                                <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required placeholder="Enter Name" />
+                                <span style={{ color: "red" }}>{nameErrors}</span>
+                            </Form.Group>
+
+                            <Form.Group className="required">
+                                <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
+                                    <Form.Label className="control-label">Email:</Form.Label>
+                                </OverlayTrigger>
+                                <Form.Control type="text" defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required placeholder="Enter Email" />
+                                <span style={{ color: "red" }}>{emailErrors}</span>
+                            </Form.Group >
+
+                            <Form.Group className="required">
+                                <OverlayTrigger placement="top" overlay={renderMessageToolTip}>
+                                    <Form.Label className="control-label">Message:</Form.Label>
+                                </OverlayTrigger>
+                                <Form.Control as="textarea" defaultValue={message} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleMessageChanged(val.target.value)} required placeholder="Enter Message" />
+                                <span style={{ color: "red" }}>{messageErrors}</span>
+                            </Form.Group >
+                            <Form.Group>
+                                <LoadCanvasTemplateNoReload className="border" />
+                            </Form.Group>
+                            <Form.Group className="required">
+                                <Form.Label className="control-label">CAPTCHA Value:</Form.Label>
+                                <Form.Control type="text" required name="user_captcha_input" placeholder="Enter Captcha" />
+                            </Form.Group >
+                            <Form.Group className="form-group d-flex justify-content-end">
+                                <ButtonGroup className="justify-content-between">
+                                    <Button id="contactFormCancelBtn" className="action mr-2" onClick={(e) => handleCancel(e)}>Cancel</Button>
+                                    <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Submit</Button>
+                                </ButtonGroup>
+                            </Form.Group >
+                        </Form >
+                    </div>
+                </Col>
+            </Row >
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirmation</Modal.Title>
@@ -191,7 +203,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
                     <small>You'll now be redirected to the TrashMob.eco home page...</small>
                 </Modal.Body>
             </Modal>
-        </div>
+        </Container >
     )
 }
 
