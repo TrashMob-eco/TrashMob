@@ -60,11 +60,11 @@
         {
             if (!App.CurrentUser.IsPrivacyPolicyAgreedTo || !App.CurrentUser.IsTermsOfServiceAgreedTo)
             {
-                await Shell.Current.GoToAsync($"//{nameof(TermsAndConditionsPage)}");
+                await Shell.Current.GoToAsync($"{nameof(TermsAndConditionsPage)}");
             }
             else if (string.IsNullOrEmpty(App.CurrentUser.UserName))
             {
-                await Shell.Current.GoToAsync($"//{nameof(UserProfilePage)}");
+                await Shell.Current.GoToAsync($"{nameof(UserProfilePage)}");
             }
             else
             {
