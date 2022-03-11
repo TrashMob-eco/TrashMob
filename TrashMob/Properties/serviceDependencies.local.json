@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "secrets2": {
+      "type": "secrets.user"
+    },
+    "appInsights1": {
+      "secretStore": "LocalSecretsFile",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/microsoft.insights/components/ai-tm-pr-westus2",
+      "type": "appInsights.azure",
+      "connectionId": "APPINSIGHTS_CONNECTIONSTRING"
+    }
+  }
+}
