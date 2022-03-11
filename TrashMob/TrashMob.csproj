@@ -168,6 +168,7 @@
 
   <PropertyGroup>
     <UserSecretsId>{9B07A82B-C4CC-492A-A618-12F622A7AD52}</UserSecretsId>
+    <ApplicationInsightsResourceId>/subscriptions/5ea21946-8cb1-413f-9005-0ab10bfa839d/resourceGroups/rg-trashmob-pr-westus2/providers/microsoft.insights/components/ai-tm-pr-westus2</ApplicationInsightsResourceId>
   </PropertyGroup>
 
 </Project>

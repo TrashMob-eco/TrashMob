@@ -1,9 +1,5 @@
 {
   "dependencies": {
-    "appInsights1": {
-      "type": "appInsights",
-      "connectionId": "APPINSIGHTS_CONNECTIONSTRING"
-    },
     "secrets1": {
       "type": "secrets",
       "connectionId": "VaultUri"
@@ -11,6 +7,13 @@
     "mssql1": {
       "type": "mssql",
       "connectionId": "TMDBServerConnectionString"
+    },
+    "secrets2": {
+      "type": "secrets"
+    },
+    "appInsights1": {
+      "type": "appInsights",
+      "connectionId": "APPINSIGHTS_CONNECTIONSTRING"
     }
   }
 }
