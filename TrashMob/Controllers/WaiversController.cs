@@ -56,5 +56,25 @@
 
             return Ok(await waiverRepository.UpdateWaiver(waiver).ConfigureAwait(false));
         }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> AddWaiver(Waiver waiver)
+        {
+            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+
+            if (currentUser == null)
+            {
+                return Forbid();
+            }
+
+            // Ensure user is allowed to update this Partner
+            if (!currentUser.IsSiteAdmin)
+            {
+                return Forbid();
+            }
+
+            return Ok(await waiverRepository.AddWaiver(waiver).ConfigureAwait(false));
+        }
     }
 }

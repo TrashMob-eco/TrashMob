@@ -284,7 +284,7 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
                     <span style={{ color: "red" }}>{notesErrors}</span>
                 </Form.Group >
                 <Form.Group className="form-group">
-                    <Button disabled={isSaveEnabled} type="submit" className="action btn-default">Save</Button>
+                    <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Save</Button>
                 </Form.Group >
             </Form >
         </div>

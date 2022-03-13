@@ -46,7 +46,7 @@ export const AdminWaivers: React.FC<AdminWaiversPropsType> = (props) => {
             .then(data => {
                 setWaiverDurationTypeList(data);
             })
-    }),[];
+    }, []);
 
     function handleNameChanged(value: string) {
 
@@ -221,16 +221,18 @@ export const AdminWaivers: React.FC<AdminWaiversPropsType> = (props) => {
                             return (
                                 <tr key={waiver.id.toString()}>
                                     <td>{waiver.name}</td>
-                                    <td>{waiver.effectiveDate}</td>
-                                    <td>{getWaiverDurationType(waiverDurationTypeList, waiverDurationTypeId)}</td>
+                                    <td>{waiver.version}</td>
+                                    <td>{waiver.effectiveDate.toLocaleString()}</td>
+                                    <td>{getWaiverDurationType(waiverDurationTypeList, waiver.waiverDurationTypeId)}</td>
                                     <td>
-                                        <Button className="action" onClick={() => addWaiver()}>Add Waiver</Button>
+                                        <Button className="action" onClick={() => editWaiver(waiver.id)}>Edit Waiver</Button>
                                     </td>
                                 </tr>)
                         }
                         )}
                     </tbody>
                 </table>
+                <Button className="action" onClick={() => addWaiver()}>Add Waiver</Button>
             </div>
         );
     }
@@ -280,7 +282,7 @@ export const AdminWaivers: React.FC<AdminWaiversPropsType> = (props) => {
                                 </OverlayTrigger>
                                 <div>
                                     <select data-val="true" name="waiverDurationTypeId" defaultValue={waiverDurationTypeId} onChange={(val) => selectWaiverDurationType(val.target.value)} required>
-                                        <option value="">-- Select Event Type --</option>
+                                        <option value="">-- Select Waiver Duration Type --</option>
                                         {typeList.map(type =>
                                             <option key={type.id} value={type.id}>{type.name}</option>
                                         )}

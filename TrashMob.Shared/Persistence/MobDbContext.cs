@@ -688,10 +688,10 @@
                     .HasMaxLength(50);
 
                 entity.HasData(
-                    new WaiverDurationType { Id = (int)WaiverDurationTypeEnum.CalendarYear, Name = "Calendar Year", Description = "Waiver Expires at the end of the current calendar year", DisplayOrder = 1 },
-                    new WaiverDurationType { Id = (int)WaiverDurationTypeEnum.YearFromSigning, Name = "Year from Signing", Description = "Waiver Expires a year to the date after signing", DisplayOrder = 2 },
-                    new WaiverDurationType { Id = (int)WaiverDurationTypeEnum.MonthFromSigning, Name = "Calendar Year", Description = "Waiver Expires at the end of the current calendar month", DisplayOrder = 3 },
-                    new WaiverDurationType { Id = (int)WaiverDurationTypeEnum.SingleDay, Name = "Calendar Year", Description = "Waiver Expires at the end of the current day", DisplayOrder = 4 });
+                    new WaiverDurationType { Id = (int)WaiverDurationTypeEnum.CalendarYear, Name = "Calendar Year", Description = "Waiver Expires at the end of the current calendar year", DisplayOrder = 1, IsActive = true },
+                    new WaiverDurationType { Id = (int)WaiverDurationTypeEnum.YearFromSigning, Name = "Year from Signing", Description = "Waiver Expires a year to the date after signing", DisplayOrder = 2, IsActive = true },
+                    new WaiverDurationType { Id = (int)WaiverDurationTypeEnum.MonthFromSigning, Name = "Calendar Year", Description = "Waiver Expires at the end of the current calendar month", DisplayOrder = 3, IsActive = true },
+                    new WaiverDurationType { Id = (int)WaiverDurationTypeEnum.SingleDay, Name = "Calendar Year", Description = "Waiver Expires at the end of the current day", DisplayOrder = 4, IsActive = true });
             });
 
             modelBuilder.Entity<EventType>(entity =>
