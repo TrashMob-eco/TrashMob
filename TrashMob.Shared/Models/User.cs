@@ -92,5 +92,13 @@ namespace TrashMob.Shared.Models
         public virtual ICollection<EventSummary> EventSummariesCreated { get; set; }
 
         public virtual ICollection<EventSummary> EventSummariesUpdated { get; set; }
+
+        public virtual ICollection<Waiver> WaiversCreated { get; set; }
+
+        public virtual ICollection<Waiver> WaiversUpdated { get; set; }
+
+        public virtual ICollection<UserWaiver> UserWaiversCreated { get; set; }
+
+        public virtual ICollection<UserWaiver> UserWaiversUpdated { get; set; }
     }
 }
