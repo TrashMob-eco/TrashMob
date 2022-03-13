@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrashMob.Shared.Persistence;
 
@@ -11,9 +12,10 @@ using TrashMob.Shared.Persistence;
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    partial class MobDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220221173315_AddWaivers")]
+    partial class AddWaivers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1388,7 +1390,6 @@ namespace TrashMob.Migrations
                             Id = 1,
                             Description = "Waiver Expires at the end of the current calendar year",
                             DisplayOrder = 1,
-                            IsActive = true,
                             Name = "Calendar Year"
                         },
                         new
@@ -1396,7 +1397,6 @@ namespace TrashMob.Migrations
                             Id = 2,
                             Description = "Waiver Expires a year to the date after signing",
                             DisplayOrder = 2,
-                            IsActive = true,
                             Name = "Year from Signing"
                         },
                         new
@@ -1404,7 +1404,6 @@ namespace TrashMob.Migrations
                             Id = 3,
                             Description = "Waiver Expires at the end of the current calendar month",
                             DisplayOrder = 3,
-                            IsActive = true,
                             Name = "Calendar Year"
                         },
                         new
@@ -1412,7 +1411,6 @@ namespace TrashMob.Migrations
                             Id = 4,
                             Description = "Waiver Expires at the end of the current day",
                             DisplayOrder = 4,
-                            IsActive = true,
                             Name = "Calendar Year"
                         });
                 });

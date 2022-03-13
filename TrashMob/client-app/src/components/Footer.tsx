@@ -26,6 +26,7 @@ export const Footer: React.FC = () => {
                         <div className="col-md-4">
                             <Link to="/privacypolicy">Privacy policy</Link>
                             <Link to="/termsofservice">Terms of service</Link>
+                            <Link to="/waiver">Waiver</Link>
                             <Link to="/eventsummaries">Event summaries</Link>
                         </div>
                     </div>

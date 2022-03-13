@@ -37,4 +37,11 @@
         Declined = 3,
     }
 
+    public enum WaiverDurationTypeEnum
+    {
+        CalendarYear = 1,
+        YearFromSigning = 2,
+        MonthFromSigning = 3,
+        SingleDay = 4,
+    }
 }

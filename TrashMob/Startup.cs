@@ -48,6 +48,7 @@ namespace TrashMob
             services.AddScoped<IEmailManager, EmailManager>();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
+            services.AddScoped<IEventMediaRepository, EventMediaRepository>();
             services.AddScoped<IEventPartnerRepository, EventPartnerRepository>();
             services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IEventPartnerStatusRepository, EventPartnerStatusRepository>();
@@ -55,6 +56,7 @@ namespace TrashMob
             services.AddScoped<IEventSummaryRepository, EventSummaryRepository>();
             services.AddScoped<IEventTypeRepository, EventTypeRepository>();
             services.AddScoped<IMapRepository, MapRepository>();
+            services.AddScoped<IMediaTypeRepository, MediaTypeRepository>();
             services.AddScoped<IPartnerLocationRepository, PartnerLocationRepository>();
             services.AddScoped<IPartnerManager, PartnerManager>();
             services.AddScoped<IPartnerRepository, PartnerRepository>();
@@ -62,12 +64,13 @@ namespace TrashMob
             services.AddScoped<IPartnerRequestRepository, PartnerRequestRepository>();
             services.AddScoped<IPartnerRequestStatusRepository, PartnerRequestStatusRepository>();
             services.AddScoped<IPartnerUserRepository, PartnerUserRepository>();
+            services.AddScoped<ISecretRepository, SecretRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
             services.AddScoped<IUserNotificationPreferenceRepository, UserNotificationPreferenceRepository>();
-            services.AddScoped<IEventMediaRepository, EventMediaRepository>();
-            services.AddScoped<IMediaTypeRepository, MediaTypeRepository>();
-            services.AddScoped<ISecretRepository, SecretRepository>();
+            services.AddScoped<IUserWaiverRepository, UserWaiverRepository>();
+            services.AddScoped<IWaiverDurationTypeRepository, WaiverDurationTypeRepository>();
+            services.AddScoped<IWaiverRepository, WaiverRepository>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 

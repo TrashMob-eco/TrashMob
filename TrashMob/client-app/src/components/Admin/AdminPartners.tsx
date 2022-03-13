@@ -16,7 +16,7 @@ interface AdminPartnersPropsType extends RouteComponentProps {
 
 export const AdminPartners: React.FC<AdminPartnersPropsType> = (props) => {
 
-    // Handle Delete request for an event  
+    // Handle Delete request for an partner
     function handleDelete(id: string, name: string) {
         if (!window.confirm("Do you want to delete partner with name: " + name))
             return;
