@@ -23,7 +23,7 @@ export const AboutUs: React.FC = () => {
                                 To participate, all it takes is the willingness to get your hands a little dirty and a desire to leave the world better than how you found it. Whether it's your neighborhood, a park, a stream, a road,
                                 or even a parking lot of a big box store, all litter being cleaned up contributes to our goal of making this planet of ours a little better for the next generation.
                             </p>
-                            <Link className="mt-2 btn btn-primary" to="/eventsummaries" role="button">Find an event</Link>
+                            <Link className="mt-2 btn btn-primary" to="/" role="button">Find an event</Link>
                         </div>
                     </Col>
                     <Col className="mt-3 d-flex justify-content-center">
@@ -39,13 +39,13 @@ export const AboutUs: React.FC = () => {
                             <li className="mb-4">
                                 <div className="d-flex align-top">
                                     <span className="mr-3 font-weight-bold font-size-lg">1</span>
-                                    <span>TrashMobs allows you to connect with your local community and foster relationships built on positive changes.</span>
+                                    <span>TrashMobs allow you to connect with your local community and foster relationships built on positive changes.</span>
                                 </div>
                             </li>
                             <li className="mb-4">
                                 <div className="d-flex align-top">
                                     <span className="mr-3 font-weight-bold font-size-lg">2</span>
-                                    <span>TrashMobs clean up our parks, streams, and neighborhoods which benefits our Earth and communities.</span>
+                                    <span>TrashMobs clean up our parks, streams, and neighborhoods which benefits our Earth and our communities.</span>
                                 </div>
                             </li>
                             <li className="mb-4">
@@ -83,7 +83,7 @@ export const AboutUs: React.FC = () => {
                                 <div className="timeline-content" data-toggle="popover" data-trigger="hover" data-placement="top" title="" data-content="And here's some amazing content. It's very engaging. Right?" data-original-title="2003">
                                     <div className="inner-circle"><span className='inner-circle-text'>01</span></div>
                                     <h6 className="mt-3 mb-1 font-weight-bold">The Inspiration That Flourished</h6>
-                                    <p className="mb-0 mb-lg-0">TrashMob founder, Joe Beernick, first gained inspiration for TrashMob from Microsoft colleagues. An idea formed for a project that would bring people together to take small, positive actions that would cascade into meaningful long term effects.</p>
+                                    <p className="mb-0 mb-lg-0">TrashMob founder, Joe Beernink, first gained inspiration for TrashMob from Microsoft colleagues. An idea formed for a project that would bring people together to take small, positive actions that would cascade into meaningful long term effects.</p>
                                 </div>
                             </div>
                             <div className="timeline-step">
