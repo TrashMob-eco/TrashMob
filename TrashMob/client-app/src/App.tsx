@@ -185,7 +185,7 @@ export const App: React.FC = () => {
             <div className="d-flex flex-column h-100">
                 <BrowserRouter>
                     <TopMenu isUserLoaded={isUserLoaded} currentUser={currentUser} />
-                    <div className="container">
+                    <div className="container-fluid px-0">
                         <Switch>
                             <Route path="/manageeventdashboard/:eventId?" render={(props: AppProps) => renderEditEvent(props)} />
                             <Route path="/eventdetails/:eventId" component={EventDetails} />
