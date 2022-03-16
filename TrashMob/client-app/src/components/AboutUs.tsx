@@ -1,61 +1,138 @@
 import * as React from 'react';
-import onTheBeach from './assets/brian-yurasits-43upsZNmy9Q-unsplash.jpg';
-import pile from './assets/cmophoto-net-4ANtcRmvgE4-unsplash.jpg';
-import bigpile from './assets/muhammad-numan-ZVgxiKJlMk0-unsplash.jpg'
+import trashbin from './assets/the-blowup-t06aN6vewaQ-unsplash1.png';
+import trashcans from './assets/trashcan-artwork.png';
+import bucket from './assets/bucket.svg'
+import gloves from './assets/gloves.svg';
+import smileyFace from './assets/smileyface.svg';
+import { Button, Col, Container, Image, Row } from 'react-bootstrap';
 
 export const AboutUs: React.FC = () => {
     return (
-        <div className="card">
-            <h2>What is a TrashMob?</h2>
-            <p>
-                A TrashMob is a group of citizens who are willing to take a hour or two out of their busy lives to get together and clean up a mess. Friends, family, total strangers, it doesn't matter. If you've ever
-                said that you want to leave the world a better place than what you found, this is your chance to follow through and actually do something. All it takes is the willingness to get your hands a
-                little dirty, but that's what gloves are for! It also doesn't matter where you help to clean up. Whether it's your neighborhood, a park, a stream, a road, or even a parking lot of a big box store,
-                all litter needs to be cleaned up, and every bit we pick up, no matter where it is, helps make this planet of ours a little better for the next generation.
-                </p>
-            <img src={onTheBeach} alt="Person picking litter on a beach" />
-            <h2>Where did the idea come from?</h2>
-            <p>
-                Years ago, Scott Hanselman at Microsoft built out the NerdDinner.com site as a demo of the capabilities of ASP.NET MVC. I (<a target="_blank" rel="noopener noreferrer" href="https://twitter.com/joebeernink">Joe Beernink</a>) actually went to a bunch of the nerd dinners in Redmond, WA which were fantastic
-                    and had a huge role in my career, including eventually leading me to join Microsoft. This site is based on both that code and the idea that getting people together to do small good things
-                    results in larger good things in the long term.
-                </p>
-
-            <p>
-                Fast forward to today, and my passion is fixing problems we have on the planet with pollution and climate change. I've been thinking about what technology can do to help in these areas,
-                without creating more problems. And I keep coming back to the thought that a lot of this is a human problem. People want to help and they want to fix things, but they don't know where to start.
-                Other people have ideas on where to start, but not enough help to get started.
-                </p>
-
-            <p>
-                In January 2021, I read about <a target="_blank" rel="noopener noreferrer" href="https://twitter.com/edgarmcgregor">Edgar McGregor</a> in California, who had, at that time, spent over 580 days cleaning up a park in his community, two pails of litter at a time, and I thought,
-                    that was a great idea. His actions inspired me to get out and clean up a local park one Saturday. It was fun and rewarding and other people saw what I was doing on my own and thanked me for doing it. It felt great.
-                    And then I passed by an area of town that was completely covered in trash and I thought "this is too much for me alone. It would be great to have a group of people descend on this area like a mob and clean
-                    it up in an hour or two". And the idea for <b>TrashMob.eco</b> was born.
-                </p>
-
-            <p>
-                Basically, TrashMob.eco is the NerdDinner.com site modernized and re-purposed to allow people to start TrashMobs of their own to tackle cleanup or <i>whatever</i> needs doing. And we keep coming up with more and more ideas for the site that will
-                    allow it to grow organically because of the good that we can do we get together with a common goal!
-                </p>
-            <img src={pile} alt="Pile of trash by bin" />
-
-            <h2>Can't I just do this on my own?</h2>
-            <p>
-                There's absolutely no reason not to do this on your own. In fact, the inspiration I got for this project came from others doing this on their own.
-                </p>
-            <p>
-                But doing this with a group brings some sizable benefits with it:
-                    <ol>
-                    <li>A TrashMob can tackle really bad areas in a very short time. An individual may take days or weeks, and may become demoralized</li>
-                    <li>A TrashMob can grab the attention of other citizens much more quickly than an individual, and can spur even more cleanups</li>
-                    <li>A TrashMob can get resources like hauling of the gathered trash, local merchant support, and municipal support that an individual just can't. If you tell your city works department
-                        that you are cleaning up a park, they'll be nice and say thanks. But if you say you've got <b>30</b> people showing up at 10AM to clean up a notorious area, they will help you to get
-                            the supplies you need, and may even help with the haulaway. Communities want to see active citizens and will do whatever they can to encourage it.</li>
-                </ol>
-            </p>
-            <img src={bigpile} alt="Pile of collected trash" />
-        </div>
+        <>
+            <Container fluid className="mt-1 bg-white p-5">
+                <Row className="d-flex mb-4 px-5" xs={1} lg={2}>
+                    <Col className="mb-5 px-5">
+                        <div className="px-5">
+                            <h2>What is a TrashMob?</h2>
+                            <p className="font-weight-bold">
+                                A TrashMob is a group of citizens who are willing to take a hour or two out of their lives to get together and clean up their communities.
+                            </p>
+                            <p>
+                                Whether the motivation is to better your local community, connect with like-minded individuals, or improve your own mental health and wellbeing, TrashMob provides an avenue for accomplishing these goals.
+                                To participate, all it takes is the willingness to get your hands a little dirty and a desire to leave the world better than how you found it. Whether it's your neighborhood, a park, a stream, a road,
+                                or even a parking lot of a big box store, all litter being cleaned up contributes to our goal of making this planet of ours a little better for the next generation.
+                            </p>
+                            <Button className="mt-2">Find an event</Button>
+                        </div>
+                    </Col>
+                    <Col className="mt-3 d-flex justify-content-center">
+                        <Image src={trashcans} alt="" className="h-75" />
+                    </Col>
+                </Row>
+            </Container>
+            <div className="w-100 d-flex align-items-center" style={{ backgroundImage: `url(${trashbin})`, backgroundRepeat: "no-repeat", backgroundSize: "cover", backgroundPosition: "center" }} >
+                <div className="text-white bg-black w-50 border-rounded-lg my-5 mx-auto" style={{ opacity: 0.95 }}>
+                    <div className="p-5">
+                        <h4>Benefits of joining TrashMob</h4>
+                        <ol className="list-unstyled mt-5">
+                            <li className="mb-4">
+                                <div className="d-flex align-top">
+                                    <span className="mr-3 font-weight-bold font-size-lg">1</span>
+                                    <span>TrashMobs allows you to connect with your local community and foster relationships built on positive changes.</span>
+                                </div>
+                            </li>
+                            <li className="mb-4">
+                                <div className="d-flex align-top">
+                                    <span className="mr-3 font-weight-bold font-size-lg">2</span>
+                                    <span>TrashMobs clean up our parks, streams, and neighborhoods which benefits our Earth and communities.</span>
+                                </div>
+                            </li>
+                            <li className="mb-4">
+                                <div className="d-flex align-top">
+                                    <span className="mr-3 font-weight-bold font-size-lg">3</span>
+                                    <span>A TrashMob can tackle highly polluted areas in a shorter time than individuals which improves morale and satisfaction.</span>
+                                </div>
+                            </li>
+                            <li className="mb-4">
+                                <div className="d-flex align-top">
+                                    <span className="mr-3 font-weight-bold font-size-lg">4</span>
+                                    <span>TrashMobs can garner attention from neighbors, friends, and local governments that can spur on more cleanups.</span>
+                                </div>
+                            </li>
+                            <li className="mb-4">
+                                <div className="d-flex align-top">
+                                    <span className="mr-3 font-weight-bold font-size-lg">5</span>
+                                    <span>TrashMobs can acquire municipal support which can help with the hauling of gathered trash and providing supplies.</span>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <Container fluid className="bg-white pb-5">
+                <Row className="row text-center justify-content-center py-5">
+                    <Col lg={8} xl={6}>
+                        <h2 className="font-weight-bold">The Journey</h2>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <div className="timeline-steps aos-init aos-animate" data-aos="fade-up">
+                            <div className="timeline-step">
+                                <div className="timeline-content" data-toggle="popover" data-trigger="hover" data-placement="top" title="" data-content="And here's some amazing content. It's very engaging. Right?" data-original-title="2003">
+                                    <div className="inner-circle"><span className='inner-circle-text'>01</span></div>
+                                    <h6 className="mt-3 mb-1 font-weight-bold">The Inspiration That Flourished</h6>
+                                    <p className="mb-0 mb-lg-0">TrashMob founder, Joe Beernick, first gained inspiration for TrashMob from Microsoft colleagues. An idea formed for a project that would bring people together to take small, positive actions that would cascade into meaningful long term effects.</p>
+                                </div>
+                            </div>
+                            <div className="timeline-step">
+                                <div className="timeline-content" data-toggle="popover" data-trigger="hover" data-placement="top" title="" data-content="And here's some amazing content. It's very engaging. Right?" data-original-title="2004">
+                                    <div className="inner-circle"><span className='inner-circle-text'>02</span></div>
+                                    <h6 className="mt-3 mb-1 font-weight-bold">Starting Out</h6>
+                                    <p className="mb-0 mb-lg-0">Joe, passionate about pollution and climate change, took inspiration from Edgar McGregor in California who spent over 580 days cleaning up a park in his community. He began cleaning up his own local parks, and others soon began to take notice.</p>
+                                </div>
+                            </div>
+                            <div className="timeline-step">
+                                <div className="timeline-content" data-toggle="popover" data-trigger="hover" data-placement="top" title="" data-content="And here's some amazing content. It's very engaging. Right?" data-original-title="2005">
+                                    <div className="inner-circle"><span className='inner-circle-text'>03</span></div>
+                                    <h6 className="mt-3 mb-1 font-weight-bold">Connecting Others</h6>
+                                    <p className="mb-0 mb-lg-0">After realizing cleaning up would be too much to do on his own, Joe saw potential in connecting others. He knew that technology had potential to fix these human problems, and assembled a team to help bring his vision to life.</p>
+                                </div>
+                            </div>
+                            <div className="timeline-step">
+                                <div className="timeline-content" data-toggle="popover" data-trigger="hover" data-placement="top" title="" data-content="And here's some amazing content. It's very engaging. Right?" data-original-title="2010">
+                                    <div className="inner-circle"><span className='inner-circle-text'>04</span></div>
+                                    <h6 className="mt-3 mb-1 font-weight-bold">TrashMob was Born</h6>
+                                    <p className="mb-0 mb-lg-0">Today, TrashMob has provided communities the opportunity to create and participate in TrashMobs of their own. The TrashMob team is continuously coming up with more ways to grow the TrashMob community to achieve the common goal of bettering our community!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </Col>
+                </Row>
+            </Container>
+            <Container fluid>
+                <div className="d-flex flex-column text-center py-5">
+                    <h2 className="font-weight-bold">Getting Started</h2>
+                    <span className="flex-wrap">All you really need to start or join a trash mob are:</span>
+                    <div className="d-flex justify-content-center flex-wrap">
+                        <div className="d-flex flex-wrap justify-content-around w-50 my-5">
+                            <div className="d-flex flex-column">
+                                <img src={gloves} className="graphic-large mx-auto"></img>
+                                <span className="font-weight-bold mt-2">Work gloves</span>
+                            </div>
+                            <div className="d-flex flex-column">
+                                <img src={bucket} className="graphic-large mx-auto"></img>
+                                <span className="font-weight-bold mt-2">A bucket</span>
+                            </div>
+                            <div className="d-flex flex-column">
+                                <img src={smileyFace} className="graphic-large mx-auto"></img>
+                                <span className="font-weight-bold mt-2">A good attitude</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Container>
+        </>
     );
 }
 

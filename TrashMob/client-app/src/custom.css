@@ -145,3 +145,20 @@ hr.rounded {
 .color-primary {
   color: #96ba00;
 }
+
+.bg-black {
+  background-color: #212529 !important;
+}
+
+.border-rounded-lg {
+  border-radius: 1rem !important;
+}
+
+.graphic-large {
+  width: 100px;
+  height: 100px;
+}
+
+.font-size-lg {
+  font-size: 1.5rem;
+}
