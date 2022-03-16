@@ -27,7 +27,7 @@ export const AboutUs: React.FC = () => {
                         </div>
                     </Col>
                     <Col className="mt-3 d-flex justify-content-center">
-                        <Image src={trashcans} alt="" className="h-75" />
+                        <Image src={trashcans} alt="trashcans" className="h-75" />
                     </Col>
                 </Row>
             </Container>
@@ -118,15 +118,15 @@ export const AboutUs: React.FC = () => {
                     <div className="d-flex justify-content-center flex-wrap">
                         <div className="d-flex flex-wrap justify-content-around w-50 my-5">
                             <div className="d-flex flex-column">
-                                <img src={gloves} className="graphic-large mx-auto" alt=""></img>
+                                <img src={gloves} className="graphic-large mx-auto" alt="Work gloves"></img>
                                 <span className="font-weight-bold mt-2">Work gloves</span>
                             </div>
                             <div className="d-flex flex-column">
-                                <img src={bucket} className="graphic-large mx-auto" alt=""></img>
+                                <img src={bucket} className="graphic-large mx-auto" alt="Bucket"></img>
                                 <span className="font-weight-bold mt-2">A bucket</span>
                             </div>
                             <div className="d-flex flex-column">
-                                <img src={smileyFace} className="graphic-large mx-auto" alt=""></img>
+                                <img src={smileyFace} className="graphic-large mx-auto" alt="Smiley face"></img>
                                 <span className="font-weight-bold mt-2">A good attitude</span>
                             </div>
                         </div>
