@@ -118,15 +118,15 @@ export const AboutUs: React.FC = () => {
                     <div className="d-flex justify-content-center flex-wrap">
                         <div className="d-flex flex-wrap justify-content-around w-50 my-5">
                             <div className="d-flex flex-column">
-                                <img src={gloves} className="graphic-large mx-auto"></img>
+                                <img src={gloves} className="graphic-large mx-auto" alt=""></img>
                                 <span className="font-weight-bold mt-2">Work gloves</span>
                             </div>
                             <div className="d-flex flex-column">
-                                <img src={bucket} className="graphic-large mx-auto"></img>
+                                <img src={bucket} className="graphic-large mx-auto" alt=""></img>
                                 <span className="font-weight-bold mt-2">A bucket</span>
                             </div>
                             <div className="d-flex flex-column">
-                                <img src={smileyFace} className="graphic-large mx-auto"></img>
+                                <img src={smileyFace} className="graphic-large mx-auto" alt=""></img>
                                 <span className="font-weight-bold mt-2">A good attitude</span>
                             </div>
                         </div>
