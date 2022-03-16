@@ -6,6 +6,8 @@
 // Example
 // $white: black;
 $font-family-base: 'Poppins' !default;
+$primary: rgb(150, 186, 0);
+$primarySemiTransparent: rgba(150, 186, 0, 0.8);
 
 // =================
 // Importing Bootstrap
@@ -17,3 +19,4 @@ $font-family-base: 'Poppins' !default;
 // Importing app styles here so we can reuse bootstrap variables
 // =================
 @import "./app.scss";
+@import "./components/assets/styles/timeline.scss";

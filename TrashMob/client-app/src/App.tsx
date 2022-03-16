@@ -8,8 +8,8 @@ import Home from './components/Home';
 // Layout
 import TopMenu from './components/TopMenu';
 
-import { AboutUs } from './components/AboutUs';
-import ContactUs from './components/ContactUs';
+import { AboutUs } from './components/Pages/AboutUs';
+import ContactUs from './components/Pages/ContactUs';
 import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
 import { GettingStarted } from './components/GettingStarted';
@@ -186,7 +186,7 @@ export const App: React.FC = () => {
             <div className="d-flex flex-column h-100">
                 <BrowserRouter>
                     <TopMenu isUserLoaded={isUserLoaded} currentUser={currentUser} />
-                    <div className="container">
+                    <div className="container-fluid px-0">
                         <Switch>
                             <Route path="/manageeventdashboard/:eventId?" render={(props: AppProps) => renderEditEvent(props)} />
                             <Route path="/eventdetails/:eventId" component={EventDetails} />
