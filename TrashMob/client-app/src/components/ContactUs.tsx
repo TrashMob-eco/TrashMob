@@ -136,7 +136,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
     }
 
     return (
-        <Container fluid>
+        <Container>
             <Row className="gx-2 py-5" lg={2}>
                 <Col lg={4} className="d-flex">
                     <div className="bg-white py-2 px-5 shadow-sm rounded">
