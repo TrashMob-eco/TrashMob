@@ -1,10 +1,11 @@
 import * as React from 'react';
-import trashbin from './assets/the-blowup-t06aN6vewaQ-unsplash1.png';
-import trashcans from './assets/trashcan-artwork.png';
-import bucket from './assets/bucket.svg'
-import gloves from './assets/gloves.svg';
-import smileyFace from './assets/smileyface.svg';
-import { Button, Col, Container, Image, Row } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import trashbin from '../assets/the-blowup-t06aN6vewaQ-unsplash1.png';
+import trashcans from '../assets/trashcan-artwork.png';
+import bucket from '../assets/bucket.svg'
+import gloves from '../assets/gloves.svg';
+import smileyFace from '../assets/smileyface.svg';
+import { Col, Container, Image, Row } from 'react-bootstrap';
 
 export const AboutUs: React.FC = () => {
     return (
@@ -22,7 +23,7 @@ export const AboutUs: React.FC = () => {
                                 To participate, all it takes is the willingness to get your hands a little dirty and a desire to leave the world better than how you found it. Whether it's your neighborhood, a park, a stream, a road,
                                 or even a parking lot of a big box store, all litter being cleaned up contributes to our goal of making this planet of ours a little better for the next generation.
                             </p>
-                            <Button className="mt-2">Find an event</Button>
+                            <Link className="mt-2 btn btn-primary" to="/eventsummaries" role="button">Find an event</Link>
                         </div>
                     </Col>
                     <Col className="mt-3 d-flex justify-content-center">
@@ -112,7 +113,7 @@ export const AboutUs: React.FC = () => {
             </Container>
             <Container fluid>
                 <div className="d-flex flex-column text-center py-5">
-                    <h2 className="font-weight-bold">Getting Started</h2>
+                    <h2 className="font-weight-bold">Getting started</h2>
                     <span className="flex-wrap">All you really need to start or join a trash mob are:</span>
                     <div className="d-flex justify-content-center flex-wrap">
                         <div className="d-flex flex-wrap justify-content-around w-50 my-5">
