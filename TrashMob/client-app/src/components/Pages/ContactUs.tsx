@@ -1,13 +1,13 @@
 import * as React from 'react'
-import ContactRequestData from './Models/ContactRequestData';
+import ContactRequestData from '../Models/ContactRequestData';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { loadCaptchaEnginge, LoadCanvasTemplateNoReload, validateCaptcha } from 'react-simple-captcha';
-import { getDefaultHeaders } from '../store/AuthStore';
+import { getDefaultHeaders } from '../../store/AuthStore';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
-import * as ToolTips from "../store/ToolTips";
+import * as ToolTips from "../../store/ToolTips";
 import { Button, ButtonGroup, Col, Container, Form, Modal, Row } from 'react-bootstrap';
-import * as Constants from './Models/Constants';
+import * as Constants from '../Models/Constants';
 
 interface ContactUsProps extends RouteComponentProps<any> { }
 

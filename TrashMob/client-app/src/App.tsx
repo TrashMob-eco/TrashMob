@@ -8,8 +8,8 @@ import Home from './components/Home';
 // Layout
 import TopMenu from './components/TopMenu';
 
-import { AboutUs } from './components/AboutUs';
-import ContactUs from './components/ContactUs';
+import { AboutUs } from './components/Pages/AboutUs';
+import ContactUs from './components/Pages/ContactUs';
 import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
 import { GettingStarted } from './components/GettingStarted';
