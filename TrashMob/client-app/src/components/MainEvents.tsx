@@ -112,8 +112,8 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
                             <th>Name</th>
                             <th>Date</th>
                             <th>Event Type</th>
-                            {/* <th>City</th> */}
-                            {/* <th>Region</th> */}
+                            {<th>City</th>}
+                            {<th>Region</th>}
                             {/* <th>Country</th> */}
                             <th>Am I Attending?</th>
                             <th />
@@ -125,8 +125,8 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
                                 <td>{mobEvent.name}</td>
                                 <td>{new Date(mobEvent.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' })}</td>
                                 <td>{getEventType(props.eventTypeList, mobEvent.eventTypeId)}</td>
-                                {/* <td>{mobEvent.city}</td> */}
-                                {/* <td>{mobEvent.region}</td> */}
+                                {<td>{mobEvent.city}</td>}
+                                {<td>{mobEvent.region}</td>}
                                 {/* <td>{mobEvent.country}</td> */}
                                 <td>
                                     <Button hidden={!props.isUserLoaded || mobEvent.isAttending === "Yes"} className="action" onClick={() => handleAttend(mobEvent.id)}>Register to Attend Event</Button>
