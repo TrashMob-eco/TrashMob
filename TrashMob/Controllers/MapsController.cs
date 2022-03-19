@@ -1,17 +1,19 @@
 ﻿namespace TrashMob.Controllers
 {
+    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
     using TrashMob.Shared.Persistence;
 
-    [ApiController]
     [Route("api/maps")]
-    public class MapsController : ControllerBase
+    public class MapsController : BaseController
     {
         private readonly IMapRepository mapRepository;
 
-        public MapsController(IMapRepository mapRepository)
+        public MapsController(IMapRepository mapRepository,
+                              TelemetryClient telemetryClient)
+            : base(telemetryClient)
         {
             this.mapRepository = mapRepository;
         }
@@ -25,9 +27,10 @@
 
         [HttpGet("GetAddress")]
         [Authorize]
-        public async Task<IActionResult> GetAddress([FromQuery] double latitude, [FromQuery] double longitude)
+        public async Task<IActionResult> GetAddressForPoint([FromQuery] double latitude, [FromQuery] double longitude)
         {
             var address = await mapRepository.GetAddress(latitude, longitude);
+            TelemetryClient.TrackEvent(nameof(GetAddressForPoint));
             return Ok(address);
         }
     }

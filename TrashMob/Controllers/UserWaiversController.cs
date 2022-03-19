@@ -1,28 +1,30 @@
 ﻿namespace TrashMob.Controllers
 {
+    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Poco;
     using TrashMob.Shared;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    [ApiController]
     [Authorize]
     [Route("api/userwaivers")]
-    public class UserWaiversController : ControllerBase
+    public class UserWaiversController : BaseController
     {
         private readonly IUserWaiverRepository userWaiverRepository;
         private readonly IUserRepository userRepository;
         private readonly IWaiverRepository waiverRepository;
 
-        public UserWaiversController(IUserWaiverRepository userWaiverRepository, IUserRepository userRepository, IWaiverRepository waiverRepository)
+        public UserWaiversController(IUserWaiverRepository userWaiverRepository,
+                                     IUserRepository userRepository,
+                                     IWaiverRepository waiverRepository,
+                                     TelemetryClient telemetryClient)
+            : base(telemetryClient)
         {
             this.userWaiverRepository = userWaiverRepository;
             this.userRepository = userRepository;
@@ -85,6 +87,7 @@
             };
 
             await userWaiverRepository.AddUserWaiver(userWaiver).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(AddUserWaiver));
 
             return CreatedAtAction(nameof(GetUserWaiver), new { userId, waiver.Id });
         }

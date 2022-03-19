@@ -6,15 +6,18 @@ namespace TrashMob.Controllers
     using TrashMob.Shared.Persistence;
     using TrashMob.Poco;
     using System.Threading;
+    using Microsoft.ApplicationInsights;
 
-    [ApiController]
     [Route("api/stats")]
-    public class StatsController : ControllerBase
+    public class StatsController : BaseController
     {
         private readonly IEventRepository eventRepository;
         private readonly IEventSummaryRepository eventSummaryRepository;
 
-        public StatsController(IEventRepository eventRepository, IEventSummaryRepository eventSummaryRepository)
+        public StatsController(IEventRepository eventRepository,
+                               IEventSummaryRepository eventSummaryRepository,
+                               TelemetryClient telemetryClient)
+            : base(telemetryClient)
         {
             this.eventRepository = eventRepository;
             this.eventSummaryRepository = eventSummaryRepository;

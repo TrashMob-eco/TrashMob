@@ -1,5 +1,6 @@
 ﻿namespace TrashMob.Controllers
 {
+    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System;
@@ -12,16 +13,19 @@
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    [ApiController]
     [Authorize]
     [Route("api/partnerusers")]
-    public class PartnerUsersController : ControllerBase
+    public class PartnerUsersController : BaseController
     {
         private readonly IPartnerUserRepository partnerUserRepository;
         private readonly IUserRepository userRepository;
         private readonly IPartnerRepository partnerRepository;
 
-        public PartnerUsersController(IPartnerUserRepository partnerUserRepository, IUserRepository userRepository, IPartnerRepository partnerRepository)
+        public PartnerUsersController(IPartnerUserRepository partnerUserRepository,
+                                      IUserRepository userRepository,
+                                      IPartnerRepository partnerRepository,
+                                      TelemetryClient telemetryClient)
+            : base(telemetryClient)
         {
             this.partnerUserRepository = partnerUserRepository;
             this.userRepository = userRepository;
@@ -115,6 +119,7 @@
             };
 
             await partnerUserRepository.AddPartnerUser(partnerUser).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(AddPartnerUser));
 
             return CreatedAtAction(nameof(GetPartnerUser), new { partnerId, userId });
         }
