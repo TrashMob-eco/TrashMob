@@ -1,5 +1,6 @@
 ﻿namespace TrashMob.Controllers
 {
+    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System;
@@ -13,10 +14,9 @@
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    [ApiController]
     [Authorize]
     [Route("api/partnerrequests")]
-    public class PartnerRequestsController : ControllerBase
+    public class PartnerRequestsController : BaseController
     {
         private readonly IPartnerRequestRepository partnerRequestRepository;
         private readonly IPartnerManager partnerManager;
@@ -26,7 +26,9 @@
         public PartnerRequestsController(IPartnerRequestRepository partnerRequestRepository, 
                                          IPartnerManager partnerManager,
                                          IEmailManager emailManager, 
-                                         IUserRepository userRepository)
+                                         IUserRepository userRepository,
+                                         TelemetryClient telemetryClient)
+            : base(telemetryClient)
         {
             this.partnerRequestRepository = partnerRequestRepository;
             this.partnerManager = partnerManager;
@@ -45,6 +47,7 @@
             }
 
             await partnerRequestRepository.AddPartnerRequest(partnerRequest).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(AddPartnerRequest));
 
             var message = $"From Email: {partnerRequest.PrimaryEmail}\nFrom Name:{partnerRequest.Name}\nMessage:\n{partnerRequest.Notes}";
             var htmlMessage = $"From Email: {partnerRequest.PrimaryEmail}\nFrom Name:{partnerRequest.Name}\nMessage:\n{partnerRequest.Notes}";
@@ -74,6 +77,7 @@
             partnerRequest.PartnerRequestStatusId = (int)PartnerRequestStatusEnum.Approved;
 
             await partnerRequestRepository.UpdatePartnerRequest(partnerRequest).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(ApprovePartnerRequest));
 
             await partnerManager.CreatePartner(partnerRequest).ConfigureAwait(false);
 
@@ -109,6 +113,7 @@
             partnerRequest.PartnerRequestStatusId = (int)PartnerRequestStatusEnum.Denied;
 
             await partnerRequestRepository.UpdatePartnerRequest(partnerRequest).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(DenyPartnerRequest));
 
             var partnerMessage = emailManager.GetEmailTemplate(NotificationTypeEnum.PartnerRequestDeclined.ToString());
             partnerMessage = partnerMessage.Replace("{PartnerName}", partnerRequest.Name);
@@ -138,12 +143,6 @@
             }
 
             return Ok(await partnerRequestRepository.GetPartnerRequests(cancellationToken).ConfigureAwait(false));
-        }
-
-        private bool ValidateUser(string userId)
-        {
-            var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            return userId == nameIdentifier;
         }
     }
 }

@@ -1,16 +1,18 @@
 ﻿namespace TrashMob.Controllers
 {
+    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
     using TrashMob.Shared.Persistence;
 
-    [ApiController]
     [Route("api/secrets")]
-    public class SecretsController : ControllerBase
+    public class SecretsController : BaseController
     {
         private readonly ISecretRepository secretRepository;
 
-        public SecretsController(ISecretRepository secretRepository)
+        public SecretsController(ISecretRepository secretRepository,
+                                 TelemetryClient telemetryClient)
+            : base(telemetryClient)
         {
             this.secretRepository = secretRepository;
         }

@@ -3,16 +3,18 @@ namespace TrashMob.Controllers
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Shared.Persistence;
 
-    [ApiController]
     [Route("api/eventtypes")]
-    public class EventsTypesController : ControllerBase
+    public class EventsTypesController : BaseController
     {
         private readonly IEventTypeRepository eventTypeRepository;
 
-        public EventsTypesController(IEventTypeRepository eventTypeRepository)
+        public EventsTypesController(IEventTypeRepository eventTypeRepository,
+                                     TelemetryClient telemetryClient)
+            : base(telemetryClient)
         {
             this.eventTypeRepository = eventTypeRepository;
         }
