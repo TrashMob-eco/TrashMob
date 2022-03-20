@@ -15,15 +15,18 @@ namespace TrashMob.Controllers
     using TrashMob.Shared;
     using System.Collections.Generic;
     using TrashMob.Shared.Engine;
+    using Microsoft.ApplicationInsights;
 
-    [ApiController]
     [Route("api/users")]
-    public class UsersController : ControllerBase
+    public class UsersController : BaseController
     {
         private readonly IUserRepository userRepository;
         private readonly IEmailManager emailManager;
 
-        public UsersController(IUserRepository userRepository, IEmailManager emailManager)
+        public UsersController(IUserRepository userRepository,
+                               IEmailManager emailManager,
+                               TelemetryClient telemetryClient)
+            : base(telemetryClient)
         {
             this.userRepository = userRepository;
             this.emailManager = emailManager;
@@ -93,6 +96,7 @@ namespace TrashMob.Controllers
             try
             {
                 var updatedUser = await userRepository.UpdateUser(user).ConfigureAwait(false);
+                TelemetryClient.TrackEvent("UpdateUser");
                 var returnedUser = await userRepository.GetUserByNameIdentifier(user.NameIdentifier).ConfigureAwait(false);
                 return Ok(returnedUser);
             }
@@ -110,7 +114,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpPut("updateemailoptout/{userId}/{isOptedOutOfAllEmails}")]
-        public async Task<IActionResult> PutUserEmailOptOut(Guid userId, bool isOptedOutOfAllEmails)
+        public async Task<IActionResult> UpdateUserEmailOptOut(Guid userId, bool isOptedOutOfAllEmails)
         {
             var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
 
@@ -123,6 +127,7 @@ namespace TrashMob.Controllers
             {
                 user.IsOptedOutOfAllEmails = isOptedOutOfAllEmails;
                 await userRepository.UpdateUser(user);
+                TelemetryClient.TrackEvent(nameof(UpdateUserEmailOptOut));
 
                 return Ok(user);
             }
@@ -159,6 +164,7 @@ namespace TrashMob.Controllers
                 originalUser.SourceSystemUserName = user.SourceSystemUserName;
 
                 await userRepository.UpdateUser(originalUser).ConfigureAwait(false);
+                TelemetryClient.TrackEvent("UpdateUser");
 
                 var returnedUser = await userRepository.GetUserByNameIdentifier(user.NameIdentifier).ConfigureAwait(false);
                 return Ok(returnedUser);
@@ -175,6 +181,7 @@ namespace TrashMob.Controllers
             }
 
             var newUser = await userRepository.AddUser(user).ConfigureAwait(false);
+            TelemetryClient.TrackEvent("AddUser");
 
             // Notify Admins that a new user has joined
             var message = $"A new user: {user.Email} has joined TrashMob.eco!";
@@ -219,6 +226,8 @@ namespace TrashMob.Controllers
             }
 
             await userRepository.DeleteUserByInternalId(id).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(DeleteUser));
+
             return Ok(id);
         }
 
@@ -230,12 +239,6 @@ namespace TrashMob.Controllers
         private async Task<User> UserExists(string nameIdentifier)
         {
             return (await userRepository.GetAllUsers().ConfigureAwait(false)).FirstOrDefault(u => u.NameIdentifier == nameIdentifier);
-        }
-
-        private bool ValidateUser(string userId)
-        {
-            var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            return userId == nameIdentifier;
         }
     }
 }

@@ -14,15 +14,18 @@ namespace TrashMob.Controllers
     using TrashMob.Shared.Persistence;
     using TrashMob.Poco;
     using System.Threading;
+    using Microsoft.ApplicationInsights;
 
-    [ApiController]
     [Route("api/eventattendees")]
-    public class EventAttendeesController : ControllerBase
+    public class EventAttendeesController : BaseController
     {
         private readonly IEventAttendeeRepository eventAttendeeRepository;
         private readonly IUserRepository userRepository;
 
-        public EventAttendeesController(IEventAttendeeRepository eventAttendeeRepository, IUserRepository userRepository)
+        public EventAttendeesController(IEventAttendeeRepository eventAttendeeRepository,
+                                        IUserRepository userRepository,
+                                        TelemetryClient telemetryClient) 
+            : base(telemetryClient)
         {
             this.eventAttendeeRepository = eventAttendeeRepository;
             this.userRepository = userRepository;
@@ -38,7 +41,7 @@ namespace TrashMob.Controllers
         [HttpPut("{id}")]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> PutEventAttendee(EventAttendee eventAttendee)
+        public async Task<IActionResult> UpdateEventAttendee(EventAttendee eventAttendee)
         {
             var user = await userRepository.GetUserByInternalId(eventAttendee.UserId).ConfigureAwait(false);
             if (user == null || !ValidateUser(user.NameIdentifier))
@@ -49,6 +52,8 @@ namespace TrashMob.Controllers
             try
             {
                 var updatedEventAttendee = await eventAttendeeRepository.UpdateEventAttendee(eventAttendee).ConfigureAwait(false);
+                TelemetryClient.TrackEvent(nameof(UpdateEventAttendee));
+
                 return Ok(updatedEventAttendee);
             }
             catch (DbUpdateConcurrencyException)
@@ -67,7 +72,7 @@ namespace TrashMob.Controllers
         [HttpPost]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> PostEventAttendee(EventAttendee eventAttendee)
+        public async Task<IActionResult> AddEventAttendee(EventAttendee eventAttendee)
         {
             var user = await userRepository.GetUserByInternalId(eventAttendee.UserId).ConfigureAwait(false);
             if (user == null || !ValidateUser(user.NameIdentifier))
@@ -76,6 +81,7 @@ namespace TrashMob.Controllers
             }
 
             await eventAttendeeRepository.AddEventAttendee(eventAttendee.EventId, eventAttendee.UserId).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(AddEventAttendee));
 
             return CreatedAtAction("GetEventAttendees", new { eventId = eventAttendee.EventId });
         }
@@ -92,19 +98,14 @@ namespace TrashMob.Controllers
             }
 
             await eventAttendeeRepository.DeleteEventAttendee(eventId, userId).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(DeleteEventAttendee));
+
             return Ok();
         }
 
         private async Task<bool> EventAttendeeExists(Guid eventId, Guid userId)
         {
             return (await eventAttendeeRepository.GetEventAttendees(eventId).ConfigureAwait(false)).Any(e => e.Id == userId);
-        }
-
-        // Ensure the user calling in is the owner of the record
-        private bool ValidateUser(string userId)
-        {
-            var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            return userId == nameIdentifier;
         }
     }
 }

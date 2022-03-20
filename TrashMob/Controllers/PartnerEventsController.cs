@@ -7,13 +7,13 @@ namespace TrashMob.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Poco;
     using TrashMob.Shared.Persistence;
 
-    [ApiController]
     [Route("api/partnerevents")]
-    public class PartnerEventsController : ControllerBase
+    public class PartnerEventsController : BaseController
     {
         private readonly IEventPartnerRepository eventPartnerRepository;
         private readonly IUserRepository userRepository;
@@ -27,7 +27,9 @@ namespace TrashMob.Controllers
                                        IPartnerRepository partnerRepository, 
                                        IPartnerLocationRepository partnerLocationRepository, 
                                        IEventRepository eventRepository,
-                                       IPartnerUserRepository partnerUserRepository)
+                                       IPartnerUserRepository partnerUserRepository,
+                                       TelemetryClient telemetryClient)
+            : base(telemetryClient)
         {
             this.eventPartnerRepository = eventPartnerRepository;
             this.userRepository = userRepository;
