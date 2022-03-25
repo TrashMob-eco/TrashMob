@@ -3,16 +3,18 @@ namespace TrashMob.Controllers
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Shared.Persistence;
 
-    [ApiController]
     [Route("api/mediatypes")]
-    public class MediaTypesController : ControllerBase
+    public class MediaTypesController : BaseController
     {
         private readonly IMediaTypeRepository mediaTypeRepository;
 
-        public MediaTypesController(IMediaTypeRepository mediaTypeRepository)
+        public MediaTypesController(IMediaTypeRepository mediaTypeRepository,
+                                    TelemetryClient telemetryClient)
+            : base(telemetryClient)
         {
             this.mediaTypeRepository = mediaTypeRepository;
         }

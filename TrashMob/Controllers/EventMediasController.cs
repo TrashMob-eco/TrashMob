@@ -12,15 +12,18 @@ namespace TrashMob.Controllers
     using TrashMob.Shared;
     using System.Collections.Generic;
     using System.Threading;
+    using Microsoft.ApplicationInsights;
 
-    [ApiController]
     [Route("api/eventmedias")]
-    public class EventMediasController : ControllerBase
+    public class EventMediasController : BaseController
     {
         private readonly IUserRepository userRepository;
         private readonly IEventMediaRepository eventMediaRepository;
 
-        public EventMediasController(IUserRepository userRepository, IEventMediaRepository eventMediaRepository)
+        public EventMediasController(IUserRepository userRepository,
+                                     IEventMediaRepository eventMediaRepository, 
+                                     TelemetryClient telemetryClient)
+            : base(telemetryClient)
         {
             this.userRepository = userRepository;
             this.eventMediaRepository = eventMediaRepository;
@@ -65,7 +68,7 @@ namespace TrashMob.Controllers
         [HttpPut("{userId}")]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> PutEventMedia(Guid userId, IList<EventMedia> eventMedias)
+        public async Task<IActionResult> UpdateEventMedia(Guid userId, IList<EventMedia> eventMedias)
         {
             var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
 
@@ -78,6 +81,8 @@ namespace TrashMob.Controllers
             {
                 await eventMediaRepository.AddUpdateEventMedia(eventMedia).ConfigureAwait(false);
             }
+
+            TelemetryClient.TrackEvent(nameof(UpdateEventMedia));
 
             return Ok();
         }
@@ -96,13 +101,9 @@ namespace TrashMob.Controllers
             }
 
             await eventMediaRepository.DeleteEventMedia(id).ConfigureAwait(false);
-            return Ok(id);
-        }
+            TelemetryClient.TrackEvent(nameof(DeleteEventMedia));
 
-        private bool ValidateUser(string userId)
-        {
-            var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            return userId == nameIdentifier;
+            return Ok(id);
         }
     }
 }

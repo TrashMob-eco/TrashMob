@@ -3,16 +3,18 @@ namespace TrashMob.Controllers
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Shared.Persistence;
 
-    [ApiController]
     [Route("api/waiverdurationtypes")]
-    public class WaiverDurationTypesController : ControllerBase
+    public class WaiverDurationTypesController : BaseController
     {
         private readonly IWaiverDurationTypeRepository waiverDurationTypeRepository;
 
-        public WaiverDurationTypesController(IWaiverDurationTypeRepository waiverDurationTypeRepository)
+        public WaiverDurationTypesController(IWaiverDurationTypeRepository waiverDurationTypeRepository,
+                                             TelemetryClient telemetryClient)
+            : base(telemetryClient)
         {
             this.waiverDurationTypeRepository = waiverDurationTypeRepository;
         }
