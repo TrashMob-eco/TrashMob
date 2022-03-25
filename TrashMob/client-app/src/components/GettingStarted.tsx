@@ -6,12 +6,26 @@ import picker from './assets/gettingStarted/picker.png';
 import trashcangroup from './assets/gettingStarted/trashcangroup.png';
 import wear from './assets/gettingStarted/wear.png';
 import workgloves from './assets/gettingStarted/workgloves.png';
+import globes from './assets/gettingStarted/globes.png';
 import { Link } from 'react-router-dom';
 import { Col, Container, Row, Image } from 'react-bootstrap';
 
 export const GettingStarted: React.FC = () => {
     return (
         <>
+            <Container fluid style={{ backgroundColor: '#96ba00'}}>
+                <Row className="text-center pt-0">
+                    <Col md={7} className="d-flex flex-column justify-content-center pr-5">
+                        <h1 className='font-weight-bold'>Getting Started</h1>
+                        <p className="font-weight-bold">
+                            Tips and tricks to get you out there.
+                        </p>
+                    </Col>
+                    <Col md={5}>
+                        <Image src={globes} alt="globes" className="h-99 mt-0" />
+                    </Col>
+                </Row>
+            </Container>
             <Container fluid className="bg-white">
                 <Row className="text-center pt-5 ">
                     <Col md>
