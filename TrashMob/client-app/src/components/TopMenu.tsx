@@ -5,7 +5,7 @@ import UserData from './Models/UserData';
 import logo from './assets/logo.svg'
 import { Button, Dropdown, Nav } from 'react-bootstrap';
 import './assets/styles/header.css';
-import { Person, PersonCircle, PlusLg, Power, Speedometer2 } from 'react-bootstrap-icons';
+import { Bell, Building, BoxArrowLeft, Person, PersonBadge, PersonCircle, PlusLg, Speedometer2 } from 'react-bootstrap-icons';
 
 interface TopMenuProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -58,7 +58,7 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                         {/* <Navbar.Toggle aria-controls="basic-navbar-nav" /> */}
                         <ul className="nav navbar-nav">
                             {mainNavItems.map(item => (
-                                <li><Nav.Link href={item.url} key={item.name}>{item.name}</Nav.Link></li>
+                                <li key={item.name}><Nav.Link href={item.url} >{item.name}</Nav.Link></li>
                             ))}
                         </ul>
                         <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="loginBtn">Sign in</Button>
@@ -71,17 +71,17 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                             <Dropdown.Menu className="shadow border-0">
                                 <Dropdown.Item eventKey="1" href="/mydashboard"><Speedometer2 aria-hidden="true" />My dashboard</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="2" href="/userprofile"><Person aria-hidden="true" />My profile</Dropdown.Item>
+                                <Dropdown.Item eventKey="2" href="/manageeventdashboard"><PlusLg aria-hidden="true" />Add event</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="3" href="/notificationpreferences"><Person aria-hidden="true" />Notification preferences</Dropdown.Item>
+                                <Dropdown.Item eventKey="3" href="/userprofile"><Person aria-hidden="true" />My profile</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="4" href="/manageeventdashboard"><PlusLg aria-hidden="true" />Add event</Dropdown.Item>
+                                <Dropdown.Item eventKey="4" href="/notificationpreferences"><Bell aria-hidden="true" />Notification preferences</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="5" href="/partnerdashboard"><PlusLg aria-hidden="true" />Partner dashboard</Dropdown.Item>
+                                <Dropdown.Item eventKey="5" href="/partnerdashboard"><Building aria-hidden="true" />Partner dashboard</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="6" href="/siteadmin" disabled={!props.currentUser.isSiteAdmin}><PlusLg aria-hidden="true" />Site administration</Dropdown.Item>
+                                <Dropdown.Item eventKey="6" href="/siteadmin" disabled={!props.currentUser.isSiteAdmin}><PersonBadge aria-hidden="true" />Site administration</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="7" onClick={(e) => signOut(e)}><Power aria-hidden="true" />Sign out</Dropdown.Item>
+                                <Dropdown.Item eventKey="7" onClick={(e) => signOut(e)}><BoxArrowLeft aria-hidden="true" />Sign out</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
                     </div>
