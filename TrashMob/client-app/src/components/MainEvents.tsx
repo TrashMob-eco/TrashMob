@@ -47,7 +47,7 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
                 dispEvent.eventDate = mobEvent.eventDate;
                 dispEvent.eventTypeId = mobEvent.eventTypeId;
                 dispEvent.name = mobEvent.name;
-                dispEvent.creator = mobEvent.createdByUserId;
+                dispEvent.creator = mobEvent.createdByUserName;
 
                 if (props.isUserEventDataLoaded) {
                     var isAttending = props.myAttendanceList && (props.myAttendanceList.findIndex((e) => e.id === mobEvent.id) >= 0);

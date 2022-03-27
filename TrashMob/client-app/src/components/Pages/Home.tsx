@@ -23,6 +23,7 @@ import Trashbag from '../assets/Trashbag.svg';
 import Person from '../assets/Person.svg';
 import Clock from '../assets/Clock.svg';
 import { GettingStartedSection } from '../GettingStartedSection';
+import StatsData from '../Models/StatsData';
 
 export interface HomeProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -43,7 +44,12 @@ const Home: React.FC<HomeProps> = (props) => {
     const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
     const [agree, setAgree] = React.useState(false);
     const [isOpen, setIsOpen] = React.useState(false);
-    const [eventView, setEventView] = React.useState<string>('map');
+    const [eventView, setEventView] = React.useState<string>('list');
+    const [totalBags, setTotalBags] = React.useState<number>(0);
+    const [totalHours, setTotalHours] = React.useState<number>(0);
+    const [totalEvents, setTotalEvents] = React.useState<number>(0);
+    const [totalParticipants, setTotalParticipants] = React.useState<number>(0);
+    const [isDataLoaded, setIsDataLoaded] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
@@ -64,6 +70,19 @@ const Home: React.FC<HomeProps> = (props) => {
             .then(data => {
                 setEventList(data);
                 setIsEventDataLoaded(true);
+            });
+
+        fetch('/api/stats', {
+            method: 'GET',
+            headers: headers
+        })
+            .then(response => response.json() as Promise<StatsData>)
+            .then(data => {
+                setTotalBags(data.totalBags);
+                setTotalHours(data.totalHours);
+                setTotalEvents(data.totalEvents);
+                setTotalParticipants(data.totalParticipants);
+                setIsDataLoaded(true);
             });
 
         MapStore.getOption().then(opts => {
@@ -277,22 +296,22 @@ const Home: React.FC<HomeProps> = (props) => {
             <Container className="d-flex justify-content-around my-5 py-5 flex-column flex-md-row">
                 <div className="d-flex flex-column justify-content-center text-center">
                     <img src={Calendar} alt="Calendar icon" className="w-auto mx-auto mb-3" />
-                    <span className="font-weight-bold font-size-lg">8</span>
+                    <span className="font-weight-bold font-size-lg">{totalEvents}</span>
                     <span className="font-weight-bold">Events Hosted</span>
                 </div>
                 <div className="d-flex flex-column justify-content-center text-center">
                     <img src={Trashbag} alt="Trashbag icon" className="w-auto mx-auto mb-3" />
-                    <span className="font-weight-bold font-size-lg">8</span>
+                    <span className="font-weight-bold font-size-lg">{totalBags}</span>
                     <span className="font-weight-bold">Bags Collected</span>
                 </div>
                 <div className="d-flex flex-column justify-content-center text-center">
                     <img src={Person} alt="Person icon" className="w-auto mx-auto mb-3" />
-                    <span className="font-weight-bold font-size-lg">8</span>
+                    <span className="font-weight-bold font-size-lg">{totalParticipants}</span>
                     <span className="font-weight-bold">Participants</span>
                 </div>
                 <div className="d-flex flex-column justify-content-center text-center">
                     <img src={Clock} alt="Clock icon" className="w-auto mx-auto mb-3" />
-                    <span className="font-weight-bold font-size-lg">8</span>
+                    <span className="font-weight-bold font-size-lg">{totalHours}</span>
                     <span className="font-weight-bold">Hours Spent</span>
                 </div>
             </Container>
