@@ -1,5 +1,6 @@
 ﻿namespace TrashMob.Controllers
 {
+    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Mvc;
     using System.Collections.Generic;
     using System.Threading;
@@ -9,14 +10,16 @@
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    [ApiController]
     [Route("api/contactrequest")]
-    public class ContactRequestController : ControllerBase
+    public class ContactRequestController : BaseController
     {
         private readonly IContactRequestRepository contactRequestRepository;
         private readonly IEmailManager emailManager;
 
-        public ContactRequestController(IContactRequestRepository contactRequestRepository, IEmailManager emailManager)
+        public ContactRequestController(IContactRequestRepository contactRequestRepository, 
+                                        IEmailManager emailManager, 
+                                        TelemetryClient telemetryClient)
+            : base(telemetryClient)
         {
             this.contactRequestRepository = contactRequestRepository;
             this.emailManager = emailManager;
@@ -44,6 +47,8 @@
             };
 
             await emailManager.SendSystemEmail(subject, message, htmlMessage, recipients, CancellationToken.None).ConfigureAwait(false);
+
+            TelemetryClient.TrackEvent(nameof(SaveContactRequest));
 
             return Ok();
         }

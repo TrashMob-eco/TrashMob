@@ -1,23 +1,25 @@
 ﻿namespace TrashMob.Controllers
 {
+    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using System;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using TrashMob.Shared;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    [ApiController]
     [Route("api/admin")]
-    public class AdminController : ControllerBase
+    public class AdminController : BaseController
     {
         private readonly IPartnerRequestRepository partnerRequestRepository;
         private readonly IUserRepository userRepository;
 
-        public AdminController(IPartnerRequestRepository partnerRequestRepository, IUserRepository userRepository)
+        public AdminController(IPartnerRequestRepository partnerRequestRepository, 
+                               IUserRepository userRepository, 
+                               TelemetryClient telemetryClient) 
+            : base(telemetryClient)
         {
             this.partnerRequestRepository = partnerRequestRepository;
             this.userRepository = userRepository;
@@ -35,13 +37,8 @@
                 return Forbid();
             }
 
+            TelemetryClient.TrackEvent(nameof(UpdatePartnerRequest));
             return Ok(await partnerRequestRepository.UpdatePartnerRequest(partnerRequest).ConfigureAwait(false));
-        }
-
-        private bool ValidateUser(string userId)
-        {
-            var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            return userId == nameIdentifier;
         }
     }
 }

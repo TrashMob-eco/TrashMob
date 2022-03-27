@@ -17,10 +17,10 @@ namespace TrashMob.Controllers
     using System.Collections.Generic;
     using TrashMob.Shared.Engine;
     using TrashMob.Poco;
+    using Microsoft.ApplicationInsights;
 
-    [ApiController]
     [Route("api/events")]
-    public class EventsController : ControllerBase
+    public class EventsController : BaseController
     {
         private readonly IEventRepository eventRepository;
         private readonly IEventAttendeeRepository eventAttendeeRepository;
@@ -28,7 +28,13 @@ namespace TrashMob.Controllers
         private readonly IEmailManager emailManager;
         private readonly IMapRepository mapRepository;
 
-        public EventsController(IEventRepository eventRepository, IEventAttendeeRepository eventAttendeeRepository, IUserRepository userRepository, IEmailManager emailManager, IMapRepository mapRepository)
+        public EventsController(IEventRepository eventRepository,
+                                IEventAttendeeRepository eventAttendeeRepository,
+                                IUserRepository userRepository,
+                                IEmailManager emailManager,
+                                IMapRepository mapRepository,
+                                TelemetryClient telemetryClient)
+            : base(telemetryClient)
         {
             this.eventRepository = eventRepository;
             this.eventAttendeeRepository = eventAttendeeRepository;
@@ -122,7 +128,7 @@ namespace TrashMob.Controllers
         [HttpPut]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> PutEvent(Event mobEvent)
+        public async Task<IActionResult> UpdateEvent(Event mobEvent)
         {
             var user = await userRepository.GetUserByInternalId(mobEvent.CreatedByUserId).ConfigureAwait(false);
             if (user == null || !ValidateUser(user.NameIdentifier))
@@ -133,6 +139,8 @@ namespace TrashMob.Controllers
             try
             {
                 var updatedEvent = await eventRepository.UpdateEvent(mobEvent).ConfigureAwait(false);
+                TelemetryClient.TrackEvent(nameof(UpdateEvent));
+
                 return Ok(updatedEvent);
             }
             catch (DbUpdateConcurrencyException)
@@ -151,7 +159,7 @@ namespace TrashMob.Controllers
         [HttpPost]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> PostEvent(Event mobEvent)
+        public async Task<IActionResult> AddEvent(Event mobEvent)
         {
             var user = await userRepository.GetUserByInternalId(mobEvent.CreatedByUserId).ConfigureAwait(false);
             if (user == null || !ValidateUser(user.NameIdentifier))
@@ -160,6 +168,7 @@ namespace TrashMob.Controllers
             }
 
             var eventId = await eventRepository.AddEvent(mobEvent).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(AddEvent));
 
             var message = $"A new event: {mobEvent.Name} in {mobEvent.City} has been created on TrashMob.eco!";
             var htmlMessage = $"A new event: {mobEvent.Name} in {mobEvent.City} has been created on TrashMob.eco!";
@@ -191,6 +200,7 @@ namespace TrashMob.Controllers
             var eventAttendees = await eventAttendeeRepository.GetEventAttendees(eventCancellationRequest.EventId).ConfigureAwait(false);
             
             await eventRepository.DeleteEvent(eventCancellationRequest.EventId, eventCancellationRequest.CancellationReason).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(DeleteEvent));
 
             var message = emailManager.GetEmailTemplate(NotificationTypeEnum.EventCancelledNotice.ToString());
             message = message.Replace("{EventName}", mobEvent.Name);
@@ -228,12 +238,6 @@ namespace TrashMob.Controllers
         private async Task<bool> EventExists(Guid id)
         {
             return (await eventRepository.GetAllEvents().ConfigureAwait(false)).Any(e => e.Id == id);
-        }
-
-        private bool ValidateUser(string userId)
-        {
-            var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            return userId == nameIdentifier;
         }
     }
 }

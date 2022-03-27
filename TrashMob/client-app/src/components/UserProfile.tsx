@@ -200,8 +200,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
     }
 
     function validateForm() {
-        if (userName === "" ||
-            userNameErrors !== "" ||
+        if (userNameErrors !== "" ||
             givenNameErrors !== "" ||
             surNameErrors !== "" ||
             cityErrors !== "" ||

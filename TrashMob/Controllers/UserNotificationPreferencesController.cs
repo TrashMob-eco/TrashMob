@@ -12,15 +12,18 @@ namespace TrashMob.Controllers
     using TrashMob.Shared;
     using System.Collections.Generic;
     using System.Threading;
+    using Microsoft.ApplicationInsights;
 
-    [ApiController]
     [Route("api/usernotificationpreferences")]
-    public class UserNotificationPreferencesController : ControllerBase
+    public class UserNotificationPreferencesController : BaseController
     {
         private readonly IUserRepository userRepository;
         private readonly IUserNotificationPreferenceRepository userNotificationPreferenceRepository;
 
-        public UserNotificationPreferencesController(IUserRepository userRepository, IUserNotificationPreferenceRepository userNotificationPreferenceRepository)
+        public UserNotificationPreferencesController(IUserRepository userRepository,
+                                                     IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
+                                                     TelemetryClient telemetryClient)
+            : base(telemetryClient)
         {
             this.userRepository = userRepository;
             this.userNotificationPreferenceRepository = userNotificationPreferenceRepository;
@@ -40,7 +43,7 @@ namespace TrashMob.Controllers
         [HttpPut("{userId}")]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> PutUserNotificationPreferences(Guid userId, IList<UserNotificationPreference> userNotificationPreferences)
+        public async Task<IActionResult> UpdateUserNotificationPreferences(Guid userId, IList<UserNotificationPreference> userNotificationPreferences)
         {
             var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
 
@@ -54,13 +57,9 @@ namespace TrashMob.Controllers
                 await userNotificationPreferenceRepository.AddUpdateUserNotificationPreference(notificationPreference).ConfigureAwait(false);
             }
 
-            return Ok();
-        }
+            TelemetryClient.TrackEvent(nameof(UpdateUserNotificationPreferences));
 
-        private bool ValidateUser(string userId)
-        {
-            var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            return userId == nameIdentifier;
+            return Ok();
         }
     }
 }

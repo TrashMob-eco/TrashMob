@@ -7,18 +7,17 @@ namespace TrashMob.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Poco;
     using TrashMob.Shared;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    [ApiController]
     [Route("api/eventsummaries")]
-    public class EventSummariesController : ControllerBase
+    public class EventSummariesController : BaseController
     {
         private readonly IEventSummaryRepository eventSummaryRepository;
         private readonly IUserRepository userRepository;
@@ -26,7 +25,9 @@ namespace TrashMob.Controllers
 
         public EventSummariesController(IEventSummaryRepository eventSummaryRepository,
                                        IUserRepository userRepository,
-                                       IEventRepository eventRepository)
+                                       IEventRepository eventRepository,
+                                       TelemetryClient telemetryClient) 
+            : base(telemetryClient)
         {
             this.eventSummaryRepository = eventSummaryRepository;
             this.userRepository = userRepository;
@@ -85,7 +86,7 @@ namespace TrashMob.Controllers
         [HttpPut]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> PutEventSummary(EventSummary eventSummary)
+        public async Task<IActionResult> UpdateEventSummary(EventSummary eventSummary)
         {
             var user = await userRepository.GetUserByInternalId(eventSummary.CreatedByUserId).ConfigureAwait(false);
             if (user == null || !ValidateUser(user.NameIdentifier))
@@ -94,13 +95,15 @@ namespace TrashMob.Controllers
             }
 
             var updatedEvent = await eventSummaryRepository.UpdateEventSummary(eventSummary).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(UpdateEventSummary));
+
             return Ok(updatedEvent);
         }
 
         [HttpPost]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> PostEventSummary(EventSummary eventSummary)
+        public async Task<IActionResult> AddEventSummary(EventSummary eventSummary)
         {
             var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
             if (currentUser == null || !ValidateUser(currentUser.NameIdentifier))
@@ -113,6 +116,7 @@ namespace TrashMob.Controllers
             eventSummary.CreatedDate = DateTimeOffset.UtcNow;
             eventSummary.LastUpdatedDate = DateTimeOffset.UtcNow;
             await eventSummaryRepository.AddEventSummary(eventSummary).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(AddEventSummary));
 
             return CreatedAtAction(nameof(GetEventSummary), new { eventId = eventSummary.EventId });
         }
@@ -131,14 +135,9 @@ namespace TrashMob.Controllers
             }
 
             await eventSummaryRepository.DeleteEventSummary(eventId).ConfigureAwait(false);
-            return Ok(eventId);
-        }
+            TelemetryClient.TrackEvent(nameof(DeleteEventSummary));
 
-        // Ensure the user calling in is the owner of the record
-        private bool ValidateUser(string userId)
-        {
-            var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            return userId == nameIdentifier;
+            return Ok(eventId);
         }
     }
 }
