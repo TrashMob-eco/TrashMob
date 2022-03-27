@@ -6,6 +6,8 @@ import MapComponent from './MapComponent';
 import * as MapStore from '../store/MapStore'
 import UserData from './Models/UserData';
 import { HtmlMarkerLayer } from './HtmlMarkerLayer/SimpleHtmlMarkerLayer'
+import { AsyncTypeahead } from 'react-bootstrap-typeahead';
+import { getDefaultHeaders } from '../store/AuthStore';
 
 interface MapControllerProps {
     mapOptions: IAzureMapOptions | undefined
@@ -27,6 +29,16 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     const [isDataSourceLoaded, setIsDataSourceLoaded] = React.useState(false);
     const { onLocationChange } = props.onLocationChange;
+    const CACHE = {};
+    const PER_PAGE = 50;
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [options, setOptions] = React.useState([]);
+    const [query, setQuery] = React.useState('');
+    const [mapKey, setMapKey] = React.useState('');
+
+    const handleInputChange = (q: string) => {
+        setQuery(q);
+    };
 
     useEffect(() => {
         if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && !isDataSourceLoaded && isMapReady) {
@@ -50,7 +62,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
                     // Create an HtmlMarker.
                     const marker = new HtmlMarker({
                         position: position,
-                        draggable: props.isDraggable                                                
+                        draggable: props.isDraggable
                     });
 
                     mapRef.events.add('mouseover', marker, (event: any) => {
@@ -127,12 +139,115 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
         onLocationChange,
         isMapReady]);
 
+    useEffect(() => {
+        const getmapkey = async () => {
+            var key = await MapStore.getKey();
+            setMapKey(key);
+        }
+
+        getmapkey();
+    });
+
     function handleLocationChange(e: any) {
         props.onLocationChange(e);
     }
 
+    const handlePagination = (e: any, shownResults: any) => {
+        const cachedQuery = CACHE[query];
+
+        // Don't make another request if:
+        // - the cached results exceed the shown results
+        // - we've already fetched all possible results
+        if (
+            cachedQuery.options.length > shownResults ||
+            cachedQuery.options.length === cachedQuery.total_count
+        ) {
+            return;
+        }
+
+        setIsLoading(true);
+
+        const page = cachedQuery.page + 1;
+
+        makeAndHandleRequest(query, page)
+            .then((resp: any) => {
+            const options = cachedQuery.options.concat(resp.options);
+            CACHE[query] = { ...cachedQuery, options, page };
+
+            setIsLoading(false);
+            setOptions(options);
+        });
+    };
+
+    // `handleInputChange` updates state and triggers a re-render, so
+    // use `useCallback` to prevent the debounced search handler from
+    // being cancelled.
+    const handleSearch = React.useCallback((q) => {
+        if (CACHE[q]) {
+            setOptions(CACHE[q].options);
+            return;
+        }
+
+        setIsLoading(true);
+        makeAndHandleRequest(q)
+            .then((resp: any) => {
+            CACHE[q] = { ...resp, page: 1 };
+
+            setIsLoading(false);
+            setOptions(resp.options);
+        });
+    }, []);
+
+    function makeAndHandleRequest(query: string, page: number = 1) {
+
+        var headers = getDefaultHeaders('GET');
+        var kk = "5p5HTkSxyEJQS3Jo5n6uVbdtY_zmhItA4QpxWaQh0x8";
+
+        return fetch('https://atlas.microsoft.com/search/address/json?typeahead=true&subscription-key=' + kk + '&api-version=1.0&query=' + query, {
+            method: 'GET',
+            mode: 'cors',
+            headers: headers
+        })
+            .then((resp) => resp.json())
+            .then(({ res, total_count }) => {
+                const options = res.results.map((i: any) => ({
+                    id: i.id,
+                    address: i.address.streetNameAndNumber,
+                }));
+                return { options, total_count };
+            });
+    }
+
     return (
         <>
+            <AsyncTypeahead
+                id="async-pagination-example"
+                isLoading={isLoading}
+                labelKey="login"
+                maxResults={PER_PAGE - 1}
+                minLength={2}
+                onInputChange={handleInputChange}
+                onPaginate={handlePagination}
+                onSearch={handleSearch}
+                options={options}
+                paginate
+                placeholder="Search for a location..."
+                renderMenuItemChildren={(option: any) => (
+                    <div key={option.id}>
+                        <img
+                            alt={option.login}
+                            src={option.avatar_url}
+                            style={{
+                                height: '24px',
+                                marginRight: '10px',
+                                width: '24px',
+                            }}
+                        />
+                        <span>{option.login}</span>
+                    </div>
+                )}
+                useCache={false}
+            />
             <MapComponent mapOptions={props.mapOptions} isMapKeyLoaded={props.isMapKeyLoaded} onLocationChange={handleLocationChange} />
         </>
     );
