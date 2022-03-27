@@ -34,7 +34,6 @@ export interface MainEventsDataProps {
 
 export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
     const [displayEvents, setDisplayEvents] = React.useState<DisplayEvent[]>([]);
-    const history = useHistory();
 
     React.useEffect(() => {
         if (props.isEventDataLoaded && props.eventList) {
