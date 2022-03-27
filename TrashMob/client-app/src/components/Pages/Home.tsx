@@ -223,35 +223,7 @@ const Home: React.FC<HomeProps> = (props) => {
     }
 
     function handleEventView(view: string) {
-        console.log('set', view)
         setEventView(view);
-    }
-
-    console.log('event list', eventList)
-    console.log('event list type', eventTypeList)
-    console.log('event view', eventView)
-
-    const listView = (eventList: EventData, eventTypeList: EventTypeData) => {
-        <div className="d-flex flex-column px-4 justify-content-center">
-            <div>
-                <div className="d-flex justify-content-between">
-                    <span className="font-weight-bold">Event name</span>
-                    <span>Created by someone</span>
-                </div>
-                <div className="my-2">EventType</div>
-                <div className="d-flex justify-content-between">
-                    <div>
-                        <span>Time</span>
-                        <span>Location</span>
-                    </div>
-                    <div>
-                        <button className="btn btn-outline mr-2">View</button>
-                        <button className="btn btn-primary">Register</button>
-                    </div>
-                </div>
-            </div>
-            <Button className="btn btn-primary mx-auto my-5">View all events</Button>
-        </div>
     }
 
     return (
@@ -278,8 +250,8 @@ const Home: React.FC<HomeProps> = (props) => {
                 </div>
             </Modal>
             <Container fluid>
-                <Row className="shadow-lg position-relative" >
-                    <Col className="d-flex flex-column px-0 py-4" sm={6} style={{ zIndex: 1 }}>
+                <Row className="shadow position-relative" >
+                    <Col className="d-flex flex-column px-0 py-4 pl-lg-5" sm={6} style={{ zIndex: 1 }}>
                         <div className="ml-sm-2 ml-lg-5 pl-sm-3 pl-md-5 mt-md-5 mb-md-2">
                             <img src={Logo} alt="TrashMob.eco logo" className="banner-logo"></img>
                             <h3 className="ml-md-4 mt-4 mb-4 mb-md-5 font-weight-bold font-size-xl banner-heading pl-3">Meet up. Clean up. Feel good.</h3>
@@ -302,7 +274,7 @@ const Home: React.FC<HomeProps> = (props) => {
                     </div>
                 </Row>
             </Container>
-            <Container className="d-flex justify-content-around my-5 flex-column flex-md-row">
+            <Container className="d-flex justify-content-around my-5 py-5 flex-column flex-md-row">
                 <div className="d-flex flex-column justify-content-center text-center">
                     <img src={Calendar} alt="Calendar icon" className="w-auto mx-auto mb-3" />
                     <span className="font-weight-bold font-size-lg">8</span>
