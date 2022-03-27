@@ -49,7 +49,6 @@ const Home: React.FC<HomeProps> = (props) => {
     const [totalHours, setTotalHours] = React.useState<number>(0);
     const [totalEvents, setTotalEvents] = React.useState<number>(0);
     const [totalParticipants, setTotalParticipants] = React.useState<number>(0);
-    const [isDataLoaded, setIsDataLoaded] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
@@ -82,7 +81,6 @@ const Home: React.FC<HomeProps> = (props) => {
                 setTotalHours(data.totalHours);
                 setTotalEvents(data.totalEvents);
                 setTotalParticipants(data.totalParticipants);
-                setIsDataLoaded(true);
             });
 
         MapStore.getOption().then(opts => {
