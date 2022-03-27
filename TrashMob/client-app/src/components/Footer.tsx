@@ -8,7 +8,7 @@ export const Footer: React.FC = () => {
     return (
         <footer id="pageFooter">
             <div className="container" id="footerWrapper">
-                <div className="card my-5">
+                <div className="my-5">
                     <img src={logo} alt="TrashMob Logo" id="logo_footer" />
                     <div className="row">
                         <div className="col-md-4">
