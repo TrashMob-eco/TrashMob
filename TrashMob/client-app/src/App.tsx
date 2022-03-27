@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Route, Switch } from 'react-router';
 import { BrowserRouter, RouteComponentProps } from 'react-router-dom';
 
-import Home from './components/Home';
+import Home from './components/Pages/Home';
 
 // Layout
 import TopMenu from './components/TopMenu';
@@ -40,7 +40,7 @@ import { EventSummaries } from './components/EventSummaries';
 import { CancelEvent, CancelEventMatchParams } from './components/EventManagement/CancelEvent';
 import NotificationPreferences from './components/NotificationPreferences';
 
-import './custom.css';
+import './custom.scss';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }
