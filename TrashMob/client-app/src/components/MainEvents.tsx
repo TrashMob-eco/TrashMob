@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import EventAttendeeData from './Models/EventAttendeeData';
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
@@ -34,7 +34,6 @@ export interface MainEventsDataProps {
 
 export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
     const [displayEvents, setDisplayEvents] = React.useState<DisplayEvent[]>([]);
-    const history = useHistory();
 
     React.useEffect(() => {
         if (props.isEventDataLoaded && props.eventList) {

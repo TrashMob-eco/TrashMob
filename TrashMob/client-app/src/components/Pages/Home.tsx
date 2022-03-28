@@ -5,7 +5,7 @@ import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import EventData from '../Models/EventData';
 import EventTypeData from '../Models/EventTypeData';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
-import { data, setView } from 'azure-maps-control';
+import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapController from '../MapController';
@@ -275,7 +275,7 @@ const Home: React.FC<HomeProps> = (props) => {
                             <Link className="btn btn-primary ml-5 py-md-3 banner-button" to="/gettingstarted">Join us today</Link>
                         </div>
                     </Col>
-                    <img src={Globe2} className="position-absolute p-0 m-0 h-100 banner-globe" alt="Image of globe" ></img>
+                    <img src={Globe2} className="position-absolute p-0 m-0 h-100 banner-globe" alt="Globe" ></img>
                 </Row>
             </Container>
             <div className="bg-white pb-4"><Image src={Drawings} alt="Drawings of trash" /></div>
