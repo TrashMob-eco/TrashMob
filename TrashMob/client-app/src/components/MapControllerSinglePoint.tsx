@@ -8,6 +8,8 @@ import UserData from './Models/UserData';
 import { HtmlMarkerLayer } from './HtmlMarkerLayer/SimpleHtmlMarkerLayer'
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import { getDefaultHeaders } from '../store/AuthStore';
+import AddressData from './Models/AddressData';
+import SearchAddressData from './Models/SearchAddressData';
 
 interface MapControllerProps {
     mapOptions: IAzureMapOptions | undefined
@@ -139,14 +141,14 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
         onLocationChange,
         isMapReady]);
 
-    useEffect(() => {
-        const getmapkey = async () => {
-            var key = await MapStore.getKey();
-            setMapKey(key);
-        }
+    //useEffect(() => {
+    //    const getmapkey = async () => {
+    //        var key = await MapStore.getKey();
+    //        setMapKey(key);
+    //    }
 
-        getmapkey();
-    });
+    //    getmapkey();
+    //});
 
     function handleLocationChange(e: any) {
         props.onLocationChange(e);
@@ -208,13 +210,14 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
             mode: 'cors',
             headers: headers
         })
-            .then((resp) => resp.json())
-            .then(({ res, total_count }) => {
-                const options = res.results.map((i: any) => ({
+            .then((resp) => resp.json() as Promise<SearchAddressData>)
+            .then( (addressData) => {
+                const options = addressData.results.map((i: any) => ({
                     id: i.id,
-                    address: i.address.streetNameAndNumber,
+                    address: i.address.freeformAddress,
                 }));
-                return { options, total_count };
+                const totalResults = addressData.summary.totalResults;
+                return { options, totalResults };
             });
     }
 
@@ -223,7 +226,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
             <AsyncTypeahead
                 id="async-pagination-example"
                 isLoading={isLoading}
-                labelKey="login"
+                labelKey="address"
                 maxResults={PER_PAGE - 1}
                 minLength={2}
                 onInputChange={handleInputChange}
@@ -234,16 +237,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
                 placeholder="Search for a location..."
                 renderMenuItemChildren={(option: any) => (
                     <div key={option.id}>
-                        <img
-                            alt={option.login}
-                            src={option.avatar_url}
-                            style={{
-                                height: '24px',
-                                marginRight: '10px',
-                                width: '24px',
-                            }}
-                        />
-                        <span>{option.login}</span>
+                        <span>{option.address}</span>
                     </div>
                 )}
                 useCache={false}
