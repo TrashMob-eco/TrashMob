@@ -214,11 +214,18 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
             .then( (addressData) => {
                 const options = addressData.results.map((i: any) => ({
                     id: i.id,
-                    address: i.address.freeformAddress,
+                    displayAddress: i.address.freeformAddress,
+                    position: i.position,
                 }));
                 const totalResults = addressData.summary.totalResults;
                 return { options, totalResults };
             });
+    }
+
+    function handleSelectedChanged(val: any) {
+        var position = val[0].position;
+        var point = new data.Position(position.lon, position.lat)
+        handleLocationChange(point);
     }
 
     return (
@@ -226,18 +233,19 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
             <AsyncTypeahead
                 id="async-pagination-example"
                 isLoading={isLoading}
-                labelKey="address"
+                labelKey="displayAddress"
                 maxResults={PER_PAGE - 1}
                 minLength={2}
                 onInputChange={handleInputChange}
                 onPaginate={handlePagination}
                 onSearch={handleSearch}
-                options={options}
+                onChange={(selected) => handleSelectedChanged(selected)}
+                options={options}                
                 paginate
                 placeholder="Search for a location..."
                 renderMenuItemChildren={(option: any) => (
                     <div key={option.id}>
-                        <span>{option.address}</span>
+                        <span>{option.displayAddress}</span>
                     </div>
                 )}
                 useCache={false}
