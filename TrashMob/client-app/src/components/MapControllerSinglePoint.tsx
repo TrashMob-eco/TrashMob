@@ -8,8 +8,8 @@ import UserData from './Models/UserData';
 import { HtmlMarkerLayer } from './HtmlMarkerLayer/SimpleHtmlMarkerLayer'
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import { getDefaultHeaders } from '../store/AuthStore';
-import AddressData from './Models/AddressData';
 import SearchAddressData from './Models/SearchAddressData';
+import { useAccordionToggle } from 'react-bootstrap';
 
 interface MapControllerProps {
     mapOptions: IAzureMapOptions | undefined
@@ -49,6 +49,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
             mapRef.setCamera({ center: props.center, zoom: MapStore.defaultUserLocationZoom });
 
             var dataSourceRef = new source.DataSource("mainDataSource", { cluster: true });
+
             mapRef.sources.add(dataSourceRef);
             setIsDataSourceLoaded(true);
 
@@ -141,6 +142,24 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
         onLocationChange,
         isMapReady]);
 
+    useEffect(() => {
+        if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && isDataSourceLoaded && isMapReady) {
+            var dsr = mapRef.sources.getById("mainDataSource") as source.DataSource;
+            var feature = dsr.getShapes()[0];
+            var position = new data.Position(props.longitude, props.latitude);
+            feature.setCoordinates(position);
+
+            // Simple Camera options modification
+            mapRef.setCamera({ center: position, zoom: MapStore.defaultUserLocationZoom });
+        }
+    }, [mapRef,
+        props.isEventDataLoaded,
+        props.isMapKeyLoaded,
+        props.longitude,
+        props.latitude,
+        isDataSourceLoaded,
+        isMapReady]);
+
     //useEffect(() => {
     //    const getmapkey = async () => {
     //        var key = await MapStore.getKey();
@@ -173,12 +192,12 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
 
         makeAndHandleRequest(query, page)
             .then((resp: any) => {
-            const options = cachedQuery.options.concat(resp.options);
-            CACHE[query] = { ...cachedQuery, options, page };
+                const options = cachedQuery.options.concat(resp.options);
+                CACHE[query] = { ...cachedQuery, options, page };
 
-            setIsLoading(false);
-            setOptions(options);
-        });
+                setIsLoading(false);
+                setOptions(options);
+            });
     };
 
     // `handleInputChange` updates state and triggers a re-render, so
@@ -193,11 +212,11 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
         setIsLoading(true);
         makeAndHandleRequest(q)
             .then((resp: any) => {
-            CACHE[q] = { ...resp, page: 1 };
+                CACHE[q] = { ...resp, page: 1 };
 
-            setIsLoading(false);
-            setOptions(resp.options);
-        });
+                setIsLoading(false);
+                setOptions(resp.options);
+            });
     }, []);
 
     function makeAndHandleRequest(query: string, page: number = 1) {
@@ -211,7 +230,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
             headers: headers
         })
             .then((resp) => resp.json() as Promise<SearchAddressData>)
-            .then( (addressData) => {
+            .then((addressData) => {
                 const options = addressData.results.map((i: any) => ({
                     id: i.id,
                     displayAddress: i.address.freeformAddress,
@@ -223,9 +242,11 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
     }
 
     function handleSelectedChanged(val: any) {
-        var position = val[0].position;
-        var point = new data.Position(position.lon, position.lat)
-        handleLocationChange(point);
+        if (val && val.length > 0) {
+            var position = val[0].position;
+            var point = new data.Position(position.lon, position.lat)
+            handleLocationChange(point);
+        }
     }
 
     return (
@@ -240,7 +261,7 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
                 onPaginate={handlePagination}
                 onSearch={handleSearch}
                 onChange={(selected) => handleSelectedChanged(selected)}
-                options={options}                
+                options={options}
                 paginate
                 placeholder="Search for a location..."
                 renderMenuItemChildren={(option: any) => (
