@@ -652,7 +652,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                             </Col>
                         </Form.Row>
                         <Form.Row>
-                            <Form.Label>Click on the map to set your base location. This location will only be used to assist in locating events you wish to be notified about. The location fields below will be automatically populated.</Form.Label>
+                            <Form.Label>Either search for a location or click on the map to set your base location. This location will only be used to assist in locating events you wish to be notified about. The location fields below will be automatically populated.</Form.Label>
                         </Form.Row>
                         <Form.Row>
                             <AzureMapsProvider>
@@ -667,7 +667,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                     <OverlayTrigger placement="top" overlay={renderCityToolTip}>
                                         <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
                                     </OverlayTrigger>
-                                    <Form.Control className="form-control" type="text" name="city" defaultValue={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('64')} />
+                                    <Form.Control className="form-control" type="text" disabled name="city" defaultValue={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('64')} />
                                     <span style={{ color: "red" }}>{cityErrors}</span>
                                 </Form.Group>
                             </Col>
@@ -676,7 +676,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                     <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
                                         <Form.Label className="control-label" htmlFor="PostalCode">Postal Code:</Form.Label>
                                     </OverlayTrigger>
-                                    <Form.Control type="text" name="postalCode" defaultValue={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
+                                    <Form.Control type="text" disabled name="postalCode" defaultValue={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
                                     <span style={{ color: "red" }}>{postalCodeErrors}</span>
                                 </Form.Group>
                             </Col>
@@ -687,7 +687,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                     <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
                                         <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
                                     </OverlayTrigger>
-                                    <CountryDropdown name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
+                                    <CountryDropdown disabled name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
                                     <span style={{ color: "red" }}>{countryErrors}</span>
                                 </Form.Group>
                             </Col>
@@ -696,7 +696,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                     <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
                                         <Form.Label className="control-label" htmlFor="region">Region:</Form.Label>
                                     </OverlayTrigger>
-                                    <RegionDropdown
+                                    <RegionDropdown disabled
                                         country={country ?? ""}
                                         value={region ?? ""}
                                         onChange={(val) => selectRegion(val)} />
@@ -710,7 +710,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                     <OverlayTrigger placement="top" overlay={renderUserLatitudeToolTip}>
                                         <Form.Label className="control-label" htmlFor="Latitude">Latitude:</Form.Label>
                                     </OverlayTrigger>
-                                    <Form.Control type="text" name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
+                                    <Form.Control type="text" disabled name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
                                     <span style={{ color: "red" }}>{latitudeErrors}</span>
                                 </Form.Group>
                             </Col>
@@ -719,7 +719,7 @@ const UserProfile: React.FC<UserProfileProps> = (props) => {
                                     <OverlayTrigger placement="top" overlay={renderUserLongitudeToolTip}>
                                         <Form.Label className="control-label" htmlFor="Longitude">Longitude:</Form.Label>
                                     </OverlayTrigger >
-                                    <Form.Control type="text" name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
+                                    <Form.Control type="text" disabled name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
                                     <span style={{ color: "red" }}>{longitudeErrors}</span>
                                 </Form.Group>
                             </Col>

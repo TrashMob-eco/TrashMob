@@ -9,7 +9,6 @@ import { HtmlMarkerLayer } from './HtmlMarkerLayer/SimpleHtmlMarkerLayer'
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import { getDefaultHeaders } from '../store/AuthStore';
 import SearchAddressData from './Models/SearchAddressData';
-import { useAccordionToggle } from 'react-bootstrap';
 
 interface MapControllerProps {
     mapOptions: IAzureMapOptions | undefined
@@ -26,7 +25,7 @@ interface MapControllerProps {
     isDraggable: boolean;
 }
 
-export const EventCollectionMapController: React.FC<MapControllerProps> = (props) => {
+export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) => {
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     const [isDataSourceLoaded, setIsDataSourceLoaded] = React.useState(false);
@@ -41,6 +40,13 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
     const handleInputChange = (q: string) => {
         setQuery(q);
     };
+
+    useEffect(() => {
+        MapStore.getKey()
+            .then(val => {
+                setMapKey(val)
+            });
+    }, []);
 
     useEffect(() => {
         if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && !isDataSourceLoaded && isMapReady) {
@@ -160,15 +166,6 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
         isDataSourceLoaded,
         isMapReady]);
 
-    //useEffect(() => {
-    //    const getmapkey = async () => {
-    //        var key = await MapStore.getKey();
-    //        setMapKey(key);
-    //    }
-
-    //    getmapkey();
-    //});
-
     function handleLocationChange(e: any) {
         props.onLocationChange(e);
     }
@@ -222,9 +219,8 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
     function makeAndHandleRequest(query: string, page: number = 1) {
 
         var headers = getDefaultHeaders('GET');
-        var kk = "5p5HTkSxyEJQS3Jo5n6uVbdtY_zmhItA4QpxWaQh0x8";
 
-        return fetch('https://atlas.microsoft.com/search/address/json?typeahead=true&subscription-key=' + kk + '&api-version=1.0&query=' + query, {
+        return fetch('https://atlas.microsoft.com/search/address/json?typeahead=true&subscription-key=' + mapKey + '&api-version=1.0&query=' + query, {
             method: 'GET',
             mode: 'cors',
             headers: headers
@@ -276,4 +272,4 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
     );
 };
 
-export default EventCollectionMapController;
+export default MapControllerSinglePoint;

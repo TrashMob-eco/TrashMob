@@ -7,7 +7,7 @@ import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import MapController from './MapController';
+import MapControllerPointCollection from './MapControllerPointCollection';
 import UserData from './Models/UserData';
 import { Col, Form, ToggleButton } from 'react-bootstrap';
 
@@ -161,7 +161,7 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
             <div>
                 <AzureMapsProvider>
                     <>
-                        <MapController center={center} multipleEvents={myEventList} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={handleAttendanceChanged} myAttendanceList={myEventList} isUserEventDataLoaded={isEventDataLoaded} onDetailsSelected={handleDetailsSelected} />
+                        <MapControllerPointCollection center={center} multipleEvents={myEventList} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={handleAttendanceChanged} myAttendanceList={myEventList} isUserEventDataLoaded={isEventDataLoaded} onDetailsSelected={handleDetailsSelected} />
                     </>
                 </AzureMapsProvider>
             </div>

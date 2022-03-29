@@ -30,7 +30,7 @@ interface MapControllerProps {
     onDetailsSelected: any;
 }
 
-export const EventCollectionMapController: React.FC<MapControllerProps> = (props) => {
+export const MapControllerPointCollection: React.FC<MapControllerProps> = (props) => {
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     const [isDataSourceLoaded, setIsDataSourceLoaded] = React.useState(false);
@@ -219,4 +219,4 @@ export const EventCollectionMapController: React.FC<MapControllerProps> = (props
     );
 };
 
-export default EventCollectionMapController;
+export default MapControllerPointCollection;
