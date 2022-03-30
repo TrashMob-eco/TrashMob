@@ -166,6 +166,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
             mapRef.setCamera({ center: position, zoom: MapStore.defaultUserLocationZoom });
         }
     }, [mapRef,
+        props.center,
         props.isEventDataLoaded,
         props.isMapKeyLoaded,
         props.longitude,
@@ -221,7 +222,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
                 setIsLoading(false);
                 setOptions(resp.options);
             });
-    }, []);
+    }, [CACHE]);
 
     function makeAndHandleRequest(query: string, page: number = 1) {
 
