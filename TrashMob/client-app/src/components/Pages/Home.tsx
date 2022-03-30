@@ -8,7 +8,7 @@ import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore'
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import MapController from '../MapController';
+import MapControllerPointCollection from '../MapControllerPointCollection';
 import UserData from '../Models/UserData';
 import { Button, Modal } from 'reactstrap';
 import { CurrentTermsOfServiceVersion } from '../TermsOfService';
@@ -334,7 +334,7 @@ const Home: React.FC<HomeProps> = (props) => {
                             <div className="w-100 m-0">
                                 <AzureMapsProvider>
                                     <>
-                                        <MapController center={center} multipleEvents={eventList} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={handleAttendanceChanged} onDetailsSelected={handleDetailsSelected} />
+                                        <MapControllerPointCollection center={center} multipleEvents={eventList} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={handleAttendanceChanged} onDetailsSelected={handleDetailsSelected} />
                                     </>
                                 </AzureMapsProvider>
                             </div>
