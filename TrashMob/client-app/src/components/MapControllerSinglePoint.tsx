@@ -35,7 +35,6 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
     const [isLoading, setIsLoading] = React.useState(false);
     const [options, setOptions] = React.useState([]);
     const [query, setQuery] = React.useState('');
-    const [mapKey, setMapKey] = React.useState<string>(props.mapOptions?.authOptions?.subscriptionKey ?? "");
     const mapKeyRef = React.useRef('');
 
     const handleInputChange = (q: string) => {
@@ -153,7 +152,14 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
         if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && isDataSourceLoaded && isMapReady) {
             var dsr = mapRef.sources.getById("mainDataSource") as source.DataSource;
             var feature = dsr.getShapes()[0];
+
             var position = new data.Position(props.longitude, props.latitude);
+
+            // if the value is (0,0) this is a default. Use the user's position instead if available
+            if (props.latitude === 0 && props.longitude === 0) {
+                position = props.center;
+            }
+
             feature.setCoordinates(position);
 
             // Simple Camera options modification
