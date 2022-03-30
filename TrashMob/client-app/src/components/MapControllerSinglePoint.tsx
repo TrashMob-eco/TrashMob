@@ -222,7 +222,8 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
                 setIsLoading(false);
                 setOptions(resp.options);
             });
-    }, [CACHE]);
+    // eslint-disable-next-line
+    }, []);
 
     function makeAndHandleRequest(query: string, page: number = 1) {
 
