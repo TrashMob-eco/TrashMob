@@ -35,18 +35,19 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
     const [isLoading, setIsLoading] = React.useState(false);
     const [options, setOptions] = React.useState([]);
     const [query, setQuery] = React.useState('');
-    const [mapKey, setMapKey] = React.useState('');
+    const [mapKey, setMapKey] = React.useState<string>(props.mapOptions?.authOptions?.subscriptionKey ?? "");
+    const mapKeyRef = React.useRef('');
 
     const handleInputChange = (q: string) => {
         setQuery(q);
     };
 
     useEffect(() => {
-        MapStore.getKey()
-            .then(val => {
-                setMapKey(val)
-            });
-    }, []);
+        if (props.mapOptions) {
+            const key = props.mapOptions?.subscriptionKey ?? "";
+            mapKeyRef.current = key;
+        }
+    }, [props.mapOptions]);
 
     useEffect(() => {
         if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && !isDataSourceLoaded && isMapReady) {
@@ -220,7 +221,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
 
         var headers = getDefaultHeaders('GET');
 
-        return fetch('https://atlas.microsoft.com/search/address/json?typeahead=true&subscription-key=' + mapKey + '&api-version=1.0&query=' + query, {
+        return fetch('https://atlas.microsoft.com/search/address/json?typeahead=true&subscription-key=' + mapKeyRef.current + '&api-version=1.0&query=' + query, {
             method: 'GET',
             mode: 'cors',
             headers: headers
@@ -247,26 +248,28 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
 
     return (
         <>
-            <AsyncTypeahead
-                id="async-pagination-example"
-                isLoading={isLoading}
-                labelKey="displayAddress"
-                maxResults={PER_PAGE - 1}
-                minLength={2}
-                onInputChange={handleInputChange}
-                onPaginate={handlePagination}
-                onSearch={handleSearch}
-                onChange={(selected) => handleSelectedChanged(selected)}
-                options={options}
-                paginate
-                placeholder="Search for a location..."
-                renderMenuItemChildren={(option: any) => (
-                    <div key={option.id}>
-                        <span>{option.displayAddress}</span>
-                    </div>
-                )}
-                useCache={false}
-            />
+            { props.isDraggable ? <div >
+                <AsyncTypeahead
+                    id="async-pagination-example"
+                    isLoading={isLoading}
+                    labelKey="displayAddress"
+                    maxResults={PER_PAGE - 1}
+                    minLength={2}
+                    onInputChange={handleInputChange}
+                    onPaginate={handlePagination}
+                    onSearch={handleSearch}
+                    onChange={(selected) => handleSelectedChanged(selected)}
+                    options={options}
+                    paginate
+                    placeholder="Search for a location..."
+                    renderMenuItemChildren={(option: any) => (
+                        <div key={option.id}>
+                            <span>{option.displayAddress}</span>
+                        </div>
+                    )}
+                    useCache={false}
+                />
+            </div> : null }
             <MapComponent mapOptions={props.mapOptions} isMapKeyLoaded={props.isMapKeyLoaded} onLocationChange={handleLocationChange} />
         </>
     );
