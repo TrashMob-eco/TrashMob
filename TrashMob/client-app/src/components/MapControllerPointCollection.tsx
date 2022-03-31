@@ -34,6 +34,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     const [isDataSourceLoaded, setIsDataSourceLoaded] = React.useState(false);
+    var popup;
 
     useEffect(() => {
         if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && !isDataSourceLoaded && isMapReady) {
@@ -45,12 +46,6 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
             mapRef.sources.add(dataSourceRef);
             setIsDataSourceLoaded(true);
 
-            // Create a reusable popup.
-            const popup = new Popup({
-                pixelOffset: [0, -20],
-                closeButton: true
-            });
-
             // Create a HTML marker layer for rendering data points.
             var markerLayer = new HtmlMarkerLayer(dataSourceRef, "marker1", {
                 markerRenderCallback: (id: any, position: data.Position, properties: any) => {
@@ -61,17 +56,37 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
 
                     mapRef.events.add('mouseover', marker, (event: any) => {
                         const marker = event.target as HtmlMarker & { properties: any };
-                        const content = marker.properties.cluster
-                            ? `Cluster of ${marker.properties.point_count_abbreviated} markers`
-                            : marker.properties.content;
-                        popup.setOptions({
-                            content: content,
-                            position: marker.getOptions().position
-                        });
 
-                        // Open the popup.
-                        if (mapRef) {
-                            popup.open(mapRef);
+                        if (marker.properties.cluster) {
+                            const content = `Cluster of ${marker.properties.point_count_abbreviated} markers`
+                            // Create a popup.
+                            popup = new Popup({
+                                content: content,
+                                position: marker.getOptions().position,
+                                pixelOffset: [0, -20],
+                                closeButton: true
+                            });
+
+                            // Open the popup.
+                            if (mapRef) {
+                                popup.open(mapRef);
+                            }
+                        }
+                        else {
+                            const content = marker.properties.content as HTMLDivElement;
+
+                            // Create a popup.
+                            popup = new Popup({
+                                content: content,
+                                position: marker.getOptions().position,
+                                pixelOffset: [0, -20],
+                                closeButton: true
+                            });
+
+                            // Open the popup.
+                            if (mapRef) {
+                                popup.open(mapRef);
+                            }
                         }
                     });
 
@@ -105,7 +120,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                 }
 
                 var properties = {
-                    content: renderToString(getPopUpContent(mobEvent.id, mobEvent.name, new Date(mobEvent.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' }), mobEvent.streetAddress, mobEvent.city, mobEvent.region, mobEvent.country, mobEvent.postalCode, isAtt, vd)),
+                    content: getPopUpContentDom(mobEvent.id, mobEvent.name, new Date(mobEvent.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' }), mobEvent.streetAddress, mobEvent.city, mobEvent.region, mobEvent.country, mobEvent.postalCode, isAtt, vd),
                     name: mobEvent.name,
                 }
                 dataSourceRef.add(new data.Feature(position, properties));
@@ -159,6 +174,31 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                 })
             }
 
+            function getPopUpContentDom(eventId: string, eventName: string, eventDate: string, streetAddress: string, city: string, region: string, country: string, postalCode: string, isAttending: string, onViewDetails: any) {
+                var popUpContent = document.createElement('div');
+
+                var nameLabel = document.createElement('label');
+                nameLabel.textContent = "Event Name: "
+
+                var name = document.createElement('label');
+                nameLabel.textContent = eventName;
+
+                popUpContent.appendChild(nameLabel);
+                popUpContent.appendChild(name);
+
+                var button = document.createElement('input');
+                button.type = 'button';
+                button.value = 'View Details';
+
+                button.addEventListener('click', function () {
+                    onViewDetails(eventId);
+                });
+
+                popUpContent.appendChild(button);
+
+                return popUpContent;
+            }
+
             function getPopUpContent(eventId: string, eventName: string, eventDate: string, streetAddress: string, city: string, region: string, country: string, postalCode: string, isAttending: string, onViewDetails: any) {
 
                 function handleClick() {
@@ -180,13 +220,13 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                                 </tr>
                                 <tr>
                                     <td>
-                                        <Button hidden={!props.isUserLoaded || isAttending === "Yes"} className="action" onClick={() => handleAttend(eventId)}>Register to Attend Event</Button>
+                                        <a hidden={!props.isUserLoaded || isAttending === "Yes"} className="action" onClick={() => handleAttend(eventId)}>Register to Attend Event</a>
                                         <label hidden={props.isUserLoaded}>Sign-in required</label>
                                         <label hidden={!props.isUserLoaded || isAttending !== 'Yes'}>Yes</label>
                                     </td>
                                     <td>
                                         <form>
-                                            <button className="action" type="button" onClick={() => handleClick()}>View Details</button>
+                                            <a className="action" type="button" onClick={() => handleClick()}>View Details</a>
                                         </form>
                                     </td>
                                 </tr>
