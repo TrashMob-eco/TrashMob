@@ -1,5 +1,6 @@
 ﻿namespace TrashMob.Controllers
 {
+    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System;
@@ -10,16 +11,19 @@
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    [ApiController]
     [Authorize]
     [Route("api/partnerlocations")]
-    public class PartnerLocationsController : ControllerBase
+    public class PartnerLocationsController : BaseController
     {
         private readonly IPartnerLocationRepository partnerLocationRepository;
         private readonly IUserRepository userRepository;
         private readonly IPartnerUserRepository partnerUserRepository;
 
-        public PartnerLocationsController(IPartnerLocationRepository partnerLocationRepository, IPartnerUserRepository partnerUserRepository, IUserRepository userRepository)
+        public PartnerLocationsController(IPartnerLocationRepository partnerLocationRepository,
+                                          IPartnerUserRepository partnerUserRepository,
+                                          IUserRepository userRepository,
+                                          TelemetryClient telemetryClient)
+            : base(telemetryClient)
         {
             this.partnerLocationRepository = partnerLocationRepository;
             this.partnerUserRepository = partnerUserRepository;
@@ -62,6 +66,7 @@
             }
 
             await partnerLocationRepository.AddPartnerLocation(partnerLocation).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(AddPartnerLocation));
 
             return CreatedAtAction(nameof(GetPartnerLocation), new { partnerId = partnerLocation.PartnerId, locationId = partnerLocation.Id });
         }
@@ -83,6 +88,7 @@
             }
 
             await partnerLocationRepository.UpdatePartnerLocation(partnerLocation).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(UpdatePartnerLocation));
 
             return Ok(partnerLocation);
         }
@@ -104,6 +110,7 @@
             }
 
             await partnerLocationRepository.DeletePartnerLocation(partnerLocationId).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(DeletePartnerLocation));
 
             return Ok(partnerLocationId);
         }

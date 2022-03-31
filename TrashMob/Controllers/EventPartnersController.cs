@@ -7,6 +7,7 @@ namespace TrashMob.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
@@ -16,9 +17,8 @@ namespace TrashMob.Controllers
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    [ApiController]
     [Route("api/eventpartners")]
-    public class EventPartnersController : ControllerBase
+    public class EventPartnersController : BaseController
     {
         private readonly IEventPartnerRepository eventPartnerRepository;
         private readonly IUserRepository userRepository;
@@ -32,7 +32,9 @@ namespace TrashMob.Controllers
                                        IPartnerRepository partnerRepository, 
                                        IPartnerLocationRepository partnerLocationRepository,
                                        IPartnerUserRepository partnerUserRepository,
-                                       IEmailManager emailManager)
+                                       IEmailManager emailManager,
+                                       TelemetryClient telemetryClient) 
+            : base(telemetryClient)
         {
             this.eventPartnerRepository = eventPartnerRepository;
             this.userRepository = userRepository;
@@ -99,7 +101,7 @@ namespace TrashMob.Controllers
         [HttpPut]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> PutEventPartner(EventPartner eventPartner)
+        public async Task<IActionResult> UpdateEventPartner(EventPartner eventPartner)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
             var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
@@ -149,6 +151,7 @@ namespace TrashMob.Controllers
             };
 
             await emailManager.SendSystemEmail(partnerSubject, partnerMessage, partnerHtmlMessage, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(UpdateEventPartner));
 
             return Ok(updatedEventPartner);
         }
@@ -156,7 +159,7 @@ namespace TrashMob.Controllers
         [HttpPost]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> PostEventPartner(EventPartner eventPartner)
+        public async Task<IActionResult> AddEventPartner(EventPartner eventPartner)
         {
             var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
             if (currentUser == null || !ValidateUser(currentUser.NameIdentifier))
@@ -199,15 +202,9 @@ namespace TrashMob.Controllers
             };
 
             await emailManager.SendSystemEmail(partnerSubject, partnerMessage, htmlPartnerMessage, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(AddEventPartner));
 
             return Ok();
-        }
-
-        // Ensure the user calling in is the owner of the record
-        private bool ValidateUser(string userId)
-        {
-            var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            return userId == nameIdentifier;
         }
     }
 }

@@ -1,28 +1,28 @@
 ﻿namespace TrashMob.Controllers
 {
+    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System;
-    using System.Linq;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    [ApiController]
     [Route("api/waivers")]
-    public class WaiversController : ControllerBase
+    public class WaiversController : BaseController
     {
         private readonly IWaiverRepository waiverRepository;
         private readonly IUserRepository userRepository;
-        private readonly IUserWaiverRepository userWaiverRepository;
 
-        public WaiversController(IWaiverRepository waiverRepository, IUserRepository userRepository, IUserWaiverRepository userWaiverRepository)
+        public WaiversController(IWaiverRepository waiverRepository,
+                                 IUserRepository userRepository,
+                                 TelemetryClient telemetryClient)
+            : base(telemetryClient)
         {
             this.waiverRepository = waiverRepository;
             this.userRepository = userRepository;
-            this.userWaiverRepository = userWaiverRepository;
         }
 
         [HttpGet]
@@ -54,6 +54,8 @@
                 return Forbid();
             }
 
+            TelemetryClient.TrackEvent(nameof(UpdateWaiver));
+
             return Ok(await waiverRepository.UpdateWaiver(waiver).ConfigureAwait(false));
         }
 
@@ -74,6 +76,7 @@
                 return Forbid();
             }
 
+            TelemetryClient.TrackEvent(nameof(AddWaiver));
             return Ok(await waiverRepository.AddWaiver(waiver).ConfigureAwait(false));
         }
     }
