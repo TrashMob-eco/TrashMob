@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Route, Switch } from 'react-router';
 import { BrowserRouter, RouteComponentProps } from 'react-router-dom';
 
-import Home from './components/Home';
+import Home from './components/Pages/Home';
 
 // Layout
 import TopMenu from './components/TopMenu';
