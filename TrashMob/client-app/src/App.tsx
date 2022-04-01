@@ -13,7 +13,7 @@ import ContactUs from './components/Pages/ContactUs';
 import EventSummary from './components/EventSummary';
 import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
-import { GettingStarted } from './components/GettingStarted';
+import { GettingStarted } from './components/Pages/GettingStarted';
 import { MediaGallery } from './components/MediaGallery';
 import MyDashboard from './components/MyDashboard';
 import { Partners } from './components/Partners/Partners';
