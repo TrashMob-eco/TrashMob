@@ -64,12 +64,12 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
                         setNotes(data.notes);
                         setNumberOfBags(data.numberOfBags);
                         setNumberOfBuckets(data.numberOfBuckets);
-                        if (data.createdByUserId == props.currentUser.id) {
+                        if (data.createdByUserId === props.currentUser.id) {
                             setIsOwner(true);
                         }
                     });
             });
-    }, [loadedEventId]);
+    }, [loadedEventId, props.currentUser.id]);
 
     function validateForm() {
         if (notesErrors !== "" || actualNumberOfAttendeesErrors !== "" || numberOfBagsErrors !== "" || numberOfBucketsErrors !== "" || durationInMinutesErrors !== "") {
