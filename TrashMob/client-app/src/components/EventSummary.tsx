@@ -1,17 +1,23 @@
 import * as React from 'react'
-import UserData from '../Models/UserData';
+import UserData from './Models/UserData';
 import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
-import * as ToolTips from "../../store/ToolTips";
-import EventSummaryData from '../Models/EventSummaryData';
+import { apiConfig, getDefaultHeaders, msalClient } from './../store/AuthStore';
+import * as ToolTips from "./../store/ToolTips";
+import EventSummaryData from './Models/EventSummaryData';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
+import EventData from './Models/EventData';
 
-export interface ManageEventSummaryDataProps {
+export interface EventSummaryMatchParams {
     eventId: string;
+}
+
+export interface EventSummaryDashboardProps extends RouteComponentProps<EventSummaryMatchParams> {
     isUserLoaded: boolean;
     currentUser: UserData;
-};
+}
 
-export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props) => {
+
+const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
     const [actualNumberOfAttendees, setActualNumberOfAttendees] = React.useState<number>(0);
     const [numberOfBuckets, setNumberOfBuckets] = React.useState<number>(0);
     const [numberOfBags, setNumberOfBags] = React.useState<number>(0);
@@ -25,26 +31,45 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
     const [numberOfBucketsErrors, setNumberOfBucketsErrors] = React.useState<string>("");
     const [durationInMinutesErrors, setDurationInMinutesErrors] = React.useState<string>("");
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
+    const [loadedEventId] = React.useState<string>(props.match.params["eventId"]);
+    const [isOwner, setIsOwner] = React.useState<boolean>(false);
+    const [eventName, setEventName] = React.useState<string>("New Event");
+    const [eventDate, setEventDate] = React.useState<Date>(new Date());
 
     React.useEffect(() => {
 
         const headers = getDefaultHeaders('GET');
 
-        fetch('/api/eventsummaries/' + props.eventId, {
+        fetch('/api/Events/' + loadedEventId, {
             method: 'GET',
-            headers: headers,
+            headers: headers
         })
-            .then(response => response.json() as Promise<EventSummaryData>)
-            .then(data => {
-                setActualNumberOfAttendees(data.actualNumberOfAttendees);
-                setCreatedByUserId(data.createdByUserId);
-                setCreatedDate(data.createdDate);
-                setDurationInMinutes(data.durationInMinutes);
-                setNotes(data.notes);
-                setNumberOfBags(data.numberOfBags);
-                setNumberOfBuckets(data.numberOfBuckets);
+            .then(response => response.json() as Promise<EventData>)
+            .then(eventData => {
+                setEventName(eventData.name);
+                setEventDate(new Date(eventData.eventDate));
+            })
+            .then(() => {
+
+                fetch('/api/eventsummaries/' + loadedEventId, {
+                    method: 'GET',
+                    headers: headers,
+                })
+                    .then(response => response.json() as Promise<EventSummaryData>)
+                    .then(data => {
+                        setActualNumberOfAttendees(data.actualNumberOfAttendees);
+                        setCreatedByUserId(data.createdByUserId);
+                        setCreatedDate(data.createdDate);
+                        setDurationInMinutes(data.durationInMinutes);
+                        setNotes(data.notes);
+                        setNumberOfBags(data.numberOfBags);
+                        setNumberOfBuckets(data.numberOfBuckets);
+                        if (data.createdByUserId == props.currentUser.id) {
+                            setIsOwner(true);
+                        }
+                    });
             });
-    }, [props.eventId]);
+    }, [loadedEventId]);
 
     function validateForm() {
         if (notesErrors !== "" || actualNumberOfAttendeesErrors !== "" || numberOfBagsErrors !== "" || numberOfBucketsErrors !== "" || durationInMinutesErrors !== "") {
@@ -72,7 +97,7 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
         }
 
         var eventSummaryData = new EventSummaryData();
-        eventSummaryData.eventId = props.eventId;
+        eventSummaryData.eventId = loadedEventId;
         eventSummaryData.actualNumberOfAttendees = actualNumberOfAttendees;
         eventSummaryData.numberOfBags = numberOfBags;
         eventSummaryData.numberOfBuckets = numberOfBuckets;
@@ -237,6 +262,10 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
 
     return (
         <div className="container-fluid card">
+            <h1>Event Summary</h1>
+            <h2>Name: {eventName}</h2>
+            <h3>Date: {eventDate.toLocaleDateString()}</h3>
+
             <Form onSubmit={handleSave} >
                 <Form.Row>
                     <Col>
@@ -244,7 +273,7 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
                             <OverlayTrigger placement="top" overlay={renderActualNumberOfAttendeesToolTip}>
                                 <Form.Label className="control-label">Actual Number of Attendees:</Form.Label>
                             </OverlayTrigger>
-                            <Form.Control type="text" value={actualNumberOfAttendees} maxLength={parseInt('3')} onChange={(val) => handleActualNumberOfAttendeesChanged(val.target.value)} required />
+                            <Form.Control type="text" disabled={!isOwner} value={actualNumberOfAttendees} maxLength={parseInt('3')} onChange={(val) => handleActualNumberOfAttendeesChanged(val.target.value)} required />
                             <span style={{ color: "red" }}>{actualNumberOfAttendeesErrors}</span>
                         </Form.Group>
                     </Col>
@@ -253,7 +282,7 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
                             <OverlayTrigger placement="top" overlay={renderNumberOfBagsToolTip}>
                                 <Form.Label className="control-label">Number of Bags:</Form.Label>
                             </OverlayTrigger>
-                            <Form.Control type="text" value={numberOfBags} maxLength={parseInt('3')} onChange={(val) => handleNumberOfBagsChanged(val.target.value)} />
+                            <Form.Control type="text" disabled={!isOwner} value={numberOfBags} maxLength={parseInt('3')} onChange={(val) => handleNumberOfBagsChanged(val.target.value)} />
                             <span style={{ color: "red" }}>{numberOfBagsErrors}</span>
                         </Form.Group >
                     </Col>
@@ -262,7 +291,7 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
                             <OverlayTrigger placement="top" overlay={renderNumberOfBucketsToolTip}>
                                 <Form.Label className="control-label">Number of Buckets:</Form.Label>
                             </OverlayTrigger>
-                            <Form.Control type="text" value={numberOfBuckets} maxLength={parseInt('3')} onChange={(val) => handleNumberOfBucketsChanged(val.target.value)} />
+                            <Form.Control type="text" disabled={!isOwner} value={numberOfBuckets} maxLength={parseInt('3')} onChange={(val) => handleNumberOfBucketsChanged(val.target.value)} />
                             <span style={{ color: "red" }}>{numberOfBucketsErrors}</span>
                         </Form.Group >
                     </Col>
@@ -271,7 +300,7 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
                             <OverlayTrigger placement="top" overlay={renderDurationInMinutesToolTip}>
                                 <Form.Label className="control-label">Actual Duration in Minutes:</Form.Label>
                             </OverlayTrigger>
-                            <Form.Control type="text" value={durationInMinutes} maxLength={parseInt('3')} onChange={(val) => handleDurationInMinutesChanged(val.target.value)} required />
+                            <Form.Control type="text" disabled={!isOwner} value={durationInMinutes} maxLength={parseInt('3')} onChange={(val) => handleDurationInMinutesChanged(val.target.value)} required />
                             <span style={{ color: "red" }}>{durationInMinutesErrors}</span>
                         </Form.Group >
                     </Col>
@@ -280,13 +309,15 @@ export const ManageEventSummary: React.FC<ManageEventSummaryDataProps> = (props)
                     <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
                         <Form.Label className="control-label">Notes:</Form.Label>
                     </OverlayTrigger>
-                    <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} />
+                    <Form.Control as="textarea" disabled={!isOwner} defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} />
                     <span style={{ color: "red" }}>{notesErrors}</span>
                 </Form.Group >
                 <Form.Group className="form-group">
-                    <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Save</Button>
+                    <Button disabled={!isSaveEnabled || !isOwner} type="submit" className="action btn-default">Save</Button>
                 </Form.Group >
             </Form >
         </div>
     )
 }
+
+export default withRouter(EventSummary);
