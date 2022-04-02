@@ -10,9 +10,10 @@ import TopMenu from './components/TopMenu';
 
 import { AboutUs } from './components/Pages/AboutUs';
 import ContactUs from './components/Pages/ContactUs';
+import EventSummary from './components/EventSummary';
 import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
-import { GettingStarted } from './components/GettingStarted';
+import { GettingStarted } from './components/Pages/GettingStarted';
 import { MediaGallery } from './components/MediaGallery';
 import MyDashboard from './components/MyDashboard';
 import { Partners } from './components/Partners/Partners';
@@ -91,6 +92,16 @@ export const App: React.FC = () => {
                 errorComponent={ErrorComponent}
                 loadingComponent={LoadingComponent}>
                 <ManageEventDashboard {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+            </MsalAuthenticationTemplate >);
+    }
+
+    function renderEventSummary(inp: AppProps) {
+        return (
+            <MsalAuthenticationTemplate
+                interactionType={InteractionType.Redirect}
+                errorComponent={ErrorComponent}
+                loadingComponent={LoadingComponent}>
+                <EventSummary {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </MsalAuthenticationTemplate >);
     }
 
@@ -189,6 +200,7 @@ export const App: React.FC = () => {
                     <div className="container-fluid px-0">
                         <Switch>
                             <Route path="/manageeventdashboard/:eventId?" render={(props: AppProps) => renderEditEvent(props)} />
+                            <Route path="/eventsummary/:eventId?" render={(props: AppProps) => renderEventSummary(props)} />
                             <Route path="/eventdetails/:eventId" component={EventDetails} />
                             <Route path="/cancelevent/:eventId" render={(props: CancelProps) => renderCancelEvent(props)} />
                             <Route exact path="/mydashboard">
