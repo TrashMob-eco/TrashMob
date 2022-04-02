@@ -204,6 +204,9 @@
             eventGrid.AppendLine("<th>");
             eventGrid.AppendLine("<b>Event Country</b>");
             eventGrid.AppendLine("</th>");
+            eventGrid.AppendLine("<th>");
+            eventGrid.AppendLine("<b>Summary</b>");
+            eventGrid.AppendLine("</th>");
             eventGrid.AppendLine("</tr>");
 
             foreach (var mobEvent in mobEvents)
@@ -230,6 +233,10 @@
                 eventGrid.AppendLine("</td>");
                 eventGrid.AppendLine("<td>");
                 eventGrid.AppendLine(mobEvent.Country);
+                eventGrid.AppendLine("</td>");
+                eventGrid.AppendLine("<td>");
+                var summaryLink = $"<a target='_blank' href='https://www.trashmob.eco/eventsummary/{mobEvent.Id}'>Summary</a>";
+                eventGrid.AppendLine(summaryLink);
                 eventGrid.AppendLine("</td>");
                 eventGrid.AppendLine("</tr>");
             }
