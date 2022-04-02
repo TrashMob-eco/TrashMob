@@ -48,6 +48,9 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
             .then(eventData => {
                 setEventName(eventData.name);
                 setEventDate(new Date(eventData.eventDate));
+                if (eventData.createdByUserId === props.currentUser.id) {
+                    setIsOwner(true);
+                }
             })
             .then(() => {
 
@@ -64,9 +67,6 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
                         setNotes(data.notes);
                         setNumberOfBags(data.numberOfBags);
                         setNumberOfBuckets(data.numberOfBuckets);
-                        if (data.createdByUserId === props.currentUser.id) {
-                            setIsOwner(true);
-                        }
                     });
             });
     }, [loadedEventId, props.currentUser.id]);
