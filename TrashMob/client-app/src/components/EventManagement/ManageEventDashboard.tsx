@@ -4,7 +4,6 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import UserData from '../Models/UserData';
 import { ButtonGroup, ToggleButton } from 'react-bootstrap';
 import { EditEvent } from './EditEvent';
-import { ManageEventSummary } from './ManageEventSummary';
 import { ManageEventPartners } from './ManageEventPartners';
 import { ManageEventMedia } from './ManageEventMedia';
 import { ManageEventAttendees } from './ManageEventAttendees';
@@ -31,7 +30,6 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
         { name: 'Manage Event Partners', value: '2' },
         { name: 'Manage Event Attendees', value: '3' },
         { name: 'Manage Event Media', value: '4' },
-        { name: 'Manage Event Summary', value: '5' },
     ];
 
     React.useEffect(() => {
@@ -99,15 +97,6 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
         )
     }
 
-    function renderManageEventSummary() {
-        return (
-            <div>
-                <h2>Post Event Summary</h2>
-                <ManageEventSummary eventId={eventId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
-            </div >
-        )
-    }
-
     function renderEventDashboard() {
         return (
             <div className="card pop">
@@ -133,7 +122,6 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
                 { radioValue === '2' && renderManageEventPartners()}
                 { radioValue === '3' && renderManageEventAttendees()}
                 { radioValue === '4' && renderManageEventMedia()}
-                { radioValue === '5' && renderManageEventSummary()}
             </div>);
     }
 

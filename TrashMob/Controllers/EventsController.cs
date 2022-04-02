@@ -54,8 +54,17 @@ namespace TrashMob.Controllers
         [Route("active")]
         public async Task<IActionResult> GetActiveEvents(CancellationToken cancellationToken)
         {
-            var result = await eventRepository.GetActiveEvents(cancellationToken).ConfigureAwait(false);
-            return Ok(result);
+            var results = await eventRepository.GetActiveEvents(cancellationToken).ConfigureAwait(false);
+
+            var displayResults = new List<DisplayEvent>();
+
+            foreach (var mobEvent in results)
+            {
+                var user = await userRepository.GetUserByInternalId(mobEvent.CreatedByUserId, cancellationToken);
+                displayResults.Add(mobEvent.ToDisplayEvent(user.UserName));
+            }
+
+            return Ok(displayResults);
         }
 
         [HttpGet]

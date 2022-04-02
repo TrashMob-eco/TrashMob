@@ -75,6 +75,7 @@ export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
                                         <Button hidden={!isOwner} className="action" onClick={() => props.history.push('/manageeventdashboard/' + mobEvent.id)}>Manage Event</Button>
                                         <Button hidden={!isOwner} className="action" onClick={() => props.history.push('/cancelevent/' + mobEvent.id)}>Cancel Event</Button>
                                         <Button className="action" onClick={() => props.history.push('/eventdetails/' + mobEvent.id)}>View Details</Button>
+                                        <Button className="action" onClick={() => props.history.push('/eventsummary/' + mobEvent.id)}>View Summary</Button>
                                         <Button hidden={isOwner} className="action" onClick={() => handleRemove(mobEvent.id, mobEvent.name)}>Remove Me from Event</Button>
                                     </td>
                                 </tr>)

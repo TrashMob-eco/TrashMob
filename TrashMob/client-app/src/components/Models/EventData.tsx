@@ -22,6 +22,7 @@ class EventData {
     lastUpdatedByUserId: string = "";
     lastUpdatedDate: Date = new Date();
     isEventPublic: boolean = true;
+    createdByUserName: string = "";
 }
 
 export default EventData;

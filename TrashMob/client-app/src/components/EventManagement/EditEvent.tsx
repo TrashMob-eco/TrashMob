@@ -572,7 +572,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                 <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
                                     <Form.Label className="control-label" htmlFor="StreetAddress">Street Address:</Form.Label>
                                 </OverlayTrigger>
-                                <Form.Control type="text" name="streetAddress" value={streetAddress} onChange={(val) => handleStreetAddressChanged(val.target.value)} maxLength={parseInt('256')} />
+                                <Form.Control type="text" disabled name="streetAddress" value={streetAddress} onChange={(val) => handleStreetAddressChanged(val.target.value)} maxLength={parseInt('256')} />
                             </Form.Group>
                         </Col>
                         <Col>
@@ -580,7 +580,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                 <OverlayTrigger placement="top" overlay={renderCityToolTip}>
                                     <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
                                 </OverlayTrigger >
-                                <Form.Control className="control-label" type="text" name="city" value={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
+                                <Form.Control className="control-label" disabled type="text" name="city" value={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
                             </Form.Group>
                         </Col>
                         <Col>
@@ -588,7 +588,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                 <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
                                     <Form.Label className="control-label" htmlFor="PostalCode">Postal Code:</Form.Label>
                                 </OverlayTrigger >
-                                <Form.Control type="text" name="postalCode" value={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
+                                <Form.Control type="text" disabled name="postalCode" value={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
                             </Form.Group>
                         </Col>
                     </Form.Row>
@@ -599,7 +599,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
                                 </OverlayTrigger >
                                 <div>
-                                    <CountryDropdown name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
+                                    <CountryDropdown disabled name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
                                 </div>
                             </Form.Group>
                         </Col>
@@ -609,7 +609,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     <Form.Label className="control-label" htmlFor="Region">Region:</Form.Label>
                                 </OverlayTrigger >
                                 <div>
-                                    <RegionDropdown
+                                    <RegionDropdown disabled
                                         country={country ?? ""}
                                         value={region ?? ""}
                                         onChange={(val) => selectRegion(val)} />
@@ -623,7 +623,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                 <OverlayTrigger placement="top" overlay={renderLatitudeToolTip}>
                                     <Form.Label className="control-label" htmlFor="Latitude">Latitude:</Form.Label>
                                 </OverlayTrigger>
-                                <Form.Control type="text" name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
+                                <Form.Control type="text" disabled name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
                                 <span style={{ color: "red" }}>{latitudeErrors}</span>
                             </Form.Group>
                         </Col>
@@ -632,7 +632,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                 <OverlayTrigger placement="top" overlay={renderLongitudeToolTip}>
                                     <Form.Label className="control-label" htmlFor="Longitude">Longitude:</Form.Label>
                                 </OverlayTrigger >
-                                <Form.Control type="text" name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
+                                <Form.Control type="text" disabled name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
                                 <span style={{ color: "red" }}>{longitudeErrors}</span>
                             </Form.Group>
                         </Col>
@@ -653,7 +653,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         </Form.Group>
                     </Form.Row>
                     <Form.Row>
-                        <Form.Label>Click on the map to set the location for your event. The location fields above will be automatically populated.</Form.Label>
+                        <Form.Label>Search for location or click on the map to set the location for your event. The location fields above will be automatically populated.</Form.Label>
                     </Form.Row>
                     <Form.Row>
                         <AzureMapsProvider>

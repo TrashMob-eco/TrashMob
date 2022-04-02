@@ -12,7 +12,7 @@ import { Guid } from 'guid-typescript';
 import PartnerData from '../Models/PartnerData';
 import * as Constants from '../Models/Constants';
 import AddressData from '../Models/AddressData';
-import MapController from '../MapController';
+import MapControllerPointCollection from '../MapControllerPointCollection';
 
 export interface PartnerLocationsDataProps {
     partner: PartnerData;
@@ -658,7 +658,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     <Form.Row>
                         <AzureMapsProvider>
                             <>
-                                <MapController center={center} multipleEvents={[]} isEventDataLoaded={isLocationDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={locationName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} myAttendanceList={[]} isUserEventDataLoaded={true} onAttendanceChanged={handleAttendanceChanged} onDetailsSelected={handleDetailsSelected} />
+                                <MapControllerPointCollection center={center} multipleEvents={[]} isEventDataLoaded={isLocationDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={locationName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} myAttendanceList={[]} isUserEventDataLoaded={true} onAttendanceChanged={handleAttendanceChanged} onDetailsSelected={handleDetailsSelected} />
                             </>
                         </AzureMapsProvider>
                     </Form.Row>

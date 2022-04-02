@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import EventAttendeeData from './Models/EventAttendeeData';
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
@@ -17,6 +17,7 @@ class DisplayEvent {
     region: string = "";
     country: string = "";
     isAttending: string = "";
+    creator: string = "";
 }
 
 
@@ -33,7 +34,6 @@ export interface MainEventsDataProps {
 
 export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
     const [displayEvents, setDisplayEvents] = React.useState<DisplayEvent[]>([]);
-    const history = useHistory();
 
     React.useEffect(() => {
         if (props.isEventDataLoaded && props.eventList) {
@@ -46,6 +46,8 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
                 dispEvent.eventDate = mobEvent.eventDate;
                 dispEvent.eventTypeId = mobEvent.eventTypeId;
                 dispEvent.name = mobEvent.name;
+                dispEvent.creator = mobEvent.createdByUserName;
+
                 if (props.isUserEventDataLoaded) {
                     var isAttending = props.myAttendanceList && (props.myAttendanceList.findIndex((e) => e.id === mobEvent.id) >= 0);
                     dispEvent.isAttending = (isAttending ? 'Yes' : 'No');
@@ -103,53 +105,42 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
         }
     }
 
-    function renderEventsTable(events: DisplayEvent[]) {
+    const renderEventsList = (events: DisplayEvent[]) => {
+        const sortedEvents = events.sort((a, b) => (a.eventDate > b.eventDate) ? 1 : -1)
         return (
-            <div>
-                <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Date</th>
-                            <th>Event Type</th>
-                            {<th>City</th>}
-                            {<th>Region</th>}
-                            {/* <th>Country</th> */}
-                            <th>Am I Attending?</th>
-                            <th />
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {events.sort((a, b) => (a.eventDate > b.eventDate) ? 1 : -1).map(mobEvent =>
-                            <tr key={mobEvent.id.toString()}>
-                                <td>{mobEvent.name}</td>
-                                <td>{new Date(mobEvent.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' })}</td>
-                                <td>{getEventType(props.eventTypeList, mobEvent.eventTypeId)}</td>
-                                {<td>{mobEvent.city}</td>}
-                                {<td>{mobEvent.region}</td>}
-                                {/* <td>{mobEvent.country}</td> */}
-                                <td>
-                                    <Button hidden={!props.isUserLoaded || mobEvent.isAttending === "Yes"} className="action" onClick={() => handleAttend(mobEvent.id)}>Register to Attend Event</Button>
-                                    <label hidden={props.isUserLoaded}>Sign-in required</label>
-                                    <label hidden={!props.isUserLoaded || mobEvent.isAttending !== 'Yes'}>Yes</label>
-                                </td>
-                                <td>
-                                    <Button className="action" onClick={() => history.push('/eventdetails/' + mobEvent.id)}>View Details</Button>
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
-        );
+            <>
+                <ol className="px-1 px-md-5">
+                    {sortedEvents.map((mobEvent, i) =>
+                        <li className={`d-flex flex-column justify-content-center mb-4 ${i !== sortedEvents.length - 1 ? "border-bottom" : ""}`} key={`event-${i}`}>
+                            <div className="d-flex justify-content-between align-items-start align-items-sm-end flex-column flex-sm-row">
+                                <h5 className="font-weight-bold font-size-xl">{mobEvent.name}</h5>
+                                <span className="font-grey">Created by: {mobEvent.creator}</span>
+                            </div>
+                            <span className="my-2 event-list-event-type p-2 rounded">{getEventType(props.eventTypeList, mobEvent.eventTypeId)}</span>
+                            <div className="d-flex justify-content-between align-items-start align-items-sm-end mb-4 flex-column flex-sm-row">
+                                <div className="d-inline-block font-grey">
+                                    <p>{new Date(mobEvent.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' })}</p>
+                                    <span>{mobEvent.city}, {mobEvent.region}, {mobEvent.country}</span>
+                                </div>
+                                <div className="mt-3 mt-sm-0">
+                                    <Link to={'/eventdetails/' + mobEvent.id}><button className="btn btn-outline mr-2 font-weight-bold btn-128">View</button></Link>
+                                    <Button className="btn btn-primary action btn-128" hidden={!props.isUserLoaded || mobEvent.isAttending === "Yes"} onClick={() => handleAttend(mobEvent.id)}>Register</Button>
+                                </div>
+                            </div>
+                        </li>
+                    )}
+                </ol>
+                <div className="d-flex justify-content-center">
+                    <Link to="/eventsummaries"><Button className="btn btn-primary my-5">View all events</Button></Link>
+                </div>
+            </>
+        )
     }
 
     return (
         <>
-            <div>
-                {!props.isEventDataLoaded && <p><em>Loading...</em></p>}
-                {props.isEventDataLoaded && renderEventsTable(displayEvents)}
-            </div>
+            {!props.isEventDataLoaded && <p><em>Loading...</em></p>}
+            {props.isEventDataLoaded && renderEventsList(displayEvents)}
         </>
     );
 }

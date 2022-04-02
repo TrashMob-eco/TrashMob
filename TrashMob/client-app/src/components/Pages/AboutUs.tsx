@@ -2,17 +2,15 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import trashbin from '../assets/the-blowup-t06aN6vewaQ-unsplash1.png';
 import trashcans from '../assets/trashcan-artwork.png';
-import bucket from '../assets/bucket.svg'
-import gloves from '../assets/gloves.svg';
-import smileyFace from '../assets/smileyface.svg';
+import { GettingStartedSection } from '../GettingStartedSection';
 import { Col, Container, Image, Row } from 'react-bootstrap';
 
 export const AboutUs: React.FC = () => {
     return (
         <>
             <Container fluid className="mt-1 bg-white p-5">
-                <Row className="d-flex mb-4 px-5" xs={1} lg={2}>
-                    <Col className="mb-5 px-5">
+                <Row className="mb-4 px-5" xs={1} lg={2}>
+                    <Col className="mb-5 pl-5">
                         <div className="px-5">
                             <h2>What is a TrashMob?</h2>
                             <p className="font-weight-bold">
@@ -71,10 +69,8 @@ export const AboutUs: React.FC = () => {
                 </div>
             </div>
             <Container fluid className="bg-white pb-5">
-                <Row className="row text-center justify-content-center py-5">
-                    <Col lg={8} xl={6}>
-                        <h2 className="font-weight-bold">The Journey</h2>
-                    </Col>
+                <Row className="text-center justify-content-center py-5">
+                    <h2 className="font-weight-bold">The Journey</h2>
                 </Row>
                 <Row>
                     <Col>
@@ -111,29 +107,7 @@ export const AboutUs: React.FC = () => {
                     </Col>
                 </Row>
             </Container>
-            <Container fluid>
-                <div className="d-flex flex-column text-center py-5">
-                    <h2 className="font-weight-bold">Getting started</h2>
-                    <span className="flex-wrap">All you really need to start or join a trash mob are:</span>
-                    <div className="d-flex justify-content-center flex-wrap">
-                        <div className="d-flex flex-wrap justify-content-around w-50 my-5">
-                            <div className="d-flex flex-column">
-                                <img src={gloves} className="graphic-large mx-auto" alt="Work gloves"></img>
-                                <span className="font-weight-bold mt-2">Work gloves</span>
-                            </div>
-                            <div className="d-flex flex-column">
-                                <img src={bucket} className="graphic-large mx-auto" alt="Bucket"></img>
-                                <span className="font-weight-bold mt-2">A bucket</span>
-                            </div>
-                            <div className="d-flex flex-column">
-                                <img src={smileyFace} className="graphic-large mx-auto" alt="Smiley face"></img>
-                                <span className="font-weight-bold mt-2">A good attitude</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </Container>
+            <GettingStartedSection />
         </>
     );
 }
-
