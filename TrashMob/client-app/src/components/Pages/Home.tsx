@@ -340,9 +340,12 @@ const Home: React.FC<HomeProps> = (props) => {
                             </div>
                         </>
                     ) : (
-                        <div className="container-lg">
-                            <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} />
-                        </div>
+                        <>
+                            <Link to="/manageeventdashboard">Create a New Event</Link>
+                            <div className="container-lg">
+                                <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} />
+                            </div>
+                        </>
                     )}
                 </div>
             </Container>

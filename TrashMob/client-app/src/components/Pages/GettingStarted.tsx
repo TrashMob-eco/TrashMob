@@ -52,7 +52,7 @@ export const GettingStarted: React.FC = () => {
                         <div className="d-flex flex-column">
                             <img src={picker} className="graphic-large mx-auto" alt="picker"></img>
                             <h6 className="font-weight-bold mt-2">A grabber tool</h6>
-                            <span className='mt-4'>While not essential, we recommend a grabber tool because they help make grabbing trash easier on our bodies.  We recommend ones with a pistol grip, like the <a href='https://ungerconsumer.com/product/grabber-plus/'>
+                            <span className='mt-4'>While not essential, we recommend a grabber tool because they help make grabbing trash easier on our bodies. We like ones with a pistol grip, like the <a href='https://ungerconsumer.com/product/grabber-plus/'>
                                 Unger Grabber Plus Reacher</a>.</span>
                         </div>
                     </Col>
@@ -82,7 +82,7 @@ export const GettingStarted: React.FC = () => {
                                         <li className="mb-4">
                                             <div className="d-flex align-top">
                                                 <span className="mr-3 font-weight-bold font-size-lg">2</span>
-                                                <span>Start with a park-based event. With little to no cars, nearby garbage cans, and high community exposure, this is a great way to ease in.</span>
+                                                <span>Start with a park-based event. With few cars, nearby garbage cans, and high community exposure, this is a great way to ease in.</span>
                                             </div>
                                         </li>
                                         <li className="mb-4">
@@ -94,7 +94,7 @@ export const GettingStarted: React.FC = () => {
                                         <li className="mb-4">
                                             <div className="d-flex align-top">
                                                 <span className="mr-3 font-weight-bold font-size-lg">4</span>
-                                                <span>Set a goal. For example, aim for 2 buckets per person. Smart small, and recognize an area won’t be litter-free in 30 minutes.</span>
+                                                <span>Set a goal. For example, aim for 2 buckets per person. Start small, and recognize an area won’t be litter-free in 30 minutes.</span>
                                             </div>
                                         </li>
                                         <li className="mb-4">
@@ -115,11 +115,11 @@ export const GettingStarted: React.FC = () => {
                         <div className="px-5 mb-5">
                             <h2>What do I wear?</h2>
                             <p className="font-weight-bold">
-                                Wear clothes you won’t mind getting dirty or possibly torn. We strongly encourage a reflection vest for clean ups along roadsides.
+                                Wear clothes you won’t mind getting dirty or possibly torn. We strongly encourage a reflective vest for clean ups along roadsides.
                             </p>
                             <p className="font-weight-light">
                                 Long sleeves and jeans that keep branches and thorns off are best. Most importantly, wear good footwear that are preferably water resistant and thick.
-                                Old tennis shoes and hiking boots work well. Shorts and t-shirts are sometimes enough for some urban pickups, but remember to dress safely and for the weather.
+                                Hiking boots work well, as do old tennis shoes. Shorts and t-shirts are sometimes enough for some urban pickups, but remember to dress for safety and for the weather.
                             </p>
                         </div>
                     </Col>
@@ -138,13 +138,15 @@ export const GettingStarted: React.FC = () => {
                         <div className="px-5">
                             <h2>But what about the highways?</h2>
                             <p className="font-weight-bold">
-                                Please check with your Department of Transportation before creating a highway cleanup event, and follow all their guidance. Safety is the number one priority!
+                                Please check with your Department of Transportation before creating a highway cleanup event, and follow all of their guidance. Safety is the number one priority!
                             </p>
                             <p className="font-weight-light">
-                                In America, the highways are notorious for litter. People tend to throw trash out of their windows in areas they don’t live near, and unsecured loads tend to fly
-                                out of trucks at highway speeds. With vehicles racing by at 75mph, they are also the most dangerous places to pick up trash. Because of this danger,
+                                In America, the highways are notorious for litter. People tend to throw trash out of their windows in areas they don’t live near, and unsecured loads will fly
+                                off trucks at highway speeds. With vehicles racing by at 75mph, they are also the most dangerous places to pick up trash. Because of this danger,
                                 most states have formed Adopt-a-Highway programs which provide guidance, training, and safety equipment for those who want to work these tough environments.
-                                Please check with your Deparment of Transportation before creating a highway cleanup event, and follow all of their guidance. Safety is the number one priority!
+                            </p>
+                            <p className="font-weight-light">
+                                And never, ever, pick on or beside railways.
                             </p>
                         </div>
                     </Col>
