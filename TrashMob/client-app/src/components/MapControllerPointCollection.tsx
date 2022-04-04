@@ -45,77 +45,40 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
             mapRef.sources.add(dataSourceRef);
 
             // Create a HTML marker layer for rendering data points.
-            var markerLayer = new HtmlMarkerLayer(dataSourceRef, "marker1", {
-                markerRenderCallback: (id: any, position: data.Position, properties: any) => {
+            var markerLayer = new HtmlMarkerLayer(dataSourceRef, null, {
+                markerRenderCallback: function (id: any, position: data.Position, properties: any) {
+
                     // Create an HtmlMarker.
-                    var marker = new HtmlMarker({
-                        position: position
+                    const marker = new HtmlMarker({
+                        position: position,
+                        id: id,
+                        properties: properties
                     });
 
                     mapRef.events.add('mouseover', marker, (event: any) => {
-                        const marker = event.target as HtmlMarker & { properties: any };
-
-                        if (marker.properties.cluster) {
-                            const content = `Cluster of ${marker.properties.point_count_abbreviated} markers`
-                            // Create a popup.
-                            var popup = new Popup({
-                                content: content,
-                                position: marker.getOptions().position,
-                                pixelOffset: [0, -20],
-                                closeButton: true
-                            });
-
-                            // Open the popup.
-                            if (mapRef) {
-                                popup.open(mapRef);
-                            }
-                        }
-                        else {
-                            var popUpHtmlContent = ReactDOMServer.renderToString(getPopUpContent(marker.properties.eventId, marker.properties.eventName, marker.properties.eventDate, marker.properties.streetAddress, marker.properties.city, marker.properties.region, marker.properties.country, marker.properties.postalCode, marker.properties.isAttending));
-                            var popUpContent = new DOMParser().parseFromString(popUpHtmlContent, "text/xml");
-
-                            var viewDetailsButton = popUpContent.getElementById("viewDetails");
-                            if (viewDetailsButton)
-                                viewDetailsButton.addEventListener('click', function () {
-                                viewDetails(marker.properties.eventId);
-                            });
-
-                            var addAttendeeButton = popUpContent.getElementById("addAttendee");
-                            if (addAttendeeButton)
-                                addAttendeeButton.addEventListener('click', function () {
-                                    handleAttend(marker.properties.eventId);
-                                });
-
-                            // Create a popup.
-                            var popup = new Popup({
-                                content: popUpContent.documentElement,
-                                position: marker.getOptions().position,
-                                pixelOffset: [0, -20],
-                                closeButton: true
-                            });
-
-                            // Open the popup.
-                            if (mapRef) {
-                                popup.open(mapRef);
-                            }
-                        }
+                        markerHovered(event);
                     });
 
                     // mapRef.events.add('mouseout', marker, (event: any) => popup.close());
 
-                    return marker
+                    mapRef.markers.add(marker);
+                    return marker;
                 },
                 clusterRenderCallback: function (id: any, position: any, properties: any) {
                     const markerCluster = new HtmlMarker({
                         position: position,
                         color: 'DarkViolet',
                         text: properties.point_count_abbreviated,
+                        id: id
                     });
 
+                    mapRef.markers.add(markerCluster);
                     return markerCluster;
-                },
-                source: dataSourceRef
+                }
             });
+
+            //Add marker layer to the map.
+            mapRef.layers.add(markerLayer);
 
             props.multipleEvents.forEach(mobEvent => {
                 var position = new data.Point(new data.Position(mobEvent.longitude, mobEvent.latitude));
@@ -144,6 +107,55 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
             })
 
             setIsDataSourceLoaded(true);
+
+            function markerHovered(event: any) {
+                var marker2 = event.target as HtmlMarker & { properties: any };
+
+                if (marker2.properties.cluster) {
+                    const content = `Cluster of ${marker2.properties.point_count_abbreviated} markers`
+                    // Create a popup.
+                    var popup = new Popup({
+                        content: content,
+                        position: marker2.getOptions().position,
+                        pixelOffset: [0, -20],
+                        closeButton: true
+                    });
+
+                    // Open the popup.
+                    if (mapRef) {
+                        popup.open(mapRef);
+                    }
+                }
+                else {
+                    var popUpHtmlContent = ReactDOMServer.renderToString(getPopUpContent(marker2.properties.eventId, marker2.properties.eventName, marker2.properties.eventDate, marker2.properties.streetAddress, marker2.properties.city, marker2.properties.region, marker2.properties.country, marker2.properties.postalCode, marker2.properties.isAttending));
+                    var popUpContent = new DOMParser().parseFromString(popUpHtmlContent, "text/xml");
+
+                    var viewDetailsButton = popUpContent.getElementById("viewDetails");
+                    if (viewDetailsButton)
+                        viewDetailsButton.addEventListener('click', function () {
+                            viewDetails(marker2.properties.eventId);
+                        });
+
+                    var addAttendeeButton = popUpContent.getElementById("addAttendee");
+                    if (addAttendeeButton)
+                        addAttendeeButton.addEventListener('click', function () {
+                            handleAttend(marker2.properties.eventId);
+                        });
+
+                    // Create a popup.
+                    var popup = new Popup({
+                        content: popUpContent.documentElement,
+                        position: marker2.getOptions().position,
+                        pixelOffset: [0, -20],
+                        closeButton: true
+                    });
+
+                    // Open the popup.
+                    if (mapRef) {
+                        popup.open(mapRef);
+                    }
+                }
+            }
 
             function viewDetails(eventId: string) {
                 props.onDetailsSelected(eventId);
@@ -223,9 +235,6 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                     </div>
                 );
             }
-
-            //Add marker layer to the map.
-            mapRef.layers.add(markerLayer);
         }
     }, [mapRef,
         props,
