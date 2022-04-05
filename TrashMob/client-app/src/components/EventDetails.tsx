@@ -8,10 +8,11 @@ import { getEventType } from '../store/eventTypeHelper';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import { Col, Form } from 'react-bootstrap';
+import { Container, Dropdown, Pagination } from 'react-bootstrap';
 import MapControllerSinglePoint from './MapControllerSinglePoint';
 import AddToCalendar from '@culturehq/add-to-calendar';
 import moment from 'moment';
+import { Calendar, Facebook, GeoAlt, Link, Share, Stopwatch, Twitter } from 'react-bootstrap-icons';
 
 export interface DetailsMatchParams {
     eventId: string;
@@ -50,6 +51,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
     const [twitterUrl, setTwitterUrl] = React.useState<string>();
     const [facebookUrl, setFacebookUrl] = React.useState<string>();
     const [createdById, setCreatedById] = React.useState<string>("");
+    const [copied, setCopied] = React.useState(false);
 
     let startDateTime = moment(eventDate);
     let endDateTime = moment(startDateTime).add(durationHours, 'hours').add(durationMinutes, 'minutes');
@@ -132,12 +134,20 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
         // do nothing
     }
 
-    function renderUsersTable(users: UserData[]) {
+    function handleCopyLink() {
+        navigator.clipboard.writeText(window.location.href);
+        setCopied(true);
+        setTimeout(() => {
+            setCopied(false);
+        }, 5000)
+    }
+
+    const UsersTable: React.FC<{ userList: UserData[] }> = React.memo(({ userList }) => {
         return (
             <div>
                 <table className='table table-striped' aria-labelledby="tableLabel">
                     <thead>
-                        <tr>
+                        <tr className="bg-ice">
                             <th>User Name</th>
                             <th>City</th>
                             <th>Country</th>
@@ -145,7 +155,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {users.map(user => {
+                        {userList.map(user => {
                             var uName = user.userName ? user.userName : user.sourceSystemUserName;
                             if (user.id === createdById) {
                                 uName += " (Lead)";
@@ -163,126 +173,57 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                         )}
                     </tbody>
                 </table>
+                <Pagination className="d-flex justify-content-end">
+                    <Pagination.Prev />
+                    <Pagination.Next />
+                </Pagination>
             </div>
         );
-    }
+    });
 
     function renderEvent() {
-
         return (
-            <div>
-                 <AddToCalendar event={event}/>
-                <Form>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group>
-                                <div><a target="_blank" rel="noopener noreferrer" href={twitterUrl} className="twitter-share-button" data-size="large">Share on Twitter</a></div>
-                                <div className="fb-share-button" data-href={eventUrl} data-layout="button" data-size="small"><a target="_blank" rel="noreferrer" href={facebookUrl} className="fb-xfbml-parse-ignore">Share</a></div>
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group>
-                                <Form.Label className="control-label" htmlFor="Name">Name:</Form.Label>
-                                <Form.Control disabled type="text" defaultValue={eventName} />
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <Form.Label className="control-label" htmlFor="EventDate">EventDate:</Form.Label>
-                                <Form.Control disabled type="text" defaultValue={eventDate.toLocaleString()} />
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <Form.Label className="control-label" htmlFor="Duration">Duration:</Form.Label>
-                                <Form.Control disabled type="text" defaultValue={durationHours + "hours, " + durationMinutes + "min"} />
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <Form.Label className="control-label" htmlFor="EventType">Event Type:</Form.Label>
-                                <Form.Control disabled type="text" defaultValue={getEventType(eventTypeList, eventTypeId)} />
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group>
-                                <Form.Label className="control-label" htmlFor="Description">Description:</Form.Label>
-                                <Form.Control disabled as="textarea" defaultValue={description} rows={5} cols={5} />
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group>
-                                <Form.Label className="control-label" htmlFor="StreetAddress">Street Address:</Form.Label>
-                                <Form.Control disabled type="text" defaultValue={streetAddress} />
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
-                                <Form.Control disabled type="text" defaultValue={city} />
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <Form.Label className="control-label" htmlFor="postalCode">Postal Code:</Form.Label>
-                                <Form.Control disabled type="text" defaultValue={postalCode} />
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group>
-                                <Form.Label className="control-label" htmlFor="stateProvince">Region:</Form.Label>
-                                <Form.Control disabled type="text" defaultValue={region} />
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
-                                <Form.Control disabled type="text" defaultValue={country} />
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group>
-                                <Form.Label className="control-label" htmlFor="Latitude">Latitude:</Form.Label>
-                                <Form.Control disabled type="text" defaultValue={latitude} />
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <Form.Label className="control-label" htmlFor="Longitude">Longitude:</Form.Label>
-                                <Form.Control disabled type="text" defaultValue={longitude} />
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <Form.Label className="control-label" hidden={maxNumberOfParticipants === 0} htmlFor="MaxNumberOfParticipants">Max Number Of Participants:</Form.Label>
-                                <Form.Control hidden={maxNumberOfParticipants === 0} disabled type="text" defaultValue={maxNumberOfParticipants} />
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                </Form >
-                <div>
-                    <h2>Event Location</h2>
-                    <AzureMapsProvider>
-                        <>
-                            <MapControllerSinglePoint center={center} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} eventDate={eventDate} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} isDraggable={false} />
-                        </>
-                    </AzureMapsProvider>
-                </div>
-                <div>
-                    <h2>Event Attendees</h2>
-                    {renderUsersTable(userList)}
-                </div>
-            </div>
+            <>
+                <AzureMapsProvider>
+                    <MapControllerSinglePoint center={center} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} eventDate={eventDate} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} isDraggable={false} />
+                </AzureMapsProvider>
+                <Container>
+                    <div className="d-flex justify-content-between align-items-end">
+                        <h4 className="font-weight-bold">{eventName}</h4>
+                        <div className="d-flex">
+                            <div className="btn btn-outline" id="addToCalendarBtn"><AddToCalendar event={event} /></div>
+                            <Dropdown role="menuitem">
+                                <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100"><Share className="mr-2" aria-hidden="true" />Share</Dropdown.Toggle>
+                                <Dropdown.Menu id="share-menu">
+                                    <Dropdown.Item className="share-link" onClick={handleCopyLink}><Link className="mr-2" aria-hidden="true" />{!copied ? "Copy link" : "Copied!"}</Dropdown.Item>
+                                    <Dropdown.Item className="share-link"><Facebook className="mr-2" aria-hidden="true" /><a target="_blank" rel="noopener noreferrer" href={facebookUrl} className="fb-xfbml-parse-ignore">Share to Facebook</a></Dropdown.Item>
+                                    <Dropdown.Item className="share-link"><Twitter className="mr-2" aria-hidden="true" /><a target="_blank" rel="noopener noreferrer" href={twitterUrl} className="twitter-share-button">Share to Twitter</a></Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                            <button className="btn btn-primary">Register</button>
+                        </div>
+                    </div>
+                    <span className="my-2 event-list-event-type p-2 rounded d-block">{getEventType(eventTypeList, eventTypeId)}</span>
+                    <p>{description}</p>
+                    <p><Calendar className="mr-2" />{moment(startDateTime).local().format('L')}</p>
+                    <p><Stopwatch className="mr-2" />{moment(startDateTime).local().format('LT')}</p>
+                    <p><GeoAlt className="mr-2" /><a href={`https://google.com/maps/place/${streetAddress}+${city}+${region}+${postalCode}+${country}`}>{streetAddress}, {city}, {region} - {postalCode} {country}</a></p>
+                    <div className="d-flex">
+                        <span className="font-weight-bold mr-2">Latitude:</span>
+                        <span className="mr-5">{latitude}</span>
+                        <span className="font-weight-bold mr-2">Longitude:</span>
+                        <span>{longitude}</span>
+                    </div>
+                    <div hidden={maxNumberOfParticipants === 0}>
+                        <span className="font-weight-bold mr-2">Max Number of Participants:</span>
+                        <span>{maxNumberOfParticipants}</span>
+                    </div>
+                </Container>
+                <Container>
+                    <h5 className="font-weight-bold mr-2 mt-5 mb-4 text-decoration-underline">Attendees ({userList.length})</h5>
+                    <UsersTable userList={userList} />
+                </Container>
+            </>
         )
     }
 
