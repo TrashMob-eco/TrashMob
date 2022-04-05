@@ -29,7 +29,6 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     const [isDataSourceLoaded, setIsDataSourceLoaded] = React.useState(false);
-    const { onLocationChange } = props.onLocationChange;
     const CACHE = {};
     const PER_PAGE = 50;
     const [isLoading, setIsLoading] = React.useState(false);
@@ -100,9 +99,14 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
                         }
                     });
 
-                    mapRef.events.add('drag', marker, (e: any) => {
+                    mapRef.events.add('dragend', marker, (e: any) => {
                         var pos = e.target.options.position;
-                        onLocationChange(pos);
+                        handleLocationChange(pos);
+                    });
+
+                    mapRef.events.add('click', marker, (e: any) => {
+                        var pos = e.target.options.position;
+                        handleLocationChange(pos);
                     });
 
                     mapRef.events.add('mouseout', marker, () => popup.close());
@@ -145,7 +149,8 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
         props.latitude,
         isDataSourceLoaded,
         props.isDraggable,
-        onLocationChange,
+        // eslint-disable-next-line
+        handleLocationChange,
         isMapReady]);
 
     useEffect(() => {
@@ -174,6 +179,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
         isDataSourceLoaded,
         isMapReady]);
 
+    // eslint-disable-next-line
     function handleLocationChange(e: any) {
         props.onLocationChange(e);
     }
