@@ -29,7 +29,6 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     const [isDataSourceLoaded, setIsDataSourceLoaded] = React.useState(false);
-    const { onLocationChange } = props.onLocationChange;
     const CACHE = {};
     const PER_PAGE = 50;
     const [isLoading, setIsLoading] = React.useState(false);
@@ -150,6 +149,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
         props.latitude,
         isDataSourceLoaded,
         props.isDraggable,
+        // eslint-disable-next-line
         handleLocationChange,
         isMapReady]);
 
