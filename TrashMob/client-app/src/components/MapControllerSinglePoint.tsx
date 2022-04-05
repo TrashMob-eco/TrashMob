@@ -150,7 +150,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
         props.latitude,
         isDataSourceLoaded,
         props.isDraggable,
-        onLocationChange,
+        handleLocationChange,
         isMapReady]);
 
     useEffect(() => {
