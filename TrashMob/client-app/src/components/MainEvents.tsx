@@ -130,9 +130,6 @@ export const MainEvents: React.FC<MainEventsDataProps> = (props) => {
                         </li>
                     )}
                 </ol>
-                <div className="d-flex justify-content-center">
-                    <Link to="/eventsummaries"><Button className="btn btn-primary my-5">View all events</Button></Link>
-                </div>
             </>
         )
     }

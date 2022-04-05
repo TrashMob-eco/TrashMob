@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Container } from 'react-bootstrap';
-import bucket from './assets/bucket.svg'
+import bucket from './assets/gettingStarted/bucket.png'
 import gloves from './assets/gloves.svg';
 import smileyFace from './assets/smileyface.svg';
 
