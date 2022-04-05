@@ -179,6 +179,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
         isDataSourceLoaded,
         isMapReady]);
 
+    // eslint-disable-next-line
     function handleLocationChange(e: any) {
         props.onLocationChange(e);
     }
