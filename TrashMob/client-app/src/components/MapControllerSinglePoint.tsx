@@ -100,9 +100,14 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
                         }
                     });
 
-                    mapRef.events.add('drag', marker, (e: any) => {
+                    mapRef.events.add('dragend', marker, (e: any) => {
                         var pos = e.target.options.position;
-                        onLocationChange(pos);
+                        handleLocationChange(pos);
+                    });
+
+                    mapRef.events.add('click', marker, (e: any) => {
+                        var pos = e.target.options.position;
+                        handleLocationChange(pos);
                     });
 
                     mapRef.events.add('mouseout', marker, () => popup.close());

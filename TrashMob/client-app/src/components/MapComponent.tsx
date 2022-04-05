@@ -16,7 +16,7 @@ const MapComponent: React.FC<MapComponentProps> = (props) => {
     return (
         <div style={{ height: '300px', width: 100 + '%' }}>
             {(!props.isMapKeyLoaded || !props.mapOptions) && <div>Map is loading.</div>}
-            {props.isMapKeyLoaded && props.mapOptions && <AzureMap options={props.mapOptions} events={{ click: getCoordinates }}/> }
+            {props.isMapKeyLoaded && props.mapOptions && <AzureMap options={props.mapOptions} /> }
         </div>
     );
 };
