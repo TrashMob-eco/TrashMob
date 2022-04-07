@@ -77,16 +77,9 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
                         const marker = event.target as HtmlMarker & { properties: any };
                         const content = marker.properties.cluster
                             ? `Cluster of ${marker.properties.point_count_abbreviated} markers`
-                            : `<div className="container-fluid card">
-                                <h4>${marker.properties.name}</h4>
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td>Event Date:</td>
-                                            <td>${new Date(marker.properties.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' })}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            : `<div className="card" style="padding:0.5rem;">
+                                <h6>${marker.properties.name}</h6>
+                                <span>Event Date: ${new Date(marker.properties.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' })} </span>
                             </div>`;
                         popup.setOptions({
                             content: content,
@@ -228,7 +221,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
                 setIsLoading(false);
                 setOptions(resp.options);
             });
-    // eslint-disable-next-line
+        // eslint-disable-next-line
     }, []);
 
     function makeAndHandleRequest(query: string, page: number = 1) {
@@ -262,7 +255,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
 
     return (
         <>
-            { props.isDraggable ? <div >
+            {props.isDraggable ? <div >
                 <AsyncTypeahead
                     id="async-pagination-example"
                     isLoading={isLoading}
@@ -283,7 +276,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
                     )}
                     useCache={false}
                 />
-            </div> : null }
+            </div> : null}
             <MapComponent mapOptions={props.mapOptions} isMapKeyLoaded={props.isMapKeyLoaded} onLocationChange={handleLocationChange} />
         </>
     );
