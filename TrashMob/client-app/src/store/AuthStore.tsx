@@ -16,6 +16,7 @@ export function GetMsalClient() {
             clientId: clientId,
             authority: 'https://trashmob.b2clogin.com/Trashmob.onmicrosoft.com/b2c_1_signupsignin1',
             postLogoutRedirectUri: "/",
+            navigateToLoginRequestUrl: true,
             knownAuthorities: ['trashmob.b2clogin.com']
         },
         cache: { cacheLocation: "sessionStorage", storeAuthStateInCookie: false },
