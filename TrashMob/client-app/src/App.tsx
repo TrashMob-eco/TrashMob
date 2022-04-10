@@ -42,7 +42,6 @@ import { CancelEvent, CancelEventMatchParams } from './components/EventManagemen
 import NotificationPreferences from './components/NotificationPreferences';
 
 import './custom.css';
-import { clearStoredUser, getStoredUser, storeUser } from './store/LocalUserStorage';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }
@@ -66,7 +65,7 @@ export const App: React.FC = () => {
             }
         });
 
-        var userStr = getStoredUser();
+        var userStr = sessionStorage.getItem('user');
         if (userStr) {
             var user = JSON.parse(userStr);
             setCurrentUser(user);
@@ -120,7 +119,7 @@ export const App: React.FC = () => {
         setIsUserLoaded(false);
         var user = new UserData();
         setCurrentUser(user)
-        clearStoredUser();
+        sessionStorage.setItem('user', JSON.stringify(user));
     }
 
     function handleUserUpdated() {
@@ -141,9 +140,9 @@ export const App: React.FC = () => {
             })
                 .then(response => response.json() as Promise<UserData>)
                 .then(data => {
-                    storeUser(data);
                     setCurrentUser(data);
                     setIsUserLoaded(true);
+                    sessionStorage.setItem('user', JSON.stringify(data));
                 });
         });
     }
@@ -185,9 +184,9 @@ export const App: React.FC = () => {
                         user.privacyPolicyVersion = data.privacyPolicyVersion;
                         user.termsOfServiceVersion = data.termsOfServiceVersion;
                         user.isSiteAdmin = data.isSiteAdmin;
-                        storeUser(user);
                         setCurrentUser(user);
                         setIsUserLoaded(true);
+                        sessionStorage.setItem('user', JSON.stringify(user));
                     }
                 });
         });
