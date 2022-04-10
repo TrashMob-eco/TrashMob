@@ -15,23 +15,23 @@ code {
 
 /* Rounded border */
 hr.rounded {
-    border-top: 8px solid #bbb;
-    border-radius: 5px;
+  border-top: 8px solid #bbb;
+  border-radius: 5px;
 }
 
 .video-responsive {
-    overflow: hidden;
-    padding-bottom: 56.25%;
-    position: relative;
-    height: 0;
+  overflow: hidden;
+  padding-bottom: 56.25%;
+  position: relative;
+  height: 0;
 }
 
 .video-responsive iframe {
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  position: absolute;
 }
 
 .chq-atc--dropdown {
@@ -85,7 +85,7 @@ hr.rounded {
   margin-bottom: 0 !important;
 }
 
-#copyright p{
+#copyright p {
   font-family: 'Montserrat', sans-serif;
   font-style: normal;
   font-weight: 500;
@@ -107,7 +107,8 @@ hr.rounded {
   margin-right: 15px;
 }
 
-.fa-facebook-f, .fa-twitter {
+.fa-facebook-f,
+.fa-twitter {
   color: black;
   font-size: 20px;
   align-self: center;
@@ -133,8 +134,8 @@ hr.rounded {
 }
 
 .form-group.required .control-label:after {
-    content: "*";
-    color: red;
+  content: "*";
+  color: red;
 }
 
 .dropdown-divider {
@@ -176,7 +177,8 @@ hr.rounded {
   color: #96ba00 !important;
   border: 1px solid #96ba00 !important;
   transition: all ease .5s;
-  margin-right: 9px;background-color: unset !important;
+  margin-right: 9px;
+  background-color: unset !important;
 }
 
 .btn-outline:hover {
@@ -193,8 +195,8 @@ hr.rounded {
 }
 
 input[type="radio"] {
-	appearance: none;
-	/* background, border etc to customize */ 
+  appearance: none;
+  /* background, border etc to customize */
   width: 18px;
   height: 18px;
   border: 1px solid #6b6f74;
@@ -204,7 +206,7 @@ input[type="radio"] {
 }
 
 input[type="radio"]:checked {
-	width: 18px;
+  width: 18px;
   height: 18px;
   background-color: #96ba00;
   border: 1px solid #6b6f74;
@@ -263,6 +265,12 @@ input[type="radio"]:checked {
   }
 }
 
-.bg-grass{
+@media (min-width: 1800px) {
+  .banner-globe {
+    width: 20%;
+  }
+}
+
+.bg-grass {
   background-color: #96ba00;
 }

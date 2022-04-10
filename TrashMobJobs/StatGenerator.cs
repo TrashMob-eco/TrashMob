@@ -32,6 +32,9 @@ namespace TrashMobJobs
                 siteStats.FutureEventsCount = await CountFutureEvents(log, conn).ConfigureAwait(false);
                 siteStats.FutureEventAttendeesCount = await CountFutureEventAttendees(log, conn).ConfigureAwait(false);
                 siteStats.ContactRequestsCount = await CountContactRequests(log, conn).ConfigureAwait(false);
+                siteStats.BagsCount = await CountBags(log, conn).ConfigureAwait(false);
+                siteStats.MinutesCount = await CountMinutes(log, conn).ConfigureAwait(false);
+                siteStats.ActualAttendeesCount = await CountActualAttendees(log, conn).ConfigureAwait(false);
             }
 
             await SendSummaryReport(siteStats, instanceName, sendGridApiKey).ConfigureAwait(false);
@@ -69,6 +72,57 @@ namespace TrashMobJobs
             await AddSiteMetrics(log, conn, "TotalEvents", numberOfEvents).ConfigureAwait(false);
 
             return numberOfEvents;
+        }
+
+        private static async Task<int> CountBags(ILogger log, SqlConnection conn)
+        {
+            var sql = "SELECT sum(NumberOfBags) + sum(NumberOfBuckets)/3 FROM dbo.EventSummaries";
+            var numberOfBags = 0;
+
+            using (var cmd = new SqlCommand(sql, conn))
+            {
+                numberOfBags = (int)await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+
+                log.LogInformation("There are currently '{numberOfBags}' Bags picked.", numberOfBags);
+            }
+
+            await AddSiteMetrics(log, conn, "TotalBags", numberOfBags).ConfigureAwait(false);
+
+            return numberOfBags;
+        }
+
+        private static async Task<int> CountMinutes(ILogger log, SqlConnection conn)
+        {
+            var sql = "SELECT sum(DurationInMinutes * ActualNumberOfAttendees) FROM dbo.EventSummaries";
+            var numberOfMinutes = 0;
+
+            using (var cmd = new SqlCommand(sql, conn))
+            {
+                numberOfMinutes = (int)await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+
+                log.LogInformation("There are currently '{numberOfMinutes}' minutes picked.", numberOfMinutes);
+            }
+
+            await AddSiteMetrics(log, conn, "TotalMinutes", numberOfMinutes).ConfigureAwait(false);
+
+            return numberOfMinutes;
+        }
+
+        private static async Task<int> CountActualAttendees(ILogger log, SqlConnection conn)
+        {
+            var sql = "SELECT sum(ActualNumberOfAttendees) FROM dbo.EventSummaries";
+            var numberOfAttendees = 0;
+
+            using (var cmd = new SqlCommand(sql, conn))
+            {
+                numberOfAttendees = (int)await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+
+                log.LogInformation("There are currently '{numberOfAttendees}' actual attendees.", numberOfAttendees);
+            }
+
+            await AddSiteMetrics(log, conn, "ActualAttendees", numberOfAttendees).ConfigureAwait(false);
+
+            return numberOfAttendees;
         }
 
         private static async Task<int> CountFutureEvents(ILogger log, SqlConnection conn)
@@ -163,13 +217,17 @@ namespace TrashMobJobs
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine($"Summary Report for '{instanceName}'");
-            sb.AppendLine($"Total Number of Users: {siteStats.UserCount}");
-            sb.AppendLine($"Total Number of Events: {siteStats.EventCount}");
-            sb.AppendLine($"Total Number of Attendees: {siteStats.AttendeeCount}");
-            sb.AppendLine($"Total Number of Future Events: {siteStats.FutureEventsCount}");
-            sb.AppendLine($"Total Number of Future Event Attendees: {siteStats.FutureEventAttendeesCount}");
-            sb.AppendLine($"Total Number of Contact Requests: {siteStats.ContactRequestsCount}");
+            sb.AppendLine($"Summary Report for '{instanceName}'\n");
+            sb.AppendLine($"Total Number of Users: {siteStats.UserCount}\n");
+            sb.AppendLine($"Total Number of Events: {siteStats.EventCount}\n");
+            sb.AppendLine($"Total Number of Attendees: {siteStats.AttendeeCount}\n");
+            sb.AppendLine($"Total Number of Future Events: {siteStats.FutureEventsCount}\n");
+            sb.AppendLine($"Total Number of Future Event Attendees: {siteStats.FutureEventAttendeesCount}\n");
+            sb.AppendLine($"Total Number of Contact Requests: {siteStats.ContactRequestsCount}\n");
+            sb.AppendLine($"Total Number of Bags Collected: {siteStats.BagsCount}\n");
+            sb.AppendLine($"Total Number of Minutes: {siteStats.MinutesCount}\n");
+            sb.AppendLine($"Total Number of Actual Attendees: {siteStats.ActualAttendeesCount}\n");
+            sb.AppendLine($"End Report.\n");
 
             var email = new Email
             {
@@ -197,5 +255,11 @@ namespace TrashMobJobs
         public int FutureEventAttendeesCount { get; set; }
 
         public int ContactRequestsCount { get; set; }
+
+        public int BagsCount { get; set; }
+
+        public int MinutesCount { get; set; }
+
+        public int ActualAttendeesCount { get; set; }
     }
 }

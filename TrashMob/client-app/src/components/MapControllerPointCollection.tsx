@@ -208,7 +208,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
             function getPopUpContent(eventId: string, eventName: string, eventDate: string, streetAddress: string, city: string, region: string, country: string, postalCode: string, isAttending: string) {
 
                 return (
-                    <div className="container-fluid card">
+                    <div className="container card" style={{padding: "0.5rem"}}>
                         <h4>{eventName}</h4>
                         <table>
                             <tbody>
