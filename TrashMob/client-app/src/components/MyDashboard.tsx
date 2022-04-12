@@ -98,7 +98,7 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
                 }
             });
         }
-    }, [showFutureEventsOnly, showCanceledEventsOnly, reloadEvents, props.currentUser.id, props.isUserLoaded]);
+    }, [showFutureEventsOnly, showCanceledEventsOnly, reloadEvents, props.currentUser, props.currentUser.id, props.isUserLoaded]);
 
     function handleLocationChange(point: data.Position) {
         // do nothing
