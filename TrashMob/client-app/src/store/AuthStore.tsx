@@ -2,11 +2,14 @@ import * as msal from "@azure/msal-browser";
 
 export function GetMsalClient() {
 
-    var url = window.location.href;
+    var host = window.location.host;
+    var protocol = window.location.protocol;
+
+    var uri = protocol + "//" + host;
 
     var clientId = 'f977762a-30a6-4664-af41-cd1fe21fffe1';
 
-    if (url.startsWith("https://www.trashmob.eco") || url.startsWith("https://trashmob.eco")) {
+    if (host.startsWith("www.trashmob.eco") || host.startsWith("trashmob.eco")) {
         clientId = "0a1647a4-c758-4964-904f-a9b66958c071";
     }
 
@@ -17,7 +20,8 @@ export function GetMsalClient() {
             authority: 'https://trashmob.b2clogin.com/Trashmob.onmicrosoft.com/b2c_1_signupsignin1',
             postLogoutRedirectUri: "/",
             navigateToLoginRequestUrl: true,
-            knownAuthorities: ['trashmob.b2clogin.com']
+            knownAuthorities: ['trashmob.b2clogin.com'],
+            redirectUri: uri
         },
         cache: { cacheLocation: "sessionStorage", storeAuthStateInCookie: false },
         system: {
