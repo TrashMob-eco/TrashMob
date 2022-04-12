@@ -35,7 +35,7 @@ ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want
 
 ## Getting Started - Development
 
-1. You must install the .net 5 SDK
+1. You must install the .net 6 SDK
 1. Install Visual Studio Code
 1. Connect to github and clone the repo
 1. Install the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli)

@@ -32,9 +32,6 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
 
-        setCurrentUser(props.currentUser);
-        setIsUserLoaded(props.isUserLoaded);
-
         fetch('/api/eventtypes', {
             method: 'GET',
             headers: headers,
@@ -57,10 +54,14 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
         } else {
             console.log("Not Available");
         }
-    }, [props.currentUser, props.isUserLoaded]);
+    }, []);
 
     React.useEffect(() => {
         if (props.isUserLoaded) {
+
+            setCurrentUser(props.currentUser);
+            setIsUserLoaded(props.isUserLoaded);
+
             setIsEventDataLoaded(false);
             const account = msalClient.getAllAccounts()[0];
 
@@ -74,7 +75,7 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
                 if (!showCanceledEventsOnly) {
-                    fetch('/api/events/userevents/' + currentUser.id + '/' + showFutureEventsOnly, {
+                    fetch('/api/events/userevents/' + props.currentUser.id + '/' + showFutureEventsOnly, {
                         method: 'GET',
                         headers: headers
                     })
@@ -85,7 +86,7 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
                         });
                 }
                 else {
-                    fetch('/api/events/canceleduserevents/' + currentUser.id + '/' + showFutureEventsOnly, {
+                    fetch('/api/events/canceleduserevents/' + props.currentUser.id + '/' + showFutureEventsOnly, {
                         method: 'GET',
                         headers: headers
                     })
@@ -97,7 +98,7 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
                 }
             });
         }
-    }, [showFutureEventsOnly, showCanceledEventsOnly, reloadEvents, currentUser.id, props.isUserLoaded]);
+    }, [showFutureEventsOnly, showCanceledEventsOnly, reloadEvents, props.currentUser, props.currentUser.id, props.isUserLoaded]);
 
     function handleLocationChange(point: data.Position) {
         // do nothing

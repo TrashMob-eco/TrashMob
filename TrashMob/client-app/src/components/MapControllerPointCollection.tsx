@@ -166,7 +166,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                 }
 
                 return (
-                    <div className="container-fluid card">
+                    <div className="container card" style={{padding: "0.5rem"}}>
                         <h4>{eventName}</h4>
                         <table>
                             <tbody>
