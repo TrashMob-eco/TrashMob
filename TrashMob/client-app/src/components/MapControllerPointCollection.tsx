@@ -46,7 +46,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
 
             // Create a HTML marker layer for rendering data points.
             var markerLayer = new HtmlMarkerLayer(dataSourceRef, null, {
-                markerRenderCallback: function (id: any, position: data.Position, properties: any) {
+                markerCallback: function (id: any, position: data.Position, properties: any) {
 
                     // Create an HtmlMarker.
                     const marker = new HtmlMarker({

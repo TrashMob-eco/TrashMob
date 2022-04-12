@@ -55,7 +55,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
     constructor(source: string | azmaps.source.Source, id?: string, options?: HtmlMarkerLayerOptions) {
         super(source, id);
 
-        super.setOptions({
+        super.setOptions(<azmaps.BubbleLayerOptions>{
             color: 'transparent',
             radius: 0,
             strokeWidth: 0
@@ -83,7 +83,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
         const self = this;
         const opt = self._options;
 
-        const newBaseOptions = {} as azmaps.BubbleLayerOptions;
+        const newBaseOptions = <azmaps.BubbleLayerOptions>{};
         let cc = false;
 
         if (options.source && opt.source !== options.source) {
@@ -216,7 +216,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
     /**
      * Event handler for when a data source in the map changes.
      */
-    private _sourceUpdated = (e : any) => {
+    private _sourceUpdated = (e: any) => {
         const s = this._getSourceClass();
 
         if (s && s.getId() === e.source.id) {
@@ -248,7 +248,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
      * Clears the marker cache.
      * @param update A boolean indicating if the layer should rerender/update after clearing the cache.
      */
-    private _clearCache(update : any): void {
+    private _clearCache(update: any): void {
         const self = this;
 
         self._markerCache = {}; //Clear marker cache. 
@@ -274,7 +274,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
     /**
      * Main function that updates all displayed markers on the map.
      */
-    private _updateMarkers = () => {
+    private _updateMarkers = async (): Promise<void> => {
         const self = this;
         const map = self._map;
         const markers = self._markers;
@@ -297,7 +297,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
             const newMarkers = [];
             const newMarkerIds = [];
 
-            let id: string | null = null;
+            let id: string = "";
             let properties: any;
             let position: azmaps.data.Position | null = null;
             let shape: azmaps.Shape;
@@ -308,32 +308,31 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
                 marker = null;
 
                 if (shapes[i] instanceof azmaps.Shape) {
-                    shape = shapes[i] as azmaps.Shape;
+                    shape = <azmaps.Shape>shapes[i];
 
                     if (shape.getType() === 'Point') {
-                        position = shape.getCoordinates() as azmaps.data.Position;
+                        position = <azmaps.data.Position>shape.getCoordinates();
                         properties = shape.getProperties();
-                        id = shape.getId() as string;
+                        id = <string>shape.getId();
                     }
                 } else {
-                    feature = shapes[i] as azmaps.data.Feature<azmaps.data.Geometry, any>;
+                    feature = <azmaps.data.Feature<azmaps.data.Geometry, any>>shapes[i];
 
                     if (feature.geometry.type === 'Point') {
-                        position = feature.geometry.coordinates as azmaps.data.Position;
+                        position = <azmaps.data.Position>feature.geometry.coordinates;
                         properties = feature.properties;
 
                         //Check to see if the point represents a clustered point from a GeoJSON data source. Vector tile sources may have cluster data, but may not align with the same property schema.
                         if (properties && properties.cluster) {
                             id = 'cluster_' + feature.properties.cluster_id;
                         } else if (feature.id) {
-                            id = feature.id as string;
+                            id = <string>feature.id;
                         }
                     }
                 }
 
                 if (position) {
-                    marker = self._getMarker(id, position, properties);
-
+                    marker = await self._getMarker(id, position, properties);
                     //Add marker events to wrap layer events.
                     if (marker && !marker._eventsAttached) {
                         self._addEvents(marker);
@@ -355,12 +354,9 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
 
             //Remove all markers that are no longer in view. 
             for (let i = markers.length - 1; i >= 0; i--) {
-                if (markers && markers[i]) {
-                    var mId = markers[i].id;
-                    if (!mId || newMarkerIds.indexOf(mId) === -1) {
-                        map?.markers.remove(markers[i]);
-                        markers.splice(i, 1);
-                    }
+                if (markers && !markers[i].id || (markers && markers[i].id && newMarkerIds.indexOf(<string>markers[i].id) === -1)) {
+                    map?.markers.remove(markers[i]);
+                    markers.splice(i, 1);
                 }
             }
 
@@ -378,7 +374,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
      * @param position The position of the marker.
      * @param properties The properties of the marker.
      */
-    private _getMarker(id: string | null, position: azmaps.data.Position, properties: any): ExtendedHtmlMarker | null {
+    private _getMarker(id: string, position: azmaps.data.Position, properties: any): Promise<ExtendedHtmlMarker> | null {
         const self = this;
         const markerCache = self._markerCache;
         const opt = self._options;
@@ -393,99 +389,51 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
             return markerCache[id];
         } else {
             if (opt && opt.markerCallback) {
-                const m: ExtendedHtmlMarker = opt.markerCallback(id, position, properties);
-                if (m) {
-                    m.properties = properties;
-                    m.id = id;
-
-                    //Make sure position is set.
-                    m.setOptions({
-                        position: position
+                const callbackResult = opt.markerCallback(id, position, properties);
+                if (callbackResult instanceof azmaps.HtmlMarker) {
+                    const m = self._getExtendedMarker(callbackResult, id, position, properties);
+                    if (m) {
+                        markerCache[id] = m;
+                        return Promise.resolve(m);
+                    }
+                } else {
+                    return new Promise<ExtendedHtmlMarker>(resolve => {
+                        callbackResult.then(marker => {
+                            const m = self._getExtendedMarker(marker, id, position, properties);
+                            if (m) {
+                                markerCache[id] = m;
+                                resolve(m);
+                            }
+                        });
                     });
-
-                    markerCache[id] = m;
-
-                    return m;
                 }
             }
+
             return null;
         }
     }
 
+    private _getExtendedMarker(marker: azmaps.HtmlMarker, id: string, position: azmaps.data.Position, properties: any): ExtendedHtmlMarker | null {
+        const result: ExtendedHtmlMarker = marker;
+        if (result) {
+            result.properties = properties;
+            result.id = id;
 
-    /////**
-    //// * Wraps all events on a marker.
-    //// * @param marker Marker to wrap events on.
-    //// */
-    ////private _addEvents(marker: ExtendedHtmlMarker): void {
-    ////    const self = this;
-    ////    self._supportedEvents.forEach(e => {
-    ////        //@ts-ignore
-    ////        self.map.events.add(e, marker, self._wrappedEvent);
-    ////    });
-    ////}
+            //Make sure position is set.
+            result.setOptions({
+                position: position
+            });
 
-    /////**
-    //// * Removes all wrapped events on a marker.
-    //// * @param marker Marker to remove events from.
-    //// */
-    ////private _removeEvents(marker: ExtendedHtmlMarker): void {
-    ////    const self = this;
-    ////    self._supportedEvents.forEach(e => {
-    ////        //@ts-ignore
-    ////        self.map.events.remove(e, marker, self._wrappedEvent);
-    ////    });
-    ////}
+            return result;
+        }
 
-    /////**
-    //// * A simple event handler wrapper.
-    //// * @param e Event arg. Will be a TargetedEvent from an HTML Marker.
-    //// */
-    ////private _wrappedEvent = (e: azmaps.TargetedEvent) => {
-    ////    this.map.events.invoke(e.type, e.target as ExtendedHtmlMarker, e.target as ExtendedHtmlMarker);
-    ////}
-
-    ///**
-    // * Wraps all events on a marker.
-    // * @param marker Marker to wrap events on.
-    // */
-    //private _addEvents(marker: azmaps.HtmlMarker | null): void {
-    //    if (!marker) {
-    //        return;
-    //    }
-
-    //    const self = this;
-    //    self._supportedEvents.forEach(e => {
-    //        //@ts-ignore
-    //        self.map.events.add(e, marker, self._wrappedEvent(e, marker));
-    //    });
-    //}
-
-    ///**
-    // * Removes all wrapped events on a marker.
-    // * @param marker Marker to remove events from.
-    // */
-    //private _removeEvents(marker: azmaps.HtmlMarker): void {
-    //    const self = this;
-    //    self._supportedEvents.forEach(e => {
-    //        //@ts-ignore
-    //        self.map.events.remove(e, marker, self._wrappedEvent(e, marker));
-    //    });
-    //}
-
-    ///**
-    // * A simple event handler wrapper.
-    // * @param e Event arg. Will be a TargetedEvent from an HTML Marker.
-    // */
-    //private _wrappedEvent(e : any, marker: azmaps.HtmlMarker) {
-    //    this.map.events.invoke(e.type, marker);
-    //}
-
+        return null;
+    }
 
     /**
-   * Wraps all events on a marker.
-   * @param marker Marker to wrap events on.
-   */
+     * Wraps all events on a marker.
+     * @param marker Marker to wrap events on.
+     */
     private _addEvents(marker: azmaps.HtmlMarker): void {
         const self = this;
         self._supportedEvents.forEach(e => {
@@ -510,7 +458,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
      * A simple event handler wrapper.
      * @param e Event arg. Will be a TargetedEvent from an HTML Marker.
      */
-    private _wrappedEvent = (e: azmaps.TargetedEvent) => {
+    private _wrappedEvent = (e : azmaps.TargetedEvent) => {
         this.map.events.invoke(e.type, this, e);
     }
 }
