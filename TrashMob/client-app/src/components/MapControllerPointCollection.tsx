@@ -6,7 +6,7 @@ import MapComponent from './MapComponent';
 import EventData from './Models/EventData';
 import * as MapStore from '../store/MapStore'
 import UserData from './Models/UserData';
-import { HtmlMarkerLayer } from './HtmlMarkerLayer/SimpleHtmlMarkerLayer'
+import { HtmlMarkerLayer } from './HtmlMarkerLayer/src/layer/HtmlMarkerLayer'
 import ReactDOMServer, { renderToString } from "react-dom/server"
 import { Button } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
@@ -44,8 +44,10 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
             var dataSourceRef = new source.DataSource("mainDataSource", { cluster: true });
             mapRef.sources.add(dataSourceRef);
 
+            var temp: string = "";
+
             // Create a HTML marker layer for rendering data points.
-            var markerLayer = new HtmlMarkerLayer(dataSourceRef, null, {
+            var markerLayer = new HtmlMarkerLayer(dataSourceRef, temp, {
                 markerCallback: function (id: any, position: data.Position, properties: any) {
 
                     // Create an HtmlMarker.
@@ -63,17 +65,6 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
 
                     mapRef.markers.add(marker);
                     return marker;
-                },
-                clusterRenderCallback: function (id: any, position: any, properties: any) {
-                    const markerCluster = new HtmlMarker({
-                        position: position,
-                        color: 'DarkViolet',
-                        text: properties.point_count_abbreviated,
-                        id: id
-                    });
-
-                    mapRef.markers.add(markerCluster);
-                    return markerCluster;
                 }
             });
 

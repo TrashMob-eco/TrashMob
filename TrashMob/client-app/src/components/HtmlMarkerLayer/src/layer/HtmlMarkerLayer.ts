@@ -1,6 +1,8 @@
+// @ts-nocheck
+
 import * as azmaps from "azure-maps-control";
 import { HtmlMarkerLayerOptions } from './HtmlMarkerLayerOptions';
-import { ExtendedHtmlMarker } from './ExtendedHtmlMarker';
+import { ExtendedHtmlMarker } from '../extensions/ExtendedHtmlMarker';
 
 /**
  * A layer that renders point data from a data source as HTML elements on the map.
@@ -31,13 +33,13 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
         }
     };
 
-    private _map: azmaps.Map | undefined | null;
+    private _map: azmaps.Map;
 
     private _markers: ExtendedHtmlMarker[] = [];
     private _markerIds: string[] = [];
     private _markerCache: any = {};
 
-    private _timer: number | undefined | null;
+    private _timer: number;
 
     /** Events supported by the HTML Marker Layer */
     private _supportedEvents = ["click", "contextmenu", "dblclick", "drag", "dragstart", "dragend", "keydown", "keypress", "keyup", "mousedown", "mouseenter", "mouseleave", "mousemove", "mouseout", "mouseover", "mouseup"];
@@ -52,14 +54,14 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
     * @param id The id of the layer. If not specified a random one will be generated.
     * @param options The options of the Html marker layer.
     */
-    constructor(source: string | azmaps.source.Source, id?: string, options?: HtmlMarkerLayerOptions) {
+    constructor(source?: string | azmaps.source.Source, id?: string, options?: HtmlMarkerLayerOptions) {
         super(source, id);
 
         super.setOptions(<azmaps.BubbleLayerOptions>{
             color: 'transparent',
             radius: 0,
             strokeWidth: 0
-        } as azmaps.BubbleLayerOptions);
+        });
 
         this.setOptions(options || {});
     }
@@ -119,7 +121,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
             newBaseOptions.visible = options.visible;
         }
 
-        if (options.markerCallback && opt.markerCallback !== options.markerCallback) {
+        if (options.markerCallback && opt.markerCallback != options.markerCallback) {
             opt.markerCallback = options.markerCallback;
             cc = true;
         }
@@ -201,11 +203,11 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
     /**
      * Gets the source class of the layer.
      */
-    private _getSourceClass(): azmaps.source.Source | null | undefined {
+    private _getSourceClass(): azmaps.source.Source {
         const self = this;
         const s = self.getSource();
         if (typeof s === 'string' && self._map !== null) {
-            return self._map?.sources.getById(s);
+            return self._map.sources.getById(s);
         } else if (s instanceof azmaps.source.Source) {
             return s;
         }
@@ -216,7 +218,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
     /**
      * Event handler for when a data source in the map changes.
      */
-    private _sourceUpdated = (e: any) => {
+    private _sourceUpdated = (e) => {
         const s = this._getSourceClass();
 
         if (s && s.getId() === e.source.id) {
@@ -248,7 +250,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
      * Clears the marker cache.
      * @param update A boolean indicating if the layer should rerender/update after clearing the cache.
      */
-    private _clearCache(update: any): void {
+    private _clearCache(update): void {
         const self = this;
 
         self._markerCache = {}; //Clear marker cache. 
@@ -281,7 +283,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
         const opt = self._options;
         const zoom = (map) ? map.getCamera().zoom : undefined;
 
-        if (opt.visible && zoom !== undefined && opt.minZoom !== undefined && opt.maxZoom !== undefined && zoom >= opt.minZoom && zoom <= opt.maxZoom) {
+        if (opt.visible && zoom !== undefined && zoom >= opt.minZoom && zoom <= opt.maxZoom) {
             //TODO: Bug: this doesn't currently return clusters. Using underlying code to work around this.
             //const shapes = map.layers.getRenderedShapes(null, self, opt.filter);
 
@@ -297,15 +299,16 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
             const newMarkers = [];
             const newMarkerIds = [];
 
-            let id: string = "";
+            let id: string;
             let properties: any;
-            let position: azmaps.data.Position | null = null;
+            let position: azmaps.data.Position;
             let shape: azmaps.Shape;
             let feature: azmaps.data.Feature<azmaps.data.Geometry, any>;
-            let marker: ExtendedHtmlMarker | null;
+            let marker: ExtendedHtmlMarker;
 
             for (let i = 0, len = shapes.length; i < len; i++) {
                 marker = null;
+                id = null;
 
                 if (shapes[i] instanceof azmaps.Shape) {
                     shape = <azmaps.Shape>shapes[i];
@@ -334,7 +337,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
                 if (position) {
                     marker = await self._getMarker(id, position, properties);
                     //Add marker events to wrap layer events.
-                    if (marker && !marker._eventsAttached) {
+                    if (!marker._eventsAttached) {
                         self._addEvents(marker);
                         marker._eventsAttached = true;
                     }
@@ -346,7 +349,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
 
                         if (!marker.id || self._markerIds.indexOf(marker.id) === -1) {
                             newMarkers.push(marker);
-                            map?.markers.add(marker);
+                            map.markers.add(marker);
                         }
                     }
                 }
@@ -354,8 +357,8 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
 
             //Remove all markers that are no longer in view. 
             for (let i = markers.length - 1; i >= 0; i--) {
-                if (markers && !markers[i].id || (markers && markers[i].id && newMarkerIds.indexOf(<string>markers[i].id) === -1)) {
-                    map?.markers.remove(markers[i]);
+                if (!markers[i].id || newMarkerIds.indexOf(markers[i].id) === -1) {
+                    map.markers.remove(markers[i]);
                     markers.splice(i, 1);
                 }
             }
@@ -363,7 +366,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
             self._markers = markers.concat(newMarkers);
             self._markerIds = newMarkerIds;
         } else if (self._markers.length > 0) {
-            map?.markers.remove(self._markers);
+            map.markers.remove(self._markers);
             self._markers = [];
         }
     }
@@ -374,7 +377,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
      * @param position The position of the marker.
      * @param properties The properties of the marker.
      */
-    private _getMarker(id: string, position: azmaps.data.Position, properties: any): Promise<ExtendedHtmlMarker> | null {
+    private _getMarker(id: string, position: azmaps.data.Position, properties: any): Promise<ExtendedHtmlMarker> {
         const self = this;
         const markerCache = self._markerCache;
         const opt = self._options;
@@ -388,32 +391,30 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
         if (markerCache[id]) {
             return markerCache[id];
         } else {
-            if (opt && opt.markerCallback) {
-                const callbackResult = opt.markerCallback(id, position, properties);
-                if (callbackResult instanceof azmaps.HtmlMarker) {
-                    const m = self._getExtendedMarker(callbackResult, id, position, properties);
-                    if (m) {
-                        markerCache[id] = m;
-                        return Promise.resolve(m);
-                    }
-                } else {
-                    return new Promise<ExtendedHtmlMarker>(resolve => {
-                        callbackResult.then(marker => {
-                            const m = self._getExtendedMarker(marker, id, position, properties);
-                            if (m) {
-                                markerCache[id] = m;
-                                resolve(m);
-                            }
-                        });
-                    });
+            const callbackResult = opt.markerCallback(id, position, properties);
+            if (callbackResult instanceof azmaps.HtmlMarker) {
+                const m = self._getExtendedMarker(callbackResult, id, position, properties);
+                if (m) {
+                    markerCache[id] = m;
+                    return Promise.resolve(m);
                 }
+            } else {
+                return new Promise<ExtendedHtmlMarker>(resolve => {
+                    callbackResult.then(marker => {
+                        const m = self._getExtendedMarker(marker, id, position, properties);
+                        if (m) {
+                            markerCache[id] = m;
+                            resolve(m);
+                        }
+                    });
+                });
             }
 
             return null;
         }
     }
 
-    private _getExtendedMarker(marker: azmaps.HtmlMarker, id: string, position: azmaps.data.Position, properties: any): ExtendedHtmlMarker | null {
+    private _getExtendedMarker(marker: azmaps.HtmlMarker, id: string, position: azmaps.data.Position, properties: any): ExtendedHtmlMarker {
         const result: ExtendedHtmlMarker = marker;
         if (result) {
             result.properties = properties;
@@ -426,7 +427,6 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
 
             return result;
         }
-
         return null;
     }
 
@@ -458,7 +458,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
      * A simple event handler wrapper.
      * @param e Event arg. Will be a TargetedEvent from an HTML Marker.
      */
-    private _wrappedEvent = (e : azmaps.TargetedEvent) => {
+    private _wrappedEvent = (e) => {
         this.map.events.invoke(e.type, this, e);
     }
 }

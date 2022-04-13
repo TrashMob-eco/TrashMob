@@ -5,7 +5,7 @@ import { data, source, Popup, HtmlMarker } from 'azure-maps-control';
 import MapComponent from './MapComponent';
 import * as MapStore from '../store/MapStore'
 import UserData from './Models/UserData';
-import { HtmlMarkerLayer } from './HtmlMarkerLayer/SimpleHtmlMarkerLayer'
+import { HtmlMarkerLayer } from './HtmlMarkerLayer/src/layer/HtmlMarkerLayer'
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import { getDefaultHeaders } from '../store/AuthStore';
 import SearchAddressData from './Models/SearchAddressData';
@@ -66,7 +66,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
 
             // Create a HTML marker layer for rendering data points.
             var markerLayer = new HtmlMarkerLayer(dataSourceRef, "marker1", {
-                markerRenderCallback: (id: any, position: data.Position, properties: any) => {
+                markerCallback: (id: any, position: data.Position, properties: any) => {
                     // Create an HtmlMarker.
                     const marker = new HtmlMarker({
                         position: position,
@@ -105,17 +105,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
                     mapRef.events.add('mouseout', marker, () => popup.close());
 
                     return marker
-                },
-                clusterRenderCallback: function (id: any, position: any, properties: any) {
-                    const markerCluster = new HtmlMarker({
-                        position: position,
-                        color: 'DarkViolet',
-                        text: properties.point_count_abbreviated,
-                    });
-
-                    return markerCluster;
-                },
-                source: dataSourceRef
+                }
             });
 
             // Add marker layer to the map.
