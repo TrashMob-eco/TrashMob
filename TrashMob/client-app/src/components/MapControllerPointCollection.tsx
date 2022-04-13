@@ -50,6 +50,16 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
             var markerLayer = new HtmlMarkerLayer(dataSourceRef, temp, {
                 markerCallback: function (id: any, position: data.Position, properties: any) {
 
+                    //Check to see if marker represents a cluster.
+                    if (properties.cluster) {
+                        //Return either an HtmlMarker
+                        return new HtmlMarker({
+                            position: position,
+                            color: 'DarkViolet',
+                            text: properties.point_count_abbreviated
+                        });
+                    }
+
                     // Create an HtmlMarker.
                     const marker = new HtmlMarker({
                         position: position,
@@ -61,9 +71,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                         markerHovered(event);
                     });
 
-                    // mapRef.events.add('mouseout', marker, (event: any) => popup.close());
-
-                    mapRef.markers.add(marker);
+                    // mapRef.markers.add(marker);
                     return marker;
                 }
             });
@@ -109,11 +117,12 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                         content: content,
                         position: marker2.getOptions().position,
                         pixelOffset: [0, -20],
-                        closeButton: true
+                        closeButton: false
                     });
 
                     // Open the popup.
                     if (mapRef) {
+                        mapRef.events.add('mouseout', marker2, (event: any) => popup.close());
                         popup.open(mapRef);
                     }
                 }
@@ -143,6 +152,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
 
                     // Open the popup.
                     if (mapRef) {
+                        mapRef.events.add('mouseout', marker2, (event: any) => popup.close());
                         popup.open(mapRef);
                     }
                 }
