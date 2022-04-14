@@ -8,11 +8,12 @@ import { getEventType } from '../store/eventTypeHelper';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import { Container, Dropdown, Pagination } from 'react-bootstrap';
+import { Container, Dropdown } from 'react-bootstrap';
 import MapControllerSinglePoint from './MapControllerSinglePoint';
 import AddToCalendar from '@culturehq/add-to-calendar';
 import moment from 'moment';
 import { Calendar, Facebook, GeoAlt, Link, Share, Stopwatch, Twitter } from 'react-bootstrap-icons';
+import { RegisterBtn } from './RegisterBtn';
 
 export interface DetailsMatchParams {
     eventId: string;
@@ -53,8 +54,8 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
     const [createdById, setCreatedById] = React.useState<string>("");
     const [copied, setCopied] = React.useState(false);
 
-    let startDateTime = moment(eventDate);
-    let endDateTime = moment(startDateTime).add(durationHours, 'hours').add(durationMinutes, 'minutes');
+    const startDateTime = moment(eventDate);
+    const endDateTime = moment(startDateTime).add(durationHours, 'hours').add(durationMinutes, 'minutes');
 
     const event = {
         name: eventName,
@@ -110,7 +111,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     setLatitude(eventData.latitude);
                     setLongitude(eventData.longitude);
                     setCreatedById(eventData.createdByUserId);
-                    var shareMessage = "Help clean up Planet Earth! Sign up for this TrashMob.eco event in " + eventData.city + ", " + eventData.region + " on " + (new Date(eventData.eventDate)).toLocaleDateString() + "! via @TrashMobEco";
+                    const shareMessage = "Help clean up Planet Earth! Sign up for this TrashMob.eco event in " + eventData.city + ", " + eventData.region + " on " + (new Date(eventData.eventDate)).toLocaleDateString() + "! via @TrashMobEco";
                     setTwitterUrl("https://twitter.com/intent/tweet?text=" + encodeURI(shareMessage) + "&ref_src=twsrc%5Etfw");
                     setFacebookUrl("https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.trashmob.eco%2Feventdetails%2" + eventId + "&amp;src=sdkpreparse");
                     setMaxNumberOfParticipants(eventData.maxNumberOfParticipants);
@@ -130,11 +131,11 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
         setIsUserLoaded(props.isUserLoaded);
     }, [props.currentUser, props.isUserLoaded])
 
-    function handleLocationChange(point: data.Position) {
+    const handleLocationChange = (point: data.Position) => {
         // do nothing
     }
 
-    function handleCopyLink() {
+    const handleCopyLink = () => {
         navigator.clipboard.writeText(window.location.href);
         setCopied(true);
         setTimeout(() => {
@@ -142,7 +143,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
         }, 5000)
     }
 
-    const UsersTable: React.FC<{ userList: UserData[] }> = React.memo(({ userList }) => {
+    const UsersTable = () => {
         return (
             <div>
                 <table className='table table-striped' aria-labelledby="tableLabel">
@@ -179,9 +180,9 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                 </Pagination>
             </div>
         );
-    });
+    };
 
-    function renderEvent() {
+    const renderEvent = () => {
         return (
             <>
                 <AzureMapsProvider>
@@ -191,7 +192,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                     <div className="d-flex justify-content-between align-items-end">
                         <h4 className="font-weight-bold">{eventName}</h4>
                         <div className="d-flex">
-                            <div className="btn btn-outline" id="addToCalendarBtn"><AddToCalendar event={event} /></div>
+                            <div id="addToCalendarBtn"><AddToCalendar event={event} /></div>
                             <Dropdown role="menuitem">
                                 <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100"><Share className="mr-2" aria-hidden="true" />Share</Dropdown.Toggle>
                                 <Dropdown.Menu id="share-menu">
@@ -200,7 +201,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                                     <Dropdown.Item className="share-link"><Twitter className="mr-2" aria-hidden="true" /><a target="_blank" rel="noopener noreferrer" href={twitterUrl} className="twitter-share-button">Share to Twitter</a></Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
-                            <button className="btn btn-primary">Register</button>
+                            <RegisterBtn eventId={eventId} isAttending={isAttending} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} isUserLoaded={isUserLoaded}></RegisterBtn>
                         </div>
                     </div>
                     <span className="my-2 event-list-event-type p-2 rounded d-block">{getEventType(eventTypeList, eventTypeId)}</span>
@@ -221,13 +222,13 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                 </Container>
                 <Container>
                     <h5 className="font-weight-bold mr-2 mt-5 mb-4 text-decoration-underline">Attendees ({userList.length})</h5>
-                    <UsersTable userList={userList} />
+                    <UsersTable />
                 </Container>
             </>
         )
     }
 
-    let contents = isDataLoaded
+    const contents = isDataLoaded
         ? renderEvent()
         : <p><em>Loading...</em></p>;
 
