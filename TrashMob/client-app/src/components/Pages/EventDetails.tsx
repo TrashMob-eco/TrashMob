@@ -1,19 +1,20 @@
 import { FC, useEffect, useState } from 'react'
 import { RouteComponentProps } from 'react-router';
-import EventData from './Models/EventData';
-import UserData from './Models/UserData';
-import EventTypeData from './Models/EventTypeData';
-import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
-import { getEventType } from '../store/eventTypeHelper';
+import EventData from '../Models/EventData';
+import UserData from '../Models/UserData';
+import EventTypeData from '../Models/EventTypeData';
+import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getEventType } from '../../store/eventTypeHelper';
 import { data } from 'azure-maps-control';
-import * as MapStore from '../store/MapStore';
+import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import { Container, Dropdown } from 'react-bootstrap';
-import MapControllerSinglePoint from './MapControllerSinglePoint';
+import { Col, Container, Dropdown, Image, Row } from 'react-bootstrap';
+import MapControllerSinglePoint from '../MapControllerSinglePoint';
 import AddToCalendar from '@culturehq/add-to-calendar';
 import moment from 'moment';
 import { Calendar, Facebook, GeoAlt, Link, Share, Stopwatch, Twitter } from 'react-bootstrap-icons';
-import { RegisterBtn } from './RegisterBtn';
+import { RegisterBtn } from '../RegisterBtn';
+import globes from '../assets/gettingStarted/globes.png';
 
 export interface DetailsMatchParams {
     eventId: string;
@@ -272,8 +273,16 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
         : <p><em>Loading...</em></p>;
 
     return <div>
-        <h3>Event Details</h3>
-        <hr />
+        <Container fluid className='bg-grass'>
+            <Row className="text-center pt-0">
+                <Col md={7} className="d-flex flex-column justify-content-center pr-5">
+                    <h1 className='font-weight-bold'>Event Details</h1>
+                </Col>
+                <Col md={5}>
+                    <Image src={globes} alt="globes" className="h-100 mt-0" />
+                </Col>
+            </Row>
+        </Container>
         {contents}
     </div>;
 }
