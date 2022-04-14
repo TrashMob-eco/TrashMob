@@ -174,10 +174,6 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
                         )}
                     </tbody>
                 </table>
-                <Pagination className="d-flex justify-content-end">
-                    <Pagination.Prev />
-                    <Pagination.Next />
-                </Pagination>
             </div>
         );
     };
