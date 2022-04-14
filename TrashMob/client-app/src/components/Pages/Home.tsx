@@ -316,7 +316,7 @@ const Home: React.FC<HomeProps> = (props) => {
             <Container fluid className="bg-white p-md-5">
                 <div className="max-width-container mx-auto">
                     <div className="d-flex justify-content-between mb-4 flex-wrap flex-md-nowrap">
-                        <h3 className="font-weight-bold flex-grow-1">Upcoming Events</h3>
+                        <h3 id="events" className="font-weight-bold flex-grow-1">Upcoming Events</h3>
                         <div className="d-flex align-items-center mt-4">
                             <label className="pr-3 mb-0">
                                 <input type="radio" className="mb-0 radio" name="Event view" value="map" onChange={e => handleEventView(e.target.value)} checked={eventView === "map"}></input>
