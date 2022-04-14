@@ -128,7 +128,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
             setMapOptions(opts);
             setIsMapKeyLoaded(true);
         })
-    }, [eventId, eventUrl]);
+    }, [eventId, eventUrl, headers]);
 
     useEffect(() => {
         if (!isUserLoaded || !currentUser) {
@@ -163,7 +163,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                     })
             });
         }
-    }, [isUserLoaded, currentUser]);
+    }, [isUserLoaded, currentUser, eventId, myAttendanceList]);
 
     useEffect(() => {
         fetch('/api/eventattendees/' + eventId, {
@@ -174,7 +174,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
             .then(data => {
                 setUserList(data);
             });
-    }, [myAttendanceList])
+    }, [myAttendanceList, eventId, headers])
 
     const handleLocationChange = (point: data.Position) => {
         // do nothing
