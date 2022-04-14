@@ -276,7 +276,8 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
         <Container fluid className='bg-grass'>
             <Row className="text-center pt-0">
                 <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                    <h1 className='font-weight-bold'>Event Details</h1>
+                    <h3 className='font-weight-bold'>Event Details</h3>
+                    <p className="font-weight-bold">Learn, join, and inspire.</p>
                 </Col>
                 <Col md={5}>
                     <Image src={globes} alt="globes" className="h-100 mt-0" />
