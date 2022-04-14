@@ -13,14 +13,14 @@ import { Button, Modal } from 'reactstrap';
 import { CurrentTermsOfServiceVersion } from '../TermsOfService';
 import { CurrentPrivacyPolicyVersion } from '../PrivacyPolicy';
 import { Col, Container, Form, Image, Row } from 'react-bootstrap';
-import Drawings from '../assets/Drawings.png';
-import Trash from '../assets/jeremy-bezanger-u5mCQ-c5oSI-unsplash2.jpg';
+import Drawings from '../assets/home/Drawings.png';
+import Trash from '../assets/home/cleanup.jpg';
 import Globe2 from '../assets/globe2.png';
 import Logo from '../assets/logo.svg';
-import Calendar from '../assets/Calendar.svg';
-import Trashbag from '../assets/Trashbag.svg';
-import Person from '../assets/Person.svg';
-import Clock from '../assets/Clock.svg';
+import Calendar from '../assets/home/Calendar.svg';
+import Trashbag from '../assets/home/Trashbag.svg';
+import Person from '../assets/home/Person.svg';
+import Clock from '../assets/home/Clock.svg';
 import { GettingStartedSection } from '../GettingStartedSection';
 import StatsData from '../Models/StatsData';
 
@@ -241,7 +241,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, handleUpdateAttendance
                     <img src={Globe2} className="position-absolute p-0 m-0 h-100 banner-globe" alt="Globe" ></img>
                 </Row>
             </Container>
-            <div className="bg-white pb-4"><Image src={Drawings} alt="Drawings of trash" /></div>
+            <div className="bg-white pb-4"><Image src={Drawings} alt="Drawings of trash" className="w-100" /></div>
             <Container fluid className="bg-white">
                 <Row className="py-5 d-flex justify-content-around">
                     <div className="mx-auto d-flex flex-column flex-lg-row container-lg px-0">

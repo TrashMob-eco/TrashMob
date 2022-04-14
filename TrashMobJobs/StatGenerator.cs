@@ -217,17 +217,17 @@ namespace TrashMobJobs
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine($"Summary Report for '{instanceName}'");
-            sb.AppendLine($"Total Number of Users: {siteStats.UserCount}");
-            sb.AppendLine($"Total Number of Events: {siteStats.EventCount}");
-            sb.AppendLine($"Total Number of Attendees: {siteStats.AttendeeCount}");
-            sb.AppendLine($"Total Number of Future Events: {siteStats.FutureEventsCount}");
-            sb.AppendLine($"Total Number of Future Event Attendees: {siteStats.FutureEventAttendeesCount}");
-            sb.AppendLine($"Total Number of Contact Requests: {siteStats.ContactRequestsCount}");
-            sb.AppendLine($"Total Number of Bags Collected: {siteStats.BagsCount}");
-            sb.AppendLine($"Total Number of Minutes: {siteStats.MinutesCount}");
-            sb.AppendLine($"Total Number of Actual Attendees: {siteStats.ActualAttendeesCount}");
-            sb.AppendLine($"End Report.");
+            sb.AppendLine($"Summary Report for '{instanceName}'\n");
+            sb.AppendLine($"Total Number of Users: {siteStats.UserCount}\n");
+            sb.AppendLine($"Total Number of Events: {siteStats.EventCount}\n");
+            sb.AppendLine($"Total Number of Attendees: {siteStats.AttendeeCount}\n");
+            sb.AppendLine($"Total Number of Future Events: {siteStats.FutureEventsCount}\n");
+            sb.AppendLine($"Total Number of Future Event Attendees: {siteStats.FutureEventAttendeesCount}\n");
+            sb.AppendLine($"Total Number of Contact Requests: {siteStats.ContactRequestsCount}\n");
+            sb.AppendLine($"Total Number of Bags Collected: {siteStats.BagsCount}\n");
+            sb.AppendLine($"Total Number of Minutes: {siteStats.MinutesCount}\n");
+            sb.AppendLine($"Total Number of Actual Attendees: {siteStats.ActualAttendeesCount}\n");
+            sb.AppendLine($"End Report.\n");
 
             var email = new Email
             {
