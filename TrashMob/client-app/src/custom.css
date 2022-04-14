@@ -36,15 +36,16 @@ hr.rounded {
 
 .chq-atc {
   position: relative;
+  margin-right: 9px;
 }
 
 .chq-atc--dropdown {
   display: flex;
   flex-direction: column;
-  margin: .5rem 0 .5rem .5rem;
   position: absolute;
   background-color: #FFF;
   width: 100%;
+  text-align: center;
 }
 
 .chq-atc--dropdown a {
@@ -54,15 +55,20 @@ hr.rounded {
 .chq-atc--button {
   background-color: unset !important;
   color: #96ba00 !important;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0.375rem 0.75rem;
+  line-height: 1.5;
+  border: 1px solid #96ba00 !important;
+  border-radius: 0.25rem;
 }
 
+.chq-atc--button:hover,
 .chq-atc--button:active {
-  color: #FFF;
-}
-
-.chq-atc--button:hover {
-  background-color: unset !important;
+  background-color: #96ba00 !important;
   color: #FFF !important;
+  transition: all ease .5s;
 }
 
 .chq-atc--button svg {
