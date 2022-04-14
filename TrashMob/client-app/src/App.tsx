@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import { Route, Switch } from 'react-router';
 import { BrowserRouter, RouteComponentProps } from 'react-router-dom';
@@ -26,7 +26,7 @@ import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
 import { apiConfig, getDefaultHeaders, msalClient } from './store/AuthStore';
-import { EventDetails } from './components/EventDetails';
+import { EventDetails, DetailsMatchParams } from './components/EventDetails';
 import { NoMatch } from './components/NoMatch';
 import UserData from './components/Models/UserData';
 import * as msal from "@azure/msal-browser";
@@ -40,6 +40,7 @@ import { Shop } from './components/Shop';
 import { EventSummaries } from './components/EventSummaries';
 import { CancelEvent, CancelEventMatchParams } from './components/EventManagement/CancelEvent';
 import NotificationPreferences from './components/NotificationPreferences';
+import EventData from './components/Models/EventData';
 
 import './custom.css';
 
@@ -49,11 +50,17 @@ interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> 
 interface CancelProps extends RouteComponentProps<CancelEventMatchParams> {
 }
 
-export const App: React.FC = () => {
-    const [isUserLoaded, setIsUserLoaded] = React.useState(false);
-    const [currentUser, setCurrentUser] = React.useState<UserData>(new UserData());
+interface DetailsProps extends RouteComponentProps<DetailsMatchParams> {
+}
 
-    React.useEffect(() => {
+export const App: FC = () => {
+    const [isUserLoaded, setIsUserLoaded] = useState(false);
+    const [currentUser, setCurrentUser] = useState<UserData>(new UserData());
+    const [myAttendanceList, setMyAttendanceList] = useState<EventData[]>([]);
+    const [isUserEventDataLoaded, setIsUserEventDataLoaded] = useState(false);
+    const [isAttending, setIsAttending] = useState('');
+
+    useEffect(() => {
         initializeIcons();
 
         msalClient.addEventCallback((message: msal.EventMessage) => {
@@ -95,6 +102,12 @@ export const App: React.FC = () => {
             </MsalAuthenticationTemplate >);
     }
 
+    function renderEventDetails(inp: DetailsProps) {
+        return (
+            <EventDetails {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={() => handleAttendanceChanged(inp.match.params.eventId)} myAttendanceList={myAttendanceList} handleUpdateAttendanceList={handleUpdateAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} handleUpdateIsUserEventDataLoaded={handleUpdateIsUserEventDataLoaded} isAttending={isAttending} handleUpdateIsAttending={handleUpdateIsAttending} />
+        );
+    }
+
     function renderEventSummary(inp: AppProps) {
         return (
             <MsalAuthenticationTemplate
@@ -117,7 +130,7 @@ export const App: React.FC = () => {
 
     function clearUser() {
         setIsUserLoaded(false);
-        var user = new UserData();
+        const user = new UserData();
         setCurrentUser(user)
         sessionStorage.setItem('user', JSON.stringify(user));
     }
@@ -125,7 +138,7 @@ export const App: React.FC = () => {
     function handleUserUpdated() {
         const account = msalClient.getAllAccounts()[0];
 
-        var request = {
+        const request = {
             scopes: apiConfig.b2cScopes,
             account: account
         };
@@ -151,7 +164,7 @@ export const App: React.FC = () => {
 
         const account = msalClient.getAllAccounts()[0];
 
-        var request = {
+        const request = {
             scopes: apiConfig.b2cScopes,
             account: account
         };
@@ -159,7 +172,7 @@ export const App: React.FC = () => {
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
             const headers = getDefaultHeaders('PUT');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-            var user = new UserData();
+            const user = new UserData();
 
             user.nameIdentifier = result.idTokenClaims["sub"];
             user.sourceSystemUserName = result.account?.username ?? "";
@@ -192,6 +205,53 @@ export const App: React.FC = () => {
         });
     }
 
+    function handleAttendanceChanged(eventId?: string) {
+        if (!isUserLoaded || !currentUser) {
+            return;
+        }
+
+        // If the user is logged in, get the events they are attending
+        const accounts = msalClient.getAllAccounts();
+
+        if (accounts !== null && accounts.length > 0) {
+            const request = {
+                scopes: apiConfig.b2cScopes,
+                account: accounts[0]
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                fetch('/api/events/eventsuserisattending/' + currentUser.id, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<EventData[]>)
+                    .then(data => {
+                        setMyAttendanceList(data);
+                        setIsUserEventDataLoaded(true);
+
+                        const attending = myAttendanceList && (myAttendanceList.findIndex((e) => e.id === eventId) >= 0);
+                        const isAttending = (attending ? 'Yes' : 'No');
+                        setIsAttending(isAttending);
+                    })
+            });
+        }
+    }
+
+    function handleUpdateAttendanceList(data: EventData[]) {
+        setMyAttendanceList(data);
+    }
+
+    function handleUpdateIsUserEventDataLoaded(status: boolean) {
+        setIsUserEventDataLoaded(status);
+    }
+
+    function handleUpdateIsAttending(status: string) {
+        setIsAttending(status);
+    }
+
     return (
         <MsalProvider instance={msalClient} >
             <div className="d-flex flex-column h-100">
@@ -201,7 +261,7 @@ export const App: React.FC = () => {
                         <Switch>
                             <Route path="/manageeventdashboard/:eventId?" render={(props: AppProps) => renderEditEvent(props)} />
                             <Route path="/eventsummary/:eventId?" render={(props: AppProps) => renderEventSummary(props)} />
-                            <Route path="/eventdetails/:eventId" component={EventDetails} />
+                            <Route path="/eventdetails/:eventId" render={(props: DetailsProps) => renderEventDetails(props)} />
                             <Route path="/cancelevent/:eventId" render={(props: CancelProps) => renderCancelEvent(props)} />
                             <Route exact path="/mydashboard">
                                 <MsalAuthenticationTemplate
@@ -291,7 +351,7 @@ export const App: React.FC = () => {
                                 <Waiver />
                             </Route>
                             <Route exact path='/'>
-                                <Home currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
+                                <Home currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} onAttendanceChanged={handleAttendanceChanged} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} handleUpdateAttendanceList={handleUpdateAttendanceList} handleUpdateIsUserEventDataLoaded={handleUpdateIsUserEventDataLoaded} />
                             </Route>
                             <Route>
                                 <NoMatch />

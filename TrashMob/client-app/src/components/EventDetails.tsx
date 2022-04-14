@@ -1,9 +1,9 @@
-import * as React from 'react'
+import { FC, useEffect, useState } from 'react'
 import { RouteComponentProps } from 'react-router';
 import EventData from './Models/EventData';
 import UserData from './Models/UserData';
 import EventTypeData from './Models/EventTypeData';
-import { getDefaultHeaders } from '../store/AuthStore';
+import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../store/MapStore';
@@ -22,37 +22,43 @@ export interface DetailsMatchParams {
 export interface EventDetailsProps extends RouteComponentProps<DetailsMatchParams> {
     isUserLoaded: boolean;
     currentUser: UserData;
+    onAttendanceChanged: () => void;
+    myAttendanceList: EventData[];
+    handleUpdateAttendanceList: (data: EventData[]) => void;
+    isUserEventDataLoaded: boolean;
+    handleUpdateIsUserEventDataLoaded: (status: boolean) => void;
+    isAttending: string;
+    handleUpdateIsAttending: (status: string) => void;
 }
 
-export const EventDetails: React.FC<EventDetailsProps> = (props) => {
-    const [isDataLoaded, setIsDataLoaded] = React.useState<boolean>(false);
-    const [eventId, setEventId] = React.useState<string>(props.match.params["eventId"]);
-    const [eventName, setEventName] = React.useState<string>("New Event");
-    const [description, setDescription] = React.useState<string>("");
-    const [eventDate, setEventDate] = React.useState<Date>(new Date());
-    const [durationHours, setDurationHours] = React.useState<number>(1);
-    const [durationMinutes, setDurationMinutes] = React.useState<number>(0);
-    const [eventTypeId, setEventTypeId] = React.useState<number>(0);
-    const [streetAddress, setStreetAddress] = React.useState<string>();
-    const [city, setCity] = React.useState<string>();
-    const [country, setCountry] = React.useState<string>();
-    const [region, setRegion] = React.useState<string>();
-    const [postalCode, setPostalCode] = React.useState<string>();
-    const [latitude, setLatitude] = React.useState<number>(0);
-    const [longitude, setLongitude] = React.useState<number>(0);
-    const [maxNumberOfParticipants, setMaxNumberOfParticipants] = React.useState<number>(0);
-    const [eventTypeList, setEventTypeList] = React.useState<EventTypeData[]>([]);
-    const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
-    const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
-    const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
-    const [userList, setUserList] = React.useState<UserData[]>([]);
-    const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
-    const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
-    const [eventUrl, setEventUrl] = React.useState<string>();
-    const [twitterUrl, setTwitterUrl] = React.useState<string>();
-    const [facebookUrl, setFacebookUrl] = React.useState<string>();
-    const [createdById, setCreatedById] = React.useState<string>("");
-    const [copied, setCopied] = React.useState(false);
+export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUserLoaded, handleUpdateAttendanceList,
+    handleUpdateIsUserEventDataLoaded, myAttendanceList, handleUpdateIsAttending, onAttendanceChanged, isAttending }) => {
+    const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
+    const [eventId, setEventId] = useState<string>(match.params["eventId"]);
+    const [eventName, setEventName] = useState<string>("New Event");
+    const [description, setDescription] = useState<string>("");
+    const [eventDate, setEventDate] = useState<Date>(new Date());
+    const [durationHours, setDurationHours] = useState<number>(1);
+    const [durationMinutes, setDurationMinutes] = useState<number>(0);
+    const [eventTypeId, setEventTypeId] = useState<number>(0);
+    const [streetAddress, setStreetAddress] = useState<string>();
+    const [city, setCity] = useState<string>();
+    const [country, setCountry] = useState<string>();
+    const [region, setRegion] = useState<string>();
+    const [postalCode, setPostalCode] = useState<string>();
+    const [latitude, setLatitude] = useState<number>(0);
+    const [longitude, setLongitude] = useState<number>(0);
+    const [maxNumberOfParticipants, setMaxNumberOfParticipants] = useState<number>(0);
+    const [eventTypeList, setEventTypeList] = useState<EventTypeData[]>([]);
+    const [center, setCenter] = useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
+    const [isMapKeyLoaded, setIsMapKeyLoaded] = useState<boolean>(false);
+    const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
+    const [userList, setUserList] = useState<UserData[]>([]);
+    const [eventUrl, setEventUrl] = useState<string>();
+    const [twitterUrl, setTwitterUrl] = useState<string>();
+    const [facebookUrl, setFacebookUrl] = useState<string>();
+    const [createdById, setCreatedById] = useState<string>("");
+    const [copied, setCopied] = useState(false);
 
     const startDateTime = moment(eventDate);
     const endDateTime = moment(startDateTime).add(durationHours, 'hours').add(durationMinutes, 'minutes');
@@ -64,11 +70,9 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
         startsAt: moment(eventDate).format(),
         endsAt: moment(endDateTime).format()
     }
+    const headers = getDefaultHeaders('GET');
 
-    React.useEffect(() => {
-
-        const headers = getDefaultHeaders('GET');
-
+    useEffect(() => {
         fetch('/api/eventtypes', {
             method: 'GET',
             headers: headers,
@@ -126,10 +130,51 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
         })
     }, [eventId, eventUrl]);
 
-    React.useEffect(() => {
-        setCurrentUser(props.currentUser);
-        setIsUserLoaded(props.isUserLoaded);
-    }, [props.currentUser, props.isUserLoaded])
+    useEffect(() => {
+        if (!isUserLoaded || !currentUser) {
+            return;
+        }
+
+        // If the user is logged in, get the events they are attending
+        const accounts = msalClient.getAllAccounts();
+
+        if (accounts !== null && accounts.length > 0) {
+            const request = {
+                scopes: apiConfig.b2cScopes,
+                account: accounts[0]
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                fetch('/api/events/eventsuserisattending/' + currentUser.id, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<EventData[]>)
+                    .then(data => {
+                        handleUpdateAttendanceList(data);
+                        handleUpdateIsUserEventDataLoaded(true);
+
+                        const attending = myAttendanceList && (myAttendanceList.findIndex((e) => e.id === eventId) >= 0);
+                        const isAttendingStatus = (attending ? 'Yes' : 'No');
+                        handleUpdateIsAttending(isAttendingStatus);
+                    })
+            });
+        }
+    }, [isUserLoaded, currentUser]);
+
+    useEffect(() => {
+        fetch('/api/eventattendees/' + eventId, {
+            method: 'GET',
+            headers: headers,
+        })
+            .then(response => response.json() as Promise<UserData[]>)
+            .then(data => {
+                setUserList(data);
+            });
+    }, [myAttendanceList])
 
     const handleLocationChange = (point: data.Position) => {
         // do nothing
@@ -145,36 +190,34 @@ export const EventDetails: React.FC<EventDetailsProps> = (props) => {
 
     const UsersTable = () => {
         return (
-            <div>
-                <table className='table table-striped' aria-labelledby="tableLabel">
-                    <thead>
-                        <tr className="bg-ice">
-                            <th>User Name</th>
-                            <th>City</th>
-                            <th>Country</th>
-                            <th>Member Since</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {userList.map(user => {
-                            var uName = user.userName ? user.userName : user.sourceSystemUserName;
-                            if (user.id === createdById) {
-                                uName += " (Lead)";
-                            }
-
-                            return (
-                                <tr key={user.id.toString()}>
-                                    <td>{uName}</td>
-                                    <td>{user.city}</td>
-                                    <td>{user.country}</td>
-                                    <td>{new Date(user.memberSince).toLocaleDateString()}</td>
-                                </tr>
-                            )
+            <table className='table table-striped' aria-labelledby="tableLabel">
+                <thead>
+                    <tr className="bg-ice">
+                        <th>User Name</th>
+                        <th>City</th>
+                        <th>Country</th>
+                        <th>Member Since</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {userList.map(user => {
+                        const uName = user.userName ? user.userName : user.sourceSystemUserName;
+                        if (user.id === createdById) {
+                            uName += " (Lead)";
                         }
-                        )}
-                    </tbody>
-                </table>
-            </div>
+
+                        return (
+                            <tr key={user.id.toString()}>
+                                <td>{uName}</td>
+                                <td>{user.city}</td>
+                                <td>{user.country}</td>
+                                <td>{new Date(user.memberSince).toLocaleDateString()}</td>
+                            </tr>
+                        )
+                    }
+                    )}
+                </tbody>
+            </table>
         );
     };
 
