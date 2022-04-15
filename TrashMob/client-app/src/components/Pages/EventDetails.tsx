@@ -55,7 +55,6 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
     const [isMapKeyLoaded, setIsMapKeyLoaded] = useState<boolean>(false);
     const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
     const [userList, setUserList] = useState<UserData[]>([]);
-    const [eventUrl, setEventUrl] = useState<string>();
     const [twitterUrl, setTwitterUrl] = useState<string>();
     const [facebookUrl, setFacebookUrl] = useState<string>();
     const [createdById, setCreatedById] = useState<string>("");
@@ -71,9 +70,10 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
         startsAt: moment(eventDate).format(),
         endsAt: moment(endDateTime).format()
     }
-    const headers = getDefaultHeaders('GET');
 
     useEffect(() => {
+        const headers = getDefaultHeaders('GET');
+
         fetch('/api/eventtypes', {
             method: 'GET',
             headers: headers,
@@ -84,7 +84,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
             });
 
         if (eventId != null) {
-            setEventUrl("https://www.trashmob.eco/eventdetails/" + eventId);
+            var eventUrl = "https://www.trashmob.eco/eventdetails/" + eventId;
 
             fetch('/api/eventattendees/' + eventId, {
                 method: 'GET',
@@ -116,7 +116,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                     setLatitude(eventData.latitude);
                     setLongitude(eventData.longitude);
                     setCreatedById(eventData.createdByUserId);
-                    const shareMessage = "Help clean up Planet Earth! Sign up for this TrashMob.eco event in " + eventData.city + ", " + eventData.region + " on " + (new Date(eventData.eventDate)).toLocaleDateString() + "! via @TrashMobEco";
+                    const shareMessage = "Help clean up Planet Earth! Sign up for this TrashMob.eco event in " + eventData.city + ", " + eventData.region + " on " + (new Date(eventData.eventDate)).toLocaleDateString() + "! via @TrashMobEco " + eventUrl;
                     setTwitterUrl("https://twitter.com/intent/tweet?text=" + encodeURI(shareMessage) + "&ref_src=twsrc%5Etfw");
                     setFacebookUrl("https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.trashmob.eco%2Feventdetails%2" + eventId + "&amp;src=sdkpreparse");
                     setMaxNumberOfParticipants(eventData.maxNumberOfParticipants);
@@ -129,7 +129,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
             setMapOptions(opts);
             setIsMapKeyLoaded(true);
         })
-    }, [eventId, eventUrl, headers]);
+    }, [eventId]);
 
     useEffect(() => {
         if (!isUserLoaded || !currentUser) {
@@ -167,6 +167,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
     }, [isUserLoaded, currentUser, eventId, myAttendanceList]);
 
     useEffect(() => {
+        const headers = getDefaultHeaders('GET');
         fetch('/api/eventattendees/' + eventId, {
             method: 'GET',
             headers: headers,
@@ -175,7 +176,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
             .then(data => {
                 setUserList(data);
             });
-    }, [myAttendanceList, eventId, headers])
+    }, [eventId])
 
     const handleLocationChange = (point: data.Position) => {
         // do nothing
