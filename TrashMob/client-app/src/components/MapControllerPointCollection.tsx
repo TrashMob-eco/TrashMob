@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react';
 import * as React from 'react';
 import { AzureMapsContext, IAzureMapOptions, IAzureMapsContextProps } from 'react-azure-maps';
-import { data, source, Popup, HtmlMarker } from 'azure-maps-control';
+import { data, source, Popup, HtmlMarker, layer } from 'azure-maps-control';
 import MapComponent from './MapComponent';
 import EventData from './Models/EventData';
 import * as MapStore from '../store/MapStore'
@@ -11,6 +11,7 @@ import ReactDOMServer, { renderToString } from "react-dom/server"
 import { Button } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import EventAttendeeData from './Models/EventAttendeeData';
+import { Position } from '@fluentui/react';
 
 interface MapControllerProps {
     mapOptions: IAzureMapOptions | undefined
@@ -41,43 +42,95 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
             // Simple Camera options modification
             mapRef.setCamera({ center: props.center, zoom: MapStore.defaultUserLocationZoom });
 
-            var dataSourceRef = new source.DataSource("mainDataSource", { cluster: true });
+            var dataSourceRef = new source.DataSource("mainDataSource", {
+                cluster: true,
+                clusterMaxZoom: 15,
+                clusterRadius: 45
+            });
             mapRef.sources.add(dataSourceRef);
 
-            var temp: string = "";
+            // Create a bubble layer for rendering clustered data points.
+            var clusterBubbleLayer = new layer.BubbleLayer(dataSourceRef, "bubbleLayer", {
+                // Scale the size of the clustered bubble based on the number of points in the cluster.
+                radius: [
+                    'step',
+                    ['get', 'point_count'],
+                    20,         // Default of 20 pixel radius.
+                    100, 30,    // If point_count >= 100, radius is 30 pixels.
+                    750, 40     // If point_count >= 750, radius is 40 pixels.
+                ],
 
-            // Create a HTML marker layer for rendering data points.
-            var markerLayer = new HtmlMarkerLayer(dataSourceRef, temp, {
-                markerCallback: function (id: any, position: data.Position, properties: any) {
-
-                    //Check to see if marker represents a cluster.
-                    if (properties.cluster) {
-                        //Return either an HtmlMarker
-                        return new HtmlMarker({
-                            position: position,
-                            color: 'DarkViolet',
-                            text: properties.point_count_abbreviated
-                        });
-                    }
-
-                    // Create an HtmlMarker.
-                    const marker = new HtmlMarker({
-                        position: position,
-                        id: id,
-                        properties: properties
-                    });
-
-                    mapRef.events.add('mouseover', marker, (event: any) => {
-                        markerHovered(event);
-                    });
-
-                    // mapRef.markers.add(marker);
-                    return marker;
-                }
+                // Change the color of the cluster based on the value on the point_cluster property of the cluster.
+                color: [
+                    'step',
+                    ['get', 'point_count'],
+                    'lime',            //Default to lime green. 
+                    100, 'yellow',     //If the point_count >= 100, color is yellow.
+                    750, 'red'        //If the point_count >= 100, color is red.
+                ],
+                strokeWidth: 0,
+                filter: ['has', 'point_count'] //Only rendered data points which have a point_count property, which clusters do.
             });
 
-            //Add marker layer to the map.
-            mapRef.layers.add(markerLayer);
+            // Create a layer to render the individual locations.
+            var pointLayer = new layer.SymbolLayer(dataSourceRef, "pointLayer", {
+                filter: ['!', ['has', 'point_count']], // Filter out clustered points from this layer.   
+                iconOptions: { allowOverlap: true }
+            });
+
+            // Add the clusterBubbleLayer and two additional layers to the map.
+            mapRef.layers.add([
+                clusterBubbleLayer,
+
+                // Create a symbol layer to render the count of locations in a cluster.
+                new layer.SymbolLayer(dataSourceRef, "clusterLayer", {
+                    iconOptions: {
+                        image: 'none' //Hide the icon image.
+                    },
+                    textOptions: {
+                        textField: ['get', 'point_count_abbreviated'],
+                        offset: [0, 0.4]
+                    }
+                }),
+
+                pointLayer
+            ]);
+
+            mapRef.events.add('click', pointLayer, function (e) {
+
+                if (e.shapes && e.shapes.length > 0) {
+                    var feature = e.shapes[0] as data.Feature<data.Geometry, any>;
+                    var properties = feature.properties;
+
+                    var popUpHtmlContent = ReactDOMServer.renderToString(getPopUpContent(properties.eventId, properties.eventName, properties.eventDate, properties.streetAddress, properties.city, properties.region, properties.country, properties.postalCode, properties.isAttending));
+                    var popUpContent = new DOMParser().parseFromString(popUpHtmlContent, "text/xml");
+
+                    var viewDetailsButton = popUpContent.getElementById("viewDetails");
+                    if (viewDetailsButton)
+                        viewDetailsButton.addEventListener('click', function () {
+                            viewDetails(properties.eventId);
+                        });
+
+                    var addAttendeeButton = popUpContent.getElementById("addAttendee");
+                    if (addAttendeeButton)
+                        addAttendeeButton.addEventListener('click', function () {
+                            handleAttend(properties.eventId);
+                        });
+
+                    // Create a popup.
+                    var popup = new Popup({
+                        content: popUpContent.documentElement,
+                        position: e.position,
+                        pixelOffset: [0, -20],
+                        closeButton: true
+                    });
+
+                    // Open the popup.
+                    if (mapRef) {
+                        popup.open(mapRef);
+                    }
+                }
+            });
 
             props.multipleEvents.forEach(mobEvent => {
                 var position = new data.Point(new data.Position(mobEvent.longitude, mobEvent.latitude));
@@ -106,57 +159,6 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
             })
 
             setIsDataSourceLoaded(true);
-
-            function markerHovered(event: any) {
-                var marker2 = event.target as HtmlMarker & { properties: any };
-
-                if (marker2.properties.cluster) {
-                    const content = `Cluster of ${marker2.properties.point_count_abbreviated} markers`
-                    // Create a popup.
-                    var popup = new Popup({
-                        content: content,
-                        position: marker2.getOptions().position,
-                        pixelOffset: [0, -20],
-                        closeButton: false
-                    });
-
-                    // Open the popup.
-                    if (mapRef) {
-                        mapRef.events.add('mouseout', marker2, (event: any) => popup.close());
-                        popup.open(mapRef);
-                    }
-                }
-                else {
-                    var popUpHtmlContent = ReactDOMServer.renderToString(getPopUpContent(marker2.properties.eventId, marker2.properties.eventName, marker2.properties.eventDate, marker2.properties.streetAddress, marker2.properties.city, marker2.properties.region, marker2.properties.country, marker2.properties.postalCode, marker2.properties.isAttending));
-                    var popUpContent = new DOMParser().parseFromString(popUpHtmlContent, "text/xml");
-
-                    var viewDetailsButton = popUpContent.getElementById("viewDetails");
-                    if (viewDetailsButton)
-                        viewDetailsButton.addEventListener('click', function () {
-                            viewDetails(marker2.properties.eventId);
-                        });
-
-                    var addAttendeeButton = popUpContent.getElementById("addAttendee");
-                    if (addAttendeeButton)
-                        addAttendeeButton.addEventListener('click', function () {
-                            handleAttend(marker2.properties.eventId);
-                        });
-
-                    // Create a popup.
-                    var popup = new Popup({
-                        content: popUpContent.documentElement,
-                        position: marker2.getOptions().position,
-                        pixelOffset: [0, -20],
-                        closeButton: true
-                    });
-
-                    // Open the popup.
-                    if (mapRef) {
-                        mapRef.events.add('mouseout', marker2, (event: any) => popup.close());
-                        popup.open(mapRef);
-                    }
-                }
-            }
 
             function viewDetails(eventId: string) {
                 props.onDetailsSelected(eventId);
@@ -209,7 +211,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
             function getPopUpContent(eventId: string, eventName: string, eventDate: string, streetAddress: string, city: string, region: string, country: string, postalCode: string, isAttending: string) {
 
                 return (
-                    <div className="container card" style={{padding: "0.5rem"}}>
+                    <div className="container card" style={{ padding: "0.5rem" }}>
                         <h4>{eventName}</h4>
                         <table>
                             <tbody>
