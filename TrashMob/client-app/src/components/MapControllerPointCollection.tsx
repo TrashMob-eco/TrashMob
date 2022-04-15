@@ -78,25 +78,25 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                 iconOptions: { allowOverlap: true }
             });
 
+            // Create a symbol layer to render the count of locations in a cluster.
+            var clusterLayer = new layer.SymbolLayer(dataSourceRef, "clusterLayer", {
+                iconOptions: {
+                    image: 'none' //Hide the icon image.
+                },
+                textOptions: {
+                    textField: ['get', 'point_count_abbreviated'],
+                    offset: [0, 0.4]
+                }
+            });
+
             // Add the clusterBubbleLayer and two additional layers to the map.
             mapRef.layers.add([
-                clusterBubbleLayer,
-
-                // Create a symbol layer to render the count of locations in a cluster.
-                new layer.SymbolLayer(dataSourceRef, "clusterLayer", {
-                    iconOptions: {
-                        image: 'none' //Hide the icon image.
-                    },
-                    textOptions: {
-                        textField: ['get', 'point_count_abbreviated'],
-                        offset: [0, 0.4]
-                    }
-                }),
-
+                //clusterBubbleLayer,
+                //clusterLayer,
                 pointLayer
             ]);
 
-            mapRef.events.add('click', pointLayer, function (e) {
+            mapRef.events.add('mousemove', [pointLayer], function (e) {
 
                 if (e.shapes && e.shapes.length > 0) {
                     var feature = e.shapes[0] as data.Feature<data.Geometry, any>;
