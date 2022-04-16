@@ -85,10 +85,9 @@ export const App: FC = () => {
 
     useEffect(() => {
         handleAttendanceChanged();
-    }, [isUserLoaded,
+    },
         // eslint-disable-next-line
-        handleAttendanceChanged
-    ]);
+        [isUserLoaded]);
 
     function ErrorComponent(error: MsalAuthenticationResult) {
         return <p>An Error Occurred: {error}</p>;
