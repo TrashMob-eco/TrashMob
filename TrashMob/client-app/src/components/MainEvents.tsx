@@ -47,6 +47,7 @@ export const MainEvents: FC<MainEventsDataProps> = ({ isEventDataLoaded, eventLi
                     creator: mobEvent.createdByUserName,
                     isAttending: ''
                 }
+
                 if (isUserEventDataLoaded) {
                     const isAttending = myAttendanceList && (myAttendanceList.findIndex((e) => e.id === mobEvent.id) >= 0);
                     dispEvent.isAttending = (isAttending ? 'Yes' : 'No');
@@ -54,6 +55,7 @@ export const MainEvents: FC<MainEventsDataProps> = ({ isEventDataLoaded, eventLi
                 else {
                     dispEvent.isAttending = 'Log in to see your status';
                 }
+
                 return dispEvent;
             });
             setDisplayEvents(list);

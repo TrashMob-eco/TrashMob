@@ -14,8 +14,7 @@ interface RegisterBtnProps {
     onAttendanceChanged: any;
 };
 
-export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAttending, isUserLoaded,
-    onAttendanceChanged }) => {
+export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAttending, isUserLoaded, onAttendanceChanged }) => {
     const addAttendee = (eventId: string) => {
         const account = msalClient.getAllAccounts()[0];
 

@@ -58,7 +58,6 @@ export const App: FC = () => {
     const [currentUser, setCurrentUser] = useState<UserData>(new UserData());
     const [myAttendanceList, setMyAttendanceList] = useState<EventData[]>([]);
     const [isUserEventDataLoaded, setIsUserEventDataLoaded] = useState(false);
-    const [isAttending, setIsAttending] = useState('');
 
     useEffect(() => {
         initializeIcons();
@@ -84,6 +83,10 @@ export const App: FC = () => {
         }
     }, []);
 
+    useEffect(() => {
+        handleAttendanceChanged();
+    }, [isUserLoaded]);
+
     function ErrorComponent(error: MsalAuthenticationResult) {
         return <p>An Error Occurred: {error}</p>;
     }
@@ -104,7 +107,7 @@ export const App: FC = () => {
 
     function renderEventDetails(inp: DetailsProps) {
         return (
-            <EventDetails {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={() => handleAttendanceChanged(inp.match.params.eventId)} myAttendanceList={myAttendanceList} handleUpdateAttendanceList={handleUpdateAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} handleUpdateIsUserEventDataLoaded={handleUpdateIsUserEventDataLoaded} isAttending={isAttending} handleUpdateIsAttending={handleUpdateIsAttending} />
+            <EventDetails {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={() => handleAttendanceChanged()} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} />
         );
     }
 
@@ -205,8 +208,10 @@ export const App: FC = () => {
         });
     }
 
-    function handleAttendanceChanged(eventId?: string) {
+    function handleAttendanceChanged() {
         if (!isUserLoaded || !currentUser) {
+            setMyAttendanceList([]);
+            setIsUserEventDataLoaded(false);
             return;
         }
 
@@ -231,26 +236,10 @@ export const App: FC = () => {
                     .then(response => response.json() as Promise<EventData[]>)
                     .then(data => {
                         setMyAttendanceList(data);
-
-                        const attending = myAttendanceList && (myAttendanceList.findIndex((e) => e.id === eventId) >= 0);
-                        const isAttending = (attending ? 'Yes' : 'No');
-                        setIsAttending(isAttending);
                         setIsUserEventDataLoaded(true);
                     })
             });
         }
-    }
-
-    function handleUpdateAttendanceList(data: EventData[]) {
-        setMyAttendanceList(data);
-    }
-
-    function handleUpdateIsUserEventDataLoaded(status: boolean) {
-        setIsUserEventDataLoaded(status);
-    }
-
-    function handleUpdateIsAttending(status: string) {
-        setIsAttending(status);
     }
 
     return (
@@ -352,7 +341,7 @@ export const App: FC = () => {
                                 <Waiver />
                             </Route>
                             <Route exact path='/'>
-                                <Home currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} onAttendanceChanged={handleAttendanceChanged} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} handleUpdateAttendanceList={handleUpdateAttendanceList} handleUpdateIsUserEventDataLoaded={handleUpdateIsUserEventDataLoaded} />
+                                <Home currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} onAttendanceChanged={handleAttendanceChanged} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} />
                             </Route>
                             <Route>
                                 <NoMatch />
