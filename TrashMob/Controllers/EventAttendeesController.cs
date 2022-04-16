@@ -32,9 +32,10 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("{eventId}")]
-        public async Task<IActionResult> GetEventAttendees(Guid eventId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetEventAttendees(Guid eventId)
         {
-            var result = (await eventAttendeeRepository.GetEventAttendees(eventId, cancellationToken).ConfigureAwait(false)).Select(u => u.ToDisplayUser());
+            
+            var result = (await eventAttendeeRepository.GetEventAttendees(eventId, CancellationToken.None).ConfigureAwait(false)).Select(u => u.ToDisplayUser());
             return Ok(result);
         }
 
@@ -83,7 +84,8 @@ namespace TrashMob.Controllers
             await eventAttendeeRepository.AddEventAttendee(eventAttendee.EventId, eventAttendee.UserId).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddEventAttendee));
 
-            return CreatedAtAction("GetEventAttendees", new { eventId = eventAttendee.EventId });
+            var result = (await eventAttendeeRepository.GetEventAttendees(eventAttendee.EventId, CancellationToken.None).ConfigureAwait(false)).Select(u => u.ToDisplayUser());
+            return Ok(result);
         }
 
         [HttpDelete("{eventId}/{userId}")]

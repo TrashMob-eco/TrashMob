@@ -164,7 +164,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                     })
             });
         }
-    }, [isUserLoaded, currentUser, eventId, myAttendanceList]);
+    }, [isUserLoaded, currentUser, eventId]);
 
     useEffect(() => {
         const headers = getDefaultHeaders('GET');

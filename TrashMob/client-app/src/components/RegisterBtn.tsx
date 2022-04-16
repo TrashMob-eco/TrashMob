@@ -36,12 +36,12 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
             // POST request for Add EventAttendee.  
-            fetch('/api/EventAttendees', {
+            fetch('/api/eventattendees', {
                 method: 'POST',
                 body: data,
                 headers: headers,
             }).then((response) => response.json())
-                .then(onAttendanceChanged(eventId))
+              .then(onAttendanceChanged(eventId))
         })
     }
 

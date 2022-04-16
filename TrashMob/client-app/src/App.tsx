@@ -212,6 +212,7 @@ export const App: FC = () => {
 
         // If the user is logged in, get the events they are attending
         const accounts = msalClient.getAllAccounts();
+        setIsUserEventDataLoaded(false);
 
         if (accounts !== null && accounts.length > 0) {
             const request = {
@@ -230,11 +231,11 @@ export const App: FC = () => {
                     .then(response => response.json() as Promise<EventData[]>)
                     .then(data => {
                         setMyAttendanceList(data);
-                        setIsUserEventDataLoaded(true);
 
                         const attending = myAttendanceList && (myAttendanceList.findIndex((e) => e.id === eventId) >= 0);
                         const isAttending = (attending ? 'Yes' : 'No');
                         setIsAttending(isAttending);
+                        setIsUserEventDataLoaded(true);
                     })
             });
         }
