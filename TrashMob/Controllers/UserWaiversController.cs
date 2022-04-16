@@ -54,7 +54,7 @@
         }
 
         [HttpGet("{userId}/{waiverId}")]
-        public IActionResult GetUserWaiver(Guid userId, Guid waiverId, CancellationToken cancellationToken)
+        public IActionResult GetUserWaiver(Guid userId, Guid waiverId, CancellationToken cancellationToken = default)
         {
             var userWaiver = userWaiverRepository.GetUserWaivers(cancellationToken).FirstOrDefault(uw => uw.UserId == userId && uw.WaiverId == waiverId);
 

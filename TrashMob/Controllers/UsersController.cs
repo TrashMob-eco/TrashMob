@@ -71,7 +71,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserByInternalId(Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetUserByInternalId(Guid id, CancellationToken cancellationToken = default)
         {
             var user = await userRepository.GetUserByInternalId(id, cancellationToken).ConfigureAwait(false);
 
