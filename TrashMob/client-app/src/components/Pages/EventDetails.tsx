@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
 import EventTypeData from '../Models/EventTypeData';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getDefaultHeaders } from '../../store/AuthStore';
 import { getEventType } from '../../store/eventTypeHelper';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
