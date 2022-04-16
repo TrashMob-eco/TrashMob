@@ -142,7 +142,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, handleUpdateAttendance
             });
         }
 
-    }, [isUserLoaded, currentUser])
+    }, [isUserLoaded, currentUser, handleUpdateAttendanceList, handleUpdateIsUserEventDataLoaded])
 
     const handleLocationChange = (point: data.Position) => {
         // do nothing
