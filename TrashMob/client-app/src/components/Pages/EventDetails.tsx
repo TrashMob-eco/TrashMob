@@ -25,15 +25,10 @@ export interface EventDetailsProps extends RouteComponentProps<DetailsMatchParam
     currentUser: UserData;
     onAttendanceChanged: () => void;
     myAttendanceList: EventData[];
-    handleUpdateAttendanceList: (data: EventData[]) => void;
     isUserEventDataLoaded: boolean;
-    handleUpdateIsUserEventDataLoaded: (status: boolean) => void;
-    isAttending: string;
-    handleUpdateIsAttending: (status: string) => void;
 }
 
-export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUserLoaded, handleUpdateAttendanceList,
-    handleUpdateIsUserEventDataLoaded, myAttendanceList, handleUpdateIsAttending, onAttendanceChanged, isAttending }) => {
+export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUserLoaded, myAttendanceList, onAttendanceChanged, isUserEventDataLoaded }) => {
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
     const [eventId, setEventId] = useState<string>(match.params["eventId"]);
     const [eventName, setEventName] = useState<string>("New Event");
@@ -59,6 +54,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
     const [facebookUrl, setFacebookUrl] = useState<string>();
     const [createdById, setCreatedById] = useState<string>("");
     const [copied, setCopied] = useState(false);
+    const [isAttending, setIsAttending] = useState<string>("No");
 
     const startDateTime = moment(eventDate);
     const endDateTime = moment(startDateTime).add(durationHours, 'hours').add(durationMinutes, 'minutes');
@@ -136,35 +132,9 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
             return;
         }
 
-        // If the user is logged in, get the events they are attending
-        const accounts = msalClient.getAllAccounts();
-
-        if (accounts !== null && accounts.length > 0) {
-            const request = {
-                scopes: apiConfig.b2cScopes,
-                account: accounts[0]
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/events/eventsuserisattending/' + currentUser.id, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<EventData[]>)
-                    .then(data => {
-                        handleUpdateAttendanceList(data);
-                        handleUpdateIsUserEventDataLoaded(true);
-
-                        const attending = myAttendanceList && (myAttendanceList.findIndex((e) => e.id === eventId) >= 0);
-                        const isAttendingStatus = (attending ? 'Yes' : 'No');
-                        handleUpdateIsAttending(isAttendingStatus);
-                    })
-            });
-        }
-    }, [isUserLoaded, currentUser, eventId, handleUpdateAttendanceList, handleUpdateIsAttending, handleUpdateIsUserEventDataLoaded, myAttendanceList]);
+        const attending = myAttendanceList && (myAttendanceList.findIndex((e) => e.id === eventId) >= 0);
+        setIsAttending(attending ? 'Yes' : 'No');
+    }, [isUserLoaded, currentUser, eventId, myAttendanceList, isUserEventDataLoaded]);
 
     useEffect(() => {
         const headers = getDefaultHeaders('GET');

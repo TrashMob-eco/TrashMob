@@ -31,12 +31,9 @@ export interface HomeProps extends RouteComponentProps<any> {
     onAttendanceChanged: () => void;
     myAttendanceList: EventData[];
     isUserEventDataLoaded: boolean;
-    handleUpdateAttendanceList: (data: EventData[]) => void;
-    handleUpdateIsUserEventDataLoaded: (status: boolean) => void;
 }
 
-const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, handleUpdateAttendanceList, handleUpdateIsUserEventDataLoaded,
-    history, onUserUpdated, myAttendanceList, isUserEventDataLoaded, onAttendanceChanged }) => {
+const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated, myAttendanceList, isUserEventDataLoaded, onAttendanceChanged }) => {
     const [eventList, setEventList] = useState<EventData[]>([]);
     const [eventTypeList, setEventTypeList] = useState<EventTypeData[]>([]);
     const [isEventDataLoaded, setIsEventDataLoaded] = useState(false);
@@ -111,38 +108,6 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, handleUpdateAttendance
             setIsOpen(true);
         }
     }, [isUserLoaded, currentUser]);
-
-    useEffect(() => {
-        if (!isUserLoaded || !currentUser) {
-            return;
-        }
-
-        // If the user is logged in, get the events they are attending
-        const accounts = msalClient.getAllAccounts();
-
-        if (accounts !== null && accounts.length > 0) {
-            const request = {
-                scopes: apiConfig.b2cScopes,
-                account: accounts[0]
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/events/eventsuserisattending/' + currentUser.id, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<EventData[]>)
-                    .then(data => {
-                        handleUpdateAttendanceList(data);
-                        handleUpdateIsUserEventDataLoaded(true);
-                    })
-            });
-        }
-
-    }, [isUserLoaded, currentUser, handleUpdateAttendanceList, handleUpdateIsUserEventDataLoaded])
 
     const handleLocationChange = (point: data.Position) => {
         // do nothing
