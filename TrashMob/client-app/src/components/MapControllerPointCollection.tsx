@@ -35,6 +35,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     const [isDataSourceLoaded, setIsDataSourceLoaded] = React.useState(false);
+    var popup: Popup;
 
     useEffect(() => {
         if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && !isDataSourceLoaded && isMapReady) {
@@ -49,52 +50,9 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
             });
             mapRef.sources.add(dataSourceRef);
 
-            //// Create a bubble layer for rendering clustered data points.
-            //var clusterBubbleLayer = new layer.BubbleLayer(dataSourceRef, "bubbleLayer", {
-            //    // Scale the size of the clustered bubble based on the number of points in the cluster.
-            //    radius: [
-            //        'step',
-            //        ['get', 'point_count'],
-            //        20,         // Default of 20 pixel radius.
-            //        100, 30,    // If point_count >= 100, radius is 30 pixels.
-            //        750, 40     // If point_count >= 750, radius is 40 pixels.
-            //    ],
-
-            //    // Change the color of the cluster based on the value on the point_cluster property of the cluster.
-            //    color: [
-            //        'step',
-            //        ['get', 'point_count'],
-            //        'lime',            //Default to lime green. 
-            //        100, 'yellow',     //If the point_count >= 100, color is yellow.
-            //        750, 'red'        //If the point_count >= 100, color is red.
-            //    ],
-            //    strokeWidth: 0,
-            //    filter: ['has', 'point_count'] //Only rendered data points which have a point_count property, which clusters do.
-            //});
-
-            //// Create a layer to render the individual locations.
-            //var pointLayer = new layer.SymbolLayer(dataSourceRef, "pointLayer", {
-            //    filter: ['!', ['has', 'point_count']], // Filter out clustered points from this layer.   
-            //    iconOptions: { allowOverlap: true }
-            //});
-
-            //// Create a symbol layer to render the count of locations in a cluster.
-            //var clusterLayer = new layer.SymbolLayer(dataSourceRef, "clusterLayer", {
-            //    iconOptions: {
-            //        image: 'none' //Hide the icon image.
-            //    },
-            //    textOptions: {
-            //        textField: ['get', 'point_count_abbreviated'],
-            //        offset: [0, 0.4]
-            //    }
-            //});
-
-            //// Add the clusterBubbleLayer and two additional layers to the map.
-            //mapRef.layers.add([
-            //    //clusterBubbleLayer,
-            //    //clusterLayer,
-            //    pointLayer
-            //]);
+            popup = new Popup({
+                pixelOffset: [0, -20],
+            });
 
             props.multipleEvents.forEach(mobEvent => {
 
@@ -130,11 +88,9 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                     properties: properties
                 })
 
-                mapRef.events.add('click', marker, function (e) {
+                mapRef.events.add('mouseover', marker, function (e) {
 
-                    var properties = e.properties;
-
-                    var popUpHtmlContent = ReactDOMServer.renderToString(getPopUpContent(properties.eventId, properties.eventName, properties.eventDate, properties.streetAddress, properties.city, properties.region, properties.country, properties.postalCode, properties.isAttending));
+                    var popUpHtmlContent = ReactDOMServer.renderToString(getPopUpContent(properties.eventId, properties.eventName, new Date(properties.eventDate).toLocaleDateString(), properties.streetAddress, properties.city, properties.region, properties.country, properties.postalCode, isAtt));
                     var popUpContent = new DOMParser().parseFromString(popUpHtmlContent, "text/xml");
 
                     var viewDetailsButton = popUpContent.getElementById("viewDetails");
@@ -149,12 +105,12 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                             handleAttend(properties.eventId);
                         });
 
-                    // Create a popup.
-                    var popup = new Popup({
+                    //Update the content and position of the popup.
+                    popup.setOptions({
+                        //Create a table from the properties in the feature.
                         content: popUpContent.documentElement,
-                        position: e.target.position,
-                        pixelOffset: [0, -20],
-                        closeButton: true
+                        position: position,
+                        closeButton: true,
                     });
 
                     // Open the popup.
