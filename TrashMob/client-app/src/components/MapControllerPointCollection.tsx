@@ -6,12 +6,9 @@ import MapComponent from './MapComponent';
 import EventData from './Models/EventData';
 import * as MapStore from '../store/MapStore'
 import UserData from './Models/UserData';
-import { HtmlMarkerLayer } from './HtmlMarkerLayer/src/layer/HtmlMarkerLayer'
-import ReactDOMServer, { renderToString } from "react-dom/server"
-import { Button } from 'react-bootstrap';
+import ReactDOMServer from "react-dom/server"
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import EventAttendeeData from './Models/EventAttendeeData';
-import { Position } from '@fluentui/react';
 
 interface MapControllerProps {
     mapOptions: IAzureMapOptions | undefined
