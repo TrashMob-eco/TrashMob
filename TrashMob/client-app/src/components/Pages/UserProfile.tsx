@@ -155,7 +155,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
 
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(position => {
-                var point = new data.Position(position.coords.longitude, position.coords.latitude);
+                const point = new data.Position(position.coords.longitude, position.coords.latitude);
                 setCenter(point)
             });
         }
