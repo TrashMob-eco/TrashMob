@@ -90,8 +90,8 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
 
                 mapRef.events.add('mouseover', marker, function (e) {
 
-                    var popUpHtmlContent = ReactDOMServer.renderToString(getPopUpContent(properties.eventId, properties.eventName, new Date(properties.eventDate).toLocaleDateString(), properties.streetAddress, properties.city, properties.region, properties.country, properties.postalCode, isAtt));
-                    var popUpContent = new DOMParser().parseFromString(popUpHtmlContent, "text/xml");
+                    var popUpHtmlContent = ReactDOMServer.renderToString(getPopUpContent(properties.eventName, new Date(properties.eventDate).toLocaleDateString(), properties.streetAddress, properties.city, properties.region, properties.country, properties.postalCode, isAtt));
+                    var popUpContent = new DOMParser().parseFromString(popUpHtmlContent, "text/html");
 
                     var viewDetailsButton = popUpContent.getElementById("viewDetails");
                     if (viewDetailsButton)
@@ -107,7 +107,6 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
 
                     //Update the content and position of the popup.
                     popup.setOptions({
-                        //Create a table from the properties in the feature.
                         content: popUpContent.documentElement,
                         position: position,
                         closeButton: true,
@@ -172,33 +171,29 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                 })
             }
 
-            function getPopUpContent(eventId: string, eventName: string, eventDate: string, streetAddress: string, city: string, region: string, country: string, postalCode: string, isAttending: string) {
+            function getPopUpContent(eventName: string, eventDate: string, streetAddress: string, city: string, region: string, country: string, postalCode: string, isAttending: string) {
 
                 return (
                     <div className="container card" style={{ padding: "0.5rem" }}>
                         <h4>{eventName}</h4>
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>Event Date:</td>
-                                    <td>{eventDate}</td>
-                                </tr>
-                                <tr>
-                                    <td>Location:</td>
-                                    <td>{streetAddress}, {city}, {region}, {country}, {postalCode}</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <a id="addAttendee" hidden={!props.isUserLoaded || isAttending === "Yes"} className="action" onClick={() => handleAttend(eventId)}>Register to Attend Event</a>
-                                        <label hidden={props.isUserLoaded}>Sign-in required</label>
-                                        <label hidden={!props.isUserLoaded || isAttending !== 'Yes'}>Yes</label>
-                                    </td>
-                                    <td>
-                                        <a id="viewDetails" className="action" type="button">View Details</a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div className="divTable">
+                            <div className="divTableBody">
+                                <div className="divTableRow">
+                                    <div className="divTableCell">Event Date:</div>
+                                    <div className="divTableCell">{eventDate}</div>
+                                </div>
+                                <div className="divTableRow">
+                                    <div className="divTableCell">Location:</div>
+                                    <div className="divTableCell">{streetAddress}, {city}, {region}, {country}, {postalCode}</div>
+                                </div>
+                                <div className="divTableRow">
+                                    <div className="divTableCell"><a id="addAttendee" hidden={!props.isUserLoaded || isAttending === "Yes"} className="action">Register to Attend Event</a></div>
+                                    <label hidden={props.isUserLoaded}>Sign-in required</label>
+                                    <label hidden={!props.isUserLoaded || isAttending !== 'Yes'}>Yes</label>
+                                    <div className="divTableCell"><a id="viewDetails" type="button">View Details</a></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 );
             }
