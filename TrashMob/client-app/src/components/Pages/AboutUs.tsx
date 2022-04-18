@@ -9,9 +9,9 @@ export const AboutUs: React.FC = () => {
     return (
         <>
             <Container fluid className="mt-1 bg-white p-5">
-                <Row className="mb-4 px-5" xs={1} lg={2}>
-                    <Col className="mb-5 pl-5">
-                        <div className="px-5">
+                <Row className="mb-4 px-md-5" xs={1} lg={2}>
+                    <Col className="mb-5 pl-lg-5">
+                        <div className="px-lg-5">
                             <h2>What is a TrashMob?</h2>
                             <p className="font-weight-bold">
                                 A TrashMob is a group of citizens who are willing to take a hour or two out of their lives to get together and clean up their communities.
@@ -29,45 +29,49 @@ export const AboutUs: React.FC = () => {
                     </Col>
                 </Row>
             </Container>
-            <div className="w-100 d-flex align-items-center" style={{ backgroundImage: `url(${trashbin})`, backgroundRepeat: "no-repeat", backgroundSize: "cover", backgroundPosition: "center" }} >
-                <div className="text-white bg-black w-50 border-rounded-lg my-5 mx-auto" style={{ opacity: 0.95 }}>
-                    <div className="p-5">
-                        <h4>Benefits of joining TrashMob</h4>
-                        <ol className="list-unstyled mt-5">
-                            <li className="mb-4">
-                                <div className="d-flex align-top">
-                                    <span className="mr-3 font-weight-bold font-size-lg">1</span>
-                                    <span>TrashMobs allow you to connect with your local community and foster relationships built on positive changes.</span>
-                                </div>
-                            </li>
-                            <li className="mb-4">
-                                <div className="d-flex align-top">
-                                    <span className="mr-3 font-weight-bold font-size-lg">2</span>
-                                    <span>TrashMobs clean up our parks, streams, and neighborhoods which benefits our Earth and our communities.</span>
-                                </div>
-                            </li>
-                            <li className="mb-4">
-                                <div className="d-flex align-top">
-                                    <span className="mr-3 font-weight-bold font-size-lg">3</span>
-                                    <span>A TrashMob can tackle highly polluted areas in a shorter time than individuals which improves morale and satisfaction.</span>
-                                </div>
-                            </li>
-                            <li className="mb-4">
-                                <div className="d-flex align-top">
-                                    <span className="mr-3 font-weight-bold font-size-lg">4</span>
-                                    <span>TrashMobs can garner attention from neighbors, friends, and local governments that can spur on more cleanups.</span>
-                                </div>
-                            </li>
-                            <li className="mb-4">
-                                <div className="d-flex align-top">
-                                    <span className="mr-3 font-weight-bold font-size-lg">5</span>
-                                    <span>TrashMobs can acquire municipal support which can help with the hauling of gathered trash and providing supplies.</span>
-                                </div>
-                            </li>
-                        </ol>
-                    </div>
+            <Container fluid className="px-0">
+                <div className="w-100 d-flex align-items-center" style={{ backgroundImage: `url(${trashbin})`, backgroundRepeat: "no-repeat", backgroundSize: "cover", backgroundPosition: "center" }} >
+                    <Col xs={8} lg={8} className="px-0 mx-auto">
+                        <div className="text-white bg-black border-rounded-lg my-5 mx-auto" style={{ opacity: 0.95 }}>
+                            <div className="p-5">
+                                <h4>Benefits of joining TrashMob</h4>
+                                <ol className="list-unstyled mt-5">
+                                    <li className="mb-4">
+                                        <div className="d-flex align-top">
+                                            <span className="mr-3 font-weight-bold font-size-lg">1</span>
+                                            <span>TrashMobs allow you to connect with your local community and foster relationships built on positive changes.</span>
+                                        </div>
+                                    </li>
+                                    <li className="mb-4">
+                                        <div className="d-flex align-top">
+                                            <span className="mr-3 font-weight-bold font-size-lg">2</span>
+                                            <span>TrashMobs clean up our parks, streams, and neighborhoods which benefits our Earth and our communities.</span>
+                                        </div>
+                                    </li>
+                                    <li className="mb-4">
+                                        <div className="d-flex align-top">
+                                            <span className="mr-3 font-weight-bold font-size-lg">3</span>
+                                            <span>A TrashMob can tackle highly polluted areas in a shorter time than individuals which improves morale and satisfaction.</span>
+                                        </div>
+                                    </li>
+                                    <li className="mb-4">
+                                        <div className="d-flex align-top">
+                                            <span className="mr-3 font-weight-bold font-size-lg">4</span>
+                                            <span>TrashMobs can garner attention from neighbors, friends, and local governments that can spur on more cleanups.</span>
+                                        </div>
+                                    </li>
+                                    <li className="mb-4">
+                                        <div className="d-flex align-top">
+                                            <span className="mr-3 font-weight-bold font-size-lg">5</span>
+                                            <span>TrashMobs can acquire municipal support which can help with the hauling of gathered trash and providing supplies.</span>
+                                        </div>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                    </Col>
                 </div>
-            </div>
+            </Container>
             <Container fluid className="bg-white pb-5">
                 <Row className="text-center justify-content-center py-5">
                     <h2 className="font-weight-bold">The Journey</h2>

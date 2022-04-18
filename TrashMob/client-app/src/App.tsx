@@ -31,7 +31,7 @@ import { NoMatch } from './components/NoMatch';
 import UserData from './components/Models/UserData';
 import * as msal from "@azure/msal-browser";
 import { Guid } from 'guid-typescript';
-import UserProfile from './components/UserProfile';
+import UserProfile from './components/Pages/UserProfile';
 import PartnerDashboard from './components/Partners/PartnerDashboard';
 import BecomeAPartner from './components/Partners/BecomeAPartner';
 import SiteAdmin from './components/Admin/SiteAdmin';
