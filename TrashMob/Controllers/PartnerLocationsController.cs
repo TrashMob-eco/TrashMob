@@ -37,7 +37,7 @@
         }
 
         [HttpGet("{partnerId}/{locationId}")]
-        public IActionResult GetPartnerLocation(Guid partnerId, Guid locationId, CancellationToken cancellationToken)
+        public IActionResult GetPartnerLocation(Guid partnerId, Guid locationId, CancellationToken cancellationToken = default)
         {
             var partnerLocation = partnerLocationRepository.GetPartnerLocations(cancellationToken).FirstOrDefault(pl => pl.PartnerId == partnerId && pl.Id == locationId);
 

@@ -60,7 +60,7 @@
         }
 
         [HttpGet("{partnerId}/{userId}")]
-        public IActionResult GetPartnerUser(Guid partnerId, Guid userId, CancellationToken cancellationToken)
+        public IActionResult GetPartnerUser(Guid partnerId, Guid userId, CancellationToken cancellationToken = default)
         {
             var partnerUser = partnerUserRepository.GetPartnerUsers(cancellationToken).FirstOrDefault(pu => pu.PartnerId == partnerId && pu.UserId == userId);
 

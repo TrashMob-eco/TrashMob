@@ -1,5 +1,4 @@
-import * as React from 'react'
-
+import { FC, useEffect, useState } from 'react'
 import { MainEvents } from '../MainEvents';
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import EventData from '../Models/EventData';
@@ -29,28 +28,27 @@ export interface HomeProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
     currentUser: UserData;
     onUserUpdated: any;
+    onAttendanceChanged: () => void;
+    myAttendanceList: EventData[];
+    isUserEventDataLoaded: boolean;
 }
 
-const Home: React.FC<HomeProps> = (props) => {
-    const [eventList, setEventList] = React.useState<EventData[]>([]);
-    const [eventTypeList, setEventTypeList] = React.useState<EventTypeData[]>([]);
-    const [myAttendanceList, setMyAttendanceList] = React.useState<EventData[]>([]);
-    const [isEventDataLoaded, setIsEventDataLoaded] = React.useState(false);
-    const [isUserEventDataLoaded, setIsUserEventDataLoaded] = React.useState(false);
-    const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState(false);
-    const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
-    const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
-    const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
-    const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
-    const [agree, setAgree] = React.useState(false);
-    const [isOpen, setIsOpen] = React.useState(false);
-    const [eventView, setEventView] = React.useState<string>('list');
-    const [totalBags, setTotalBags] = React.useState<number>(0);
-    const [totalHours, setTotalHours] = React.useState<number>(0);
-    const [totalEvents, setTotalEvents] = React.useState<number>(0);
-    const [totalParticipants, setTotalParticipants] = React.useState<number>(0);
+const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated, myAttendanceList, isUserEventDataLoaded, onAttendanceChanged }) => {
+    const [eventList, setEventList] = useState<EventData[]>([]);
+    const [eventTypeList, setEventTypeList] = useState<EventTypeData[]>([]);
+    const [isEventDataLoaded, setIsEventDataLoaded] = useState(false);
+    const [isMapKeyLoaded, setIsMapKeyLoaded] = useState(false);
+    const [center, setCenter] = useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
+    const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
+    const [agree, setAgree] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const [eventView, setEventView] = useState<string>('list');
+    const [totalBags, setTotalBags] = useState<number>(0);
+    const [totalHours, setTotalHours] = useState<number>(0);
+    const [totalEvents, setTotalEvents] = useState<number>(0);
+    const [totalParticipants, setTotalParticipants] = useState<number>(0);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const headers = getDefaultHeaders('GET');
         fetch('/api/eventtypes', {
             method: 'GET',
@@ -90,7 +88,7 @@ const Home: React.FC<HomeProps> = (props) => {
 
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(position => {
-                var point = new data.Position(position.coords.longitude, position.coords.latitude);
+                const point = new data.Position(position.coords.longitude, position.coords.latitude);
                 setCenter(point)
             });
         } else {
@@ -98,110 +96,41 @@ const Home: React.FC<HomeProps> = (props) => {
         }
     }, [])
 
-    React.useEffect(() => {
-
-        setCurrentUser(props.currentUser);
-        setIsUserLoaded(props.isUserLoaded);
-
-        if (!props.isUserLoaded || !props.currentUser) {
-            return;
-        }
-
-        // If the user is logged in, get the events they are attending
-        var accounts = msalClient.getAllAccounts();
-
-        if (accounts !== null && accounts.length > 0) {
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: accounts[0]
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/events/eventsuserisattending/' + props.currentUser.id, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<EventData[]>)
-                    .then(data => {
-                        setMyAttendanceList(data);
-                        setIsUserEventDataLoaded(true);
-                    })
-            });
-        }
-    }, [props.isUserLoaded, props.currentUser]);
-
-    React.useEffect(() => {
+    useEffect(() => {
         if (!isUserLoaded || !currentUser) {
             return;
         }
 
-        var isPrivacyPolicyOutOfDate = currentUser.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate;
-        var isTermsOfServiceOutOfDate = currentUser.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate;
+        const isPrivacyPolicyOutOfDate = currentUser.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate;
+        const isTermsOfServiceOutOfDate = currentUser.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate;
 
         if (isPrivacyPolicyOutOfDate || isTermsOfServiceOutOfDate || (currentUser.termsOfServiceVersion === "") || (currentUser.privacyPolicyVersion === "")) {
             setIsOpen(true);
         }
     }, [isUserLoaded, currentUser]);
 
-    function handleLocationChange(point: data.Position) {
+    const handleLocationChange = (point: data.Position) => {
         // do nothing
     }
 
-    function handleAttendanceChanged() {
-        setIsUserEventDataLoaded(false);
-
-        if (!props.isUserLoaded || !props.currentUser) {
-            return;
-        }
-
-        // If the user is logged in, get the events they are attending
-        var accounts = msalClient.getAllAccounts();
-
-        if (accounts !== null && accounts.length > 0) {
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: accounts[0]
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/events/eventsuserisattending/' + props.currentUser.id, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<EventData[]>)
-                    .then(data => {
-                        setMyAttendanceList(data);
-                        setIsUserEventDataLoaded(true);
-                    })
-            });
-        }
-    }
-
-    function checkboxhandler() {
+    const checkboxhandler = () => {
         // if agree === true, it will be set to false
         // if agree === false, it will be set to true
         setAgree(!agree);
     }
 
-    function togglemodal() {
+    const togglemodal = () => {
         setIsOpen(!isOpen);
     }
 
-    function handleDetailsSelected(eventId: string) {
-        props.history.push("eventdetails/" + eventId);
+    const handleDetailsSelected = (eventId: string) => {
+        history.push("eventdetails/" + eventId);
     }
 
-    function updateAgreements(tosVersion: string, privacyVersion: string) {
-
+    const updateAgreements = (tosVersion: string, privacyVersion: string) => {
         const account = msalClient.getAllAccounts()[0];
 
-        var request = {
+        const request = {
             scopes: apiConfig.b2cScopes,
             account: account
         };
@@ -228,10 +157,9 @@ const Home: React.FC<HomeProps> = (props) => {
                         })
                             .then(response => response.json() as Promise<UserData>)
                             .then(data => {
-                                setCurrentUser(data);
-                                props.onUserUpdated();
+                                onUserUpdated();
                                 if (!currentUser.userName) {
-                                    props.history.push("/userprofile");
+                                    history.push("/userprofile");
                                 }
                             })
                     }
@@ -239,7 +167,7 @@ const Home: React.FC<HomeProps> = (props) => {
         })
     }
 
-    function handleEventView(view: string) {
+    const handleEventView = (view: string) => {
         setEventView(view);
     }
 
@@ -316,7 +244,7 @@ const Home: React.FC<HomeProps> = (props) => {
             <Container fluid className="bg-white p-md-5">
                 <div className="max-width-container mx-auto">
                     <div className="d-flex justify-content-between mb-4 flex-wrap flex-md-nowrap">
-                        <h3 className="font-weight-bold flex-grow-1">Upcoming Events</h3>
+                        <h3 id="events" className="font-weight-bold flex-grow-1">Upcoming Events</h3>
                         <div className="d-flex align-items-center mt-4">
                             <label className="pr-3 mb-0">
                                 <input type="radio" className="mb-0 radio" name="Event view" value="map" onChange={e => handleEventView(e.target.value)} checked={eventView === "map"}></input>
@@ -334,7 +262,7 @@ const Home: React.FC<HomeProps> = (props) => {
                             <div className="w-100 m-0">
                                 <AzureMapsProvider>
                                     <>
-                                        <MapControllerPointCollection center={center} multipleEvents={eventList} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={handleAttendanceChanged} onDetailsSelected={handleDetailsSelected} />
+                                        <MapControllerPointCollection center={center} multipleEvents={eventList} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={onAttendanceChanged} onDetailsSelected={handleDetailsSelected} />
                                     </>
                                 </AzureMapsProvider>
                             </div>
@@ -343,7 +271,7 @@ const Home: React.FC<HomeProps> = (props) => {
                         <>
                             <Link to="/manageeventdashboard">Create a New Event</Link>
                             <div className="container-lg">
-                                <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} />
+                                <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} />
                             </div>
                         </>
                     )}

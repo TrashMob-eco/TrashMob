@@ -122,7 +122,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetEvent(Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetEvent(Guid id, CancellationToken cancellationToken = default)
         {
             var mobEvent = await eventRepository.GetEvent(id, cancellationToken).ConfigureAwait(false);
 
