@@ -219,7 +219,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                     <p>{description}</p>
                     <p><Calendar className="mr-2" />{moment(startDateTime).local().format('L')}</p>
                     <p><Stopwatch className="mr-2" />{moment(startDateTime).local().format('LT')}</p>
-                    <p><GeoAlt className="mr-2" /><a href={`https://google.com/maps/place/${streetAddress}+${city}+${region}+${postalCode}+${country}`}>{streetAddress}, {city}, {region} - {postalCode} {country}</a></p>
+                    <p><GeoAlt className="mr-2" /><a href={`https://google.com/maps/place/${streetAddress}+${city}+${region}+${postalCode}+${country}`} target="_blank" rel="noopener noreferrer">{streetAddress}, {city}, {region} - {postalCode} {country}</a></p>
                     <div className="d-flex">
                         <span className="font-weight-bold mr-2">Latitude:</span>
                         <span className="mr-5">{latitude}</span>
