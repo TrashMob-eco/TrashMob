@@ -23,6 +23,7 @@ import globes from '../assets/gettingStarted/globes.png';
 interface UserProfileProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
     currentUser: UserData;
+    onUserUpdated: any;
 }
 
 const UserProfile: FC<UserProfileProps> = (props) => {
@@ -273,9 +274,10 @@ const UserProfile: FC<UserProfileProps> = (props) => {
             }).then(response => {
                 if (response.status === 200) {
                     setFormSubmitted(true);
+                    props.onUserUpdated();
                 }
                 else {
-                    setFormSubmitErrors("Unknown error occured while hecking user name. Please try again. Error Code: " + response.status);
+                    setFormSubmitErrors("Unknown error occured while checking user name. Please try again. Error Code: " + response.status);
                 }
             });
         })
@@ -323,7 +325,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                     setUserNameErrors("This username is already in use. Please choose a different name.");
                 }
                 else {
-                    setUserNameErrors("Unknown error occured while hecking user name. Please try again. Error Code: " + response.status);
+                    setUserNameErrors("Unknown error occured while checking user name. Please try again. Error Code: " + response.status);
                 }
 
                 validateForm();

@@ -148,6 +148,8 @@ export const App: FC = () => {
             account: account
         };
 
+        setIsUserLoaded(false);
+
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
@@ -300,7 +302,7 @@ export const App: FC = () => {
                                     interactionType={InteractionType.Redirect}
                                     errorComponent={ErrorComponent}
                                     loadingComponent={LoadingComponent}>
-                                    <UserProfile currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                    <UserProfile currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
                                 </MsalAuthenticationTemplate >
                             </Route>
                             <Route exact path="/shop">
