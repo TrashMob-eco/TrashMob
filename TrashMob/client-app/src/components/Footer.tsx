@@ -38,19 +38,19 @@ export const Footer: React.FC = () => {
                         <div className="col-md-4">
                             <div className="row" id="iconsOrigWrapper">
                                 <div className="iconWrapper" id="firstWrapper">
-                                    <Link to={{ pathname: "https://www.facebook.com/trashmob.eco/" }}>
+                                    <a href={"https://www.facebook.com/trashmob.eco/"} target="_blank">
                                         <i className="fab fa-facebook-f"></i>
-                                    </Link>
+                                    </a>
                                 </div>
                                 <div className="iconWrapper">
-                                    <Link to={{ pathname: "https://twitter.com/TrashMobEco" }}>
+                                    <a href={"https://twitter.com/TrashMobEco"} target="_blank">
                                         <i className="fab fa-twitter"></i>
-                                    </Link>
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </div >
+                </div >
             </div >
         </footer >
     );
