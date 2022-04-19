@@ -38,12 +38,12 @@ export const Footer: React.FC = () => {
                         <div className="col-md-4">
                             <div className="row" id="iconsOrigWrapper">
                                 <div className="iconWrapper" id="firstWrapper">
-                                    <Link to="https://www.facebook.com/trashmob.eco/">
+                                    <Link to={{ pathname: "https://www.facebook.com/trashmob.eco/" }}>
                                         <i className="fab fa-facebook-f"></i>
                                     </Link>
                                 </div>
                                 <div className="iconWrapper">
-                                    <Link to="https://twitter.com/TrashMobEco">
+                                    <Link to={{ pathname: "https://twitter.com/TrashMobEco" }}>
                                         <i className="fab fa-twitter"></i>
                                     </Link>
                                 </div>
@@ -51,7 +51,7 @@ export const Footer: React.FC = () => {
                         </div>
                     </div>
                 </div>
-            </div>
-        </footer>
+            </div >
+        </footer >
     );
 }
