@@ -12,11 +12,11 @@ h5 {
   margin-top: 1em;
 }
 
-.pop > h1,
-.pop > h2,
-.pop > h3,
-.pop > h4,
-.pop > h5 {
+.pop>h1,
+.pop>h2,
+.pop>h3,
+.pop>h4,
+.pop>h5 {
   margin-top: 0;
 }
 
@@ -58,6 +58,7 @@ p {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -101,6 +102,7 @@ p {
     //   margin-left: 1rem;
     // }
   }
+
   .navbar-nav {
     width: 100%;
     margin-top: 8px;
@@ -166,7 +168,7 @@ nav {
   width: auto;
 }
 
-nav > div {
+nav>div {
   display: inline-block;
   width: 100%;
 }
@@ -198,7 +200,7 @@ nav ul li a {
   padding: 0px;
 }
 
-nav ul li .dropdown > a {
+nav ul li .dropdown>a {
   margin: 0px;
   padding: 0px 8px;
   display: block;
@@ -206,7 +208,7 @@ nav ul li .dropdown > a {
   text-decoration: none;
 }
 
-nav ul li .dropdown > a:hover {
+nav ul li .dropdown>a:hover {
   color: rgba(255, 255, 255, 1);
 }
 
@@ -282,6 +284,7 @@ nav ul li .dropdown > a:hover {
   margin-bottom: 0;
   background-size: 100%;
 }
+
 .green-flood-image,
 .basic-flood-image {
   position: absolute;
@@ -364,7 +367,7 @@ img {
   margin: 2% 0px 0%;
 }
 
-.expandCollapse > div {
+.expandCollapse>div {
   color: #444;
   // cursor: pointer;
   padding: 0px;
@@ -377,28 +380,28 @@ img {
 //   overflow: hidden;
 // }
 
-.expandCollapse > div:active p,
-.expandCollapse > div:focus p,
-.expandCollapse > .active p {
+.expandCollapse>div:active p,
+.expandCollapse>div:focus p,
+.expandCollapse>.active p {
   display: block;
   overflow: auto;
   line-height: 1.5em;
 }
 
 button,
-.dropdown > a.dropdown-toggle {
+.dropdown>a.dropdown-toggle {
   background-color: $primary !important;
   border: none !important;
   outline: none !important;
 }
 
-.dropdown > a.dropdown-toggle {
+.dropdown>a.dropdown-toggle {
   padding: 5px 10px 7px;
   margin-top: 2px;
   margin-left: 10px;
 }
 
-.dropdown > a:hover,
+.dropdown>a:hover,
 button:hover {
   background-color: #546900 !important;
 }
@@ -450,8 +453,13 @@ button:hover {
   max-height: 20em;
 }
 
-eco-trustmark {
+.eco-trustmark {
   max-width: 4rem;
+  color: black;
+  font-size: 20px;
+  align-self: center;
+  width: 17.5px;
+  height: 20px;
 }
 
 input,
