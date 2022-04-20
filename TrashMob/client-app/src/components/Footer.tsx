@@ -39,27 +39,27 @@ export const Footer: React.FC = () => {
                             <div className="row" id="iconsOrigWrapper">
                                 <div className="d-flex justify-content-between">
                                     <div className="iconWrapper" id="firstWrapper">
-                                        <a href={"https://www.facebook.com/trashmob.eco/"} target="_blank">
+                                        <a href={"https://www.facebook.com/trashmob.eco/"} target="_blank" rel="noreferrer noopener">
                                             <i className="fab fa-facebook-f"></i>
                                         </a>
                                     </div>
                                     <div className="iconWrapper">
-                                        <a href={"https://twitter.com/TrashMobEco"} target="_blank">
+                                        <a href={"https://twitter.com/TrashMobEco"} target="_blank" rel="noreferrer noopener">
                                             <i className="fab fa-twitter"></i>
                                         </a>
                                     </div>
                                     <div className="iconWrapper">
-                                        <a href={"https://profiles.eco/trashmob?ref=tm"} target="_blank" rel="noopener">
+                                        <a href={"https://profiles.eco/trashmob?ref=tm"} target="_blank" rel="noreferrer noopener">
                                             <img className="eco-trustmark" alt=".eco profile for trashmob.eco" src="https://trust.profiles.eco/trashmob/eco-button.svg?color=%2396BA00" />
                                         </a>
                                     </div>
                                     <div className="iconWrapper">
-                                        <a href={"https://www.instagram.com/trashmobinfo"} target="_blank" >
+                                        <a href={"https://www.instagram.com/trashmobinfo"} target="_blank" rel="noreferrer noopener">
                                             <i className="fa-brands fa-instagram"></i>
                                         </a>
                                     </div>
                                     <div className="iconWrapper">
-                                        <a href={"https://www.youtube.com/channel/UC2LgFmXFCA8kdkxd4IJ51BA"} target="_blank">
+                                        <a href={"https://www.youtube.com/channel/UC2LgFmXFCA8kdkxd4IJ51BA"} target="_blank" rel="noreferrer noopener">
                                             <i className="fa-brands fa-youtube"></i>
                                         </a>
                                     </div>
