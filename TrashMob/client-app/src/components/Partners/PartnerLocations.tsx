@@ -497,10 +497,6 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
         // Do nothing
     }
 
-    function handleDetailsSelected(e: any) {
-        // Do nothing
-    }
-
     function renderEditLocation() {
         return (
             <div>
@@ -550,7 +546,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                                     onChange={(e) => setIsPartnerLocationActive(e.currentTarget.checked)}
                                 >
                                     Is Active
-                                    </ToggleButton>
+                                </ToggleButton>
                             </Form.Group>
                         </Col>
                     </Form.Row>
@@ -658,7 +654,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     <Form.Row>
                         <AzureMapsProvider>
                             <>
-                                <MapControllerPointCollection center={center} multipleEvents={[]} isEventDataLoaded={isLocationDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={locationName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} myAttendanceList={[]} isUserEventDataLoaded={true} onAttendanceChanged={handleAttendanceChanged} onDetailsSelected={handleDetailsSelected} />
+                                <MapControllerPointCollection center={center} multipleEvents={[]} isEventDataLoaded={isLocationDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={locationName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} myAttendanceList={[]} isUserEventDataLoaded={true} onAttendanceChanged={handleAttendanceChanged} />
                             </>
                         </AzureMapsProvider>
                     </Form.Row>

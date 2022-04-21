@@ -27,7 +27,6 @@ interface MapControllerProps {
     onAttendanceChanged: any;
     myAttendanceList: EventData[];
     isUserEventDataLoaded: boolean;
-    onDetailsSelected: any;
 }
 
 export const MapControllerPointCollection: React.FC<MapControllerProps> = (props) => {
@@ -41,7 +40,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
             // Simple Camera options modification
             mapRef.setCamera({ center: props.center, zoom: MapStore.defaultUserLocationZoom });
 
-            var dataSourceRef = new source.DataSource("mainDataSource", { cluster: true });
+            const dataSourceRef = new source.DataSource("mainDataSource", { cluster: true });
             mapRef.sources.add(dataSourceRef);
             setIsDataSourceLoaded(true);
 
@@ -52,7 +51,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
             });
 
             // Create a HTML marker layer for rendering data points.
-            var markerLayer = new HtmlMarkerLayer(dataSourceRef, "marker1", {
+            const markerLayer = new HtmlMarkerLayer(dataSourceRef, "marker1", {
                 markerRenderCallback: (id: any, position: data.Position, properties: any) => {
                     // Create an HtmlMarker.
                     const marker = new HtmlMarker({
@@ -93,73 +92,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
             //Add marker layer to the map.
             mapRef.layers.add(markerLayer);
 
-            props.multipleEvents.forEach(mobEvent => {
-                var position = new data.Point(new data.Position(mobEvent.longitude, mobEvent.latitude));
-                var isAtt = 'No';
-                if (props.isUserEventDataLoaded) {
-                    var isAttending = props.myAttendanceList && (props.myAttendanceList.findIndex((e) => e.id === mobEvent.id) >= 0);
-                    isAtt = (isAttending ? 'Yes' : 'No');
-                }
-                else {
-                    isAtt = 'Log in to see your status';
-                }
-
-                var properties = {
-                    content: renderToString(getPopUpContent(mobEvent.id, mobEvent.name, new Date(mobEvent.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' }), mobEvent.streetAddress, mobEvent.city, mobEvent.region, mobEvent.country, mobEvent.postalCode, isAtt, vd)),
-                    name: mobEvent.name,
-                }
-                dataSourceRef.add(new data.Feature(position, properties));
-            })
-
-            function vd(eventId: string) {
-                props.onDetailsSelected(eventId);
-            }
-
-            function handleAttend(eventId: string) {
-
-                var accounts = msalClient.getAllAccounts();
-
-                if (accounts === null || accounts.length === 0) {
-                    msalClient.loginRedirect().then(() => {
-                        addAttendee(eventId);
-                    })
-                }
-                else {
-                    addAttendee(eventId);
-                }
-            }
-
-            function addAttendee(eventId: string) {
-
-                const account = msalClient.getAllAccounts()[0];
-
-                var request = {
-                    scopes: apiConfig.b2cScopes,
-                    account: account
-                };
-
-                msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                    var eventAttendee = new EventAttendeeData();
-                    eventAttendee.userId = props.currentUser.id;
-                    eventAttendee.eventId = eventId;
-
-                    var data = JSON.stringify(eventAttendee);
-
-                    const headers = getDefaultHeaders('POST');
-                    headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                    // POST request for Add EventAttendee.  
-                    fetch('/api/EventAttendees', {
-                        method: 'POST',
-                        body: data,
-                        headers: headers,
-                    }).then((response) => response.json())
-                        .then(props.onAttendanceChanged())
-                })
-            }
-
-            function getPopUpContent(eventId: string, eventName: string, eventDate: string, streetAddress: string, city: string, region: string, country: string, postalCode: string, isAttending: string, onViewDetails: any) {
+            const getPopUpContent = (eventId: string, eventName: string, eventDate: string, streetAddress: string, city: string, region: string, country: string, postalCode: string, isAttending: string) => {
                 return (
                     <div className="container card" style={{ padding: "0.5rem" }}>
                         <h4 className="mt-1">{eventName}</h4>
@@ -187,6 +120,70 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                     </div >
                 );
             }
+
+            props.multipleEvents.forEach(mobEvent => {
+                const position = new data.Point(new data.Position(mobEvent.longitude, mobEvent.latitude));
+                let isAtt = 'No';
+                if (props.isUserEventDataLoaded) {
+                    const isAttending = props.myAttendanceList && (props.myAttendanceList.findIndex((e) => e.id === mobEvent.id) >= 0);
+                    isAtt = (isAttending ? 'Yes' : 'No');
+                }
+                else {
+                    isAtt = 'Log in to see your status';
+                }
+
+                const properties = {
+                    content: renderToString(getPopUpContent(mobEvent.id, mobEvent.name, new Date(mobEvent.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' }), mobEvent.streetAddress, mobEvent.city, mobEvent.region, mobEvent.country, mobEvent.postalCode, isAtt)),
+                    name: mobEvent.name,
+                }
+                dataSourceRef.add(new data.Feature(position, properties));
+            })
+
+            const handleAttend = (eventId: string) => {
+
+                const accounts = msalClient.getAllAccounts();
+
+                if (accounts === null || accounts.length === 0) {
+                    msalClient.loginRedirect().then(() => {
+                        addAttendee(eventId);
+                    })
+                }
+                else {
+                    addAttendee(eventId);
+                }
+            }
+
+            const addAttendee = (eventId: string) => {
+
+                const account = msalClient.getAllAccounts()[0];
+
+                const request = {
+                    scopes: apiConfig.b2cScopes,
+                    account: account
+                };
+
+                msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                    const eventAttendee = new EventAttendeeData();
+                    eventAttendee.userId = props.currentUser.id;
+                    eventAttendee.eventId = eventId;
+
+                    const data = JSON.stringify(eventAttendee);
+
+                    const headers = getDefaultHeaders('POST');
+                    headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                    // POST request for Add EventAttendee.  
+                    fetch('/api/EventAttendees', {
+                        method: 'POST',
+                        body: data,
+                        headers: headers,
+                    }).then((response) => response.json())
+                        .then(props.onAttendanceChanged())
+                })
+            }
+
+
         }
     }, [mapRef,
         props,
@@ -200,7 +197,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
         isMapReady,
         props.onAttendanceChanged]);
 
-    function handleLocationChange(e: any) {
+    const handleLocationChange = (e: any) => {
         props.onLocationChange(e);
     }
 

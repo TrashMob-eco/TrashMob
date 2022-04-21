@@ -108,10 +108,6 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
         // do nothing
     }
 
-    function handleDetailsSelected(eventId: string) {
-        props.history.push("eventdetails/" + eventId);
-    }
-
     function handleReloadEvents() {
         // A trick to force the reload as needed.
         setReloadEvents(reloadEvents + 1);
@@ -135,7 +131,7 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
                                     onChange={(e) => setShowFutureEventsOnly(e.currentTarget.checked)}
                                 >
                                     Show Future Events Only:
-                                    </ToggleButton>
+                                </ToggleButton>
                             </Form.Group>
                         </Col>
                         <Col>
@@ -162,7 +158,7 @@ const MyDashboard: React.FC<MyDashboardProps> = (props) => {
             <div>
                 <AzureMapsProvider>
                     <>
-                        <MapControllerPointCollection center={center} multipleEvents={myEventList} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={handleAttendanceChanged} myAttendanceList={myEventList} isUserEventDataLoaded={isEventDataLoaded} onDetailsSelected={handleDetailsSelected} />
+                        <MapControllerPointCollection center={center} multipleEvents={myEventList} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={handleAttendanceChanged} myAttendanceList={myEventList} isUserEventDataLoaded={isEventDataLoaded} />
                     </>
                 </AzureMapsProvider>
             </div>

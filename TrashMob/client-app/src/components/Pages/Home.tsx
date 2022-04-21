@@ -123,10 +123,6 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
         setIsOpen(!isOpen);
     }
 
-    const handleDetailsSelected = (eventId: string) => {
-        history.push("eventdetails/" + eventId);
-    }
-
     const updateAgreements = (tosVersion: string, privacyVersion: string) => {
         const account = msalClient.getAllAccounts()[0];
 
@@ -262,7 +258,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
                             <div className="w-100 m-0">
                                 <AzureMapsProvider>
                                     <>
-                                        <MapControllerPointCollection center={center} multipleEvents={eventList} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={onAttendanceChanged} onDetailsSelected={handleDetailsSelected} />
+                                        <MapControllerPointCollection center={center} multipleEvents={eventList} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={onAttendanceChanged} />
                                     </>
                                 </AzureMapsProvider>
                             </div>
