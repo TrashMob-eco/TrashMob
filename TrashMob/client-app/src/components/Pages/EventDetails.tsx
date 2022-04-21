@@ -208,8 +208,8 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                                 <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100"><Share className="mr-2" aria-hidden="true" />Share</Dropdown.Toggle>
                                 <Dropdown.Menu id="share-menu">
                                     <Dropdown.Item className="share-link" onClick={handleCopyLink}><Link className="mr-2" aria-hidden="true" />{!copied ? "Copy link" : "Copied!"}</Dropdown.Item>
-                                    <Dropdown.Item className="share-link"><Facebook className="mr-2" aria-hidden="true" /><a target="_blank" rel="noopener noreferrer" href={facebookUrl} className="fb-xfbml-parse-ignore">Share to Facebook</a></Dropdown.Item>
-                                    <Dropdown.Item className="share-link"><Twitter className="mr-2" aria-hidden="true" /><a target="_blank" rel="noopener noreferrer" href={twitterUrl} className="twitter-share-button">Share to Twitter</a></Dropdown.Item>
+                                    <Dropdown.Item className="share-link" href={facebookUrl}><Facebook className="mr-2" aria-hidden="true" />Share to Facebook</Dropdown.Item>
+                                    <Dropdown.Item className="share-link" href={twitterUrl}><Twitter className="mr-2" aria-hidden="true" />Share to Twitter</Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
                             <RegisterBtn eventId={eventId} isAttending={isAttending} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} isUserLoaded={isUserLoaded}></RegisterBtn>
