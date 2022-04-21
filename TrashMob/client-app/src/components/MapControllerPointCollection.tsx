@@ -32,7 +32,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     const [isDataSourceLoaded, setIsDataSourceLoaded] = React.useState(false);
-    var popup: Popup;
+    let popup: Popup;
 
     useEffect(() => {
         if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && !isDataSourceLoaded && isMapReady) {
@@ -40,7 +40,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
             // Simple Camera options modification
             mapRef.setCamera({ center: props.center, zoom: MapStore.defaultUserLocationZoom });
 
-            var dataSourceRef = new source.DataSource("mainDataSource", {
+            const dataSourceRef = new source.DataSource("mainDataSource", {
                 cluster: true,
                 clusterMaxZoom: 15,
                 clusterRadius: 45
@@ -53,9 +53,9 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
 
             props.multipleEvents.forEach(mobEvent => {
 
-                var position = new data.Position(mobEvent.longitude, mobEvent.latitude)
-                var point = new data.Point(position);
-                var isAtt = 'No';
+                const position = new data.Position(mobEvent.longitude, mobEvent.latitude)
+                const point = new data.Point(position);
+                let isAtt = 'No';
                 if (props.isUserEventDataLoaded) {
                     var isAttending = props.myAttendanceList && (props.myAttendanceList.findIndex((e) => e.id === mobEvent.id) >= 0);
                     isAtt = (isAttending ? 'Yes' : 'No');
@@ -64,7 +64,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                     isAtt = 'Log in to see your status';
                 }
 
-                var properties = {
+                const properties = {
                     eventId: mobEvent.id,
                     eventName: mobEvent.name,
                     eventDate: mobEvent.eventDate,
@@ -79,7 +79,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
 
                 dataSourceRef.add(new data.Feature(point, properties));
 
-                var marker = new HtmlMarker({
+                const marker = new HtmlMarker({
                     position: position,
                     draggable: false,
                     properties: properties
@@ -87,16 +87,16 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
 
                 mapRef.events.add('mouseover', marker, function (e) {
 
-                    var popUpHtmlContent = ReactDOMServer.renderToString(getPopUpContent(properties.eventName, new Date(properties.eventDate).toLocaleDateString(), properties.streetAddress, properties.city, properties.region, properties.country, properties.postalCode, isAtt));
-                    var popUpContent = new DOMParser().parseFromString(popUpHtmlContent, "text/html");
+                    const popUpHtmlContent = ReactDOMServer.renderToString(getPopUpContent(properties.eventName, new Date(properties.eventDate).toLocaleDateString(), properties.streetAddress, properties.city, properties.region, properties.country, properties.postalCode, isAtt));
+                    const popUpContent = new DOMParser().parseFromString(popUpHtmlContent, "text/html");
 
-                    var viewDetailsButton = popUpContent.getElementById("viewDetails");
+                    const viewDetailsButton = popUpContent.getElementById("viewDetails");
                     if (viewDetailsButton)
                         viewDetailsButton.addEventListener('click', function () {
                             viewDetails(properties.eventId);
                         });
 
-                    var addAttendeeButton = popUpContent.getElementById("addAttendee");
+                    const addAttendeeButton = popUpContent.getElementById("addAttendee");
                     if (addAttendeeButton)
                         addAttendeeButton.addEventListener('click', function () {
                             handleAttend(properties.eventId);
@@ -126,7 +126,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
 
             function handleAttend(eventId: string) {
 
-                var accounts = msalClient.getAllAccounts();
+                const accounts = msalClient.getAllAccounts();
 
                 if (accounts === null || accounts.length === 0) {
                     msalClient.loginRedirect().then(() => {
@@ -142,18 +142,18 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
 
                 const account = msalClient.getAllAccounts()[0];
 
-                var request = {
+                const request = {
                     scopes: apiConfig.b2cScopes,
                     account: account
                 };
 
                 msalClient.acquireTokenSilent(request).then(tokenResponse => {
 
-                    var eventAttendee = new EventAttendeeData();
+                    const eventAttendee = new EventAttendeeData();
                     eventAttendee.userId = props.currentUser.id;
                     eventAttendee.eventId = eventId;
 
-                    var data = JSON.stringify(eventAttendee);
+                    const data = JSON.stringify(eventAttendee);
 
                     const headers = getDefaultHeaders('POST');
                     headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
@@ -171,8 +171,8 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
             function getPopUpContent(eventName: string, eventDate: string, streetAddress: string, city: string, region: string, country: string, postalCode: string, isAttending: string) {
 
                 return (
-                    <div className="container card" style={{ padding: "0.5rem" }}>
-                        <h4>{eventName}</h4>
+                    <div className="p-lg-4 p-1 map-popup-container">
+                        <h4 className="mt-1">{eventName}</h4>
                         <div className="divTable">
                             <div className="divTableBody">
                                 <div className="divTableRow">
@@ -184,14 +184,17 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                                     <div className="divTableCell">{streetAddress}, {city}, {region}, {country}, {postalCode}</div>
                                 </div>
                                 <div className="divTableRow">
-                                    <div className="divTableCell"><a id="addAttendee" hidden={!props.isUserLoaded || isAttending === "Yes"} className="action">Register to Attend Event</a></div>
-                                    <label hidden={props.isUserLoaded}>Sign-in required</label>
-                                    <label hidden={!props.isUserLoaded || isAttending !== 'Yes'}>Yes</label>
-                                    <div className="divTableCell"><a id="viewDetails" type="button">View Details</a></div>
+                                    <div className="divTableCell">Attending:</div>
+                                    <div className="divTableCell">
+                                        <a id="addAttendee" hidden={!props.isUserLoaded || isAttending === "Yes"} className="action">Register to Attend Event</a>
+                                        <span hidden={props.isUserLoaded}>Sign-in required</span>
+                                        <span hidden={!props.isUserLoaded || isAttending !== 'Yes'}>Yes</span>
+                                        <a id="viewDetails" type="button" className="ml-4">View Details</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div >
                 );
             }
         }
