@@ -9,6 +9,7 @@ import UserData from './Models/UserData';
 import ReactDOMServer from "react-dom/server"
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import EventAttendeeData from './Models/EventAttendeeData';
+import { Button } from 'react-bootstrap';
 
 interface MapControllerProps {
     mapOptions: IAzureMapOptions | undefined
@@ -187,10 +188,10 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                                 <div className="divTableRow">
                                     <div className="divTableCell">Attending:</div>
                                     <div className="divTableCell">
-                                        <a id="addAttendee" hidden={!props.isUserLoaded || isAttending === "Yes"} className="action" type="button">Register to Attend Event</a>
+                                        <Button id="addAttendee" hidden={!props.isUserLoaded || isAttending === "Yes"} className="action" type="button">Register to Attend Event</Button>
                                         <span hidden={props.isUserLoaded}>Sign-in required</span>
                                         <span hidden={!props.isUserLoaded || isAttending !== 'Yes'}>Yes</span>
-                                        <a id="viewDetails" type="button" className="ml-4">View Details</a>
+                                        <Button id="viewDetails" type="button" className="ml-4">View Details</Button>
                                     </div>
                                 </div>
                             </div>
