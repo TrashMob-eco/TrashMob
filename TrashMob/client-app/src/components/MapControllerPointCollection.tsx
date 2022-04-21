@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react';
 import * as React from 'react';
 import { AzureMapsContext, IAzureMapOptions, IAzureMapsContextProps } from 'react-azure-maps';
-import { data, source, Popup, HtmlMarker, layer } from 'azure-maps-control';
+import { data, source, Popup, HtmlMarker } from 'azure-maps-control';
 import MapComponent from './MapComponent';
 import EventData from './Models/EventData';
 import * as MapStore from '../store/MapStore'
@@ -32,9 +32,10 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     const [isDataSourceLoaded, setIsDataSourceLoaded] = React.useState(false);
-    let popup: Popup;
 
     useEffect(() => {
+        let popup: Popup;
+
         if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && !isDataSourceLoaded && isMapReady) {
 
             // Simple Camera options modification
@@ -186,7 +187,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                                 <div className="divTableRow">
                                     <div className="divTableCell">Attending:</div>
                                     <div className="divTableCell">
-                                        <a id="addAttendee" hidden={!props.isUserLoaded || isAttending === "Yes"} className="action">Register to Attend Event</a>
+                                        <a id="addAttendee" hidden={!props.isUserLoaded || isAttending === "Yes"} className="action" type="button">Register to Attend Event</a>
                                         <span hidden={props.isUserLoaded}>Sign-in required</span>
                                         <span hidden={!props.isUserLoaded || isAttending !== 'Yes'}>Yes</span>
                                         <a id="viewDetails" type="button" className="ml-4">View Details</a>
