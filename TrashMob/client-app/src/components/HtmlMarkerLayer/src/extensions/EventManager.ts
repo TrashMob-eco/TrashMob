@@ -1,5 +1,5 @@
 ﻿import * as azmaps from "azure-maps-control";
-import { HtmlMarkerLayer } from "./HtmlMarkerLayer";
+import { HtmlMarkerLayer } from "../layer";
 
 /**
  * This module partially defines the map control.
