@@ -188,6 +188,10 @@ hr.rounded {
   background-color: #212529 !important;
 }
 
+.color-black {
+  color: #212529 !important;
+}
+
 .border-rounded-lg {
   border-radius: 1rem !important;
 }

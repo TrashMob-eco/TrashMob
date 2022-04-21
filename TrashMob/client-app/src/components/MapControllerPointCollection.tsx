@@ -160,39 +160,31 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
             }
 
             function getPopUpContent(eventId: string, eventName: string, eventDate: string, streetAddress: string, city: string, region: string, country: string, postalCode: string, isAttending: string, onViewDetails: any) {
-
-                function handleClick() {
-                    onViewDetails(eventId)
-                }
-
                 return (
-                    <div className="container card" style={{padding: "0.5rem"}}>
-                        <h4>{eventName}</h4>
+                    <div className="container card" style={{ padding: "0.5rem" }}>
+                        <h4 className="mt-1">{eventName}</h4>
                         <table>
                             <tbody>
                                 <tr>
-                                    <td>Event Date:</td>
+                                    <td className="font-weight-bold">Event Date:</td>
                                     <td>{eventDate}</td>
                                 </tr>
                                 <tr>
-                                    <td>Location:</td>
+                                    <td className="font-weight-bold">Location:</td>
                                     <td>{streetAddress}, {city}, {region}, {country}, {postalCode}</td>
                                 </tr>
                                 <tr>
-                                    <td>
+                                    <td className="font-weight-bold">Attending:</td>
+                                    <td className="d-flex">
                                         <Button hidden={!props.isUserLoaded || isAttending === "Yes"} className="action" onClick={() => handleAttend(eventId)}>Register to Attend Event</Button>
-                                        <label hidden={props.isUserLoaded}>Sign-in required</label>
-                                        <label hidden={!props.isUserLoaded || isAttending !== 'Yes'}>Yes</label>
-                                    </td>
-                                    <td>
-                                        <form>
-                                            <button className="action" type="button" onClick={() => handleClick()}>View Details</button>
-                                        </form>
+                                        <span hidden={props.isUserLoaded}>Sign-in required</span>
+                                        <span hidden={!props.isUserLoaded || isAttending !== 'Yes'}>Yes</span>
+                                        <button className="action ml-4" type="button"><a href={`/eventdetails/${eventId}`} className="color-black">View Details</a></button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
+                    </div >
                 );
             }
         }

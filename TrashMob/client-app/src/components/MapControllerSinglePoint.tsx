@@ -79,7 +79,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
                             ? `Cluster of ${marker.properties.point_count_abbreviated} markers`
                             : `<div className="card" style="padding:0.5rem;">
                                 <h6>${marker.properties.name}</h6>
-                                <span>Event Date: ${new Date(marker.properties.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' })} </span>
+                                <div className="d-flex"><span className="font-weight-bold">Event Date: </span><span>${new Date(marker.properties.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' })} </span></div>
                             </div>`;
                         popup.setOptions({
                             content: content,
