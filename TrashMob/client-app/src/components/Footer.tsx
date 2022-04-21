@@ -63,6 +63,11 @@ export const Footer: React.FC = () => {
                                             <i className="fa-brands fa-youtube"></i>
                                         </a>
                                     </div>
+                                    <div className="iconWrapper">
+                                        <a href={"https://www.linkedin.com/company/76188984"} target="_blank" rel="noreferrer noopener">
+                                            <i className="fa-brands fa-linkedin"></i>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
