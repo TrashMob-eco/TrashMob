@@ -147,8 +147,51 @@ namespace TrashMob.Controllers
 
             try
             {
+                var oldEvent = await eventRepository.GetEvent(mobEvent.Id).ConfigureAwait(false);
+
                 var updatedEvent = await eventRepository.UpdateEvent(mobEvent).ConfigureAwait(false);
                 TelemetryClient.TrackEvent(nameof(UpdateEvent));
+
+                if (oldEvent.EventDate != mobEvent.EventDate
+                    || oldEvent.City != mobEvent.City
+                    || oldEvent.Country != mobEvent.Country
+                    || oldEvent.Region != mobEvent.Region
+                    || oldEvent.PostalCode != mobEvent.PostalCode
+                    || oldEvent.StreetAddress != mobEvent.StreetAddress)
+                {
+                    var message = emailManager.GetEmailTemplate(NotificationTypeEnum.EventUpdatedNotice.ToString());
+                    message = message.Replace("{EventName}", mobEvent.Name);
+
+                    var localTime = await mapRepository.GetTimeForPoint(new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), oldEvent.EventDate).ConfigureAwait(false);
+                    DateTime localDate = (!string.IsNullOrWhiteSpace(localTime)) ? DateTime.Parse(localTime) : oldEvent.EventDate.DateTime;
+                    var eventDetailsUrl = $"https://www.trashmob.eco/eventdetails/{mobEvent.Id}";
+
+                    message = message.Replace("{EventDate}", localDate.ToString("MMMM dd, yyyy HH:mm tt"));
+                    message = message.Replace("{eventDetailsUrl}", eventDetailsUrl);
+
+                    var htmlMessage = emailManager.GetHtmlEmailTemplate(NotificationTypeEnum.EventUpdatedNotice.ToString());
+                    htmlMessage = htmlMessage.Replace("{EventName}", mobEvent.Name);
+
+                    htmlMessage = htmlMessage.Replace("{EventDate}", localDate.ToString("MMMM dd, yyyy HH:mm tt"));
+                    htmlMessage = htmlMessage.Replace("{eventDetailsUrl}", eventDetailsUrl);
+
+                    var subject = "A TrashMob.eco event you were scheduled to attend has been updated!";
+
+                    var eventAttendees = await eventAttendeeRepository.GetEventAttendees(mobEvent.Id).ConfigureAwait(false);
+
+                    foreach (var attendee in eventAttendees)
+                    {
+                        var userMessage = message.Replace("{UserName}", attendee.UserName);
+                        var userHtmlMessage = htmlMessage.Replace("{UserName}", attendee.UserName);
+
+                        var recipients = new List<EmailAddress>
+                        {
+                            new EmailAddress { Name = attendee.UserName, Email = attendee.Email },
+                        };
+
+                        await emailManager.SendSystemEmail(subject, userMessage, userHtmlMessage, recipients, CancellationToken.None).ConfigureAwait(false);
+                    }
+                }
 
                 return Ok(updatedEvent);
             }
@@ -207,7 +250,7 @@ namespace TrashMob.Controllers
             }
 
             var eventAttendees = await eventAttendeeRepository.GetEventAttendees(eventCancellationRequest.EventId).ConfigureAwait(false);
-            
+
             await eventRepository.DeleteEvent(eventCancellationRequest.EventId, eventCancellationRequest.CancellationReason).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeleteEvent));
 
