@@ -50,7 +50,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
             mapRef.sources.add(dataSourceRef);
 
             popup = new Popup({
-                pixelOffset: [0, -20],
+                pixelOffset: [0, -20]
             });
 
             props.multipleEvents.forEach(mobEvent => {
@@ -89,7 +89,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
 
                 mapRef.events.add('mouseover', marker, function (e) {
 
-                    const popUpHtmlContent = ReactDOMServer.renderToString(getPopUpContent(properties.eventName, new Date(properties.eventDate).toLocaleDateString(), properties.streetAddress, properties.city, properties.region, properties.country, properties.postalCode, isAtt));
+                    const popUpHtmlContent = ReactDOMServer.renderToString(getPopUpContent(properties.eventName, properties.eventDate, properties.city, properties.region, properties.country, properties.postalCode, isAtt));
                     const popUpContent = new DOMParser().parseFromString(popUpHtmlContent, "text/html");
 
                     const viewDetailsButton = popUpContent.getElementById("viewDetails");
@@ -170,32 +170,23 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                 })
             }
 
-            function getPopUpContent(eventName: string, eventDate: string, streetAddress: string, city: string, region: string, country: string, postalCode: string, isAttending: string) {
-
+            function getPopUpContent(eventName: string, eventDate: Date, city: string, region: string, country: string, postalCode: string, isAttending: string) {
+                const date = new Date(eventDate).toLocaleDateString([], { month: "long", day: "2-digit", year: "numeric" });
+                const time = new Date(eventDate).toLocaleTimeString([], { timeZoneName: 'short' });
                 return (
-                    <div className="p-lg-4 p-1 map-popup-container">
-                        <h4 className="mt-1">{eventName}</h4>
-                        <div className="divTable">
-                            <div className="divTableBody">
-                                <div className="divTableRow">
-                                    <div className="divTableCell">Event Date:</div>
-                                    <div className="divTableCell">{eventDate}</div>
-                                </div>
-                                <div className="divTableRow">
-                                    <div className="divTableCell">Location:</div>
-                                    <div className="divTableCell">{streetAddress}, {city}, {region}, {country}, {postalCode}</div>
-                                </div>
-                                <div className="divTableRow">
-                                    <div className="divTableCell">Attending:</div>
-                                    <div className="divTableCell">
-                                        <Button id="addAttendee" hidden={!props.isUserLoaded || isAttending === "Yes"} className="action" type="button">Register to Attend Event</Button>
-                                        <span hidden={props.isUserLoaded}>Sign-in required</span>
-                                        <span hidden={!props.isUserLoaded || isAttending !== 'Yes'}>Yes</span>
-                                        <Button id="viewDetails" type="button" className="ml-4">View Details</Button>
-                                    </div>
-                                </div>
-                            </div>
+                    <div className="p-4 map-popup-container">
+                        <h4 className="mt-1 font-weight-bold">{eventName}</h4>
+                        <div><span className="font-weight-bold">Event Date: </span><span>{date}</span></div>
+                        <div><span className="font-weight-bold">Time: </span><span>{time}</span></div>
+                        <div><span className="font-weight-bold">Location: </span><span>{city}, {region}, {country}, {postalCode}</span></div>
+                        <div>
+                            <a id="addAttendee" hidden={!props.isUserLoaded || isAttending === "Yes"} className="action">Register to Attend Event</a>
+                            <span hidden={props.isUserLoaded}>Sign-in required</span>
+                            <span hidden={!props.isUserLoaded || isAttending !== 'Yes'} className="font-weight-bold">Attending: Yes</span>
                         </div>
+                        <button className="btn btn-primary mt-2 w-100">
+                            <a id="viewDetails" type="button" className="color-white">View Details</a>
+                        </button>
                     </div >
                 );
             }
@@ -215,7 +206,6 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
     function handleLocationChange(e: any) {
         props.onLocationChange(e);
     }
-
     return (
         <>
             <MapComponent mapOptions={props.mapOptions} isMapKeyLoaded={props.isMapKeyLoaded} onLocationChange={handleLocationChange} />

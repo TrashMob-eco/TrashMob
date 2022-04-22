@@ -76,11 +76,14 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
 
                     mapRef.events.add('mouseover', marker, (event: any) => {
                         const marker = event.target as HtmlMarker & { properties: any };
+                        const date = new Date(marker.properties.eventDate).toLocaleDateString([], { month: "long", day: "2-digit", year: "numeric" });
+                        const time = new Date(marker.properties.eventDate).toLocaleTimeString([], { timeZoneName: 'short' });
                         const content = marker.properties.cluster
                             ? `Cluster of ${marker.properties.point_count_abbreviated} markers`
-                            : `<div className="card" style="padding:0.5rem;">
-                                <h6>${marker.properties.name}</h6>
-                                <span>Event Date: ${new Date(marker.properties.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' })} </span>
+                            : `<div className="map-popup-container" style="padding:0.5rem;>
+                                <h4 className="mt-1 font-weight-bold">${marker.properties.name}</h4>
+                                <div><span className="font-weight-bold">Event Date: </span><span>${date}</span></div>
+                                <div><span className="font-weight-bold">Time: </span><span>${time}</span></div>
                             </div>`;
                         popup.setOptions({
                             content: content,
