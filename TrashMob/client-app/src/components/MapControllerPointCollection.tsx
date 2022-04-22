@@ -9,7 +9,6 @@ import UserData from './Models/UserData';
 import ReactDOMServer from "react-dom/server"
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import EventAttendeeData from './Models/EventAttendeeData';
-import { Button } from 'react-bootstrap';
 
 interface MapControllerProps {
     mapOptions: IAzureMapOptions | undefined
@@ -170,6 +169,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                 })
             }
 
+            /* eslint-disable */
             function getPopUpContent(eventName: string, eventDate: Date, city: string, region: string, country: string, postalCode: string, isAttending: string) {
                 const date = new Date(eventDate).toLocaleDateString([], { month: "long", day: "2-digit", year: "numeric" });
                 const time = new Date(eventDate).toLocaleTimeString([], { timeZoneName: 'short' });
@@ -190,6 +190,7 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                     </div >
                 );
             }
+            /* eslint-enable */
         }
     }, [mapRef,
         props,
