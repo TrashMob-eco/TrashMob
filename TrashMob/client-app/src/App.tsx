@@ -31,7 +31,7 @@ import { NoMatch } from './components/NoMatch';
 import UserData from './components/Models/UserData';
 import * as msal from "@azure/msal-browser";
 import { Guid } from 'guid-typescript';
-import UserProfile from './components/UserProfile';
+import UserProfile from './components/Pages/UserProfile';
 import PartnerDashboard from './components/Partners/PartnerDashboard';
 import BecomeAPartner from './components/Partners/BecomeAPartner';
 import SiteAdmin from './components/Admin/SiteAdmin';
@@ -148,6 +148,8 @@ export const App: FC = () => {
             account: account
         };
 
+        setIsUserLoaded(false);
+
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
@@ -211,15 +213,15 @@ export const App: FC = () => {
     }
 
     function handleAttendanceChanged() {
-        if (!isUserLoaded || !currentUser) {
-            setMyAttendanceList([]);
-            setIsUserEventDataLoaded(false);
+        setMyAttendanceList([]);
+        setIsUserEventDataLoaded(false);
+
+        if (!isUserLoaded || !currentUser) {            
             return;
         }
 
         // If the user is logged in, get the events they are attending
         const accounts = msalClient.getAllAccounts();
-        setIsUserEventDataLoaded(false);
 
         if (accounts !== null && accounts.length > 0) {
             const request = {
@@ -300,7 +302,7 @@ export const App: FC = () => {
                                     interactionType={InteractionType.Redirect}
                                     errorComponent={ErrorComponent}
                                     loadingComponent={LoadingComponent}>
-                                    <UserProfile currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                    <UserProfile currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
                                 </MsalAuthenticationTemplate >
                             </Route>
                             <Route exact path="/shop">

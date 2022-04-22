@@ -131,18 +131,26 @@ hr.rounded {
   justify-content: center;
   width: 25px;
   height: 25px;
-}
-
-#firstWrapper {
-  margin-right: 15px;
+  margin-inline-end: 8px;
 }
 
 .fa-facebook-f,
-.fa-twitter {
+.fa-twitter,
+.fa-instagram,
+.fa-youtube,
+.fa-linkedin {
   color: black;
   font-size: 20px;
   align-self: center;
   margin-top: 3px;
+  width: 17.5px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.fa-youtube {
+  margin-left: -4px;
 }
 
 #iconsOrigWrapper {

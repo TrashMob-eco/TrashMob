@@ -208,8 +208,8 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                                 <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100"><Share className="mr-2" aria-hidden="true" />Share</Dropdown.Toggle>
                                 <Dropdown.Menu id="share-menu">
                                     <Dropdown.Item className="share-link" onClick={handleCopyLink}><Link className="mr-2" aria-hidden="true" />{!copied ? "Copy link" : "Copied!"}</Dropdown.Item>
-                                    <Dropdown.Item className="share-link"><Facebook className="mr-2" aria-hidden="true" /><a target="_blank" rel="noopener noreferrer" href={facebookUrl} className="fb-xfbml-parse-ignore">Share to Facebook</a></Dropdown.Item>
-                                    <Dropdown.Item className="share-link"><Twitter className="mr-2" aria-hidden="true" /><a target="_blank" rel="noopener noreferrer" href={twitterUrl} className="twitter-share-button">Share to Twitter</a></Dropdown.Item>
+                                    <Dropdown.Item className="share-link" href={facebookUrl}><Facebook className="mr-2" aria-hidden="true" />Share to Facebook</Dropdown.Item>
+                                    <Dropdown.Item className="share-link" href={twitterUrl}><Twitter className="mr-2" aria-hidden="true" />Share to Twitter</Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
                             <RegisterBtn eventId={eventId} isAttending={isAttending} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} isUserLoaded={isUserLoaded}></RegisterBtn>
@@ -219,7 +219,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                     <p>{description}</p>
                     <p><Calendar className="mr-2" />{moment(startDateTime).local().format('L')}</p>
                     <p><Stopwatch className="mr-2" />{moment(startDateTime).local().format('LT')}</p>
-                    <p><GeoAlt className="mr-2" /><a href={`https://google.com/maps/place/${streetAddress}+${city}+${region}+${postalCode}+${country}`}>{streetAddress}, {city}, {region} - {postalCode} {country}</a></p>
+                    <p><GeoAlt className="mr-2" /><a href={`https://google.com/maps/place/${streetAddress}+${city}+${region}+${postalCode}+${country}`} target="_blank" rel="noopener noreferrer">{streetAddress}, {city}, {region} - {postalCode} {country}</a></p>
                     <div className="d-flex">
                         <span className="font-weight-bold mr-2">Latitude:</span>
                         <span className="mr-5">{latitude}</span>

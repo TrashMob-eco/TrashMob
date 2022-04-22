@@ -57,11 +57,11 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
     constructor(source?: string | azmaps.source.Source, id?: string, options?: HtmlMarkerLayerOptions) {
         super(source, id);
 
-        super.setOptions(<azmaps.BubbleLayerOptions>{
+        super.setOptions({
             color: 'transparent',
             radius: 0,
             strokeWidth: 0
-        });
+        } as azmaps.BubbleLayerOptions);
 
         this.setOptions(options || {});
     }
@@ -85,7 +85,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
         const self = this;
         const opt = self._options;
 
-        const newBaseOptions = <azmaps.BubbleLayerOptions>{};
+        const newBaseOptions = {} as azmaps.BubbleLayerOptions;
         let cc = false;
 
         if (options.source && opt.source !== options.source) {
@@ -121,7 +121,7 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
             newBaseOptions.visible = options.visible;
         }
 
-        if (options.markerCallback && opt.markerCallback != options.markerCallback) {
+        if (options.markerCallback && opt.markerCallback !== options.markerCallback) {
             opt.markerCallback = options.markerCallback;
             cc = true;
         }
@@ -311,25 +311,25 @@ export class HtmlMarkerLayer extends azmaps.layer.BubbleLayer {
                 id = null;
 
                 if (shapes[i] instanceof azmaps.Shape) {
-                    shape = <azmaps.Shape>shapes[i];
+                    shape = shapes[i] as azmaps.Shape;
 
                     if (shape.getType() === 'Point') {
-                        position = <azmaps.data.Position>shape.getCoordinates();
+                        position = shape.getCoordinates() as azmaps.data.Position;
                         properties = shape.getProperties();
-                        id = <string>shape.getId();
+                        id = shape.getId() as string;
                     }
                 } else {
-                    feature = <azmaps.data.Feature<azmaps.data.Geometry, any>>shapes[i];
+                    feature = shapes[i] as azmaps.data.Feature<azmaps.data.Geometry, any>;
 
                     if (feature.geometry.type === 'Point') {
-                        position = <azmaps.data.Position>feature.geometry.coordinates;
+                        position = feature.geometry.coordinates as azmaps.data.Position;
                         properties = feature.properties;
 
                         //Check to see if the point represents a clustered point from a GeoJSON data source. Vector tile sources may have cluster data, but may not align with the same property schema.
                         if (properties && properties.cluster) {
                             id = 'cluster_' + feature.properties.cluster_id;
                         } else if (feature.id) {
-                            id = <string>feature.id;
+                            id = feature.id as string;
                         }
                     }
                 }

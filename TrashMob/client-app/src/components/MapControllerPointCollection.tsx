@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react';
 import * as React from 'react';
 import { AzureMapsContext, IAzureMapOptions, IAzureMapsContextProps } from 'react-azure-maps';
-import { data, source, Popup, HtmlMarker, layer } from 'azure-maps-control';
+import { data, source, Popup, HtmlMarker } from 'azure-maps-control';
 import MapComponent from './MapComponent';
 import EventData from './Models/EventData';
 import * as MapStore from '../store/MapStore'
@@ -9,6 +9,7 @@ import UserData from './Models/UserData';
 import ReactDOMServer from "react-dom/server"
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import EventAttendeeData from './Models/EventAttendeeData';
+import { Button } from 'react-bootstrap';
 
 interface MapControllerProps {
     mapOptions: IAzureMapOptions | undefined
@@ -32,9 +33,10 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     const [isDataSourceLoaded, setIsDataSourceLoaded] = React.useState(false);
-    let popup: Popup;
 
     useEffect(() => {
+        let popup: Popup;
+
         if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && !isDataSourceLoaded && isMapReady) {
 
             // Simple Camera options modification
