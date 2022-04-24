@@ -81,11 +81,11 @@ namespace TrashMob.Shared.Persistence
         {
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.txt", notificationType);
-            logger.LogInformation("Getting email template: {0}", resourceName);
+            logger.LogInformation("Getting email template: {resourceName}", resourceName);
             string result;
 
             using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-            using (StreamReader reader = new StreamReader(stream))
+            using (StreamReader reader = new(stream))
             {
                 result = reader.ReadToEnd();
             }
@@ -97,11 +97,11 @@ namespace TrashMob.Shared.Persistence
         {
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.html", notificationType);
-            logger.LogInformation("Getting email template: {0}", resourceName);
+            logger.LogInformation("Getting email template: {resourceName}", resourceName);
             string result;
 
             using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-            using (StreamReader reader = new StreamReader(stream))
+            using (StreamReader reader = new(stream))
             {
                 result = reader.ReadToEnd();
             }
@@ -113,11 +113,11 @@ namespace TrashMob.Shared.Persistence
         {
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = string.Format("TrashMob.Shared.Engine.EmailCopy.{0}.html", notificationType);
-            logger.LogInformation("Getting email copy: {0}", resourceName);
+            logger.LogInformation("Getting email copy: {resourceName}", resourceName);
             string result;
 
             using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-            using (StreamReader reader = new StreamReader(stream))
+            using (StreamReader reader = new(stream))
             {
                 result = reader.ReadToEnd();
             }
@@ -125,13 +125,14 @@ namespace TrashMob.Shared.Persistence
             return result;
         }
 
-        public async Task SendTemplatedEmail(string subject, string templateId, object dynamicTemplateData, List<EmailAddress> recipients, CancellationToken cancellationToken = default)
+        public async Task SendTemplatedEmail(string subject, string templateId, int groupId, object dynamicTemplateData, List<EmailAddress> recipients, CancellationToken cancellationToken = default)
         {
             var email = new Email
             {
                 Subject = subject,
                 DynamicTemplateData = dynamicTemplateData,
-                TemplateId = templateId
+                TemplateId = templateId,
+                GroupId = groupId,
             };
 
             email.Addresses.AddRange(recipients);

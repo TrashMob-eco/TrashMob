@@ -3,7 +3,6 @@ namespace TrashMob.Controllers
 {
     using System;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
@@ -11,6 +10,7 @@ namespace TrashMob.Controllers
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Common;
+    using TrashMob.Shared.Extensions;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
     using TrashMob.Shared;
@@ -254,13 +254,12 @@ namespace TrashMob.Controllers
             await eventRepository.DeleteEvent(eventCancellationRequest.EventId, eventCancellationRequest.CancellationReason).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeleteEvent));
 
-            var emailCopy = emailManager.(NotificationTypeEnum.EventCancelledNotice.ToString());
-            emailCopy = emailCopy.Replace("{CancellationReason}", mobEvent.CancellationReason);
-
-            var localTime = await mapRepository.GetTimeForPoint(new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false);
-            DateTime localDate = (!string.IsNullOrWhiteSpace(localTime)) ? DateTime.Parse(localTime) : mobEvent.EventDate.DateTime;
-
             var subject = "A TrashMob.eco event you were scheduled to attend has been cancelled!";
+
+            var emailCopy = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventCancelledNotice.ToString());
+            emailCopy = emailCopy.Replace("{CancellationReason}", eventCancellationRequest.CancellationReason);
+
+            DateTime localDate = await mobEvent.GetLocalEventTime(mapRepository).ConfigureAwait(false);
 
             foreach (var attendee in eventAttendees)
             {
@@ -270,11 +269,11 @@ namespace TrashMob.Controllers
                     eventName = mobEvent.Name,
                     eventDate = localDate.ToString("MMMM dd, yyyy"),
                     eventTime = localDate.ToString("HH:mm tt"),
-                    streetAddress = mobEvent.StreetAddress,
-                    city = mobEvent.City,
-                    region = mobEvent.Region,
-                    country = mobEvent.Country,
+                    eventAddress = mobEvent.EventAddress(),
                     emailCopy = emailCopy,
+                    subject = subject,
+                    eventDetailsUrl = mobEvent.EventDetailsUrl(),
+                    googleMapsUrl = mobEvent.GoogleMapsUrl(),
                 };
 
                 var recipients = new List<EmailAddress>
@@ -282,7 +281,7 @@ namespace TrashMob.Controllers
                     new EmailAddress { Name = attendee.UserName, Email = attendee.Email },
                 };
 
-                await emailManager.SendTemplatedEmail(subject, SendGridEmailTemplateId.EventEmail, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+                await emailManager.SendTemplatedEmail(subject, SendGridEmailTemplateId.EventEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
             }
 
             return Ok(eventCancellationRequest.EventId);

@@ -60,6 +60,16 @@
             {
                 var client = new SendGridClient(ApiKey);
                 var message = MailHelper.CreateSingleTemplateEmailToMultipleRecipients(from, tos, email.TemplateId, email.DynamicTemplateData);
+                
+                message.Asm = new ASM
+                {
+                    GroupId = email.GroupId,
+                    GroupsToDisplay = new List<int>()
+                    {
+                        email.GroupId,
+                    }
+                };
+
                 var response = await client.SendEmailAsync(message, cancellationToken).ConfigureAwait(false);
                 Console.WriteLine(response);
             }

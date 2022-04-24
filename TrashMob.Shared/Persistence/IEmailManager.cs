@@ -15,6 +15,8 @@
         
         string GetHtmlEmailTemplate(string notificationType);
 
-        public Task SendTemplatedEmail(string subject, string templateId, object dynamicTemplateData, List<EmailAddress> recipients, CancellationToken cancellationToken = default);
+        Task SendTemplatedEmail(string subject, string templateId, int groupId, object dynamicTemplateData, List<EmailAddress> recipients, CancellationToken cancellationToken = default);
+
+        string GetHtmlEmailCopy(string notificationType);
     }
 }

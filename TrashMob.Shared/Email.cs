@@ -23,5 +23,7 @@ namespace TrashMob.Shared
         public object DynamicTemplateData { get; set; }
 
         public string TemplateId { get; set; }
+
+        public int GroupId { get; set; }
     }
 }
