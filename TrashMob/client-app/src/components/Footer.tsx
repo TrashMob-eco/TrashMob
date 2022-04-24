@@ -33,7 +33,7 @@ export const Footer: React.FC = () => {
                     <hr className="horizontalLine" />
                     <div className="row" id="copyright">
                         <div className="col-md-8">
-                            <p>Copyright &copy; 2021 TRASHMOB.ECO - All rights reserved.</p>
+                            <p>Copyright &copy; 2022 TRASHMOB.ECO - All rights reserved.</p>
                         </div>
                         <div className="col-md-4">
                             <div className="row" id="iconsOrigWrapper">
@@ -61,6 +61,11 @@ export const Footer: React.FC = () => {
                                     <div className="iconWrapper">
                                         <a href={"https://www.youtube.com/channel/UC2LgFmXFCA8kdkxd4IJ51BA"} target="_blank" rel="noreferrer noopener">
                                             <i className="fa-brands fa-youtube"></i>
+                                        </a>
+                                    </div>
+                                    <div className="iconWrapper">
+                                        <a href={"https://www.linkedin.com/company/76188984"} target="_blank" rel="noreferrer noopener">
+                                            <i className="fa-brands fa-linkedin"></i>
                                         </a>
                                     </div>
                                 </div>

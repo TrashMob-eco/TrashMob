@@ -5,7 +5,7 @@ import { data, source, Popup, HtmlMarker } from 'azure-maps-control';
 import MapComponent from './MapComponent';
 import * as MapStore from '../store/MapStore'
 import UserData from './Models/UserData';
-import { HtmlMarkerLayer } from './HtmlMarkerLayer/SimpleHtmlMarkerLayer'
+import { HtmlMarkerLayer } from './HtmlMarkerLayer/src/layer/HtmlMarkerLayer'
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import { getDefaultHeaders } from '../store/AuthStore';
 import SearchAddressData from './Models/SearchAddressData';
@@ -66,7 +66,8 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
 
             // Create a HTML marker layer for rendering data points.
             var markerLayer = new HtmlMarkerLayer(dataSourceRef, "marker1", {
-                markerRenderCallback: (id: any, position: data.Position, properties: any) => {
+                markerCallback: (id: any, position: data.Position, properties: any) => {
+
                     // Create an HtmlMarker.
                     const marker = new HtmlMarker({
                         position: position,
@@ -75,11 +76,14 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
 
                     mapRef.events.add('mouseover', marker, (event: any) => {
                         const marker = event.target as HtmlMarker & { properties: any };
+                        const date = new Date(marker.properties.eventDate).toLocaleDateString([], { month: "long", day: "2-digit", year: "numeric" });
+                        const time = new Date(marker.properties.eventDate).toLocaleTimeString([], { timeZoneName: 'short' });
                         const content = marker.properties.cluster
                             ? `Cluster of ${marker.properties.point_count_abbreviated} markers`
-                            : `<div className="card" style="padding:0.5rem;">
-                                <h6>${marker.properties.name}</h6>
-                                <span>Event Date: ${new Date(marker.properties.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' })} </span>
+                            : `<div className="map-popup-container" style="padding:0.5rem;>
+                                <h4 className="mt-1 font-weight-bold">${marker.properties.name}</h4>
+                                <div><span className="font-weight-bold">Event Date: </span><span>${date}</span></div>
+                                <div><span className="font-weight-bold">Time: </span><span>${time}</span></div>
                             </div>`;
                         popup.setOptions({
                             content: content,
@@ -105,17 +109,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
                     mapRef.events.add('mouseout', marker, () => popup.close());
 
                     return marker
-                },
-                clusterRenderCallback: function (id: any, position: any, properties: any) {
-                    const markerCluster = new HtmlMarker({
-                        position: position,
-                        color: 'DarkViolet',
-                        text: properties.point_count_abbreviated,
-                    });
-
-                    return markerCluster;
-                },
-                source: dataSourceRef
+                }
             });
 
             // Add marker layer to the map.

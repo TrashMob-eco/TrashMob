@@ -6,9 +6,7 @@ import MapComponent from './MapComponent';
 import EventData from './Models/EventData';
 import * as MapStore from '../store/MapStore'
 import UserData from './Models/UserData';
-import { HtmlMarkerLayer } from './HtmlMarkerLayer/SimpleHtmlMarkerLayer'
-import { renderToString } from "react-dom/server"
-import { Button } from 'react-bootstrap';
+import ReactDOMServer from "react-dom/server"
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import EventAttendeeData from './Models/EventAttendeeData';
 
@@ -36,66 +34,29 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
     const [isDataSourceLoaded, setIsDataSourceLoaded] = React.useState(false);
 
     useEffect(() => {
+        let popup: Popup;
+
         if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && !isDataSourceLoaded && isMapReady) {
 
             // Simple Camera options modification
             mapRef.setCamera({ center: props.center, zoom: MapStore.defaultUserLocationZoom });
 
-            var dataSourceRef = new source.DataSource("mainDataSource", { cluster: true });
+            const dataSourceRef = new source.DataSource("mainDataSource", {
+                cluster: true,
+                clusterMaxZoom: 15,
+                clusterRadius: 45
+            });
             mapRef.sources.add(dataSourceRef);
-            setIsDataSourceLoaded(true);
 
-            // Create a reusable popup.
-            const popup = new Popup({
-                pixelOffset: [0, -20],
-                closeButton: true
+            popup = new Popup({
+                pixelOffset: [0, -20]
             });
-
-            // Create a HTML marker layer for rendering data points.
-            var markerLayer = new HtmlMarkerLayer(dataSourceRef, "marker1", {
-                markerRenderCallback: (id: any, position: data.Position, properties: any) => {
-                    // Create an HtmlMarker.
-                    const marker = new HtmlMarker({
-                        position: position
-                    });
-
-                    mapRef.events.add('mouseover', marker, (event: any) => {
-                        const marker = event.target as HtmlMarker & { properties: any };
-                        const content = marker.properties.cluster
-                            ? `Cluster of ${marker.properties.point_count_abbreviated} markers`
-                            : marker.properties.content;
-                        popup.setOptions({
-                            content: content,
-                            position: marker.getOptions().position
-                        });
-
-                        // Open the popup.
-                        if (mapRef) {
-                            popup.open(mapRef);
-                        }
-                    });
-
-                    // mapRef.events.add('mouseout', marker, (event: any) => popup.close());
-                    return marker
-                },
-                clusterRenderCallback: function (id: any, position: any, properties: any) {
-                    const markerCluster = new HtmlMarker({
-                        position: position,
-                        color: 'DarkViolet',
-                        text: properties.point_count_abbreviated,
-                    });
-
-                    return markerCluster;
-                },
-                source: dataSourceRef
-            });
-
-            //Add marker layer to the map.
-            mapRef.layers.add(markerLayer);
 
             props.multipleEvents.forEach(mobEvent => {
-                var position = new data.Point(new data.Position(mobEvent.longitude, mobEvent.latitude));
-                var isAtt = 'No';
+
+                const position = new data.Position(mobEvent.longitude, mobEvent.latitude)
+                const point = new data.Point(position);
+                let isAtt = 'No';
                 if (props.isUserEventDataLoaded) {
                     var isAttending = props.myAttendanceList && (props.myAttendanceList.findIndex((e) => e.id === mobEvent.id) >= 0);
                     isAtt = (isAttending ? 'Yes' : 'No');
@@ -104,20 +65,69 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                     isAtt = 'Log in to see your status';
                 }
 
-                var properties = {
-                    content: renderToString(getPopUpContent(mobEvent.id, mobEvent.name, new Date(mobEvent.eventDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: 'numeric', hour: 'numeric', minute: 'numeric' }), mobEvent.streetAddress, mobEvent.city, mobEvent.region, mobEvent.country, mobEvent.postalCode, isAtt, vd)),
+                const properties = {
+                    eventId: mobEvent.id,
+                    eventName: mobEvent.name,
+                    eventDate: mobEvent.eventDate,
+                    streetAddress: mobEvent.streetAddress,
+                    city: mobEvent.city,
+                    region: mobEvent.region,
+                    country: mobEvent.country,
+                    postalCode: mobEvent.postalCode,
+                    isAttending: isAtt,
                     name: mobEvent.name,
                 }
-                dataSourceRef.add(new data.Feature(position, properties));
+
+                dataSourceRef.add(new data.Feature(point, properties));
+
+                const marker = new HtmlMarker({
+                    position: position,
+                    draggable: false,
+                    properties: properties
+                })
+
+                mapRef.events.add('mouseover', marker, function (e) {
+
+                    const popUpHtmlContent = ReactDOMServer.renderToString(getPopUpContent(properties.eventName, properties.eventDate, properties.city, properties.region, properties.country, properties.postalCode, isAtt));
+                    const popUpContent = new DOMParser().parseFromString(popUpHtmlContent, "text/html");
+
+                    const viewDetailsButton = popUpContent.getElementById("viewDetails");
+                    if (viewDetailsButton)
+                        viewDetailsButton.addEventListener('click', function () {
+                            viewDetails(properties.eventId);
+                        });
+
+                    const addAttendeeButton = popUpContent.getElementById("addAttendee");
+                    if (addAttendeeButton)
+                        addAttendeeButton.addEventListener('click', function () {
+                            handleAttend(properties.eventId);
+                        });
+
+                    //Update the content and position of the popup.
+                    popup.setOptions({
+                        content: popUpContent.documentElement,
+                        position: position,
+                        closeButton: true,
+                    });
+
+                    // Open the popup.
+                    if (mapRef) {
+                        popup.open(mapRef);
+                    }
+                });
+
+                mapRef.markers.add(marker);
             })
 
-            function vd(eventId: string) {
+            setIsDataSourceLoaded(true);
+
+            function viewDetails(eventId: string) {
                 props.onDetailsSelected(eventId);
             }
 
             function handleAttend(eventId: string) {
 
-                var accounts = msalClient.getAllAccounts();
+                const accounts = msalClient.getAllAccounts();
 
                 if (accounts === null || accounts.length === 0) {
                     msalClient.loginRedirect().then(() => {
@@ -133,18 +143,18 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
 
                 const account = msalClient.getAllAccounts()[0];
 
-                var request = {
+                const request = {
                     scopes: apiConfig.b2cScopes,
                     account: account
                 };
 
                 msalClient.acquireTokenSilent(request).then(tokenResponse => {
 
-                    var eventAttendee = new EventAttendeeData();
+                    const eventAttendee = new EventAttendeeData();
                     eventAttendee.userId = props.currentUser.id;
                     eventAttendee.eventId = eventId;
 
-                    var data = JSON.stringify(eventAttendee);
+                    const data = JSON.stringify(eventAttendee);
 
                     const headers = getDefaultHeaders('POST');
                     headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
@@ -159,42 +169,28 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                 })
             }
 
-            function getPopUpContent(eventId: string, eventName: string, eventDate: string, streetAddress: string, city: string, region: string, country: string, postalCode: string, isAttending: string, onViewDetails: any) {
-
-                function handleClick() {
-                    onViewDetails(eventId)
-                }
-
+            /* eslint-disable */
+            function getPopUpContent(eventName: string, eventDate: Date, city: string, region: string, country: string, postalCode: string, isAttending: string) {
+                const date = new Date(eventDate).toLocaleDateString([], { month: "long", day: "2-digit", year: "numeric" });
+                const time = new Date(eventDate).toLocaleTimeString([], { timeZoneName: 'short' });
                 return (
-                    <div className="container card" style={{padding: "0.5rem"}}>
-                        <h4>{eventName}</h4>
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>Event Date:</td>
-                                    <td>{eventDate}</td>
-                                </tr>
-                                <tr>
-                                    <td>Location:</td>
-                                    <td>{streetAddress}, {city}, {region}, {country}, {postalCode}</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <Button hidden={!props.isUserLoaded || isAttending === "Yes"} className="action" onClick={() => handleAttend(eventId)}>Register to Attend Event</Button>
-                                        <label hidden={props.isUserLoaded}>Sign-in required</label>
-                                        <label hidden={!props.isUserLoaded || isAttending !== 'Yes'}>Yes</label>
-                                    </td>
-                                    <td>
-                                        <form>
-                                            <button className="action" type="button" onClick={() => handleClick()}>View Details</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <div className="p-4 map-popup-container">
+                        <h4 className="mt-1 font-weight-bold">{eventName}</h4>
+                        <div><span className="font-weight-bold">Event Date: </span><span>{date}</span></div>
+                        <div><span className="font-weight-bold">Time: </span><span>{time}</span></div>
+                        <div><span className="font-weight-bold">Location: </span><span>{city}, {region}, {country}, {postalCode}</span></div>
+                        <div>
+                            <a id="addAttendee" hidden={!props.isUserLoaded || isAttending === "Yes"} className="action">Register to Attend Event</a>
+                            <span hidden={props.isUserLoaded}>Sign-in required</span>
+                            <span hidden={!props.isUserLoaded || isAttending !== 'Yes'} className="font-weight-bold">Attending: Yes</span>
+                        </div>
+                        <button className="btn btn-primary mt-2 w-100">
+                            <a id="viewDetails" type="button" className="color-white">View Details</a>
+                        </button>
+                    </div >
                 );
             }
+            /* eslint-enable */
         }
     }, [mapRef,
         props,
@@ -211,7 +207,6 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
     function handleLocationChange(e: any) {
         props.onLocationChange(e);
     }
-
     return (
         <>
             <MapComponent mapOptions={props.mapOptions} isMapKeyLoaded={props.isMapKeyLoaded} onLocationChange={handleLocationChange} />

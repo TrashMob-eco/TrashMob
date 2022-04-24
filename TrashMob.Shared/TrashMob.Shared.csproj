@@ -18,6 +18,8 @@
     <None Remove="Engine\EmailTemplates\EventSummaryAttendee.txt" />
     <None Remove="Engine\EmailTemplates\EventSummaryHostReminder.html" />
     <None Remove="Engine\EmailTemplates\EventSummaryHostReminder.txt" />
+    <None Remove="Engine\EmailTemplates\EventUpdatedNotice.html" />
+    <None Remove="Engine\EmailTemplates\EventUpdatedNotice.txt" />
     <None Remove="Engine\EmailTemplates\Generic.html" />
     <None Remove="Engine\EmailTemplates\Generic.txt" />
     <None Remove="Engine\EmailTemplates\PartnerRequestAccepted.html" />
@@ -43,6 +45,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Engine\EmailTemplates\ContactRequestReceived.txt" />
     <EmbeddedResource Include="Engine\EmailTemplates\ContactRequestReceived.html" />
+    <EmbeddedResource Include="Engine\EmailTemplates\EventUpdatedNotice.txt" />
+    <EmbeddedResource Include="Engine\EmailTemplates\EventUpdatedNotice.html" />
     <EmbeddedResource Include="Engine\EmailTemplates\EventCancelledNotice.txt" />
     <EmbeddedResource Include="Engine\EmailTemplates\EventCancelledNotice.html" />
     <EmbeddedResource Include="Engine\EmailTemplates\PartnerRequestDeclined.txt" />
