@@ -6,6 +6,7 @@
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using TrashMob.Shared.Engine;
 
     public class EmailSender : IEmailSender
     {
@@ -66,7 +67,8 @@
                     GroupId = email.GroupId,
                     GroupsToDisplay = new List<int>()
                     {
-                        email.GroupId,
+                        SendGridEmailGroupId.EventRelated,
+                        SendGridEmailGroupId.General
                     }
                 };
 
