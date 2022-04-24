@@ -14,5 +14,7 @@
         string GetEmailTemplate(string notificationType);
         
         string GetHtmlEmailTemplate(string notificationType);
+
+        public Task SendTemplatedEmail(string subject, string templateId, object dynamicTemplateData, List<EmailAddress> recipients, CancellationToken cancellationToken = default);
     }
 }

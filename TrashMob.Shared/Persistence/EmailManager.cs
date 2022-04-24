@@ -108,5 +108,35 @@ namespace TrashMob.Shared.Persistence
 
             return result;
         }
+
+        public string GetHtmlEmailCopy(string notificationType)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = string.Format("TrashMob.Shared.Engine.EmailCopy.{0}.html", notificationType);
+            logger.LogInformation("Getting email copy: {0}", resourceName);
+            string result;
+
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                result = reader.ReadToEnd();
+            }
+
+            return result;
+        }
+
+        public async Task SendTemplatedEmail(string subject, string templateId, object dynamicTemplateData, List<EmailAddress> recipients, CancellationToken cancellationToken = default)
+        {
+            var email = new Email
+            {
+                Subject = subject,
+                DynamicTemplateData = dynamicTemplateData,
+                TemplateId = templateId
+            };
+
+            email.Addresses.AddRange(recipients);
+
+            await emailSender.SendTemplatedEmailAsync(email, cancellationToken).ConfigureAwait(false);
+        }
     }
 }

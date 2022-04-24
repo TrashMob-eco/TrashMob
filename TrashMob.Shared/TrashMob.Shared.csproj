@@ -40,6 +40,7 @@
     <None Remove="Engine\EmailTemplates\UpcomingEventsInYourAreaThisWeek.txt" />
     <None Remove="Engine\EmailTemplates\WelcomeToTrashMob.html" />
     <None Remove="Engine\EmailTemplates\WelcomeToTrashMob.txt" />
+    <None Remove="Engine\EmailCopy\EventCancelledNotice.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -77,6 +78,7 @@
     <EmbeddedResource Include="Engine\EmailTemplates\UpcomingEventHostingSoon.html" />
     <EmbeddedResource Include="Engine\EmailTemplates\UpcomingEventsInYourAreaThisWeek.html" />
     <EmbeddedResource Include="Engine\EmailTemplates\UpcomingEventsInYourAreaSoon.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\EventCancelledNotice.html" />
   </ItemGroup>
 
   <ItemGroup>

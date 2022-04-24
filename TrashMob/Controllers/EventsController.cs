@@ -254,34 +254,35 @@ namespace TrashMob.Controllers
             await eventRepository.DeleteEvent(eventCancellationRequest.EventId, eventCancellationRequest.CancellationReason).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeleteEvent));
 
-            var message = emailManager.GetEmailTemplate(NotificationTypeEnum.EventCancelledNotice.ToString());
-            message = message.Replace("{EventName}", mobEvent.Name);
+            var emailCopy = emailManager.(NotificationTypeEnum.EventCancelledNotice.ToString());
+            emailCopy = emailCopy.Replace("{CancellationReason}", mobEvent.CancellationReason);
 
             var localTime = await mapRepository.GetTimeForPoint(new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false);
             DateTime localDate = (!string.IsNullOrWhiteSpace(localTime)) ? DateTime.Parse(localTime) : mobEvent.EventDate.DateTime;
-
-            message = message.Replace("{EventDate}", localDate.ToString("MMMM dd, yyyy HH:mm tt"));
-            message = message.Replace("{CancellationReason}", eventCancellationRequest.CancellationReason);
-
-            var htmlMessage = emailManager.GetHtmlEmailTemplate(NotificationTypeEnum.EventCancelledNotice.ToString());
-            htmlMessage = htmlMessage.Replace("{EventName}", mobEvent.Name);
-
-            htmlMessage = htmlMessage.Replace("{EventDate}", localDate.ToString("MMMM dd, yyyy HH:mm tt"));
-            htmlMessage = htmlMessage.Replace("{CancellationReason}", eventCancellationRequest.CancellationReason);
 
             var subject = "A TrashMob.eco event you were scheduled to attend has been cancelled!";
 
             foreach (var attendee in eventAttendees)
             {
-                var userMessage = message.Replace("{UserName}", attendee.UserName);
-                var userHtmlMessage = htmlMessage.Replace("{UserName}", attendee.UserName);
+                var dynamicTemplateData = new
+                {
+                    username = attendee.UserName,
+                    eventName = mobEvent.Name,
+                    eventDate = localDate.ToString("MMMM dd, yyyy"),
+                    eventTime = localDate.ToString("HH:mm tt"),
+                    streetAddress = mobEvent.StreetAddress,
+                    city = mobEvent.City,
+                    region = mobEvent.Region,
+                    country = mobEvent.Country,
+                    emailCopy = emailCopy,
+                };
 
                 var recipients = new List<EmailAddress>
                 {
                     new EmailAddress { Name = attendee.UserName, Email = attendee.Email },
                 };
 
-                await emailManager.SendSystemEmail(subject, userMessage, userHtmlMessage, recipients, CancellationToken.None).ConfigureAwait(false);
+                await emailManager.SendTemplatedEmail(subject, SendGridEmailTemplateId.EventEmail, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
             }
 
             return Ok(eventCancellationRequest.EventId);
