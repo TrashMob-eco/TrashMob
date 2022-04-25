@@ -50,7 +50,6 @@
             TelemetryClient.TrackEvent(nameof(AddPartnerRequest));
 
             var message = $"From Email: {partnerRequest.PrimaryEmail}\nFrom Name:{partnerRequest.Name}\nMessage:\n{partnerRequest.Notes}";
-            var htmlMessage = $"From Email: {partnerRequest.PrimaryEmail}\nFrom Name:{partnerRequest.Name}\nMessage:\n{partnerRequest.Notes}";
             var subject = "Partner Request";
 
             var recipients = new List<EmailAddress>
@@ -58,8 +57,15 @@
                 new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
             };
 
-            await emailManager.SendGenericSystemEmail(subject, message, htmlMessage, recipients, CancellationToken.None).ConfigureAwait(false);
-            
+            var dynamicTemplateData = new
+            {
+                username = Constants.TrashMobEmailName,
+                emailCopy = message,
+                subject = subject,
+            };
+
+            await emailManager.SendTemplatedEmail(subject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+
             return Ok();
         }
 
@@ -81,11 +87,16 @@
 
             await partnerManager.CreatePartner(partnerRequest).ConfigureAwait(false);
 
-            var partnerMessage = emailManager.GetEmailTemplate(NotificationTypeEnum.PartnerRequestAccepted.ToString());
+            var partnerMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.PartnerRequestAccepted.ToString());
             partnerMessage = partnerMessage.Replace("{PartnerName}", partnerRequest.Name);
-            var partnerHtmlMessage = emailManager.GetHtmlEmailTemplate(NotificationTypeEnum.PartnerRequestAccepted.ToString());
-            partnerHtmlMessage = partnerHtmlMessage.Replace("{PartnerName}", partnerRequest.Name);
             var partnerSubject = "Your request to become a TrashMob.eco Partner has been accepted!";
+
+            var dynamicTemplateData = new
+            {
+                username = partnerRequest.Name,
+                emailCopy = partnerMessage,
+                subject = partnerSubject,
+            };
 
             var partnerRecipients = new List<EmailAddress>
             {
@@ -93,7 +104,7 @@
                 new EmailAddress { Name = partnerRequest.Name, Email = partnerRequest.SecondaryEmail },
             };
             
-            await emailManager.SendSystemEmail(partnerSubject, partnerMessage, partnerHtmlMessage, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendTemplatedEmail(partnerSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
 
             return Ok();
         }
@@ -115,11 +126,16 @@
             await partnerRequestRepository.UpdatePartnerRequest(partnerRequest).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DenyPartnerRequest));
 
-            var partnerMessage = emailManager.GetEmailTemplate(NotificationTypeEnum.PartnerRequestDeclined.ToString());
+            var partnerMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.PartnerRequestDeclined.ToString());
             partnerMessage = partnerMessage.Replace("{PartnerName}", partnerRequest.Name);
-            var partnerHtmlMessage = emailManager.GetHtmlEmailTemplate(NotificationTypeEnum.PartnerRequestDeclined.ToString());
-            partnerHtmlMessage = partnerHtmlMessage.Replace("{PartnerName}", partnerRequest.Name);
             var partnerSubject = "Your request to become a TrashMob.eco Partner has been declined";
+
+            var dynamicTemplateData = new
+            {
+                username = partnerRequest.Name,
+                emailCopy = partnerMessage,
+                subject = partnerSubject,
+            };
 
             var partnerRecipients = new List<EmailAddress>
             {
@@ -127,7 +143,7 @@
                 new EmailAddress { Name = partnerRequest.Name, Email = partnerRequest.SecondaryEmail },
             };
 
-            await emailManager.SendSystemEmail(partnerSubject, partnerMessage, partnerHtmlMessage, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendTemplatedEmail(partnerSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
 
             return Ok();
         }
