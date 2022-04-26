@@ -3,12 +3,10 @@
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
-    using System.Reflection;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using TrashMob.Shared.Extensions;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
@@ -23,10 +21,13 @@
         protected IUserNotificationRepository UserNotificationRepository { get; }
 
         public IUserNotificationPreferenceRepository UserNotificationPreferenceRepository { get; }
-
+       
+        protected IEmailManager EmailManager { get; }
+        
         protected IEmailSender EmailSender { get; }
 
         protected IMapRepository MapRepository { get; }
+
         public ILogger Logger { get; }
 
         protected abstract NotificationTypeEnum NotificationType { get; }
@@ -43,7 +44,8 @@
                                       IUserNotificationRepository userNotificationRepository,
                                       IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
                                       IEmailSender emailSender,
-                                      IMapRepository mapRepository, 
+                                      IEmailManager emailManager,
+                                      IMapRepository mapRepository,
                                       ILogger logger)
         {
             EventRepository = eventRepository;
@@ -52,43 +54,12 @@
             UserNotificationRepository = userNotificationRepository;
             UserNotificationPreferenceRepository = userNotificationPreferenceRepository;
             EmailSender = emailSender;
+            EmailManager = emailManager;
             MapRepository = mapRepository;
             Logger = logger;
 
             // Set the Api Key Here
             EmailSender.ApiKey = Environment.GetEnvironmentVariable("SendGridApiKey");
-        }
-
-        public string GetEmailTemplate()
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.txt", NotificationType);
-            Logger.LogInformation("Getting email template: {0}", resourceName);
-            string result;
-
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-            using (StreamReader reader = new StreamReader(stream))
-            {
-                result = reader.ReadToEnd();
-            }
-
-            return result;
-        }
-
-        public string GetHtmlEmailTemplate()
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.html", NotificationType);
-            Logger.LogInformation("Getting email template: {0}", resourceName);
-            string result;
-
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-            using (StreamReader reader = new StreamReader(stream))
-            {
-                result = reader.ReadToEnd();
-            }
-
-            return result;
         }
 
         protected async Task<bool> IsOptedOut(User user)
@@ -128,20 +99,35 @@
                     await UserNotificationRepository.AddUserNotification(userNotification).ConfigureAwait(false);
                 }
 
-                var emailTemplate = GetEmailTemplate();
-                var content = await PopulateTemplate(emailTemplate, user, eventsToNotifyUserFor).ConfigureAwait(false);
-                var htmlEmailTemplate = GetHtmlEmailTemplate();
-                var htmlContent = await PopulateTemplate(htmlEmailTemplate, user, eventsToNotifyUserFor).ConfigureAwait(false);
-                var email = new Email();
-                email.Addresses.Add(new EmailAddress() { Email = user.Email, Name = $"{user.GivenName} {user.SurName}" });
-                email.Subject = EmailSubject;
-                email.Message = content;
-                email.HtmlMessage = htmlContent;
+                var emailCopy = EmailManager.GetHtmlEmailCopy(NotificationType.ToString());
 
-                Logger.LogInformation("Sending email to {0}, Subject {0}", email.Addresses[0].Email, email.Subject);
+                foreach (var mobEvent in eventsToNotifyUserFor)
+                {
+                    var localDate = await mobEvent.GetLocalEventTime(MapRepository).ConfigureAwait(false);
 
-                // send email
-                await EmailSender.SendEmailAsync(email, cancellationToken).ConfigureAwait(false);
+                    var dynamicTemplateData = new
+                    {
+                        username = user.UserName,
+                        eventName = mobEvent.Name,
+                        eventDate = localDate.ToString("MMMM dd, yyyy"),
+                        eventTime = localDate.ToString("HH:mm tt"),
+                        eventAddress = mobEvent.EventAddress(),
+                        emailCopy = emailCopy,
+                        subject = EmailSubject,
+                        eventDetailsUrl = mobEvent.EventDetailsUrl(),
+                        eventSummaryUrl = mobEvent.EventSummaryUrl(),
+                        googleMapsUrl = mobEvent.GoogleMapsUrl(),
+                    };
+
+                    var recipients = new List<EmailAddress>
+                        {
+                            new EmailAddress { Name = user.UserName, Email = user.Email },
+                        };
+
+                    Logger.LogInformation("Sending email to {0}, Subject {0}", user.Email, EmailSubject);
+
+                    await EmailManager.SendTemplatedEmail(EmailSubject, SendGridEmailTemplateId.EventEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+                }
 
                 return 1;
             }
@@ -156,96 +142,6 @@
 
             // Verify that the user has not already received this type of notification for this event
             return notifications.Any(un => un.UserNotificationTypeId == (int)NotificationType);
-        }
-
-        public async Task<string> PopulateTemplate(string template, User user, Event mobEvent)
-        {
-            var localTime = await MapRepository.GetTimeForPoint(new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false);
-            DateTime localDate = (!string.IsNullOrWhiteSpace(localTime)) ? DateTime.Parse(localTime) : mobEvent.EventDate.DateTime;
-
-            var populatedTemplate = template;
-            populatedTemplate = populatedTemplate.Replace("{UserName}", user.UserName);
-            populatedTemplate = populatedTemplate.Replace("{EventName}", mobEvent.Name);
-            populatedTemplate = populatedTemplate.Replace("{EventDate}", localDate.ToString("MMMM dd, yyyy HH:mm tt"));
-            populatedTemplate = populatedTemplate.Replace("{EventStreet}", mobEvent.StreetAddress);
-            populatedTemplate = populatedTemplate.Replace("{EventCity}", mobEvent.City);
-            populatedTemplate = populatedTemplate.Replace("{EventRegion}", mobEvent.Region);
-            populatedTemplate = populatedTemplate.Replace("{EventCountry}", mobEvent.Country);
-            var summaryLink = $"<a target='_blank' href='https://www.trashmob.eco/eventsummary/{mobEvent.Id}'>Event Summary</a>";
-            populatedTemplate = populatedTemplate.Replace("{EventSummaryLink}", summaryLink);
-            var detailsLink = $"<a target='_blank' href='https://www.trashmob.eco/eventdetails/{mobEvent.Id}'>Event Details</a>";
-            populatedTemplate = populatedTemplate.Replace("{EventDetailsLink}", detailsLink);
-            return populatedTemplate;
-        }
-
-        public async Task<string> PopulateTemplate(string template, User user, IEnumerable<Event> mobEvents)
-        {
-            var populatedTemplate = template;
-            populatedTemplate = populatedTemplate.Replace("{UserName}", user.UserName);
-
-            var eventGrid = new StringBuilder();
-            eventGrid.AppendLine("<table>");
-            eventGrid.AppendLine("<tr>");
-            eventGrid.AppendLine("<th>");
-            eventGrid.AppendLine("<b>Event Name</b>");
-            eventGrid.AppendLine("</th>");
-            eventGrid.AppendLine("<th>");
-            eventGrid.AppendLine("<b>Event Date</b>");
-            eventGrid.AppendLine("</th>");
-            eventGrid.AppendLine("<th>");
-            eventGrid.AppendLine("<b>Event Address</b>");
-            eventGrid.AppendLine("</th>");
-            eventGrid.AppendLine("<th>");
-            eventGrid.AppendLine("<b>Event City</b>");
-            eventGrid.AppendLine("</th>");
-            eventGrid.AppendLine("<th>");
-            eventGrid.AppendLine("<b>Event Region</b>");
-            eventGrid.AppendLine("</th>");
-            eventGrid.AppendLine("<th>");
-            eventGrid.AppendLine("<b>Event Country</b>");
-            eventGrid.AppendLine("</th>");
-            eventGrid.AppendLine("<th>");
-            eventGrid.AppendLine("<b>Summary</b>");
-            eventGrid.AppendLine("</th>");
-            eventGrid.AppendLine("</tr>");
-
-            foreach (var mobEvent in mobEvents)
-            {
-                var localTime = await MapRepository.GetTimeForPoint(new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false);
-                DateTime localDate = (!string.IsNullOrWhiteSpace(localTime)) ? DateTime.Parse(localTime) : mobEvent.EventDate.DateTime;
-
-                eventGrid.AppendLine("<tr>");
-                eventGrid.AppendLine("<td>");
-                var link = $"<a target='_blank' href='https://www.trashmob.eco/eventdetails/{mobEvent.Id}'>{mobEvent.Name}</a>";
-                eventGrid.AppendLine(link);
-                eventGrid.AppendLine("</td>");
-                eventGrid.AppendLine("<td>");
-                eventGrid.AppendLine(localDate.ToString("MMMM dd, yyyy HH:mm tt"));
-                eventGrid.AppendLine("</td>");
-                eventGrid.AppendLine("<td>");
-                eventGrid.AppendLine(mobEvent.StreetAddress);
-                eventGrid.AppendLine("</td>");
-                eventGrid.AppendLine("<td>");
-                eventGrid.AppendLine(mobEvent.City);
-                eventGrid.AppendLine("</td>");
-                eventGrid.AppendLine("<td>");
-                eventGrid.AppendLine(mobEvent.Region);
-                eventGrid.AppendLine("</td>");
-                eventGrid.AppendLine("<td>");
-                eventGrid.AppendLine(mobEvent.Country);
-                eventGrid.AppendLine("</td>");
-                eventGrid.AppendLine("<td>");
-                var summaryLink = $"<a target='_blank' href='https://www.trashmob.eco/eventsummary/{mobEvent.Id}'>Summary</a>";
-                eventGrid.AppendLine(summaryLink);
-                eventGrid.AppendLine("</td>");
-                eventGrid.AppendLine("</tr>");
-            }
-            
-            eventGrid.AppendLine("</table>");
-
-            populatedTemplate = populatedTemplate.Replace("{EventGrid}", eventGrid.ToString());
-
-            return populatedTemplate;
         }
     }
 }

@@ -11,9 +11,9 @@ namespace TrashMob.Shared.Tests
 
     public abstract class NotifierTestsBase
     {
-        private Guid createdById;
-        private Guid userId1;
-        private Guid userId2;
+        private readonly Guid createdById;
+        private readonly Guid userId1;
+        private readonly Guid userId2;
 
         protected abstract NotificationTypeEnum NotificationType { get; }
 
@@ -28,7 +28,9 @@ namespace TrashMob.Shared.Tests
         protected Mock<IUserNotificationPreferenceRepository> UserNotificationPreferenceRepository { get; }
         
         protected Mock<IEmailSender> EmailSender { get; }
-        
+
+        protected Mock<IEmailManager> EmailManager { get; }
+
         protected Mock<IMapRepository> MapRepository { get; }
 
         protected Mock<ILogger> Logger { get; }
@@ -45,6 +47,7 @@ namespace TrashMob.Shared.Tests
             UserNotificationRepository = new Mock<IUserNotificationRepository>();
             UserNotificationPreferenceRepository = new Mock<IUserNotificationPreferenceRepository>();
             EmailSender = new Mock<IEmailSender>();
+            EmailManager = new Mock<IEmailManager>();
             MapRepository = new Mock<IMapRepository>();
             Logger = new Mock<ILogger>();
 

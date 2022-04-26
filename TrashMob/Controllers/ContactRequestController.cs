@@ -30,23 +30,26 @@
         {
             await contactRequestRepository.AddContactRequest(contactRequest).ConfigureAwait(false);
 
-            var message = emailManager.GetEmailTemplate(NotificationTypeEnum.ContactRequestReceived.ToString());
-            var htmlMessage = emailManager.GetHtmlEmailTemplate(NotificationTypeEnum.ContactRequestReceived.ToString());
+            var message = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.ContactRequestReceived.ToString());
             var subject = "A Contact Request has been received on TrashMob.eco!";
 
             message = message.Replace("{UserName}", contactRequest.Name);
-            htmlMessage = htmlMessage.Replace("{UserName}", contactRequest.Name);
             message = message.Replace("{UserEmail}", contactRequest.Email);
-            htmlMessage = htmlMessage.Replace("{UserEmail}", contactRequest.Email);
             message = message.Replace("{Message}", contactRequest.Message);
-            htmlMessage = htmlMessage.Replace("{Message}", contactRequest.Message);
 
             var recipients = new List<EmailAddress>
             {
                 new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
             };
 
-            await emailManager.SendSystemEmail(subject, message, htmlMessage, recipients, CancellationToken.None).ConfigureAwait(false);
+            var dynamicTemplateData = new
+            {
+                username = Constants.TrashMobEmailName,
+                emailCopy = message,
+                subject = subject,
+            };
+
+            await emailManager.SendTemplatedEmail(subject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
 
             TelemetryClient.TrackEvent(nameof(SaveContactRequest));
 

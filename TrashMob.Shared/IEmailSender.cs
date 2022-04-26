@@ -7,6 +7,8 @@
     {
         public Task SendEmailAsync(Email email, CancellationToken cancellationToken = default);
 
+        public Task SendTemplatedEmailAsync(Email email, CancellationToken cancellationToken = default);
+
         public string ApiKey { get; set; }
     }
 }

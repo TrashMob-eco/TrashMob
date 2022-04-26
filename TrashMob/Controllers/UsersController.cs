@@ -185,30 +185,39 @@ namespace TrashMob.Controllers
 
             // Notify Admins that a new user has joined
             var message = $"A new user: {user.Email} has joined TrashMob.eco!";
-            var htmlMessage = $"A new user: {user.Email} has joined TrashMob.eco!";
             var subject = "New User Alert";
+
+            var dynamicTemplateData = new
+            {
+                username = Constants.TrashMobEmailName,
+                emailCopy = message,
+                subject = subject,
+            };
 
             var recipients = new List<EmailAddress>
             {
                 new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
             };
 
-            await emailManager.SendSystemEmail(subject, message, htmlMessage, recipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendTemplatedEmail(subject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
 
             // Send welcome email to new User
-            var welcomeMessage = emailManager.GetEmailTemplate(NotificationTypeEnum.WelcomeToTrashMob.ToString());
+            var welcomeMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.WelcomeToTrashMob.ToString());
             var welcomeSubject = "Welcome to TrashMob.eco!";
-            welcomeMessage = welcomeMessage.Replace("{UserName}", user.UserName);
 
-            var welcomeHtmlMessage = emailManager.GetHtmlEmailTemplate(NotificationTypeEnum.WelcomeToTrashMob.ToString());
-            welcomeHtmlMessage = welcomeHtmlMessage.Replace("{UserName}", user.UserName);
+            var userDynamicTemplateData = new
+            {
+                username = user.UserName,
+                emailCopy = welcomeMessage,
+                subject = welcomeSubject,
+            };
 
             var welcomeRecipients = new List<EmailAddress>
             {
                 new EmailAddress { Name = user.UserName, Email = user.Email }
             };
 
-            await emailManager.SendSystemEmail(welcomeSubject, welcomeMessage, welcomeHtmlMessage, welcomeRecipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendTemplatedEmail(welcomeSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, userDynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
 
             return CreatedAtAction(nameof(GetUserByInternalId), new { id = newUser.Id }, newUser);
         }

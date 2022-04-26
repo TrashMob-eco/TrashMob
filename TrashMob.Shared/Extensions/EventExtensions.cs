@@ -1,7 +1,10 @@
 ﻿namespace TrashMob.Shared.Extensions
 {
     using System;
+    using System.Text;
+    using System.Threading.Tasks;
     using TrashMob.Shared.Models;
+    using TrashMob.Shared.Persistence;
 
     public static class EventExtensions
     {
@@ -33,6 +36,65 @@
                 LastUpdatedDate = originalEvent.LastUpdatedDate,
                 CancellationReason = originalEvent.CancellationReason,
             };
+        }
+
+        public static string EventAddress(this Event mobEvent)
+        {
+            var eventAddress = new StringBuilder();
+
+            if (!string.IsNullOrWhiteSpace(mobEvent.StreetAddress))
+            {
+                eventAddress.Append(mobEvent.StreetAddress);
+                eventAddress.Append(", ");
+            }
+
+            if (!string.IsNullOrWhiteSpace(mobEvent.City))
+            {
+                eventAddress.Append(mobEvent.City);
+                eventAddress.Append(", ");
+            }
+
+            if (!string.IsNullOrWhiteSpace(mobEvent.Region))
+            {
+                eventAddress.Append(mobEvent.Region);
+                eventAddress.Append(',');
+            }
+
+            if (!string.IsNullOrWhiteSpace(mobEvent.PostalCode))
+            {
+                eventAddress.Append(mobEvent.PostalCode);
+                eventAddress.Append(' ');
+            }
+
+            if (!string.IsNullOrWhiteSpace(mobEvent.Country))
+            {
+                eventAddress.Append(mobEvent.Country);
+            }
+
+            return eventAddress.ToString();
+        }
+
+        public static async Task<DateTime> GetLocalEventTime(this Event mobEvent, IMapRepository mapRepository)
+        {
+            var localTime = await mapRepository.GetTimeForPoint(new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false);
+            return (!string.IsNullOrWhiteSpace(localTime)) ? DateTime.Parse(localTime) : mobEvent.EventDate.DateTime;
+        }
+
+        public static string GoogleMapsUrl(this Event mobEvent)
+        {
+            return $"https://google.com/maps/place/{mobEvent.StreetAddress}+{mobEvent.City}+{mobEvent.Region}+{mobEvent.PostalCode}+{mobEvent.Country}";
+        }
+
+        public static string EventDetailsUrl(this Event mobEvent)
+        {
+            // Todo - make this variable depending on environment
+            return $"https://www.trashmob.eco/eventdetails/{mobEvent.Id}";
+        }
+
+        public static string EventSummaryUrl(this Event mobEvent)
+        {
+            // Todo - make this variable depending on environment
+            return $"https://www.trashmob.eco/eventsummary/{mobEvent.Id}";
         }
     }
 }

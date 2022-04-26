@@ -19,5 +19,11 @@ namespace TrashMob.Shared
         public string Message { get; set; }
         
         public string HtmlMessage { get; set; }
+
+        public object DynamicTemplateData { get; set; }
+
+        public string TemplateId { get; set; }
+
+        public int GroupId { get; set; }
     }
 }
