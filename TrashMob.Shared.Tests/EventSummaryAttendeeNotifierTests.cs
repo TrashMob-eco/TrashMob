@@ -1,6 +1,7 @@
 namespace TrashMob.Shared.Tests
 {
     using Moq;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Engine;
@@ -20,7 +21,7 @@ namespace TrashMob.Shared.Tests
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);
 
             // Assert
-            EmailSender.Verify(_ => _.SendEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
+            EmailManager.Verify(_ => _.SendTemplatedEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<object>(), It.IsAny<List<EmailAddress>>(), It.IsAny<CancellationToken>()), Times.Never);
         }
     }
 }
