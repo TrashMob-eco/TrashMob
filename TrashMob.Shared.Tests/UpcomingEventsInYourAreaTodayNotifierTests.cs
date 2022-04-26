@@ -7,22 +7,8 @@ namespace TrashMob.Shared.Tests
     {
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UpcomingEventsInYourAreaSoon;
 
-        protected override INotificationEngine Engine => new UpcomingEventsInYourAreaSoonNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
+        protected override INotificationEngine Engine => new UpcomingEventsInYourAreaSoonNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, EmailManager.Object, MapRepository.Object, Logger.Object);
 
         protected override int NumberOfDaysToAddForEventOutOfWindow => 3;
-
-        [Fact]
-        public void GetHtmlEmailTemplate_Succeeds()
-        {
-            // Arrange
-            var engine = new UpcomingEventsInYourAreaSoonNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, UserNotificationPreferenceRepository.Object, EmailSender.Object, MapRepository.Object, Logger.Object);
-
-            // Act
-            var template = engine.GetHtmlEmailTemplate();
-
-            // Assert
-            Assert.False(string.IsNullOrWhiteSpace(template));
-            Assert.Contains("Upcoming TrashMob.eco events in your area soon!", template);
-        }
     }
 }
