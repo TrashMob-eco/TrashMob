@@ -1,9 +1,0 @@
-﻿        Hey {UserName},
-
-        A TrashMob.eco partner has responded to your request for assistance for your upcoming event. Check out their response <a href="{PartnerResponseUrl}">here</a>!
-
-        The Team at TrashMob.eco
-
-        https://www.trashmob.eco
-
-        Go to https://www.trashmob.eco/userprofile to manage your notification preferences for TrashMob.eco.
