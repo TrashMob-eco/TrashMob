@@ -221,7 +221,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var eventId = await eventRepository.AddEvent(mobEvent).ConfigureAwait(false);
+            var newEvent = await eventRepository.AddEvent(mobEvent).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddEvent));
 
             var message = $"A new event: {mobEvent.Name} in {mobEvent.City} has been created on TrashMob.eco!";
@@ -249,7 +249,7 @@ namespace TrashMob.Controllers
 
             await emailManager.SendTemplatedEmail(subject, SendGridEmailTemplateId.EventEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
 
-            return CreatedAtAction(nameof(GetEvent), new { eventId });
+            return Ok(newEvent);
         }
 
         [HttpDelete]
