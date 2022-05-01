@@ -103,7 +103,12 @@
 
                 foreach (var mobEvent in eventsToNotifyUserFor)
                 {
+                    Logger.LogInformation("Getting local event time for eventId: {eventId}", mobEvent.Id);
+
                     var localDate = await mobEvent.GetLocalEventTime(MapRepository).ConfigureAwait(false);
+
+                    Logger.LogInformation("UTC event time for eventId ({eventId}): {eventDate}.", mobEvent.Id, mobEvent.EventDate);
+                    Logger.LogInformation("Local event time for eventId ({eventId}): {localDate}.", mobEvent.Id, localDate);
 
                     var dynamicTemplateData = new
                     {
