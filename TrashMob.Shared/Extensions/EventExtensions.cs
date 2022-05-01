@@ -1,5 +1,6 @@
 ﻿namespace TrashMob.Shared.Extensions
 {
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Text;
     using System.Threading.Tasks;
@@ -77,7 +78,13 @@
         public static async Task<DateTime> GetLocalEventTime(this Event mobEvent, IMapRepository mapRepository)
         {
             var localTime = await mapRepository.GetTimeForPoint(new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false);
-            return (!string.IsNullOrWhiteSpace(localTime)) ? DateTime.Parse(localTime) : mobEvent.EventDate.DateTime;
+
+            if (string.IsNullOrWhiteSpace(localTime))
+            {
+                return mobEvent.EventDate.DateTime;
+            }
+            
+            return DateTime.Parse(localTime);
         }
 
         public static string GoogleMapsUrl(this Event mobEvent)
