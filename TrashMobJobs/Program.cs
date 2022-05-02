@@ -31,7 +31,6 @@ namespace TrashMobJobs
                      .AddSingleton<IMapRepository, MapRepository>()
                      .AddSingleton<IUserRepository, UserRepository>()
                      .AddSingleton<IUserNotificationRepository, UserNotificationRepository>()
-                     .AddSingleton<IUserNotificationPreferenceRepository, UserNotificationPreferenceRepository>()
                      .AddSingleton<IUserNotificationManager, UserNotificationManager>()
                      .AddSingleton<IMediaTypeRepository, MediaTypeRepository>()
                      .AddSingleton<IEventMediaRepository, EventMediaRepository>())
