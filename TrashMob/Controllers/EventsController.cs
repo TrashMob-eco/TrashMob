@@ -165,7 +165,8 @@ namespace TrashMob.Controllers
                     var oldLocalDate = await oldEvent.GetLocalEventTime(mapRepository).ConfigureAwait(false);
                     var newLocalDate = await mobEvent.GetLocalEventTime(mapRepository).ConfigureAwait(false);
 
-                    emailCopy = emailCopy.Replace("{EventDate}", oldLocalDate.ToString("MMMM dd, yyyy HH:mm tt"));
+                    emailCopy = emailCopy.Replace("{EventDate}", oldLocalDate.Item1);
+                    emailCopy = emailCopy.Replace("{EventTime}", oldLocalDate.Item2);
 
                     var subject = "A TrashMob.eco event you were scheduled to attend has been updated!";
 
@@ -177,8 +178,8 @@ namespace TrashMob.Controllers
                         {
                             username = attendee.UserName,
                             eventName = mobEvent.Name,
-                            eventDate = newLocalDate.ToString("MMMM dd, yyyy"),
-                            eventTime = newLocalDate.ToString("HH:mm tt"),
+                            eventDate = newLocalDate.Item1,
+                            eventTime = newLocalDate.Item2,
                             eventAddress = mobEvent.EventAddress(),
                             emailCopy = emailCopy,
                             subject = subject,
@@ -232,14 +233,14 @@ namespace TrashMob.Controllers
                 new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
             };
 
-            DateTime localDate = await mobEvent.GetLocalEventTime(mapRepository).ConfigureAwait(false);
+            var localTime = await mobEvent.GetLocalEventTime(mapRepository).ConfigureAwait(false);
 
             var dynamicTemplateData = new
             {
                 username = Constants.TrashMobEmailName,
                 eventName = mobEvent.Name,
-                eventDate = localDate.ToString("MMMM dd, yyyy"),
-                eventTime = localDate.ToString("HH:mm tt"),
+                eventDate = localTime.Item1,
+                eventTime = localTime.Item2,
                 eventAddress = mobEvent.EventAddress(),
                 emailCopy = message,
                 subject = subject,
@@ -275,7 +276,7 @@ namespace TrashMob.Controllers
             var emailCopy = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventCancelledNotice.ToString());
             emailCopy = emailCopy.Replace("{CancellationReason}", eventCancellationRequest.CancellationReason);
 
-            DateTime localDate = await mobEvent.GetLocalEventTime(mapRepository).ConfigureAwait(false);
+            var localDate = await mobEvent.GetLocalEventTime(mapRepository).ConfigureAwait(false);
 
             foreach (var attendee in eventAttendees)
             {
@@ -283,8 +284,8 @@ namespace TrashMob.Controllers
                 {
                     username = attendee.UserName,
                     eventName = mobEvent.Name,
-                    eventDate = localDate.ToString("MMMM dd, yyyy"),
-                    eventTime = localDate.ToString("HH:mm tt"),
+                    eventDate = localDate.Item1,
+                    eventTime = localDate.Item2,
                     eventAddress = mobEvent.EventAddress(),
                     emailCopy = emailCopy,
                     subject = subject,
