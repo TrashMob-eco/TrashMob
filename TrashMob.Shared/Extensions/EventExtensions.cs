@@ -75,16 +75,18 @@
             return eventAddress.ToString();
         }
 
-        public static async Task<DateTime> GetLocalEventTime(this Event mobEvent, IMapRepository mapRepository)
+        public static async Task<Tuple<string, string>> GetLocalEventTime(this Event mobEvent, IMapRepository mapRepository)
         {
             var localTime = await mapRepository.GetTimeForPoint(new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false);
 
             if (string.IsNullOrWhiteSpace(localTime))
             {
-                return mobEvent.EventDate.DateTime;
+                return new Tuple<string, string>(mobEvent.EventDate.ToString("MMMM dd, yyyy"), mobEvent.EventDate.ToString("hh:mm tt"));
             }
-            
-            return DateTime.Parse(localTime);
+
+            var localDate = DateTimeOffset.Parse(localTime);
+            var retVal = new Tuple<string, string>(localDate.ToString("MMMM dd, yyyy"), localDate.ToString("hh:mm tt"));
+            return retVal;
         }
 
         public static string GoogleMapsUrl(this Event mobEvent)

@@ -114,8 +114,8 @@
                     {
                         username = user.UserName,
                         eventName = mobEvent.Name,
-                        eventDate = localDate.ToString("MMMM dd, yyyy"),
-                        eventTime = localDate.ToString("HH:mm tt"),
+                        eventDate = localDate.Item1,
+                        eventTime = localDate.Item2,
                         eventAddress = mobEvent.EventAddress(),
                         emailCopy = emailCopy,
                         subject = EmailSubject,
