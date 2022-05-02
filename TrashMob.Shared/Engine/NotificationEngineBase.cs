@@ -110,6 +110,9 @@
                     Logger.LogInformation("UTC event time for eventId ({eventId}): {eventDate}.", mobEvent.Id, mobEvent.EventDate);
                     Logger.LogInformation("Local event time for eventId ({eventId}): {localDate}.", mobEvent.Id, localDate);
 
+                    // If the email has an event summary, add it here.
+                    emailCopy = emailCopy.Replace("{eventSummaryUrl}", mobEvent.EventSummaryUrl());
+
                     var dynamicTemplateData = new
                     {
                         username = user.UserName,
