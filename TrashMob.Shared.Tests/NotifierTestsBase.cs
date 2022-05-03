@@ -25,8 +25,6 @@ namespace TrashMob.Shared.Tests
         
         protected Mock<IUserNotificationRepository> UserNotificationRepository { get; }
         
-        protected Mock<IUserNotificationPreferenceRepository> UserNotificationPreferenceRepository { get; }
-        
         protected Mock<IEmailSender> EmailSender { get; }
 
         protected Mock<IEmailManager> EmailManager { get; }
@@ -45,7 +43,6 @@ namespace TrashMob.Shared.Tests
             EventAttendeeRepository = new Mock<IEventAttendeeRepository>();
             UserRepository = new Mock<IUserRepository>();
             UserNotificationRepository = new Mock<IUserNotificationRepository>();
-            UserNotificationPreferenceRepository = new Mock<IUserNotificationPreferenceRepository>();
             EmailSender = new Mock<IEmailSender>();
             EmailManager = new Mock<IEmailManager>();
             MapRepository = new Mock<IMapRepository>();
@@ -235,71 +232,6 @@ namespace TrashMob.Shared.Tests
             };
 
             return events;
-        }
-
-        protected List<UserNotificationPreference> GetUserNotificationPreferences()
-        {
-            var preferences = new List<UserNotificationPreference>()
-            {
-                new UserNotificationPreference
-                {
-                    UserId = userId1,
-                    IsOptedOut = false,
-                    LastUpdatedDate = DateTimeOffset.UtcNow.AddHours(-1),
-                    UserNotificationTypeId = (int)NotificationTypeEnum.EventSummaryAttendee,
-                },
-                new UserNotificationPreference
-                {
-                    UserId = userId1,
-                    IsOptedOut = false,
-                    LastUpdatedDate = DateTimeOffset.UtcNow.AddHours(-1),
-                    UserNotificationTypeId = (int)NotificationTypeEnum.EventSummaryHostReminder,
-                },
-                new UserNotificationPreference
-                {
-                    UserId = userId1,
-                    IsOptedOut = false,
-                    LastUpdatedDate = DateTimeOffset.UtcNow.AddHours(-1),
-                    UserNotificationTypeId = (int)NotificationTypeEnum.UpcomingEventAttendingThisWeek,
-                },
-                new UserNotificationPreference
-                {
-                    UserId = userId1,
-                    IsOptedOut = false,
-                    LastUpdatedDate = DateTimeOffset.UtcNow.AddHours(-1),
-                    UserNotificationTypeId = (int)NotificationTypeEnum.UpcomingEventAttendingSoon,
-                },
-                new UserNotificationPreference
-                {
-                    UserId = userId1,
-                    IsOptedOut = false,
-                    LastUpdatedDate = DateTimeOffset.UtcNow.AddHours(-1),
-                    UserNotificationTypeId = (int)NotificationTypeEnum.UpcomingEventHostingThisWeek,
-                },
-                new UserNotificationPreference
-                {
-                    UserId = userId1,
-                    IsOptedOut = false,
-                    LastUpdatedDate = DateTimeOffset.UtcNow.AddHours(-1),
-                    UserNotificationTypeId = (int)NotificationTypeEnum.UpcomingEventHostingSoon,
-                },
-                new UserNotificationPreference
-                {
-                    UserId = userId1,
-                    IsOptedOut = false,
-                    LastUpdatedDate = DateTimeOffset.UtcNow.AddHours(-1),
-                    UserNotificationTypeId = (int)NotificationTypeEnum.UpcomingEventsInYourAreaThisWeek,
-                },
-                new UserNotificationPreference
-                {
-                    UserId = userId1,
-                    IsOptedOut = false,
-                    LastUpdatedDate = DateTimeOffset.UtcNow.AddHours(-1),
-                    UserNotificationTypeId = (int)NotificationTypeEnum.UpcomingEventsInYourAreaSoon,
-                },
-            };
-
-            return preferences;
         }
     }
 }

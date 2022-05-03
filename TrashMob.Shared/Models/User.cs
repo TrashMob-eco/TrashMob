@@ -65,8 +65,6 @@ namespace TrashMob.Shared.Models
 
         public virtual ICollection<UserNotification> UserNotifications { get; set; }
 
-        public virtual ICollection<UserNotificationPreference> UserNotificationPreferences { get; set; }
-
         public virtual ICollection<PartnerRequest> PartnerRequestsCreated { get; set; }
 
         public virtual ICollection<PartnerRequest> PartnerRequestsUpdated { get; set; }

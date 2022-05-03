@@ -16,12 +16,11 @@ namespace TrashMob.Shared.Engine
                                                      IUserRepository userRepository,
                                                      IEventAttendeeRepository eventAttendeeRepository,
                                                      IUserNotificationRepository userNotificationRepository,
-                                                     IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
                                                      IEmailSender emailSender,
                                                      IEmailManager emailManager,
                                                      IMapRepository mapRepository,
                                                      ILogger logger) :
-            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, userNotificationPreferenceRepository, emailSender, emailManager, mapRepository, logger)
+            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, emailSender, emailManager, mapRepository, logger)
         {
         }
 
@@ -38,11 +37,6 @@ namespace TrashMob.Shared.Engine
             // for each user
             foreach (var user in users)
             {
-                if (await IsOptedOut(user).ConfigureAwait(false))
-                {
-                    continue;
-                }
-
                 // If the user has not set their latitude and longitude, skip user
                 if (user.Latitude == 0 && user.Longitude == 0)
                 {

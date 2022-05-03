@@ -76,13 +76,11 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 <Dropdown.Divider />
                                 <Dropdown.Item eventKey="3" href="/userprofile"><Person aria-hidden="true" />My profile</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="4" href="/notificationpreferences"><Bell aria-hidden="true" />Notification preferences</Dropdown.Item>
+                                <Dropdown.Item eventKey="4" href="/partnerdashboard"><Building aria-hidden="true" />Partner dashboard</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="5" href="/partnerdashboard"><Building aria-hidden="true" />Partner dashboard</Dropdown.Item>
+                                <Dropdown.Item eventKey="5" href="/siteadmin" disabled={!props.currentUser.isSiteAdmin}><PersonBadge aria-hidden="true" />Site administration</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="6" href="/siteadmin" disabled={!props.currentUser.isSiteAdmin}><PersonBadge aria-hidden="true" />Site administration</Dropdown.Item>
-                                <Dropdown.Divider />
-                                <Dropdown.Item eventKey="7" onClick={(e) => signOut(e)}><BoxArrowLeft aria-hidden="true" />Sign out</Dropdown.Item>
+                                <Dropdown.Item eventKey="6" onClick={(e) => signOut(e)}><BoxArrowLeft aria-hidden="true" />Sign out</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
                     </div>

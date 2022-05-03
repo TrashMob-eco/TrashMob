@@ -60,8 +60,6 @@
 
         public virtual DbSet<UserNotificationType> UserNotificationTypes { get; set; }
 
-        public virtual DbSet<UserNotificationPreference> UserNotificationPreferences { get; set; }
-
         public virtual DbSet<Waiver> Waivers { get; set; }
 
         public virtual DbSet<UserWaiver> UserWaivers { get; set; }
@@ -382,23 +380,6 @@
                     .HasForeignKey(d => d.EventId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EventMedia_Event_Id");
-            });
-
-            modelBuilder.Entity<UserNotificationPreference>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.HasOne(d => d.UserNotificationType)
-                    .WithMany(p => p.UserNotificationPreferences)
-                    .HasForeignKey(d => d.UserNotificationTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserNotificationPreferences_UserNotificationTypes");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.UserNotificationPreferences)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserNotificationPreferences_User_Id");
             });
 
             modelBuilder.Entity<Event>(entity =>
