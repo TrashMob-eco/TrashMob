@@ -335,10 +335,10 @@ input[type="radio"]:checked {
 
 .map-popup-container {
   overflow-x: auto;
+  width: 500px;
   max-width: 500px;
-  background-color: rgba(0, 0, 0, 0.57);
+  background-color: #FFF;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  color: #FFF;
 }
 
 @media (max-width: 767px) {
@@ -349,4 +349,11 @@ input[type="radio"]:checked {
 
 .color-white {
   color: #FFF;
+}
+
+.popup-close {
+  width: 40px;
+  height: 40px;
+  background-color: #FFF !important;
+  color: #000;
 }

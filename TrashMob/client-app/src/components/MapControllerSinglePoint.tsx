@@ -83,10 +83,12 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
                         const time = new Date(marker.properties.eventDate).toLocaleTimeString([], { timeZoneName: 'short' });
                         const content = marker.properties.cluster
                             ? `Cluster of ${marker.properties.point_count_abbreviated} markers`
-                            : `<div className="map-popup-container" style="padding:0.5rem;>
-                                <h4 className="mt-1 font-weight-bold">${marker.properties.name}</h4>
+                            : `<div className="map-popup-container" style="padding:0.5rem;">
+                                <h5 style="font-weight: 500; font-size: 18px; margin-top: 0.5rem;">${marker.properties.name}</h5>
                                 <div><span className="font-weight-bold">Event Date: </span><span>${date}</span></div>
                                 <div><span className="font-weight-bold">Time: </span><span>${time}</span></div>
+
+                                <div>
                             </div>`;
                         popup.setOptions({
                             content: content,
