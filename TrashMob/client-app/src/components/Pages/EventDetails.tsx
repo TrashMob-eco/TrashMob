@@ -199,7 +199,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                 <AzureMapsProvider>
                     <MapControllerSinglePoint center={center} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} eventDate={eventDate} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} isDraggable={false} />
                 </AzureMapsProvider>
-                <Container>
+                <Container className="mt-3">
                     <div className="d-flex justify-content-between align-items-end">
                         <h4 className="font-weight-bold">{eventName}</h4>
                         <div className="d-flex">
