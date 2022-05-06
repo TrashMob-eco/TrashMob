@@ -200,7 +200,7 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
                         <div className="d-flex justify-content-between mt-2">
                             <span className="align-self-end">Created by {creator}</span>
                             <button className="btn btn-outline">
-                                <a id="viewDetails" type="button">View Details</a>
+                                <a id="viewDetails" type="button" href={'/eventdetails/' + eventId}>View Details</a>
                             </button>
                             <RegisterBtn eventId={eventId} isAttending={isAttending} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onAttendanceChanged={props.onAttendanceChanged}></RegisterBtn>
                         </div>
