@@ -140,6 +140,22 @@
     <ProjectReference Include="..\TrashMob.Shared\TrashMob.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="client-app\src\components\Waivers\assets\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="client-app\src\components\Waivers\assets\anchorfields.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="client-app\src\components\Waivers\assets\anchorfields_view.docx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="client-app\src\components\Waivers\assets\anchorfields_view.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">
