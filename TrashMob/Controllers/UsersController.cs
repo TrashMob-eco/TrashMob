@@ -217,7 +217,7 @@ namespace TrashMob.Controllers
                 new EmailAddress { Name = user.UserName, Email = user.Email }
             };
 
-            await emailManager.SendTemplatedEmail(welcomeSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, userDynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendTemplatedEmail(welcomeSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients, CancellationToken.None).ConfigureAwait(false);
 
             return CreatedAtAction(nameof(GetUserByInternalId), new { id = newUser.Id }, newUser);
         }
