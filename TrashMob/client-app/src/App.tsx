@@ -42,6 +42,7 @@ import { CancelEvent, CancelEventMatchParams } from './components/EventManagemen
 import EventData from './components/Models/EventData';
 
 import './custom.css';
+import Waivers from './components/Waivers/Waivers';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }
@@ -298,6 +299,9 @@ export const App: FC = () => {
                             </Route>
                             <Route exact path="/shop">
                                 <Shop />
+                            </Route>
+                            <Route exact path="/waivers">
+                                <Waivers currentUser={currentUser} isUserLoaded={isUserLoaded} />
                             </Route>
                             <Route exact path="/aboutus">
                                 <AboutUs />

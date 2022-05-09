@@ -1,4 +1,4 @@
-﻿import React, { FC } from 'react';
+﻿import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -9,62 +9,38 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import { ToastContainer, toast } from 'react-toastify';
 import OAuthImplicit from './OAuthImplicit';
-import './App.css';
 import UserData from '../Models/UserData';
 import { useEffect } from 'react';
 import DocuSign from './Docusign';
-
-export interface WaiverState {
-    accessToken: string;
-    expires: Date;
-    name: string;
-    email: string;
-    externalAccountId: string;
-    accountName: string;
-    accountId: string;
-    baseUri: string;
-    page: string;
-    working: boolean;
-    workingMessage: string;
-    responseErrorMsg: string;
-    responseEnvelopeId: string;
-    responseAvailableApiRequests: number;
-    responseApiRequestsReset: Date;
-    responseSuccess: boolean;
-    responseTraceId: string;
-    resultsEnvelopeJson: string;
-    formName: string;
-    formEmail: string;
-}
+import configuration from '../../store/config.json';
 
 export interface WaiversProps {
     isUserLoaded: boolean;
     currentUser: UserData;
-    waiverState: WaiverState;
 };
 
 const Waivers: React.FC<WaiversProps> = (props) => {
 
     const oAuthImplicit = new OAuthImplicit(this);
     const docusign = new DocuSign(this);
-    const [accessToken, setAccessToken] = React.useState<string | undefined>(props.waiverState.accessToken);
-    const [expires, setExpires] = React.useState<Date | undefined>(props.waiverState.expires);
-    const [name, setName] = React.useState<string | undefined>(props.waiverState.name);
-    const [email, setEmail] = React.useState<string | undefined>(props.waiverState.email);
-    const [externalAccountId, setExternalAccountId] = React.useState<string | undefined>(props.waiverState.externalAccountId);
-    const [accountName, setAccountName] = React.useState<string | undefined>(props.waiverState.accountName);
-    const [accountId, setAccountId] = React.useState<string | undefined>(props.waiverState.accountId);
-    const [baseUri, setBaseUri] = React.useState<string | undefined>(props.waiverState.baseUri);
+    const [accessToken, setAccessToken] = React.useState<string | undefined>();
+    const [expires, setExpires] = React.useState<Date | undefined>();
+    const [name, setName] = React.useState<string | undefined>();
+    const [email, setEmail] = React.useState<string | undefined>();
+    const [externalAccountId, setExternalAccountId] = React.useState<string | undefined>();
+    const [accountName, setAccountName] = React.useState<string | undefined>();
+    const [accountId, setAccountId] = React.useState<string | undefined>();
+    const [baseUri, setBaseUri] = React.useState<string | undefined>();
     const [page, setPage] = React.useState<string>('welcome');
     const [working, setWorking] = React.useState<boolean>(false);
     const [workingMessage, setWorkingMessage] = React.useState<string>('');
-    const [responseErrorMsg, setResponseErrorMsg] = React.useState<string | undefined>(props.waiverState.accountId);
-    const [responseEnvelopeId, setResponseEnvelopeId] = React.useState<string | undefined>(props.waiverState.responseEnvelopeId);
-    const [responseAvailableApiRequests, setResponseAvailableApiRequests] = React.useState<number | undefined>(props.waiverState.responseAvailableApiRequests);
-    const [responseApiRequestsReset, setResponseApiRequestsReset] = React.useState<Date | undefined>(props.waiverState.responseApiRequestsReset);
-    const [responseSuccess, setResponseSuccess] = React.useState<boolean | undefined>(props.waiverState.responseSuccess);
-    const [responseTraceId, setResponseTraceId] = React.useState<string | undefined>(props.waiverState.responseTraceId);
-    const [resultsEnvelopeJson, setResultsEnvelopeJson] = React.useState<string | undefined>(props.waiverState.resultsEnvelopeJson);
+    const [responseErrorMsg, setResponseErrorMsg] = React.useState<string | undefined>();
+    const [responseEnvelopeId, setResponseEnvelopeId] = React.useState<string | undefined>();
+    const [responseAvailableApiRequests, setResponseAvailableApiRequests] = React.useState<number | undefined>();
+    const [responseApiRequestsReset, setResponseApiRequestsReset] = React.useState<Date | undefined>();
+    const [responseSuccess, setResponseSuccess] = React.useState<boolean | undefined>();
+    const [responseTraceId, setResponseTraceId] = React.useState<string | undefined>();
+    const [resultsEnvelopeJson, setResultsEnvelopeJson] = React.useState<string | undefined>();
     const [formName, setFormName] = React.useState<string>('');
     const [formEmail, setFormEmail] = React.useState<string>('');
 
@@ -73,7 +49,7 @@ const Waivers: React.FC<WaiversProps> = (props) => {
          * Starting up--if our URL includes a hash, check it to see if
          * it's the OAuth response
          */
-        const config = window.config;
+        const config = configuration;
         // if the url has a query parameter of ?error=logout_request (from a logout operation) 
         // then remove it
         if (window.location.search && window.location.search === '?error=logout_request') {
