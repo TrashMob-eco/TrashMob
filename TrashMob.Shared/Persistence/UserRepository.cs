@@ -76,14 +76,6 @@
                 mobDbContext.EventAttendees.Remove(attendee);
             }
 
-            // Remove the userNotificationPreferences records
-            var userNotificationPreferences = mobDbContext.UserNotificationPreferences.Where(e => e.UserId == id);
-
-            foreach (var userNotificationPreference in userNotificationPreferences)
-            {
-                mobDbContext.UserNotificationPreferences.Remove(userNotificationPreference);
-            }
-
             // Remove the userNotification records where the user created or updated the event
             var userNotifications = mobDbContext.UserNotifications.Where(e => e.UserId == id);
 

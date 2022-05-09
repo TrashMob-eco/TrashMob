@@ -39,7 +39,6 @@ import ManageEventDashboard, { ManageEventDashboardMatchParams } from './compone
 import { Shop } from './components/Shop';
 import { EventSummaries } from './components/EventSummaries';
 import { CancelEvent, CancelEventMatchParams } from './components/EventManagement/CancelEvent';
-import NotificationPreferences from './components/NotificationPreferences';
 import EventData from './components/Models/EventData';
 
 import './custom.css';
@@ -271,14 +270,6 @@ export const App: FC = () => {
                                     errorComponent={ErrorComponent}
                                     loadingComponent={LoadingComponent}>
                                     <BecomeAPartner currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                                </MsalAuthenticationTemplate >
-                            </Route>
-                            <Route exact path="/notificationpreferences">
-                                <MsalAuthenticationTemplate
-                                    interactionType={InteractionType.Redirect}
-                                    errorComponent={ErrorComponent}
-                                    loadingComponent={LoadingComponent}>
-                                    <NotificationPreferences currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
                             </Route>
                             <Route exact path="/partnerdashboard">

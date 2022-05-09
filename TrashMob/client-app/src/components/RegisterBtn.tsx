@@ -15,6 +15,7 @@ interface RegisterBtnProps {
 };
 
 export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAttending, isUserLoaded, onAttendanceChanged }) => {
+    console.log('cur', currentUser, eventId, 'isAt', isAttending, 'isUsr', isUserLoaded, onAttendanceChanged)
     const addAttendee = (eventId: string) => {
         const account = msalClient.getAllAccounts()[0];
 
@@ -40,7 +41,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
                 body: data,
                 headers: headers,
             }).then((response) => response.json())
-              .then(onAttendanceChanged(eventId))
+                .then(onAttendanceChanged(eventId))
         })
     }
 

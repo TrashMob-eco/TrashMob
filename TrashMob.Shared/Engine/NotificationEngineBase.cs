@@ -19,8 +19,6 @@
         protected IEventAttendeeRepository EventAttendeeRepository { get; }
 
         protected IUserNotificationRepository UserNotificationRepository { get; }
-
-        public IUserNotificationPreferenceRepository UserNotificationPreferenceRepository { get; }
        
         protected IEmailManager EmailManager { get; }
         
@@ -42,7 +40,6 @@
                                       IUserRepository userRepository,
                                       IEventAttendeeRepository eventAttendeeRepository,
                                       IUserNotificationRepository userNotificationRepository,
-                                      IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
                                       IEmailSender emailSender,
                                       IEmailManager emailManager,
                                       IMapRepository mapRepository,
@@ -52,7 +49,6 @@
             UserRepository = userRepository;
             EventAttendeeRepository = eventAttendeeRepository;
             UserNotificationRepository = userNotificationRepository;
-            UserNotificationPreferenceRepository = userNotificationPreferenceRepository;
             EmailSender = emailSender;
             EmailManager = emailManager;
             MapRepository = mapRepository;
@@ -60,23 +56,6 @@
 
             // Set the Api Key Here
             EmailSender.ApiKey = Environment.GetEnvironmentVariable("SendGridApiKey");
-        }
-
-        protected async Task<bool> IsOptedOut(User user)
-        {
-            if (user.IsOptedOutOfAllEmails)
-            {
-                return true;
-            }
-
-            var userNotificationPreferences = await UserNotificationPreferenceRepository.GetUserNotificationPreferences(user.Id).ConfigureAwait(false);
-
-            if (userNotificationPreferences.Any(unp => unp.UserNotificationTypeId == (int)NotificationType && unp.IsOptedOut))
-            {
-                return true;
-            }
-
-            return false;
         }
 
         protected async Task<int> SendNotifications(User user, IEnumerable<Event> eventsToNotifyUserFor, CancellationToken cancellationToken)

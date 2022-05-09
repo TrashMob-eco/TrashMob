@@ -1,5 +1,4 @@
-import { useContext, useEffect } from 'react';
-import * as React from 'react';
+import { FC, useContext, useEffect, useState } from 'react';
 import { AzureMapsContext, IAzureMapOptions, IAzureMapsContextProps } from 'react-azure-maps';
 import { data, source, Popup, HtmlMarker } from 'azure-maps-control';
 import MapComponent from './MapComponent';
@@ -9,7 +8,8 @@ import UserData from './Models/UserData';
 import ReactDOMServer from "react-dom/server"
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import EventAttendeeData from './Models/EventAttendeeData';
-
+import { getEventType } from '../store/eventTypeHelper';
+import { RegisterBtn } from './RegisterBtn';
 interface MapControllerProps {
     mapOptions: IAzureMapOptions | undefined
     center: data.Position;
@@ -28,10 +28,10 @@ interface MapControllerProps {
     onDetailsSelected: any;
 }
 
-export const MapControllerPointCollection: React.FC<MapControllerProps> = (props) => {
+export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
-    const [isDataSourceLoaded, setIsDataSourceLoaded] = React.useState(false);
+    const [isDataSourceLoaded, setIsDataSourceLoaded] = useState(false);
 
     useEffect(() => {
         let popup: Popup;
@@ -69,6 +69,8 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                     eventId: mobEvent.id,
                     eventName: mobEvent.name,
                     eventDate: mobEvent.eventDate,
+                    eventTypeList: '',
+                    eventTypeId: mobEvent.eventTypeId,
                     streetAddress: mobEvent.streetAddress,
                     city: mobEvent.city,
                     region: mobEvent.region,
@@ -76,7 +78,18 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                     postalCode: mobEvent.postalCode,
                     isAttending: isAtt,
                     name: mobEvent.name,
+                    creator: mobEvent.createdByUserName
                 }
+
+                const headers = getDefaultHeaders('GET');
+                fetch('/api/eventtypes', {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json()).then(data => {
+                        const type = getEventType(data, properties.eventTypeId)
+                        properties.eventTypeList = type;
+                    });
 
                 dataSourceRef.add(new data.Feature(point, properties));
 
@@ -88,8 +101,10 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
 
                 mapRef.events.add('mouseover', marker, function (e) {
 
-                    const popUpHtmlContent = ReactDOMServer.renderToString(getPopUpContent(properties.eventName, properties.eventDate, properties.city, properties.region, properties.country, properties.postalCode, isAtt));
+                    const popUpHtmlContent = ReactDOMServer.renderToString(getPopUpContent(properties.eventId, properties.eventName, properties.eventTypeList, properties.eventDate, properties.city, properties.region, properties.country, properties.postalCode, properties.creator, isAtt));
                     const popUpContent = new DOMParser().parseFromString(popUpHtmlContent, "text/html");
+                    const body = popUpContent.querySelector('body');
+                    body?.classList.add('p-4', 'map-popup-container');
 
                     const viewDetailsButton = popUpContent.getElementById("viewDetails");
                     if (viewDetailsButton)
@@ -169,28 +184,29 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
                 })
             }
 
-            /* eslint-disable */
-            function getPopUpContent(eventName: string, eventDate: Date, city: string, region: string, country: string, postalCode: string, isAttending: string) {
+            function getPopUpContent(eventId: string, eventName: string, eventType: string, eventDate: Date, city: string, region: string, country: string, postalCode: string, creator: string, isAttending: string) {
                 const date = new Date(eventDate).toLocaleDateString([], { month: "long", day: "2-digit", year: "numeric" });
                 const time = new Date(eventDate).toLocaleTimeString([], { timeZoneName: 'short' });
                 return (
-                    <div className="p-4 map-popup-container">
-                        <h4 className="mt-1 font-weight-bold">{eventName}</h4>
-                        <div><span className="font-weight-bold">Event Date: </span><span>{date}</span></div>
-                        <div><span className="font-weight-bold">Time: </span><span>{time}</span></div>
-                        <div><span className="font-weight-bold">Location: </span><span>{city}, {region}, {country}, {postalCode}</span></div>
+                    <>
                         <div>
-                            <a id="addAttendee" hidden={!props.isUserLoaded || isAttending === "Yes"} className="action">Register to Attend Event</a>
-                            <span hidden={props.isUserLoaded}>Sign-in required</span>
-                            <span hidden={!props.isUserLoaded || isAttending !== 'Yes'} className="font-weight-bold">Attending: Yes</span>
+                            <h5 className="mt-1 font-weight-bold">{eventName}</h5>
+                            <p className="my-3 event-list-event-type p-2 rounded">{eventType}</p>
+                            <p className="m-0">{date}, {time}</p>
+                            <p className="m-0">
+                                {city ? city + "," : ""} {region ? region + "," : ""} {country ? country + "," : ""} {postalCode ? postalCode : ""}
+                            </p>
                         </div>
-                        <button className="btn btn-primary mt-2 w-100">
-                            <a id="viewDetails" type="button" className="color-white">View Details</a>
-                        </button>
-                    </div >
+                        <div className="d-flex justify-content-between mt-2">
+                            <span className="align-self-end">Created by {creator}</span>
+                            <button className="btn btn-outline">
+                                <a id="viewDetails" type="button" href={'/eventdetails/' + eventId}>View Details</a>
+                            </button>
+                            <RegisterBtn eventId={eventId} isAttending={isAttending} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onAttendanceChanged={props.onAttendanceChanged}></RegisterBtn>
+                        </div>
+                    </>
                 );
             }
-            /* eslint-enable */
         }
     }, [mapRef,
         props,
@@ -202,7 +218,8 @@ export const MapControllerPointCollection: React.FC<MapControllerProps> = (props
         props.isUserLoaded,
         isDataSourceLoaded,
         isMapReady,
-        props.onAttendanceChanged]);
+        props.onAttendanceChanged
+    ]);
 
     function handleLocationChange(e: any) {
         props.onLocationChange(e);
