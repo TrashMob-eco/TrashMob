@@ -12,7 +12,7 @@ import OAuthImplicit from './OAuthImplicit';
 import UserData from '../Models/UserData';
 import { useEffect } from 'react';
 import DocuSign from './Docusign';
-import configuration from '../../store/config.json';
+import * as DS from '../../store/Docusign';
 
 export interface WaiversProps {
     isUserLoaded: boolean;
@@ -49,14 +49,13 @@ const Waivers: React.FC<WaiversProps> = (props) => {
          * Starting up--if our URL includes a hash, check it to see if
          * it's the OAuth response
          */
-        const config = configuration;
         // if the url has a query parameter of ?error=logout_request (from a logout operation) 
         // then remove it
         if (window.location.search && window.location.search === '?error=logout_request') {
-            window.history.replaceState(null, '', config.DS_APP_URL);
+            window.history.replaceState(null, '', DS.DS_APP_URL);
         }
 
-        if (config?.DS_REDIRECT_AUTHENTICATION) {
+        if (DS.DS_REDIRECT_AUTHENTICATION) {
             const hash = window.location.hash;
             if (!hash) { return }
             // possible OAuth response
