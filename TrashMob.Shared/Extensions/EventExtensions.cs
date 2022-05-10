@@ -81,11 +81,11 @@
 
             if (string.IsNullOrWhiteSpace(localTime))
             {
-                return new Tuple<string, string>(mobEvent.EventDate.ToString("MMMM dd, yyyy"), mobEvent.EventDate.ToString("hh:mm tt"));
+                return new Tuple<string, string>(mobEvent.EventDate.ToString("MMMM dd, yyyy"), mobEvent.EventDate.ToString("h:mm tt"));
             }
 
             var localDate = DateTimeOffset.Parse(localTime);
-            var retVal = new Tuple<string, string>(localDate.ToString("MMMM dd, yyyy"), localDate.ToString("hh:mm tt"));
+            var retVal = new Tuple<string, string>(localDate.ToString("MMMM dd, yyyy"), localDate.ToString("h:mm tt"));
             return retVal;
         }
 
