@@ -1,5 +1,5 @@
 
-export const DS_APP_URL = "http://localhost:44332/react-oauth-docusign/build";
+export const DS_APP_URL = "https://localhost:44332/waivers";
 export const DS_CLIENT_ID = "8d26c0ee-f419-44ac-8db5-c448b3d80e5b";
 export const IMPLICIT_SCOPES = "signature";
 export const DS_IDP = "https://account-d.docusign.com";

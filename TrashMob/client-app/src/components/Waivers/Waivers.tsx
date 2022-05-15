@@ -69,7 +69,7 @@ const Waivers: React.FC<WaiversProps> = (props) => {
             // await authentication via the new tab
             window.addEventListener("message", receiveMessage, false);
         }
-    });
+    },[]);
 
     /**
      * Receive message from a child .
