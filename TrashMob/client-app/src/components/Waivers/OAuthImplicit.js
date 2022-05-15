@@ -33,8 +33,8 @@ class OAuthImplicit {
     //
     // constructor for the class
     //
-    constructor(app) {
-        this.app = app;
+    constructor(oAuthResults) {
+        this.UpdateAuthResults = oAuthResults;
         this.oauthWindow = null; // only used for new tab auth
     }
 
@@ -119,7 +119,7 @@ class OAuthImplicit {
         const externalAccountId = await this.getExternalAccountId(
             defaultAccount.account_id, baseUri);
         toast.dismiss(toastId);
-        this.app.oAuthResults({
+        this.UpdateAuthResults({
             accessToken,
             expires,
             name: userInfo.name,

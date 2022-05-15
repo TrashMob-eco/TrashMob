@@ -21,7 +21,7 @@ export interface WaiversProps {
 
 const Waivers: React.FC<WaiversProps> = (props) => {
 
-    const oAuthImplicit = new OAuthImplicit(this);
+    const oAuthImplicit = new OAuthImplicit(oAuthResults);
     const docusign = new DocuSign(this);
     const [accessToken, setAccessToken] = React.useState<string | undefined>();
     const [expires, setExpires] = React.useState<Date | undefined>();
