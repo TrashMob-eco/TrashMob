@@ -19,8 +19,7 @@ class DocuSign {
     //
     // constructor for the class
     //
-    constructor(app) {
-        this.app = app;
+    constructor() {
         this.sendEnvelope = this.sendEnvelope.bind(this);
     }
 
@@ -31,7 +30,7 @@ class DocuSign {
     /**
      * Send an envelope, return results or error
      */
-    async sendEnvelope() {
+    async sendEnvelope(email, name, baseUri, accountId, accessToken) {
         // get the document
         let response = await fetch(anchorfields_pdf)
         if (!response || response.status !== 200) {
@@ -55,8 +54,8 @@ class DocuSign {
             recipients: {
                 signers: [
                     {
-                        email: this.app.state.formEmail,
-                        name: this.app.state.formName,
+                        email: email,
+                        name: name,
                         recipientId: '1',
                         tabs: {
                             signHereTabs: [
@@ -82,14 +81,14 @@ class DocuSign {
 
         try {
             const url =
-                `${this.app.state.baseUri}${urlFrag}` +
-                `/accounts/${this.app.state.accountId}` +
+                `${baseUri}${urlFrag}` +
+                `/accounts/${accountId}` +
                 `/envelopes`;
             const response = await fetch(url, {
                 method: 'POST',
                 body: JSON.stringify(envelopeRequest),
                 headers: new Headers({
-                    Authorization: `Bearer ${this.app.state.accessToken}`,
+                    Authorization: `Bearer ${accessToken}`,
                     Accept: `application/json`,
                     'Content-Type': 'application/json',
                     'X-DocuSign-SDK': sdkString,
@@ -149,16 +148,16 @@ class DocuSign {
     /**
      * Get envelope's status, return results or error
      */
-    async getEnvelope() {
+    async getEnvelope(baseUri, accountId, responseEnvelopeId, accessToken) {
         try {
             const url =
-                `${this.app.state.baseUri}${urlFrag}` +
-                `/accounts/${this.app.state.accountId}` +
-                `/envelopes/${this.app.state.responseEnvelopeId}`;
+                `${baseUri}${urlFrag}` +
+                `/accounts/${accountId}` +
+                `/envelopes/${responseEnvelopeId}`;
             const response = await fetch(url, {
                 method: 'GET',
                 headers: new Headers({
-                    Authorization: `Bearer ${this.app.state.accessToken}`,
+                    Authorization: `Bearer ${accessToken}`,
                     Accept: `application/json`,
                     'Content-Type': 'application/json',
                     'X-DocuSign-SDK': sdkString,

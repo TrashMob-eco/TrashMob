@@ -22,7 +22,7 @@ export interface WaiversProps {
 const Waivers: React.FC<WaiversProps> = (props) => {
 
     const oAuthImplicit = new OAuthImplicit(oAuthResults);
-    const docusign = new DocuSign(this);
+    const docusign = new DocuSign();
     const [accessToken, setAccessToken] = React.useState<string | undefined>();
     const [expires, setExpires] = React.useState<Date | undefined>();
     const [name, setName] = React.useState<string | undefined>();
@@ -221,7 +221,7 @@ const Waivers: React.FC<WaiversProps> = (props) => {
 
         setWorking(true);
         setWorkingMessage("Sending envelope");
-        const results = await docusign.sendEnvelope();
+        const results = await docusign.sendEnvelope(formEmail, formName, baseUri, accountId, accessToken);
 
         if (!results) {
             return;
@@ -257,7 +257,7 @@ const Waivers: React.FC<WaiversProps> = (props) => {
         setWorking(true);
         setWorkingMessage("Fetching the envelope's status");
 
-        const results = await docusign.getEnvelope();
+        const results = await docusign.getEnvelope(baseUri, accountId, responseEnvelopeId, accessToken);
         const { apiRequestsReset } = results;
         const responseApiRequestsReset = apiRequestsReset ? new Date(apiRequestsReset) : undefined;
 
