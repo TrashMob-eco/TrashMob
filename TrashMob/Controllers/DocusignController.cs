@@ -6,6 +6,7 @@
     using System.IO;
     using System.Net.Http;
     using System.Net.Http.Json;
+    using System.Text;
     using System.Text.Json;
     using System.Text.Json.Nodes;
     using System.Threading.Tasks;
@@ -28,14 +29,14 @@
 
             var httpRequestMessage = new HttpRequestMessage();
 
-            httpRequestMessage.Headers.Add("Accept", "application/json, text/plain");
+            httpRequestMessage.Headers.Add("Accept", "application/json");
             httpRequestMessage.Headers.Add("Authorization", incomingToken);
             httpRequestMessage.Headers.Add("X-DocuSign-SDK", docusignHeader);
             httpRequestMessage.Method = HttpMethod.Post;
 
             httpRequestMessage.RequestUri = new Uri(docusignApiRoot + path);
             var jsonString = JsonObject.Create(body).ToJsonString();
-            httpRequestMessage.Content = new StringContent(jsonString);
+            httpRequestMessage.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
 
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
