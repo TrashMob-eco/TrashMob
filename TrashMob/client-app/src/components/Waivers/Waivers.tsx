@@ -41,8 +41,6 @@ const Waivers: React.FC<WaiversProps> = (props) => {
     const [responseSuccess, setResponseSuccess] = React.useState<boolean | undefined>();
     const [responseTraceId, setResponseTraceId] = React.useState<string | undefined>();
     const [resultsEnvelopeJson, setResultsEnvelopeJson] = React.useState<string | undefined>();
-    const [formName, setFormName] = React.useState<string>('');
-    const [formEmail, setFormEmail] = React.useState<string>('');
 
     useEffect(() => {
         /**
@@ -54,6 +52,9 @@ const Waivers: React.FC<WaiversProps> = (props) => {
         if (window.location.search && window.location.search === '?error=logout_request') {
             window.history.replaceState(null, '', DS.DS_APP_URL);
         }
+
+        setName(props.currentUser.givenName + " " + props.currentUser.surName)
+        setEmail(props.currentUser.email)
 
         if (DS.DS_REDIRECT_AUTHENTICATION) {
             const hash = window.location.hash;
@@ -69,7 +70,14 @@ const Waivers: React.FC<WaiversProps> = (props) => {
             // await authentication via the new tab
             window.addEventListener("message", receiveMessage, false);
         }
-    },[]);
+    }, []);
+
+    useEffect(() => {
+        if (props.currentUser) {
+            setName(props.currentUser.givenName + " " + props.currentUser.surName)
+            setEmail(props.currentUser.email)
+        }
+    }, [props.currentUser])
 
     /**
      * Receive message from a child .
@@ -147,16 +155,12 @@ const Waivers: React.FC<WaiversProps> = (props) => {
         setExternalAccountId(undefined);
         setAccountName(undefined);
         setBaseUri(undefined);
-        setName(undefined);
-        setEmail(undefined);
     }
 
     /**
      * Clear the app's form and related state
      */
     function clearState() {
-        setFormName('');
-        setFormEmail('');
         setWorking(false);
         setResponseErrorMsg(undefined);
         setResponseEnvelopeId(undefined);
@@ -175,25 +179,13 @@ const Waivers: React.FC<WaiversProps> = (props) => {
     function oAuthResults(results: any) {
         setAccessToken(results.accessToken);
         setExpires(results.expires);
-        setName(results.name);
         setExternalAccountId(results.externalAccountId);
-        setEmail(results.email);
         setAccountId(results.accountId);
         setAccountName(results.accountName);
         setBaseUri(results.baseUri);
         setPage('loggedIn');
-        setFormName(results.name);
-        setFormEmail(results.email);
 
         toast.success(`Welcome ${results.name}, you are now logged in`);
-    }
-
-    function formNameChange(event: any) {
-        setFormName(event.target.value);
-    }
-
-    function formEmailChange(event: any) {
-        setFormEmail(event.target.value);
     }
 
     async function sendEnvelope() {
@@ -209,19 +201,9 @@ const Waivers: React.FC<WaiversProps> = (props) => {
             return; // Problem! The user needs to login
         }
 
-        if (!formEmail || formEmail.length < 5) {
-            toast.error("Problem: Enter the signer's email address");
-            return;
-        }
-
-        if (!formName || formName.length < 5) {
-            toast.error("Problem: Enter the signer's name");
-            return;
-        }
-
         setWorking(true);
         setWorkingMessage("Sending envelope");
-        const results = await docusign.sendEnvelope(formEmail, formName, baseUri, accountId, accessToken);
+        const results = await docusign.sendEnvelope(email, name, baseUri, accountId, accessToken, props.currentUser.id);
 
         if (!results) {
             return;
@@ -249,6 +231,7 @@ const Waivers: React.FC<WaiversProps> = (props) => {
         if (!checkToken()) {
             return; // Problem! The user needs to login
         }
+
         if (!responseEnvelopeId) {
             toast.error("Problem: First send an envelope");
             return;
@@ -271,6 +254,36 @@ const Waivers: React.FC<WaiversProps> = (props) => {
         setResponseApiRequestsReset(responseApiRequestsReset);
     }
 
+    async function getView() {
+        setResponseErrorMsg(undefined);
+        setResponseSuccess(undefined);
+        setResponseTraceId(undefined);
+
+        if (!checkToken()) {
+            return; // Problem! The user needs to login
+        }
+        if (!responseEnvelopeId) {
+            toast.error("Problem: First send an envelope");
+            return;
+        }
+
+        setWorking(true);
+        setWorkingMessage("Fetching View url");
+
+        const results = await docusign.getViewUrl(email, name, baseUri, accountId, accessToken, responseEnvelopeId, props.currentUser.id);
+        const { apiRequestsReset } = results;
+        const responseApiRequestsReset = apiRequestsReset ? new Date(apiRequestsReset) : undefined;
+
+        setWorking(false);
+        setResponseSuccess(results.success);
+        setResponseErrorMsg(results.errorMsg);
+        setResponseAvailableApiRequests(results.availableApiRequests);
+        setResponseTraceId(results.traceId);
+        setResponseApiRequestsReset(responseApiRequestsReset);
+        // setResultsEnvelopeJson(results.resultsEnvelopeJson);
+        setResponseApiRequestsReset(responseApiRequestsReset);
+    }
+
     function LoggedIn() {
         const resetTime = responseApiRequestsReset;
         const resetTimeString = resetTime
@@ -285,27 +298,14 @@ const Waivers: React.FC<WaiversProps> = (props) => {
                     <Col className="col-md-4">
                         <h2>Send an Envelope</h2>
                         <Form>
-                            <Form.Group controlId="formName">
-                                <Form.Label>Name</Form.Label>
-                                <Form.Control type="text" placeholder="Name"
-                                    value={formName}
-                                    onChange={formNameChange}
-
-                                />
-                            </Form.Group>
-                            <Form.Group controlId="formEmail">
-                                <Form.Label>Email</Form.Label>
-                                <Form.Control type="email" placeholder="Email"
-                                    value={formEmail}
-                                    onChange={formEmailChange}
-                                />
-                            </Form.Group>
-
                             <Button variant="primary" onClick={sendEnvelope}>
                                 Send Envelope
                             </Button>
                             <Button variant="primary" className='ml-4' onClick={getEnvelope}>
                                 Get Envelope Status
+                            </Button>
+                            <Button variant="primary" className='ml-4' onClick={getView}>
+                                Get View
                             </Button>
                         </Form>
                     </Col>

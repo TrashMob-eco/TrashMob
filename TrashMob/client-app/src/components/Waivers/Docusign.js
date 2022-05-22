@@ -30,7 +30,7 @@ class DocuSign {
     /**
      * Send an envelope, return results or error
      */
-    async sendEnvelope(email, name, baseUri, accountId, accessToken) {
+    async sendEnvelope(email, name, baseUri, accountId, accessToken, clientUserId) {
         // get the document
         let response = await fetch(anchorfields_pdf)
         if (!response || response.status !== 200) {
@@ -56,7 +56,7 @@ class DocuSign {
                     {
                         email: email,
                         name: name,
-                        recipientId: '1',
+                        recipientId: clientUserId,
                         tabs: {
                             signHereTabs: [
                                 {
@@ -87,6 +87,81 @@ class DocuSign {
             const response = await fetch(url, {
                 method: 'POST',
                 body: JSON.stringify(envelopeRequest),
+                headers: new Headers({
+                    Authorization: `Bearer ${accessToken}`,
+                    Accept: `application/json`,
+                    'Content-Type': 'application/json',
+                    'X-DocuSign-SDK': sdkString,
+                }),
+            });
+            const data = response && response.ok && (await response.json());
+            let result;
+            const headers = response.headers;
+            const availableApiReqHeader = headers.get('X-RateLimit-Remaining');
+            const availableApiRequests = availableApiReqHeader
+                ? parseInt(availableApiReqHeader, 10)
+                : undefined;
+            const apiResetHeader = headers.get('X-RateLimit-Reset');
+            const apiRequestsReset = apiResetHeader
+                ? new Date(parseInt(apiResetHeader, 10) * 1000)
+                : undefined;
+            const traceId = headers.get('X-DocuSign-TraceToken') || undefined;
+            if (response.ok) {
+                result = {
+                    success: true,
+                    errorMsg: undefined,
+                    envelopeId: data.envelopeId,
+                    availableApiRequests,
+                    apiRequestsReset,
+                    traceId,
+                };
+            } else {
+                result = {
+                    success: false,
+                    errorMsg: response && (await response.text()),
+                    envelopeId: undefined,
+                    availableApiRequests,
+                    apiRequestsReset,
+                    traceId,
+                };
+            }
+            return result;
+        } catch (e) {
+            // Unfortunately we don't have access to the real
+            // networking problem!
+            // See https://medium.com/to-err-is-aaron/detect-network-failures-when-using-fetch-40a53d56e36
+            const errorMsg =
+                e.message === 'Failed to fetch'
+                    ? 'Networking error—check your Internet and DNS connections'
+                    : e.message;
+            return {
+                success: false,
+                errorMsg,
+                envelopeId: undefined,
+                availableApiRequests: undefined,
+                apiRequestsReset: undefined,
+                traceId: undefined,
+            };
+        }
+    }
+
+    async getViewUrl(email, name, baseUri, accountId, accessToken, envelopeId, clientUserId) {
+        try {
+            const recipientRequest = {
+                "returnUrl": "http://localhost:44332/waiversreturn",
+                "authenticationMethod": "email",
+                "email": email,
+                "userName": name,
+                "clientUserId": clientUserId,
+            };
+
+            const url =
+                `${baseUri}${urlFrag}` +
+                `/accounts/${accountId}` +
+                `/envelopes/${envelopeId}/views/recipient`;
+            const response = await fetch(url, {
+                method: 'POST',
+                body: JSON.stringify(recipientRequest),
                 headers: new Headers({
                     Authorization: `Bearer ${accessToken}`,
                     Accept: `application/json`,
