@@ -13,6 +13,7 @@
     <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
     <PackageReference Include="Azure.Identity" Version="1.6.0" />
     <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.3.0" />
+    <PackageReference Include="DocuSign.eSign.dll" Version="5.11.0" />
     <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.4" />
@@ -138,22 +139,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TrashMob.Shared\TrashMob.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="client-app\src\components\Waivers\assets\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="client-app\src\components\Waivers\assets\anchorfields.pdf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="client-app\src\components\Waivers\assets\anchorfields_view.docx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="client-app\src\components\Waivers\assets\anchorfields_view.pdf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

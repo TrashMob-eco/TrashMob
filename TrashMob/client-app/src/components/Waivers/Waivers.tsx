@@ -11,8 +11,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import OAuthImplicit from './OAuthImplicit';
 import UserData from '../Models/UserData';
 import { useEffect } from 'react';
-import DocuSign from './Docusign';
 import * as DS from '../../store/Docusign';
+import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import EnvelopeResponse from '../Models/EnvelopeResponse';
 
 export interface WaiversProps {
     isUserLoaded: boolean;
@@ -22,7 +23,6 @@ export interface WaiversProps {
 const Waivers: React.FC<WaiversProps> = (props) => {
 
     const oAuthImplicit = new OAuthImplicit(oAuthResults);
-    const docusign = new DocuSign();
     const [accessToken, setAccessToken] = React.useState<string | undefined>();
     const [expires, setExpires] = React.useState<Date | undefined>();
     const [name, setName] = React.useState<string | undefined>();
@@ -36,10 +36,7 @@ const Waivers: React.FC<WaiversProps> = (props) => {
     const [workingMessage, setWorkingMessage] = React.useState<string>('');
     const [responseErrorMsg, setResponseErrorMsg] = React.useState<string | undefined>();
     const [responseEnvelopeId, setResponseEnvelopeId] = React.useState<string | undefined>();
-    const [responseAvailableApiRequests, setResponseAvailableApiRequests] = React.useState<number | undefined>();
-    const [responseApiRequestsReset, setResponseApiRequestsReset] = React.useState<Date | undefined>();
     const [responseSuccess, setResponseSuccess] = React.useState<boolean | undefined>();
-    const [responseTraceId, setResponseTraceId] = React.useState<string | undefined>();
     const [resultsEnvelopeJson, setResultsEnvelopeJson] = React.useState<string | undefined>();
 
     useEffect(() => {
@@ -164,10 +161,7 @@ const Waivers: React.FC<WaiversProps> = (props) => {
         setWorking(false);
         setResponseErrorMsg(undefined);
         setResponseEnvelopeId(undefined);
-        setResponseAvailableApiRequests(undefined);
-        setResponseApiRequestsReset(undefined)
         setResponseSuccess(undefined);
-        setResponseTraceId(undefined);
         setResultsEnvelopeJson(undefined);
     }
 
@@ -188,124 +182,69 @@ const Waivers: React.FC<WaiversProps> = (props) => {
         toast.success(`Welcome ${results.name}, you are now logged in`);
     }
 
-    async function sendEnvelope() {
+    async function signWaiver() {
         setResponseErrorMsg(undefined);
         setResponseEnvelopeId(undefined);
-        setResponseAvailableApiRequests(undefined);
-        setResponseApiRequestsReset(undefined);
         setResponseSuccess(undefined);
-        setResponseTraceId(undefined);
         setResultsEnvelopeJson(undefined);
 
         if (!checkToken()) {
             return; // Problem! The user needs to login
         }
 
-        setWorking(true);
-        setWorkingMessage("Sending envelope");
-        const results = await docusign.sendEnvelope(email, name, baseUri, accountId, accessToken, props.currentUser.id);
+        const account = msalClient.getAllAccounts()[0];
 
-        if (!results) {
-            return;
-        }
+        const request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
 
-        const { apiRequestsReset } = results;
-        const responseApiRequestsReset = apiRequestsReset ? new Date(apiRequestsReset) : undefined;
-        setWorking(false);
-        setResponseSuccess(results.success);
-        setResponseErrorMsg(results.errorMsg);
-        setResponseEnvelopeId(results.envelopeId);
-        setResponseAvailableApiRequests(results.availableApiRequests);
-        setResponseTraceId(results.traceId);
-        setResponseApiRequestsReset(responseApiRequestsReset);
-    }
+        return msalClient.acquireTokenSilent(request).then(tokenResponse => {
 
-    async function getEnvelope() {
-        setResponseErrorMsg(undefined);
-        setResponseEnvelopeId(undefined);
-        setResponseAvailableApiRequests(undefined);
-        setResponseApiRequestsReset(undefined);
-        setResponseSuccess(undefined);
-        setResponseTraceId(undefined);
+            setWorking(true);
+            setWorkingMessage("Sending envelope");
 
-        if (!checkToken()) {
-            return; // Problem! The user needs to login
-        }
+            const headers = getDefaultHeaders('POST');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-        if (!responseEnvelopeId) {
-            toast.error("Problem: First send an envelope");
-            return;
-        }
+            // Get this from docusign by going to the template page and looking at the Url
+            // Prod
+            // const waiverTemplateId = "d41bbbb3-272b-409e-92bd-0c00a61b022f";
+            // Demo
+            const waiverTemplateId = "4a6f4370-48e2-43a9-a861-136a3627979c";
 
-        setWorking(true);
-        setWorkingMessage("Fetching the envelope's status");
+            const envelopeRequest = {
+                accountId: accountId,
+                signerEmail: email,
+                signerName: name,
+                signerClientId: props.currentUser.id,
+                accessToken: accessToken,
+                templateId: waiverTemplateId,
+                basePath: "https://demo.docusign.net/restapi",
+                returnUrl: "http://localhost:44332/waiversreturn",
+            };
 
-        const results = await docusign.getEnvelope(baseUri, accountId, responseEnvelopeId, accessToken);
-        const { apiRequestsReset } = results;
-        const responseApiRequestsReset = apiRequestsReset ? new Date(apiRequestsReset) : undefined;
-
-        setWorking(false);
-        setResponseSuccess(results.success);
-        setResponseErrorMsg(results.errorMsg);
-        setResponseAvailableApiRequests(results.availableApiRequests);
-        setResponseTraceId(results.traceId);
-        setResponseApiRequestsReset(responseApiRequestsReset);
-        setResultsEnvelopeJson(results.resultsEnvelopeJson);
-        setResponseApiRequestsReset(responseApiRequestsReset);
-    }
-
-    async function getView() {
-        setResponseErrorMsg(undefined);
-        setResponseSuccess(undefined);
-        setResponseTraceId(undefined);
-
-        if (!checkToken()) {
-            return; // Problem! The user needs to login
-        }
-        if (!responseEnvelopeId) {
-            toast.error("Problem: First send an envelope");
-            return;
-        }
-
-        setWorking(true);
-        setWorkingMessage("Fetching View url");
-
-        const results = await docusign.getViewUrl(email, name, baseUri, accountId, accessToken, responseEnvelopeId, props.currentUser.id);
-        const { apiRequestsReset } = results;
-        const responseApiRequestsReset = apiRequestsReset ? new Date(apiRequestsReset) : undefined;
-
-        setWorking(false);
-        setResponseSuccess(results.success);
-        setResponseErrorMsg(results.errorMsg);
-        setResponseAvailableApiRequests(results.availableApiRequests);
-        setResponseTraceId(results.traceId);
-        setResponseApiRequestsReset(responseApiRequestsReset);
-        // setResultsEnvelopeJson(results.resultsEnvelopeJson);
-        setResponseApiRequestsReset(responseApiRequestsReset);
+            fetch('/api/docusign', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(envelopeRequest),
+            }).then(response => response.json() as Promise<EnvelopeResponse>)
+                .then(data => {
+                    setResponseEnvelopeId(data.envelopeId);
+                    window.location.href = data.redirectUrl;
+                })
+        });
     }
 
     function LoggedIn() {
-        const resetTime = responseApiRequestsReset;
-        const resetTimeString = resetTime
-            ? new Intl.DateTimeFormat('en-US', {
-                dateStyle: 'medium',
-                timeStyle: 'full',
-            }).format(resetTime)
-            : undefined;
         return (
             <Container className='bodyMargin'>
                 <Row>
                     <Col className="col-md-4">
-                        <h2>Send an Envelope</h2>
+                        <h2>Sign Waiver</h2>
                         <Form>
-                            <Button variant="primary" onClick={sendEnvelope}>
-                                Send Envelope
-                            </Button>
-                            <Button variant="primary" className='ml-4' onClick={getEnvelope}>
-                                Get Envelope Status
-                            </Button>
-                            <Button variant="primary" className='ml-4' onClick={getView}>
-                                Get View
+                            <Button variant="primary" onClick={signWaiver}>
+                                Sign Waiver
                             </Button>
                         </Form>
                     </Col>
@@ -330,20 +269,6 @@ const Waivers: React.FC<WaiversProps> = (props) => {
                         ) : null}
                         {resultsEnvelopeJson ? (
                             <p><pre>Response: {JSON.stringify(resultsEnvelopeJson, null, 4)}</pre></p>
-                        ) : null}
-                        {responseAvailableApiRequests ? (
-                            <p>
-                                Available API requests: {responseAvailableApiRequests}
-                            </p>
-                        ) : null}
-                        {resetTimeString ? (
-                            <p>API requests reset time: {resetTimeString}</p>
-                        ) : null}
-                        {responseTraceId ? (
-                            <p>
-                                Trace ID: {responseTraceId}. Please include with all
-                                customer service questions.
-                            </p>
                         ) : null}
                     </Col>
                 </Row>

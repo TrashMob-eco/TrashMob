@@ -1,151 +1,38 @@
 ﻿namespace TrashMob.Controllers
 {
     using Microsoft.ApplicationInsights;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using System;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Text;
-    using System.Text.Json;
-    using System.Text.Json.Nodes;
     using System.Threading.Tasks;
+    using TrashMob.Common;
+    using TrashMob.Docusign;
+    using TrashMob.Shared.Persistence;
 
-    [Route("restapi/v2.1/accounts")]
+    [Route("api/docusign")]
     public class DocusignController : BaseController
     {
-        public DocusignController(TelemetryClient telemetryClient)
+        private readonly IUserRepository userRepository;
+
+        public DocusignController(TelemetryClient telemetryClient, IUserRepository userRepository)
             : base(telemetryClient)
         {
+            this.userRepository = userRepository;
         }
 
-        [HttpPost("{accountId}/envelopes")]
-        public async Task<IActionResult> SendEnvelope(string accountId, [FromBody] JsonElement body)
+        [Authorize]
+        [HttpPost()]
+        public async Task<IActionResult> SendEnvelope(EnvelopeRequest envelope)
         {
-            var incomingToken = Request.Headers.Authorization[0];
-            var docusignHeader = Request.Headers["X-DocuSign-SDK"][0];
-            var docusignApiRoot = "https://demo.docusign.net";
-            var path = Request.Path;
-
-            var httpRequestMessage = new HttpRequestMessage();
-
-            httpRequestMessage.Headers.Add("Accept", "application/json");
-            httpRequestMessage.Headers.Add("Authorization", incomingToken);
-            httpRequestMessage.Headers.Add("X-DocuSign-SDK", docusignHeader);
-            httpRequestMessage.Method = HttpMethod.Post;
-
-            httpRequestMessage.RequestUri = new Uri(docusignApiRoot + path);
-            var jsonString = JsonObject.Create(body).ToJsonString();
-            httpRequestMessage.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
-            var data = await response.Content.ReadAsStringAsync();
-
-            var headers = response.Headers;
-            if (headers.TryGetValues("X-RateLimit-Remaining", out var rateLimitRemaining))
+            var user = await userRepository.GetUserByInternalId(envelope.SignerClientId).ConfigureAwait(false);
+            if (user == null || !ValidateUser(user.NameIdentifier))
             {
-                Response.Headers.Add("X-RateLimit-Remaining", rateLimitRemaining.First().ToString());
+                return Forbid();
             }
 
-            if (headers.TryGetValues("X-RateLimit-Reset", out var rateLimitReset))
-            {
-                Response.Headers.Add("X-RateLimit-Reset", rateLimitReset.First().ToString());
-            }
+            // Create the Envelope
+            var result = CreateEnvelopeFromTemplate.SendEnvelopeFromTemplate(envelope);
 
-            if (headers.TryGetValues("X-DocuSign-TraceToken", out var traceToken))
-            {
-                Response.Headers.Add("X-DocuSign-TraceToken", traceToken.First().ToString());
-            }
-
-            Response.Headers.Add("Content-Type", "application/json");
-
-            return Content(data);
-        }
-
-        [HttpGet("{accountId}/envelopes/{envelopeId}")]
-        public async Task<IActionResult> GetEnvelope(string accountId, string envelopeId)
-        {
-            var incomingToken = Request.Headers.Authorization[0];
-            var docusignHeader = Request.Headers["X-DocuSign-SDK"][0];
-            var docusignApiRoot = "https://demo.docusign.net";
-            var path = Request.Path;
-
-            var httpRequestMessage = new HttpRequestMessage();
-
-            httpRequestMessage.Headers.Add("Accept", "application/json");
-            httpRequestMessage.Headers.Add("Authorization", incomingToken);
-            httpRequestMessage.Headers.Add("X-DocuSign-SDK", docusignHeader);
-            httpRequestMessage.Method = HttpMethod.Get;
-
-            httpRequestMessage.RequestUri = new Uri(docusignApiRoot + path);
-
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
-            var data = await response.Content.ReadAsStringAsync();
-
-            var headers = response.Headers;
-            if (headers.TryGetValues("X-RateLimit-Remaining", out var rateLimitRemaining))
-            {
-                Response.Headers.Add("X-RateLimit-Remaining", rateLimitRemaining.First().ToString());
-            }
-
-            if (headers.TryGetValues("X-RateLimit-Reset", out var rateLimitReset))
-            {
-                Response.Headers.Add("X-RateLimit-Reset", rateLimitReset.First().ToString());
-            }
-
-            if (headers.TryGetValues("X-DocuSign-TraceToken", out var traceToken))
-            {
-                Response.Headers.Add("X-DocuSign-TraceToken", traceToken.First().ToString());
-            }
-
-            Response.Headers.Add("Content-Type", "application/json");
-
-            return Content(data);
-        }
-
-        [HttpPost("{accountId}/envelopes/{envelopeId}/views/recipient")]
-        public async Task<IActionResult> GetView(string accountId, string envelopeId, [FromBody] JsonElement body)
-        {
-            var incomingToken = Request.Headers.Authorization[0];
-            var docusignHeader = Request.Headers["X-DocuSign-SDK"][0];
-            var docusignApiRoot = "https://demo.docusign.net";
-            var path = Request.Path;
-
-            var httpRequestMessage = new HttpRequestMessage();
-
-            httpRequestMessage.Headers.Add("Accept", "application/json");
-            httpRequestMessage.Headers.Add("Authorization", incomingToken);
-            httpRequestMessage.Headers.Add("X-DocuSign-SDK", docusignHeader);
-            httpRequestMessage.Method = HttpMethod.Post;
-
-            httpRequestMessage.RequestUri = new Uri(docusignApiRoot + path);
-            var jsonString = JsonObject.Create(body).ToJsonString();
-            httpRequestMessage.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
-            var data = await response.Content.ReadAsStringAsync();
-
-            var headers = response.Headers;
-            if (headers.TryGetValues("X-RateLimit-Remaining", out var rateLimitRemaining))
-            {
-                Response.Headers.Add("X-RateLimit-Remaining", rateLimitRemaining.First().ToString());
-            }
-
-            if (headers.TryGetValues("X-RateLimit-Reset", out var rateLimitReset))
-            {
-                Response.Headers.Add("X-RateLimit-Reset", rateLimitReset.First().ToString());
-            }
-
-            if (headers.TryGetValues("X-DocuSign-TraceToken", out var traceToken))
-            {
-                Response.Headers.Add("X-DocuSign-TraceToken", traceToken.First().ToString());
-            }
-
-            Response.Headers.Add("Content-Type", "application/json");
-
-            return Content(data);
+            return Ok(result);
         }
     }
 }

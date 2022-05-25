@@ -198,6 +198,8 @@ export const App: FC = () => {
                     if (data) {
                         user.id = data.id;
                         user.userName = data.userName;
+                        user.givenName = data.givenName;
+                        user.surName = data.surName;
                         user.dateAgreedToPrivacyPolicy = data.dateAgreedToPrivacyPolicy;
                         user.dateAgreedToTermsOfService = data.dateAgreedToTermsOfService;
                         user.memberSince = data.memberSince;
