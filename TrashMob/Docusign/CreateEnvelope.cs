@@ -7,7 +7,7 @@
     using DocuSign.eSign.Model;
     using TrashMob.Common;
 
-    public static class CreateEnvelopeFromTemplate
+    public static class CreateEnvelope
     {
         /// <summary>
         /// Creates a new envelope from an existing template and send it out
@@ -21,12 +21,16 @@
         /// <param name="accountId">The DocuSign Account ID (GUID or short version) for which the APIs call would be made</param>
         /// <param name="templateId">The templateId for the tempalte to use to create an envelope</param>
         /// <returns>EnvelopeId for the new envelope</returns>
-        public static EnvelopeResponse SendEnvelopeFromTemplate(EnvelopeRequest envelopeRequest)
+        public static EnvelopeResponse SendEnvelope(EnvelopeRequest envelopeRequest)
         {
             var apiClient = new ApiClient(envelopeRequest.BasePath);
             apiClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + envelopeRequest.AccessToken);
+
+            string docxDocument = "Docusign\\TrashMob_Volunteer_Waiver_V1.docx";
+
             EnvelopesApi envelopesApi = new EnvelopesApi(apiClient);
-            EnvelopeDefinition envelope = MakeEnvelope(envelopeRequest.SignerEmail, envelopeRequest.SignerName, envelopeRequest.SignerClientId, envelopeRequest.TemplateId);
+
+            EnvelopeDefinition envelope = MakeEnvelope(envelopeRequest.SignerEmail, envelopeRequest.SignerName, envelopeRequest.SignerClientId, docxDocument);
             EnvelopeSummary result = envelopesApi.CreateEnvelope(envelopeRequest.AccountId, envelope);
 
             var envelopeId = result.EnvelopeId;
@@ -51,29 +55,77 @@
             };
         }
 
-        private static EnvelopeDefinition MakeEnvelope(string signerEmail, string signerName, Guid signerClientId, string templateId)
+        private static EnvelopeDefinition MakeEnvelope(string signerEmail, string signerName, Guid signerClientId, string docxDocument)
         {
-            // Data for this method
-            // signerEmail 
-            // signerName
-            // ccEmail
-            // ccName
-            // templateId
+            string docxDocumentBytes = Convert.ToBase64String(System.IO.File.ReadAllBytes(docxDocument));
+            EnvelopeDefinition env = new EnvelopeDefinition();
+            env.EmailSubject = "TrashMob.eco waiver";
 
-            EnvelopeDefinition env = new EnvelopeDefinition
+            Document waiverDoc = new Document
             {
-                TemplateId = templateId
+                DocumentBase64 = docxDocumentBytes,
+                Name = "Waiver", // can be different from actual file name
+                FileExtension = "docx",
+                DocumentId = "1"
             };
 
-            TemplateRole signer1 = new TemplateRole
+            env.Documents = new List<Document> { waiverDoc };
+
+            Signer signer = new Signer
             {
                 Email = signerEmail,
                 Name = signerName,
+                RecipientId = "1",
+                RoutingOrder = "1",
                 ClientUserId = signerClientId.ToString(),
-                RoleName = "signer"
             };
 
-            env.TemplateRoles = new List<TemplateRole> { signer1 };
+            SignHere signHere = new SignHere
+            {
+                AnchorString = "/sn1/",
+                AnchorUnits = "pixels",
+                AnchorYOffset = "0",
+                AnchorXOffset = "0",
+                ScaleValue = "1.5",
+            };
+
+            FullName fullName = new FullName
+            {
+                AnchorString = "/fn1/",
+                AnchorUnits = "pixels",
+                AnchorYOffset = "0",
+                AnchorXOffset = "0",
+                Font = "Tahoma",
+                FontSize = "15",
+            };
+
+            DateSigned dateSigned = new DateSigned
+            {
+                AnchorString = "/ds1/",
+                AnchorUnits = "pixels",
+                AnchorYOffset = "0",
+                AnchorXOffset = "0",
+                Font = "Tahoma",
+                FontSize = "15",
+            };
+
+            Tabs signerTabs = new Tabs
+            {
+                SignHereTabs = new List<SignHere> { signHere },
+                FullNameTabs = new List<FullName> { fullName },
+                DateSignedTabs = new List<DateSigned> { dateSigned },
+            };
+
+            signer.Tabs = signerTabs;
+
+            // Add the recipients to the envelope object
+            Recipients recipients = new Recipients
+            {
+                Signers = new List<Signer> { signer },
+            };
+
+            env.Recipients = recipients;
+
             env.Status = "sent";
             return env;
         }

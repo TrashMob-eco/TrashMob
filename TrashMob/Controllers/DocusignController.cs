@@ -30,7 +30,7 @@
             }
 
             // Create the Envelope
-            var result = CreateEnvelopeFromTemplate.SendEnvelopeFromTemplate(envelope);
+            var result = CreateEnvelope.SendEnvelope(envelope);
 
             return Ok(result);
         }
