@@ -21,7 +21,6 @@ import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { TermsOfService } from './components/TermsOfService';
 import { Board } from './components/Board';
 import { VolunteerOpportunities } from './components/VolunteerOpportunities';
-import { Waiver } from './components/Waiver';
 import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
@@ -43,6 +42,7 @@ import EventData from './components/Models/EventData';
 
 import './custom.css';
 import Waivers from './components/Waivers/Waivers';
+import WaiversReturn from './components/Waivers/WaiversReturn';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }
@@ -311,7 +311,7 @@ export const App: FC = () => {
                                 <Shop />
                             </Route>
                             <Route exact path="/waiversreturn">
-                                <Waivers currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                <WaiversReturn currentUser={currentUser} isUserLoaded={isUserLoaded} />
                             </Route>
                             <Route exact path="/aboutus">
                                 <AboutUs />
@@ -345,9 +345,6 @@ export const App: FC = () => {
                             </Route>
                             <Route exact path="/volunteeropportunities">
                                 <VolunteerOpportunities />
-                            </Route>
-                            <Route exact path="/waiver">
-                                <Waiver />
                             </Route>
                             <Route exact path='/'>
                                 <Home currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} onAttendanceChanged={handleAttendanceChanged} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} />

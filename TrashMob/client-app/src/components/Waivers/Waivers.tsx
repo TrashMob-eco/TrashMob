@@ -30,7 +30,6 @@ const Waivers: React.FC<WaiversProps> = (props) => {
     const [externalAccountId, setExternalAccountId] = React.useState<string | undefined>();
     const [accountName, setAccountName] = React.useState<string | undefined>();
     const [accountId, setAccountId] = React.useState<string | undefined>();
-    const [baseUri, setBaseUri] = React.useState<string | undefined>();
     const [page, setPage] = React.useState<string>('welcome');
     const [working, setWorking] = React.useState<boolean>(false);
     const [workingMessage, setWorkingMessage] = React.useState<string>('');
@@ -151,7 +150,6 @@ const Waivers: React.FC<WaiversProps> = (props) => {
         setAccountId(undefined);
         setExternalAccountId(undefined);
         setAccountName(undefined);
-        setBaseUri(undefined);
     }
 
     /**
@@ -176,7 +174,6 @@ const Waivers: React.FC<WaiversProps> = (props) => {
         setExternalAccountId(results.externalAccountId);
         setAccountId(results.accountId);
         setAccountName(results.accountName);
-        setBaseUri(results.baseUri);
         setPage('loggedIn');
 
         toast.success(`Welcome ${results.name}, you are now logged in`);
