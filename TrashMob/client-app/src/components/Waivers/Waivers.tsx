@@ -33,10 +33,6 @@ const Waivers: React.FC<WaiversProps> = (props) => {
     const [page, setPage] = React.useState<string>('welcome');
     const [working, setWorking] = React.useState<boolean>(false);
     const [workingMessage, setWorkingMessage] = React.useState<string>('');
-    const [responseErrorMsg, setResponseErrorMsg] = React.useState<string | undefined>();
-    const [responseEnvelopeId, setResponseEnvelopeId] = React.useState<string | undefined>();
-    const [responseSuccess, setResponseSuccess] = React.useState<boolean | undefined>();
-    const [resultsEnvelopeJson, setResultsEnvelopeJson] = React.useState<string | undefined>();
 
     useEffect(() => {
         /**
@@ -94,7 +90,6 @@ const Waivers: React.FC<WaiversProps> = (props) => {
         if (!source) { return }; // Ignore if no source field
         if (source === 'oauthResponse') {
             setWorking(true);
-            setWorkingMessage('Logging in');
             const hash = e.data && e.data.hash;
             await oAuthImplicit.receiveHash(hash);
             setWorking(false);
@@ -119,7 +114,7 @@ const Waivers: React.FC<WaiversProps> = (props) => {
             clearAuth();
             setPage('welcome');
             setWorking(false);
-            toast.error('Your login session has ended.\nPlease login again', {
+            toast.error('Your Docusign login session has ended.\nPlease login to Docusign again', {
                 autoClose: 8000,
             });
             return false;
@@ -137,7 +132,7 @@ const Waivers: React.FC<WaiversProps> = (props) => {
         clearAuth();
         clearState();
         setPage('welcome');
-        toast.success('You have logged out.', { autoClose: 5000 });
+        toast.success('You have logged out from docusign.', { autoClose: 5000 });
         oAuthImplicit.logout();
     }
 
@@ -157,10 +152,6 @@ const Waivers: React.FC<WaiversProps> = (props) => {
      */
     function clearState() {
         setWorking(false);
-        setResponseErrorMsg(undefined);
-        setResponseEnvelopeId(undefined);
-        setResponseSuccess(undefined);
-        setResultsEnvelopeJson(undefined);
     }
 
     /**
@@ -176,14 +167,10 @@ const Waivers: React.FC<WaiversProps> = (props) => {
         setAccountName(results.accountName);
         setPage('loggedIn');
 
-        toast.success(`Welcome ${results.name}, you are now logged in`);
+        toast.success(`Welcome ${results.name}, you are now logged in to Docusign`);
     }
 
     async function signWaiver() {
-        setResponseErrorMsg(undefined);
-        setResponseEnvelopeId(undefined);
-        setResponseSuccess(undefined);
-        setResultsEnvelopeJson(undefined);
 
         if (!checkToken()) {
             return; // Problem! The user needs to login
@@ -199,16 +186,9 @@ const Waivers: React.FC<WaiversProps> = (props) => {
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
 
             setWorking(true);
-            setWorkingMessage("Sending envelope");
 
             const headers = getDefaultHeaders('POST');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            // Get this from docusign by going to the template page and looking at the Url
-            // Prod
-            // const waiverTemplateId = "d41bbbb3-272b-409e-92bd-0c00a61b022f";
-            // Demo
-            const waiverTemplateId = "4a6f4370-48e2-43a9-a861-136a3627979c";
 
             const envelopeRequest = {
                 accountId: accountId,
@@ -216,7 +196,6 @@ const Waivers: React.FC<WaiversProps> = (props) => {
                 signerName: name,
                 signerClientId: props.currentUser.id,
                 accessToken: accessToken,
-                templateId: waiverTemplateId,
                 basePath: "https://demo.docusign.net/restapi",
                 returnUrl: "http://localhost:44332/waiversreturn",
             };
@@ -227,7 +206,6 @@ const Waivers: React.FC<WaiversProps> = (props) => {
                 body: JSON.stringify(envelopeRequest),
             }).then(response => response.json() as Promise<EnvelopeResponse>)
                 .then(data => {
-                    setResponseEnvelopeId(data.envelopeId);
                     window.location.href = data.redirectUrl;
                 })
         });
@@ -246,29 +224,6 @@ const Waivers: React.FC<WaiversProps> = (props) => {
                         </Form>
                     </Col>
                 </Row>
-                <Row className='mt-4'>
-                    <Col>
-                        <h2>Results</h2>
-                        <h2>
-                            {responseSuccess !== undefined ? (
-                                responseSuccess ? (
-                                    <>✅ Success!</>
-                                ) : (
-                                    <>❌ Problem!</>
-                                )
-                            ) : null}
-                        </h2>
-                        {responseErrorMsg ? (
-                            <p>Error message: {responseErrorMsg}</p>
-                        ) : null}
-                        {responseEnvelopeId ? (
-                            <p>Envelope ID: {responseEnvelopeId}</p>
-                        ) : null}
-                        {resultsEnvelopeJson ? (
-                            <p><pre>Response: {JSON.stringify(resultsEnvelopeJson, null, 4)}</pre></p>
-                        ) : null}
-                    </Col>
-                </Row>
             </Container>
         )
     }
@@ -279,19 +234,21 @@ const Waivers: React.FC<WaiversProps> = (props) => {
                 <Row>
                     <Col>
                         <Jumbotron>
-                            <h1>React Example with OAuth Authentication</h1>
+                            <h1>TrashMob.eco Waiver</h1>
                             <p>
-                                In this example the user authenticates with DocuSign via the OAuth Implicit grant flow.
-                                Since the app will then have an access token for the user, the app can call any
-                                DocuSign eSignature REST API method.
+                                In order to participate in TrashMob.eco events, you must agree to a liability waiver. Please click the
+                                Login button below. This will take you to a screen which will either allow you to sign in
+                                to an existing Docusign account, or allow you to create a new Docusign Account. Once you have signed in, you will
+                                be asked to view and sign the waiver. Once that is done, you will be redirected back to TrashMob.eco.
                             </p>
                             <p>
-                                Use this example for apps used by the staff of your organization who have
-                                DocuSign accounts. For example, an application could pull data from multiple
-                                sources and then send an envelope that includes the data.
+                                You will only need to sign this waiver once (unless we have to change the legalese).
                             </p>
                             <p>
-                                Login with your DocuSign Developer (Demo) credentials.
+                                Thank you!
+                            </p>
+                            <p>
+                                Login with your DocuSign credentials.
                             </p>
                             <p>
                                 <Button variant="primary" onClick={startAuthentication}>Login</Button>
