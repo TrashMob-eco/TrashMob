@@ -57,6 +57,10 @@ namespace TrashMob.Shared.Models
 
         public string TermsOfServiceVersion { get; set; }
 
+        public DateTimeOffset? DateAgreedToTrashMobWaiver { get; set; }
+
+        public string TrashMobWaiverVersion { get; set; }
+
         public DateTimeOffset? MemberSince { get; set; }
 
         public virtual ICollection<Event> EventsCreated { get; set; }

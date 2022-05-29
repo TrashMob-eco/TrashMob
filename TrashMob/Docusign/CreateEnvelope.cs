@@ -96,7 +96,7 @@
                 AnchorYOffset = "0",
                 AnchorXOffset = "0",
                 Font = "Tahoma",
-                FontSize = "15",
+                FontSize = "Size16",
             };
 
             DateSigned dateSigned = new DateSigned
@@ -106,7 +106,7 @@
                 AnchorYOffset = "0",
                 AnchorXOffset = "0",
                 Font = "Tahoma",
-                FontSize = "15",
+                FontSize = "Size16",
             };
 
             Tabs signerTabs = new Tabs
@@ -147,7 +147,7 @@
             // the DocuSign signing ceremony. It's usually better to use
             // the session mechanism of your web framework. Query parameters
             // can be changed/spoofed very easily.
-            viewRequest.ReturnUrl = returnUrl + "?state=123";
+            viewRequest.ReturnUrl = returnUrl;
 
             // How has your app authenticated the user? In addition to your app's
             // authentication, you can include authenticate steps from DocuSign.

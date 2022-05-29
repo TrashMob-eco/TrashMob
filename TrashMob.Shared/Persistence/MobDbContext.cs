@@ -324,6 +324,8 @@
 
                 entity.Property(e => e.TermsOfServiceVersion).HasMaxLength(50);
 
+                entity.Property(e => e.TrashMobWaiverVersion).HasMaxLength(50);
+
                 entity.HasData(
                     new User { Id = Guid.Empty, City = "Anytown", Country = "AnyCountry", Email="info@trashmob.eco", GivenName = "TrashMob", Region = "AnyState", SurName = "Eco", UserName = "TrashMob" });
             });

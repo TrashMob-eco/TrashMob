@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -19,6 +19,16 @@ export interface WaiversProps {
     isUserLoaded: boolean;
     currentUser: UserData;
 };
+
+export const CurrentTrashMobWaiverVersion = {
+    versionId: "0.1",
+    versionDate: new Date(2022, 5, 28, 0, 0, 0, 0)
+}
+
+export class TrashMobWaiverVersion {
+    versionId: string = "0.1";
+    versionDate: Date = new Date(2022, 5, 28, 0, 0, 0, 0);
+}
 
 const Waivers: React.FC<WaiversProps> = (props) => {
 
@@ -199,13 +209,14 @@ const Waivers: React.FC<WaiversProps> = (props) => {
                 basePath: "https://demo.docusign.net/restapi",
                 returnUrl: "http://localhost:44332/waiversreturn",
             };
-
             fetch('/api/docusign', {
                 method: 'POST',
                 headers: headers,
                 body: JSON.stringify(envelopeRequest),
             }).then(response => response.json() as Promise<EnvelopeResponse>)
                 .then(data => {
+                    // Save the envelope Id to state
+                    sessionStorage.setItem('envelopeId', JSON.stringify(data.envelopeId));
                     window.location.href = data.redirectUrl;
                 })
         });

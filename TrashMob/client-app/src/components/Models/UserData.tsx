@@ -16,6 +16,8 @@ class UserData {
     privacyPolicyVersion: string = "";
     dateAgreedToTermsOfService: Date = new Date();
     termsOfServiceVersion: string = "";
+    dateAgreedToTrashMobWaiver: Date = new Date();
+    trashMobWaiverVersion: string = "";
     memberSince: Date = new Date();
     latitude: number = 0;
     longitude: number = 0;

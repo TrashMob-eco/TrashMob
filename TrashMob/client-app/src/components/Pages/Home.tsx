@@ -12,6 +12,7 @@ import UserData from '../Models/UserData';
 import { Button, Modal } from 'reactstrap';
 import { CurrentTermsOfServiceVersion } from '../TermsOfService';
 import { CurrentPrivacyPolicyVersion } from '../PrivacyPolicy';
+import { CurrentTrashMobWaiverVersion } from '../Waivers/Waivers';
 import { Col, Container, Form, Image, Row } from 'react-bootstrap';
 import Drawings from '../assets/home/Drawings.png';
 import Trash from '../assets/home/cleanup.jpg';
@@ -103,9 +104,16 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
 
         const isPrivacyPolicyOutOfDate = currentUser.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate;
         const isTermsOfServiceOutOfDate = currentUser.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate;
+        const isTrashMobWaiverOutOfDate = currentUser.dateAgreedToTrashMobWaiver < CurrentTrashMobWaiverVersion.versionDate;
 
+        // Get agreement for the privacy policy and terms of service 
         if (isPrivacyPolicyOutOfDate || isTermsOfServiceOutOfDate || (currentUser.termsOfServiceVersion === "") || (currentUser.privacyPolicyVersion === "")) {
             setIsOpen(true);
+        }
+
+        // Have user sign waiver if needed
+        if (isTrashMobWaiverOutOfDate || (currentUser.trashMobWaiverVersion === "")) {
+            history.push("/waivers");
         }
     }, [isUserLoaded, currentUser]);
 

@@ -307,11 +307,16 @@ export const App: FC = () => {
                                     <Waivers currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
                             </Route>
+                            <Route exact path="/waiversreturn">
+                                <MsalAuthenticationTemplate
+                                    interactionType={InteractionType.Redirect}
+                                    errorComponent={ErrorComponent}
+                                    loadingComponent={LoadingComponent}>
+                                    <WaiversReturn currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                </MsalAuthenticationTemplate >
+                            </Route>
                             <Route exact path="/shop">
                                 <Shop />
-                            </Route>
-                            <Route exact path="/waiversreturn">
-                                <WaiversReturn currentUser={currentUser} isUserLoaded={isUserLoaded} />
                             </Route>
                             <Route exact path="/aboutus">
                                 <AboutUs />

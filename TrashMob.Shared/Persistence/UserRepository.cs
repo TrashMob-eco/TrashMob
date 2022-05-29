@@ -32,8 +32,10 @@
             user.MemberSince = DateTimeOffset.UtcNow;
             user.DateAgreedToPrivacyPolicy = DateTimeOffset.MinValue;
             user.DateAgreedToTermsOfService = DateTimeOffset.MinValue;
+            user.DateAgreedToTrashMobWaiver = DateTimeOffset.MinValue;
             user.PrivacyPolicyVersion = string.Empty;
             user.TermsOfServiceVersion = string.Empty;
+            user.TrashMobWaiverVersion = string.Empty;
             user.IsSiteAdmin = false;
             mobDbContext.Users.Add(user);
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
