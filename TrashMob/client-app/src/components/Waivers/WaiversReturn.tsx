@@ -25,12 +25,14 @@ const WaiversReturn: FC<WaiversReturnProps> = ({ currentUser, isUserLoaded }) =>
 
     var query = useQuery();
     var eventStatus = query.get("event");
+    var envelopeId = sessionStorage.getItem("envelopeId");
 
     return (
         <div className="container-fluid card">
             <h1>Waivers Return</h1>
             <p>
                 Signing Status: {eventStatus}
+                EnvelopeId: {envelopeId}
             </p>
         </div>
     );
