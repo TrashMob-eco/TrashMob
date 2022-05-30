@@ -12,6 +12,11 @@ dotnet user-secrets init
 dotnet user-secrets set "AzureMapsKey" $mapKey
 dotnet user-secrets set "TMDBServerConnectionString" $sqlConnection
 dotnet user-secrets set "sendGridApiKey" "x"
+dotnet user-secrets set "DocusignImpersonatedUserId" "x"
+dotnet user-secrets set "DocusignClientId" "x"
+dotnet user-secrets set "DocusignAuthServer" "account-d.docusign.com"
+dotnet user-secrets set "DocusignAccountId" "x"
+dotnet user-secrets set "DocusignPrivateKey" "x"
 
 # Build the project
 dotnet build -c Debug

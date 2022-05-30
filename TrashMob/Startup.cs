@@ -45,6 +45,7 @@ namespace TrashMob
 
             services.AddDbContext<MobDbContext>();
             services.AddScoped<IContactRequestRepository, ContactRequestRepository>();
+            services.AddScoped<IDocusignManager, DocusignManager>();
             services.AddScoped<IEmailManager, EmailManager>();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();

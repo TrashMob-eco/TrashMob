@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Common
+﻿namespace TrashMob.Shared
 {
     using System;
 
