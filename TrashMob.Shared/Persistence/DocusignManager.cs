@@ -98,10 +98,8 @@ namespace TrashMob.Shared.Persistence
                     "impersonation",
                 };
 
-            using (var keyStream = new MemoryStream(Encoding.UTF8.GetBytes(privateKey)))
-            {
-                return apiClient.RequestJWTUserToken(clientId, impersonatedUserId, authServer, keyStream, 1, scopes);
-            }
+            var bytes = Encoding.UTF8.GetBytes(privateKey);
+            return apiClient.RequestJWTUserToken(clientId, impersonatedUserId, authServer, bytes, 1, scopes);
         }
 
         private static EnvelopeDefinition MakeEnvelope(string signerEmail, string signerName, Guid signerClientId, string docxDocument)
