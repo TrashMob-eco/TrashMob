@@ -68,9 +68,6 @@ namespace TrashMob
             services.AddScoped<ISecretRepository, SecretRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
-            services.AddScoped<IUserWaiverRepository, UserWaiverRepository>();
-            services.AddScoped<IWaiverDurationTypeRepository, WaiverDurationTypeRepository>();
-            services.AddScoped<IWaiverRepository, WaiverRepository>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
