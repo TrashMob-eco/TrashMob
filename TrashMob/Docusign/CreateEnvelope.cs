@@ -6,6 +6,7 @@
     using DocuSign.eSign.Client;
     using DocuSign.eSign.Model;
     using TrashMob.Common;
+    using static DocuSign.eSign.Client.Auth.OAuth;
 
     public static class CreateEnvelope
     {
@@ -23,15 +24,42 @@
         /// <returns>EnvelopeId for the new envelope</returns>
         public static EnvelopeResponse SendEnvelope(EnvelopeRequest envelopeRequest)
         {
+            const string clientId = "8d26c0ee-f419-44ac-8db5-c448b3d80e5b";
+            const string impersonatedUserId = "2fd4c07b-67eb-4795-9005-0fb49bfe241c"; // joe@trashmob.eco
+            const string authServer = "account-d.docusign.com";
+            const string privateKeyFile = "docusign\\docusign_private_key.txt";
+            const string redirectHome = "https://localhost:44332/waivers";
+            const string accountId = "406c6e30-7b74-4343-a99b-b786142b2def";
+
+            OAuthToken accessToken;
+            
+            try
+            {
+                accessToken = AuthenticateWithJWT(clientId, impersonatedUserId, authServer, privateKeyFile);
+            }
+            catch (Exception ex)
+            {
+                // Consent for impersonation must be obtained to use JWT Grant
+                if (ex.Message.Contains("consent_required"))
+                {
+                    // build a URL to provide consent for this Integratio Key and this userId
+                    string url = "https://" + authServer + "/oauth/auth?response_type=code^&scope=impersonation%20signature&client_id=" +
+                                clientId + "&redirect_uri=" + redirectHome;
+                    Console.WriteLine($"Consent is required - launch browser (URL is {url})");
+                }
+                 
+                return null;
+            }
+
             var apiClient = new ApiClient(envelopeRequest.BasePath);
-            apiClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + envelopeRequest.AccessToken);
+            apiClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + accessToken.access_token);
 
             string docxDocument = "Docusign\\TrashMob_Volunteer_Waiver_V1.docx";
 
             EnvelopesApi envelopesApi = new EnvelopesApi(apiClient);
 
             EnvelopeDefinition envelope = MakeEnvelope(envelopeRequest.SignerEmail, envelopeRequest.SignerName, envelopeRequest.SignerClientId, docxDocument);
-            EnvelopeSummary result = envelopesApi.CreateEnvelope(envelopeRequest.AccountId, envelope);
+            EnvelopeSummary result = envelopesApi.CreateEnvelope(accountId, envelope);
 
             var envelopeId = result.EnvelopeId;
 
@@ -39,7 +67,7 @@
             RecipientViewRequest viewRequest = MakeRecipientViewRequest(envelopeRequest.SignerEmail, envelopeRequest.SignerName, envelopeRequest.ReturnUrl, envelopeRequest.SignerClientId, envelopeRequest.PingUrl);
             
             // call the CreateRecipientView API
-            ViewUrl results1 = envelopesApi.CreateRecipientView(envelopeRequest.AccountId, envelopeId, viewRequest);
+            ViewUrl results1 = envelopesApi.CreateRecipientView(accountId, envelopeId, viewRequest);
 
             // Step 4. Redirect the user to the Signing Ceremony
             // Don't use an iFrame!
@@ -53,6 +81,24 @@
                 EnvelopeId = envelopeId, 
                 RedirectUrl = redirectUrl 
             };
+        }
+
+        /// <summary>
+        /// Uses Json Web Token (JWT) Authentication Method to obtain the necessary information needed to make API calls.
+        /// </summary>
+        /// <returns>Auth token needed for API calls</returns>
+        public static OAuthToken AuthenticateWithJWT(string clientId, string impersonatedUserId, string authServer, string privateKeyFile)
+        {
+            var apiClient = new ApiClient();
+            var scopes = new List<string>
+                {
+                    "signature",
+                    "impersonation",
+                };
+
+            return apiClient.RequestJWTUserToken(
+                clientId, impersonatedUserId, authServer,
+                DSHelper.ReadFileContent(DSHelper.PrepareFullPrivateKeyFilePath(privateKeyFile)), 1, scopes);
         }
 
         private static EnvelopeDefinition MakeEnvelope(string signerEmail, string signerName, Guid signerClientId, string docxDocument)

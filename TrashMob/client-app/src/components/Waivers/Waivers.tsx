@@ -182,9 +182,9 @@ const Waivers: React.FC<WaiversProps> = (props) => {
 
     async function signWaiver() {
 
-        if (!checkToken()) {
-            return; // Problem! The user needs to login
-        }
+        //if (!checkToken()) {
+        //    return; // Problem! The user needs to login
+        //}
 
         const account = msalClient.getAllAccounts()[0];
 
@@ -276,13 +276,13 @@ const Waivers: React.FC<WaiversProps> = (props) => {
     let pagebody;
     switch (page) {
         case 'welcome': // not logged in
-            pagebody = Welcome();
+            pagebody = LoggedIn();
             break;
         case 'loggedIn':
             pagebody = LoggedIn();
             break;
         default:
-            pagebody = Welcome();
+            pagebody = LoggedIn();
     };
 
     // Compute the name block for the top nav section
