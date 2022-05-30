@@ -3,7 +3,6 @@ namespace TrashMob.Shared.Persistence
 {
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using System.Threading.Tasks;
     using System;
     using System.Collections.Generic;
     using DocuSign.eSign.Api;
@@ -31,7 +30,8 @@ namespace TrashMob.Shared.Persistence
             string authServer = configuration["DocusignAuthServer"];
             string privateKey = configuration["DocusignPrivateKey"];
             string accountId = configuration["DocusignAccountId"];
-            const string redirectHome = "https://localhost:44332/waivers";
+            string basePath = configuration["DocusignBasePath"];
+            string redirectHome = configuration["DocusignRedirectHome"];
 
             OAuthToken accessToken;
 
@@ -53,7 +53,7 @@ namespace TrashMob.Shared.Persistence
                 throw;
             }
 
-            var apiClient = new ApiClient(envelopeRequest.BasePath);
+            var apiClient = new ApiClient(basePath);
             apiClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + accessToken.access_token);
 
             string docxDocument = "Docusign\\TrashMob_Volunteer_Waiver_V1.docx";

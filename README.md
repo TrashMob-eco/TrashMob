@@ -126,9 +126,10 @@ If you are, however, attempting to test or alter the Docusign workflow, here are
 4. This should bring you to a page with "My Account Information" at the top.
 5. Click Add App and Integration Key
 6. Set the App Name
-7. Open Visual Studio Code and a terminal window within
-8. cd trashmob
-9. Set the following user secrets using dotnet user-secrets set with the following names / values
+7. Set the RedirectUrl to https://localhost:44332/waivers
+8. Open Visual Studio Code and a terminal window within
+9. cd trashmob
+10. Set the following user secrets using dotnet user-secrets set with the following names / values
 
 | Secret Name | Where to get the value |
 | --- | --- |
@@ -137,20 +138,20 @@ If you are, however, attempting to test or alter the Docusign workflow, here are
 | DocusignClientId | Integration Key from the Apps and Integration Keys section |
 | DocusignAuthServer | account-d.docusign.com |
 | DocusignPrivateKey | Click the Actions pull down under apps and integration keys, and click edit. Then under service integration, click generate RSA. Copy the value for PrivateKey, and use that as the secret |
+| DocusignBasePath | https://demo.docusign.net/restapi |
+| DocusignRedirectHome | https://localhost:44332/waivers | 
 
-10. Set a breakpoint in the DocusignManager.SendEnvelope method
-11. Start the code in the debugger
-12. Log in to TrashMob via the debugger browser
-13. Click "Create an Event"
-14. When the breakpoint is reached, step until you get into the catch handler after AuthenticateWithJWT call
-15. Step into the if statement and get the value for the url that is created.
-16. Open a browser, and paste that Url into the browser.
-17. Accept the consent as instructed in the window.
-18. Close the browser
-19. Restart your debugger session
-20. You should now be able to go through the regular Docusign Waiver form flow.
-
-
+11. Set a breakpoint in the DocusignManager.SendEnvelope method
+12. Start the code in the debugger
+13. Log in to TrashMob via the debugger browser
+14. Click "Create an Event"
+15. When the breakpoint is reached, step until you get into the catch handler after AuthenticateWithJWT call
+16. Step into the if statement and get the value for the url that is created.
+17. Open a browser, and paste that Url into the browser.
+18. Accept the consent as instructed in the window.
+19. Close the browser
+20. Restart your debugger session
+21. You should now be able to go through the regular Docusign Waiver form flow.
 
 ## Getting Started - Mobile Development
 
