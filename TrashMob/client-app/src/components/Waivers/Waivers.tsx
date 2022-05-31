@@ -50,12 +50,17 @@ const Waivers: React.FC<WaiversProps> = (props) => {
 
             const headers = getDefaultHeaders('POST');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+            var hostname = window.location.hostname;
+
+            if (hostname === "localhost") {
+                hostname = hostname + ":" + window.location.port
+            }
 
             const envelopeRequest = {
                 signerEmail: email,
                 signerName: name,
                 signerClientId: props.currentUser.id,
-                returnUrl: "http://localhost:44332/waiversreturn",
+                returnUrl: "https://" + hostname + "/waiversreturn",
             };
             fetch('/api/docusign', {
                 method: 'POST',
