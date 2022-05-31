@@ -12,7 +12,6 @@ import UserData from '../Models/UserData';
 import { Button, Modal } from 'reactstrap';
 import { CurrentTermsOfServiceVersion } from '../TermsOfService';
 import { CurrentPrivacyPolicyVersion } from '../PrivacyPolicy';
-import { CurrentTrashMobWaiverVersion } from '../Waivers/Waivers';
 import { Col, Container, Form, Image, Row } from 'react-bootstrap';
 import Drawings from '../assets/home/Drawings.png';
 import Trash from '../assets/home/cleanup.jpg';
@@ -34,7 +33,7 @@ export interface HomeProps extends RouteComponentProps<any> {
     isUserEventDataLoaded: boolean;
 }
 
-const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated, myAttendanceList, isUserEventDataLoaded, onAttendanceChanged }) => {
+const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated, myAttendanceList, isUserEventDataLoaded, onAttendanceChanged, location, match }) => {
     const [eventList, setEventList] = useState<EventData[]>([]);
     const [eventTypeList, setEventTypeList] = useState<EventTypeData[]>([]);
     const [isEventDataLoaded, setIsEventDataLoaded] = useState(false);
@@ -104,16 +103,10 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
 
         const isPrivacyPolicyOutOfDate = currentUser.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate;
         const isTermsOfServiceOutOfDate = currentUser.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate;
-        const isTrashMobWaiverOutOfDate = currentUser.dateAgreedToTrashMobWaiver < CurrentTrashMobWaiverVersion.versionDate;
 
         // Get agreement for the privacy policy and terms of service 
         if (isPrivacyPolicyOutOfDate || isTermsOfServiceOutOfDate || (currentUser.termsOfServiceVersion === "") || (currentUser.privacyPolicyVersion === "")) {
             setIsOpen(true);
-        }
-
-        // Have user sign waiver if needed
-        if (isTrashMobWaiverOutOfDate || (currentUser.trashMobWaiverVersion === "")) {
-            history.push("/waivers");
         }
     }, [isUserLoaded, currentUser]);
 
@@ -270,7 +263,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
                             <div className="w-100 m-0">
                                 <AzureMapsProvider>
                                     <>
-                                        <MapControllerPointCollection center={center} multipleEvents={eventList} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={onAttendanceChanged} onDetailsSelected={handleDetailsSelected} />
+                                        <MapControllerPointCollection center={center} multipleEvents={eventList} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={onAttendanceChanged} onDetailsSelected={handleDetailsSelected} history={history} location={location} match={match} />
                                     </>
                                 </AzureMapsProvider>
                             </div>
@@ -279,7 +272,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
                         <>
                             <Link to="/manageeventdashboard">Create a New Event</Link>
                             <div className="container-lg">
-                                <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} />
+                                    <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} history={history} location={location} match={match} />
                             </div>
                         </>
                     )}

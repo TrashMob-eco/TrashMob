@@ -5,8 +5,10 @@ import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import EventAttendeeData from './Models/EventAttendeeData';
 import UserData from './Models/UserData';
 import { DisplayEvent } from './MainEvents';
+import { RouteComponentProps } from 'react-router-dom';
+import { CurrentTrashMobWaiverVersion } from './Waivers/Waivers';
 
-interface RegisterBtnProps {
+interface RegisterBtnProps extends RouteComponentProps {
     currentUser: UserData;
     eventId: DisplayEvent["id"];
     isAttending: DisplayEvent["isAttending"];
@@ -14,7 +16,7 @@ interface RegisterBtnProps {
     onAttendanceChanged: any;
 };
 
-export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAttending, isUserLoaded, onAttendanceChanged }) => {
+export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAttending, isUserLoaded, onAttendanceChanged, history }) => {
     console.log('cur', currentUser, eventId, 'isAt', isAttending, 'isUsr', isUserLoaded, onAttendanceChanged)
     const addAttendee = (eventId: string) => {
         const account = msalClient.getAllAccounts()[0];
@@ -46,6 +48,13 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
     }
 
     const handleAttend = (eventId: string) => {
+
+         // Have user sign waiver if needed
+         const isTrashMobWaiverOutOfDate = currentUser.dateAgreedToTrashMobWaiver < CurrentTrashMobWaiverVersion.versionDate;
+         if (isTrashMobWaiverOutOfDate || (currentUser.trashMobWaiverVersion === "")) {
+            history.push("/waivers");
+         }
+
         const accounts = msalClient.getAllAccounts();
 
         if (accounts === null || accounts.length === 0) {

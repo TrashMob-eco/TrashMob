@@ -13,8 +13,9 @@ import PartnerData from '../Models/PartnerData';
 import * as Constants from '../Models/Constants';
 import AddressData from '../Models/AddressData';
 import MapControllerPointCollection from '../MapControllerPointCollection';
+import { RouteComponentProps } from 'react-router-dom';
 
-export interface PartnerLocationsDataProps {
+export interface PartnerLocationsDataProps extends RouteComponentProps {
     partner: PartnerData;
     partnerLocations: PartnerLocationData[];
     isPartnerLocationDataLoaded: boolean;
@@ -658,7 +659,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     <Form.Row>
                         <AzureMapsProvider>
                             <>
-                                <MapControllerPointCollection center={center} multipleEvents={[]} isEventDataLoaded={isLocationDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={locationName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} myAttendanceList={[]} isUserEventDataLoaded={true} onAttendanceChanged={handleAttendanceChanged} onDetailsSelected={handleDetailsSelected} />
+                                <MapControllerPointCollection center={center} multipleEvents={[]} isEventDataLoaded={isLocationDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={locationName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} myAttendanceList={[]} isUserEventDataLoaded={true} onAttendanceChanged={handleAttendanceChanged} onDetailsSelected={handleDetailsSelected} history={props.history} location={props.location} match={props.match} />
                             </>
                         </AzureMapsProvider>
                     </Form.Row>

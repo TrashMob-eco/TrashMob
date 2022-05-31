@@ -28,7 +28,7 @@ export interface EventDetailsProps extends RouteComponentProps<DetailsMatchParam
     isUserEventDataLoaded: boolean;
 }
 
-export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUserLoaded, myAttendanceList, onAttendanceChanged, isUserEventDataLoaded }) => {
+export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUserLoaded, myAttendanceList, onAttendanceChanged, isUserEventDataLoaded, history, location }) => {
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
     const [eventId, setEventId] = useState<string>(match.params["eventId"]);
     const [eventName, setEventName] = useState<string>("New Event");
@@ -212,7 +212,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                                     <Dropdown.Item className="share-link" href={twitterUrl}><Twitter className="mr-2" aria-hidden="true" />Share to Twitter</Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
-                            <RegisterBtn eventId={eventId} isAttending={isAttending} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} isUserLoaded={isUserLoaded}></RegisterBtn>
+                            <RegisterBtn eventId={eventId} isAttending={isAttending} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} isUserLoaded={isUserLoaded} history={history} location={location} match={match}></RegisterBtn>
                         </div>
                     </div>
                     <span className="my-2 event-list-event-type p-2 rounded d-block">{getEventType(eventTypeList, eventTypeId)}</span>

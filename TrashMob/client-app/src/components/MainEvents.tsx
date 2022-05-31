@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, RouteComponentProps } from 'react-router-dom';
 import { getEventType } from '../store/eventTypeHelper';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
@@ -18,7 +18,7 @@ export interface DisplayEvent {
     creator: string;
 }
 
-export interface MainEventsDataProps {
+export interface MainEventsDataProps extends RouteComponentProps {
     eventList: EventData[];
     eventTypeList: EventTypeData[];
     myAttendanceList: EventData[];
@@ -30,7 +30,7 @@ export interface MainEventsDataProps {
 };
 
 export const MainEvents: FC<MainEventsDataProps> = ({ isEventDataLoaded, eventList, isUserEventDataLoaded,
-    myAttendanceList, isUserLoaded, eventTypeList, currentUser, onAttendanceChanged }) => {
+    myAttendanceList, isUserLoaded, eventTypeList, currentUser, onAttendanceChanged, history, location, match }) => {
     const [displayEvents, setDisplayEvents] = useState<DisplayEvent[]>([]);
 
     useEffect(() => {
@@ -81,7 +81,7 @@ export const MainEvents: FC<MainEventsDataProps> = ({ isEventDataLoaded, eventLi
                                 </div>
                                 <div className="mt-3 mt-sm-0">
                                     <Link to={'/eventdetails/' + mobEvent.id}><button className="btn btn-outline mr-2 font-weight-bold btn-128">View</button></Link>
-                                    <RegisterBtn eventId={mobEvent.id} isAttending={mobEvent.isAttending} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} isUserLoaded={isUserLoaded}></RegisterBtn>
+                                    <RegisterBtn eventId={mobEvent.id} isAttending={mobEvent.isAttending} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} isUserLoaded={isUserLoaded} history={history} location={location} match={match} ></RegisterBtn>
                                 </div>
                             </div>
                         </li>
