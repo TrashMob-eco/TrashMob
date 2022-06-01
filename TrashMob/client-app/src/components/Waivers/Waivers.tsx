@@ -69,7 +69,7 @@ const Waivers: React.FC<WaiversProps> = (props) => {
             }).then(response => response.json() as Promise<EnvelopeResponse>)
                 .then(data => {
                     // Save the envelope Id to state
-                    sessionStorage.setItem('envelopeId', JSON.stringify(data.envelopeId));
+                    sessionStorage.setItem('envelopeId', data.envelopeId);
                     window.location.href = data.redirectUrl;
                 })
         });

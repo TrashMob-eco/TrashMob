@@ -53,6 +53,9 @@ interface CancelProps extends RouteComponentProps<CancelEventMatchParams> {
 interface DetailsProps extends RouteComponentProps<DetailsMatchParams> {
 }
 
+interface WaiversReturnProps extends RouteComponentProps {
+}
+
 export const App: FC = () => {
     const [isUserLoaded, setIsUserLoaded] = useState(false);
     const [currentUser, setCurrentUser] = useState<UserData>(new UserData());
@@ -130,6 +133,16 @@ export const App: FC = () => {
                 errorComponent={ErrorComponent}
                 loadingComponent={LoadingComponent}>
                 <CancelEvent {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+            </MsalAuthenticationTemplate >);
+    }
+
+    function renderWaiversReturn(inp: WaiversReturnProps) {
+        return (
+            <MsalAuthenticationTemplate
+                interactionType={InteractionType.Redirect}
+                errorComponent={ErrorComponent}
+                loadingComponent={LoadingComponent}>
+                <WaiversReturn {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
             </MsalAuthenticationTemplate >);
     }
 
@@ -259,6 +272,7 @@ export const App: FC = () => {
                             <Route path="/eventsummary/:eventId?" render={(props: AppProps) => renderEventSummary(props)} />
                             <Route path="/eventdetails/:eventId" render={(props: DetailsProps) => renderEventDetails(props)} />
                             <Route path="/cancelevent/:eventId" render={(props: CancelProps) => renderCancelEvent(props)} />
+                            <Route path="/waiversreturn" render={(props: WaiversReturnProps) => renderWaiversReturn(props)} />
                             <Route exact path="/mydashboard">
                                 <MsalAuthenticationTemplate
                                     interactionType={InteractionType.Redirect}
@@ -305,14 +319,6 @@ export const App: FC = () => {
                                     errorComponent={ErrorComponent}
                                     loadingComponent={LoadingComponent}>
                                     <Waivers currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                                </MsalAuthenticationTemplate >
-                            </Route>
-                            <Route exact path="/waiversreturn">
-                                <MsalAuthenticationTemplate
-                                    interactionType={InteractionType.Redirect}
-                                    errorComponent={ErrorComponent}
-                                    loadingComponent={LoadingComponent}>
-                                    <WaiversReturn currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
                             </Route>
                             <Route exact path="/shop">

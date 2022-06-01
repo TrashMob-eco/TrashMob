@@ -1,38 +1,84 @@
 import { FC, useEffect, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { RouteComponentProps, useLocation } from 'react-router-dom';
+import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
+import { CurrentTrashMobWaiverVersion } from './Waivers';
 
-export interface WaiversReturnProps {
+export interface WaiversReturnProps extends RouteComponentProps {
     isUserLoaded: boolean;
     currentUser: UserData;
+    onUserUpdated: any;
 };
 
-const WaiversReturn: FC<WaiversReturnProps> = ({ currentUser, isUserLoaded }) => {
+const WaiversReturn: FC<WaiversReturnProps> = ({ currentUser, isUserLoaded, onUserUpdated, history }) => {
 
     useEffect(() => {
         if (!isUserLoaded || !currentUser) {
             return;
         }
+
+        var envelopeId = sessionStorage.getItem("envelopeId");
+        var targetUrl = sessionStorage.getItem("targetUrl");
+
+        if (envelopeId) {
+
+            const account = msalClient.getAllAccounts()[0];
+
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                fetch('/api/docusign/' + envelopeId, {
+                    method: 'GET',
+                    headers: headers,
+                })
+                    .then(response => response.json() as Promise<string>)
+                    .then(envelopeStatus => {
+                        if (envelopeStatus === "signing_complete") {
+                            fetch('/api/users/' + currentUser.id, {
+                                method: 'GET',
+                                headers: headers,
+                            })
+                                .then(response => response.json() as Promise<UserData>)
+                                .then(user => {
+                                    if (user) {
+                                        user.dateAgreedToTrashMobWaiver = new Date();
+                                        user.termsOfServiceVersion = CurrentTrashMobWaiverVersion.versionId;
+                                        fetch('/api/Users/', {
+                                            method: 'PUT',
+                                            headers: headers,
+                                            body: JSON.stringify(user)
+                                        })
+                                            .then(response => response.json() as Promise<UserData>)
+                                            .then(_ => {
+                                                onUserUpdated();
+                                                if (!targetUrl || targetUrl === "") {
+                                                    history.push("/");
+                                                }
+                                                else {
+                                                    sessionStorage.setItem("targetUrl", "")
+                                                    history.push(targetUrl);
+                                                }
+                                            })
+                                    }
+                                })
+                        }
+                })
+            });
+        }
     }, [isUserLoaded, currentUser]);
-
-    // A custom hook that builds on useLocation to parse
-    // the query string for you.
-    function useQuery() {
-        const { search } = useLocation();
-
-        return useMemo(() => new URLSearchParams(search), [search]);
-    }
-
-    var query = useQuery();
-    var eventStatus = query.get("event");
-    var envelopeId = sessionStorage.getItem("envelopeId");
 
     return (
         <div className="container-fluid card">
-            <h1>Waivers Return</h1>
+            <h1>Waiver Signing Incomplete</h1>
             <p>
-                Signing Status: {eventStatus}
-                EnvelopeId: {envelopeId}
+                The waiver signing process did not complete successfully. Please try again.
             </p>
         </div>
     );

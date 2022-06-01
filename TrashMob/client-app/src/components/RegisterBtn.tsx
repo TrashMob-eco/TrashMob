@@ -51,7 +51,8 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
 
          // Have user sign waiver if needed
          const isTrashMobWaiverOutOfDate = currentUser.dateAgreedToTrashMobWaiver < CurrentTrashMobWaiverVersion.versionDate;
-         if (isTrashMobWaiverOutOfDate || (currentUser.trashMobWaiverVersion === "")) {
+        if (isTrashMobWaiverOutOfDate || (currentUser.trashMobWaiverVersion === "")) {
+            sessionStorage.setItem('targetUrl', window.location.pathname);
             history.push("/waivers");
          }
 

@@ -11,28 +11,35 @@ namespace TrashMob.Shared.Persistence
     using static DocuSign.eSign.Client.Auth.OAuth;
     using System.IO;
     using System.Text;
+    using System.Threading.Tasks;
 
     public class DocusignManager : IDocusignManager
     {
         private readonly IConfiguration configuration;
         private readonly ILogger<DocusignManager> logger;
+        private string clientId;
+        private string impersonatedUserId;
+        private string authServer;
+        private string privateKey;
+        private string accountId;
+        private string basePath;
+        private string redirectHome;
 
         public DocusignManager(IConfiguration configuration, ILogger<DocusignManager> logger)
         {
             this.configuration = configuration;
             this.logger = logger;
+            clientId = configuration["DocusignClientId"];
+            impersonatedUserId = configuration["DocusignImpersonatedUserId"]; // joe@trashmob.eco
+            authServer = configuration["DocusignAuthServer"];
+            privateKey = configuration["DocusignPrivateKey"];
+            accountId = configuration["DocusignAccountId"];
+            basePath = configuration["DocusignBasePath"];
+            redirectHome = configuration["DocusignRedirectHome"];
         }
 
         public EnvelopeResponse SendEnvelope(EnvelopeRequest envelopeRequest)
         {
-            string clientId = configuration["DocusignClientId"];
-            string impersonatedUserId = configuration["DocusignImpersonatedUserId"]; // joe@trashmob.eco
-            string authServer = configuration["DocusignAuthServer"];
-            string privateKey = configuration["DocusignPrivateKey"];
-            string accountId = configuration["DocusignAccountId"];
-            string basePath = configuration["DocusignBasePath"];
-            string redirectHome = configuration["DocusignRedirectHome"];
-
             OAuthToken accessToken;
 
             try
@@ -224,6 +231,38 @@ namespace TrashMob.Shared.Persistence
             }
 
             return viewRequest;
+        }
+
+        public async Task<string> GetEnvelopeStatus(string envelopeId)
+        {
+            OAuthToken accessToken;
+
+            try
+            {
+                accessToken = AuthenticateWithJWT(clientId, impersonatedUserId, authServer, privateKey);
+            }
+            catch (Exception ex)
+            {
+                // Consent for impersonation must be obtained to use JWT Grant
+                if (ex.Message.Contains("consent_required"))
+                {
+                    // build a URL to provide consent for this Integratio Key and this userId
+                    string url = "https://" + authServer + "/oauth/auth?response_type=code^&scope=impersonation%20signature&client_id=" +
+                                clientId + "&redirect_uri=" + redirectHome;
+                    logger.LogError($"Consent is required - launch browser (URL is {url})");
+                }
+
+                throw;
+            }
+
+            var apiClient = new ApiClient(basePath);
+            apiClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + accessToken.access_token);
+
+            EnvelopesApi envelopesApi = new EnvelopesApi(apiClient);
+
+            var envelope = await envelopesApi.GetEnvelopeAsync(accountId, envelopeId);
+
+            return envelope.Status;
         }
     }
 }

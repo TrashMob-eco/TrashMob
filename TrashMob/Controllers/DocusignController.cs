@@ -3,6 +3,7 @@
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using System;
     using System.Threading.Tasks;
     using TrashMob.Shared;
     using TrashMob.Shared.Persistence;
@@ -32,6 +33,22 @@
 
             // Create the Envelope
             var result = docusignManager.SendEnvelope(envelope);
+
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpGet("{userId}/{envelopeId}")]
+        public async Task<IActionResult> GetEnvelopeStatus(Guid userId, string envelopeId)
+        {
+            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
+            if (user == null || !ValidateUser(user.NameIdentifier))
+            {
+                return Forbid();
+            }
+
+            // Get the Envelope Status
+            var result = await docusignManager.GetEnvelopeStatus(envelopeId);
 
             return Ok(result);
         }
