@@ -21,7 +21,7 @@ const WaiversReturn: FC<WaiversReturnProps> = ({ currentUser, isUserLoaded, onUs
 
         var envelopeId = sessionStorage.getItem("envelopeId");
 
-        var targetUrl = sessionStorage.getItem("targetUrl");
+        // var targetUrl = sessionStorage.getItem("targetUrl");
 
         if (envelopeId) {
 
@@ -71,7 +71,7 @@ const WaiversReturn: FC<WaiversReturnProps> = ({ currentUser, isUserLoaded, onUs
                                             //    }
                                             //    else {
                                             //        sessionStorage.setItem("targetUrl", "")
-                                            //        history.push("/" + targetUrl);
+                                            //        history.push(targetUrl);
                                             //    }
                                             })
                                     }
@@ -86,7 +86,7 @@ const WaiversReturn: FC<WaiversReturnProps> = ({ currentUser, isUserLoaded, onUs
         else {
             setIsSigned(true);
         }
-    }, [isUserLoaded, currentUser]);
+    }, [isUserLoaded, currentUser, history, onUserUpdated]);
 
     const renderIncomplete = () => {
         return (
