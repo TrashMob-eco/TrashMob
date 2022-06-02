@@ -190,7 +190,8 @@ export const App: FC = () => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders('PUT');
+            const method = 'POST';
+            const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
             const user = new UserData();
 
@@ -202,7 +203,7 @@ export const App: FC = () => {
             }
 
             fetch('/api/Users', {
-                method: 'POST',
+                method: method,
                 headers: headers,
                 body: JSON.stringify(user)
             })
@@ -215,9 +216,11 @@ export const App: FC = () => {
                         user.surName = data.surName;
                         user.dateAgreedToPrivacyPolicy = data.dateAgreedToPrivacyPolicy;
                         user.dateAgreedToTermsOfService = data.dateAgreedToTermsOfService;
+                        user.dateAgreedToTrashMobWaiver = data.dateAgreedToTrashMobWaiver;
                         user.memberSince = data.memberSince;
                         user.privacyPolicyVersion = data.privacyPolicyVersion;
                         user.termsOfServiceVersion = data.termsOfServiceVersion;
+                        user.trashMobWaiverVersion = data.trashMobWaiverVersion;
                         user.isSiteAdmin = data.isSiteAdmin;
                         setCurrentUser(user);
                         setIsUserLoaded(true);
