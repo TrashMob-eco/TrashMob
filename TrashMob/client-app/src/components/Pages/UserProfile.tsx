@@ -488,6 +488,14 @@ const UserProfile: FC<UserProfileProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.UserProfileTermsOfServiceVersion}</Tooltip>
     }
 
+    const renderDateAgreedToTrashMobWaiverToolTip = (props: any) => {
+        return <Tooltip {...props}>{ToolTips.UserProfileDateAgreedToTrashMobWaiver}</Tooltip>
+    }
+
+    const renderTrashMobWaiverVersionToolTip = (props: any) => {
+        return <Tooltip {...props}>{ToolTips.UserProfileTrashMobWaiverVersion}</Tooltip>
+    }
+
     const renderMemberSinceToolTip = (props: any) => {
         return <Tooltip {...props}>{ToolTips.UserProfileMemberSince}</Tooltip>
     }
@@ -803,6 +811,24 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                                                 <Form.Label className="control-label font-weight-bold" htmlFor="TermsOfServiceVersion">Terms Of Service Version:</Form.Label>
                                             </OverlayTrigger>
                                             <Form.Control type="text" disabled defaultValue={termsOfServiceVersion} />
+                                        </Form.Group>
+                                    </Col>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderDateAgreedToTrashMobWaiverToolTip}>
+                                                <Form.Label className="control-label font-weight-bold" htmlFor="dateAgreedToTrashMobWaiver">Date Agreed To TrashMob Waiver:</Form.Label>
+                                            </OverlayTrigger>
+                                            <Form.Control type="text" disabled defaultValue={dateAgreedToTrashMobWaiver ? dateAgreedToTrashMobWaiver.toString() : ""} />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderTrashMobWaiverVersionToolTip}>
+                                                <Form.Label className="control-label font-weight-bold" htmlFor="TrashMobWaiverVersion">TrashMob Waiver Version:</Form.Label>
+                                            </OverlayTrigger>
+                                            <Form.Control type="text" disabled defaultValue={trashMobWaiverVersion} />
                                         </Form.Group>
                                     </Col>
                                 </Form.Row>

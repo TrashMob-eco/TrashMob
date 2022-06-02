@@ -131,7 +131,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         } else {
             console.log("Not Available");
         }
-    }, [eventId])
+    }, [eventId, props.currentUser.dateAgreedToTrashMobWaiver, props.currentUser.trashMobWaiverVersion, props.history])
 
 
     function handleEventNameChanged(val: string) {
