@@ -45,6 +45,7 @@ namespace TrashMob
 
             services.AddDbContext<MobDbContext>();
             services.AddScoped<IContactRequestRepository, ContactRequestRepository>();
+            services.AddScoped<IDocusignManager, DocusignManager>();
             services.AddScoped<IEmailManager, EmailManager>();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
@@ -67,9 +68,6 @@ namespace TrashMob
             services.AddScoped<ISecretRepository, SecretRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
-            services.AddScoped<IUserWaiverRepository, UserWaiverRepository>();
-            services.AddScoped<IWaiverDurationTypeRepository, WaiverDurationTypeRepository>();
-            services.AddScoped<IWaiverRepository, WaiverRepository>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 

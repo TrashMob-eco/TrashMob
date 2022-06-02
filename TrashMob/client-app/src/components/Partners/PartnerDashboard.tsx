@@ -272,7 +272,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         return (
             <div>
                 <h2>Partner Locations for {partner.name}</h2>
-                <PartnerLocations partnerLocations={partnerLocationList} partner={partner} isPartnerLocationDataLoaded={isPartnerLocationDataLoaded} onPartnerLocationsUpdated={handlePartnerLocationsUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                <PartnerLocations partnerLocations={partnerLocationList} partner={partner} isPartnerLocationDataLoaded={isPartnerLocationDataLoaded} onPartnerLocationsUpdated={handlePartnerLocationsUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} history={props.history} location={props.location} match={props.match} />
             </div >
         )
     }

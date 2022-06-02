@@ -105,6 +105,54 @@ Add the following launchsettings.json file (may need to create it if you don't h
 
 ```
 
+## Setting up your environment for Docusign Integration Testing
+
+Docusign is integrated with the TrashMob.eco to ensure that a user has signed the appropriate liability waivers before attending a
+TrashMob.eco event. If the user has not previously signed a waiver, or the waiver they signed is out of date, they will be asked to 
+sign a new waiver either when they try to create a new event, or when they sign up for an existing event.
+
+For developers, there are a number of secrets that need to be set up in your environment before you can test with an identity which has not signed the
+waiver for testing. 
+
+If you are a new developer and have no need to test the Docusign flow, simply sign into the Dev site for TrashMob.eco, and create or register for an event. 
+When you try to do this, the system will ask you to sign the waivers. Follow the instructions, and then you can begin testing locally without needing the 
+integration to work. This is, by far, the easiest way to get start on non-docusign features, and is highly recommended.
+
+If you are, however, attempting to test or alter the Docusign workflow, here are the steps you need to take:
+
+1. Create a Developer Account at https://appdemo.docusign.com/home
+2. Click on **Settings** in the top action bar
+3. Click on Integrations / Apps and Keys in the Left Action Bar
+4. This should bring you to a page with "My Account Information" at the top.
+5. Click Add App and Integration Key
+6. Set the App Name
+7. Set the RedirectUrl to https://localhost:44332/waivers
+8. Open Visual Studio Code and a terminal window within
+9. cd trashmob
+10. Set the following user secrets using dotnet user-secrets set with the following names / values
+
+| Secret Name | Where to get the value |
+| --- | --- |
+| DocusignAccountId | API Account Id under My Account Information |
+| DocusignImpersonatedUserId | Use Id under My Account Information |
+| DocusignClientId | Integration Key from the Apps and Integration Keys section |
+| DocusignAuthServer | account-d.docusign.com |
+| DocusignPrivateKey | Click the Actions pull down under apps and integration keys, and click edit. Then under service integration, click generate RSA. Copy the value for PrivateKey, and use that as the secret |
+| DocusignBasePath | https://demo.docusign.net/restapi |
+| DocusignRedirectHome | https://localhost:44332/waivers | 
+
+11. Set a breakpoint in the DocusignManager.SendEnvelope method
+12. Start the code in the debugger
+13. Log in to TrashMob via the debugger browser
+14. Click "Create an Event"
+15. When the breakpoint is reached, step until you get into the catch handler after AuthenticateWithJWT call
+16. Step into the if statement and get the value for the url that is created.
+17. Open a browser, and paste that Url into the browser.
+18. Accept the consent as instructed in the window.
+19. Close the browser
+20. Restart your debugger session
+21. You should now be able to go through the regular Docusign Waiver form flow.
+
 ## Getting Started - Mobile Development
 
 The mobile app is written using Xamarin. It requires a few prerequisites in order to get it compiling and running.

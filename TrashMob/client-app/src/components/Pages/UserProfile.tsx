@@ -41,8 +41,10 @@ const UserProfile: FC<UserProfileProps> = (props) => {
     const [postalCode, setPostalCode] = useState<string>();
     const [dateAgreedToPrivacyPolicy, setDateAgreedToPrivacyPolicy] = useState<Date>(new Date());
     const [dateAgreedToTermsOfService, setDateAgreedToTermsOfService] = useState<Date>(new Date());
+    const [dateAgreedToTrashMobWaiver, setDateAgreedToTrashMobWaiver] = useState<Date>(new Date());
     const [privacyPolicyVersion, setPrivacyPolicyVersion] = useState<string>("");
     const [termsOfServiceVersion, setTermsOfServiceVersion] = useState<string>("");
+    const [trashMobWaiverVersion, setTrashMobWaiverVersion] = useState<string>("");
     const [memberSince, setMemberSince] = useState<Date>(new Date());
     const [userNameErrors, setUserNameErrors] = useState<string>("");
     const [givenNameErrors, setGivenNameErrors] = useState<string>("");
@@ -101,8 +103,10 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                         setPostalCode(data.postalCode);
                         setDateAgreedToPrivacyPolicy(data.dateAgreedToPrivacyPolicy);
                         setDateAgreedToTermsOfService(data.dateAgreedToTermsOfService);
+                        setDateAgreedToTrashMobWaiver(data.dateAgreedToTrashMobWaiver);
                         setPrivacyPolicyVersion(data.privacyPolicyVersion);
                         setTermsOfServiceVersion(data.termsOfServiceVersion);
+                        setTrashMobWaiverVersion(data.trashMobWaiverVersion);
                         setMemberSince(data.memberSince);
                         setSourceSystemUserName(data.sourceSystemUserName);
                         setLatitude(data.latitude);
@@ -244,6 +248,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
         userData.postalCode = postalCode ?? "";
         userData.dateAgreedToPrivacyPolicy = new Date(dateAgreedToPrivacyPolicy);
         userData.dateAgreedToTermsOfService = new Date(dateAgreedToTermsOfService);
+        userData.dateAgreedToTrashMobWaiver = new Date(dateAgreedToTrashMobWaiver);
         userData.privacyPolicyVersion = privacyPolicyVersion ?? "";
         userData.termsOfServiceVersion = termsOfServiceVersion;
         userData.memberSince = new Date(memberSince);

@@ -60,12 +60,6 @@
 
         public virtual DbSet<UserNotificationType> UserNotificationTypes { get; set; }
 
-        public virtual DbSet<Waiver> Waivers { get; set; }
-
-        public virtual DbSet<UserWaiver> UserWaivers { get; set; }
-
-        public virtual DbSet<WaiverDurationType> WaiverDurationTypes { get; set; }
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"]);
@@ -149,63 +143,6 @@
                     .HasForeignKey(d => d.PartnerStatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Partners_PartnerRequestStatus");
-            });
-
-            modelBuilder.Entity<Waiver>(entity =>
-            {
-                entity.Property(e => e.Name).HasMaxLength(128);
-
-                entity.Property(e => e.Version).HasMaxLength(64);
-
-                entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.WaiversCreated)
-                    .HasForeignKey(d => d.CreatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Waivers_CreatedByUser_Id");
-
-                entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.WaiversUpdated)
-                    .HasForeignKey(d => d.LastUpdatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Waivers_LastUpdatedByUser_Id");
-
-                entity.HasOne(d => d.WaiverDurationType)
-                    .WithMany(p => p.Waivers)
-                    .HasForeignKey(d => d.WaiverDurationTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Waivers_WaiverDurationType_Id");
-            });
-
-            modelBuilder.Entity<UserWaiver>(entity =>
-            {
-                entity.HasKey(e => new { e.UserId, e.WaiverId, });
-
-                entity.Property(e => e.UserId)
-                    .IsRequired();
-
-                entity.HasOne(d => d.Waiver)
-                    .WithMany()
-                    .HasForeignKey(d => d.WaiverId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserWaiver_Waivers");
-
-                entity.HasOne(d => d.User)
-                    .WithMany()
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserWaiver_User");
-
-                entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.UserWaiversCreated)
-                    .HasForeignKey(d => d.CreatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserWaivers_CreatedByUser_Id");
-
-                entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.UserWaiversUpdated)
-                    .HasForeignKey(d => d.LastUpdatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserWaivers_LastUpdatedByUser_Id");
             });
 
             modelBuilder.Entity<PartnerUser>(entity =>
@@ -323,6 +260,8 @@
                 entity.Property(e => e.PrivacyPolicyVersion).HasMaxLength(50);
 
                 entity.Property(e => e.TermsOfServiceVersion).HasMaxLength(50);
+
+                entity.Property(e => e.TrashMobWaiverVersion).HasMaxLength(50);
 
                 entity.HasData(
                     new User { Id = Guid.Empty, City = "Anytown", Country = "AnyCountry", Email="info@trashmob.eco", GivenName = "TrashMob", Region = "AnyState", SurName = "Eco", UserName = "TrashMob" });
@@ -656,23 +595,6 @@
                 entity.HasData(
                     new PartnerStatus { Id = (int)PartnerStatusEnum.Active, Name = "Active", Description = "Partner is Active", DisplayOrder = 1 },
                     new PartnerStatus { Id = (int)PartnerStatusEnum.Inactive, Name = "Inactive", Description = "Partner is Inactive", DisplayOrder = 2 });
-            });
-
-            modelBuilder.Entity<WaiverDurationType>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Description);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.HasData(
-                    new WaiverDurationType { Id = (int)WaiverDurationTypeEnum.CalendarYear, Name = "Calendar Year", Description = "Waiver Expires at the end of the current calendar year", DisplayOrder = 1, IsActive = true },
-                    new WaiverDurationType { Id = (int)WaiverDurationTypeEnum.YearFromSigning, Name = "Year from Signing", Description = "Waiver Expires a year to the date after signing", DisplayOrder = 2, IsActive = true },
-                    new WaiverDurationType { Id = (int)WaiverDurationTypeEnum.MonthFromSigning, Name = "Calendar Year", Description = "Waiver Expires at the end of the current calendar month", DisplayOrder = 3, IsActive = true },
-                    new WaiverDurationType { Id = (int)WaiverDurationTypeEnum.SingleDay, Name = "Calendar Year", Description = "Waiver Expires at the end of the current day", DisplayOrder = 4, IsActive = true });
             });
 
             modelBuilder.Entity<EventType>(entity =>

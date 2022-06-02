@@ -12,6 +12,13 @@ dotnet user-secrets init
 dotnet user-secrets set "AzureMapsKey" $mapKey
 dotnet user-secrets set "TMDBServerConnectionString" $sqlConnection
 dotnet user-secrets set "sendGridApiKey" "x"
+dotnet user-secrets set "DocusignImpersonatedUserId" "x"
+dotnet user-secrets set "DocusignClientId" "x"
+dotnet user-secrets set "DocusignAuthServer" "account-d.docusign.com"
+dotnet user-secrets set "DocusignAccountId" "x"
+dotnet user-secrets set "DocusignPrivateKey" "x"
+dotnet user-secrets set "DocusignBasePath" "https://demo.docusign.net/restapi"
+dotnet user-secrets set "DocusignRedirectHome" "https://localhost:44332/waivers"
 
 # Build the project
 dotnet build -c Debug

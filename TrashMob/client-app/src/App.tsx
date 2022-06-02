@@ -21,7 +21,6 @@ import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { TermsOfService } from './components/TermsOfService';
 import { Board } from './components/Board';
 import { VolunteerOpportunities } from './components/VolunteerOpportunities';
-import { Waiver } from './components/Waiver';
 import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
@@ -42,6 +41,8 @@ import { CancelEvent, CancelEventMatchParams } from './components/EventManagemen
 import EventData from './components/Models/EventData';
 
 import './custom.css';
+import Waivers from './components/Waivers/Waivers';
+import WaiversReturn from './components/Waivers/WaiversReturn';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }
@@ -50,6 +51,9 @@ interface CancelProps extends RouteComponentProps<CancelEventMatchParams> {
 }
 
 interface DetailsProps extends RouteComponentProps<DetailsMatchParams> {
+}
+
+interface WaiversReturnProps extends RouteComponentProps {
 }
 
 export const App: FC = () => {
@@ -132,6 +136,16 @@ export const App: FC = () => {
             </MsalAuthenticationTemplate >);
     }
 
+    function renderWaiversReturn(inp: WaiversReturnProps) {
+        return (
+            <MsalAuthenticationTemplate
+                interactionType={InteractionType.Redirect}
+                errorComponent={ErrorComponent}
+                loadingComponent={LoadingComponent}>
+                <WaiversReturn {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
+            </MsalAuthenticationTemplate >);
+    }
+
     function clearUser() {
         setIsUserLoaded(false);
         const user = new UserData();
@@ -176,7 +190,8 @@ export const App: FC = () => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders('PUT');
+            const method = 'POST';
+            const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
             const user = new UserData();
 
@@ -188,7 +203,7 @@ export const App: FC = () => {
             }
 
             fetch('/api/Users', {
-                method: 'POST',
+                method: method,
                 headers: headers,
                 body: JSON.stringify(user)
             })
@@ -197,11 +212,15 @@ export const App: FC = () => {
                     if (data) {
                         user.id = data.id;
                         user.userName = data.userName;
+                        user.givenName = data.givenName;
+                        user.surName = data.surName;
                         user.dateAgreedToPrivacyPolicy = data.dateAgreedToPrivacyPolicy;
                         user.dateAgreedToTermsOfService = data.dateAgreedToTermsOfService;
+                        user.dateAgreedToTrashMobWaiver = data.dateAgreedToTrashMobWaiver;
                         user.memberSince = data.memberSince;
                         user.privacyPolicyVersion = data.privacyPolicyVersion;
                         user.termsOfServiceVersion = data.termsOfServiceVersion;
+                        user.trashMobWaiverVersion = data.trashMobWaiverVersion;
                         user.isSiteAdmin = data.isSiteAdmin;
                         setCurrentUser(user);
                         setIsUserLoaded(true);
@@ -256,6 +275,7 @@ export const App: FC = () => {
                             <Route path="/eventsummary/:eventId?" render={(props: AppProps) => renderEventSummary(props)} />
                             <Route path="/eventdetails/:eventId" render={(props: DetailsProps) => renderEventDetails(props)} />
                             <Route path="/cancelevent/:eventId" render={(props: CancelProps) => renderCancelEvent(props)} />
+                            <Route path="/waiversreturn" render={(props: WaiversReturnProps) => renderWaiversReturn(props)} />
                             <Route exact path="/mydashboard">
                                 <MsalAuthenticationTemplate
                                     interactionType={InteractionType.Redirect}
@@ -296,6 +316,14 @@ export const App: FC = () => {
                                     <UserProfile currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
                                 </MsalAuthenticationTemplate >
                             </Route>
+                            <Route exact path="/waivers">
+                                <MsalAuthenticationTemplate
+                                    interactionType={InteractionType.Redirect}
+                                    errorComponent={ErrorComponent}
+                                    loadingComponent={LoadingComponent}>
+                                    <Waivers currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                </MsalAuthenticationTemplate >
+                            </Route>
                             <Route exact path="/shop">
                                 <Shop />
                             </Route>
@@ -331,9 +359,6 @@ export const App: FC = () => {
                             </Route>
                             <Route exact path="/volunteeropportunities">
                                 <VolunteerOpportunities />
-                            </Route>
-                            <Route exact path="/waiver">
-                                <Waiver />
                             </Route>
                             <Route exact path='/'>
                                 <Home currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} onAttendanceChanged={handleAttendanceChanged} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} />

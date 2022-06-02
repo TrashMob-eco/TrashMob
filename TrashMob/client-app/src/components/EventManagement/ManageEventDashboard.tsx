@@ -64,7 +64,7 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
                 <div>
                     <h2>Event Details</h2>
                     <div>
-                        <EditEvent eventId={eventId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onEditCancel={handleEditCancel} onEditSave={handleEditSave} />
+                        <EditEvent eventId={eventId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onEditCancel={handleEditCancel} onEditSave={handleEditSave} history={props.history} location={props.location} match={props.match} />
                     </div>
                 </div>
             </div>);

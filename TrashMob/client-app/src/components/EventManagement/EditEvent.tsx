@@ -16,8 +16,11 @@ import * as ToolTips from "../../store/ToolTips";
 import { Button, Col, Form, ToggleButton } from 'react-bootstrap';
 import { Guid } from 'guid-typescript';
 import MapControllerSinglePoint from '../MapControllerSinglePoint';
+import { RouteComponentProps } from 'react-router-dom';
+import { CurrentTrashMobWaiverVersion } from '../Waivers/Waivers';
 
-export interface EditEventProps {
+export interface EditEventProps extends RouteComponentProps
+{
     eventId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
@@ -104,6 +107,14 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             });
 
         if (eventId === Guid.EMPTY) {
+
+            // Have user sign waiver if needed
+            const isTrashMobWaiverOutOfDate = props.currentUser.dateAgreedToTrashMobWaiver < CurrentTrashMobWaiverVersion.versionDate;
+            if (isTrashMobWaiverOutOfDate || (props.currentUser.trashMobWaiverVersion === "")) {
+                sessionStorage.setItem('targetUrl', window.location.pathname);
+                props.history.push("/waivers");
+            }
+
             setIsDataLoaded(true);
         }
 
