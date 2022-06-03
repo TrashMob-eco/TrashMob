@@ -36,8 +36,8 @@ namespace TrashMob.Shared.Persistence
             accountId = configuration["DocusignAccountId"];
             basePath = configuration["DocusignBasePath"];
             redirectHome = configuration["DocusignRedirectHome"];
-            privateKey = privateKey.Replace("-----BEGIN RSA PRIVATE KEY-----", "-----BEGIN RSA PRIVATE KEY-----\n");
-            privateKey = privateKey.Replace("-----END RSA PRIVATE KEY-----", "\n-----END RSA PRIVATE KEY-----");
+            privateKey = privateKey.Replace("-----BEGIN RSA PRIVATE KEY----- ", "-----BEGIN RSA PRIVATE KEY-----\n");
+            privateKey = privateKey.Replace(" -----END RSA PRIVATE KEY-----", "\n-----END RSA PRIVATE KEY-----\n");
         }
 
         public EnvelopeResponse SendEnvelope(EnvelopeRequest envelopeRequest)
