@@ -22,7 +22,8 @@
         public OAuthToken AuthenticateWithJWT(string clientId, string impersonatedUserId, string authServer)
         {
             var secret = keyVaultManager.GetSecret("Docusign");
-            var password = keyVaultManager.GetSecret("DocusignPassword");
+            // var password = keyVaultManager.GetSecret("DocusignPassword");
+            var password = "";
             var privateKeyBytes = Convert.FromBase64String(secret);
             var certificate = new X509Certificate2(privateKeyBytes, password);
             var pk = certificate.GetRSAPrivateKey();
