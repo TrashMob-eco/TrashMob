@@ -1,26 +1,32 @@
 namespace TrashMob
 {
+    using Azure.Identity;
+    using Azure.Security.KeyVault.Secrets;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+    using Microsoft.Extensions.Azure;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Identity.Web;
     using Microsoft.OpenApi.Models;
+    using System;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Persistence;
     
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             Configuration = configuration;
+            CurrentEnvironment = webHostEnvironment;
         }
 
         public IConfiguration Configuration { get; }
+        private IWebHostEnvironment CurrentEnvironment { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -70,12 +76,31 @@ namespace TrashMob
             services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
+            
+            if (CurrentEnvironment.IsDevelopment())
+            {
+                services.AddScoped<IKeyVaultManager, LocalKeyVaultManager>();
+                services.AddScoped<IDocusignAuthenticator, DocusignStringAuthenticator>();
+            }
+            else
+            {
+                services.AddAzureClients(azureClientFactoryBuilder =>
+                {
+                    azureClientFactoryBuilder.UseCredential(new DefaultAzureCredential());
+                    azureClientFactoryBuilder.AddSecretClient(Configuration.GetValue<Uri>("VaultUri"));
+                });
+
+                services.AddScoped<IKeyVaultManager, KeyVaultManager>();
+                services.AddScoped<IDocusignAuthenticator, DocusignCertificateAuthenticator>();
+            }
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "trashmobapi", Version = "v1" });
             });
+
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
