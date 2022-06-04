@@ -10,34 +10,31 @@ namespace TrashMob.Shared.Persistence
     using DocuSign.eSign.Model;
     using static DocuSign.eSign.Client.Auth.OAuth;
     using System.IO;
-    using System.Text;
     using System.Threading.Tasks;
 
     public class DocusignManager : IDocusignManager
     {
         private readonly IConfiguration configuration;
         private readonly ILogger<DocusignManager> logger;
+        private readonly IDocusignAuthenticator docusignAuthenticator;
         private string clientId;
         private string impersonatedUserId;
         private string authServer;
-        private string privateKey;
         private string accountId;
         private string basePath;
         private string redirectHome;
 
-        public DocusignManager(IConfiguration configuration, ILogger<DocusignManager> logger)
+        public DocusignManager(IConfiguration configuration, ILogger<DocusignManager> logger, IDocusignAuthenticator docusignAuthenticator)
         {
             this.configuration = configuration;
             this.logger = logger;
+            this.docusignAuthenticator = docusignAuthenticator;
             clientId = configuration["DocusignClientId"];
             impersonatedUserId = configuration["DocusignImpersonatedUserId"]; // joe@trashmob.eco
             authServer = configuration["DocusignAuthServer"];
-            privateKey = configuration["DocusignPrivateKey"];
             accountId = configuration["DocusignAccountId"];
             basePath = configuration["DocusignBasePath"];
             redirectHome = configuration["DocusignRedirectHome"];
-            privateKey = privateKey.Replace("-----BEGIN RSA PRIVATE KEY----- ", "-----BEGIN RSA PRIVATE KEY-----\n");
-            privateKey = privateKey.Replace(" -----END RSA PRIVATE KEY-----", "\n-----END RSA PRIVATE KEY-----\n");
         }
 
         public EnvelopeResponse SendEnvelope(EnvelopeRequest envelopeRequest)
@@ -46,7 +43,7 @@ namespace TrashMob.Shared.Persistence
 
             try
             {
-                accessToken = AuthenticateWithJWT(clientId, impersonatedUserId, authServer, privateKey);
+                accessToken = docusignAuthenticator.AuthenticateWithJWT(clientId, impersonatedUserId, authServer);
             }
             catch (Exception ex)
             {
@@ -92,23 +89,6 @@ namespace TrashMob.Shared.Persistence
                 EnvelopeId = envelopeId,
                 RedirectUrl = redirectUrl
             };
-        }
-
-        /// <summary>
-        /// Uses Json Web Token (JWT) Authentication Method to obtain the necessary information needed to make API calls.
-        /// </summary>
-        /// <returns>Auth token needed for API calls</returns>
-        public static OAuthToken AuthenticateWithJWT(string clientId, string impersonatedUserId, string authServer, string privateKey)
-        {
-            var apiClient = new ApiClient();
-            var scopes = new List<string>
-                {
-                    "signature",
-                    "impersonation",
-                };
-
-            var bytes = Encoding.UTF8.GetBytes(privateKey);
-            return apiClient.RequestJWTUserToken(clientId, impersonatedUserId, authServer, bytes, 1, scopes);
         }
 
         private static EnvelopeDefinition MakeEnvelope(string signerEmail, string signerName, Guid signerClientId, string docxDocument)
@@ -241,7 +221,7 @@ namespace TrashMob.Shared.Persistence
 
             try
             {
-                accessToken = AuthenticateWithJWT(clientId, impersonatedUserId, authServer, privateKey);
+                accessToken = docusignAuthenticator.AuthenticateWithJWT(clientId, impersonatedUserId, authServer);
             }
             catch (Exception ex)
             {
