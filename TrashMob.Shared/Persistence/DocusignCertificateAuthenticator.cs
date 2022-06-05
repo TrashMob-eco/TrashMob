@@ -21,11 +21,9 @@
         /// <returns>Auth token needed for API calls</returns>
         public OAuthToken AuthenticateWithJWT(string clientId, string impersonatedUserId, string authServer)
         {
-            var secret = keyVaultManager.GetSecret("Docusign");
-            // var password = keyVaultManager.GetSecret("DocusignPassword");
-            var password = "";
-            var privateKeyBytes = Convert.FromBase64String(secret);
-            var certificate = new X509Certificate2(privateKeyBytes, password);
+            // TODO: is there a better way to do this
+            // This has to be forced to be synchronous because a Span<byte> cannot be created in an Asynchronous method.
+            var certificate = keyVaultManager.GetCertificateAsync("Docusign").GetAwaiter().GetResult();
             var pk = certificate.GetRSAPrivateKey();
 
             var bytes = new Span<byte>();
