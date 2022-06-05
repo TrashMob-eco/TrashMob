@@ -137,7 +137,7 @@ If you are, however, attempting to test or alter the Docusign workflow, here are
 | DocusignImpersonatedUserId | Use Id under My Account Information |
 | DocusignClientId | Integration Key from the Apps and Integration Keys section |
 | DocusignAuthServer | account-d.docusign.com |
-| DocusignPrivateKey | Click the Actions pull down under apps and integration keys, and click edit. Then under service integration, click generate RSA. Copy the value for PrivateKey, and use that as the secret |
+| DocusignPrivateKeyEncoded | Click the Actions pull down under apps and integration keys, and click edit. Then under service integration, click generate RSA. Copy the value for PrivateKey. Then you need to base64 encode this value before setting that as a secret |
 | DocusignBasePath | https://demo.docusign.net/restapi |
 | DocusignRedirectHome | https://localhost:44332/waivers | 
 
