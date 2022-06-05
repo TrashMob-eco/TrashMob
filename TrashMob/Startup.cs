@@ -75,7 +75,6 @@ namespace TrashMob
             services.AddScoped<ISecretRepository, SecretRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
-            services.AddScoped<IKeyVaultClient, KeyVaultClient>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             
