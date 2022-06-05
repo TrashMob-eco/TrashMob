@@ -92,7 +92,7 @@ namespace TrashMob
                 });
 
                 services.AddScoped<IKeyVaultManager, KeyVaultManager>();
-                services.AddScoped<IDocusignAuthenticator, DocusignCertificateAuthenticator>();
+                services.AddScoped<IDocusignAuthenticator, DocusignStringAuthenticator>();
             }
 
             services.AddControllers();
