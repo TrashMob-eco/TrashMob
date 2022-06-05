@@ -6,6 +6,7 @@ namespace TrashMob
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+    using Microsoft.Azure.KeyVault;
     using Microsoft.Extensions.Azure;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -74,6 +75,7 @@ namespace TrashMob
             services.AddScoped<ISecretRepository, SecretRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
+            services.AddScoped<IKeyVaultClient, KeyVaultClient>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             
