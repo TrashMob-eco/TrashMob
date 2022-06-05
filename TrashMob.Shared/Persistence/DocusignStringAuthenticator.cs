@@ -31,8 +31,7 @@
                     "impersonation",
                 };
 
-            var bytes = Encoding.UTF8.GetBytes(privateKey);
-            return apiClient.RequestJWTUserToken(clientId, impersonatedUserId, authServer, bytes, 1, scopes);
+            return apiClient.RequestJWTUserToken(clientId, impersonatedUserId, authServer, privateKey, 1, scopes);
         }
     }
 }
