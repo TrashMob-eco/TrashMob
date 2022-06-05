@@ -1,6 +1,7 @@
 ﻿namespace TrashMob.Shared.Persistence
 {
     using DocuSign.eSign.Client;
+    using System;
     using System.Collections.Generic;
     using System.Text;
     using static DocuSign.eSign.Client.Auth.OAuth;
@@ -20,7 +21,8 @@
         /// <returns>Auth token needed for API calls</returns>
         public OAuthToken AuthenticateWithJWT(string clientId, string impersonatedUserId, string authServer)
         {
-            var privateKey = keyVaultManager.GetSecret("DocusignPrivateKey");
+            var privateKeyEncoded = keyVaultManager.GetSecret("DocusignPrivateKeyEncoded");
+            var privateKey = Convert.FromBase64String(privateKeyEncoded);
 
             var apiClient = new ApiClient();
             var scopes = new List<string>
