@@ -24,7 +24,7 @@
             }
 
             var pfxBytes = Convert.FromBase64String(secret.Value.Value);
-            return new X509Certificate2(pfxBytes, string.Empty, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
+            return new X509Certificate2(pfxBytes, string.Empty, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.EphemeralKeySet);
         }
 
         public string GetSecret(string secretName)
