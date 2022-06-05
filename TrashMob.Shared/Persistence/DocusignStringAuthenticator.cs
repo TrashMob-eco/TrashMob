@@ -3,7 +3,6 @@
     using DocuSign.eSign.Client;
     using System;
     using System.Collections.Generic;
-    using System.Text;
     using static DocuSign.eSign.Client.Auth.OAuth;
 
     public class DocusignStringAuthenticator : IDocusignAuthenticator
