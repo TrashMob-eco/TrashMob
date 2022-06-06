@@ -1,26 +1,33 @@
 namespace TrashMob
 {
+    using Azure.Identity;
+    using Azure.Security.KeyVault.Secrets;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+    using Microsoft.Azure.KeyVault;
+    using Microsoft.Extensions.Azure;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Identity.Web;
     using Microsoft.OpenApi.Models;
+    using System;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Persistence;
     
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             Configuration = configuration;
+            CurrentEnvironment = webHostEnvironment;
         }
 
         public IConfiguration Configuration { get; }
+        private IWebHostEnvironment CurrentEnvironment { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -45,6 +52,7 @@ namespace TrashMob
 
             services.AddDbContext<MobDbContext>();
             services.AddScoped<IContactRequestRepository, ContactRequestRepository>();
+            services.AddScoped<IDocusignManager, DocusignManager>();
             services.AddScoped<IEmailManager, EmailManager>();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
@@ -67,17 +75,33 @@ namespace TrashMob
             services.AddScoped<ISecretRepository, SecretRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
-            services.AddScoped<IUserWaiverRepository, UserWaiverRepository>();
-            services.AddScoped<IWaiverDurationTypeRepository, WaiverDurationTypeRepository>();
-            services.AddScoped<IWaiverRepository, WaiverRepository>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
+            
+            if (CurrentEnvironment.IsDevelopment())
+            {
+                services.AddScoped<IKeyVaultManager, LocalKeyVaultManager>();
+                services.AddScoped<IDocusignAuthenticator, DocusignStringAuthenticator>();
+            }
+            else
+            {
+                services.AddAzureClients(azureClientFactoryBuilder =>
+                {
+                    azureClientFactoryBuilder.UseCredential(new DefaultAzureCredential());
+                    azureClientFactoryBuilder.AddSecretClient(Configuration.GetValue<Uri>("VaultUri"));
+                });
+
+                services.AddScoped<IKeyVaultManager, KeyVaultManager>();
+                services.AddScoped<IDocusignAuthenticator, DocusignStringAuthenticator>();
+            }
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "trashmobapi", Version = "v1" });
             });
+
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

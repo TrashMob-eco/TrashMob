@@ -10,7 +10,8 @@ import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import EventAttendeeData from './Models/EventAttendeeData';
 import { getEventType } from '../store/eventTypeHelper';
 import { RegisterBtn } from './RegisterBtn';
-interface MapControllerProps {
+import { RouteComponentProps } from 'react-router-dom';
+interface MapControllerProps extends RouteComponentProps {
     mapOptions: IAzureMapOptions | undefined
     center: data.Position;
     multipleEvents: EventData[],
@@ -202,7 +203,7 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
                             <button className="btn btn-outline">
                                 <a id="viewDetails" type="button" href={'/eventdetails/' + eventId}>View Details</a>
                             </button>
-                            <RegisterBtn eventId={eventId} isAttending={isAttending} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onAttendanceChanged={props.onAttendanceChanged}></RegisterBtn>
+                            <RegisterBtn eventId={eventId} isAttending={isAttending} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onAttendanceChanged={props.onAttendanceChanged} history={props.history} location={props.location} match={props.match}></RegisterBtn>
                         </div>
                     </>
                 );
