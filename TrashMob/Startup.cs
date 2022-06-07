@@ -65,6 +65,7 @@ namespace TrashMob
             services.AddScoped<IEventTypeRepository, EventTypeRepository>();
             services.AddScoped<IMapRepository, MapRepository>();
             services.AddScoped<IMediaTypeRepository, MediaTypeRepository>();
+            services.AddScoped<INonEventUserNotificationRepository, NonEventUserNotificationRepository>();
             services.AddScoped<IPartnerLocationRepository, PartnerLocationRepository>();
             services.AddScoped<IPartnerManager, PartnerManager>();
             services.AddScoped<IPartnerRepository, PartnerRepository>();
