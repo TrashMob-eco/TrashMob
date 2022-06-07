@@ -12,6 +12,7 @@ namespace TrashMob.Shared.Models
             EventsCreated = new HashSet<Event>();
             EventsUpdated = new HashSet<Event>();
             UserNotifications = new HashSet<UserNotification>();
+            NonEventUserNotifications = new HashSet<NonEventUserNotification>();
             EventMedias = new HashSet<EventMedia>();
         }
 
@@ -45,8 +46,6 @@ namespace TrashMob.Shared.Models
 
         public int TravelLimitForLocalEvents { get; set; }
 
-        public bool IsOptedOutOfAllEmails { get; set; }
-
         public bool IsSiteAdmin { get; set; }
 
         public DateTimeOffset? DateAgreedToPrivacyPolicy { get; set; }
@@ -68,6 +67,8 @@ namespace TrashMob.Shared.Models
         public virtual ICollection<Event> EventsUpdated { get; set; }
 
         public virtual ICollection<UserNotification> UserNotifications { get; set; }
+        
+        public virtual ICollection<NonEventUserNotification> NonEventUserNotifications { get; set; }
 
         public virtual ICollection<PartnerRequest> PartnerRequestsCreated { get; set; }
 

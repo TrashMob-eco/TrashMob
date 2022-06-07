@@ -39,7 +39,6 @@ export const UserProfileLatitude = "The Latitude will auto-populate when clickin
 export const UserProfileLongitude = "The Longitude will auto-populate when clicking a location on the map. It must be between -180.0 and 180.0"
 export const UserProfileTravelLimitForLocalEvents = "The maximum distance from your base location for events for which you are interested in being notified."
 export const UserProfilePreferMetric = "Do you prefer to use the Metric System for all measurements?"
-export const UserProfileIsOptedOutOfAllEmails = "Selecting this will disable all emails from TrashMob.eco."
 export const PartnerRequestName = "Enter the name of the parter. If this is a company, enter the company name. If this is an individual, enter the person's name."
 export const PartnerRequestPrimaryEmail = "Enter the primary email for person making the request."
 export const PartnerRequestSecondaryEmail = "Enter the secondary email for the request. We recommend making this an email distribution list, in case the primary address becomes invalid in the future."

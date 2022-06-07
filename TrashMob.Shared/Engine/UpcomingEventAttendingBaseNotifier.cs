@@ -13,14 +13,15 @@ namespace TrashMob.Shared.Engine
     public abstract class UpcomingEventAttendingBaseNotifier : NotificationEngineBase, INotificationEngine
     {
         public UpcomingEventAttendingBaseNotifier(IEventRepository eventRepository,
-                                                     IUserRepository userRepository,
-                                                     IEventAttendeeRepository eventAttendeeRepository,
-                                                     IUserNotificationRepository userNotificationRepository,
-                                                     IEmailSender emailSender,
-                                                     IEmailManager emailManager,
-                                                     IMapRepository mapRepository,
-                                                     ILogger logger) :
-            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, emailSender, emailManager, mapRepository, logger)
+                                                  IUserRepository userRepository,
+                                                  IEventAttendeeRepository eventAttendeeRepository,
+                                                  IUserNotificationRepository userNotificationRepository,
+                                                  INonEventUserNotificationRepository nonEventUserNotificationRepository,
+                                                  IEmailSender emailSender,
+                                                  IEmailManager emailManager,
+                                                  IMapRepository mapRepository,
+                                                  ILogger logger) :
+            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, nonEventUserNotificationRepository, emailSender, emailManager, mapRepository, logger)
         {
         }
 

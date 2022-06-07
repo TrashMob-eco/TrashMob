@@ -19,9 +19,11 @@
         protected IEventAttendeeRepository EventAttendeeRepository { get; }
 
         protected IUserNotificationRepository UserNotificationRepository { get; }
-       
+
+        protected INonEventUserNotificationRepository NonEventUserNotificationRepository { get; }
+
         protected IEmailManager EmailManager { get; }
-        
+
         protected IEmailSender EmailSender { get; }
 
         protected IMapRepository MapRepository { get; }
@@ -40,6 +42,7 @@
                                       IUserRepository userRepository,
                                       IEventAttendeeRepository eventAttendeeRepository,
                                       IUserNotificationRepository userNotificationRepository,
+                                      INonEventUserNotificationRepository nonEventUserNotificationRepository,
                                       IEmailSender emailSender,
                                       IEmailManager emailManager,
                                       IMapRepository mapRepository,
@@ -52,6 +55,7 @@
             EmailSender = emailSender;
             EmailManager = emailManager;
             MapRepository = mapRepository;
+            NonEventUserNotificationRepository = nonEventUserNotificationRepository;
             Logger = logger;
 
             // Set the Api Key Here
@@ -122,13 +126,56 @@
             return 0;
         }
 
-        protected async Task<bool> UserHasAlreadyReceivedNotification(User user, Event mobEvent)
+        protected async Task<int> SendNotification(User user, CancellationToken cancellationToken)
         {
-            // Get list of notification events user has already received for the event
-            var notifications = await UserNotificationRepository.GetUserNotifications(user.Id, mobEvent.Id).ConfigureAwait(false);
+            // Populate email
+            var userNotification = new NonEventUserNotification
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                SentDate = DateTimeOffset.UtcNow,
+                UserNotificationTypeId = (int)NotificationType,
+            };
 
-            // Verify that the user has not already received this type of notification for this event
-            return notifications.Any(un => un.UserNotificationTypeId == (int)NotificationType);
+            await NonEventUserNotificationRepository.AddNonEventUserNotification(userNotification).ConfigureAwait(false);
+
+            var emailCopy = EmailManager.GetHtmlEmailCopy(NotificationType.ToString());
+
+            var dynamicTemplateData = new
+            {
+                username = user.UserName,
+                emailCopy = emailCopy,
+                subject = EmailSubject,
+            };
+
+            var recipients = new List<EmailAddress>
+                        {
+                            new EmailAddress { Name = user.UserName, Email = user.Email },
+                        };
+
+            Logger.LogInformation("Sending email to {0}, Subject {0}", user.Email, EmailSubject);
+
+            await EmailManager.SendTemplatedEmail(EmailSubject, SendGridEmailTemplateId.EventEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+
+            return 1;
         }
+
+protected async Task<bool> UserHasAlreadyReceivedNotification(User user, Event mobEvent)
+{
+    // Get list of notification events user has already received for the event
+    var notifications = await UserNotificationRepository.GetUserNotifications(user.Id, mobEvent.Id).ConfigureAwait(false);
+
+    // Verify that the user has not already received this type of notification for this event
+    return notifications.Any(un => un.UserNotificationTypeId == (int)NotificationType);
+}
+
+protected async Task<bool> UserHasAlreadyReceivedNotification(User user)
+{
+    // Get list of notification events user has already received for the event
+    var notifications = await NonEventUserNotificationRepository.GetNonEventUserNotifications(user.Id).ConfigureAwait(false);
+
+    // Verify that the user has not already received this type of notification for this event
+    return notifications.Any(un => un.UserNotificationTypeId == (int)NotificationType);
+}
     }
 }
