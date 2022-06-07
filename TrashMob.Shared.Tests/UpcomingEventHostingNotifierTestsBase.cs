@@ -208,31 +208,6 @@ namespace TrashMob.Shared.Tests
         }
 
         [Fact]
-        public async Task GenerateNotificationsAsync_With1EventFor1UsersWhoHasOptedOutOfAllEmails_SendsNoEmail()
-        {
-            // Arrange
-            List<Event> events = GetEventList1();
-            List<User> users = GetUserList1();
-            events[0].CreatedByUserId = users[0].Id;
-
-            users[0].IsOptedOutOfAllEmails = true;
-
-            // The user is attending all available events
-            EventAttendeeRepository.Setup(ea => ea.GetEventsUserIsAttending(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(events);
-            EventRepository.Setup(e => e.GetActiveEvents(It.IsAny<CancellationToken>())).ReturnsAsync(events);
-            UserRepository.Setup(u => u.GetAllUsers(It.IsAny<CancellationToken>())).ReturnsAsync(users);
-
-            // Act
-            await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
-
-            // Assert
-            UserRepository.Verify(_ => _.GetAllUsers(It.IsAny<CancellationToken>()), Times.Once);
-            EventRepository.Verify(_ => _.GetActiveEvents(It.IsAny<CancellationToken>()), Times.Never);
-            UserNotificationRepository.Verify(_ => _.AddUserNotification(It.IsAny<UserNotification>()), Times.Never);
-            EmailManager.Verify(_ => _.SendTemplatedEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<object>(), It.IsAny<List<EmailAddress>>(), It.IsAny<CancellationToken>()), Times.Never);
-        }
-
-        [Fact]
         public async Task GenerateNotificationsAsync_With1EventFor1UsersWhereEventIsMoreThanRequiredHoursAway_SendsNoEmail()
         {
             // Arrange

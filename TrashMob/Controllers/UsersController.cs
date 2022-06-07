@@ -113,37 +113,6 @@ namespace TrashMob.Controllers
             }
         }
 
-        [HttpPut("updateemailoptout/{userId}/{isOptedOutOfAllEmails}")]
-        public async Task<IActionResult> UpdateUserEmailOptOut(Guid userId, bool isOptedOutOfAllEmails)
-        {
-            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
-
-            if (user == null || !ValidateUser(user.NameIdentifier))
-            {
-                return Forbid();
-            }
-
-            try
-            {
-                user.IsOptedOutOfAllEmails = isOptedOutOfAllEmails;
-                await userRepository.UpdateUser(user);
-                TelemetryClient.TrackEvent(nameof(UpdateUserEmailOptOut));
-
-                return Ok(user);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!await UserExists(user.Id).ConfigureAwait(false))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-        }
-
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]

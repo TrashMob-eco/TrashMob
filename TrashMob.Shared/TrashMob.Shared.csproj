@@ -11,6 +11,7 @@
     <None Remove="Engine\EmailCopy\EventPartnerResponse.html" />
     <None Remove="Engine\EmailCopy\EventSummaryAttendee.html" />
     <None Remove="Engine\EmailCopy\EventSummaryHostReminder.html" />
+    <None Remove="Engine\EmailCopy\EventSummaryHostWeekReminder.html" />
     <None Remove="Engine\EmailCopy\EventUpdatedNotice.html" />
     <None Remove="Engine\EmailCopy\Generic.html" />
     <None Remove="Engine\EmailCopy\PartnerRequestAccepted.html" />
@@ -21,6 +22,7 @@
     <None Remove="Engine\EmailCopy\UpcomingEventHostingThisWeek.html" />
     <None Remove="Engine\EmailCopy\UpcomingEventsInYourAreaSoon.html" />
     <None Remove="Engine\EmailCopy\UpcomingEventsInYourAreaThisWeek.html" />
+    <None Remove="Engine\EmailCopy\UserProfileUpdateLocation.html" />
     <None Remove="Engine\EmailCopy\WelcomeToTrashMob.html" />
     <None Remove="Engine\EmailCopy\EventCancelledNotice.html" />
   </ItemGroup>
@@ -30,6 +32,7 @@
     <EmbeddedResource Include="Engine\EmailCopy\EventPartnerRequest.html" />
     <EmbeddedResource Include="Engine\EmailCopy\EventPartnerResponse.html" />
     <EmbeddedResource Include="Engine\EmailCopy\EventSummaryAttendee.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\EventSummaryHostWeekReminder.html" />
     <EmbeddedResource Include="Engine\EmailCopy\EventSummaryHostReminder.html" />
     <EmbeddedResource Include="Engine\EmailCopy\EventUpdatedNotice.html" />
     <EmbeddedResource Include="Engine\EmailCopy\Generic.html" />
@@ -41,6 +44,7 @@
     <EmbeddedResource Include="Engine\EmailCopy\UpcomingEventHostingThisWeek.html" />
     <EmbeddedResource Include="Engine\EmailCopy\UpcomingEventsInYourAreaSoon.html" />
     <EmbeddedResource Include="Engine\EmailCopy\UpcomingEventsInYourAreaThisWeek.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\UserProfileUpdateLocation.html" />
     <EmbeddedResource Include="Engine\EmailCopy\WelcomeToTrashMob.html" />
     <EmbeddedResource Include="Engine\EmailCopy\EventCancelledNotice.html" />
   </ItemGroup>

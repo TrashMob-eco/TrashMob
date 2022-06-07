@@ -56,7 +56,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
     const [longitude, setLongitude] = useState<number>(0);
     const [latitude, setLatitude] = useState<number>(0);
     const [prefersMetric, setPrefersMetric] = useState<boolean>(false);
-    const [isOptedOutOfAllEmails, setIsOptedOutOfAllEmails] = useState<boolean>(false);
     const [travelLimitForLocalEvents, setTravelLimitForLocalEvents] = useState<number>(10);
     const [isOpen, setIsOpen] = useState(false);
     const [latitudeErrors, setLatitudeErrors] = useState<string>("");
@@ -111,7 +110,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                         setSourceSystemUserName(data.sourceSystemUserName);
                         setLatitude(data.latitude);
                         setLongitude(data.longitude);
-                        setIsOptedOutOfAllEmails(data.isOptedOutOfAllEmails);
                         setPrefersMetric(data.prefersMetric);
                         setTravelLimitForLocalEvents(data.travelLimitForLocalEvents);
 
@@ -254,7 +252,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
         userData.memberSince = new Date(memberSince);
         userData.latitude = latitude;
         userData.longitude = longitude;
-        userData.isOptedOutOfAllEmails = isOptedOutOfAllEmails;
         userData.prefersMetric = prefersMetric;
         userData.travelLimitForLocalEvents = travelLimitForLocalEvents;
 

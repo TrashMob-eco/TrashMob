@@ -16,11 +16,12 @@ namespace TrashMob.Shared.Engine
                                                     IUserRepository userRepository, 
                                                     IEventAttendeeRepository eventAttendeeRepository,
                                                     IUserNotificationRepository userNotificationRepository,
+                                                    INonEventUserNotificationRepository nonEventUserNotificationRepository,
                                                     IEmailSender emailSender,
                                                     IEmailManager emailManager,
                                                     IMapRepository mapRepository,
-                                                    ILogger logger) : 
-            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, emailSender, emailManager, mapRepository, logger)
+                                                    ILogger logger) :
+            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, nonEventUserNotificationRepository, emailSender, emailManager, mapRepository, logger)
         {
         }
     }
