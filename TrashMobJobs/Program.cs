@@ -27,6 +27,7 @@ namespace TrashMobJobs
                      .AddSingleton<IEventAttendeeRepository, EventAttendeeRepository>()
                      .AddSingleton<IEventRepository, EventRepository>()
                      .AddSingleton<IEventStatusRepository, EventStatusRepository>()
+                     .AddSingleton<IEventSummaryRepository, EventSummaryRepository>()
                      .AddSingleton<IEventTypeRepository, EventTypeRepository>()
                      .AddSingleton<IMapRepository, MapRepository>()
                      .AddSingleton<IUserRepository, UserRepository>()
