@@ -24,7 +24,9 @@ namespace TrashMob.Shared.Tests
         protected Mock<IUserRepository> UserRepository { get; }
         
         protected Mock<IUserNotificationRepository> UserNotificationRepository { get; }
-        
+
+        protected Mock<INonEventUserNotificationRepository> NonEventUserNotificationRepository { get; }
+
         protected Mock<IEmailSender> EmailSender { get; }
 
         protected Mock<IEmailManager> EmailManager { get; }
@@ -43,6 +45,7 @@ namespace TrashMob.Shared.Tests
             EventAttendeeRepository = new Mock<IEventAttendeeRepository>();
             UserRepository = new Mock<IUserRepository>();
             UserNotificationRepository = new Mock<IUserNotificationRepository>();
+            NonEventUserNotificationRepository = new Mock<INonEventUserNotificationRepository>();
             EmailSender = new Mock<IEmailSender>();
             EmailManager = new Mock<IEmailManager>();
             MapRepository = new Mock<IMapRepository>();
@@ -50,6 +53,7 @@ namespace TrashMob.Shared.Tests
 
             // Setup a default return of distance between User and Event of 10 (in whatever units)
             MapRepository.Setup(mr => mr.GetDistanceBetweenTwoPoints(It.IsAny<Tuple<double, double>>(), It.IsAny<Tuple<double, double>>(), It.IsAny<bool>())).ReturnsAsync(10);
+            EmailManager.Setup(em => em.GetHtmlEmailCopy(It.IsAny<string>())).Returns("Test");
         }
 
         protected List<User> GetUserList1()
@@ -109,7 +113,6 @@ namespace TrashMob.Shared.Tests
                 TermsOfServiceVersion = "1.0",
                 TrashMobWaiverVersion = "1.0",
                 UserName = "BlegD",
-                IsOptedOutOfAllEmails = false,
                 TravelLimitForLocalEvents = 25,
                 Longitude = 1,
                 Latitude = 1,
@@ -135,7 +138,6 @@ namespace TrashMob.Shared.Tests
                 TermsOfServiceVersion = "1.0",
                 TrashMobWaiverVersion = "1.0",
                 UserName = "BlegD2",
-                IsOptedOutOfAllEmails = false,
                 TravelLimitForLocalEvents = 25,
                 Longitude = 1,
                 Latitude = 1,

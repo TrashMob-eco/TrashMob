@@ -19,5 +19,7 @@
         EventCancelledNotice = 15,
         ContactRequestReceived = 16,
         EventUpdatedNotice = 17,
+        EventSummaryHostWeekReminder = 18,
+        UserProfileUpdateLocation = 19,
     }
 }

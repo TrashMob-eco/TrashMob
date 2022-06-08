@@ -9,6 +9,7 @@ namespace TrashMob.Shared.Models
         public UserNotificationType()
         {
             UserNotifications = new HashSet<UserNotification>();
+            NonEventUserNotifications = new HashSet<NonEventUserNotification>();
         }
 
         public int Id { get; set; }
@@ -22,5 +23,7 @@ namespace TrashMob.Shared.Models
         public bool? IsActive { get; set; }
 
         public virtual ICollection<UserNotification> UserNotifications { get; set; }
+
+        public virtual ICollection<NonEventUserNotification> NonEventUserNotifications { get; set; }
     }
 }

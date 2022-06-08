@@ -22,7 +22,6 @@ class UserData {
     latitude: number = 0;
     longitude: number = 0;
     prefersMetric: boolean = false;
-    isOptedOutOfAllEmails: boolean = false;
     travelLimitForLocalEvents: number = 0;
     isSiteAdmin: boolean = false;
 }

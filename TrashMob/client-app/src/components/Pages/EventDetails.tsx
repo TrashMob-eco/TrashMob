@@ -80,7 +80,8 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
             });
 
         if (eventId != null) {
-            var eventUrl = "https://www.trashmob.eco/eventdetails/" + eventId;
+            var host = window.location.host;
+            var eventUrl = "https://" + host + "/eventdetails/" + eventId;
 
             fetch('/api/eventattendees/' + eventId, {
                 method: 'GET',
