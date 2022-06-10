@@ -1,10 +1,8 @@
 import { FC, useEffect, useState } from 'react'
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import { Col, Container, Dropdown, Form, Image, Row, ToggleButton } from 'react-bootstrap';
-import { UserEvents } from '../UserEvents'
+import { Col, Container, Dropdown, Image, Row } from 'react-bootstrap';
 import EventData from '../Models/EventData';
-import EventTypeData from '../Models/EventTypeData';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
@@ -16,6 +14,7 @@ import twofigure from '../assets/card/twofigure.svg';
 import calendarclock from '../assets/card/calendarclock.svg';
 import bucketplus from '../assets/card/bucketplus.svg';
 import { Eye, PersonX, Link as LinkIcon, Pencil, Clipboard } from 'react-bootstrap-icons';
+import StatsData from '../Models/StatsData';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -30,13 +29,14 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
     const [currentUser, setCurrentUser] = useState<UserData>(props.currentUser);
     const [isUserLoaded, setIsUserLoaded] = useState<boolean>(props.isUserLoaded);
-    const [showFutureEventsOnly, setShowFutureEventsOnly] = useState<boolean>(false);
-    const [showCanceledEventsOnly, setShowCanceledEventsOnly] = useState<boolean>(false);
     const [reloadEvents, setReloadEvents] = useState<number>(0);
     const [upcomingEventsMapView, setUpcomingEventsMapView] = useState<boolean>(false);
     const [pastEventsMapView, setPastEventsMapView] = useState<boolean>(false);
     const [copied, setCopied] = useState(false);
-
+    const [totalBags, setTotalBags] = useState<number>(0);
+    const [totalHours, setTotalHours] = useState<number>(0);
+    const [totalEvents, setTotalEvents] = useState<number>(0);
+    
     useEffect(() => {
         MapStore.getOption().then(opts => {
             setMapOptions(opts);
@@ -71,31 +71,30 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                if (!showCanceledEventsOnly) {
-                    fetch('/api/events/userevents/' + props.currentUser.id + '/' + showFutureEventsOnly, {
-                        method: 'GET',
-                        headers: headers
-                    })
-                        .then(response => response.json() as Promise<EventData[]>)
-                        .then(data => {
-                            setMyEventList(data);
-                            setIsEventDataLoaded(true);
-                        });
-                }
-                else {
-                    fetch('/api/events/canceleduserevents/' + props.currentUser.id + '/' + showFutureEventsOnly, {
-                        method: 'GET',
-                        headers: headers
-                    })
-                        .then(response => response.json() as Promise<EventData[]>)
-                        .then(data => {
-                            setMyEventList(data);
-                            setIsEventDataLoaded(true);
-                        });
-                }
+                fetch('/api/events/userevents/' + props.currentUser.id + '/false', {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<EventData[]>)
+                    .then(data => {
+                        setMyEventList(data);
+                        setIsEventDataLoaded(true);
+                    });
+
+                fetch('/api/stats/' + props.currentUser.id, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<StatsData>)
+                    .then(data => {
+                        setTotalBags(data.totalBags);
+                        setTotalHours(data.totalHours);
+                        setTotalEvents(data.totalEvents);
+                    }
+                    )
             });
         }
-    }, [showFutureEventsOnly, showCanceledEventsOnly, reloadEvents, props.currentUser, props.currentUser.id, props.isUserLoaded]);
+    }, [reloadEvents, props.currentUser, props.currentUser.id, props.isUserLoaded]);
 
     const handleLocationChange = (point: data.Position) => {
         // do nothing
@@ -189,7 +188,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                             return (
                                 <tr key={event.id.toString()}>
                                     <td>{event.name}</td>
-                                    <td>{event.createdByUserId === props.currentUser.id ? 'Creator' : ' Attendee'}</td>
+                                    <td>{event.createdByUserId === props.currentUser.id ? 'Lead' : ' Attendee'}</td>
                                     <td>{new Date(event.eventDate).toLocaleDateString("en-us", {
                                         year: "numeric",
                                         month: "2-digit",
@@ -229,7 +228,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                 return (
                                     <tr key={event.id.toString()}>
                                         <td>{event.name}</td>
-                                        <td>{event.createdByUserId === props.currentUser.id ? 'Creator' : ' Attendee'}</td>
+                                        <td>{event.createdByUserId === props.currentUser.id ? 'Lead' : ' Attendee'}</td>
                                         <td>{new Date(event.eventDate).toLocaleDateString("en-us", {
                                             year: "numeric",
                                             month: "2-digit",
@@ -274,7 +273,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         <div className="d-flex bg-white">
                             <Col className="ml-3">
                                 <p className="card-title">Events</p>
-                                <p className="card-statistic color-primary mt-0">12</p>
+                                <p className="card-statistic color-primary mt-0">{totalEvents}</p>
                             </Col>
                             <Col className="d-flex justify-content-end">
                                 <Image src={twofigure} alt="person silouhette icons" className="card-icon align-self-end mr-3"></Image>
@@ -285,7 +284,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         <div className="d-flex bg-white">
                             <Col className="ml-3">
                                 <p className="card-title">Hours</p>
-                                <p className="card-statistic color-primary mt-0">12</p>
+                                <p className="card-statistic color-primary mt-0">{totalHours}</p>
                             </Col>
                             <Col className="d-flex justify-content-end">
                                 <Image src={calendarclock} alt="calendar clock icons" className="card-icon align-self-end mr-3"></Image>
@@ -295,8 +294,8 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     <Col>
                         <div className="d-flex bg-white">
                             <Col className="ml-3">
-                                <p className="card-title">Bags/Buckets</p>
-                                <p className="card-statistic color-primary mt-0">12</p>
+                                <p className="card-title">Bags</p>
+                                <p className="card-statistic color-primary mt-0">{totalBags}</p>
                             </Col>
                             <Col className="d-flex justify-content-end">
                                 <Image src={bucketplus} alt="add bucket icons" className="card-icon align-self-end mr-3"></Image>
