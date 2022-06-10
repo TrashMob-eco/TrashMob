@@ -155,7 +155,7 @@
 
             Logger.LogInformation("Sending email to {0}, Subject {0}", user.Email, EmailSubject);
 
-            await EmailManager.SendTemplatedEmail(EmailSubject, SendGridEmailTemplateId.EventEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+            await EmailManager.SendTemplatedEmail(EmailSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
 
             return 1;
         }
