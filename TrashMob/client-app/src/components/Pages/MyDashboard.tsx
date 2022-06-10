@@ -13,7 +13,7 @@ import { Table } from '../Table';
 import twofigure from '../assets/card/twofigure.svg';
 import calendarclock from '../assets/card/calendarclock.svg';
 import bucketplus from '../assets/card/bucketplus.svg';
-import { Eye, PersonX, Link as LinkIcon, Pencil, Clipboard } from 'react-bootstrap-icons';
+import { Eye, PersonX, Link as LinkIcon, Pencil } from 'react-bootstrap-icons';
 import StatsData from '../Models/StatsData';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
@@ -206,6 +206,12 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                     </td>
                                 </tr>
                             )
+                        } else {
+                            return (
+                                <tr>
+                                    <td>None</td>
+                                </tr>
+                                )
                         }
                     }
                     )}
@@ -244,6 +250,12 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                                 </Dropdown.Menu>
                                             </Dropdown>
                                         </td>
+                                    </tr>
+                                )
+                            } else {
+                                return (
+                                    <tr>
+                                        <td>None</td>
                                     </tr>
                                 )
                             }
