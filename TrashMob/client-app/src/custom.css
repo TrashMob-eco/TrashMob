@@ -185,10 +185,6 @@ hr.rounded {
   color: #96ba00;
 }
 
-.bg-black {
-  background-color: #212529 !important;
-}
-
 .border-rounded-lg {
   border-radius: 1rem !important;
 }
@@ -309,12 +305,20 @@ input[type="radio"]:checked {
   }
 }
 
+.bg-black {
+  background-color: #212529 !important;
+}
+
 .bg-grass {
   background-color: #96ba00;
 }
 
 .bg-ice {
   background-color: #EAEFF6;
+}
+
+.bg-white {
+  background-color: #FFF;
 }
 
 .text-decoration-underline {
@@ -358,3 +362,16 @@ input[type="radio"]:checked {
   color: #000;
 }
 
+.card-icon {
+  width: 95px;
+  height: 95px;
+}
+
+.card-statistic {
+  font-size: 55px;
+}
+
+.card-title {
+  font-size: 25px;
+  font-weight: 500;
+}
