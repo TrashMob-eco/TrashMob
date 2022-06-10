@@ -853,7 +853,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                                     <Col>
                                         <Form.Group>
                                             <Button disabled={!isSaveEnabled} type="submit" className="action btn-outline mr-2" variant="outline-primary">Save</Button>
-                                            <Button className="action" onChange={(e) => handleCancel(e)}>Cancel</Button>
+                                            <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
                                         </Form.Group>
                                         <span>{formSubmitted ? 'Saved!' : ''}</span>
                                         <span>{formSubmitErrors ? formSubmitErrors : ''}</span>
@@ -866,7 +866,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                                         <p className="font-size-lg color-primary">Delete my account</p>
                                         <p className="font-grey">If you delete your account, you won't be able to reactivate it, or retrieve any of your content or events.</p>
                                     </div>
-                                    <Button variant="danger" onChange={(e) => handleDelete(e)}>Delete Account</Button>
+                                    <Button variant="danger" onClick={(e) => handleDelete(e)}>Delete Account</Button>
                                 </div>
                             </Col>
 
