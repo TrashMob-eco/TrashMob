@@ -781,7 +781,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                                             <OverlayTrigger placement="top" overlay={renderDateAgreedToPrivacyPolicyToolTip}>
                                                 <Form.Label className="control-label font-weight-bold" htmlFor="dateAgreedToPrivacyPolicy">Date Agreed To Privacy Policy:</Form.Label>
                                             </OverlayTrigger>
-                                            <Form.Control type="text" disabled defaultValue={dateAgreedToPrivacyPolicy ? dateAgreedToPrivacyPolicy.toString() : ""} />
+                                            <Form.Control type="text" disabled value={dateAgreedToPrivacyPolicy ? dateAgreedToPrivacyPolicy.toString() : ""} />
                                         </Form.Group>
                                     </Col>
                                     <Col>
@@ -789,7 +789,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                                             <OverlayTrigger placement="top" overlay={renderPrivacyPolicyVersionToolTip}>
                                                 <Form.Label className="control-label font-weight-bold" htmlFor="PrivacyPolicyVersion">Privacy Policy Version:</Form.Label>
                                             </OverlayTrigger>
-                                            <Form.Control type="text" disabled defaultValue={privacyPolicyVersion} />
+                                            <Form.Control type="text" disabled value={privacyPolicyVersion} />
                                         </Form.Group>
                                     </Col>
                                 </Form.Row>
@@ -799,7 +799,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                                             <OverlayTrigger placement="top" overlay={renderDateAgreedToTermsOfServiceToolTip}>
                                                 <Form.Label className="control-label font-weight-bold" htmlFor="dateAgreedToTermsOfService">Date Agreed To Terms of Service:</Form.Label>
                                             </OverlayTrigger>
-                                            <Form.Control type="text" disabled defaultValue={dateAgreedToTermsOfService ? dateAgreedToTermsOfService.toString() : ""} />
+                                            <Form.Control type="text" disabled value={dateAgreedToTermsOfService ? dateAgreedToTermsOfService.toString() : ""} />
                                         </Form.Group>
                                     </Col>
                                     <Col>
@@ -807,7 +807,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                                             <OverlayTrigger placement="top" overlay={renderTermsOfServiceVersionToolTip}>
                                                 <Form.Label className="control-label font-weight-bold" htmlFor="TermsOfServiceVersion">Terms Of Service Version:</Form.Label>
                                             </OverlayTrigger>
-                                            <Form.Control type="text" disabled defaultValue={termsOfServiceVersion} />
+                                            <Form.Control type="text" disabled value={termsOfServiceVersion} />
                                         </Form.Group>
                                     </Col>
                                 </Form.Row>
@@ -817,7 +817,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                                             <OverlayTrigger placement="top" overlay={renderDateAgreedToTrashMobWaiverToolTip}>
                                                 <Form.Label className="control-label font-weight-bold" htmlFor="dateAgreedToTrashMobWaiver">Date Agreed To TrashMob Waiver:</Form.Label>
                                             </OverlayTrigger>
-                                            <Form.Control type="text" disabled defaultValue={dateAgreedToTrashMobWaiver ? dateAgreedToTrashMobWaiver.toString() : ""} />
+                                            <Form.Control type="text" disabled value={dateAgreedToTrashMobWaiver ? dateAgreedToTrashMobWaiver.toString() : ""} />
                                         </Form.Group>
                                     </Col>
                                     <Col>
@@ -825,7 +825,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                                             <OverlayTrigger placement="top" overlay={renderTrashMobWaiverVersionToolTip}>
                                                 <Form.Label className="control-label font-weight-bold" htmlFor="TrashMobWaiverVersion">TrashMob Waiver Version:</Form.Label>
                                             </OverlayTrigger>
-                                            <Form.Control type="text" disabled defaultValue={trashMobWaiverVersion} />
+                                            <Form.Control type="text" disabled value={trashMobWaiverVersion} />
                                         </Form.Group>
                                     </Col>
                                 </Form.Row>
@@ -835,7 +835,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                                             <OverlayTrigger placement="top" overlay={renderMemberSinceToolTip}>
                                                 <Form.Label className="control-label font-weight-bold" htmlFor="memberSince">Member Since:</Form.Label>
                                             </OverlayTrigger>
-                                            <Form.Control type="text" disabled defaultValue={memberSince ? memberSince.toLocaleString() : ""} />
+                                            <Form.Control type="text" disabled value={memberSince ? memberSince.toLocaleString() : ""} />
                                         </Form.Group>
                                     </Col>
                                 </Form.Row>
