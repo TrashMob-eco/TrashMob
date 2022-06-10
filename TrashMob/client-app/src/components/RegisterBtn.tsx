@@ -1,5 +1,5 @@
 
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import EventAttendeeData from './Models/EventAttendeeData';
@@ -17,7 +17,8 @@ interface RegisterBtnProps extends RouteComponentProps {
 };
 
 export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAttending, isUserLoaded, onAttendanceChanged, history }) => {
-    console.log('cur', currentUser, eventId, 'isAt', isAttending, 'isUsr', isUserLoaded, onAttendanceChanged)
+    const [registered, setRegistered] = useState<boolean>(false);
+
     const addAttendee = (eventId: string) => {
         const account = msalClient.getAllAccounts()[0];
 
@@ -43,18 +44,17 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
                 body: data,
                 headers: headers,
             }).then((response) => response.json())
-                .then(onAttendanceChanged(eventId))
+                .then(onAttendanceChanged(eventId)).then(() => setRegistered(true))
         })
     }
 
     const handleAttend = (eventId: string) => {
-
-         // Have user sign waiver if needed
-         const isTrashMobWaiverOutOfDate = currentUser.dateAgreedToTrashMobWaiver < CurrentTrashMobWaiverVersion.versionDate;
+        // Have user sign waiver if needed
+        const isTrashMobWaiverOutOfDate = currentUser.dateAgreedToTrashMobWaiver < CurrentTrashMobWaiverVersion.versionDate;
         if (isTrashMobWaiverOutOfDate || (currentUser.trashMobWaiverVersion === "")) {
             sessionStorage.setItem('targetUrl', window.location.pathname);
             history.push("/waivers");
-         }
+        }
 
         const accounts = msalClient.getAllAccounts();
 
@@ -69,7 +69,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
     }
 
     return (
-        <Button className="btn btn-primary action btn-128" hidden={!isUserLoaded || isAttending === "Yes"}
-            onClick={() => handleAttend(eventId)}>Register</Button>
+        <Button className="btn btn-primary action btn-128" hidden={!isUserLoaded || isAttending === "Yes" || registered}
+            onClick={() => handleAttend(eventId)}>{registered ? 'Registered!' : 'Register'}</Button>
     )
 }
