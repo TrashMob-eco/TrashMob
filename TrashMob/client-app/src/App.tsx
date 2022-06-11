@@ -15,7 +15,7 @@ import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
 import { GettingStarted } from './components/Pages/GettingStarted';
 import { MediaGallery } from './components/MediaGallery';
-import MyDashboard from './components/MyDashboard';
+import MyDashboard from './components/Pages/MyDashboard';
 import { Partners } from './components/Partners/Partners';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { TermsOfService } from './components/TermsOfService';
