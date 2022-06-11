@@ -58,7 +58,7 @@ namespace TrashMob.Controllers
 
             var eventSummaries = eventSummaryRepository.GetEventSummaries(cancellationToken).Where(es => eventIds.Contains(es.EventId));
             stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) + (eventSummaries.Sum(es => es.NumberOfBuckets) / 3);
-            stats.TotalHours = eventSummaries.Sum(es => es.DurationInMinutes * es.ActualNumberOfAttendees / 60);
+            stats.TotalHours = eventSummaries.Sum(es => es.DurationInMinutes / 60);
 
             return Ok(stats);
         }
