@@ -183,7 +183,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         return (
             <div className="bg-white p-3 px-4">
                 <Table columnHeaders={headerTitles} >
-                    {myEventList.map(event => {
+                    {myEventList.sort((a, b) => (a.eventDate < b.eventDate) ? 1 : -1).map(event => {
                         if (new Date(event.eventDate) >= new Date()) {
                             return (
                                 <tr key={event.id.toString()}>
@@ -225,7 +225,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         <AzureMapsProvider>
                             <MapControllerPointCollection center={center} multipleEvents={myEventList} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={handleAttendanceChanged} myAttendanceList={myEventList} isUserEventDataLoaded={isEventDataLoaded} onDetailsSelected={handleDetailsSelected} history={props.history} location={props.location} match={props.match} />
                         </AzureMapsProvider>
-                        : myEventList.map(event => {
+                        : myEventList.sort((a, b) => (a.eventDate < b.eventDate) ? 1 : -1).map(event => {
                             if (new Date(event.eventDate) < new Date()) {
                                 return (
                                     <tr key={event.id.toString()}>
