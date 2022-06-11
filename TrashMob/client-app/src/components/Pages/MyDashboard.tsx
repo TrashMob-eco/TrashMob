@@ -36,7 +36,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [totalBags, setTotalBags] = useState<number>(0);
     const [totalHours, setTotalHours] = useState<number>(0);
     const [totalEvents, setTotalEvents] = useState<number>(0);
-    
+
     useEffect(() => {
         MapStore.getOption().then(opts => {
             setMapOptions(opts);
@@ -207,11 +207,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                 </tr>
                             )
                         } else {
-                            return (
-                                <tr>
-                                    <td>None</td>
-                                </tr>
-                                )
+                            return (<></>)
                         }
                     }
                     )}
@@ -253,11 +249,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                     </tr>
                                 )
                             } else {
-                                return (
-                                    <tr>
-                                        <td>None</td>
-                                    </tr>
-                                )
+                                return (<></>)
                             }
                         }
                         )}
