@@ -171,7 +171,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const eventOwnerActionDropdownList = (eventId: string) => {
         return (
             <>
-                <Dropdown.Item href={'./'}><Pencil />Manage event</Dropdown.Item>
+                <Dropdown.Item href={'/manageeventdashboard/' + eventId}><Pencil />Manage event</Dropdown.Item>
                 <Dropdown.Item href={'/eventdetails/' + eventId}><Eye />View event</Dropdown.Item>
                 <Dropdown.Item onClick={() => handleCopyLink(eventId)}><LinkIcon />{copied ? 'Copied!' : 'Copy event link'}</Dropdown.Item>
             </>
