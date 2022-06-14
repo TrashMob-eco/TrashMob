@@ -38,7 +38,13 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetEventSummary(Guid eventId, CancellationToken cancellationToken = default)
         {
             var eventSummary = await eventSummaryRepository.GetEventSummary(eventId, cancellationToken).ConfigureAwait(false);
-            return Ok(eventSummary);
+
+            if (eventSummary != null)
+            {
+                return Ok(eventSummary);
+            }
+
+            return NotFound();
         }
 
         [HttpGet]

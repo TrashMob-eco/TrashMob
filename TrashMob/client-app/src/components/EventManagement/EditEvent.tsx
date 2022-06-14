@@ -382,14 +382,14 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     }
 
     function handleEventDateChange(passedDate: Date) {
+
         if (isEventPublic && passedDate < new Date()) {
             setEventDateErrors("Public event cannot be in the past");
         }
         else {
             setEventDateErrors("");
+            setEventDate(passedDate);
         }
-
-        setEventDate(passedDate);
 
         validateForm();
     }
