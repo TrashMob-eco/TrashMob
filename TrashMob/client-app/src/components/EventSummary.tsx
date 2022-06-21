@@ -53,12 +53,18 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
                 }
             })
             .then(() => {
-
                 fetch('/api/eventsummaries/' + loadedEventId, {
                     method: 'GET',
                     headers: headers,
                 })
-                    .then(response => response.json() as Promise<EventSummaryData>)
+                    .then(response => {
+                        if (response.status === 200) {
+                            return response.json() as Promise<EventSummaryData>;
+                        }
+                        else {
+                            throw Error(response.statusText);
+                        }
+                    })
                     .then(data => {
                         setActualNumberOfAttendees(data.actualNumberOfAttendees);
                         setCreatedByUserId(data.createdByUserId);
@@ -67,7 +73,11 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
                         setNotes(data.notes);
                         setNumberOfBags(data.numberOfBags);
                         setNumberOfBuckets(data.numberOfBuckets);
+                    })
+                    .catch((error) => {
                     });
+            })
+            .catch((error) => {                
             });
     }, [loadedEventId, props.currentUser.id]);
 

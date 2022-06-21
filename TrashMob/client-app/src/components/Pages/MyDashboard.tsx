@@ -178,6 +178,17 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         )
     }
 
+    const eventCompletedOwnerActionDropdownList = (eventId: string) => {
+        return (
+            <>
+                <Dropdown.Item href={'/eventsummary/' + eventId}><Pencil />Event Summary</Dropdown.Item>
+                <Dropdown.Item href={'/manageeventdashboard/' + eventId}><Pencil />Manage event</Dropdown.Item>
+                <Dropdown.Item href={'/eventdetails/' + eventId}><Eye />View event</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleCopyLink(eventId)}><LinkIcon />{copied ? 'Copied!' : 'Copy event link'}</Dropdown.Item>
+            </>
+        )
+    }
+
     const UpcomingEventsTable = () => {
         const headerTitles = ['Name', 'Role', 'Date', 'Time', 'Location', 'Action']
         return (
@@ -242,7 +253,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                             <Dropdown role="menuitem">
                                                 <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
                                                 <Dropdown.Menu id="share-menu">
-                                                    {event.createdByUserId === props.currentUser.id ? eventOwnerActionDropdownList(event.id) : attendeeActionDropdownList(event.id)}
+                                                    {event.createdByUserId === props.currentUser.id ? eventCompletedOwnerActionDropdownList(event.id) : attendeeActionDropdownList(event.id)}
                                                 </Dropdown.Menu>
                                             </Dropdown>
                                         </td>
