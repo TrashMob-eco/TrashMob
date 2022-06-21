@@ -6,7 +6,6 @@ import * as ToolTips from "./../store/ToolTips";
 import EventSummaryData from './Models/EventSummaryData';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import EventData from './Models/EventData';
-import { Console } from 'console';
 
 export interface EventSummaryMatchParams {
     eventId: string;
