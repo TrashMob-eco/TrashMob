@@ -10,7 +10,7 @@ import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapControllerPointCollection from '../MapControllerPointCollection';
 import UserData from '../Models/UserData';
 import { Button, Modal } from 'reactstrap';
-import { CurrentTermsOfServiceVersion } from '../TermsOfService';
+import { CurrentTermsOfServiceVersion } from './TermsOfService';
 import { CurrentPrivacyPolicyVersion } from '../PrivacyPolicy';
 import { Col, Container, Form, Image, Row } from 'react-bootstrap';
 import Drawings from '../assets/home/Drawings.png';
