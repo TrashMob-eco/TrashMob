@@ -35,7 +35,7 @@
 
             var token = apiClient.RequestJWTUserToken(clientId, impersonatedUserId, authServer, privateKey, 1, scopes);
 
-            var userInfo = apiClient.GetUserInfo("Bearer " + token.access_token);
+            var userInfo = apiClient.GetUserInfo(token.access_token);
             
             if (userInfo?.Accounts?.Count > 0)
             {
