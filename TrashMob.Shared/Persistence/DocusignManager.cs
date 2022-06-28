@@ -40,10 +40,11 @@ namespace TrashMob.Shared.Persistence
         public EnvelopeResponse SendEnvelope(EnvelopeRequest envelopeRequest)
         {
             OAuthToken accessToken;
+            string localBaseUri;
 
             try
             {
-                accessToken = docusignAuthenticator.AuthenticateWithJWT(clientId, impersonatedUserId, authServer);
+                accessToken = docusignAuthenticator.AuthenticateWithJWT(clientId, impersonatedUserId, authServer, out localBaseUri);
             }
             catch (Exception ex)
             {
@@ -57,6 +58,11 @@ namespace TrashMob.Shared.Persistence
                 }
  
                 throw;
+            }
+
+            if (!string.IsNullOrWhiteSpace(localBaseUri))
+            {
+                basePath = localBaseUri;
             }
 
             var apiClient = new ApiClient(basePath);
@@ -218,10 +224,11 @@ namespace TrashMob.Shared.Persistence
         public async Task<string> GetEnvelopeStatus(string envelopeId)
         {
             OAuthToken accessToken;
+            string localBaseUri;
 
             try
             {
-                accessToken = docusignAuthenticator.AuthenticateWithJWT(clientId, impersonatedUserId, authServer);
+                accessToken = docusignAuthenticator.AuthenticateWithJWT(clientId, impersonatedUserId, authServer, out localBaseUri);
             }
             catch (Exception ex)
             {
@@ -235,6 +242,11 @@ namespace TrashMob.Shared.Persistence
                 }
 
                 throw;
+            }
+
+            if (!string.IsNullOrWhiteSpace(localBaseUri))
+            {
+                basePath = localBaseUri;
             }
 
             var apiClient = new ApiClient(basePath);
