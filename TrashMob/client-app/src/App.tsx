@@ -18,7 +18,7 @@ import { MediaGallery } from './components/MediaGallery';
 import MyDashboard from './components/Pages/MyDashboard';
 import { Partners } from './components/Partners/Partners';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
-import { TermsOfService } from './components/TermsOfService';
+import { TermsOfService } from './components/Pages/TermsOfService';
 import { Board } from './components/Board';
 import { VolunteerOpportunities } from './components/VolunteerOpportunities';
 import { initializeIcons } from '@uifabric/icons';
