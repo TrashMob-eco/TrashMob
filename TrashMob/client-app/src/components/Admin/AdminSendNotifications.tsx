@@ -23,6 +23,12 @@ export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> =
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    // This will handle Cancel button click event.  
+    function handleCancel(event: any) {
+        event.preventDefault();
+        props.history.push("/");
+    }
+
     // Handle Delete request for a user  
     function handleSendNotification(event: any) {
 
@@ -115,7 +121,7 @@ export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> =
                     </Col>
                     <Col lg={{ span: 7, offset: 1 }}>
                         <div className="bg-white p-5 shadow-sm rounded">
-                            <Form onSubmit={handleSend} >
+                            <Form onSubmit={handleSendNotification} >
 
                                 <Form.Group className="required">
                                     <OverlayTrigger placement="top" overlay={renderNameToolTip}>

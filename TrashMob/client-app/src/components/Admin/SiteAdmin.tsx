@@ -10,6 +10,7 @@ import UserData from '../Models/UserData';
 import { AdminEvents } from './AdminEvents';
 import { AdminPartnerRequests } from './AdminPartnerRequests';
 import { AdminPartners } from './AdminPartners';
+import { AdminSendNotifications } from './AdminSendNotifications';
 import { AdminUsers } from './AdminUsers';
 
 interface SiteAdminProps extends RouteComponentProps<any> {
@@ -39,6 +40,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
         { name: 'Manage Partners', value: '3' },
         { name: 'Manage Partner Requests', value: '4' },
         { name: 'View Executive Summary', value: '5' },
+        { name: 'Send Notifications', value: '6' },
     ];
 
     React.useEffect(() => {
@@ -252,6 +254,14 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
         )
     }
 
+    function renderSendNotifications() {
+        return (
+            <div>
+                <AdminSendNotifications history={props.history} location={props.location} match={props.match} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+            </div>
+        )
+    }
+
     function renderExecutiveSummary() {
         return (
             <div>
@@ -285,6 +295,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
                 {radioValue === '3' && renderManagePartners()}
                 {radioValue === '4' && renderManagePartnerRequests()}
                 {radioValue === '5' && renderExecutiveSummary()}
+                {radioValue === '6' && renderSendNotifications()}
 
             </div>
         );

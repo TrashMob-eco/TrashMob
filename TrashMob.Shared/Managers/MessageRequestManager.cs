@@ -7,15 +7,13 @@ namespace TrashMob.Shared.Managers
 
     public class MessageRequestManager : IMessageRequestManager
     {
-        private readonly IEmailManager emailManager;
         private readonly INotificationManager notificationManager;
         private readonly IMessageRequestRepository messageRequestRepository;
-        private readonly IPartnerUserRepository partnerUserRepository;
 
-        public MessageRequestManager(IEmailManager emailManager, IMessageRequestRepository messageRequestRepository, INotificationManager notificationManager)
+        public MessageRequestManager(IMessageRequestRepository messageRequestRepository, INotificationManager notificationManager)
         {
-            this.emailManager = emailManager;
             this.messageRequestRepository = messageRequestRepository;
+            this.notificationManager = notificationManager;
         }      
 
         public async Task SendMessageRequest(MessageRequest messageRequest)

@@ -14,7 +14,6 @@
     public class MessageRequestController : BaseController
     {
         private readonly IMessageRequestManager messageRequestManager;
-        private readonly IEmailManager emailManager;
 
         public MessageRequestController(IMessageRequestManager messageRequestManager, 
                                         TelemetryClient telemetryClient)
