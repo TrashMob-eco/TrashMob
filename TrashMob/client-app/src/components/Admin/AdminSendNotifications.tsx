@@ -113,7 +113,7 @@ export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> =
                 <Row className="gx-2 py-5" lg={2}>
                     <Col lg={4} className="d-flex">
                         <div className="bg-white py-2 px-5 shadow-sm rounded">
-                            <h2 className="color-primary mt-4 mb-5">Contact Us</h2>
+                            <h2 className="color-primary mt-4 mb-5">Send Notification</h2>
                             <p>
                                 Enter the User Name you wish to message and the message you wish to send them.
                             </p>
@@ -154,8 +154,6 @@ export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> =
                     </Modal.Header>
                     <Modal.Body className="text-center">
                         <b>Message was successfully sent!</b>
-                        <br />
-                        <small>You'll now be redirected to the TrashMob.eco home page...</small>
                     </Modal.Body>
                 </Modal>
             </Container >
