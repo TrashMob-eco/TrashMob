@@ -17,7 +17,9 @@
         }
 
         public virtual DbSet<ContactRequest> ContactRequests { get; set; }
-       
+
+        public virtual DbSet<MessageRequest> MessageRequests { get; set; }
+
         public virtual DbSet<PartnerRequest> PartnerRequests { get; set; }
         
         public virtual DbSet<Partner> Partners { get; set; }
@@ -71,6 +73,13 @@
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
+
+            modelBuilder.Entity<MessageRequest>(entity =>
+            {
+                entity.Property(e => e.Name).HasMaxLength(64);
+
+                entity.Property(e => e.Message).HasMaxLength(2048);
+            });
 
             modelBuilder.Entity<ContactRequest>(entity =>
             {
