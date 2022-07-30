@@ -95,5 +95,35 @@ namespace TrashMob.Shared.Models
         public virtual ICollection<EventSummary> EventSummariesCreated { get; set; }
 
         public virtual ICollection<EventSummary> EventSummariesUpdated { get; set; }
+
+        public virtual ICollection<Community> CommunitiesCreated { get; set; }
+
+        public virtual ICollection<Community> CommunitiesUpdated { get; set; }
+
+        public virtual ICollection<CommunityAttachment> CommunityAttachmentsCreated { get; set; }
+
+        public virtual ICollection<CommunityAttachment> CommunityAttachmentsUpdated { get; set; }
+
+        public virtual ICollection<CommunityContact> CommunityContactsCreated { get; set; }
+
+        public virtual ICollection<CommunityContact> CommunityContactsUpdated { get; set; }
+
+        public virtual ICollection<CommunityHistory> CommunityHistoriesCreated { get; set; }
+
+        public virtual ICollection<CommunityHistory> CommunityHistoriesUpdated { get; set; }
+
+        public virtual ICollection<CommunityHistory> CommunityHistoryRoutings { get; set; }
+
+        public virtual ICollection<CommunityNote> CommunityNotesCreated { get; set; }
+
+        public virtual ICollection<CommunityNote> CommunityNotesUpdated { get; set; }
+
+        public virtual ICollection<CommunityStarterKit> CommunityStarterKitsCreated { get; set; }
+
+        public virtual ICollection<CommunityStarterKit> CommunityStarterKitsUpdated { get; set; }
+
+        public virtual ICollection<CommunityStarterKitContact> CommunityStarterKitContactsCreated { get; set; }
+
+        public virtual ICollection<CommunityStarterKitContact> CommunityStarterKitContactsUpdated { get; set; }
     }
 }
