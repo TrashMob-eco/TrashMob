@@ -1,0 +1,36 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: TrashMob Pull Request Build
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '6.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION2: '6.0.x'  # set this to the dotnet version to use
+  
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION2 }}
+
+    - name: Build with dotnet
+      run: dotnet build TrashMob\TrashMob.csproj --configuration Release
+
+    - name: dotnet publish
+      run: dotnet publish TrashMob\TrashMob.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
