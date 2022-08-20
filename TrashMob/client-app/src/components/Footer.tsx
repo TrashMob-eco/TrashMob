@@ -21,6 +21,7 @@ export const Footer: React.FC = () => {
                             <Link to="/faq">FAQ</Link>
                             <Link to="/volunteeropportunities">Volunteer opportunities</Link>
                             <Link to="/contactus">Contact us</Link>
+                            <a href={"https://donate.stripe.com/14k9DN2EnfAog9O3cc"}>Donate</a>
                         </div>
 
                         <div className="col-md-4">
