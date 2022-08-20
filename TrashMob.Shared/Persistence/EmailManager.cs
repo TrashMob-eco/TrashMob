@@ -9,7 +9,6 @@ namespace TrashMob.Shared.Persistence
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared;
-    using TrashMob.Shared.Engine;
 
     public class EmailManager : IEmailManager
     {
