@@ -30,9 +30,6 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION2 }}
 
-    - name: Install MAUI Workload
-      run: dotnet workload install maui --ignore-failed-sources
-
     - name: Restore
       run: dotnet restore
 
@@ -40,7 +37,7 @@ jobs:
       run: dotnet build TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }}
 
     - name: Publish Web App
-      run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/mywebapp
+      run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobwebapp
 
   buildFunctionApp:
 
@@ -59,9 +56,6 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION2 }}
 
-    - name: Install MAUI Workload
-      run: dotnet workload install maui --ignore-failed-sources
-
     - name: Restore
       run: dotnet restore
 
@@ -69,12 +63,15 @@ jobs:
       run: dotnet build TrashMobJobs\TrashMobJobs.csproj --configuration ${{ env.CONFIGURATION }}
 
     - name: Publish Function App
-      run: dotnet publish TrashMobJobs\TrashMobJobs.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/myfunctionapp
+      run: dotnet publish TrashMobJobs\TrashMobJobs.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobjobsfunctionapp
 
   buildMobileApp:
     runs-on: windows-latest
 
     steps:
+    - env:
+       AndroidKeystorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+
     - uses: actions/checkout@v2
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
@@ -97,4 +94,4 @@ jobs:
       run: dotnet build TrashMobMobileApp\TrashMobMobileApp.csproj --configuration ${{ env.CONFIGURATION }}
 
     - name: Publish Mobile App
-      run: dotnet publish TrashMobMobileApp\TrashMobMobileApp.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/mymobileapp
+      run: dotnet publish TrashMobMobileApp\TrashMobMobileApp.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobmobileapp -f:net6.0-android33.0 /p:AndroidSigningKeyPass=$AndroidKeyStorePassword /p:AndroidSigningStorePass=$AndroidKeyStorePassword
