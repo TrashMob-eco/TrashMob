@@ -80,8 +80,9 @@ jobs:
 
     - name: Install MAUI Workload
       run: |
-           dotnet workload install maui --ignore-failed-sources
-           dotnet workload install android ios maccatalyst tvos macos maui wasm-tools --source https://aka.ms/dotnet6/nuget/index.json --source https://api.nuget.org/v3/index.json
+        dotnet nuget locals all --clear
+        dotnet workload install maui --ignore-failed-sources
+        dotnet workload install android ios maccatalyst tvos macos maui wasm-tools --source https://api.nuget.org/v3/index.json
 
     - name: Restore
       run: dotnet restore TrashMobMobileApp\TrashMobMobileApp.sln
