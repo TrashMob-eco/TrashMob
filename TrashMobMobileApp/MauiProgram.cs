@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobileApp;
 
 using Microsoft.AspNetCore.Components.WebView.Maui;
+using TrashMobMobileApp.Authentication;
 using TrashMobMobileApp.Data;
 using TrashMobMobileApp.Models;
 
@@ -22,7 +23,7 @@ public static class MauiProgram
 #endif
 		
         // Add Services
-        // builder.Services.AddSingleton<IB2CAuthenticationService, B2CAuthenticationService>();
+        builder.Services.AddSingleton<IB2CAuthenticationService, B2CAuthenticationService>();
         builder.Services.AddSingleton<IContactRequestManager, ContactRequestManager>();
         builder.Services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
         builder.Services.AddSingleton<IDataStore<Item>, MockDataStore>();

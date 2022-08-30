@@ -50,7 +50,18 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.Identity.Client" Version="4.46.2" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Authentication\" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0-android'">
+      <PackageReference Include="Plugin.CurrentActivity">
+        <Version>2.1.0.4</Version>
+      </PackageReference>
     </ItemGroup>
 
 </Project>
