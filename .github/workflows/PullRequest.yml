@@ -14,7 +14,7 @@ env:
   CONFIGURATION: Release
 
 jobs:
-  prep:
+  buildWebapp:
     runs-on: windows-latest
 
     steps:
@@ -36,11 +36,6 @@ jobs:
     - name: Restore
       run: dotnet restore
 
-  buildWebapp:
-    runs-on: windows-latest
-    needs: prep
-
-    steps:
     - name: Build Web App
       run: dotnet build TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }}
 
@@ -50,21 +45,54 @@ jobs:
   buildFunctionApp:
 
     runs-on: windows-latest
-    needs: prep
 
     steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION2 }}
+
+    - name: Install MAUI Workload
+      run: dotnet workload install maui --ignore-failed-sources
+
+    - name: Restore
+      run: dotnet restore
+
     - name: Build Function App
       run: dotnet build TrashMobJobs\TrashMobJobs.csproj --configuration ${{ env.CONFIGURATION }}
 
     - name: Publish Function App
       run: dotnet publish TrashMobJobs\TrashMobJobs.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/myfunctionapp
 
-
   buildMobileApp:
     runs-on: windows-latest
-    needs: prep
 
     steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION2 }}
+
+    - name: Install MAUI Workload
+      run: dotnet workload install maui --ignore-failed-sources
+
+    - name: Restore
+      run: dotnet restore
+
     - name: Build Mobile App
       run: dotnet build TrashMobMobileApp\TrashMobMobileApp.csproj --configuration ${{ env.CONFIGURATION }}
 
