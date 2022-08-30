@@ -45,4 +45,4 @@ jobs:
       run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }}
 
     - name: Publish
-      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build -f:net6.0-android33.0 /p:AndroidSigningKeyPass="$AndroidKeystorePassword" /p:AndroidSigningStorePass="$AndroidKeystorePassword"
+      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build -f:net6.0-android33.0 /p:AndroidSigningKeyPass=${{ env.AndroidKeystorePassword }} /p:AndroidSigningStorePass=${{ env.AndroidKeystorePassword }}

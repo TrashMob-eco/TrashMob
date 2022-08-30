@@ -97,4 +97,4 @@ jobs:
       run: dotnet build TrashMobMobileApp\TrashMobMobileApp.csproj --configuration ${{ env.CONFIGURATION }}
 
     - name: Publish Mobile App
-      run: dotnet publish TrashMobMobileApp\TrashMobMobileApp.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobmobileapp -f:net6.0-android33.0 /p:AndroidSigningKeyPass="$AndroidKeystorePassword" /p:AndroidSigningStorePass="$AndroidKeystorePassword"
+      run: dotnet publish TrashMobMobileApp\TrashMobMobileApp.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobmobileapp -f:net6.0-android33.0 /p:AndroidSigningKeyPass=${{ env.AndroidKeystorePassword }} /p:AndroidSigningStorePass=${{ env.AndroidKeystorePassword }}
