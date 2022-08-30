@@ -1,9 +1,9 @@
 ﻿using Foundation;
 
-namespace TrashMobMobileApp;
+namespace TrashMobMobileApp.Platforms.MacCatalyst;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
 {
-	protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 }
