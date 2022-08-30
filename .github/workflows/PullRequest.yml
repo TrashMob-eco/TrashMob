@@ -16,6 +16,7 @@ env:
 jobs:
   buildWebapp:
     runs-on: windows-latest
+    environment: test
 
     steps:
     - uses: actions/checkout@v2
@@ -42,6 +43,7 @@ jobs:
   buildFunctionApp:
 
     runs-on: windows-latest
+    environment: test
 
     steps:
     - uses: actions/checkout@v2
@@ -67,6 +69,7 @@ jobs:
 
   buildMobileApp:
     runs-on: windows-latest
+    environment: test
 
     env:
       AndroidKeystorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}

@@ -17,6 +17,7 @@ env:
 jobs:
   build:
     runs-on: windows-latest
+    environment: production
 
     env:
       AndroidKeystorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}

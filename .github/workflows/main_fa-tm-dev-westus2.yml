@@ -20,6 +20,8 @@ env:
 jobs:
   build-and-deploy:
     runs-on: windows-latest
+    environment: test
+
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
