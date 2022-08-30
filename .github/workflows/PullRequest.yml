@@ -32,7 +32,7 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION2 }}
 
     - name: Restore
-      run: dotnet restore .\TrashMobMobileApp.sln
+      run: dotnet restore .\TrashMob.sln
 
     - name: Publish Web App
       run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobwebapp --no-restore
@@ -56,7 +56,7 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION2 }}
 
     - name: Restore
-      run: dotnet restore .\TrashMobMobileApp.sln
+      run: dotnet restore .\TrashMob.sln
 
     - name: Publish Function App
       run: dotnet publish TrashMobJobs\TrashMobJobs.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobjobsfunctionapp --no-restore
