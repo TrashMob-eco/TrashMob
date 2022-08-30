@@ -32,13 +32,10 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION2 }}
 
     - name: Restore
-      run: dotnet restore
-
-    - name: Build Web App
-      run: dotnet build TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }}
+      run: dotnet restore .\TrashMobMobileApp.sln
 
     - name: Publish Web App
-      run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobwebapp
+      run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobwebapp --no-restore
 
   buildFunctionApp:
 
@@ -59,13 +56,10 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION2 }}
 
     - name: Restore
-      run: dotnet restore
-
-    - name: Build Function App
-      run: dotnet build TrashMobJobs\TrashMobJobs.csproj --configuration ${{ env.CONFIGURATION }}
+      run: dotnet restore .\TrashMobMobileApp.sln
 
     - name: Publish Function App
-      run: dotnet publish TrashMobJobs\TrashMobJobs.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobjobsfunctionapp
+      run: dotnet publish TrashMobJobs\TrashMobJobs.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobjobsfunctionapp --no-restore
 
   buildMobileApp:
     runs-on: windows-latest
@@ -90,13 +84,10 @@ jobs:
            dotnet workload install android ios maccatalyst tvos macos maui wasm-tools --source https://aka.ms/dotnet6/nuget/index.json --source https://api.nuget.org/v3/index.json
 
     - name: Restore
-      run: dotnet restore
-
-    - name: Build Mobile App
-      run: dotnet build TrashMobMobileApp\TrashMobMobileApp.csproj --configuration ${{ env.CONFIGURATION }}
+      run: dotnet restore TrashMobMobileApp\TrashMobMobileApp.sln
 
     - name: Publish Mobile App
-      run: dotnet publish TrashMobMobileApp\TrashMobMobileApp.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobmobileapp -f:net6.0-android33.0 
+      run: dotnet publish TrashMobMobileApp\TrashMobMobileApp.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobmobileapp -f:net6.0-android33.0 --no-restore
       
     # Store Android Signing Keystore and password in Secrets using base64 encoding
     # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil
