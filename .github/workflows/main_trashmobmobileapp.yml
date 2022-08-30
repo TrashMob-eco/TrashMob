@@ -19,9 +19,6 @@ jobs:
     runs-on: windows-latest
     environment: test
 
-    env:
-      AndroidKeystorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-
     steps:
     - uses: actions/checkout@v2
 
@@ -45,4 +42,4 @@ jobs:
       run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }}
 
     - name: Publish
-      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build -f:net6.0-android33.0 /p:AndroidSigningKeyPass=${{ env.AndroidKeystorePassword }} /p:AndroidSigningStorePass=${{ env.AndroidKeystorePassword }}
+      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build -f:net6.0-android33.0 /p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} /p:AndroidSigningStorePass=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
