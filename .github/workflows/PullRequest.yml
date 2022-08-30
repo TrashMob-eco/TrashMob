@@ -69,11 +69,11 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - env:
-       AndroidKeystorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-
     - uses: actions/checkout@v2
 
+    - env:
+       AndroidKeystorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+       
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v1
       with:
