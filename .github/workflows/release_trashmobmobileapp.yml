@@ -14,6 +14,7 @@ env:
   DOTNET_VERSION2: '6.0.x'  # set this to the dotnet version to use
   CONFIGURATION: Release
   WORKING_DIRECTORY: TrashMobMobileApp
+
 jobs:
   build:
     runs-on: windows-latest
@@ -33,13 +34,32 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION2 }}
   
     - name: Install MAUI Workload
-      run: dotnet workload install maui --ignore-failed-sources
+      run: |
+        dotnet nuget locals all --clear
+        dotnet workload install maui --ignore-failed-sources
+        dotnet workload install android ios maccatalyst tvos macos maui wasm-tools --source https://api.nuget.org/v3/index.json
 
     - name: Restore
-      run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+      run: | 
+        cd TrashMobMobileApp
+        dotnet restore TrashMobMobileApp.sln
 
-    - name: Build with dotnet
-      run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }}
+    - name: Publish Mobile App
+      run: |
+        cd TrashMobMobileApp
+        dotnet publish TrashMobMobileApp.csproj -c:${{ env.CONFIGURATION }} -f:net6.0-android33.0 --no-restore
+      
+    # Store Android Signing Keystore and password in Secrets using base64 encoding
+    # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil
+    # command line util to encode to base64 on windows
+    - name: Extract Android signing key from env
+      shell: bash
+      run: |
+        cd TrashMobMobileApp
+        echo "${{ secrets.ANDROID_KEYSTORE }}" > ./android/trashmobmobileapp.jks.base64
+        base64 -d ./android/trashmobmobileapp.jks.base64 > ./android/trashmobmobileapp.decrypted.jks
 
-    - name: Publish
-      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build -f:net6.0-android33.0 /p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} /p:AndroidSigningStorePass=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+    # check android SDK paths etc in installed VM : https://github.com/actions/virtual-environments#available-environments
+    - name: Sign dev build
+      shell: bash
+      run: jarsigner -keystore ./android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -signedjar ./android/app/build/outputs/bundle/release/app-release-signed.aab ./android/app/build/outputs/bundle/release/app-release.aab ${{ env.CONFIGURATION }}

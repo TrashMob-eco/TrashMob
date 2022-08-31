@@ -34,10 +34,9 @@ jobs:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION_INPROC }}
     - name: Restore
       run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
-    - name: Build
-      run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+    
     - name: Publish
-      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}"
+      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore --output "${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}"
 
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1

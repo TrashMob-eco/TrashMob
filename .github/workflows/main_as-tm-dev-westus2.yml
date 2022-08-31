@@ -12,7 +12,8 @@ on:
 env:
   DOTNET_VERSION: '6.0.x'  # set this to the dotnet version to use
   DOTNET_VERSION2: '6.0.x'  # set this to the dotnet version to use
-  
+  CONFIGURATION: Release
+
 jobs:
   build:
     runs-on: windows-latest
@@ -31,11 +32,8 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION2 }}
 
-    - name: Build with dotnet
-      run: dotnet build TrashMob\TrashMob.csproj --configuration Release
-
     - name: dotnet publish
-      run: dotnet publish TrashMob\TrashMob.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/myapp --no-restore
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v2
