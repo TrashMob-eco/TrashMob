@@ -61,7 +61,9 @@ jobs:
     # check android SDK paths etc in installed VM : https://github.com/actions/virtual-environments#available-environments
     - name: Sign dev build
       shell: bash
-      run: jarsigner -keystore ./android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -signedjar ./android/app/build/outputs/bundle/release/app-release-signed.aab ./android/app/build/outputs/bundle/release/app-release.aab key
+      run: |
+        cd TrashMobMobileApp
+        jarsigner -keystore ./android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -signedjar bin/Release/net6.0-android33.0/publish/eco.trashmob.trashmobmobileapp-Signed.aab bin/Release/net6.0-android33.0/publish/eco.trashmob.trashmobmobileapp.aab key
     
     - uses: actions/upload-artifact@v2
       with:
