@@ -32,6 +32,9 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION2 }}
 
+    - name: Restore
+      run: dotnet restore .\TrashMob.sln
+
     - name: dotnet publish
       run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/myapp --no-restore
 
