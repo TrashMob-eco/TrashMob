@@ -57,8 +57,8 @@ jobs:
       run: |
         cd TrashMobMobileApp
         mkdir android
-        echo "${{ secrets.ANDROID_KEYSTORE }}" > ./android/trashmobmobileapp.jks.base64
-        base64 -d ./android/trashmobmobileapp.jks.base64 > ./android/trashmobmobileapp.decrypted.jks
+        'echo "${{ secrets.ANDROID_KEYSTORE }}" > ./android/trashmobmobileapp.jks.base64'
+        'base64 -d ./android/trashmobmobileapp.jks.base64 > ./android/trashmobmobileapp.decrypted.jks'
 
     # check android SDK paths etc in installed VM : https://github.com/actions/virtual-environments#available-environments
     - name: Sign dev build
