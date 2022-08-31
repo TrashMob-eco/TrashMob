@@ -1,67 +1,21 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: TrashMob Pull Request Build
+name: TrashMobDev - Website
 
 on:
-  pull_request:
-    branches: [ "main" ]
+  push:
+    branches:
+      - Release
   workflow_dispatch:
 
 env:
   DOTNET_VERSION: '6.0.x'  # set this to the dotnet version to use
   DOTNET_VERSION2: '6.0.x'  # set this to the dotnet version to use
   CONFIGURATION: Release
-
+  WORKING_DIRECTORY: TrashMobMobileApp
 jobs:
-  buildWebapp:
-    runs-on: windows-latest
-    environment: test
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION2 }}
-
-    - name: Restore
-      run: dotnet restore .\TrashMob.sln
-
-    - name: Publish Web App
-      run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobwebapp --no-restore
-
-  buildFunctionApp:
-
-    runs-on: windows-latest
-    environment: test
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION2 }}
-
-    - name: Restore
-      run: dotnet restore .\TrashMob.sln
-
-    - name: Publish Function App
-      run: dotnet publish TrashMobJobs\TrashMobJobs.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobjobsfunctionapp --no-restore
-
-  buildMobileApp:
+  build:
     runs-on: windows-latest
     environment: test
 
@@ -92,7 +46,7 @@ jobs:
     - name: Publish Mobile App
       run: |
         cd TrashMobMobileApp
-        dotnet publish TrashMobMobileApp.csproj -c:${{ env.CONFIGURATION }} -f:net6.0-android33.0 --no-restore 
+        dotnet publish TrashMobMobileApp.csproj -c:${{ env.CONFIGURATION }} -f:net6.0-android33.0 --no-restore
       
     # Store Android Signing Keystore and password in Secrets using base64 encoding
     # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil
@@ -104,13 +58,14 @@ jobs:
         mkdir android
         echo "${{ secrets.ANDROID_KEYSTORE }}" > android/trashmobmobileapp.jks.base64
         base64 -d android/trashmobmobileapp.jks.base64 > android/trashmobmobileapp.decrypted.jks
+
     # check android SDK paths etc in installed VM : https://github.com/actions/virtual-environments#available-environments
     - name: Sign dev build
       shell: bash
       run: |
         cd TrashMobMobileApp
         jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -signedjar bin/Release/net6.0-android33.0/publish/eco.trashmob.trashmobmobileapp-Signed.aab bin/Release/net6.0-android33.0/publish/eco.trashmob.trashmobmobileapp.aab key
-
+    
     - uses: actions/upload-artifact@v2
       with:
         name: artifacts-android
