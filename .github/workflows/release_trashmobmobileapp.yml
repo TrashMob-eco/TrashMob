@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: TrashMobDev - Website
+name: TrashMobMobileApp - Prod
 
 on:
   push:
@@ -32,7 +32,7 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ env.DOTNET_VERSION2 }}
-  
+
     - name: Install MAUI Workload
       run: |
         dotnet nuget locals all --clear
@@ -47,7 +47,7 @@ jobs:
     - name: Publish Mobile App
       run: |
         cd TrashMobMobileApp
-        dotnet publish TrashMobMobileApp.csproj -c:${{ env.CONFIGURATION }} -f:net6.0-android33.0 --no-restore
+        dotnet publish TrashMobMobileApp.csproj -c:${{ env.CONFIGURATION }} -f:net6.0-android33.0 --no-restore 
       
     # Store Android Signing Keystore and password in Secrets using base64 encoding
     # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil
@@ -59,7 +59,6 @@ jobs:
         mkdir android
         echo "${{ secrets.ANDROID_KEYSTORE }}" > android/trashmobmobileapp.jks.base64
         base64 -d android/trashmobmobileapp.jks.base64 > android/trashmobmobileapp.decrypted.jks
-
     # check android SDK paths etc in installed VM : https://github.com/actions/virtual-environments#available-environments
     - name: Sign dev build
       shell: bash
