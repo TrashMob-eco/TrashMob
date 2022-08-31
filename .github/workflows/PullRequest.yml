@@ -101,6 +101,7 @@ jobs:
       shell: bash
       run: |
         cd TrashMobMobileApp
+        mkdir android
         echo "${{ secrets.ANDROID_KEYSTORE }}" > ./android/trashmobmobileapp.jks.base64
         base64 -d ./android/trashmobmobileapp.jks.base64 > ./android/trashmobmobileapp.decrypted.jks
 
@@ -108,3 +109,9 @@ jobs:
     - name: Sign dev build
       shell: bash
       run: jarsigner -keystore ./android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -signedjar ./android/app/build/outputs/bundle/release/app-release-signed.aab ./android/app/build/outputs/bundle/release/app-release.aab ${{ env.CONFIGURATION }}
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: artifacts-android
+        path: |
+          TrashMobMobileApp\bin\Release\net6.0-android33.0\publish\*.apk
