@@ -110,6 +110,8 @@ jobs:
         echo "-----------"
         ls
         echo "-----------"
+        ls android
+        echo "-----------"
         base64 -d android/trashmobmobileapp.jks.base64 > android/trashmobmobileapp.decrypted.jks
         echo "-----------"
         ls
