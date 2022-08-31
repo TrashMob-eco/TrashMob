@@ -85,10 +85,14 @@ jobs:
         dotnet workload install android ios maccatalyst tvos macos maui wasm-tools --source https://api.nuget.org/v3/index.json
 
     - name: Restore
-      run: dotnet restore TrashMobMobileApp\TrashMobMobileApp.sln
+      run: | 
+        cd TrashMobMobileApp
+        dotnet restore TrashMobMobileApp.sln
 
     - name: Publish Mobile App
-      run: dotnet publish TrashMobMobileApp\TrashMobMobileApp.csproj -c:${{ env.CONFIGURATION }} -f:net6.0-android33.0 --no-restore
+      run: |
+        cd TrashMobMobileApp
+        dotnet publish TrashMobMobileApp.csproj -c:${{ env.CONFIGURATION }} -f:net6.0-android33.0 --no-restore
       
     # Store Android Signing Keystore and password in Secrets using base64 encoding
     # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil
@@ -96,10 +100,11 @@ jobs:
     - name: Extract Android signing key from env
       shell: bash
       run: |
-        echo "${{ secrets.ANDROID_KEYSTORE }}" > android/trashmobmobileapp.jks.base64
-        base64 -d android/trashmobmobileapp.jks.base64 > android/trashmobmobileapp.decrypted.jks
+        cd TrashMobMobileApp
+        echo "${{ secrets.ANDROID_KEYSTORE }}" > "android/trashmobmobileapp.jks.base64"
+        base64 -d "android/trashmobmobileapp.jks.base64" > "android/trashmobmobileapp.decrypted.jks"
 
     # check android SDK paths etc in installed VM : https://github.com/actions/virtual-environments#available-environments
     - name: Sign dev build
       shell: bash
-      run: jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -signedjar ./android/app/build/outputs/bundle/release/app-release-signed.aab ./android/app/build/outputs/bundle/release/app-release.aab ${{ env.CONFIGURATION }}
+      run: jarsigner -keystore "android/trashmobmobileapp.decrypted.jks" -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -signedjar ./android/app/build/outputs/bundle/release/app-release-signed.aab ./android/app/build/outputs/bundle/release/app-release.aab ${{ env.CONFIGURATION }}
