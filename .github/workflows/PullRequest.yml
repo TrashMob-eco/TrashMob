@@ -100,10 +100,16 @@ jobs:
     - name: Extract Android signing key from env
       shell: bash
       run: |
-        cd TrashMobMobileApp
-        mkdir android
-        'echo "${{ secrets.ANDROID_KEYSTORE }}" > ./android/trashmobmobileapp.jks.base64'
-        'base64 -d ./android/trashmobmobileapp.jks.base64 > ./android/trashmobmobileapp.decrypted.jks'
+        ls
+        echo "-----------"
+        echo "${{ secrets.ANDROID_KEYSTORE }}" > android/trashmobmobileapp.jks.base64
+        echo "-----------"
+        ls
+        echo "-----------"
+        base64 -d android/trashmobmobileapp.jks.base64 > android/trashmobmobileapp.decrypted.jks
+        echo "-----------"
+        ls
+        echo "-----------"
     # check android SDK paths etc in installed VM : https://github.com/actions/virtual-environments#available-environments
     - name: Sign dev build
       shell: bash
