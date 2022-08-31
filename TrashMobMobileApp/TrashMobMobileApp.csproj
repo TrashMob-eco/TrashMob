@@ -32,14 +32,13 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0-android33.0|AnyCPU'">
-		<AndroidKeyStore>True</AndroidKeyStore>
-		<AndroidSigningStorePass></AndroidSigningStorePass>
+		<AndroidKeyStore>False</AndroidKeyStore>
 		<AndroidSigningKeyStore>trashmobmobileapp.keystore</AndroidSigningKeyStore>
 		<AndroidSigningKeyAlias>key</AndroidSigningKeyAlias>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0-android33.0|AnyCPU'">
-		<AndroidKeyStore>True</AndroidKeyStore>
+		<AndroidKeyStore>False</AndroidKeyStore>
 		<AndroidSigningKeyStore>trashmobmobileapp.keystore</AndroidSigningKeyStore>
 		<AndroidSigningKeyAlias>key</AndroidSigningKeyAlias>
 	</PropertyGroup>
