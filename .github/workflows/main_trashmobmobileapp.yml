@@ -1,11 +1,12 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: TrashMob Pull Request Build
+name: TrashMobMobile App - Test
 
 on:
-  pull_request:
-    branches: [ "main" ]
+  push:
+    branches:
+      - Release
   workflow_dispatch:
 
 env:
@@ -14,54 +15,7 @@ env:
   CONFIGURATION: Release
 
 jobs:
-  buildWebapp:
-    runs-on: windows-latest
-    environment: test
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION2 }}
-
-    - name: Restore
-      run: dotnet restore .\TrashMob.sln
-
-    - name: Publish Web App
-      run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobwebapp --no-restore
-
-  buildFunctionApp:
-
-    runs-on: windows-latest
-    environment: test
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION2 }}
-
-    - name: Restore
-      run: dotnet restore .\TrashMob.sln
-
-    - name: Publish Function App
-      run: dotnet publish TrashMobJobs\TrashMobJobs.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobjobsfunctionapp --no-restore
-
-  buildMobileApp:
+  build:
     runs-on: windows-latest
     environment: test
 

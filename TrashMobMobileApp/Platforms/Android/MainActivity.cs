@@ -1,4 +1,6 @@
-﻿using Android;
+﻿namespace TrashMobMobileApp.Platforms.Android;
+
+using Android;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
@@ -7,8 +9,6 @@ using Android.Runtime;
 using Microsoft.Identity.Client;
 using Plugin.CurrentActivity;
 using TrashMobMobileApp.Authentication;
-
-namespace TrashMobMobileApp.Platforms.Android;
 
 [Activity(Label = "TrashMobMobile", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
 public class MainActivity : MauiAppCompatActivity

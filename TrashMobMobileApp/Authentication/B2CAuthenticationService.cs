@@ -147,9 +147,9 @@
                 var newContext = UpdateUserInfo(authResult);
                 return newContext;
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
