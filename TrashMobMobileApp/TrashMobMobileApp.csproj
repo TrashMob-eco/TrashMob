@@ -35,13 +35,14 @@
 		<AndroidKeyStore>False</AndroidKeyStore>
 		<AndroidSigningKeyStore>trashmobmobileapp.keystore</AndroidSigningKeyStore>
 		<AndroidSigningKeyAlias>key</AndroidSigningKeyAlias>
-		<RunAOTCompilation>True</RunAOTCompilation>
+		<RunAOTCompilation>False</RunAOTCompilation>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0-android33.0|AnyCPU'">
 		<AndroidKeyStore>False</AndroidKeyStore>
 		<AndroidSigningKeyStore>trashmobmobileapp.keystore</AndroidSigningKeyStore>
 		<AndroidSigningKeyAlias>key</AndroidSigningKeyAlias>
+		<RunAOTCompilation>False</RunAOTCompilation>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -72,6 +73,12 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' == 'net6.0-android'">
+      <PackageReference Include="Plugin.CurrentActivity">
+        <Version>2.1.0.4</Version>
+      </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0-android33.0'">
       <PackageReference Include="Plugin.CurrentActivity">
         <Version>2.1.0.4</Version>
       </PackageReference>

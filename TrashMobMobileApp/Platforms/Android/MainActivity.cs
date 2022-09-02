@@ -1,11 +1,11 @@
 ﻿namespace TrashMobMobileApp.Platforms.Android;
 
-using Android;
-using Android.App;
-using Android.Content;
-using Android.Content.PM;
-using Android.OS;
-using Android.Runtime;
+using global::Android;
+using global::Android.App;
+using global::Android.Content;
+using global::Android.Content.PM;
+using global::Android.OS;
+using global::Android.Runtime;
 using Microsoft.Identity.Client;
 using Plugin.CurrentActivity;
 using TrashMobMobileApp.Authentication;
