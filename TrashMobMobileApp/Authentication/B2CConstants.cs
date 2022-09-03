@@ -1,22 +1,35 @@
 ﻿namespace TrashMobMobileApp.Authentication
 {
-    public static class B2CConstants
+    using Microsoft.Identity.Client;
+
+    public class B2CConstants
     {
-        // Azure AD B2C Coordinates
-        public static string Tenant = "Trashmob.onmicrosoft.com";
-        public static string AzureADB2CHostname = "Trashmob.b2clogin.com";
-        public static string ClientID = "e8d8517e-095b-4797-bce8-8f6f19d71e3c";
-        public static string PolicySignUpSignIn = "B2C_1_signupsignin1";
-        public static string PolicyEditProfile = "B2C_1_editprofile1";
-        public static string PolicyResetPassword = "B2C_1_passwordreset1";
-        public static string RedirectUri = "msauth://com.trashmobeco.trashmobmobile/EjFLkitZ%2BGotx7AfSESspVmDL3o%3D";
+        public string Tenant { get; set; }
 
-        public static string[] Scopes = { "https://Trashmob.onmicrosoft.com/api/TrashMob.Writes", "https://Trashmob.onmicrosoft.com/api/TrashMob.Read" };
+        public string AzureADB2CHostname { get; set; }
+        
+        public string ClientID { get; set; }
+        
+        public string PolicySignUpSignIn { get; set; }
+        
+        public string PolicyEditProfile { get; set; }
+        
+        public string PolicyResetPassword { get; set; }
+        
+        public string RedirectUri { get; set; }
 
-        public static string AuthorityBase = $"https://{AzureADB2CHostname}/tfp/{Tenant}/";
-        public static string AuthoritySignInSignUp = $"{AuthorityBase}{PolicySignUpSignIn}";
-        public static string AuthorityEditProfile = $"{AuthorityBase}{PolicyEditProfile}";
-        public static string AuthorityPasswordReset = $"{AuthorityBase}{PolicyResetPassword}";
-        public static string IOSKeyChainGroup = "com.microsoft.adalcache";
+        public string[] Scopes { get; set; }
+
+        public string AuthorityBase { get; set; }
+        
+        public string AuthoritySignInSignUp { get; set; }
+        
+        public string AuthorityEditProfile { get; set; }
+        
+        public string AuthorityPasswordReset { get; set; }
+        
+        public string IOSKeyChainGroup { get; set; }
+
+        public IPublicClientApplication PublicClientApp { get; set; }
     }
 }

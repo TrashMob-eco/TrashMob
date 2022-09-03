@@ -15,17 +15,17 @@
     /// </summary>
     public class B2CAuthenticationService : IB2CAuthenticationService
     {
-        private readonly IPublicClientApplication _pca;
+        private readonly B2CConstants b2CConstants;
 
-        public B2CAuthenticationService()
+        public B2CAuthenticationService(B2CConstants b2CConstants)
         {
 
             // default redirectURI; each platform specific project will have to override it with its own
-            var builder = PublicClientApplicationBuilder.Create(B2CConstants.ClientID)
-                .WithB2CAuthority(B2CConstants.AuthoritySignInSignUp)
-                .WithIosKeychainSecurityGroup(B2CConstants.IOSKeyChainGroup)
+            var builder = PublicClientApplicationBuilder.Create(b2CConstants.ClientID)
+                .WithB2CAuthority(b2CConstants.AuthoritySignInSignUp)
+                .WithIosKeychainSecurityGroup(b2CConstants.IOSKeyChainGroup)
                 // .WithRedirectUri("http://localhost");
-                .WithRedirectUri(B2CConstants.RedirectUri);
+                .WithRedirectUri(b2CConstants.RedirectUri);
 
             // Android implementation is based on https://github.com/jamesmontemagno/CurrentActivityPlugin
             // iOS implementation would require to expose the current ViewControler - not currently implemented as it is not required
@@ -37,7 +37,9 @@
                 builder = builder.WithParentActivityOrWindow(() => windowLocatorService?.GetCurrentParentWindow());
             }
 
-            _pca = builder.Build();
+            b2CConstants.PublicClientApp = builder.Build();
+            this.b2CConstants = b2CConstants;
+            this.b2CConstants = b2CConstants;
         }
 
         public async Task<UserContext> SignInAsync()
@@ -81,9 +83,9 @@
 
         private async Task<UserContext> AcquireTokenSilent()
         {
-            IEnumerable<IAccount> accounts = await _pca.GetAccountsAsync();
-            AuthenticationResult authResult = await _pca.AcquireTokenSilent(B2CConstants.Scopes, GetAccountByPolicy(accounts, B2CConstants.PolicySignUpSignIn))
-               .WithB2CAuthority(B2CConstants.AuthoritySignInSignUp)
+            IEnumerable<IAccount> accounts = await b2CConstants.PublicClientApp.GetAccountsAsync();
+            AuthenticationResult authResult = await b2CConstants.PublicClientApp.AcquireTokenSilent(b2CConstants.Scopes, GetAccountByPolicy(accounts, b2CConstants.PolicySignUpSignIn))
+               .WithB2CAuthority(b2CConstants.AuthoritySignInSignUp)
                .ExecuteAsync();
 
             var newContext = UpdateUserInfo(authResult);
@@ -92,9 +94,9 @@
 
         public async Task<UserContext> ResetPasswordAsync(IUserManager userManager)
         {
-            AuthenticationResult authResult = await _pca.AcquireTokenInteractive(B2CConstants.Scopes)
+            AuthenticationResult authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.Scopes)
                 .WithPrompt(Prompt.NoPrompt)
-                .WithAuthority(B2CConstants.AuthorityPasswordReset)
+                .WithAuthority(b2CConstants.AuthorityPasswordReset)
                 .ExecuteAsync();
 
             var userContext = UpdateUserInfo(authResult);
@@ -105,12 +107,12 @@
 
         public async Task<UserContext> EditProfileAsync()
         {
-            IEnumerable<IAccount> accounts = await _pca.GetAccountsAsync();
+            IEnumerable<IAccount> accounts = await b2CConstants.PublicClientApp.GetAccountsAsync();
 
-            AuthenticationResult authResult = await _pca.AcquireTokenInteractive(B2CConstants.Scopes)
-                .WithAccount(GetAccountByPolicy(accounts, B2CConstants.PolicyEditProfile))
+            AuthenticationResult authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.Scopes)
+                .WithAccount(GetAccountByPolicy(accounts, b2CConstants.PolicyEditProfile))
                 .WithPrompt(Prompt.NoPrompt)
-                .WithAuthority(B2CConstants.AuthorityEditProfile)
+                .WithAuthority(b2CConstants.AuthorityEditProfile)
                 .ExecuteAsync();
 
             var userContext = UpdateUserInfo(authResult);
@@ -132,13 +134,13 @@
 
                 if (windowLocatorService == null)
                 {
-                    authResult = await _pca.AcquireTokenInteractive(B2CConstants.Scopes)
+                    authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.Scopes)
                                         .WithUseEmbeddedWebView(useEmbeddedWebview)
                                         .ExecuteAsync();
                 }
                 else
                 {
-                    authResult = await _pca.AcquireTokenInteractive(B2CConstants.Scopes)
+                    authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.Scopes)
                                         .WithParentActivityOrWindow(windowLocatorService?.GetCurrentParentWindow())
                                         .WithUseEmbeddedWebView(useEmbeddedWebview)
                                         .ExecuteAsync();
@@ -156,11 +158,11 @@
         public async Task<UserContext> SignOutAsync()
         {
 
-            IEnumerable<IAccount> accounts = await _pca.GetAccountsAsync();
+            IEnumerable<IAccount> accounts = await b2CConstants.PublicClientApp.GetAccountsAsync();
             while (accounts.Any())
             {
-                await _pca.RemoveAsync(accounts.FirstOrDefault());
-                accounts = await _pca.GetAccountsAsync();
+                await b2CConstants.PublicClientApp.RemoveAsync(accounts.FirstOrDefault());
+                accounts = await b2CConstants.PublicClientApp.GetAccountsAsync();
             }
 
             var signedOutContext = new UserContext

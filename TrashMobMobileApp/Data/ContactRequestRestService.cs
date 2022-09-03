@@ -5,31 +5,29 @@
     using System.Net.Http;
     using System.Net.Http.Json;
     using System.Threading.Tasks;
+    using TrashMobMobileApp.Authentication;
     using TrashMobMobileApp.Models;
 
     public class ContactRequestRestService : RestServiceBase, IContactRequestRestService
     {
-        private readonly Uri ContactRequestApi = new Uri(TrashMobServiceUrlBase + "contactrequest");
+        private readonly string ContactRequestApiPath = "contactrequest";
+
+        public ContactRequestRestService(HttpClient httpClient, IB2CAuthenticationService b2CAuthenticationService) 
+            : base(httpClient, b2CAuthenticationService)
+        {
+        }
 
         public async Task AddContactRequest(ContactRequest contactRequest)
         {
             try
             {
-                //var userContext = await GetUserContext().ConfigureAwait(false);
                 contactRequest.Id = Guid.NewGuid().ToString();
+                var content = JsonContent.Create(contactRequest, typeof(ContactRequest), null, SerializerOptions);
 
-                var httpRequestMessage = new HttpRequestMessage();
-                httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
-                httpRequestMessage.Method = HttpMethod.Post;
-                //httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
-                httpRequestMessage.RequestUri = ContactRequestApi;
-
-                httpRequestMessage.Content = JsonContent.Create(contactRequest, typeof(ContactRequest), null, SerializerOptions);
-
-                HttpClient client = new HttpClient();
-                HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
-
-                // Handle message sent successfully
+                using (var response = await HttpClient.PostAsync(ContactRequestApiPath, content))
+                {
+                    response.EnsureSuccessStatusCode();
+                }
             }
             catch (Exception ex)
             {
