@@ -5,41 +5,37 @@
     using System.Diagnostics;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using TrashMobMobileApp.Authentication;
     using TrashMobMobileApp.Models;
 
     public class MapRestService : RestServiceBase, IMapRestService
     {
-        private readonly string MapsApi = TrashMobServiceUrlBase + "maps";
+        private readonly string MapsApi = "maps";
 
-        public async Task<Address> GetAddressAsync(double latitude, double longitude)
+        public MapRestService(HttpClient httpClient, IB2CAuthenticationService b2CAuthenticationService)
+            : base(httpClient, b2CAuthenticationService)
         {
-            Address address = new Address();
+        }
+
+        public async Task<Address> GetAddressAsync(double latitude, double longitude, CancellationToken cancellationToken = default)
+        {
             try
             {
-                //var userContext = await GetUserContext().ConfigureAwait(false);
+                var requestUri = MapsApi + $"/GetAddress?latitude={latitude}&longitude={longitude}";
 
-                var httpRequestMessage = new HttpRequestMessage();
-                //httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
-
-                httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
-                httpRequestMessage.Method = HttpMethod.Get;
-                httpRequestMessage.RequestUri = new Uri(MapsApi + $"/GetAddress?latitude={latitude}&longitude={longitude}");
-
-                HttpClient client = new HttpClient();
-                HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
-
-                if (response.IsSuccessStatusCode)
+                using (var response = await HttpClient.GetAsync(requestUri, cancellationToken))
                 {
-                    string content = await response.Content.ReadAsStringAsync();
-                    address = JsonConvert.DeserializeObject<Address>(content);
+                    response.EnsureSuccessStatusCode();
+                    string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                    return JsonConvert.DeserializeObject<Address>(responseString);
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(@"\tERROR {0}", ex.Message);
+                throw;
             }
-
-            return address;
         }
     }
 }

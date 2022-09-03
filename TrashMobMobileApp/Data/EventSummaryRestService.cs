@@ -7,30 +7,30 @@
     using System.Net.Http;
     using System.Net.Http.Json;
     using System.Threading.Tasks;
+    using TrashMobMobileApp.Authentication;
     using TrashMobMobileApp.Models;
 
     public class EventSummaryRestService : RestServiceBase, IEventSummaryRestService
     {
-        private readonly string EventSummaryApi = TrashMobServiceUrlBase + "eventsummaries";
+        private readonly string EventSummaryApi = "eventsummaries";
 
-        public async Task<EventSummary> GetEventSummaryAsync(Guid eventId)
+        public EventSummaryRestService(HttpClient httpClient, IB2CAuthenticationService b2CAuthenticationService)
+            : base(httpClient, b2CAuthenticationService)
+        {
+        }
+
+        public async Task<EventSummary> GetEventSummaryAsync(Guid eventId, CancellationToken cancellationToken = default)
         {
             try
             {
-                //var userContext = await GetUserContext().ConfigureAwait(false);
+                var requestUri = EventSummaryApi + "/" + eventId;
 
-                var httpRequestMessage = new HttpRequestMessage();
-                //httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
-
-                httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
-                httpRequestMessage.Method = HttpMethod.Get;
-                httpRequestMessage.RequestUri = new Uri(EventSummaryApi + "/" + eventId);
-
-                HttpClient client = new HttpClient();
-                HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
-
-                string content = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<EventSummary>(content);
+                using (var response = await HttpClient.GetAsync(requestUri, cancellationToken))
+                {
+                    response.EnsureSuccessStatusCode();
+                    string content = await response.Content.ReadAsStringAsync(cancellationToken);
+                    return JsonConvert.DeserializeObject<EventSummary>(content);
+                }
             }
             catch (Exception ex)
             {
@@ -39,24 +39,18 @@
             }
         }
 
-        public async Task<EventSummary> UpdateEventSummaryAsync(EventSummary eventSummary)
+        public async Task<EventSummary> UpdateEventSummaryAsync(EventSummary eventSummary, CancellationToken cancellationToken = default)
         {
             try
             {
-                //var userContext = await GetUserContext().ConfigureAwait(false);
-                var httpRequestMessage = new HttpRequestMessage();
-                httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
-                httpRequestMessage.Method = HttpMethod.Put;
+                var content = JsonContent.Create(eventSummary, typeof(EventSummary), null, SerializerOptions);
 
-                //httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
-                httpRequestMessage.RequestUri = new Uri(EventSummaryApi);
+                using (var response = await HttpClient.PutAsync(EventSummaryApi, content, cancellationToken))
+                {
+                    response.EnsureSuccessStatusCode();
+                }
 
-                httpRequestMessage.Content = JsonContent.Create(eventSummary, typeof(EventSummary), null, SerializerOptions);
-
-                HttpClient client = new HttpClient();
-                _ = await client.SendAsync(httpRequestMessage);
-
-                return await GetEventSummaryAsync(eventSummary.EventId);
+                return await GetEventSummaryAsync(eventSummary.EventId, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -65,24 +59,18 @@
             }
         }
 
-        public async Task<EventSummary> AddEventSummaryAsync(EventSummary eventSummary)
+        public async Task<EventSummary> AddEventSummaryAsync(EventSummary eventSummary, CancellationToken cancellationToken = default)
         {
             try
             {
-                //var userContext = await GetUserContext().ConfigureAwait(false);
-                var httpRequestMessage = new HttpRequestMessage();
-                httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
-                httpRequestMessage.Method = HttpMethod.Post;
+                var content = JsonContent.Create(eventSummary, typeof(EventSummary), null, SerializerOptions);
 
-                //httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
-                httpRequestMessage.RequestUri = new Uri(EventSummaryApi);
+                using (var response = await HttpClient.PostAsync(EventSummaryApi, content, cancellationToken))
+                {
+                    response.EnsureSuccessStatusCode();
+                }
 
-                httpRequestMessage.Content = JsonContent.Create(eventSummary, typeof(EventSummary), null, SerializerOptions);
-
-                HttpClient client = new HttpClient();
-                _ = await client.SendAsync(httpRequestMessage);
-
-                return await GetEventSummaryAsync(eventSummary.EventId);
+                return await GetEventSummaryAsync(eventSummary.EventId, cancellationToken);
             }
             catch (Exception ex)
             {

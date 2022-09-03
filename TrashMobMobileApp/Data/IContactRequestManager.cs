@@ -5,6 +5,6 @@
 
     public interface IContactRequestManager
     {
-        Task AddContactRequestAsync(ContactRequest contactRequest);
+        Task AddContactRequestAsync(ContactRequest contactRequest, CancellationToken cancellationToken = default);
     }
 }

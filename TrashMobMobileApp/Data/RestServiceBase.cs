@@ -13,9 +13,6 @@
 
         private readonly IB2CAuthenticationService b2CAuthenticationService;
 
-        [Obsolete]
-        protected const string TrashMobServiceUrlBase = "https://as-tm-dev-westus2.azurewebsites.net/api/";
-
         protected RestServiceBase(HttpClient httpClient, IB2CAuthenticationService b2CAuthenticationService)
         {
             HttpClient = httpClient;

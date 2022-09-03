@@ -17,14 +17,14 @@
         {
         }
 
-        public async Task AddContactRequest(ContactRequest contactRequest)
+        public async Task AddContactRequest(ContactRequest contactRequest, CancellationToken cancellationToken = default)
         {
             try
             {
                 contactRequest.Id = Guid.NewGuid().ToString();
                 var content = JsonContent.Create(contactRequest, typeof(ContactRequest), null, SerializerOptions);
 
-                using (var response = await HttpClient.PostAsync(ContactRequestApiPath, content))
+                using (var response = await HttpClient.PostAsync(ContactRequestApiPath, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                 }

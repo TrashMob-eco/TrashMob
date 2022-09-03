@@ -5,7 +5,7 @@
 
     public interface IEventAttendeeRestService
     {
-        Task AddAttendeeAsync(EventAttendee eventAttendee);
-        Task RemoveAttendeeAsync(EventAttendee eventAttendee);
+        Task AddAttendeeAsync(EventAttendee eventAttendee, CancellationToken cancellationToken = default);
+        Task RemoveAttendeeAsync(EventAttendee eventAttendee, CancellationToken cancellationToken = default);
     }
 }

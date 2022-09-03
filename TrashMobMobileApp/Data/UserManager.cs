@@ -12,19 +12,19 @@
             userRestService = service;
         }
 
-        public Task<User> GetUserAsync(string userId)
+        public Task<User> GetUserAsync(string userId, CancellationToken cancellationToken = default)
         {
-            return userRestService.GetUserAsync(userId);
+            return userRestService.GetUserAsync(userId, cancellationToken);
         }
 
-        public Task<User> AddUserAsync(User user)
+        public Task<User> AddUserAsync(User user, CancellationToken cancellationToken = default)
         {
-            return userRestService.AddUserAsync(user);
+            return userRestService.AddUserAsync(user, cancellationToken);
         }
 
-        public Task<User> UpdateUserAsync(User user)
+        public Task<User> UpdateUserAsync(User user, CancellationToken cancellationToken = default)
         {
-            return userRestService.UpdateUserAsync(user);
+            return userRestService.UpdateUserAsync(user, cancellationToken);
         }
     }
 }

@@ -6,42 +6,35 @@
     using System.Diagnostics;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using TrashMobMobileApp.Authentication;
     using TrashMobMobileApp.Models;
 
     public class EventTypeRestService : RestServiceBase, IEventTypeRestService
     {
-        private readonly string EventTypesApi = TrashMobServiceUrlBase + "eventtypes";
+        private readonly string EventTypesApi = "eventtypes";
 
-        public async Task<IEnumerable<EventType>> GetEventTypesAsync()
+        public EventTypeRestService(HttpClient httpClient, IB2CAuthenticationService b2CAuthenticationService)
+            : base(httpClient, b2CAuthenticationService)
         {
-            var eventTypes = new List<EventType>();
+        }
 
+        public async Task<IEnumerable<EventType>> GetEventTypesAsync(CancellationToken cancellationToken = default)
+        {
             try
             {
-                //var userContext = await GetUserContext().ConfigureAwait(false);
-
-                var httpRequestMessage = new HttpRequestMessage();
-                //httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
-
-                httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
-                httpRequestMessage.Method = HttpMethod.Get;
-                httpRequestMessage.RequestUri = new Uri(EventTypesApi);
-
-                HttpClient client = new HttpClient();
-                HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
-
-                if (response.IsSuccessStatusCode)
+                using (var response = await HttpClient.GetAsync(EventTypesApi, cancellationToken))
                 {
-                    string content = await response.Content.ReadAsStringAsync();
-                    eventTypes = JsonConvert.DeserializeObject<List<EventType>>(content);
+                    response.EnsureSuccessStatusCode();
+                    string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                    return JsonConvert.DeserializeObject<List<EventType>>(responseString);
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(@"\tERROR {0}", ex.Message);
+                throw;
             }
-
-            return eventTypes;
         }
     }
 }

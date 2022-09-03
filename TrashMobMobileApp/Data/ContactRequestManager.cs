@@ -12,9 +12,9 @@
             contactRequestRestService = service;
         }
 
-        public Task AddContactRequestAsync(ContactRequest contactRequest)
+        public Task AddContactRequestAsync(ContactRequest contactRequest, CancellationToken cancellationToken = default)
         {
-            return contactRequestRestService.AddContactRequest(contactRequest);
+            return contactRequestRestService.AddContactRequest(contactRequest, cancellationToken);
         }
     }
 }
