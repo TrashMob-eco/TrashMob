@@ -18,7 +18,7 @@
         
         public string RedirectUri { get; set; }
 
-        public string[] Scopes { get; set; }
+        public string Scopes { get; set; }
 
         public string AuthorityBase { get; set; }
         
@@ -31,5 +31,7 @@
         public string IOSKeyChainGroup { get; set; }
 
         public IPublicClientApplication PublicClientApp { get; set; }
+
+        public string[] ApiScopesArray => Scopes.Split(",");
     }
 }

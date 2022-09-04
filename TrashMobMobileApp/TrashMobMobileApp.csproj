@@ -64,10 +64,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Content Remove="appSettings.Development.json" />
 	  <Content Remove="appSettings.json" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <EmbeddedResource Include="appSettings.Development.json" />
 	  <EmbeddedResource Include="appSettings.json" />
 	</ItemGroup>
 

@@ -14,8 +14,8 @@
     {
         private readonly string EventsApi = "events";
 
-        public MobEventRestService(HttpClient httpClient, IB2CAuthenticationService b2CAuthenticationService)
-            : base(httpClient, b2CAuthenticationService)
+        public MobEventRestService(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService)
+            : base(httpClientService, b2CAuthenticationService)
         {
         }
 
@@ -27,7 +27,9 @@
             {
                 var requestUri = $"{EventsApi}/active";
 
-                using (var response = await HttpClient.GetAsync(requestUri, cancellationToken))
+                var anonymousHttpClient = HttpClientService.CreateAnonymousClient();
+
+                using (var response = await anonymousHttpClient.GetAsync(requestUri, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string content = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -50,8 +52,9 @@
             try
             {
                 var requestUri = $"{EventsApi}/userevents/{userId}/{showFutureEventsOnly}";
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
 
-                using (var response = await HttpClient.GetAsync(requestUri, cancellationToken))
+                using (var response = await authorizedHttpClient.GetAsync(requestUri, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string content = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -72,7 +75,9 @@
             {
                 var requestUri = EventsApi + "/" + eventId;
 
-                using (var response = await HttpClient.GetAsync(requestUri, cancellationToken))
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
+
+                using (var response = await authorizedHttpClient.GetAsync(requestUri, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string content = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -94,7 +99,9 @@
 
                 var content = JsonContent.Create(mobEvent, typeof(MobEvent), null, SerializerOptions);
 
-                using (var response = await HttpClient.PutAsync(requestUri, content, cancellationToken))
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
+
+                using (var response = await authorizedHttpClient.PutAsync(requestUri, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -114,7 +121,9 @@
             {
                 var content = JsonContent.Create(mobEvent, typeof(MobEvent), null, SerializerOptions);
 
-                using (var response = await HttpClient.PostAsync(EventsApi, content, cancellationToken))
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
+
+                using (var response = await authorizedHttpClient.PostAsync(EventsApi, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string returnContent = await response.Content.ReadAsStringAsync();
@@ -134,8 +143,10 @@
             {
                 var content = JsonContent.Create(cancelEvent, typeof(CancelEvent), null, SerializerOptions);
 
-                // TODO: fix this
-                using (var response = await HttpClient.DeleteAsync(EventsApi, cancellationToken))
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
+
+                // TODO: fix this - Delete of an event requires a complex object.
+                using (var response = await authorizedHttpClient.DeleteAsync(EventsApi, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                 }
@@ -155,7 +166,9 @@
             {
                 var requestUri = EventsApi + $"/eventsuserisattending/{userId}";
 
-                using (var response = await HttpClient.GetAsync(requestUri, cancellationToken))
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
+
+                using (var response = await authorizedHttpClient.GetAsync(requestUri, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string content = await response.Content.ReadAsStringAsync(cancellationToken);

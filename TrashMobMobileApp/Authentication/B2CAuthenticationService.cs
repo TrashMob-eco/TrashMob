@@ -39,7 +39,6 @@
 
             b2CConstants.PublicClientApp = builder.Build();
             this.b2CConstants = b2CConstants;
-            this.b2CConstants = b2CConstants;
         }
 
         public async Task<UserContext> SignInAsync()
@@ -84,7 +83,7 @@
         private async Task<UserContext> AcquireTokenSilent()
         {
             IEnumerable<IAccount> accounts = await b2CConstants.PublicClientApp.GetAccountsAsync();
-            AuthenticationResult authResult = await b2CConstants.PublicClientApp.AcquireTokenSilent(b2CConstants.Scopes, GetAccountByPolicy(accounts, b2CConstants.PolicySignUpSignIn))
+            AuthenticationResult authResult = await b2CConstants.PublicClientApp.AcquireTokenSilent(b2CConstants.ApiScopesArray, GetAccountByPolicy(accounts, b2CConstants.PolicySignUpSignIn))
                .WithB2CAuthority(b2CConstants.AuthoritySignInSignUp)
                .ExecuteAsync();
 
@@ -94,7 +93,7 @@
 
         public async Task<UserContext> ResetPasswordAsync(IUserManager userManager)
         {
-            AuthenticationResult authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.Scopes)
+            AuthenticationResult authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.ApiScopesArray)
                 .WithPrompt(Prompt.NoPrompt)
                 .WithAuthority(b2CConstants.AuthorityPasswordReset)
                 .ExecuteAsync();
@@ -109,7 +108,7 @@
         {
             IEnumerable<IAccount> accounts = await b2CConstants.PublicClientApp.GetAccountsAsync();
 
-            AuthenticationResult authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.Scopes)
+            AuthenticationResult authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.ApiScopesArray)
                 .WithAccount(GetAccountByPolicy(accounts, b2CConstants.PolicyEditProfile))
                 .WithPrompt(Prompt.NoPrompt)
                 .WithAuthority(b2CConstants.AuthorityEditProfile)
@@ -134,13 +133,13 @@
 
                 if (windowLocatorService == null)
                 {
-                    authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.Scopes)
+                    authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.ApiScopesArray)
                                         .WithUseEmbeddedWebView(useEmbeddedWebview)
                                         .ExecuteAsync();
                 }
                 else
                 {
-                    authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.Scopes)
+                    authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.ApiScopesArray)
                                         .WithParentActivityOrWindow(windowLocatorService?.GetCurrentParentWindow())
                                         .WithUseEmbeddedWebView(useEmbeddedWebview)
                                         .ExecuteAsync();

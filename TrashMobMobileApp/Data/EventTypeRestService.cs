@@ -13,8 +13,8 @@
     {
         private readonly string EventTypesApi = "eventtypes";
 
-        public EventTypeRestService(HttpClient httpClient, IB2CAuthenticationService b2CAuthenticationService)
-            : base(httpClient, b2CAuthenticationService)
+        public EventTypeRestService(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService)
+            : base(httpClientService, b2CAuthenticationService)
         {
         }
 
@@ -22,7 +22,9 @@
         {
             try
             {
-                using (var response = await HttpClient.GetAsync(EventTypesApi, cancellationToken))
+                var anonymousHttpClient = HttpClientService.CreateAnonymousClient();
+
+                using (var response = await anonymousHttpClient.GetAsync(EventTypesApi, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string responseString = await response.Content.ReadAsStringAsync(cancellationToken);

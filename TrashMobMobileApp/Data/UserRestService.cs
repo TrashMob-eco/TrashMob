@@ -13,8 +13,8 @@
     {
         private readonly string UserApi = "users";
 
-        public UserRestService(HttpClient httpClient, IB2CAuthenticationService b2CAuthenticationService)
-            : base(httpClient, b2CAuthenticationService)
+        public UserRestService(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService)
+            : base(httpClientService, b2CAuthenticationService)
         {
         }
 
@@ -23,8 +23,9 @@
             try
             {
                 var requestUri = UserApi + "/" + userId;
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
 
-                using (var response = await HttpClient.GetAsync(requestUri, cancellationToken))
+                using (var response = await authorizedHttpClient.GetAsync(requestUri, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -45,7 +46,9 @@
             {
                 var content = JsonContent.Create(user, typeof(User), null, SerializerOptions);
 
-                using (var response = await HttpClient.PostAsync(UserApi, content, cancellationToken))
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
+
+                using (var response = await authorizedHttpClient.PostAsync(UserApi, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -66,7 +69,9 @@
             {
                 var content = JsonContent.Create(user, typeof(User), null, SerializerOptions);
 
-                using (var response = await HttpClient.PutAsync(UserApi, content, cancellationToken))
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
+
+                using (var response = await authorizedHttpClient.PutAsync(UserApi, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string responseString = await response.Content.ReadAsStringAsync(cancellationToken);

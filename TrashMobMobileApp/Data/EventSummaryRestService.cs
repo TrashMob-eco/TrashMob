@@ -14,8 +14,8 @@
     {
         private readonly string EventSummaryApi = "eventsummaries";
 
-        public EventSummaryRestService(HttpClient httpClient, IB2CAuthenticationService b2CAuthenticationService)
-            : base(httpClient, b2CAuthenticationService)
+        public EventSummaryRestService(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService)
+            : base(httpClientService, b2CAuthenticationService)
         {
         }
 
@@ -25,7 +25,9 @@
             {
                 var requestUri = EventSummaryApi + "/" + eventId;
 
-                using (var response = await HttpClient.GetAsync(requestUri, cancellationToken))
+                var anonymousHttpClient = HttpClientService.CreateAnonymousClient();
+
+                using (var response = await anonymousHttpClient.GetAsync(requestUri, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string content = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -45,7 +47,9 @@
             {
                 var content = JsonContent.Create(eventSummary, typeof(EventSummary), null, SerializerOptions);
 
-                using (var response = await HttpClient.PutAsync(EventSummaryApi, content, cancellationToken))
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
+
+                using (var response = await authorizedHttpClient.PutAsync(EventSummaryApi, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                 }
@@ -65,7 +69,9 @@
             {
                 var content = JsonContent.Create(eventSummary, typeof(EventSummary), null, SerializerOptions);
 
-                using (var response = await HttpClient.PostAsync(EventSummaryApi, content, cancellationToken))
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
+
+                using (var response = await authorizedHttpClient.PostAsync(EventSummaryApi, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                 }

@@ -28,9 +28,9 @@ public static class MauiProgram
         builder.Services.AddMauiBlazorWebView();
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
-        strAppConfigStreamName = "TrashMobMobileApp.appsettings.Development.json";
+        strAppConfigStreamName = "TrashMobMobileApp.appSettings.Development.json";
 #else
-        strAppConfigStreamName = "TrashMobMobileApp.appsettings.json"; 
+        strAppConfigStreamName = "TrashMobMobileApp.appSettings.json"; 
 #endif
 
         string assemblyName = "TrashMobMobileApp";
@@ -40,6 +40,7 @@ public static class MauiProgram
 
         // Add Services
         builder.Services.AddSingleton<IB2CAuthenticationService, B2CAuthenticationService>();
+        builder.Services.AddSingleton<HttpClientService>();
         builder.Services.AddSingleton<IContactRequestManager, ContactRequestManager>();
         builder.Services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
         builder.Services.AddSingleton<IDataStore<Item>, MockDataStore>();

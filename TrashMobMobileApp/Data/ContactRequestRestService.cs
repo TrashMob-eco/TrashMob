@@ -12,8 +12,8 @@
     {
         private readonly string ContactRequestApiPath = "contactrequest";
 
-        public ContactRequestRestService(HttpClient httpClient, IB2CAuthenticationService b2CAuthenticationService) 
-            : base(httpClient, b2CAuthenticationService)
+        public ContactRequestRestService(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService) 
+            : base(httpClientService, b2CAuthenticationService)
         {
         }
 
@@ -24,7 +24,9 @@
                 contactRequest.Id = Guid.NewGuid().ToString();
                 var content = JsonContent.Create(contactRequest, typeof(ContactRequest), null, SerializerOptions);
 
-                using (var response = await HttpClient.PostAsync(ContactRequestApiPath, content, cancellationToken))
+                var anonymousHttpClient = HttpClientService.CreateAnonymousClient();
+
+                using (var response = await anonymousHttpClient.PostAsync(ContactRequestApiPath, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                 }

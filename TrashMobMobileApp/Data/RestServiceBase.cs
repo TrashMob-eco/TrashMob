@@ -7,20 +7,20 @@
 
     public class RestServiceBase
     {
-        protected HttpClient HttpClient { get; private set; }
-
         protected JsonSerializerOptions SerializerOptions { get; private set; }
+        
+        public HttpClientService HttpClientService { get; }
 
         private readonly IB2CAuthenticationService b2CAuthenticationService;
 
-        protected RestServiceBase(HttpClient httpClient, IB2CAuthenticationService b2CAuthenticationService)
+        protected RestServiceBase(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService)
         {
-            HttpClient = httpClient;
             SerializerOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 WriteIndented = true
             };
+            HttpClientService = httpClientService;
             this.b2CAuthenticationService = b2CAuthenticationService;
         }
 

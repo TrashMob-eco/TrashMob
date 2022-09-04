@@ -12,8 +12,8 @@
     {
         private readonly string EventAttendeeApi = "eventattendee";
 
-        public EventAttendeeRestService(HttpClient httpClient, IB2CAuthenticationService b2CAuthenticationService)
-            : base(httpClient, b2CAuthenticationService)
+        public EventAttendeeRestService(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService)
+            : base(httpClientService, b2CAuthenticationService)
         {
         }
 
@@ -23,7 +23,9 @@
             {
                 var content = JsonContent.Create(eventAttendee, typeof(EventAttendee), null, SerializerOptions);
 
-                using (var response = await HttpClient.PostAsync(EventAttendeeApi, content, cancellationToken))
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
+
+                using (var response = await authorizedHttpClient.PostAsync(EventAttendeeApi, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                 }
@@ -41,7 +43,9 @@
             {
                 var requestUri = new Uri(EventAttendeeApi + $"/{eventAttendee.EventId}/{eventAttendee.UserId}");
 
-                using (var response = await HttpClient.DeleteAsync(requestUri, cancellationToken))
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
+
+                using (var response = await authorizedHttpClient.DeleteAsync(requestUri, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                 }

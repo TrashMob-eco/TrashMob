@@ -12,8 +12,8 @@
     {
         private readonly string MapsApi = "maps";
 
-        public MapRestService(HttpClient httpClient, IB2CAuthenticationService b2CAuthenticationService)
-            : base(httpClient, b2CAuthenticationService)
+        public MapRestService(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService)
+            : base(httpClientService, b2CAuthenticationService)
         {
         }
 
@@ -23,7 +23,9 @@
             {
                 var requestUri = MapsApi + $"/GetAddress?latitude={latitude}&longitude={longitude}";
 
-                using (var response = await HttpClient.GetAsync(requestUri, cancellationToken))
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
+
+                using (var response = await authorizedHttpClient.GetAsync(requestUri, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
