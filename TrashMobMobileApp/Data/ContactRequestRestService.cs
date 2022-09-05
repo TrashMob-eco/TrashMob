@@ -5,31 +5,31 @@
     using System.Net.Http;
     using System.Net.Http.Json;
     using System.Threading.Tasks;
+    using TrashMobMobileApp.Authentication;
     using TrashMobMobileApp.Models;
 
     public class ContactRequestRestService : RestServiceBase, IContactRequestRestService
     {
-        private readonly Uri ContactRequestApi = new Uri(TrashMobServiceUrlBase + "contactrequest");
+        private readonly string ContactRequestApiPath = "contactrequest";
 
-        public async Task AddContactRequest(ContactRequest contactRequest)
+        public ContactRequestRestService(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService) 
+            : base(httpClientService, b2CAuthenticationService)
+        {
+        }
+
+        public async Task AddContactRequest(ContactRequest contactRequest, CancellationToken cancellationToken = default)
         {
             try
             {
-                //var userContext = await GetUserContext().ConfigureAwait(false);
                 contactRequest.Id = Guid.NewGuid().ToString();
+                var content = JsonContent.Create(contactRequest, typeof(ContactRequest), null, SerializerOptions);
 
-                var httpRequestMessage = new HttpRequestMessage();
-                httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
-                httpRequestMessage.Method = HttpMethod.Post;
-                //httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
-                httpRequestMessage.RequestUri = ContactRequestApi;
+                var anonymousHttpClient = HttpClientService.CreateAnonymousClient();
 
-                httpRequestMessage.Content = JsonContent.Create(contactRequest, typeof(ContactRequest), null, SerializerOptions);
-
-                HttpClient client = new HttpClient();
-                HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
-
-                // Handle message sent successfully
+                using (var response = await anonymousHttpClient.PostAsync(ContactRequestApiPath, content, cancellationToken))
+                {
+                    response.EnsureSuccessStatusCode();
+                }
             }
             catch (Exception ex)
             {

@@ -5,10 +5,10 @@
 
     public interface IUserRestService
     {
-        Task<User> GetUserAsync(string userId);
+        Task<User> GetUserAsync(string userId, CancellationToken cancellationToken = default);
 
-        Task<User> AddUserAsync(User user);
+        Task<User> AddUserAsync(User user, CancellationToken cancellationToken = default);
 
-        Task<User> UpdateUserAsync(User user);
+        Task<User> UpdateUserAsync(User user, CancellationToken cancellationToken = default);
     }
 }

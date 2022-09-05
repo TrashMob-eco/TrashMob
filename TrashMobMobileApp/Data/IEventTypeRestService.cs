@@ -7,6 +7,6 @@
 
     public interface IEventTypeRestService
     {
-        Task<IEnumerable<EventType>> GetEventTypesAsync();
+        Task<IEnumerable<EventType>> GetEventTypesAsync(CancellationToken cancellationToken = default);
     }
 }

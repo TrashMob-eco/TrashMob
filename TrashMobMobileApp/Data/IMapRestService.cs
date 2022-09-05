@@ -5,6 +5,6 @@
 
     public interface IMapRestService
     {
-        Task<Address> GetAddressAsync(double latitude, double longitude);
+        Task<Address> GetAddressAsync(double latitude, double longitude, CancellationToken cancellationToken = default);
     }
 }

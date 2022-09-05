@@ -5,6 +5,6 @@
 
     public interface IContactRequestRestService
     {
-        Task AddContactRequest(ContactRequest contactRequest);
+        Task AddContactRequest(ContactRequest contactRequest, CancellationToken cancellationToken = default);
     }
 }

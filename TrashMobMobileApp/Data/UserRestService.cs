@@ -6,30 +6,32 @@
     using System.Net.Http;
     using System.Net.Http.Json;
     using System.Threading.Tasks;
+    using TrashMobMobileApp.Authentication;
     using TrashMobMobileApp.Models;
 
     public class UserRestService : RestServiceBase, IUserRestService
     {
-        private readonly string UserApi = TrashMobServiceUrlBase + "users";
+        private readonly string UserApi = "users";
 
-        public async Task<User> GetUserAsync(string userId)
+        public UserRestService(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService)
+            : base(httpClientService, b2CAuthenticationService)
+        {
+        }
+
+        public async Task<User> GetUserAsync(string userId, CancellationToken cancellationToken = default)
         {
             try
             {
-                //var userContext = await GetUserContext().ConfigureAwait(false);
+                var requestUri = UserApi + "/" + userId;
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
 
-                var httpRequestMessage = new HttpRequestMessage();
-                httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
-                httpRequestMessage.Method = HttpMethod.Get;
+                using (var response = await authorizedHttpClient.GetAsync(requestUri, cancellationToken))
+                {
+                    response.EnsureSuccessStatusCode();
+                    string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                //httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
-                httpRequestMessage.RequestUri = new Uri(UserApi + "/" + userId);
-
-                HttpClient client = new HttpClient();
-                HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
-                string responseString = await response.Content.ReadAsStringAsync();
-
-                return JsonConvert.DeserializeObject<User>(responseString);
+                    return JsonConvert.DeserializeObject<User>(responseString);
+                }
             }
             catch (Exception ex)
             {
@@ -38,26 +40,21 @@
             }
         }
 
-        public async Task<User> AddUserAsync(User user)
+        public async Task<User> AddUserAsync(User user, CancellationToken cancellationToken = default)
         {
             try
             {
-                //var userContext = await GetUserContext().ConfigureAwait(false);
+                var content = JsonContent.Create(user, typeof(User), null, SerializerOptions);
 
-                var httpRequestMessage = new HttpRequestMessage();
-                httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
-                httpRequestMessage.Method = HttpMethod.Post;
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
 
-                //httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
-                httpRequestMessage.RequestUri = new Uri(UserApi);
+                using (var response = await authorizedHttpClient.PostAsync(UserApi, content, cancellationToken))
+                {
+                    response.EnsureSuccessStatusCode();
+                    string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                httpRequestMessage.Content = JsonContent.Create(user, typeof(User), null, SerializerOptions);
-
-                HttpClient client = new HttpClient();
-                HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
-                string responseString = await response.Content.ReadAsStringAsync();
-
-                return JsonConvert.DeserializeObject<User>(responseString);
+                    return JsonConvert.DeserializeObject<User>(responseString);
+                }
             }
             catch (Exception ex)
             {
@@ -66,26 +63,21 @@
             }
         }
 
-        public async Task<User> UpdateUserAsync(User user)
+        public async Task<User> UpdateUserAsync(User user, CancellationToken cancellationToken = default)
         {
             try
             {
-                //var userContext = await GetUserContext().ConfigureAwait(false);
+                var content = JsonContent.Create(user, typeof(User), null, SerializerOptions);
 
-                var httpRequestMessage = new HttpRequestMessage();
-                httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
-                httpRequestMessage.Method = HttpMethod.Put;
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
 
-                //httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
-                httpRequestMessage.RequestUri = new Uri(UserApi);
+                using (var response = await authorizedHttpClient.PutAsync(UserApi, content, cancellationToken))
+                {
+                    response.EnsureSuccessStatusCode();
+                    string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                httpRequestMessage.Content = JsonContent.Create(user, typeof(User), null, SerializerOptions);
-
-                HttpClient client = new HttpClient();
-                HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
-                string responseString = await response.Content.ReadAsStringAsync();
-
-                return JsonConvert.DeserializeObject<User>(responseString);
+                    return JsonConvert.DeserializeObject<User>(responseString);
+                }
             }
             catch (Exception ex)
             {
