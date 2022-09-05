@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
-using TrashMobMobileApp.Authentication;
-using TrashMobMobileApp.Data;
-
-namespace TrashMobMobileApp.Shared
+﻿namespace TrashMobMobileApp.Shared
 {
+    using Microsoft.AspNetCore.Components;
+    using TrashMobMobileApp.Authentication;
+    using TrashMobMobileApp.Data;
+
     public partial class MainLayout
     {
         [Inject]
@@ -17,7 +17,7 @@ namespace TrashMobMobileApp.Shared
             await base.OnInitializedAsync();
 
             await AuthenticationService.SignOutAsync(); //sign out on initialize to kick off login
-            _ = await AuthenticationService.SignInAsync(UserManager);
+            await AuthenticationService.SignInAsync(UserManager);
         }
     }
 }

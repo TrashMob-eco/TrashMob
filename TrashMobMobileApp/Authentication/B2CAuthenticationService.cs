@@ -58,23 +58,21 @@
             return newContext;
         }
 
-        public async Task<UserContext> SignInAsync(IUserManager userManager)             
+        public async Task SignInAsync(IUserManager userManager)             
         {
-            var userContext = await SignInAsync();
+            UserState.UserContext = await SignInAsync();
 
-            await VerifyAccount(userContext, userManager);
-
-            return userContext;
+            await VerifyAccount(userManager);
         }
 
-        private async Task VerifyAccount(UserContext userContext, IUserManager userManager)
+        private async Task VerifyAccount(IUserManager userManager)
         {
             var user = new User
             {
                 Id = Guid.Empty,
-                NameIdentifier = userContext.NameIdentifier,
-                SourceSystemUserName = userContext.SourceSystemUserName ?? "",
-                Email = userContext.EmailAddress ?? ""
+                NameIdentifier = UserState.UserContext.NameIdentifier,
+                SourceSystemUserName = UserState.UserContext.SourceSystemUserName ?? "",
+                Email = UserState.UserContext.EmailAddress ?? ""
             };
 
             App.CurrentUser = await userManager.AddUserAsync(user);
@@ -91,20 +89,18 @@
             return newContext;
         }
 
-        public async Task<UserContext> ResetPasswordAsync(IUserManager userManager)
+        public async Task ResetPasswordAsync(IUserManager userManager)
         {
             AuthenticationResult authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.ApiScopesArray)
                 .WithPrompt(Prompt.NoPrompt)
                 .WithAuthority(b2CConstants.AuthorityPasswordReset)
                 .ExecuteAsync();
 
-            var userContext = UpdateUserInfo(authResult);
-            await VerifyAccount(userContext, userManager);
-
-            return userContext;
+            UserState.UserContext = UpdateUserInfo(authResult);
+            await VerifyAccount(userManager);
         }
 
-        public async Task<UserContext> EditProfileAsync()
+        public async Task EditProfileAsync()
         {
             IEnumerable<IAccount> accounts = await b2CConstants.PublicClientApp.GetAccountsAsync();
 
@@ -114,9 +110,7 @@
                 .WithAuthority(b2CConstants.AuthorityEditProfile)
                 .ExecuteAsync();
 
-            var userContext = UpdateUserInfo(authResult);
-
-            return userContext;
+            UserState.UserContext = UpdateUserInfo(authResult);
         }
 
         private async Task<UserContext> SignInInteractively()
@@ -154,7 +148,7 @@
             }
         }
 
-        public async Task<UserContext> SignOutAsync()
+        public async Task SignOutAsync()
         {
 
             IEnumerable<IAccount> accounts = await b2CConstants.PublicClientApp.GetAccountsAsync();
@@ -168,7 +162,8 @@
             {
                 IsLoggedOn = false
             };
-            return signedOutContext;
+
+            UserState.UserContext = signedOutContext;
         }
 
         private IAccount GetAccountByPolicy(IEnumerable<IAccount> accounts, string policy)

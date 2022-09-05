@@ -23,16 +23,5 @@
             HttpClientService = httpClientService;
             this.b2CAuthenticationService = b2CAuthenticationService;
         }
-
-        protected async Task<UserContext> GetUserContext()
-        {
-            return await (b2CAuthenticationService as B2CAuthenticationService).SignInAsync();
-        }
-
-        protected HttpRequestMessage GetDefaultHeaders(HttpRequestMessage httpRequestMessage)
-        {
-            httpRequestMessage.Headers.Add("Accept", "application/json, text/plain");
-            return httpRequestMessage;
-        }
     }
 }
