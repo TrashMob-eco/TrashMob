@@ -13,10 +13,12 @@ env:
   AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '6.0.x'  # set this to the dotnet version to use
   DOTNET_VERSION2: '6.0.x'  # set this to the dotnet version to use
+  CONFIGURATION: Release
 
 jobs:
   build:
     runs-on: windows-latest
+    environment: production
 
     steps:
     - uses: actions/checkout@v2
@@ -31,11 +33,11 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION2 }}
 
-    - name: Build with dotnet
-      run: dotnet build --configuration Release
+    - name: Restore
+      run: dotnet restore .\TrashMob.sln
 
     - name: dotnet publish
-      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      run: dotnet publish --configuration ${{ env.CONFIGURATION }} --no-restore -o ${{env.DOTNET_ROOT}}/myapp
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v2

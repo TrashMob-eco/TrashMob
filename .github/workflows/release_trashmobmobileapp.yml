@@ -1,0 +1,72 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: TrashMobMobileApp - Prod
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '6.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION2: '6.0.x'  # set this to the dotnet version to use
+  CONFIGURATION: Release
+
+jobs:
+  build:
+    runs-on: windows-latest
+    environment: production
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION2 }}
+
+    - name: Install MAUI Workload
+      run: |
+        dotnet nuget locals all --clear
+        dotnet workload install maui --ignore-failed-sources
+        dotnet workload install android ios maccatalyst tvos macos maui wasm-tools --source https://api.nuget.org/v3/index.json
+
+    - name: Restore
+      run: | 
+        cd TrashMobMobileApp
+        dotnet restore TrashMobMobileApp.sln
+
+    - name: Publish Mobile App
+      run: |
+        cd TrashMobMobileApp
+        dotnet publish TrashMobMobileApp.csproj -c:${{ env.CONFIGURATION }} -f:net6.0-android33.0 --no-restore 
+      
+    # Store Android Signing Keystore and password in Secrets using base64 encoding
+    # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil
+    # command line util to encode to base64 on windows
+    - name: Extract Android signing key from env
+      shell: bash
+      run: |
+        cd TrashMobMobileApp
+        mkdir android
+        echo "${{ secrets.ANDROID_KEYSTORE }}" > android/trashmobmobileapp.jks.base64
+        base64 -d android/trashmobmobileapp.jks.base64 > android/trashmobmobileapp.decrypted.jks
+    # check android SDK paths etc in installed VM : https://github.com/actions/virtual-environments#available-environments
+    - name: Sign dev build
+      shell: bash
+      run: |
+        cd TrashMobMobileApp
+        jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -signedjar bin/Release/net6.0-android33.0/publish/eco.trashmob.trashmobmobileapp-Signed.aab bin/Release/net6.0-android33.0/publish/eco.trashmob.trashmobmobileapp.aab key
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: artifacts-android
+        path: |
+          TrashMobMobileApp\bin\Release\net6.0-android33.0\publish\*.apk
