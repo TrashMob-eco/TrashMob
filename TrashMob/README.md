@@ -12,7 +12,7 @@ The server side of the site is written in ASP.NET Core 6.0.
 
 The site integrates with the following backend components as seen the diagram below
 
-![Site Integrations](..\]TrashMobArchitecture.png)
+![Site Integrations](..\TrashMobArchitecture.png)
 
 | Component Name | Function | Notes |
 | --- | --- | --- |
