@@ -60,6 +60,7 @@
     <None Remove="client-app\src\components\assets\muhammad-numan-ZVgxiKJlMk0-unsplash.jpg" />
     <None Remove="client-app\src\components\assets\paige-cody-G8VOA-BrnHo-unsplash.jpg" />
     <None Remove="Docusign\TrashMob_Volunteer_Waiver_V1.docx" />
+    <None Remove="README.md" />
     <None Remove="robots.txt" />
   </ItemGroup>
 
@@ -82,6 +83,7 @@
     <Content Include="Docusign\TrashMob_Volunteer_Waiver_V1.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="README.md" />
     <Content Include="robots.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
