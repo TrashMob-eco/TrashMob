@@ -30,10 +30,6 @@ namespace TrashMob.Shared.Models
 
         public int CommunityStatusId { get; set; }
 
-        public int HaulingTypeId { get; set; }
-
-        public int DisposalTypeId { get; set; }
-
         public Guid CreatedByUserId { get; set; }
 
         public DateTimeOffset? CreatedDate { get; set; }
@@ -43,10 +39,6 @@ namespace TrashMob.Shared.Models
         public DateTimeOffset? LastUpdatedDate { get; set; }
 
         public virtual CommunityStatus CommunityStatus { get; set; }
-
-        public virtual HaulingType HaulingType { get; set; }
-
-        public virtual DisposalType DisposalType { get; set; }
 
         public virtual User CreatedByUser { get; set; }
 

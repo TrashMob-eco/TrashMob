@@ -117,13 +117,5 @@ namespace TrashMob.Shared.Models
         public virtual ICollection<CommunityNote> CommunityNotesCreated { get; set; }
 
         public virtual ICollection<CommunityNote> CommunityNotesUpdated { get; set; }
-
-        public virtual ICollection<CommunityStarterKit> CommunityStarterKitsCreated { get; set; }
-
-        public virtual ICollection<CommunityStarterKit> CommunityStarterKitsUpdated { get; set; }
-
-        public virtual ICollection<CommunityStarterKitContact> CommunityStarterKitContactsCreated { get; set; }
-
-        public virtual ICollection<CommunityStarterKitContact> CommunityStarterKitContactsUpdated { get; set; }
     }
 }

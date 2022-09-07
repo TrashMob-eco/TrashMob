@@ -17,7 +17,5 @@ namespace TrashMob.Shared.Models
         public bool? IsActive { get; set; }
 
         public virtual ICollection<CommunityContact> CommunityContacts { get; set; }
-
-        public virtual ICollection<CommunityStarterKitContact> CommunityStarterKitContacts { get; set; }
-    }
+   }
 }

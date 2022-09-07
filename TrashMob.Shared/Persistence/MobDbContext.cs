@@ -28,10 +28,6 @@
 
         public virtual DbSet<CommunityNote> CommunityNotes { get; set; }
 
-        public virtual DbSet<CommunityStarterKit> CommunityStarterKits { get; set; }
-
-        public virtual DbSet<CommunityStarterKitContact> CommunityStarterKitContacts { get; set; }
-
         public virtual DbSet<CommunityStatus> CommunityStatuses { get; set; }
 
         public virtual DbSet<CommunityType> CommunityTypes { get; set; }
@@ -58,8 +54,6 @@
 
         public virtual DbSet<EventType> EventTypes { get; set; }
 
-        public virtual DbSet<HaulingType> HaulingTypes { get; set; }
-
         public virtual DbSet<MediaType> MediaTypes { get; set; }
 
         public virtual DbSet<MediaType> MediaUsageTypes { get; set; }
@@ -81,8 +75,6 @@
         public virtual DbSet<PartnerUser> PartnerUsers { get; set; }
 
         public virtual DbSet<SiteMetric> SiteMetrics { get; set; }
-
-        public virtual DbSet<StarterKitDeliveryType> StarterKitDeliveryTypes { get; set; }
 
         public virtual DbSet<User> Users { get; set; }
 
@@ -142,18 +134,6 @@
                     .WithMany(p => p.Communities)
                     .HasForeignKey(d => d.CommunityStatusId)
                     .HasConstraintName("FK_Communities_CommunityStatuses");
-
-                entity.HasOne(d => d.HaulingType)
-                    .WithMany(p => p.Communities)
-                    .HasForeignKey(d => d.HaulingTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Communities_HaulingTypes");
-
-                entity.HasOne(d => d.DisposalType)
-                    .WithMany(p => p.Communities)
-                    .HasForeignKey(d => d.DisposalTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Communities_DisposalTypes");
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.CommunitiesCreated)
@@ -337,89 +317,6 @@
                     .HasConstraintName("FK_CommunityNotes_ApplicationUser_LastUpdatedBy");
             });
 
-            modelBuilder.Entity<CommunityStarterKit>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.CommunityId);
-
-                entity.HasOne(d => d.StarterKitDeliveryType)
-                    .WithMany(p => p.CommunityStarterKits)
-                    .HasForeignKey(d => d)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityStarterKits_StarterKitDeliveryType");
-
-                entity.Property(e => e.CreatedByUserId);
-
-                entity.Property(e => e.LastUpdatedByUserId);
-
-                entity.HasOne(d => d.Community)
-                    .WithMany()
-                    .HasForeignKey(d => d.CommunityId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityStarterKit_Community");
-
-                entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.CommunityStarterKitsCreated)
-                    .HasForeignKey(d => d.CreatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityStarterKit_ApplicationUser_CreatedBy");
-
-                entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.CommunityStarterKitsUpdated)
-                    .HasForeignKey(d => d.LastUpdatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityStarterKit_ApplicationUser_LastUpdatedBy");
-            });
-
-            modelBuilder.Entity<CommunityStarterKitContact>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.CommunityStarterKitId);
-
-                entity.Property(e => e.Name)
-                    .HasMaxLength(64)
-                    .IsRequired();
-
-                entity.Property(e => e.Email)
-                    .HasMaxLength(64);
-
-                entity.Property(e => e.PhoneNumber)
-                   .HasMaxLength(30);
-
-                entity.Property(e => e.Notes)
-                  .HasMaxLength(2000);
-
-                entity.Property(e => e.CreatedByUserId);
-
-                entity.Property(e => e.LastUpdatedByUserId);
-
-                entity.HasOne(d => d.CommunityContactType)
-                    .WithMany(p => p.CommunityStarterKitContacts)
-                            .HasForeignKey(d => d.CommunityContactTypeId)
-                            .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityStarterKitContact_CommunityContactTypes");
-
-                entity.HasOne(d => d.CommunityStarterKit)
-                    .WithMany()
-                    .HasForeignKey(d => d.CommunityStarterKitId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityStarterKitContacts_CommunityStarterKit");
-
-                entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.CommunityStarterKitContactsCreated)
-                    .HasForeignKey(d => d.CreatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityStarterKitContacts_ApplicationUser_CreatedBy");
-
-                entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.CommunityStarterKitContactsUpdated)
-                    .HasForeignKey(d => d.LastUpdatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityStarterKitContacts_ApplicationUser_LastUpdatedBy");
-            });
-
             modelBuilder.Entity<CommunityStatus>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -455,75 +352,6 @@
                     new CommunityType { Id = (int)CommunityTypeEnum.County, Name = "County", Description = "County", DisplayOrder = 2 },
                     new CommunityType { Id = (int)CommunityTypeEnum.Municipality, Name = "Municipality", Description = "City, Town, Village, Township", DisplayOrder = 3 },
                     new CommunityType { Id = (int)CommunityTypeEnum.Neighborhood, Name = "Neighborhood", Description = "Neighborhood Association", DisplayOrder = 4 });
-            });
-
-            modelBuilder.Entity<DisposalType>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Description);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.HasData(
-                    new DisposalType { Id = (int)DisposalTypeEnum.NotDetermined, Name = "Not yet determined", Description = "Not yet determined", DisplayOrder = 0 },
-                    new DisposalType { Id = (int)DisposalTypeEnum.UseExistingCans, Name = "Use existing cans if available", Description = "Use existing cans if available", DisplayOrder = 1 },
-                    new DisposalType { Id = (int)DisposalTypeEnum.Region, Name = "Region, Province, or State", Description = "Region, Province, or State", DisplayOrder = 1 },
-                    new DisposalType { Id = (int)DisposalTypeEnum.County, Name = "County", Description = "County", DisplayOrder = 2 },
-                    new DisposalType { Id = (int)DisposalTypeEnum.Municipality, Name = "Municipality", Description = "City, Town, Village, Township", DisplayOrder = 3 },
-                    new DisposalType { Id = (int)DisposalTypeEnum.Neighborhood, Name = "Neighborhood", Description = "Neighborhood Association", DisplayOrder = 4 },
-                    new DisposalType { Id = (int)DisposalTypeEnum.Vendor, Name = "Vendor", Description = "A vendor must be contacted to dispose of the trash", DisplayOrder = 5 },
-                    new DisposalType { Id = (int)DisposalTypeEnum.Volunteer, Name = "Volunteer", Description = "The volunteers must dispose of the trash", DisplayOrder = 6 },
-                    new DisposalType { Id = (int)DisposalTypeEnum.Partner, Name = "Partner", Description = "A partner will assist in disposing of the trash", DisplayOrder = 7 },
-                    new DisposalType { Id = (int)DisposalTypeEnum.Other, Name = "Other", Description = "Other disposal method", DisplayOrder = 99 });
-            });
-
-            modelBuilder.Entity<HaulingType>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Description);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.HasData(
-                    new HaulingType { Id = (int)HaulingTypeEnum.NotDetermined, Name = "Not yet determined", Description = "Not yet determined", DisplayOrder = 0 },
-                    new HaulingType { Id = (int)HaulingTypeEnum.Region, Name = "Region, Province, or State", Description = "Region, Province, or State", DisplayOrder = 1 },
-                    new HaulingType { Id = (int)HaulingTypeEnum.County, Name = "County", Description = "County", DisplayOrder = 2 },
-                    new HaulingType { Id = (int)HaulingTypeEnum.Municipality, Name = "Municipality", Description = "City, Town, Village, Township", DisplayOrder = 3 },
-                    new HaulingType { Id = (int)HaulingTypeEnum.Neighborhood, Name = "Neighborhood", Description = "Neighborhood Association", DisplayOrder = 4 },
-                    new HaulingType { Id = (int)HaulingTypeEnum.Vendor, Name = "Vendor", Description = "A vendor must be contacted to haul the trash", DisplayOrder = 5 },
-                    new HaulingType { Id = (int)HaulingTypeEnum.Volunteer, Name = "Volunteer", Description = "The volunteers must haul the trash", DisplayOrder = 6 },
-                    new HaulingType { Id = (int)HaulingTypeEnum.Partner, Name = "Partner", Description = "A partner will assist in hauling the trash", DisplayOrder = 7 },
-                    new HaulingType { Id = (int)HaulingTypeEnum.Other, Name = "Other", Description = "Other disposal method", DisplayOrder = 99 });
-            });
-
-            modelBuilder.Entity<StarterKitDeliveryType>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Description);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.HasData(
-                    new StarterKitDeliveryType { Id = (int)StarterKitDeliveryTypeEnum.NotDetermined, Name = "Not yet determined", Description = "Not yet determined", DisplayOrder = 0 },
-                    new StarterKitDeliveryType { Id = (int)StarterKitDeliveryTypeEnum.Region, Name = "Region, Province, or State", Description = "Region, Province, or State", DisplayOrder = 1 },
-                    new StarterKitDeliveryType { Id = (int)StarterKitDeliveryTypeEnum.County, Name = "County", Description = "County", DisplayOrder = 2 },
-                    new StarterKitDeliveryType { Id = (int)StarterKitDeliveryTypeEnum.Municipality, Name = "Municipality", Description = "City, Town, Village, Township", DisplayOrder = 3 },
-                    new StarterKitDeliveryType { Id = (int)StarterKitDeliveryTypeEnum.Neighborhood, Name = "Neighborhood", Description = "Neighborhood Association", DisplayOrder = 4 },
-                    new StarterKitDeliveryType { Id = (int)StarterKitDeliveryTypeEnum.Vendor, Name = "Vendor", Description = "A vendor must be contacted obtain a starter kit", DisplayOrder = 5 },
-                    new StarterKitDeliveryType { Id = (int)StarterKitDeliveryTypeEnum.Volunteer, Name = "Volunteer", Description = "A volunteer will distribute the starter kits", DisplayOrder = 6 },
-                    new StarterKitDeliveryType { Id = (int)StarterKitDeliveryTypeEnum.Partner, Name = "Partner", Description = "A partner will assist in distributing a starter kit", DisplayOrder = 7 },
-                    new StarterKitDeliveryType { Id = (int)StarterKitDeliveryTypeEnum.Online, Name = "Online", Description = "A starter kit can be ordered online", DisplayOrder = 8 },
-                    new StarterKitDeliveryType { Id = (int)StarterKitDeliveryTypeEnum.Other, Name = "Other", Description = "Other disposal method", DisplayOrder = 9 },
-                    new StarterKitDeliveryType { Id = (int)StarterKitDeliveryTypeEnum.NotAvailable, Name = "Not Available", Description = "A starter kit is not available yet in this lcoation", DisplayOrder = 10 });
             });
 
             modelBuilder.Entity<Event>(entity =>
