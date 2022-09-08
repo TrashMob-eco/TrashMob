@@ -19,12 +19,8 @@
 
     public enum CommunityStatusEnum
     {
-        None = 0,
-        Submitted = 1,
-        ReviewInProgress = 2,
-        Approved = 3,
-        Declined = 4,
-        OutOfDate = 5,
+        Inactive = 0,
+        Active = 1,
     }
 
     public enum CommunityTypeEnum
@@ -106,5 +102,4 @@
         Active = 1,
         Inactive = 2,
     }
-
 }

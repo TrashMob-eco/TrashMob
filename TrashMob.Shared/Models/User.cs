@@ -100,6 +100,8 @@ namespace TrashMob.Shared.Models
 
         public virtual ICollection<Community> CommunitiesUpdated { get; set; }
 
+        public virtual ICollection<CommunityRequest> CommunityRequestsCreated { get; set; }
+
         public virtual ICollection<CommunityAttachment> CommunityAttachmentsCreated { get; set; }
 
         public virtual ICollection<CommunityAttachment> CommunityAttachmentsUpdated { get; set; }
@@ -108,14 +110,12 @@ namespace TrashMob.Shared.Models
 
         public virtual ICollection<CommunityContact> CommunityContactsUpdated { get; set; }
 
-        public virtual ICollection<CommunityHistory> CommunityHistoriesCreated { get; set; }
-
-        public virtual ICollection<CommunityHistory> CommunityHistoriesUpdated { get; set; }
-
-        public virtual ICollection<CommunityHistory> CommunityHistoryRoutings { get; set; }
-
         public virtual ICollection<CommunityNote> CommunityNotesCreated { get; set; }
 
         public virtual ICollection<CommunityNote> CommunityNotesUpdated { get; set; }
+
+        public virtual ICollection<CommunityUser> CommunityUsersCreated { get; set; }
+
+        public virtual ICollection<CommunityUser> CommunityUsersUpdated { get; set; }
     }
 }

@@ -18,23 +18,21 @@
 
         public virtual DbSet<Community> Communities { get; set; }
 
+        public virtual DbSet<Community> CommunityRequests { get; set; }
+
         public virtual DbSet<CommunityAttachment> CommunityAttachments { get; set; }
 
         public virtual DbSet<CommunityContact> CommunityContacts { get; set; }
 
         public virtual DbSet<CommunityContactType> CommunityContactTypes { get; set; }
 
-        public virtual DbSet<CommunityHistory> CommunityHistories { get; set; }
-
         public virtual DbSet<CommunityNote> CommunityNotes { get; set; }
 
         public virtual DbSet<CommunityStatus> CommunityStatuses { get; set; }
 
-        public virtual DbSet<CommunityType> CommunityTypes { get; set; }
-
         public virtual DbSet<ContactRequest> ContactRequests { get; set; }
 
-        public virtual DbSet<CommunityType> DisposalTypes { get; set; }
+        public virtual DbSet<CommunityUser> CommunityUsers { get; set; }
 
         public virtual DbSet<EventPartner> EventPartners { get; set; }
 
@@ -247,44 +245,6 @@
                     new CommunityContactType { Id = (int)CommunityContactTypeEnum.Partner, Name = "TrashMob Partner", Description = "Contact is a TrashMob Partner in the community", DisplayOrder = 5 });
             });
 
-            modelBuilder.Entity<CommunityHistory>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.CommunityId);
-
-                entity.Property(e => e.Notes)
-                  .HasMaxLength(2000);
-
-                entity.Property(e => e.CreatedByUserId);
-
-                entity.Property(e => e.LastUpdatedByUserId);
-
-                entity.HasOne(d => d.RouteToUser)
-                    .WithMany(p => p.CommunityHistoryRoutings)
-                            .HasForeignKey(d => d.RouteToUserId)
-                            .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityHistories_RouteToUser");
-
-                entity.HasOne(d => d.Community)
-                    .WithMany()
-                    .HasForeignKey(d => d.CommunityId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityHistories_Community");
-
-                entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.CommunityHistoriesCreated)
-                    .HasForeignKey(d => d.CreatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityHistories_ApplicationUser_CreatedBy");
-
-                entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.CommunityHistoriesUpdated)
-                    .HasForeignKey(d => d.LastUpdatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityHistories_ApplicationUser_LastUpdatedBy");
-            });
-
             modelBuilder.Entity<CommunityNote>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -317,6 +277,21 @@
                     .HasConstraintName("FK_CommunityNotes_ApplicationUser_LastUpdatedBy");
             });
 
+            modelBuilder.Entity<CommunityRequest>(entity =>
+            {
+                entity.Property(e => e.Name).HasMaxLength(128);
+
+                entity.Property(e => e.Email).HasMaxLength(64);
+
+                entity.Property(e => e.Phone).HasMaxLength(32);
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.CommunityRequestsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CommunityRequests_CreatedByUser_Id");
+            });
+
             modelBuilder.Entity<CommunityStatus>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -328,30 +303,40 @@
                     .HasMaxLength(50);
 
                 entity.HasData(
-                    new CommunityStatus { Id = (int)CommunityStatusEnum.None, Name = "None", Description = "No application exists for selected community", DisplayOrder = 1 },
-                    new CommunityStatus { Id = (int)CommunityStatusEnum.Submitted, Name = "Submitted", Description = "Community has been submitted for review", DisplayOrder = 2 },
-                    new CommunityStatus { Id = (int)CommunityStatusEnum.ReviewInProgress, Name = "Review in Progress", Description = "Submission review in progress", DisplayOrder = 3 },
-                    new CommunityStatus { Id = (int)CommunityStatusEnum.Approved, Name = "Approved", Description = "Submission has been approved", DisplayOrder = 4 },
-                    new CommunityStatus { Id = (int)CommunityStatusEnum.Declined, Name = "Declined", Description = "Submission has been declined. See notes", DisplayOrder = 5 },
-                    new CommunityStatus { Id = (int)CommunityStatusEnum.OutOfDate, Name = "Out of Date", Description = "Submission is out of date. Review needed.", DisplayOrder = 6 });
+                    new CommunityStatus { Id = (int)CommunityStatusEnum.Active, Name = "Active", Description = "Community is an active TrashMob community", DisplayOrder = 1 },
+                    new CommunityStatus { Id = (int)CommunityStatusEnum.Inactive, Name = "Inactive", Description = "Community is not currently an active TrashMob community", DisplayOrder = 2 });
             });
 
-            modelBuilder.Entity<CommunityType>(entity =>
+            modelBuilder.Entity<CommunityUser>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.HasKey(e => new { e.CommunityId, e.UserId, });
 
-                entity.Property(e => e.Description);
+                entity.Property(e => e.UserId)
+                    .IsRequired();
 
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.HasOne(d => d.Community)
+                    .WithMany()
+                    .HasForeignKey(d => d.CommunityId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CommunityUser_Communities");
 
-                entity.HasData(
-                    new CommunityType { Id = (int)CommunityTypeEnum.Other, Name = "Other", Description = "Unknown community type", DisplayOrder = 5 },
-                    new CommunityType { Id = (int)CommunityTypeEnum.Region, Name = "Region, Province, or State", Description = "Region, Province, or State", DisplayOrder = 1 },
-                    new CommunityType { Id = (int)CommunityTypeEnum.County, Name = "County", Description = "County", DisplayOrder = 2 },
-                    new CommunityType { Id = (int)CommunityTypeEnum.Municipality, Name = "Municipality", Description = "City, Town, Village, Township", DisplayOrder = 3 },
-                    new CommunityType { Id = (int)CommunityTypeEnum.Neighborhood, Name = "Neighborhood", Description = "Neighborhood Association", DisplayOrder = 4 });
+                entity.HasOne(d => d.User)
+                    .WithMany()
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CommunityUser_User");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.CommunityUsersCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CommunityUsers_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.CommunityUsersUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CommunityUsers_LastUpdatedByUser_Id");
             });
 
             modelBuilder.Entity<Event>(entity =>
