@@ -3,14 +3,14 @@
 **Meet up. Clean up. Feel good.**
 
 # What is TrashMob?
-TrashMob is a website dedicated to organizing groups of people to clean up the world we live in. Users create cleanup events, publicize them, and recruit people to join up, as well as ask for assistance from sponsors to help haul away the garbage once it is gathered. The idea is to turn what can be an intimidating process for event organizers into a few mouse clicks and simple forms. And once the process is simple, events will spring up all over the world, and the cleanup of the world can begin.
+TrashMob is a website dedicated to organizing groups of people to clean up the world we live in. Users create cleanup events, publicize them, and recruit people to join up, as well as ask for assistance from communities and partners to help haul away the garbage once it is gathered. The idea is to turn what can be an intimidating process for event organizers into a few mouse clicks and simple forms. And once the process is simple, events will spring up all over the world, and the cleanup of the world can begin.
 
 # Where did this idea come from?
 Years ago, Scott Hanselman (and others at Microsoft) built out the NerdDinner.com site as a demo of the capabilities of ASP.NET MVC. I actually went to a bunch of the nerd dinners which were fantastic and had a huge roll in my career, including eventually leading me to join Microsoft. This site is based on both that code and the idea that getting people together to do small good things results in larger good things in the long term.
 
 My passion is fixing problems we have on the planet with pollution and climate change. I've been thinking about what technology can do to help in these areas, without creating more problems. And I keep coming back to the thought that a lot of this is a human problem. People want to help and they want to fix things, but they don't know where to start. Other people have ideas on where to start, but not enough help to get started.
  
-I read about a guy in California named [Edgar McGregor](https://twitter.com/edgarrmcgregor), who has spent over 600 days cleaning up a park in his community, two pails of litter at a time, and I thought, that was a great idea. His actions inspired me to get out and clean up a local park one Saturday. It was fun and rewarding and other people saw what I was doing on my own and I know I have already inspired others to do the same. And then I passed by an area of town that is completely covered in trash and I thought "this is too much for me alone. It would be great to have a group of people descend on this area like a mob and clean it up in an hour or two". And my idea for TrashMob.eco was born.
+I read about a guy in California named [Edgar McGregor](https://twitter.com/edgarrmcgregor), who has spent over 1100 days cleaning up a park in his community, two pails of litter at a time, and I thought, that was a great idea. His actions inspired me to get out and clean up a local park one Saturday. It was fun and rewarding and other people saw what I was doing on my own and I know I have already inspired others to do the same. And then I passed by an area of town that is completely covered in trash and I thought "this is too much for me alone. It would be great to have a group of people descend on this area like a mob and clean it up in an hour or two". And my idea for TrashMob.eco was born.
  
 Basically, TrashMob is the NerdDinner.com site re-purposed to allow people to start mobs of their own to tackle cleanup or whatever needs doing. And I keep coming up with more and more ideas for it. I'm hoping this site grows organically because of the good that we can do we get together.
 
@@ -25,26 +25,31 @@ https://as-tm-dev-westus2.azurewebsites.net/
 # FAQ 
 ## What is the current state of this project?
 
-As of 5/26/2021, we are now in Beta launch. We'll hold at Beta until a few more key features are complete so we can do a grand-relaunch when those features go in. Beta also means that if things really go wrong, we may have to delete data manually and depending on load, site availability is not guaranteed.
+As of 5/15/2022, we are now in full production launch. The site is up and running and people are using it ot help organize litter cleanups! TrashMob.eco is now a 501(c)(3) non-profit in the United States. We are working on new features all the time!
 
 ## Are you looking for contributors?
 
-ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) if you want to get involved. All kinds of skills needed, from reactjs to website design, to aspnet core, to Xamarin, to deployment / github skills.
+ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) or [info@trashmob.eco](mailto:info@trashmob.eco) if you want to get involved. All kinds of skills needed, from reactjs to website design, to aspnet core, to .NET MAUI, to PowerBI, to deployment / github skills. If you have a couple of hours a week, and want to contribute, let us know!
  
+## I have an idea for a TrashMob feature!
+
+Fantastic! We want to build this out to be best site on the internet! But before you send us your idea, please take a look at the lists of [projects](https://github.com/orgs/TrashMob-eco/projects) and [issues](https://github.com/TrashMob-eco/TrashMob/issues) we already have going. We may already be working on your idea. If your idea is not there, feel free to reach out to us at [info@trashmob.eco](mailto:info@trashmob.eco)
+
 # Development Notes
 
 ## Getting Started - Development
 
-1. You must install the .net 6 SDK
+1. You must install the .NET 6 SDK
 1. Install Visual Studio Code
 1. Connect to github and clone the repo
+1. Send your github id to info@trashmob.eco to be added as a contributor to the repository
 1. Install the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli)
 
 ### To use the Shared Dev Environment
 If you are not doing any database changes (i.e. design work, error handling, etc) you can save yourself time and money by doing the following and using the shared Dev environment:
-1. Send the email address you use on GitHub to Joe Beernink
-1. Joe will add you as a contributor to the Sandbox subscription
-1. Joe will add you to the Dev KeyVault with Secret Get and List permissions
+1. Send the email address you use on GitHub to [info@trashmob.eco](mailto:info@trashmob.eco)
+1. TrashMob will add you as a contributor to the Sandbox subscription
+1. TrashMob will add you to the Dev KeyVault with Secret Get and List permissions
 1. Log in to the Sandbox subscription, and go to the [Dev Azure SQL Database](https://portal.azure.com/#@jobeedevids.onmicrosoft.com/resource/subscriptions/39a254b7-c01a-45ab-bebd-4038ea4adea9/resourceGroups/rg-trashmob-dev-westus2/providers/Microsoft.Sql/servers/sql-tm-dev-westus2/overview)
 1. Click on Firewalls and Virtual Networks
 1. Add a new Rule with your email address as the name, with the start and end ip address set as your Client IP Address (see the line above the form for what Azure thinks your IP address is)
@@ -155,13 +160,13 @@ If you are, however, attempting to test or alter the Docusign workflow, here are
 
 ## Getting Started - Mobile Development
 
-The mobile app is written using Xamarin. It requires a few prerequisites in order to get it compiling and running.
+The mobile app is written using .NET MAUI. It requires a few prerequisites in order to get it compiling and running.
 
-1. Ensure you have installed the Xamarin components to Visual Studio
+1. Ensure you have installed the latest version of Visual Studio and the .NET MAUI Framework option
 2. Install Android Studio https://developer.android.com/studio 
 3. Create an Android Emulator device in Android Studio
-4. Load the TrashMobMobile.sln Project in Visual Studio.
-5. Set your startup project to TrashMobMobile.Android
+4. Load the TrashMobMobileApp.sln Project in Visual Studio.
+5. Set your startup project to TrashMobMobileApp
 5. In order to have the maps feature work, you will need to do the following:
     1. Create a Google Maps account: https://developers.google.com/maps/gmp-get-started
     2. Get your Google API Key from your Google Project
