@@ -13,7 +13,6 @@ nupkg/
 *.user
 *.userosscache
 *.sln.docstates
-*.Development.json
 launchSettings.json
 
 # Build results
