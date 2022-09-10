@@ -7,28 +7,28 @@
 
     public interface IMobEventManager
     {
-        Task<IEnumerable<MobEvent>> GetActiveEventsAsync();
+        Task<IEnumerable<MobEvent>> GetActiveEventsAsync(CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<MobEvent>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly);
+        Task<IEnumerable<MobEvent>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly, CancellationToken cancellationToken = default);
 
-        Task<MobEvent> GetEventAsync(Guid eventId);
+        Task<MobEvent> GetEventAsync(Guid eventId, CancellationToken cancellationToken = default);
 
-        Task<MobEvent> UpdateEventAsync(MobEvent mobEvent);
+        Task<MobEvent> UpdateEventAsync(MobEvent mobEvent, CancellationToken cancellationToken = default);
 
-        Task<MobEvent> AddEventAsync(MobEvent mobEvent);
+        Task<MobEvent> AddEventAsync(MobEvent mobEvent, CancellationToken cancellationToken = default);
 
-        Task DeleteEventAsync(CancelEvent cancelEvent);
+        Task DeleteEventAsync(CancelEvent cancelEvent, CancellationToken cancellationToken = default);
 
-        Task AddEventAttendeeAsync(EventAttendee eventAttendee);
+        Task AddEventAttendeeAsync(EventAttendee eventAttendee, CancellationToken cancellationToken = default);
 
-        Task RemoveEventAttendeeAsync(EventAttendee eventAttendee);
+        Task RemoveEventAttendeeAsync(EventAttendee eventAttendee, CancellationToken cancellationToken = default);
 
-        Task<bool> IsUserAttendingAsync(Guid eventId, Guid userId);
+        Task<bool> IsUserAttendingAsync(Guid eventId, Guid userId, CancellationToken cancellationToken = default);
 
-        Task<EventSummary> GetEventSummaryAsync(Guid eventId);
+        Task<EventSummary> GetEventSummaryAsync(Guid eventId, CancellationToken cancellationToken = default);
 
-        Task<EventSummary> UpdateEventSummaryAsync(EventSummary eventSummary);
+        Task<EventSummary> UpdateEventSummaryAsync(EventSummary eventSummary, CancellationToken cancellationToken = default);
 
-        Task<EventSummary> AddEventSummaryAsync(EventSummary eventSummary);
+        Task<EventSummary> AddEventSummaryAsync(EventSummary eventSummary, CancellationToken cancellationToken = default);
     }
 }

@@ -5,56 +5,55 @@
     using System.Net.Http;
     using System.Net.Http.Json;
     using System.Threading.Tasks;
+    using TrashMobMobileApp.Authentication;
     using TrashMobMobileApp.Models;
 
     public class EventAttendeeRestService : RestServiceBase, IEventAttendeeRestService
     {
-        private readonly string EventAttendeeApi = TrashMobServiceUrlBase + "eventattendee";
+        private readonly string EventAttendeeApi = "eventattendee";
 
-        public async Task AddAttendeeAsync(EventAttendee eventAttendee)
+        public EventAttendeeRestService(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService)
+            : base(httpClientService, b2CAuthenticationService)
         {
-            try
-            {
-                //var userContext = await GetUserContext().ConfigureAwait(false);
-
-                var httpRequestMessage = new HttpRequestMessage();
-                //httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
-
-                httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
-                httpRequestMessage.Method = HttpMethod.Post;
-                httpRequestMessage.RequestUri = new Uri(EventAttendeeApi);
-                httpRequestMessage.Content = JsonContent.Create(eventAttendee, typeof(EventAttendee), null, SerializerOptions);
-
-                HttpClient client = new HttpClient();
-                HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(@"\tERROR {0}", ex.Message);
-            }
-
-            return;
         }
 
-        public async Task RemoveAttendeeAsync(EventAttendee eventAttendee)
+        public async Task AddAttendeeAsync(EventAttendee eventAttendee, CancellationToken cancellationToken = default)
         {
             try
             {
-                //var userContext = await GetUserContext().ConfigureAwait(false);
+                var content = JsonContent.Create(eventAttendee, typeof(EventAttendee), null, SerializerOptions);
 
-                var httpRequestMessage = new HttpRequestMessage();
-                //httpRequestMessage.Headers.Add("Authorization", "BEARER " + userContext.AccessToken);
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
 
-                httpRequestMessage = GetDefaultHeaders(httpRequestMessage);
-                httpRequestMessage.Method = HttpMethod.Delete;
-                httpRequestMessage.RequestUri = new Uri(EventAttendeeApi + $"/{eventAttendee.EventId}/{eventAttendee.UserId}");
-
-                HttpClient client = new HttpClient();
-                HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
+                using (var response = await authorizedHttpClient.PostAsync(EventAttendeeApi, content, cancellationToken))
+                {
+                    response.EnsureSuccessStatusCode();
+                }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(@"\tERROR {0}", ex.Message);
+                throw;
+            }
+        }
+
+        public async Task RemoveAttendeeAsync(EventAttendee eventAttendee, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var requestUri = new Uri(EventAttendeeApi + $"/{eventAttendee.EventId}/{eventAttendee.UserId}");
+
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
+
+                using (var response = await authorizedHttpClient.DeleteAsync(requestUri, cancellationToken))
+                {
+                    response.EnsureSuccessStatusCode();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(@"\tERROR {0}", ex.Message);
+                throw;
             }
 
             return;

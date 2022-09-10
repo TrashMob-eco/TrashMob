@@ -19,66 +19,66 @@
             this.eventSummaryRestService = eventSummaryRestService;
         }
 
-        public Task<IEnumerable<MobEvent>> GetActiveEventsAsync()
+        public Task<IEnumerable<MobEvent>> GetActiveEventsAsync(CancellationToken cancellationToken = default)
         {
-            return mobEventRestService.GetActiveEventsAsync();
+            return mobEventRestService.GetActiveEventsAsync(cancellationToken);
         }
 
-        public Task<IEnumerable<MobEvent>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly)
+        public Task<IEnumerable<MobEvent>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly, CancellationToken cancellationToken = default)
         {
-            return mobEventRestService.GetUserEventsAsync(userId, showFutureEventsOnly);
+            return mobEventRestService.GetUserEventsAsync(userId, showFutureEventsOnly, cancellationToken);
         }
 
-        public Task<MobEvent> GetEventAsync(Guid eventId)
+        public Task<MobEvent> GetEventAsync(Guid eventId, CancellationToken cancellationToken = default)
         {
-            return mobEventRestService.GetEventAsync(eventId);
+            return mobEventRestService.GetEventAsync(eventId, cancellationToken);
         }
 
-        public Task<MobEvent> UpdateEventAsync(MobEvent mobEvent)
+        public Task<MobEvent> UpdateEventAsync(MobEvent mobEvent, CancellationToken cancellationToken = default)
         {
-            return mobEventRestService.UpdateEventAsync(mobEvent);
+            return mobEventRestService.UpdateEventAsync(mobEvent, cancellationToken);
         }
 
-        public Task<MobEvent> AddEventAsync(MobEvent mobEvent)
+        public Task<MobEvent> AddEventAsync(MobEvent mobEvent, CancellationToken cancellationToken = default)
         {
-            return mobEventRestService.AddEventAsync(mobEvent);
+            return mobEventRestService.AddEventAsync(mobEvent, cancellationToken);
         }
 
-        public Task DeleteEventAsync(CancelEvent cancelEvent)
+        public Task DeleteEventAsync(CancelEvent cancelEvent, CancellationToken cancellationToken = default)
         {
-            return mobEventRestService.DeleteEventAsync(cancelEvent);
+            return mobEventRestService.DeleteEventAsync(cancelEvent, cancellationToken);
         }
 
-        public Task AddEventAttendeeAsync(EventAttendee eventAttendee)
+        public Task AddEventAttendeeAsync(EventAttendee eventAttendee, CancellationToken cancellationToken = default)
         {
-            return eventAttendeeRestService.AddAttendeeAsync(eventAttendee);
+            return eventAttendeeRestService.AddAttendeeAsync(eventAttendee, cancellationToken);
         }
 
-        public Task RemoveEventAttendeeAsync(EventAttendee eventAttendee)
+        public Task RemoveEventAttendeeAsync(EventAttendee eventAttendee, CancellationToken cancellationToken = default)
         {
-            return eventAttendeeRestService.RemoveAttendeeAsync(eventAttendee);
+            return eventAttendeeRestService.RemoveAttendeeAsync(eventAttendee, cancellationToken);
         }
 
-        public async Task<bool> IsUserAttendingAsync(Guid eventId, Guid userId)
+        public async Task<bool> IsUserAttendingAsync(Guid eventId, Guid userId, CancellationToken cancellationToken = default)
         {
-            var events = await mobEventRestService.GetEventsUserIsAttending(userId);
+            var events = await mobEventRestService.GetEventsUserIsAttending(userId, cancellationToken);
 
             return events != null && events.Any(e => e.Id == eventId);
         }
 
-        public Task<EventSummary> GetEventSummaryAsync(Guid eventId)
+        public Task<EventSummary> GetEventSummaryAsync(Guid eventId, CancellationToken cancellationToken = default)
         {
-            return eventSummaryRestService.GetEventSummaryAsync(eventId);
+            return eventSummaryRestService.GetEventSummaryAsync(eventId, cancellationToken);
         }
 
-        public Task<EventSummary> UpdateEventSummaryAsync(EventSummary eventSummary)
+        public Task<EventSummary> UpdateEventSummaryAsync(EventSummary eventSummary, CancellationToken cancellationToken = default)
         {
-            return eventSummaryRestService.UpdateEventSummaryAsync(eventSummary);
+            return eventSummaryRestService.UpdateEventSummaryAsync(eventSummary, cancellationToken);
         }
 
-        public Task<EventSummary> AddEventSummaryAsync(EventSummary eventSummary)
+        public Task<EventSummary> AddEventSummaryAsync(EventSummary eventSummary, CancellationToken cancellationToken = default)
         {
-            return eventSummaryRestService.AddEventSummaryAsync(eventSummary);
+            return eventSummaryRestService.AddEventSummaryAsync(eventSummary, cancellationToken);
         }
     }
 }
