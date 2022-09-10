@@ -126,7 +126,7 @@
                 using (var response = await authorizedHttpClient.PostAsync(EventsApi, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
-                    string returnContent = await response.Content.ReadAsStringAsync();
+                    string returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
                     return JsonConvert.DeserializeObject<MobEvent>(returnContent);
                 }
             }
