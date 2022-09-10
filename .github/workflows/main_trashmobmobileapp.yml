@@ -6,7 +6,7 @@ name: TrashMobMobile App - Test
 on:
   push:
     branches:
-      - Release
+      - main
   workflow_dispatch:
 
 env:

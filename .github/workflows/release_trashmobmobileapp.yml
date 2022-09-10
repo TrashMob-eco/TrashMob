@@ -6,7 +6,7 @@ name: TrashMobMobileApp - Prod
 on:
   push:
     branches:
-      - main
+      - Release
   workflow_dispatch:
 
 env:
