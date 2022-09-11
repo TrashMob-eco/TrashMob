@@ -53,7 +53,6 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
-    const [isLocationDataLoaded, setIsLocationDataLoaded] = React.useState<boolean>(false);
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
     React.useEffect(() => {
@@ -314,7 +313,6 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     }
 
     function addLocation() {
-        setIsLocationDataLoaded(true);
         setIsEditOrAdd(true);
     }
 
@@ -351,7 +349,6 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     setSecondaryPhone(data.secondaryPhone);
                     setIsPartnerLocationActive(data.isActive);
                     setNotes(data.notes);
-                    setIsLocationDataLoaded(true);
                     setIsEditOrAdd(true);
                 });
         });
@@ -492,14 +489,6 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                         validateForm();
                     })
             })
-    }
-
-    function handleAttendanceChanged() {
-        // Do nothing
-    }
-
-    function handleDetailsSelected(e: any) {
-        // Do nothing
     }
 
     function renderEditLocation() {
