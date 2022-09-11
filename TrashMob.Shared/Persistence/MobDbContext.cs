@@ -18,7 +18,7 @@
 
         public virtual DbSet<Community> Communities { get; set; }
 
-        public virtual DbSet<Community> CommunityRequests { get; set; }
+        public virtual DbSet<CommunityRequest> CommunityRequests { get; set; }
 
         public virtual DbSet<CommunityAttachment> CommunityAttachments { get; set; }
 

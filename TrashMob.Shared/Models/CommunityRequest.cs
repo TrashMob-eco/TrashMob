@@ -34,6 +34,8 @@ namespace TrashMob.Shared.Models
 
         public string ContactName { get; set; }
 
+        public string Website { get; set; }
+
         public Guid CreatedByUserId { get; set; }
 
         public DateTimeOffset? CreatedDate { get; set; }
