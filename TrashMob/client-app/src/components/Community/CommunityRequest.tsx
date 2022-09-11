@@ -1,7 +1,6 @@
 import * as React from 'react'
 import CommunityRequestData from '../Models/CommunityRequestData';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { loadCaptchaEnginge, LoadCanvasTemplateNoReload, validateCaptcha } from 'react-simple-captcha';
 import { getDefaultHeaders } from '../../store/AuthStore';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
@@ -9,12 +8,12 @@ import * as ToolTips from "../../store/ToolTips";
 import { Button, ButtonGroup, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import * as Constants from '../Models/Constants';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import MapControllerPointCollection from '../MapControllerPointCollection';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
 import UserData from '../Models/UserData';
 import AddressData from '../Models/AddressData';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
+import MapControllerSinglePointNoEvents from '../MapControllerSinglePointNoEvent';
 
 interface CommunityRequestProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -33,7 +32,6 @@ export const CommunityRequest: React.FC<CommunityRequestProps> = (props) => {
     const [show, setShow] = React.useState<boolean>(false);
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
-    const [isLocationDataLoaded, setIsLocationDataLoaded] = React.useState<boolean>(false);
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [latitude, setLatitude] = React.useState<number>(0);
@@ -75,40 +73,30 @@ export const CommunityRequest: React.FC<CommunityRequestProps> = (props) => {
         setIsSaveEnabled(false);
         event.preventDefault();
 
-        const form = new FormData(event.target);
+        var communityRequestData = new CommunityRequestData();
+        communityRequestData.contactName = contactName ?? "";
+        communityRequestData.email = email ?? "";
+        communityRequestData.phone = phone ?? "";
+        communityRequestData.website = website ?? "";
+        communityRequestData.city = city ?? "";
+        communityRequestData.region = region ?? "";
+        communityRequestData.country = country ?? "";
+        communityRequestData.latitude = latitude ?? "";
+        communityRequestData.longitude = longitude ?? "";
 
-        var user_captcha_value = form.get("user_captcha_input")?.toString() ?? "";
+        var data = JSON.stringify(communityRequestData);
 
-        if (validateCaptcha(user_captcha_value) === true) {
+        const headers = getDefaultHeaders('POST');
 
-            var communityRequestData = new CommunityRequestData();
-            communityRequestData.contactName = contactName ?? "";
-            communityRequestData.email = email ?? "";
-            communityRequestData.phone = phone ?? "";
-            communityRequestData.website = website ?? "";
-            communityRequestData.city = city ?? "";
-            communityRequestData.region = region ?? "";
-            communityRequestData.country = country ?? "";
-            communityRequestData.latitude = latitude ?? "";
-            communityRequestData.longitude = longitude ?? "";
+        fetch('/api/CommunityRequest', {
+            method: 'POST',
+            body: data,
+            headers: headers,
+        }).then(() => {
+            setTimeout(() => props.history.push("/"), 2000);
+        });
 
-            var data = JSON.stringify(communityRequestData);
-
-            const headers = getDefaultHeaders('POST');
-
-            fetch('/api/CommunityRequest', {
-                method: 'POST',
-                body: data,
-                headers: headers,
-            }).then(() => {
-                setTimeout(() => props.history.push("/"), 2000);
-            });
-
-            handleShow();
-        }
-        else {
-            alert('Captcha Does Not Match');
-        }
+        handleShow();
     }
 
     function validateForm() {
@@ -246,11 +234,6 @@ export const CommunityRequest: React.FC<CommunityRequestProps> = (props) => {
         validateForm();
     }
 
-    React.useEffect(() => {
-        loadCaptchaEnginge(6, 'white', 'black');
-    }, []);
-
-
     function handlePhoneChanged(val: string) {
         var pattern = new RegExp(Constants.RegexPhoneNumber);
 
@@ -303,14 +286,6 @@ export const CommunityRequest: React.FC<CommunityRequestProps> = (props) => {
 
     function renderLongitudeToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.CommunityRequestLongitude}</Tooltip>
-    }
-
-    function handleAttendanceChanged() {
-        // Do nothing
-    }
-
-    function handleDetailsSelected(e: any) {
-        // Do nothing
     }
 
     function handleLocationChange(point: data.Position) {
@@ -452,17 +427,10 @@ export const CommunityRequest: React.FC<CommunityRequestProps> = (props) => {
                             <Form.Row>
                                 <AzureMapsProvider>
                                     <>
-                                        <MapControllerPointCollection center={center} multipleEvents={[]} isEventDataLoaded={isLocationDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName="Your City" latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} myAttendanceList={[]} isUserEventDataLoaded={true} onAttendanceChanged={handleAttendanceChanged} onDetailsSelected={handleDetailsSelected} history={props.history} location={props.location} match={props.match} />
+                                        <MapControllerSinglePointNoEvents center={center} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isDraggable={true} />
                                     </>
                                 </AzureMapsProvider>
                             </Form.Row>
-                            <Form.Group>
-                                <LoadCanvasTemplateNoReload className="border" />
-                            </Form.Group>
-                            <Form.Group className="required">
-                                <Form.Label className="control-label">CAPTCHA Value:</Form.Label>
-                                <Form.Control type="text" required name="user_captcha_input" placeholder="Enter Captcha" />
-                            </Form.Group >
                             <Form.Group className="form-group d-flex justify-content-end">
                                 <ButtonGroup className="justify-content-between">
                                     <Button id="contactFormCancelBtn" className="action mr-2" onClick={(e) => handleCancel(e)}>Cancel</Button>

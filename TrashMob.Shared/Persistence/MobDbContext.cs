@@ -279,7 +279,9 @@
 
             modelBuilder.Entity<CommunityRequest>(entity =>
             {
-                entity.Property(e => e.Name).HasMaxLength(128);
+                entity.Property(e => e.ContactName).HasMaxLength(128);
+
+                entity.Property(e => e.Website).HasMaxLength(1024);
 
                 entity.Property(e => e.Email).HasMaxLength(64);
 

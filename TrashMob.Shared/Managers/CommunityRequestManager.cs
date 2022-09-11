@@ -28,7 +28,7 @@ namespace TrashMob.Shared.Managers
 
             // TODO: Add more fields for this
             // TODO: Add email to community
-            message = message.Replace("{UserName}", communityRequest.Name);
+            message = message.Replace("{UserName}", communityRequest.ContactName);
             message = message.Replace("{UserEmail}", communityRequest.Email);
 
             var recipients = new List<EmailAddress>

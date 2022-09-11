@@ -12,8 +12,8 @@ import { Guid } from 'guid-typescript';
 import PartnerData from '../Models/PartnerData';
 import * as Constants from '../Models/Constants';
 import AddressData from '../Models/AddressData';
-import MapControllerPointCollection from '../MapControllerPointCollection';
 import { RouteComponentProps } from 'react-router-dom';
+import MapControllerSinglePointNoEvent from '../MapControllerSinglePointNoEvent';
 
 export interface PartnerLocationsDataProps extends RouteComponentProps {
     partner: PartnerData;
@@ -659,7 +659,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     <Form.Row>
                         <AzureMapsProvider>
                             <>
-                                <MapControllerPointCollection center={center} multipleEvents={[]} isEventDataLoaded={isLocationDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={locationName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} myAttendanceList={[]} isUserEventDataLoaded={true} onAttendanceChanged={handleAttendanceChanged} onDetailsSelected={handleDetailsSelected} history={props.history} location={props.location} match={props.match} />
+                                <MapControllerSinglePointNoEvent center={center} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isDraggable={true} />
                             </>
                         </AzureMapsProvider>
                     </Form.Row>

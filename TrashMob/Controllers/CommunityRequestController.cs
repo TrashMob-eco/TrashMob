@@ -2,20 +2,15 @@
 {
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Mvc;
-    using System.Collections.Generic;
-    using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Shared;
-    using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    [Route("api/commuinityrequest")]
+    [Route("api/communityrequest")]
     public class CommunityRequestController : BaseController
     {
         private readonly ICommunityRequestManager communityRequestManager;
-        private readonly IEmailManager emailManager;
 
         public CommunityRequestController(ICommunityRequestManager communityRequestManager, 
                                           TelemetryClient telemetryClient)
