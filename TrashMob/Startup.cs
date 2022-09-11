@@ -51,6 +51,8 @@ namespace TrashMob
             });
 
             services.AddDbContext<MobDbContext>();
+            services.AddScoped<ICommunityRequestRepository, CommunityRequestRepository>();
+            services.AddScoped<ICommunityRequestManager, CommunityRequestManager>();
             services.AddScoped<IContactRequestRepository, ContactRequestRepository>();
             services.AddScoped<IDocusignManager, DocusignManager>();
             services.AddScoped<IEmailManager, EmailManager>();

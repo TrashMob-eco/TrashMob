@@ -43,6 +43,7 @@ import EventData from './components/Models/EventData';
 import './custom.css';
 import Waivers from './components/Waivers/Waivers';
 import WaiversReturn from './components/Waivers/WaiversReturn';
+import CommunityRequest from './components/Community/CommunityRequest';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }
@@ -282,6 +283,14 @@ export const App: FC = () => {
                                     errorComponent={ErrorComponent}
                                     loadingComponent={LoadingComponent}>
                                     <MyDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                </MsalAuthenticationTemplate >
+                            </Route>
+                            <Route exact path="/communityrequest">
+                                <MsalAuthenticationTemplate
+                                    interactionType={InteractionType.Redirect}
+                                    errorComponent={ErrorComponent}
+                                    loadingComponent={LoadingComponent}>
+                                    <CommunityRequest currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
                             </Route>
                             <Route exact path="/becomeapartner">

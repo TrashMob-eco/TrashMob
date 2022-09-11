@@ -18,7 +18,7 @@
 
         public virtual DbSet<Community> Communities { get; set; }
 
-        public virtual DbSet<Community> CommunityRequests { get; set; }
+        public virtual DbSet<CommunityRequest> CommunityRequests { get; set; }
 
         public virtual DbSet<CommunityAttachment> CommunityAttachments { get; set; }
 
@@ -279,7 +279,9 @@
 
             modelBuilder.Entity<CommunityRequest>(entity =>
             {
-                entity.Property(e => e.Name).HasMaxLength(128);
+                entity.Property(e => e.ContactName).HasMaxLength(128);
+
+                entity.Property(e => e.Website).HasMaxLength(1024);
 
                 entity.Property(e => e.Email).HasMaxLength(64);
 

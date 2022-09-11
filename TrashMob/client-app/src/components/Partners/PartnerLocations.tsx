@@ -12,8 +12,8 @@ import { Guid } from 'guid-typescript';
 import PartnerData from '../Models/PartnerData';
 import * as Constants from '../Models/Constants';
 import AddressData from '../Models/AddressData';
-import MapControllerPointCollection from '../MapControllerPointCollection';
 import { RouteComponentProps } from 'react-router-dom';
+import MapControllerSinglePointNoEvent from '../MapControllerSinglePointNoEvent';
 
 export interface PartnerLocationsDataProps extends RouteComponentProps {
     partner: PartnerData;
@@ -53,7 +53,6 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
-    const [isLocationDataLoaded, setIsLocationDataLoaded] = React.useState<boolean>(false);
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
     React.useEffect(() => {
@@ -314,7 +313,6 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     }
 
     function addLocation() {
-        setIsLocationDataLoaded(true);
         setIsEditOrAdd(true);
     }
 
@@ -351,7 +349,6 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     setSecondaryPhone(data.secondaryPhone);
                     setIsPartnerLocationActive(data.isActive);
                     setNotes(data.notes);
-                    setIsLocationDataLoaded(true);
                     setIsEditOrAdd(true);
                 });
         });
@@ -492,14 +489,6 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                         validateForm();
                     })
             })
-    }
-
-    function handleAttendanceChanged() {
-        // Do nothing
-    }
-
-    function handleDetailsSelected(e: any) {
-        // Do nothing
     }
 
     function renderEditLocation() {
@@ -659,7 +648,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     <Form.Row>
                         <AzureMapsProvider>
                             <>
-                                <MapControllerPointCollection center={center} multipleEvents={[]} isEventDataLoaded={isLocationDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={locationName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} myAttendanceList={[]} isUserEventDataLoaded={true} onAttendanceChanged={handleAttendanceChanged} onDetailsSelected={handleDetailsSelected} history={props.history} location={props.location} match={props.match} />
+                                <MapControllerSinglePointNoEvent center={center} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isDraggable={true} />
                             </>
                         </AzureMapsProvider>
                     </Form.Row>
