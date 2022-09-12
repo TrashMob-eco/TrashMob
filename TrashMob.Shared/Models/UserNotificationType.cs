@@ -4,23 +4,13 @@ namespace TrashMob.Shared.Models
 {
     using System.Collections.Generic;
 
-    public partial class UserNotificationType
+    public partial class UserNotificationType : LookupModel
     {
         public UserNotificationType()
         {
             UserNotifications = new HashSet<UserNotification>();
             NonEventUserNotifications = new HashSet<NonEventUserNotification>();
         }
-
-        public int Id { get; set; }
-        
-        public string Name { get; set; }
-        
-        public string Description { get; set; }
-        
-        public int? DisplayOrder { get; set; }
-        
-        public bool? IsActive { get; set; }
 
         public virtual ICollection<UserNotification> UserNotifications { get; set; }
 
