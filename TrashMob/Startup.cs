@@ -16,6 +16,7 @@ namespace TrashMob
     using System;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers;
+    using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
     
     public class Startup
@@ -51,10 +52,20 @@ namespace TrashMob
             });
 
             services.AddDbContext<MobDbContext>();
-            services.AddScoped<ICommunityRequestRepository, CommunityRequestRepository>();
-            services.AddScoped<ICommunityRequestManager, CommunityRequestManager>();
-            services.AddScoped<IContactRequestRepository, ContactRequestRepository>();
+
+            // Non-patterned
             services.AddScoped<IDocusignManager, DocusignManager>();
+
+            // Migrated Repositories
+            services.AddScoped<IRepository<Community>, Repository<Community>>();
+            services.AddScoped<IRepository<CommunityRequest>, Repository<CommunityRequest>>();
+
+            // Migrated Managers
+            services.AddScoped<IExtendedManager<Community>, CommunityManager>();
+            services.AddScoped<IExtendedManager<CommunityRequest>, CommunityRequestManager>();
+
+            // Not Migrated Repositories and Managers
+            services.AddScoped<IContactRequestRepository, ContactRequestRepository>();
             services.AddScoped<IEmailManager, EmailManager>();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();

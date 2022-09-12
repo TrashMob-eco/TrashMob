@@ -8,26 +8,24 @@ namespace TrashMob.Shared.Managers
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    public class CommunityRequestManager : ExtendedManager<CommunityRequest>, IExtendedManager<CommunityRequest>
+    public class CommunityManager : ExtendedManager<Community>, IExtendedManager<Community>
     {
         private readonly IEmailManager emailManager;
 
-        public CommunityRequestManager(IRepository<CommunityRequest> repository, IEmailManager emailManager) : base(repository)
+        public CommunityManager(IRepository<Community> repository, IEmailManager emailManager) : base(repository)
         {
             this.emailManager = emailManager;
         }      
 
-        public override async Task<CommunityRequest> Add(CommunityRequest communityRequest)
+        public override async Task<Community> Add(Community community)
         {
-            var outputCommunityRequest = await Repository.Add(communityRequest);
+            var outputCommunity = await Repository.Add(community);
 
-            var message = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.CommunityRequestReceived.ToString());
-            var subject = "A Community Request has been received on TrashMob.eco";
+            var message = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.CommunityCreated.ToString());
+            var subject = "A Community has been created on TrashMob.eco";
 
             // TODO: Add more fields for this
             // TODO: Add email to community
-            message = message.Replace("{UserName}", communityRequest.ContactName);
-            message = message.Replace("{UserEmail}", communityRequest.Email);
 
             var recipients = new List<EmailAddress>
             {
@@ -43,7 +41,7 @@ namespace TrashMob.Shared.Managers
 
             await emailManager.SendTemplatedEmail(subject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
 
-            return outputCommunityRequest;
+            return outputCommunity;
         }
     }
 }

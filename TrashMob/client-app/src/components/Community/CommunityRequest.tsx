@@ -1,7 +1,7 @@
 import * as React from 'react'
 import CommunityRequestData from '../Models/CommunityRequestData';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { getDefaultHeaders } from '../../store/AuthStore';
+import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
@@ -86,17 +86,28 @@ export const CommunityRequest: React.FC<CommunityRequestProps> = (props) => {
 
         var data = JSON.stringify(communityRequestData);
 
-        const headers = getDefaultHeaders('POST');
+        const account = msalClient.getAllAccounts()[0];
 
-        fetch('/api/CommunityRequest', {
-            method: 'POST',
-            body: data,
-            headers: headers,
-        }).then(() => {
-            setTimeout(() => props.history.push("/"), 2000);
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            const headers = getDefaultHeaders('POST');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+            fetch('/api/CommunityRequest', {
+                method: 'POST',
+                body: data,
+                headers: headers,
+            }).then(() => {
+                setTimeout(() => props.history.push("/"), 2000);
+            });
+
+            handleShow();
         });
-
-        handleShow();
     }
 
     function validateForm() {
