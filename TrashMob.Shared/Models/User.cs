@@ -5,7 +5,7 @@ namespace TrashMob.Shared.Models
     using System;
     using System.Collections.Generic;
 
-    public partial class User
+    public partial class User : BaseModel
     {
         public User()
         {
@@ -15,8 +15,6 @@ namespace TrashMob.Shared.Models
             NonEventUserNotifications = new HashSet<NonEventUserNotification>();
             EventMedias = new HashSet<EventMedia>();
         }
-
-        public Guid Id { get; set; }
 
         public string NameIdentifier { get; set; }
 

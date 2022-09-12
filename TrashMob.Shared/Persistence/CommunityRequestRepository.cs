@@ -4,13 +4,10 @@
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
-    public class CommunityRequestRepository : ICommunityRequestRepository
+    public class CommunityRequestRepository : Repository<CommunityRequest>, IRepository<CommunityRequest>
     {
-        private readonly MobDbContext mobDbContext;
-
-        public CommunityRequestRepository(MobDbContext mobDbContext)
+        public CommunityRequestRepository(MobDbContext mobDbContext) : base(mobDbContext)
         {
-            this.mobDbContext = mobDbContext;
         }
 
         public async Task<CommunityRequest> AddCommunityRequest(CommunityRequest communityRequest)

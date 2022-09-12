@@ -1,28 +1,41 @@
 ﻿namespace TrashMob.Controllers
 {
     using Microsoft.ApplicationInsights;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using System.Security.Claims;
     using System.Threading.Tasks;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
+    [Authorize]
     [Route("api/communityrequest")]
     public class CommunityRequestController : BaseController
     {
-        private readonly ICommunityRequestManager communityRequestManager;
+        private readonly IExtendedManager<CommunityRequest> manager;
+        private readonly IUserRepository userRepository;
 
-        public CommunityRequestController(ICommunityRequestManager communityRequestManager, 
+        public CommunityRequestController(IExtendedManager<CommunityRequest> manager, 
+                                          IUserRepository userRepository,
                                           TelemetryClient telemetryClient)
             : base(telemetryClient)
         {
-            this.communityRequestManager = communityRequestManager;
+            this.manager = manager;
+            this.userRepository = userRepository;
         }
 
         [HttpPost]
         public async Task<IActionResult> SaveCommunityRequest(CommunityRequest communityRequest)
         {
-            await communityRequestManager.AddCommunityRequest(communityRequest).ConfigureAwait(false);
+            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+
+            if (currentUser == null)
+            {
+                return Forbid();
+            }
+
+            await manager.Add(communityRequest, currentUser.Id).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(SaveCommunityRequest));
 
             return Ok();

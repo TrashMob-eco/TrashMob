@@ -122,9 +122,6 @@
                     .IsRequired()
                     .HasMaxLength(256);
 
-                entity.Property(e => e.StreetAddress)
-                    .HasMaxLength(256);
-
                 entity.Property(e => e.PostalCode)
                     .HasMaxLength(25);
 

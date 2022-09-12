@@ -2,15 +2,11 @@
 
 namespace TrashMob.Shared.Models
 {
-    using System;
-
-    public partial class CommunityRequest
+    public partial class CommunityRequest : ExtendedBaseModel
     {
         public CommunityRequest()
         {
         }
-
-        public Guid Id { get; set; }
 
         public string City { get; set; }
 
@@ -31,13 +27,5 @@ namespace TrashMob.Shared.Models
         public string ContactName { get; set; }
 
         public string Website { get; set; }
-
-        public Guid CreatedByUserId { get; set; }
-
-        public DateTimeOffset? CreatedDate { get; set; }
-
-        public Guid LastUpdatedByUserId { get; set; }
-
-        public virtual User CreatedByUser { get; set; }
     }
 }
