@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrashMob.Shared.Persistence;
 
@@ -11,9 +12,10 @@ using TrashMob.Shared.Persistence;
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    partial class MobDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220912051529_repopattern1")]
+    partial class repopattern1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -85,8 +87,8 @@ namespace TrashMob.Migrations
 
             modelBuilder.Entity("TrashMob.Shared.Models.CommunityAttachment", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<string>("AttachmentUrl")
                         .IsRequired()
@@ -124,8 +126,8 @@ namespace TrashMob.Migrations
 
             modelBuilder.Entity("TrashMob.Shared.Models.CommunityContact", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<int>("CommunityContactTypeId")
                         .HasColumnType("int");
@@ -241,8 +243,8 @@ namespace TrashMob.Migrations
 
             modelBuilder.Entity("TrashMob.Shared.Models.CommunityNote", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("CommunityId")
                         .HasColumnType("uniqueidentifier");
@@ -390,9 +392,6 @@ namespace TrashMob.Migrations
 
                     b.Property<DateTimeOffset?>("CreatedDate")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("LastUpdatedByUserId")
                         .HasColumnType("uniqueidentifier");
@@ -657,9 +656,6 @@ namespace TrashMob.Migrations
                     b.Property<Guid>("EventId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("LastUpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTimeOffset?>("LastUpdatedDate")
                         .HasColumnType("datetimeoffset");
 
@@ -678,8 +674,6 @@ namespace TrashMob.Migrations
                     b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("EventId");
-
-                    b.HasIndex("LastUpdatedByUserId");
 
                     b.HasIndex("MediaTypeId");
 
@@ -1973,12 +1967,6 @@ namespace TrashMob.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_EventMedia_Event_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastUpdatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("TrashMob.Shared.Models.MediaType", "MediaType")
                         .WithMany("EventMedias")
                         .HasForeignKey("MediaTypeId")
@@ -1994,8 +1982,6 @@ namespace TrashMob.Migrations
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("Event");
-
-                    b.Navigation("LastUpdatedByUser");
 
                     b.Navigation("MediaType");
 
