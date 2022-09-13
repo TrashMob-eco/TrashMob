@@ -4,10 +4,8 @@ namespace TrashMob.Shared.Models
 {
     using System;
 
-    public partial class EventHistory
+    public partial class EventHistory : BaseModel
     {
-        public Guid Id { get; set; }
-
         public Guid EventId { get; set; }
 
         public string Name { get; set; }

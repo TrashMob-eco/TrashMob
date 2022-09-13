@@ -3,12 +3,9 @@
 namespace TrashMob.Shared.Models
 {
     using System;
-    using System.Collections.Generic;
 
-    public partial class CommunityContact
+    public partial class CommunityContact : ExtendedBaseModel
     {
-        public int Id { get; set; }
-
         public Guid CommunityId { get; set; }
 
         public int CommunityContactTypeId { get; set; }
@@ -23,20 +20,8 @@ namespace TrashMob.Shared.Models
 
         public bool? IsActive { get; set; }
 
-        public Guid CreatedByUserId { get; set; }
-
-        public DateTimeOffset? CreatedDate { get; set; }
-
-        public Guid LastUpdatedByUserId { get; set; }
-
-        public DateTimeOffset? LastUpdatedDate { get; set; }
-
         public virtual Community Community { get; set; }
 
         public virtual CommunityContactType CommunityContactType { get; set; }
-
-        public virtual User CreatedByUser { get; set; }
-
-        public virtual User LastUpdatedByUser { get; set; }
     }
 }

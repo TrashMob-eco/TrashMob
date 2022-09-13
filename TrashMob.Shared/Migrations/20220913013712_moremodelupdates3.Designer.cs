@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrashMob.Shared.Persistence;
 
@@ -11,9 +12,10 @@ using TrashMob.Shared.Persistence;
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    partial class MobDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220913013712_moremodelupdates3")]
+    partial class moremodelupdates3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,7 +85,7 @@ namespace TrashMob.Migrations
                     b.ToTable("Communities");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityAttachment", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.CommunityAttachmen", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -119,10 +121,10 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("LastUpdatedByUserId");
 
-                    b.ToTable("CommunityAttachments");
+                    b.ToTable("CommunityAttachmens");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityContact", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.CommunityContac", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -175,7 +177,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("LastUpdatedByUserId");
 
-                    b.ToTable("CommunityContacts");
+                    b.ToTable("CommunityContacs");
                 });
 
             modelBuilder.Entity("TrashMob.Shared.Models.CommunityContactType", b =>
@@ -239,7 +241,7 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityNote", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.CommunityNot", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -271,7 +273,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("LastUpdatedByUserId");
 
-                    b.ToTable("CommunityNotes");
+                    b.ToTable("CommunityNots");
                 });
 
             modelBuilder.Entity("TrashMob.Shared.Models.CommunityRequest", b =>
@@ -1761,7 +1763,7 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityAttachment", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.CommunityAttachmen", b =>
                 {
                     b.HasOne("TrashMob.Shared.Models.Community", "Community")
                         .WithMany()
@@ -1788,7 +1790,7 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityContact", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.CommunityContac", b =>
                 {
                     b.HasOne("TrashMob.Shared.Models.CommunityContactType", "CommunityContactType")
                         .WithMany("CommunityContacts")
@@ -1823,7 +1825,7 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityNote", b =>
+            modelBuilder.Entity("TrashMob.Shared.Models.CommunityNot", b =>
                 {
                     b.HasOne("TrashMob.Shared.Models.Community", "Community")
                         .WithMany()

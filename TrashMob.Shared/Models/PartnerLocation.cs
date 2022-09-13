@@ -4,12 +4,11 @@ namespace TrashMob.Shared.Models
 {
     using System;
 
-    public partial class PartnerLocation
+    public partial class PartnerLocation : ExtendedBaseModel
     {
         public PartnerLocation()
         {
         }
-        public Guid Id { get; set; }
 
         public Guid PartnerId { get; set; }
 
@@ -40,18 +39,6 @@ namespace TrashMob.Shared.Models
         public string Notes { get; set; }
 
         public bool IsActive { get; set; }
-
-        public Guid CreatedByUserId { get; set; }
-
-        public DateTimeOffset? CreatedDate { get; set; }
-
-        public Guid LastUpdatedByUserId { get; set; }
-
-        public DateTimeOffset? LastUpdatedDate { get; set; }
-
-        public virtual User CreatedByUser { get; set; }
-
-        public virtual User LastUpdatedByUser { get; set; }
 
         public virtual Partner Partner { get; set; }
     }

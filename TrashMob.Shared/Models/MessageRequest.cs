@@ -4,13 +4,11 @@ namespace TrashMob.Shared.Models
 {
     using System;
 
-    public partial class MessageRequest
+    public partial class MessageRequest : BaseModel
     {
         public MessageRequest()
         {
         }
-
-        public Guid Id { get; set; }
 
         public string Name { get; set; }
 

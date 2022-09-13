@@ -37,6 +37,5 @@ namespace TrashMob.Shared.Models
         public virtual Event Event { get; set; }
 
         public virtual EventPartnerStatus EventPartnerStatus { get; set; }
-
     }
 }

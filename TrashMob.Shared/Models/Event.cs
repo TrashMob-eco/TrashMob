@@ -5,15 +5,13 @@ namespace TrashMob.Shared.Models
     using System;
     using System.Collections.Generic;
 
-    public partial class Event
+    public partial class Event : ExtendedBaseModel
     {
         public Event()
         {
             UserNotifications = new HashSet<UserNotification>();
             EventMedias = new HashSet<EventMedia>();
         }
-
-        public Guid Id { get; set; }
 
         public string Name { get; set; }
 
@@ -47,23 +45,11 @@ namespace TrashMob.Shared.Models
 
         public bool IsEventPublic { get; set; }
 
-        public Guid CreatedByUserId { get; set; }
-
-        public DateTimeOffset? CreatedDate { get; set; }
-
-        public Guid LastUpdatedByUserId { get; set; }
-
-        public DateTimeOffset? LastUpdatedDate { get; set; }
-
         public string CancellationReason { get; set; }
 
         public virtual EventStatus EventStatus { get; set; }
 
         public virtual EventType EventType { get; set; }
-
-        public virtual User CreatedByUser { get; set; }
-
-        public virtual User LastUpdatedByUser { get; set; }
 
         public virtual ICollection<UserNotification> UserNotifications { get; set; }
 

@@ -4,10 +4,8 @@ namespace TrashMob.Shared.Models
 {
     using System;
 
-    public partial class UserNotification
+    public partial class UserNotification : BaseModel
     {
-        public Guid Id { get; set; }
-
         public Guid UserId { get; set; }
 
         public Guid EventId { get; set; }
