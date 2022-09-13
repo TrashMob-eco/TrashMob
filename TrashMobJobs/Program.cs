@@ -8,6 +8,8 @@ namespace TrashMobJobs
     using TrashMob.Shared.Engine;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Configuration;
+    using TrashMob.Shared.Models;
+    using TrashMob.Shared.Managers;
 
     public class Program
     {
@@ -22,7 +24,6 @@ namespace TrashMobJobs
                 .ConfigureServices(s =>
                     s.AddSingleton<IEmailSender, EmailSender>()
                      .AddDbContext<MobDbContext>()
-                     .AddSingleton<IContactRequestRepository, ContactRequestRepository>()
                      .AddSingleton<IEmailManager, EmailManager>()
                      .AddSingleton<IEventAttendeeRepository, EventAttendeeRepository>()
                      .AddSingleton<IEventRepository, EventRepository>()

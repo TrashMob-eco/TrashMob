@@ -59,13 +59,14 @@ namespace TrashMob
             // Migrated Repositories
             services.AddScoped<IRepository<Community>, Repository<Community>>();
             services.AddScoped<IRepository<CommunityRequest>, Repository<CommunityRequest>>();
+            services.AddScoped<IRepository<ContactRequest>, Repository<ContactRequest>>();
 
             // Migrated Managers
             services.AddScoped<IExtendedManager<Community>, CommunityManager>();
             services.AddScoped<IExtendedManager<CommunityRequest>, CommunityRequestManager>();
+            services.AddScoped<IManager<ContactRequest>, ContactRequestManager>();
 
             // Not Migrated Repositories and Managers
-            services.AddScoped<IContactRequestRepository, ContactRequestRepository>();
             services.AddScoped<IEmailManager, EmailManager>();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
