@@ -112,8 +112,20 @@ namespace TrashMob.Shared.Models
 
         public virtual ICollection<CommunityNote> CommunityNotesUpdated { get; set; }
 
+        public virtual ICollection<CommunityPartner> CommunityPartnersCreated { get; set; }
+
+        public virtual ICollection<CommunityPartner> CommunityPartnersUpdated { get; set; }
+
         public virtual ICollection<CommunityUser> CommunityUsersCreated { get; set; }
 
         public virtual ICollection<CommunityUser> CommunityUsersUpdated { get; set; }
+
+        public virtual ICollection<SocialMediaAccount> SocialMediaAccountsCreated { get; set; }
+
+        public virtual ICollection<SocialMediaAccount> SocialMediaAccountsUpdated { get; set; }
+
+        public virtual ICollection<CommunitySocialMediaAccount> CommunitySocialMediaAccountsCreated { get; set; }
+
+        public virtual ICollection<CommunitySocialMediaAccount> CommunitySocialMediaAccountsUpdated { get; set; }
     }
 }

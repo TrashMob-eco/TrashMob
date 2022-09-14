@@ -10,6 +10,8 @@ namespace TrashMob.Shared.Models
 
         public string Notes { get; set; }
 
+        public bool IsPublic { get; set; }
+
         public virtual Community Community { get; set; }
     }
 }

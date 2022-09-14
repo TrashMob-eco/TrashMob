@@ -57,14 +57,34 @@ namespace TrashMob
             services.AddScoped<IDocusignManager, DocusignManager>();
 
             // Migrated Repositories
+            services.AddScoped<IRepository<CommunityAttachment>, Repository<CommunityAttachment>>();
+            services.AddScoped<IRepository<CommunityContact>, Repository<CommunityContact>>();
+            services.AddScoped<ILookupRepository<CommunityContactType>, LookupRepository<CommunityContactType>>();
             services.AddScoped<IRepository<Community>, Repository<Community>>();
+            services.AddScoped<IRepository<CommunityNote>, Repository<CommunityNote>>();
+            services.AddScoped<IRepository<CommunityPartner>, Repository<CommunityPartner>>();
             services.AddScoped<IRepository<CommunityRequest>, Repository<CommunityRequest>>();
+            services.AddScoped<IRepository<CommunitySocialMediaAccount>, Repository<CommunitySocialMediaAccount>>();
+            services.AddScoped<ILookupRepository<CommunityStatus>, LookupRepository<CommunityStatus>>();
+            services.AddScoped<IRepository<CommunityUser>, Repository<CommunityUser>>();
             services.AddScoped<IRepository<ContactRequest>, Repository<ContactRequest>>();
+            services.AddScoped<IRepository<SocialMediaAccount>, Repository<SocialMediaAccount>>();
+            services.AddScoped<ILookupRepository<SocialMediaAccountType>, LookupRepository<SocialMediaAccountType>>();
 
             // Migrated Managers
+            services.AddScoped<IExtendedManager<CommunityAttachment>, CommunityAttachmentManager>();
+            services.AddScoped<IExtendedManager<CommunityContact>, CommunityContactManager>();
+            services.AddScoped<ILookupManager<CommunityContactType>, CommunityContactTypeManager>();
             services.AddScoped<IExtendedManager<Community>, CommunityManager>();
+            services.AddScoped<IExtendedManager<CommunityNote>, CommunityNoteManager>();
+            services.AddScoped<IExtendedManager<CommunityPartner>, CommunityPartnerManager>();
             services.AddScoped<IExtendedManager<CommunityRequest>, CommunityRequestManager>();
+            services.AddScoped<IExtendedManager<CommunitySocialMediaAccount>, CommunitySocialMediaAccountManager>();
+            services.AddScoped<ILookupManager<CommunityStatus>, CommunityStatusManager>();
+            services.AddScoped<IExtendedManager<CommunityUser>, CommunityUserManager>();
             services.AddScoped<IManager<ContactRequest>, ContactRequestManager>();
+            services.AddScoped<IExtendedManager<SocialMediaAccount>, SocialMediaAccountManager>();
+            services.AddScoped<ILookupManager<SocialMediaAccountType>, SocialMediaAccountTypeManager>();
 
             // Not Migrated Repositories and Managers
             services.AddScoped<IEmailManager, EmailManager>();

@@ -28,11 +28,15 @@
 
         public virtual DbSet<CommunityNote> CommunityNotes { get; set; }
 
+        public virtual DbSet<CommunityPartner> CommunityPartners { get; set; }
+
+        public virtual DbSet<CommunitySocialMediaAccount> CommunitySocialMediaAccounts { get; set; }
+
         public virtual DbSet<CommunityStatus> CommunityStatuses { get; set; }
 
-        public virtual DbSet<ContactRequest> ContactRequests { get; set; }
-
         public virtual DbSet<CommunityUser> CommunityUsers { get; set; }
+
+        public virtual DbSet<ContactRequest> ContactRequests { get; set; }
 
         public virtual DbSet<EventPartner> EventPartners { get; set; }
 
@@ -71,6 +75,10 @@
         public virtual DbSet<PartnerStatus> PartnerStatus { get; set; }
 
         public virtual DbSet<PartnerUser> PartnerUsers { get; set; }
+
+        public virtual DbSet<SocialMediaAccount> SocialMediaAccounts { get; set; }
+
+        public virtual DbSet<SocialMediaAccountType> SocialMediaAccountTypes { get; set; }
 
         public virtual DbSet<SiteMetric> SiteMetrics { get; set; }
 
@@ -274,6 +282,50 @@
                     .HasConstraintName("FK_CommunityNotes_ApplicationUser_LastUpdatedBy");
             });
 
+            modelBuilder.Entity<CommunityPartner>(entity =>
+            {
+                entity.HasKey(e => new { e.CommunityId, e.PartnerId, e.PartnerLocationId });
+
+                entity.Property(e => e.CommunityId)
+                    .IsRequired();
+
+                entity.Property(e => e.PartnerId)
+                    .IsRequired();
+
+                entity.Property(e => e.PartnerLocationId)
+                    .IsRequired();
+
+                entity.HasOne(d => d.Community)
+                    .WithMany()
+                    .HasForeignKey(d => d.CommunityId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CommunityPartners_Communities");
+
+                entity.HasOne(d => d.Partner)
+                    .WithMany()
+                    .HasForeignKey(d => d.PartnerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CommunityPartners_Partners");
+
+                entity.HasOne(d => d.PartnerLocation)
+                    .WithMany()
+                    .HasForeignKey(d => d.PartnerLocationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CommunityPartners_PartnerLocations");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.CommunityPartnersCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CommunityPartners_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.CommunityPartnersUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CommunityPartners_User_LastUpdatedBy");
+            });
+
             modelBuilder.Entity<CommunityRequest>(entity =>
             {
                 entity.Property(e => e.ContactName).HasMaxLength(128);
@@ -289,6 +341,38 @@
                     .HasForeignKey(d => d.CreatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_CommunityRequests_CreatedByUser_Id");
+            });
+
+            modelBuilder.Entity<CommunitySocialMediaAccount>(entity =>
+            {
+                entity.HasKey(e => new { e.CommunityId, e.SocialMediaAccountId, });
+
+                entity.Property(e => e.SocialMediaAccountId)
+                    .IsRequired();
+
+                entity.HasOne(d => d.Community)
+                    .WithMany()
+                    .HasForeignKey(d => d.CommunityId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CommunitySocialMediaAccount_Communities");
+
+                entity.HasOne(d => d.SocialMediaAccount)
+                    .WithMany()
+                    .HasForeignKey(d => d.SocialMediaAccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CommunitySocialMediaAccount_SocialMediaAccount");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.CommunitySocialMediaAccountsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CommunitySocialMediaAccount_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.CommunitySocialMediaAccountsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CommunitySocialMediaAccount_LastUpdatedByUser_Id");
             });
 
             modelBuilder.Entity<CommunityStatus>(entity =>
@@ -866,6 +950,40 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PartnerUsers_LastUpdatedByUser_Id");
+            });
+
+            modelBuilder.Entity<SocialMediaAccount>(entity =>
+            {
+                entity.Property(e => e.AccountIdentifier).HasMaxLength(128);
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.SocialMediaAccountsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SocialMediaAccount_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.SocialMediaAccountsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SocialMediaAccount_LastUpdatedByUser_Id");
+            });
+
+            modelBuilder.Entity<SocialMediaAccountType>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Description);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasData(
+                    new SocialMediaAccountType { Id = (int)SocialMediaAccountTypeEnum.Facebook, Name = "Facebook", Description = "Facebook", DisplayOrder = 1 },
+                    new SocialMediaAccountType { Id = (int)SocialMediaAccountTypeEnum.Twitter, Name = "Twitter", Description = "Twitter", DisplayOrder = 2 },
+                    new SocialMediaAccountType { Id = (int)SocialMediaAccountTypeEnum.Instagram, Name = "Instagram", Description = "Instagram", DisplayOrder = 3 },
+                    new SocialMediaAccountType { Id = (int)SocialMediaAccountTypeEnum.TikTok, Name = "TikTok", Description = "TikTok", DisplayOrder = 4 });
             });
 
             modelBuilder.Entity<SiteMetric>(entity =>

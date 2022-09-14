@@ -102,4 +102,12 @@
         Active = 1,
         Inactive = 2,
     }
+
+    public enum SocialMediaAccountTypeEnum
+    {
+        Facebook = 1,
+        Twitter = 2,
+        Instagram = 3,
+        TikTok = 4,
+    }
 }
