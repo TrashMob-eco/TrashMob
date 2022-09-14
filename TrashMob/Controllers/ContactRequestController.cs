@@ -19,11 +19,11 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveContactRequest(ContactRequest contactRequest)
+        public async Task<IActionResult> AddContactRequest(ContactRequest contactRequest)
         {
             await contactRequestManager.Add(contactRequest).ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent(nameof(SaveContactRequest));
+            TelemetryClient.TrackEvent(nameof(AddContactRequest));
 
             return Ok();
         }
