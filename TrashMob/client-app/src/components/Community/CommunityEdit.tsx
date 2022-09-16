@@ -19,10 +19,10 @@ export interface CommunityEditDataProps {
 
 export const CommunityEdit: React.FC<CommunityEditDataProps> = (props) => {
 
-    const [name, setName] = React.useState<string>(props.community.name);
-    const [primaryEmail, setPrimaryEmail] = React.useState<string>(props.community.primaryEmail);
-    const [secondaryEmail, setSecondaryEmail] = React.useState<string>(props.community.secondaryEmail);
-    const [primaryPhone, setPrimaryPhone] = React.useState<string>(props.community.primaryPhone);
+    const [city, setCity] = React.useState<string>(props.community.city);
+    const [region, setRegion] = React.useState<string>(props.community.region);
+    const [country, setCountry] = React.useState<string>(props.community.country);
+    const [postalCode, setPostalCode] = React.useState<string>(props.community.postalCode);
     const [secondaryPhone, setSecondaryPhone] = React.useState<string>(props.community.secondaryPhone);
     const [communityStatusId, setCommunityStatusId] = React.useState<number>(props.community.communityStatusId);
     const [notes, setNotes] = React.useState<string>(props.community.notes);

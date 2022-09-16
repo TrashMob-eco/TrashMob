@@ -111,10 +111,6 @@
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(256);
-
                 entity.Property(e => e.City)
                     .HasMaxLength(256);
 
@@ -197,7 +193,7 @@
                 entity.Property(e => e.Email)
                     .HasMaxLength(64);
 
-                entity.Property(e => e.PhoneNumber)
+                entity.Property(e => e.Phone)
                    .HasMaxLength(30);
 
                 entity.Property(e => e.Notes)
