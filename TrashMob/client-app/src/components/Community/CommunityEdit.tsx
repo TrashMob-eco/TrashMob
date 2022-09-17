@@ -3,9 +3,15 @@ import UserData from '../Models/UserData';
 import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import CommunityData from '../Models/CommunityData';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
-import * as Constants from '../Models/Constants';
 import * as ToolTips from "../../store/ToolTips";
 import CommunityStatusData from '../Models/CommunityStatusData';
+import AddressData from '../Models/AddressData';
+import { getKey } from '../../store/MapStore';
+import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
+import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
+import MapControllerSinglePointNoEvent from '../MapControllerSinglePointNoEvent';
+import { data } from 'azure-maps-control';
+import * as MapStore from '../../store/MapStore';
 
 export interface CommunityEditDataProps {
     community: CommunityData;
@@ -19,34 +25,41 @@ export interface CommunityEditDataProps {
 
 export const CommunityEdit: React.FC<CommunityEditDataProps> = (props) => {
 
+    const [communityId, setCommunityId] = React.useState<string>(props.community.id);
     const [city, setCity] = React.useState<string>(props.community.city);
     const [region, setRegion] = React.useState<string>(props.community.region);
     const [country, setCountry] = React.useState<string>(props.community.country);
     const [postalCode, setPostalCode] = React.useState<string>(props.community.postalCode);
-    const [secondaryPhone, setSecondaryPhone] = React.useState<string>(props.community.secondaryPhone);
     const [communityStatusId, setCommunityStatusId] = React.useState<number>(props.community.communityStatusId);
-    const [notes, setNotes] = React.useState<string>(props.community.notes);
-    const [nameErrors, setNameErrors] = React.useState<string>("");
-    const [primaryEmailErrors, setPrimaryEmailErrors] = React.useState<string>("");
-    const [secondaryEmailErrors, setSecondaryEmailErrors] = React.useState<string>("");
-    const [primaryPhoneErrors, setPrimaryPhoneErrors] = React.useState<string>("");
-    const [secondaryPhoneErrors, setSecondaryPhoneErrors] = React.useState<string>("");
-    const [notesErrors, setNotesErrors] = React.useState<string>("");
+    const [latitude, setLatitude] = React.useState<number>(0);
+    const [longitude, setLongitude] = React.useState<number>(0);
+    const [latitudeErrors, setLatitudeErrors] = React.useState<string>("");
+    const [longitudeErrors, setLongitudeErrors] = React.useState<string>("");
+    const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
+    const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
+    const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
+    React.useEffect(() => {
+        MapStore.getOption().then(opts => {
+            setMapOptions(opts);
+            setIsMapKeyLoaded(true);
+        })
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(position => {
+                var point = new data.Position(position.coords.longitude, position.coords.latitude);
+                setCenter(point)
+            });
+        } else {
+            console.log("Not Available");
+        }
+    }, [])
+
     function validateForm() {
-        if (name === "" ||
-            nameErrors !== "" ||
-            notes === "" ||
-            notesErrors !== "" ||
-            primaryEmail === "" ||
-            primaryEmailErrors !== "" ||
-            secondaryEmail === "" ||
-            secondaryEmailErrors !== "" ||
-            primaryPhone === "" ||
-            primaryPhoneErrors !== "" ||
-            secondaryPhone === "" ||
-            secondaryPhoneErrors !== "") {
+        if (city === "" ||
+            region === "" ||
+            country === "") {
             setIsSaveEnabled(false);
         }
         else {
@@ -66,12 +79,12 @@ export const CommunityEdit: React.FC<CommunityEditDataProps> = (props) => {
 
         var communityData = new CommunityData();
         communityData.id = props.community.id;
-        communityData.name = name ?? "";
-        communityData.primaryEmail = primaryEmail ?? "";
-        communityData.secondaryEmail = secondaryEmail ?? "";
-        communityData.primaryPhone = primaryPhone ?? "";
-        communityData.secondaryPhone = secondaryPhone ?? "";
-        communityData.notes = notes ?? "";
+        communityData.city = city ?? "";
+        communityData.region = region ?? "";
+        communityData.country = country ?? "";
+        communityData.postalCode = postalCode ?? "";
+        communityData.latitude = latitude ?? "";
+        communityData.longitude = longitude ?? "";
         communityData.communityStatusId = communityStatusId ?? 2;
         communityData.createdByUserId = props.community.createdByUserId ?? props.currentUser.id;
         communityData.createdDate = props.community.createdDate;
@@ -90,7 +103,7 @@ export const CommunityEdit: React.FC<CommunityEditDataProps> = (props) => {
             const headers = getDefaultHeaders('PUT');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/Communitys', {
+            fetch('/api/Communities', {
                 method: 'PUT',
                 body: data,
                 headers: headers,
@@ -107,112 +120,97 @@ export const CommunityEdit: React.FC<CommunityEditDataProps> = (props) => {
         props.onEditCanceled();
     }
 
-    function handleNameChanged(val: string) {
-        if (name === "") {
-            setNameErrors("Name cannot be blank.");
+    function handleCityChanged(val: string) {
+        setCity(val);
+
+        validateForm();
+    }
+
+    function selectCountry(val: string) {
+        setCountry(val);
+
+        validateForm();
+    }
+
+    function selectRegion(val: string) {
+        setRegion(val);
+
+        validateForm();
+    }
+
+    function handlePostalCodeChanged(val: string) {
+        setPostalCode(val);
+
+        validateForm();
+    }
+
+    function handleLatitudeChanged(val: string) {
+        try {
+            if (val) {
+                var floatVal = parseFloat(val);
+
+                if (floatVal < -90 || floatVal > 90) {
+                    setLatitudeErrors("Latitude must be => -90 and <= 90");
+                }
+                else {
+                    setLatitude(floatVal);
+                    setLatitudeErrors("");
+                }
+            }
+            else {
+                setLatitudeErrors("Latitude must be => -90 and <= 90");
+            }
         }
-        else {
-            setNameErrors("");
-            setName(val);
+        catch {
+            setLatitudeErrors("Invalid value specified for Latitude.");
         }
 
         validateForm();
     }
 
-    function handlePrimaryEmailChanged(val: string) {
-        var pattern = new RegExp(Constants.RegexEmail);
+    function handleLongitudeChanged(val: string) {
+        try {
+            if (val) {
+                var floatVal = parseFloat(val);
 
-        if (!pattern.test(val)) {
-            setPrimaryEmailErrors("Please enter valid email address.");
+                if (floatVal < -180 || floatVal > 180) {
+                    setLongitudeErrors("Longitude must be >= -180 and <= 180");
+                }
+                else {
+                    setLongitude(floatVal);
+                    setLongitudeErrors("");
+                }
+            }
+            else {
+                setLongitudeErrors("Longitude must be >= -180 and <= 180");
+            }
         }
-        else {
-            setPrimaryEmailErrors("");
-            setPrimaryEmail(val);
-        }
-
-        validateForm();
-    }
-
-    function handleSecondaryEmailChanged(val: string) {
-        var pattern = new RegExp(Constants.RegexEmail);
-
-        if (!pattern.test(val)) {
-            setSecondaryEmailErrors("Please enter valid email address.");
-        }
-        else {
-            setSecondaryEmailErrors("");
-            setSecondaryEmail(val);
+        catch {
+            setLongitudeErrors("Invalid value specified for Longitude.")
         }
 
         validateForm();
     }
 
-    function handlePrimaryPhoneChanged(val: string) {
-        var pattern = new RegExp(Constants.RegexPhoneNumber);
-
-        if (!pattern.test(val)) {
-            setPrimaryPhoneErrors("Please enter a valid phone number.");
-        }
-        else {
-            setPrimaryPhoneErrors("");
-            setPrimaryPhone(val);
-        }
-
-        validateForm();
-    }
-
-    function handleSecondaryPhoneChanged(val: string) {
-        var pattern = new RegExp(Constants.RegexPhoneNumber);
-
-        if (!pattern.test(val)) {
-            setSecondaryPhoneErrors("Please enter a valid phone number.");
-        }
-        else {
-            setSecondaryPhoneErrors("");
-            setSecondaryPhone(val);
-        }
-
-        validateForm();
-    }
-
-    function handleNotesChanged(val: string) {
-        if (val.length < 0 || val.length > 1000) {
-            setNotesErrors("Notes cannot be empty and cannot be more than 1000 characters long.");
-        }
-        else {
-            setNotesErrors("");
-            setNotes(val);
-        }
-
-        validateForm();
-    }
-
-    function renderNameToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.CommunityRequestName}</Tooltip>
-    }
 
     function renderCommunityStatusToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.CommunityStatus}</Tooltip>
     }
 
-    function renderPrimaryEmailToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.CommunityRequestPrimaryEmail}</Tooltip>
+    function renderCityToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.CommunityCity}</Tooltip>
     }
 
-    function renderSecondaryEmailToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.CommunityRequestSecondaryEmail}</Tooltip>
+    function renderCountryToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.CommunityCountry}</Tooltip>
     }
 
-    function renderPrimaryPhoneToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.CommunityRequestPrimaryPhone}</Tooltip>
+    function renderRegionToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.CommunityRegion}</Tooltip>
     }
 
-    function renderSecondaryPhoneToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.CommunityRequestSecondaryPhone}</Tooltip>
-    }
-
-    function renderNotesToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.CommunityRequestNotes}</Tooltip>
+    function renderPostalCodeToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.CommunityPostalCode}</Tooltip>
     }
 
     function renderCreatedDateToolTip(props: any) {
@@ -223,8 +221,42 @@ export const CommunityEdit: React.FC<CommunityEditDataProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.CommunityLastUpdatedDate}</Tooltip>
     }
 
+    function renderLatitudeToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.CommunityLatitude}</Tooltip>
+    }
+
+    function renderLongitudeToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.CommunityLongitude}</Tooltip>
+    }
+
     function selectCommunityStatus(val: string) {
         setCommunityStatusId(parseInt(val));
+    }
+
+    function handleLocationChange(point: data.Position) {
+        // In an Azure Map point, the longitude is the first position, and latitude is second
+        setLatitude(point[1]);
+        setLongitude(point[0]);
+        var locationString = point[1] + ',' + point[0]
+        var headers = getDefaultHeaders('GET');
+
+        getKey()
+            .then(key => {
+                fetch('https://atlas.microsoft.com/search/address/reverse/json?subscription-key=' + key + '&api-version=1.0&query=' + locationString, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<AddressData>)
+                    .then(data => {
+                        setCity(data.addresses[0].address.municipality);
+                        setCountry(data.addresses[0].address.country);
+                        setRegion(data.addresses[0].address.countrySubdivisionName);
+                        setPostalCode(data.addresses[0].address.postalCode);
+                    })
+            }
+            )
+
+        validateForm();
     }
 
     return (
@@ -234,95 +266,81 @@ export const CommunityEdit: React.FC<CommunityEditDataProps> = (props) => {
                 <Form.Row>
                     <Col>
                         <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderNameToolTip}>
-                                <Form.Label className="control-label">Community Name:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{nameErrors}</span>
+                            <OverlayTrigger placement="top" overlay={renderCityToolTip}>
+                                <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
+                            </OverlayTrigger >
+                            <Form.Control className="control-label" disabled type="text" name="city" value={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
                         </Form.Group>
                     </Col>
                     <Col>
+                        <Form.Group>
+                            <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
+                                <Form.Label className="control-label" htmlFor="PostalCode">Postal Code:</Form.Label>
+                            </OverlayTrigger >
+                            <Form.Control type="text" disabled name="postalCode" value={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
+                        </Form.Group>
+                    </Col>
+                </Form.Row>
+                <Form.Row>
+                    <Col>
                         <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderCommunityStatusToolTip}>
-                                <Form.Label className="control-label" htmlFor="Community Status">Community Status:</Form.Label>
-                            </OverlayTrigger>
+                            <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
+                                <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
+                            </OverlayTrigger >
                             <div>
-                                <select data-val="true" name="communityStatusId" defaultValue={communityStatusId} onChange={(val) => selectCommunityStatus(val.target.value)} required>
-                                    <option value="">-- Select Community Status --</option>
-                                    {props.communityStatusList.map(status =>
-                                        <option key={status.id} value={status.id}>{status.name}</option>
-                                    )}
-                                </select>
+                                <CountryDropdown disabled name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
                             </div>
                         </Form.Group>
                     </Col>
                     <Col>
                         <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderPrimaryEmailToolTip}>
-                                <Form.Label className="control-label">Primary Email:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" defaultValue={primaryEmail} maxLength={parseInt('64')} onChange={(val) => handlePrimaryEmailChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{primaryEmailErrors}</span>
-                        </Form.Group >
-                    </Col>
-                    <Col>
-                        <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderSecondaryEmailToolTip}>
-                                <Form.Label className="control-label">Secondary Email:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" defaultValue={secondaryEmail} maxLength={parseInt('64')} onChange={(val) => handleSecondaryEmailChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{secondaryEmailErrors}</span>
-                        </Form.Group >
+                            <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
+                                <Form.Label className="control-label" htmlFor="Region">Region:</Form.Label>
+                            </OverlayTrigger >
+                            <div>
+                                <RegionDropdown disabled
+                                    country={country ?? ""}
+                                    value={region ?? ""}
+                                    onChange={(val) => selectRegion(val)} />
+                            </div>
+                        </Form.Group>
                     </Col>
                 </Form.Row>
                 <Form.Row>
                     <Col>
-                        <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderPrimaryPhoneToolTip}>
-                                <Form.Label className="control-label">Primary Phone:</Form.Label>
+                        <Form.Group>
+                            <OverlayTrigger placement="top" overlay={renderLatitudeToolTip}>
+                                <Form.Label className="control-label" htmlFor="Latitude">Latitude:</Form.Label>
                             </OverlayTrigger>
-                            <Form.Control type="text" defaultValue={primaryPhone} maxLength={parseInt('64')} onChange={(val) => handlePrimaryPhoneChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{primaryPhoneErrors}</span>
-                        </Form.Group >
+                            <Form.Control type="text" disabled name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
+                            <span style={{ color: "red" }}>{latitudeErrors}</span>
+                        </Form.Group>
                     </Col>
                     <Col>
-                        <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderSecondaryPhoneToolTip}>
-                                <Form.Label className="control-label">Secondary Phone:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" defaultValue={secondaryPhone} maxLength={parseInt('64')} onChange={(val) => handleSecondaryPhoneChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{secondaryPhoneErrors}</span>
-                        </Form.Group >
+                        <Form.Group>
+                            <OverlayTrigger placement="top" overlay={renderLongitudeToolTip}>
+                                <Form.Label className="control-label" htmlFor="Longitude">Longitude:</Form.Label>
+                            </OverlayTrigger >
+                            <Form.Control type="text" disabled name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
+                            <span style={{ color: "red" }}>{longitudeErrors}</span>
+                        </Form.Group>
                     </Col>
                 </Form.Row>
-                <Form.Group className="required">
-                    <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                        <Form.Label className="control-label">Notes:</Form.Label>
-                    </OverlayTrigger>
-                    <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} required />
-                    <span style={{ color: "red" }}>{notesErrors}</span>
-                </Form.Group >
-                <Form.Group className="form-group">
-                    <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Save</Button>
-                    <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
-                </Form.Group >
                 <Form.Row>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
-                                <Form.Label className="control-label" htmlFor="createdDate">Created Date:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" disabled defaultValue={props.community.createdDate.toString()} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
-                                <Form.Label className="control-label" htmlFor="lastUpdatedDate">Last Updated Date:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" disabled defaultValue={props.community.lastUpdatedDate.toString()} />
-                        </Form.Group>
-                    </Col>
+                    <Form.Group>
+                        <Button disabled={!isSaveEnabled} type="submit" className="btn btn-default">Save</Button>
+                        <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
+                    </Form.Group>
+                </Form.Row>
+                <Form.Row>
+                    <Form.Label>Search for location or click on the map to set the location for your event. The location fields above will be automatically populated.</Form.Label>
+                </Form.Row>
+                <Form.Row>
+                    <AzureMapsProvider>
+                        <>
+                            <MapControllerSinglePointNoEvent center={center} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isDraggable={true} />
+                        </>
+                    </AzureMapsProvider>
                 </Form.Row>
             </Form >
         </div>

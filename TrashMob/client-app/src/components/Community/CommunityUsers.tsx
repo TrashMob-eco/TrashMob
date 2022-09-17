@@ -5,7 +5,7 @@ import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore'
 import * as ToolTips from "../../store/ToolTips";
 
 export interface CommunityUsersDataProps {
-    partnerId: string;
+    communityId: string;
     users: UserData[];
     isUserDataLoaded: boolean;
     onCommunityUsersUpdated: any;
@@ -32,7 +32,7 @@ export const CommunityUsers: React.FC<CommunityUsersDataProps> = (props) => {
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerusers/' + props.partnerId + '/' + userId, {
+                fetch('/api/communityusers/' + props.communityId + '/' + userId, {
                     method: 'DELETE',
                     headers: headers,
                 })
@@ -70,7 +70,7 @@ export const CommunityUsers: React.FC<CommunityUsersDataProps> = (props) => {
                     else {
                         const headers = getDefaultHeaders('POST');
                         headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-                        fetch('/api/partnerusers/' + props.partnerId + "/" + data.id, {
+                        fetch('/api/communityusers/' + props.communityId + "/" + data.id, {
                             method: 'POST',
                             headers: headers,
                         })

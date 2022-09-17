@@ -20,7 +20,7 @@ export const CommunityList: React.FC<CommunityListDataProps> = (props) => {
             const list = props.communityList.map((community) => {
                 var dispCommunity = new DisplayCommunity()
                 dispCommunity.id = community.id;
-                dispCommunity.name = community.name;
+                dispCommunity.city = community.city;
                return dispCommunity;
             });
             setDisplayCommunitys(list);
@@ -43,7 +43,7 @@ export const CommunityList: React.FC<CommunityListDataProps> = (props) => {
                     <tbody>
                         {communities.map(community =>
                             <tr key={community.id.toString()}>
-                                <td>{community.name}</td>
+                                <td>{community.city}</td>
                                 <td>
                                     <Button className="action" onClick={() => getCommunityId(community.id)}>View Details / Edit</Button>
                                 </td>

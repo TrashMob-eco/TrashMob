@@ -18,11 +18,9 @@ const CommunityDashboard: React.FC<CommunityDashboardProps> = (props) => {
     const [communityList, setCommunityList] = React.useState<CommunityData[]>([]);
     const [radioValue, setRadioValue] = React.useState('1');
     const [userList, setUserList] = React.useState<UserData[]>([]);
-    const [communityLocationList, setCommunityLocationList] = React.useState<CommunityLocationData[]>([]);
     const [communityStatusList, setCommunityStatusList] = React.useState<CommunityStatusData[]>([]);
     const [isCommunityDataLoaded, setIsCommunityDataLoaded] = React.useState<boolean>(false);
     const [isUserDataLoaded, setIsUserDataLoaded] = React.useState<boolean>(false);
-    const [isCommunityLocationDataLoaded, setIsCommunityLocationDataLoaded] = React.useState<boolean>(false);
     const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
     const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
     const [message, setMessage] = React.useState<string>("Loading...");
@@ -227,7 +225,7 @@ const CommunityDashboard: React.FC<CommunityDashboardProps> = (props) => {
     function renderEditCommunity(community: CommunityData) {
         return (
             <div>
-                <h2>Community Metadata for {community.name}</h2>
+                <h2>Community Metadata for {community.city}</h2>
                 <CommunityEdit community={community} isCommunityDataLoaded={isCommunityDataLoaded} onCommunityUpdated={handleCommunityUpdated} onEditCanceled={handleCommunityEditCanceled} currentUser={currentUser} isUserLoaded={isUserLoaded} communityStatusList={communityStatusList} />
             </div >
         )
@@ -236,7 +234,7 @@ const CommunityDashboard: React.FC<CommunityDashboardProps> = (props) => {
     function renderCommunityUsers(community: CommunityData) {
         return (
             <div>
-                <h2>Users for {community.name}</h2>
+                <h2>Users for {community.city}</h2>
                 <CommunityUsers users={userList} communityId={community.id} isUserDataLoaded={isUserDataLoaded} onCommunityUsersUpdated={handleCommunityUsersUpdated} currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </div>
         )
@@ -245,7 +243,7 @@ const CommunityDashboard: React.FC<CommunityDashboardProps> = (props) => {
     function renderExecutiveSummary(community: CommunityData) {
         return (
             <div>
-                <h2>Executive Summary for {community.name}</h2>
+                <h2>Executive Summary for {community.city}</h2>
             </div >
         )
     }
