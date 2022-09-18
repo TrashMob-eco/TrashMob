@@ -15,6 +15,9 @@ import calendarclock from '../assets/card/calendarclock.svg';
 import bucketplus from '../assets/card/bucketplus.svg';
 import { Eye, PersonX, Link as LinkIcon, Pencil } from 'react-bootstrap-icons';
 import StatsData from '../Models/StatsData';
+import CommunityRequestData from '../Models/CommunityRequestData';
+import CommunityData from '../Models/CommunityData';
+import PartnerData from '../Models/PartnerData';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -23,7 +26,13 @@ interface MyDashboardProps extends RouteComponentProps<any> {
 
 const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [myEventList, setMyEventList] = useState<EventData[]>([]);
+    const [myCommunityRequests, setMyCommunityRequests] = useState<CommunityRequestData[]>([]);
+    const [myCommunities, setMyCommunities] = useState<CommunityData[]>([]);
+    const [myPartners, setMyPartners] = useState<PartnerData[]>([]);
     const [isEventDataLoaded, setIsEventDataLoaded] = useState<boolean>(false);
+    const [isCommunityRequestDataLoaded, setIsCommunityRequestDataLoaded] = useState<boolean>(false);
+    const [isCommunityDataLoaded, setIsCommunityDataLoaded] = useState<boolean>(false);
+    const [isPartnerDataLoaded, setIsPartnerDataLoaded] = useState<boolean>(false);
     const [center, setCenter] = useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isMapKeyLoaded, setIsMapKeyLoaded] = useState<boolean>(false);
     const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
@@ -79,6 +88,72 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     .then(data => {
                         setMyEventList(data);
                         setIsEventDataLoaded(true);
+                    });
+
+                fetch('/api/communityrequests/' + props.currentUser.id, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json() as Promise<CommunityRequestData[]>
+                        }
+                        else {
+                            throw new Error("No Community Requests found for this user");
+                        }
+                    })
+                    .then(data => {
+                        setMyCommunityRequests(data);
+                        setIsCommunityRequestDataLoaded(true);
+                        return;
+                    })
+                    .catch(_ => {
+                        setIsCommunityRequestDataLoaded(false);
+                        setMyCommunityRequests([]);
+                    });
+
+                fetch('/api/communityusers/getcommunitiesforuser/' + props.currentUser.id, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json() as Promise<CommunityData[]>
+                        }
+                        else {
+                            throw new Error("No Communities found for this user");
+                        }
+                    })
+                    .then(data => {
+                        setMyCommunities(data);
+                        setIsCommunityDataLoaded(true);
+                        return;
+                    })
+                    .catch(_ => {
+                        setIsCommunityDataLoaded(false);
+                        setMyCommunities([]);
+                    });
+
+                fetch('/api/partnerusers/getpartnersforuser/' + props.currentUser.id, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json() as Promise<PartnerData[]>
+                        }
+                        else {
+                            throw new Error("No Partners found for this user");
+                        }
+                    })
+                    .then(data => {
+                        setMyPartners(data);
+                        setIsPartnerDataLoaded(true);
+                        return;
+                    })
+                    .catch(_ => {
+                        setIsPartnerDataLoaded(false);
+                        setMyPartners([]);
                     });
 
                 fetch('/api/stats/' + props.currentUser.id, {
@@ -269,6 +344,96 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         )
     }
 
+    const CommunityRequestsTable = () => {
+        const headerTitles = ['City', 'Region', 'Country']
+        if (myCommunityRequests) {
+            return (
+                <div className="bg-white p-3 px-4">
+                    <Table columnHeaders={headerTitles} >
+                        {myCommunityRequests.sort((a, b) => (a.city < b.city) ? 1 : -1).map(communityRequest => {
+                            return (
+                                <tr key={communityRequest.id.toString()}>
+                                    <td>{communityRequest.city}</td>
+                                    <td>{communityRequest.region}</td>
+                                    <td>{communityRequest.country}</td>
+                                </tr>
+                            )
+                        }
+                        )}
+                    </Table>
+                </div >
+            );
+        }
+        else {
+            return (
+                <div className="bg-white p-3 px-4">
+                    <Table columnHeaders={headerTitles} >
+                    </Table>
+                </div >
+            )
+        }
+    }
+
+    const CommunitiesTable = () => {
+        const headerTitles = ['City', 'Region', 'Country']
+
+        if (myCommunities) {
+            return (
+                <div className="bg-white p-3 px-4">
+                    <Table columnHeaders={headerTitles} >
+                        {
+                            myCommunities.sort((a, b) => (a.city < b.city) ? 1 : -1).map(community => {
+                                return (
+                                    <tr key={community.id.toString()}>
+                                        <td>{community.city}</td>
+                                        <td>{community.region}</td>
+                                        <td>{community.country}</td>
+                                    </tr>
+                                )
+                            }
+                            )}
+                    </Table>
+                </div >
+            );
+        }
+        else {
+            return (
+                <div className="bg-white p-3 px-4">
+                    <Table columnHeaders={headerTitles} >
+                    </Table>
+                </div >
+                )
+        }
+    }
+
+    const PartnersTable = () => {
+        const headerTitles = ['Name']
+        if (myPartners) {
+            return (
+                <div className="bg-white p-3 px-4">
+                    <Table columnHeaders={headerTitles} >
+                        {myPartners.sort((a, b) => (a.name < b.name) ? 1 : -1).map(partner => {
+                            return (
+                                <tr key={partner.id.toString()}>
+                                    <td>{partner.name}</td>
+                                </tr>
+                            )
+                        }
+                        )}
+                    </Table>
+                </div >
+            );
+        }
+        else {
+            return (
+                <div className="bg-white p-3 px-4">
+                    <Table columnHeaders={headerTitles} >
+                    </Table>
+                </div >
+            )
+        }
+    }
+
     return (
         <>
             <Container fluid className='bg-grass'>
@@ -367,6 +532,27 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                             <MapControllerPointCollection center={center} multipleEvents={myEventList} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={handleAttendanceChanged} myAttendanceList={myEventList} isUserEventDataLoaded={isEventDataLoaded} onDetailsSelected={handleDetailsSelected} history={props.history} location={props.location} match={props.match} />
                         </AzureMapsProvider>
                         : <PastEventsTable />}
+                </div>
+                <div className="d-flex my-5 mb-4 justify-content-between">
+                    <h4 className="font-weight-bold mr-2 mt-0 text-decoration-underline">My Community Requests ({myCommunityRequests.length})</h4>
+                    <Link className="btn btn-primary banner-button" to="/communityrequest">Create Community Request</Link>
+                </div>
+                <div className="mb-4 bg-white">
+                    <CommunityRequestsTable />
+                </div>
+                <div className="d-flex my-5 mb-4 justify-content-between">
+                    <h4 className="font-weight-bold mr-2 mt-0 text-decoration-underline">My Communities ({myCommunities.length})</h4>
+                    <Link className="btn btn-primary banner-button" to="/communitydashbaord">Create Community</Link>
+                </div>
+                <div className="mb-4 bg-white">
+                    <CommunitiesTable />
+                </div>
+                <div className="d-flex my-5 mb-4 justify-content-between">
+                    <h4 className="font-weight-bold mr-2 mt-0 text-decoration-underline">My Partners ({myPartners.length})</h4>
+                    <Link className="btn btn-primary banner-button" to="/partnerdashbaord">Create Partner</Link>
+                </div>
+                <div className="mb-4 bg-white">
+                    <PartnersTable />
                 </div>
             </Container>
         </>

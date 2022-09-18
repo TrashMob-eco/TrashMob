@@ -1,7 +1,9 @@
 ﻿
 namespace TrashMob.Shared.Managers
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Engine;
@@ -15,7 +17,7 @@ namespace TrashMob.Shared.Managers
         public CommunityRequestManager(IRepository<CommunityRequest> repository, IEmailManager emailManager) : base(repository)
         {
             this.emailManager = emailManager;
-        }      
+        }
 
         public override async Task<CommunityRequest> Add(CommunityRequest communityRequest)
         {

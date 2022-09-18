@@ -3,7 +3,9 @@
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using System;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Models;
@@ -14,15 +16,38 @@
     public class CommunityUsersController : BaseController
     {
         private readonly IExtendedManager<CommunityUser> manager;
+        private readonly IExtendedManager<Community> communityManager;
         private readonly IUserRepository userRepository;
 
-        public CommunityUsersController(IExtendedManager<CommunityUser> manager, 
-                                             IUserRepository userRepository,
-                                             TelemetryClient telemetryClient)
+        public CommunityUsersController(IExtendedManager<CommunityUser> manager,
+                                        IExtendedManager<Community> communityManager,
+                                        IUserRepository userRepository,
+                                        TelemetryClient telemetryClient)
             : base(telemetryClient)
         {
             this.manager = manager;
+            this.communityManager = communityManager;
             this.userRepository = userRepository;
+        }
+
+        [HttpGet("getcommunitiesforuser/{userId}")]
+        public async Task<IActionResult> GetCommunitiesForUser(Guid userId, CancellationToken cancellationToken)
+        {
+            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value, cancellationToken).ConfigureAwait(false);
+
+            if (currentUser == null)
+            {
+                return Forbid();
+            }
+
+            var communities = await communityManager.GetByUserId(userId, cancellationToken);
+
+            if (communities == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(communities);
         }
 
         [HttpPost]

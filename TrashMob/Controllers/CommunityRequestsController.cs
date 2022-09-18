@@ -3,7 +3,9 @@
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using System;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Models;
@@ -37,6 +39,22 @@
 
             await manager.Add(communityRequest, currentUser.Id).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddCommunityRequest));
+
+            return Ok();
+        }
+
+        [HttpGet("getcommunityrequestsforuser/{userId}")]
+        public async Task<IActionResult> GetCommunityRequestsForUser(Guid userId, CancellationToken cancellationToken)
+        {
+            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value, cancellationToken).ConfigureAwait(false);
+
+            if (currentUser == null)
+            {
+                return Forbid();
+            }
+
+            await manager.GetByUserId(userId, cancellationToken).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(GetCommunityRequestsForUser));
 
             return Ok();
         }

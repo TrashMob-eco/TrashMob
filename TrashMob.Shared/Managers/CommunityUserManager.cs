@@ -1,6 +1,12 @@
 ﻿
 namespace TrashMob.Shared.Managers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data.Entity;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
@@ -8,6 +14,6 @@ namespace TrashMob.Shared.Managers
     {
         public CommunityUserManager(IRepository<CommunityUser> repository) : base(repository)
         {
-        }      
+        }
     }
 }

@@ -1,7 +1,12 @@
 ﻿
 namespace TrashMob.Shared.Managers
 {
+    using Microsoft.EntityFrameworkCore;
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
@@ -27,6 +32,15 @@ namespace TrashMob.Shared.Managers
             instance.LastUpdatedByUserId = userId;
             instance.LastUpdatedDate = DateTimeOffset.UtcNow;
             return Repository.Update(instance);
+        }
+
+        public virtual async Task<IEnumerable<T>> GetByUserId(Guid userId, CancellationToken cancellationToken)
+        {
+            var results = await Repository.Get()
+                .Where(t => t.CreatedByUserId == userId)
+                .ToListAsync(cancellationToken);
+
+            return results;
         }
     }
 }
