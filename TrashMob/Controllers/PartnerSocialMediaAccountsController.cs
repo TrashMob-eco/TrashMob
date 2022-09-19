@@ -26,7 +26,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCommunitySocialMediaAccount(PartnerSocialMediaAccount communitySocialMediaAccount)
+        public async Task<IActionResult> AddPartnerSocialMediaAccount(PartnerSocialMediaAccount partnerSocialMediaAccount)
         {
             var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
 
@@ -35,8 +35,8 @@
                 return Forbid();
             }
 
-            await manager.Add(communitySocialMediaAccount, currentUser.Id).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddCommunitySocialMediaAccount));
+            await manager.Add(partnerSocialMediaAccount, currentUser.Id).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(AddPartnerSocialMediaAccount));
 
             return Ok();
         }

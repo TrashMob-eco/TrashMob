@@ -26,7 +26,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCommunityNote(PartnerNote communityNote)
+        public async Task<IActionResult> AddCommunityNote(PartnerNote partnerNote)
         {
             var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
 
@@ -35,7 +35,7 @@
                 return Forbid();
             }
 
-            await manager.Add(communityNote, currentUser.Id).ConfigureAwait(false);
+            await manager.Add(partnerNote, currentUser.Id).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddCommunityNote));
 
             return Ok();

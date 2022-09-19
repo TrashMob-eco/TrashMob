@@ -472,7 +472,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                 </div>
                 <div className="d-flex my-5 mb-4 justify-content-between">
                     <h4 className="font-weight-bold mr-2 mt-0 text-decoration-underline">My Partner Requests ({myPartnerRequests.length})</h4>
-                    <Link className="btn btn-primary banner-button" to="/communityrequest">Create Community Request</Link>
+                    <Link className="btn btn-primary banner-button" to="/becomeapartner">Create Partner Request</Link>
                 </div>
                 <div className="mb-4 bg-white">
                     <PartnerRequestsTable />

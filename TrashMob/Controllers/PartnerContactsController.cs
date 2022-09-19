@@ -26,7 +26,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCommunityContact(PartnerContact communityContact)
+        public async Task<IActionResult> AddCommunityContact(PartnerContact partnerContact)
         {
             var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
 
@@ -35,7 +35,7 @@
                 return Forbid();
             }
 
-            await manager.Add(communityContact, currentUser.Id).ConfigureAwait(false);
+            await manager.Add(partnerContact, currentUser.Id).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddCommunityContact));
 
             return Ok();

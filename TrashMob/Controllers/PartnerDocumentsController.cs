@@ -26,7 +26,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCommunityDocument(PartnerDocument communityAttachment)
+        public async Task<IActionResult> AddCommunityDocument(PartnerDocument partnerDocument)
         {
             var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
 
@@ -35,7 +35,7 @@
                 return Forbid();
             }
 
-            await manager.Add(communityAttachment, currentUser.Id).ConfigureAwait(false);
+            await manager.Add(partnerDocument, currentUser.Id).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddCommunityDocument));
 
             return Ok();
