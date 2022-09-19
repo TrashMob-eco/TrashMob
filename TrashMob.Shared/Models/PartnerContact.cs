@@ -4,11 +4,11 @@ namespace TrashMob.Shared.Models
 {
     using System;
 
-    public partial class CommunityContact : KeyedModel
+    public partial class PartnerContact : KeyedModel
     {
-        public Guid CommunityId { get; set; }
+        public Guid PartnerId { get; set; }
 
-        public int CommunityContactTypeId { get; set; }
+        public int PartnerContactTypeId { get; set; }
 
         public string Name { get; set; }
         
@@ -20,8 +20,6 @@ namespace TrashMob.Shared.Models
 
         public bool? IsActive { get; set; }
 
-        public virtual Community Community { get; set; }
-
-        public virtual CommunityContactType CommunityContactType { get; set; }
+        public virtual Partner Partner { get; set; }
     }
 }

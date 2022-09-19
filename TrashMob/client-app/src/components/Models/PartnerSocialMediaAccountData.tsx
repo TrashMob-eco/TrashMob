@@ -1,14 +1,14 @@
 import { Guid } from "guid-typescript";
 
-class CommunityPartnerData {
+class PartnerSocialMediaAccountData {
     id: string = Guid.createEmpty().toString();
-    communityId: string = Guid.createEmpty().toString();
     partnerId: string = Guid.createEmpty().toString();
-    partnerLocationId: string = Guid.createEmpty().toString();
+    socialMediaAccountId: string = Guid.createEmpty().toString();
+    isActive: boolean = true;
     createdByUserId: string = "";
     createdDate: Date = new Date();
     lastUpdatedByUserId: string = "";
     lastUpdatedDate: Date = new Date();
 }
 
-export default CommunityPartnerData;
+export default PartnerSocialMediaAccountData;

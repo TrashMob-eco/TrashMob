@@ -4,18 +4,18 @@ namespace TrashMob.Shared.Models
 {
     using System;
 
-    public partial class CommunityDocument : KeyedModel
+    public partial class PartnerDocument : KeyedModel
     {
-        public CommunityDocument()
+        public PartnerDocument()
         {
         }
 
-        public Guid CommunityId { get; set; }
+        public Guid PartnerId { get; set; }
 
         public string Name { get; set; }
 
         public string Url { get; set; }
 
-        public virtual Community Community { get; set; }
+        public virtual Partner Partner { get; set; }
     }
 }

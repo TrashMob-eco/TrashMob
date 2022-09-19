@@ -1,18 +1,14 @@
 import { Guid } from "guid-typescript";
 
-class CommunityContactData {
+class PartnerNoteData {
     id: string = Guid.createEmpty().toString();
-    communityId: string = Guid.createEmpty().toString();
-    communityContactTypeId: number = 0;
-    name: string = "";
-    email: string = "";
-    phone: string = "";
+    partnerId: string = Guid.createEmpty().toString();
     notes: string = "";
-    isActive: boolean = true;
+    isPublic: boolean = true;
     createdByUserId: string = "";
     createdDate: Date = new Date();
     lastUpdatedByUserId: string = "";
     lastUpdatedDate: Date = new Date();
 }
 
-export default CommunityContactData;
+export default PartnerNoteData;

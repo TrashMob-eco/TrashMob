@@ -4,14 +4,14 @@ namespace TrashMob.Shared.Models
 {
     using System;
 
-    public partial class CommunityNote : KeyedModel
+    public partial class PartnerNote : KeyedModel
     {
-        public Guid CommunityId { get; set; }
+        public Guid PartnerId { get; set; }
 
         public string Notes { get; set; }
 
         public bool IsPublic { get; set; }
 
-        public virtual Community Community { get; set; }
+        public virtual Partner Partner { get; set; }
     }
 }

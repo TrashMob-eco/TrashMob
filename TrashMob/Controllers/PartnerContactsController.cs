@@ -10,13 +10,13 @@
     using TrashMob.Shared.Persistence;
 
     [Authorize]
-    [Route("api/communitydocuments")]
-    public class CommunityDocumentsController : BaseController
+    [Route("api/partnercontacts")]
+    public class PartnerContactsController : BaseController
     {
-        private readonly IBaseManager<CommunityDocument> manager;
+        private readonly IBaseManager<PartnerContact> manager;
         private readonly IUserRepository userRepository;
 
-        public CommunityDocumentsController(IBaseManager<CommunityDocument> manager, 
+        public PartnerContactsController(IBaseManager<PartnerContact> manager, 
                                              IUserRepository userRepository,
                                              TelemetryClient telemetryClient)
             : base(telemetryClient)
@@ -26,7 +26,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCommunityDocument(CommunityDocument communityAttachment)
+        public async Task<IActionResult> AddCommunityContact(PartnerContact communityContact)
         {
             var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
 
@@ -35,8 +35,8 @@
                 return Forbid();
             }
 
-            await manager.Add(communityAttachment, currentUser.Id).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddCommunityDocument));
+            await manager.Add(communityContact, currentUser.Id).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(AddCommunityContact));
 
             return Ok();
         }

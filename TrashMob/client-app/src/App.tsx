@@ -43,8 +43,6 @@ import EventData from './components/Models/EventData';
 import './custom.css';
 import Waivers from './components/Waivers/Waivers';
 import WaiversReturn from './components/Waivers/WaiversReturn';
-import CommunityRequest from './components/Community/CommunityRequest';
-import ManageCommunityDashboard from './components/Community/ManageCommunityDashboard';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }
@@ -109,16 +107,6 @@ export const App: FC = () => {
                 errorComponent={ErrorComponent}
                 loadingComponent={LoadingComponent}>
                 <ManageEventDashboard {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
-            </MsalAuthenticationTemplate >);
-    }
-
-    function renderEditCommunity(inp: AppProps) {
-        return (
-            <MsalAuthenticationTemplate
-                interactionType={InteractionType.Redirect}
-                errorComponent={ErrorComponent}
-                loadingComponent={LoadingComponent}>
-                <ManageCommunityDashboard {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </MsalAuthenticationTemplate >);
     }
 
@@ -284,7 +272,6 @@ export const App: FC = () => {
                     <div className="container-fluid px-0">
                         <Switch>
                             <Route path="/manageeventdashboard/:eventId?" render={(props: AppProps) => renderEditEvent(props)} />
-                            <Route path="/managecommunitydashboard/:eventId?" render={(props: AppProps) => renderEditCommunity(props)} />
                             <Route path="/eventsummary/:eventId?" render={(props: AppProps) => renderEventSummary(props)} />
                             <Route path="/eventdetails/:eventId" render={(props: DetailsProps) => renderEventDetails(props)} />
                             <Route path="/cancelevent/:eventId" render={(props: CancelProps) => renderCancelEvent(props)} />
@@ -295,14 +282,6 @@ export const App: FC = () => {
                                     errorComponent={ErrorComponent}
                                     loadingComponent={LoadingComponent}>
                                     <MyDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                                </MsalAuthenticationTemplate >
-                            </Route>
-                            <Route exact path="/communityrequest">
-                                <MsalAuthenticationTemplate
-                                    interactionType={InteractionType.Redirect}
-                                    errorComponent={ErrorComponent}
-                                    loadingComponent={LoadingComponent}>
-                                    <CommunityRequest currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
                             </Route>
                             <Route exact path="/becomeapartner">

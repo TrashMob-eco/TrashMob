@@ -49,7 +49,7 @@
             await partnerRequestRepository.AddPartnerRequest(partnerRequest).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddPartnerRequest));
 
-            var message = $"From Email: {partnerRequest.PrimaryEmail}\nFrom Name:{partnerRequest.Name}\nMessage:\n{partnerRequest.Notes}";
+            var message = $"From Email: {partnerRequest.Email}\nFrom Name:{partnerRequest.Name}\nMessage:\n{partnerRequest.Notes}";
             var subject = "Partner Request";
 
             var recipients = new List<EmailAddress>
@@ -100,8 +100,7 @@
 
             var partnerRecipients = new List<EmailAddress>
             {
-                new EmailAddress { Name = partnerRequest.Name, Email = partnerRequest.PrimaryEmail },
-                new EmailAddress { Name = partnerRequest.Name, Email = partnerRequest.SecondaryEmail },
+                new EmailAddress { Name = partnerRequest.Name, Email = partnerRequest.Email },
             };
             
             await emailManager.SendTemplatedEmail(partnerSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
@@ -139,8 +138,7 @@
 
             var partnerRecipients = new List<EmailAddress>
             {
-                new EmailAddress { Name = partnerRequest.Name, Email = partnerRequest.PrimaryEmail },
-                new EmailAddress { Name = partnerRequest.Name, Email = partnerRequest.SecondaryEmail },
+                new EmailAddress { Name = partnerRequest.Name, Email = partnerRequest.Email },
             };
 
             await emailManager.SendTemplatedEmail(partnerSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, partnerRecipients, CancellationToken.None).ConfigureAwait(false);

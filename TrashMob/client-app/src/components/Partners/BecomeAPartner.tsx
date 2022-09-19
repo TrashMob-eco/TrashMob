@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { loadCaptchaEnginge, LoadCanvasTemplateNoReload, validateCaptcha } from 'react-simple-captcha';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
@@ -9,6 +8,12 @@ import { Button, Col, Form } from 'react-bootstrap';
 import PartnerRequestData from '../Models/PartnerRequestData';
 import UserData from '../Models/UserData';
 import * as Constants from '../Models/Constants';
+import { data } from 'azure-maps-control';
+import * as MapStore from '../../store/MapStore';
+import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
+import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
+import AddressData from '../Models/AddressData';
+import MapControllerSinglePointNoEvents from '../MapControllerSinglePointNoEvent';
 
 interface BecomeAPartnerProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -17,26 +22,53 @@ interface BecomeAPartnerProps extends RouteComponentProps<any> {
 
 export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
     const [name, setName] = React.useState<string>();
-    const [primaryEmail, setPrimaryEmail] = React.useState<string>();
-    const [secondaryEmail, setSecondaryEmail] = React.useState<string>();
-    const [primaryPhone, setPrimaryPhone] = React.useState<string>();
-    const [secondaryPhone, setSecondaryPhone] = React.useState<string>();
+    const [email, setEmail] = React.useState<string>();
+    const [website, setWebsite] = React.useState<string>();
+    const [phone, setPhone] = React.useState<string>();
     const [notes, setNotes] = React.useState<string>("");
     const [nameErrors, setNameErrors] = React.useState<string>("");
-    const [primaryEmailErrors, setPrimaryEmailErrors] = React.useState<string>("");
-    const [secondaryEmailErrors, setSecondaryEmailErrors] = React.useState<string>("");
-    const [primaryPhoneErrors, setPrimaryPhoneErrors] = React.useState<string>("");
-    const [secondaryPhoneErrors, setSecondaryPhoneErrors] = React.useState<string>("");
+    const [emailErrors, setEmailErrors] = React.useState<string>("");
+    const [websiteErrors, setWebsiteErrors] = React.useState<string>("");
+    const [phoneErrors, setPhoneErrors] = React.useState<string>("");
     const [notesErrors, setNotesErrors] = React.useState<string>("");
+    const [latitude, setLatitude] = React.useState<number>(0);
+    const [longitude, setLongitude] = React.useState<number>(0);
+    const [latitudeErrors, setLatitudeErrors] = React.useState<string>("");
+    const [longitudeErrors, setLongitudeErrors] = React.useState<string>("");
+    const [city, setCity] = React.useState<string>();
+    const [country, setCountry] = React.useState<string>("");
+    const [region, setRegion] = React.useState<string>();
+    const [postalCode, setPostalCode] = React.useState<string>();
+    const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
+    const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
+    const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
+
+    React.useEffect(() => {
+
+        MapStore.getOption().then(opts => {
+            setMapOptions(opts);
+            setIsMapKeyLoaded(true);
+        })
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(position => {
+                var point = new data.Position(position.coords.longitude, position.coords.latitude);
+                setCenter(point)
+            });
+        } else {
+            console.log("Not Available");
+        }
+    }, [props.currentUser, props.isUserLoaded]);
 
     function validateForm() {
         if (nameErrors !== "" ||
             notesErrors !== "" ||
-            primaryEmailErrors !== "" ||
-            secondaryEmailErrors !== "" ||
-            primaryPhoneErrors !== "" ||
-            secondaryPhoneErrors !== "") {
+            emailErrors !== "" ||
+            websiteErrors !== "" ||
+            phoneErrors !== "" ||
+            latitudeErrors !== "" ||
+            longitudeErrors !== "") {
             setIsSaveEnabled(false);
         }
         else {
@@ -56,47 +88,42 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
 
         setIsSaveEnabled(false);
 
-        var user_captcha_value = form.get("user_captcha_input")?.toString() ?? "";
+        var partnerRequestData = new PartnerRequestData();
+        partnerRequestData.name = name ?? "";
+        partnerRequestData.email = email ?? "";
+        partnerRequestData.phone = phone ?? "";
+        partnerRequestData.website = website ?? "";
+        partnerRequestData.partnerRequestStatusId = 1;
+        partnerRequestData.notes = notes ?? "";
+        partnerRequestData.city = city ?? "";
+        partnerRequestData.region = region ?? "";
+        partnerRequestData.country = country ?? "";
+        partnerRequestData.latitude = latitude ?? "";
+        partnerRequestData.longitude = longitude ?? "";
+        partnerRequestData.createdByUserId = props.currentUser.id;
+        partnerRequestData.lastUpdatedByUserId = props.currentUser.id;
 
-        if (validateCaptcha(user_captcha_value) === true) {
+        var data = JSON.stringify(partnerRequestData);
 
-            var partnerRequestData = new PartnerRequestData();
-            partnerRequestData.name = name ?? "";
-            partnerRequestData.primaryEmail = primaryEmail ?? "";
-            partnerRequestData.secondaryEmail = secondaryEmail ?? "";
-            partnerRequestData.primaryPhone = primaryPhone ?? "";
-            partnerRequestData.secondaryPhone = secondaryPhone ?? "";
-            partnerRequestData.partnerRequestStatusId = 1;
-            partnerRequestData.notes = notes ?? "";
-            partnerRequestData.createdByUserId = props.currentUser.id;
-            partnerRequestData.lastUpdatedByUserId = props.currentUser.id;
+        const account = msalClient.getAllAccounts()[0];
 
-            var data = JSON.stringify(partnerRequestData);
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
 
-            const account = msalClient.getAllAccounts()[0];
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = getDefaultHeaders('POST');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('POST');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-
-                fetch('/api/PartnerRequests', {
-                    method: 'POST',
-                    body: data,
-                    headers: headers,
-                }).then(() => {
-                    props.history.push("/");
-                })
-            });
-        }
-        else {
-            alert('Captcha Does Not Match');
-        }
+            fetch('/api/PartnerRequests', {
+                method: 'POST',
+                body: data,
+                headers: headers,
+            }).then(() => {
+                props.history.push("/");
+            })
+        });
     }
 
     // This will handle Cancel button click event.  
@@ -117,57 +144,43 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
         validateForm();
     }
 
-    function handlePrimaryEmailChanged(val: string) {
+    function handleEmailChanged(val: string) {
         var pattern = new RegExp(Constants.RegexEmail);
 
         if (!pattern.test(val)) {
-            setPrimaryEmailErrors("Please enter valid email address.");
+            setEmailErrors("Please enter valid email address.");
         }
         else {
-            setPrimaryEmailErrors("");
-            setPrimaryEmail(val);
+            setEmailErrors("");
+            setEmail(val);
         }
 
         validateForm();
     }
 
-    function handleSecondaryEmailChanged(val: string) {
-        var pattern = new RegExp(Constants.RegexEmail);
+    function handleWebsiteChanged(val: string) {
+        var pattern = new RegExp(Constants.RegexWebsite);
 
         if (!pattern.test(val)) {
-            setSecondaryEmailErrors("Please enter valid email address.");
+            setWebsiteErrors("Please enter valid website.");
         }
         else {
-            setSecondaryEmailErrors("");
-            setSecondaryEmail(val);
+            setWebsiteErrors("");
+            setWebsite(val);
         }
 
         validateForm();
     }
 
-    function handlePrimaryPhoneChanged(val: string) {
+    function handlePhoneChanged(val: string) {
         var pattern = new RegExp(Constants.RegexPhoneNumber);
 
         if (!pattern.test(val)) {
-            setPrimaryPhoneErrors("Please enter a valid phone number.");
+            setPhoneErrors("Please enter a valid phone number.");
         }
         else {
-            setPrimaryPhoneErrors("");
-            setPrimaryPhone(val);
-        }
-
-        validateForm();
-    }
-
-    function handleSecondaryPhoneChanged(val: string) {
-        var pattern = new RegExp(Constants.RegexPhoneNumber);
-
-        if (!pattern.test(val)) {
-            setSecondaryPhoneErrors("Please enter a valid phone number.");
-        }
-        else {
-            setSecondaryPhoneErrors("");
-            setSecondaryPhone(val);
+            setPhoneErrors("");
+            setPhone(val);
         }
 
         validateForm();
@@ -185,33 +198,143 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
         validateForm();
     }
 
-    React.useEffect(() => {
-        loadCaptchaEnginge(6);
-    }, []);
+    function handleCityChanged(val: string) {
+        setCity(val);
 
+        validateForm();
+    }
+
+    function selectCountry(val: string) {
+        setCountry(val);
+
+        validateForm();
+    }
+
+    function selectRegion(val: string) {
+        setRegion(val);
+
+        validateForm();
+    }
+
+    function handlePostalCodeChanged(val: string) {
+        setPostalCode(val);
+        validateForm();
+    }
+
+    function handleLatitudeChanged(val: string) {
+        try {
+            if (val) {
+                var floatVal = parseFloat(val);
+
+                if (floatVal < -90 || floatVal > 90) {
+                    setLatitudeErrors("Latitude must be => -90 and <= 90");
+                }
+                else {
+                    setLatitude(floatVal);
+                    setLatitudeErrors("");
+                }
+            }
+            else {
+                setLatitudeErrors("Latitude must be => -90 and <= 90");
+            }
+        }
+        catch {
+            setLatitudeErrors("Latitude must be a valid number.");
+        }
+
+        validateForm();
+    }
+
+    function handleLongitudeChanged(val: string) {
+        try {
+            if (val) {
+                var floatVal = parseFloat(val);
+
+                if (floatVal < -180 || floatVal > 180) {
+                    setLongitudeErrors("Longitude must be >= -180 and <= 180");
+                }
+                else {
+                    setLongitude(floatVal);
+                    setLongitudeErrors("");
+                }
+            }
+            else {
+                setLongitudeErrors("Longitude must be >= -180 and <= 180");
+            }
+        }
+        catch {
+            setLongitudeErrors("Longitude must be a valid number");
+        }
+
+        validateForm();
+    }
 
     function renderNameToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerRequestName}</Tooltip>
     }
 
-    function renderPrimaryEmailToolTip(props: any) {
+    function renderEmailToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerRequestPrimaryEmail}</Tooltip>
     }
 
-    function renderSecondaryEmailToolTip(props: any) {
+    function renderWebsiteToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerRequestSecondaryEmail}</Tooltip>
     }
 
-    function renderPrimaryPhoneToolTip(props: any) {
+    function renderPhoneToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerRequestPrimaryPhone}</Tooltip>
-    }
-
-    function renderSecondaryPhoneToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestSecondaryPhone}</Tooltip>
     }
 
     function renderNotesToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerRequestNotes}</Tooltip>
+    }
+
+    function renderCityToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerRequestCity}</Tooltip>
+    }
+
+    function renderCountryToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerRequestCountry}</Tooltip>
+    }
+
+    function renderRegionToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerRequestRegion}</Tooltip>
+    }
+
+    function renderPostalCodeToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerRequestPostalCode}</Tooltip>
+    }
+
+    function renderLatitudeToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerRequestLatitude}</Tooltip>
+    }
+
+    function renderLongitudeToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerRequestLongitude}</Tooltip>
+    }
+
+    function handleLocationChange(point: data.Position) {
+        // In an Azure Map point, the longitude is the first position, and latitude is second
+        setLatitude(point[1]);
+        setLongitude(point[0]);
+        var locationString = point[1] + ',' + point[0]
+        var headers = getDefaultHeaders('GET');
+
+        MapStore.getKey()
+            .then(key => {
+                fetch('https://atlas.microsoft.com/search/address/reverse/json?subscription-key=' + key + '&api-version=1.0&query=' + locationString, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<AddressData>)
+                    .then(data => {
+                        setCity(data.addresses[0].address.municipality);
+                        setCountry(data.addresses[0].address.country);
+                        setRegion(data.addresses[0].address.countrySubdivisionName);
+                        setPostalCode(data.addresses[0].address.postalCode);
+                        validateForm();
+                    })
+            })
     }
 
     return (
@@ -230,40 +353,31 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
                     </Col>
                     <Col>
                         <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderPrimaryEmailToolTip}>
-                                <Form.Label className="control-label">Primary Email:</Form.Label>
+                            <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
+                                <Form.Label className="control-label">Email:</Form.Label>
                             </OverlayTrigger>
-                            <Form.Control type="text" defaultValue={primaryEmail} maxLength={parseInt('64')} onChange={(val) => handlePrimaryEmailChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{primaryEmailErrors}</span>
+                            <Form.Control type="text" defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required />
+                            <span style={{ color: "red" }}>{emailErrors}</span>
                         </Form.Group >
                     </Col>
                     <Col>
                         <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderSecondaryEmailToolTip}>
-                                <Form.Label className="control-label">Secondary Email:</Form.Label>
+                            <OverlayTrigger placement="top" overlay={renderWebsiteToolTip}>
+                                <Form.Label className="control-label">Website:</Form.Label>
                             </OverlayTrigger>
-                            <Form.Control type="text" defaultValue={secondaryEmail} maxLength={parseInt('64')} onChange={(val) => handleSecondaryEmailChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{secondaryEmailErrors}</span>
+                            <Form.Control type="text" defaultValue={website} maxLength={parseInt('64')} onChange={(val) => handleWebsiteChanged(val.target.value)} required />
+                            <span style={{ color: "red" }}>{websiteErrors}</span>
                         </Form.Group >
                     </Col>
                 </Form.Row>
                 <Form.Row>
                     <Col>
                         <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderPrimaryPhoneToolTip}>
-                                <Form.Label className="control-label">Primary Phone:</Form.Label>
+                            <OverlayTrigger placement="top" overlay={renderPhoneToolTip}>
+                                <Form.Label className="control-label">Phone:</Form.Label>
                             </OverlayTrigger>
-                            <Form.Control type="text" defaultValue={primaryPhone} maxLength={parseInt('64')} onChange={(val) => handlePrimaryPhoneChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{primaryPhoneErrors}</span>
-                        </Form.Group >
-                    </Col>
-                    <Col>
-                        <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderSecondaryPhoneToolTip}>
-                                <Form.Label className="control-label">Secondary Phone:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" defaultValue={secondaryPhone} maxLength={parseInt('64')} onChange={(val) => handleSecondaryPhoneChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{secondaryPhoneErrors}</span>
+                            <Form.Control type="text" defaultValue={phone} maxLength={parseInt('64')} onChange={(val) => handlePhoneChanged(val.target.value)} required />
+                            <span style={{ color: "red" }}>{phoneErrors}</span>
                         </Form.Group >
                     </Col>
                 </Form.Row>
@@ -274,13 +388,79 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
                     <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} required />
                     <span style={{ color: "red" }}>{notesErrors}</span>
                 </Form.Group >
-                <Form.Group>
-                    <LoadCanvasTemplateNoReload />
-                </Form.Group>
-                <Form.Group className="required">
-                    <Form.Label className="control-label">CAPTCHA Value:</Form.Label>
-                    <Form.Control type="text" required name="user_captcha_input" />
-                </Form.Group >
+                <Form.Row>
+                    <Col>
+                        <Form.Group className="required">
+                            <OverlayTrigger placement="top" overlay={renderCityToolTip}>
+                                <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
+                            </OverlayTrigger >
+                            <Form.Control type="text" name="city" value={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
+                        </Form.Group>
+                    </Col>
+                    <Col>
+                        <Form.Group>
+                            <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
+                                <Form.Label className="control-label" htmlFor="PostalCode">Postal Code:</Form.Label>
+                            </OverlayTrigger >
+                            <Form.Control type="text" name="postalCode" value={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
+                        </Form.Group>
+                    </Col>
+                </Form.Row>
+                <Form.Row>
+                    <Col>
+                        <Form.Group className="required">
+                            <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
+                                <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
+                            </OverlayTrigger >
+                            <div>
+                                <CountryDropdown name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
+                            </div>
+                        </Form.Group>
+                    </Col>
+                    <Col>
+                        <Form.Group className="required">
+                            <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
+                                <Form.Label className="control-label" htmlFor="Region">Region:</Form.Label>
+                            </OverlayTrigger >
+                            <div>
+                                <RegionDropdown
+                                    country={country ?? ""}
+                                    value={region ?? ""}
+                                    onChange={(val) => selectRegion(val)} />
+                            </div>
+                        </Form.Group>
+                    </Col>
+                </Form.Row>
+                <Form.Row>
+                    <Col>
+                        <Form.Group>
+                            <OverlayTrigger placement="top" overlay={renderLatitudeToolTip}>
+                                <Form.Label className="control-label" htmlFor="Latitude">Latitude:</Form.Label>
+                            </OverlayTrigger>
+                            <Form.Control type="text" name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
+                            <span style={{ color: "red" }}>{latitudeErrors}</span>
+                        </Form.Group>
+                    </Col>
+                    <Col>
+                        <Form.Group>
+                            <OverlayTrigger placement="top" overlay={renderLongitudeToolTip}>
+                                <Form.Label className="control-label" htmlFor="Longitude">Longitude:</Form.Label>
+                            </OverlayTrigger >
+                            <Form.Control type="text" name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
+                            <span style={{ color: "red" }}>{longitudeErrors}</span>
+                        </Form.Group>
+                    </Col>
+                </Form.Row>
+                <Form.Row>
+                    <Form.Label>Click on the map to set the location for your Partner. The location fields above will be automatically populated.</Form.Label>
+                </Form.Row>
+                <Form.Row>
+                    <AzureMapsProvider>
+                        <>
+                            <MapControllerSinglePointNoEvents center={center} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isDraggable={true} />
+                        </>
+                    </AzureMapsProvider>
+                </Form.Row>
                 <Form.Group className="form-group">
                     <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Save</Button>
                     <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>

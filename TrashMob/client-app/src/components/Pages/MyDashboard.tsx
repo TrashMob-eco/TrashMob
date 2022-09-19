@@ -15,9 +15,8 @@ import calendarclock from '../assets/card/calendarclock.svg';
 import bucketplus from '../assets/card/bucketplus.svg';
 import { Eye, PersonX, Link as LinkIcon, Pencil } from 'react-bootstrap-icons';
 import StatsData from '../Models/StatsData';
-import CommunityRequestData from '../Models/CommunityRequestData';
-import CommunityData from '../Models/CommunityData';
 import PartnerData from '../Models/PartnerData';
+import PartnerRequestData from '../Models/PartnerRequestData';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -26,8 +25,7 @@ interface MyDashboardProps extends RouteComponentProps<any> {
 
 const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [myEventList, setMyEventList] = useState<EventData[]>([]);
-    const [myCommunityRequests, setMyCommunityRequests] = useState<CommunityRequestData[]>([]);
-    const [myCommunities, setMyCommunities] = useState<CommunityData[]>([]);
+    const [myPartnerRequests, setMyPartnerRequests] = useState<PartnerRequestData[]>([]);
     const [myPartners, setMyPartners] = useState<PartnerData[]>([]);
     const [isEventDataLoaded, setIsEventDataLoaded] = useState<boolean>(false);
     const [center, setCenter] = useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
@@ -87,44 +85,24 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         setIsEventDataLoaded(true);
                     });
 
-                fetch('/api/communityrequests/' + props.currentUser.id, {
+                fetch('/api/partnerrequests/' + props.currentUser.id, {
                     method: 'GET',
                     headers: headers
                 })
                     .then(response => {
                         if (response.ok) {
-                            return response.json() as Promise<CommunityRequestData[]>
+                            return response.json() as Promise<PartnerRequestData[]>
                         }
                         else {
-                            throw new Error("No Community Requests found for this user");
+                            throw new Error("No Partner Requests found for this user");
                         }
                     })
                     .then(data => {
-                        setMyCommunityRequests(data);
+                        setMyPartnerRequests(data);
                         return;
                     })
                     .catch(_ => {
-                        setMyCommunityRequests([]);
-                    });
-
-                fetch('/api/communityusers/getcommunitiesforuser/' + props.currentUser.id, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            return response.json() as Promise<CommunityData[]>
-                        }
-                        else {
-                            throw new Error("No Communities found for this user");
-                        }
-                    })
-                    .then(data => {
-                        setMyCommunities(data);
-                        return;
-                    })
-                    .catch(_ => {
-                        setMyCommunities([]);
+                        setMyPartnerRequests([]);
                     });
 
                 fetch('/api/partnerusers/getpartnersforuser/' + props.currentUser.id, {
@@ -335,18 +313,18 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         )
     }
 
-    const CommunityRequestsTable = () => {
+    const PartnerRequestsTable = () => {
         const headerTitles = ['City', 'Region', 'Country']
-        if (myCommunityRequests) {
+        if (myPartnerRequests) {
             return (
                 <div className="bg-white p-3 px-4">
                     <Table columnHeaders={headerTitles} >
-                        {myCommunityRequests.sort((a, b) => (a.city < b.city) ? 1 : -1).map(communityRequest => {
+                        {myPartnerRequests.sort((a, b) => (a.city < b.city) ? 1 : -1).map(partnerRequest => {
                             return (
-                                <tr key={communityRequest.id.toString()}>
-                                    <td>{communityRequest.city}</td>
-                                    <td>{communityRequest.region}</td>
-                                    <td>{communityRequest.country}</td>
+                                <tr key={partnerRequest.id.toString()}>
+                                    <td>{partnerRequest.city}</td>
+                                    <td>{partnerRequest.region}</td>
+                                    <td>{partnerRequest.country}</td>
                                 </tr>
                             )
                         }
@@ -362,38 +340,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     </Table>
                 </div >
             )
-        }
-    }
-
-    const CommunitiesTable = () => {
-        const headerTitles = ['City', 'Region', 'Country']
-
-        if (myCommunities) {
-            return (
-                <div className="bg-white p-3 px-4">
-                    <Table columnHeaders={headerTitles} >
-                        {
-                            myCommunities.sort((a, b) => (a.city < b.city) ? 1 : -1).map(community => {
-                                return (
-                                    <tr key={community.id.toString()}>
-                                        <td>{community.city}</td>
-                                        <td>{community.region}</td>
-                                        <td>{community.country}</td>
-                                    </tr>
-                                )
-                            }
-                            )}
-                    </Table>
-                </div >
-            );
-        }
-        else {
-            return (
-                <div className="bg-white p-3 px-4">
-                    <Table columnHeaders={headerTitles} >
-                    </Table>
-                </div >
-                )
         }
     }
 
@@ -525,18 +471,11 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         : <PastEventsTable />}
                 </div>
                 <div className="d-flex my-5 mb-4 justify-content-between">
-                    <h4 className="font-weight-bold mr-2 mt-0 text-decoration-underline">My Community Requests ({myCommunityRequests.length})</h4>
+                    <h4 className="font-weight-bold mr-2 mt-0 text-decoration-underline">My Partner Requests ({myPartnerRequests.length})</h4>
                     <Link className="btn btn-primary banner-button" to="/communityrequest">Create Community Request</Link>
                 </div>
                 <div className="mb-4 bg-white">
-                    <CommunityRequestsTable />
-                </div>
-                <div className="d-flex my-5 mb-4 justify-content-between">
-                    <h4 className="font-weight-bold mr-2 mt-0 text-decoration-underline">My Communities ({myCommunities.length})</h4>
-                    <Link className="btn btn-primary banner-button" to="/managecommunitydashboard">Create Community</Link>
-                </div>
-                <div className="mb-4 bg-white">
-                    <CommunitiesTable />
+                    <PartnerRequestsTable />
                 </div>
                 <div className="d-flex my-5 mb-4 justify-content-between">
                     <h4 className="font-weight-bold mr-2 mt-0 text-decoration-underline">My Partners ({myPartners.length})</h4>

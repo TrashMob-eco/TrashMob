@@ -4,26 +4,26 @@ import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
-import CommunityDocumentData from '../Models/CommunityDocumentData';
+import PartnerDocumentData from '../Models/PartnerDocumentData';
 
-export interface CommunityDocumentsDataProps {
-    communityId: string;
+export interface PartnerDocumentsDataProps {
+    partnerId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
 };
 
-export const CommunityDocuments: React.FC<CommunityDocumentsDataProps> = (props) => {
+export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => {
 
     const [documentName, setDocumentName] = React.useState<string>("");
     const [documentUrl, setDocumentUrl] = React.useState<string>("");
-    const [documents, setDocuments] = React.useState<CommunityDocumentData[]>([]);
+    const [documents, setDocuments] = React.useState<PartnerDocumentData[]>([]);
     const [isDocumentsDataLoaded, setIsDocumentsDataLoaded] = React.useState<boolean>(false);
 
     React.useEffect(() => {
 
         const headers = getDefaultHeaders('GET');
 
-        if (props.isUserLoaded && props.communityId && props.communityId !== Guid.EMPTY) {
+        if (props.isUserLoaded && props.partnerId && props.partnerId !== Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
 
             var request = {
@@ -34,21 +34,21 @@ export const CommunityDocuments: React.FC<CommunityDocumentsDataProps> = (props)
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/communitydocuments/' + props.communityId, {
+                fetch('/api/partnerdocuments/' + props.partnerId, {
                     method: 'GET',
                     headers: headers,
                 })
-                    .then(response => response.json() as Promise<CommunityDocumentData[]>)
+                    .then(response => response.json() as Promise<PartnerDocumentData[]>)
                     .then(data => {
                         setDocuments(data);
                         setIsDocumentsDataLoaded(true);
                     });
             });
         }
-    }, [props.communityId, props.isUserLoaded])
+    }, [props.partnerId, props.isUserLoaded])
 
     function removeDocument(documentId: string, documentName: string) {
-        if (!window.confirm("Please confirm that you want to remove document with name: '" + documentName + "' as a document from this Community?"))
+        if (!window.confirm("Please confirm that you want to remove document with name: '" + documentName + "' as a document from this Partner?"))
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
@@ -62,7 +62,7 @@ export const CommunityDocuments: React.FC<CommunityDocumentsDataProps> = (props)
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/communitydocuments/' + props.communityId + '/' + documentId, {
+                fetch('/api/partnerdocuments/' + props.partnerId + '/' + documentId, {
                     method: 'DELETE',
                     headers: headers,
                 })
@@ -82,7 +82,7 @@ export const CommunityDocuments: React.FC<CommunityDocumentsDataProps> = (props)
             account: account
         };
 
-        var documentData = new CommunityDocumentData();
+        var documentData = new PartnerDocumentData();
         documentData.name = documentName;
         documentData.url = documentUrl ?? 0;
 
@@ -90,7 +90,7 @@ export const CommunityDocuments: React.FC<CommunityDocumentsDataProps> = (props)
             const headers = getDefaultHeaders('POST');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/communitydocuments/' + props.communityId, {
+            fetch('/api/partnerdocuments/' + props.partnerId, {
                   method: 'POST',
                   headers: headers,
                  })
@@ -107,14 +107,14 @@ export const CommunityDocuments: React.FC<CommunityDocumentsDataProps> = (props)
 
 
     function renderDocumentNameToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.CommunityDocumentName}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.PartnerDocumentName}</Tooltip>
     }
 
     function renderDocumentUrlToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.CommunityDocumentUrl}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.PartnerDocumentUrl}</Tooltip>
     }
 
-    function renderCommunityDocumentsTable(documents: CommunityDocumentData[]) {
+    function renderPartnerDocumentsTable(documents: PartnerDocumentData[]) {
         return (
             <div>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
@@ -140,7 +140,7 @@ export const CommunityDocuments: React.FC<CommunityDocumentsDataProps> = (props)
         );
     }
 
-    function renderAddCommunitySocialMediaAccount() {
+    function renderAddPartnerSocialMediaAccount() {
         return (
             <div>
                 <Form onSubmit={handleAddDocument}>
@@ -173,10 +173,10 @@ export const CommunityDocuments: React.FC<CommunityDocumentsDataProps> = (props)
     return (
         <>
             <div>
-                {props.communityId === Guid.EMPTY && <p> <em>Community must be created first.</em></p>}
-                {!isDocumentsDataLoaded && props.communityId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-                {isDocumentsDataLoaded && renderCommunityDocumentsTable(documents)}
-                {renderAddCommunitySocialMediaAccount()}
+                {props.partnerId === Guid.EMPTY && <p> <em>Partner must be created first.</em></p>}
+                {!isDocumentsDataLoaded && props.partnerId !== Guid.EMPTY && <p><em>Loading...</em></p>}
+                {isDocumentsDataLoaded && renderPartnerDocumentsTable(documents)}
+                {renderAddPartnerSocialMediaAccount()}
             </div>
         </>
     );

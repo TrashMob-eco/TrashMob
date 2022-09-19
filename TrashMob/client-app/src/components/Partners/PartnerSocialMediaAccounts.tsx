@@ -7,13 +7,13 @@ import { Guid } from 'guid-typescript';
 import SocialMediaAccountData from '../Models/SocialMediaAccountData';
 import SocialMediaAccountTypeData from '../Models/SocialMediaAccountTypeData';
 
-export interface CommunitySocialMediaAccountsDataProps {
-    communityId: string;
+export interface PartnerSocialMediaAccountsDataProps {
+    partnerId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
 };
 
-export const CommunitySocialMediaAccounts: React.FC<CommunitySocialMediaAccountsDataProps> = (props) => {
+export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsDataProps> = (props) => {
 
     const [accountName, setAccountName] = React.useState<string>("");
     const [socialMediaAccounts, setSocialMediaAccounts] = React.useState<SocialMediaAccountData[]>([]);
@@ -34,7 +34,7 @@ export const CommunitySocialMediaAccounts: React.FC<CommunitySocialMediaAccounts
                 setSocialMediaAccountTypeList(data);
             });
 
-        if (props.isUserLoaded && props.communityId && props.communityId !== Guid.EMPTY) {
+        if (props.isUserLoaded && props.partnerId && props.partnerId !== Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
 
             var request = {
@@ -45,7 +45,7 @@ export const CommunitySocialMediaAccounts: React.FC<CommunitySocialMediaAccounts
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/communitysocialmediaaccounts/' + props.communityId, {
+                fetch('/api/partnersocialmediaaccounts/' + props.partnerId, {
                     method: 'GET',
                     headers: headers,
                 })
@@ -56,10 +56,10 @@ export const CommunitySocialMediaAccounts: React.FC<CommunitySocialMediaAccounts
                     });
             });
         }
-    }, [props.communityId, props.isUserLoaded])
+    }, [props.partnerId, props.isUserLoaded])
 
     function removeAccount(userId: string, accountName: string) {
-        if (!window.confirm("Please confirm that you want to remove social media account with name: '" + accountName + "' as a social media account from this Community?"))
+        if (!window.confirm("Please confirm that you want to remove social media account with name: '" + accountName + "' as a social media account from this Partner?"))
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
@@ -73,7 +73,7 @@ export const CommunitySocialMediaAccounts: React.FC<CommunitySocialMediaAccounts
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/communitysocialmediaaccounts/' + props.communityId + '/' + userId, {
+                fetch('/api/partnersocialmediaaccounts/' + props.partnerId + '/' + userId, {
                     method: 'DELETE',
                     headers: headers,
                 })
@@ -101,7 +101,7 @@ export const CommunitySocialMediaAccounts: React.FC<CommunitySocialMediaAccounts
             const headers = getDefaultHeaders('POST');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/communitysocialmediaaccounts/' + props.communityId, {
+            fetch('/api/partnersocialmediaaccounts/' + props.partnerId, {
                   method: 'POST',
                   headers: headers,
                  })
@@ -125,7 +125,7 @@ export const CommunitySocialMediaAccounts: React.FC<CommunitySocialMediaAccounts
         return <Tooltip {...props}>{ToolTips.SocialMediaAccountType}</Tooltip>
     }
 
-    function renderCommunitySocialMediaAccountsTable(accounts: SocialMediaAccountData[]) {
+    function renderPartnerSocialMediaAccountsTable(accounts: SocialMediaAccountData[]) {
         return (
             <div>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
@@ -151,7 +151,7 @@ export const CommunitySocialMediaAccounts: React.FC<CommunitySocialMediaAccounts
         );
     }
 
-    function renderAddCommunitySocialMediaAccount() {
+    function renderAddPartnerSocialMediaAccount() {
         return (
             <div>
                 <Form onSubmit={handleAddSocialMediaAccount}>
@@ -189,10 +189,10 @@ export const CommunitySocialMediaAccounts: React.FC<CommunitySocialMediaAccounts
     return (
         <>
             <div>
-                {props.communityId === Guid.EMPTY && <p> <em>Community must be created first.</em></p>}
-                {!isSocialMediaAccountsDataLoaded && props.communityId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-                {isSocialMediaAccountsDataLoaded && renderCommunitySocialMediaAccountsTable(socialMediaAccounts)}
-                {renderAddCommunitySocialMediaAccount()}
+                {props.partnerId === Guid.EMPTY && <p> <em>Partner must be created first.</em></p>}
+                {!isSocialMediaAccountsDataLoaded && props.partnerId !== Guid.EMPTY && <p><em>Loading...</em></p>}
+                {isSocialMediaAccountsDataLoaded && renderPartnerSocialMediaAccountsTable(socialMediaAccounts)}
+                {renderAddPartnerSocialMediaAccount()}
             </div>
         </>
     );

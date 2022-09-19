@@ -10,15 +10,15 @@
     using TrashMob.Shared.Persistence;
 
     [Authorize]
-    [Route("api/communitycontacts")]
-    public class CommunityContactsController : BaseController
+    [Route("api/partnersocialmediaaccounts")]
+    public class PartnerSocialMediaAccountController : BaseController
     {
-        private readonly IBaseManager<CommunityContact> manager;
+        private readonly IBaseManager<PartnerSocialMediaAccount> manager;
         private readonly IUserRepository userRepository;
 
-        public CommunityContactsController(IBaseManager<CommunityContact> manager, 
-                                             IUserRepository userRepository,
-                                             TelemetryClient telemetryClient)
+        public PartnerSocialMediaAccountController(IBaseManager<PartnerSocialMediaAccount> manager, 
+                                          IUserRepository userRepository,
+                                          TelemetryClient telemetryClient)
             : base(telemetryClient)
         {
             this.manager = manager;
@@ -26,7 +26,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCommunityContact(CommunityContact communityContact)
+        public async Task<IActionResult> AddCommunitySocialMediaAccount(PartnerSocialMediaAccount communitySocialMediaAccount)
         {
             var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
 
@@ -35,8 +35,8 @@
                 return Forbid();
             }
 
-            await manager.Add(communityContact, currentUser.Id).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddCommunityContact));
+            await manager.Add(communitySocialMediaAccount, currentUser.Id).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(AddCommunitySocialMediaAccount));
 
             return Ok();
         }
