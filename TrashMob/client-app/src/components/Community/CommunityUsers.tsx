@@ -3,11 +3,10 @@ import UserData from '../Models/UserData';
 import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
+import { Guid } from 'guid-typescript';
 
 export interface CommunityUsersDataProps {
     communityId: string;
-    users: UserData[];
-    isUserDataLoaded: boolean;
     onCommunityUsersUpdated: any;
     isUserLoaded: boolean;
     currentUser: UserData;
@@ -16,6 +15,34 @@ export interface CommunityUsersDataProps {
 export const CommunityUsers: React.FC<CommunityUsersDataProps> = (props) => {
 
     const [userName, setUserName] = React.useState<string>("");
+    const [communityUsers, setCommunityUsers] = React.useState<UserData[]>([]);
+    const [isCommunityUserDataLoaded, setIsCommunityUserDataLoaded] = React.useState<boolean>(false);
+
+    React.useEffect(() => {
+        if (props.isUserLoaded && props.communityId && props.communityId !== Guid.EMPTY) {
+            const account = msalClient.getAllAccounts()[0];
+
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                fetch('/api/communityusers/' + props.communityId, {
+                    method: 'GET',
+                    headers: headers,
+                })
+                    .then(response => response.json() as Promise<UserData[]>)
+                    .then(data => {
+                        setCommunityUsers(data);
+                        setIsCommunityUserDataLoaded(true);
+                    });
+            });
+        }
+    }, [props.communityId, props.isUserLoaded])
 
     function removeUser(userId: string, userName: string) {
         if (!window.confirm("Please confirm that you want to remove user with userName: '" + userName + "' as a user from this Community?"))
@@ -87,7 +114,7 @@ export const CommunityUsers: React.FC<CommunityUsersDataProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.CommunityUserNameSearch}</Tooltip>
     }
 
-    function renderUsersTable(users: UserData[]) {
+    function renderCommunityUsersTable(users: UserData[]) {
         return (
             <div>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
@@ -113,7 +140,7 @@ export const CommunityUsers: React.FC<CommunityUsersDataProps> = (props) => {
         );
     }
 
-    function renderAddUser() {
+    function renderAddCommunityUser() {
         return (
             <div>
                 <Form onSubmit={handleAddUser}>
@@ -136,9 +163,10 @@ export const CommunityUsers: React.FC<CommunityUsersDataProps> = (props) => {
     return (
         <>
             <div>
-                {!props.isUserDataLoaded && <p><em>Loading...</em></p>}
-                {props.isUserDataLoaded && props.users && renderUsersTable(props.users)}
-                {renderAddUser()}
+                {props.communityId === Guid.EMPTY && <p> <em>Community must be created first.</em></p>}
+                {!isCommunityUserDataLoaded && props.communityId !== Guid.EMPTY && <p><em>Loading...</em></p>}
+                {isCommunityUserDataLoaded && renderCommunityUsersTable(communityUsers)}
+                {renderAddCommunityUser()}
             </div>
         </>
     );

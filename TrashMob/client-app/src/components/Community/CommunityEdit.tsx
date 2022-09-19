@@ -12,35 +12,75 @@ import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapControllerSinglePointNoEvent from '../MapControllerSinglePointNoEvent';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
+import { Guid } from 'guid-typescript';
 
 export interface CommunityEditDataProps {
-    community: CommunityData;
-    communityStatusList: CommunityStatusData[];
-    isCommunityDataLoaded: boolean;
+    communityId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
-    onCommunityUpdated: any;
     onEditCanceled: any;
+    onEditSave: any;
 };
 
 export const CommunityEdit: React.FC<CommunityEditDataProps> = (props) => {
 
-    const [communityId, setCommunityId] = React.useState<string>(props.community.id);
-    const [city, setCity] = React.useState<string>(props.community.city);
-    const [region, setRegion] = React.useState<string>(props.community.region);
-    const [country, setCountry] = React.useState<string>(props.community.country);
-    const [postalCode, setPostalCode] = React.useState<string>(props.community.postalCode);
-    const [communityStatusId, setCommunityStatusId] = React.useState<number>(props.community.communityStatusId);
+    const [communityId, setCommunityId] = React.useState<string>(props.communityId);
+    const [city, setCity] = React.useState<string>();
+    const [country, setCountry] = React.useState<string>();
+    const [region, setRegion] = React.useState<string>();
+    const [postalCode, setPostalCode] = React.useState<string>();
     const [latitude, setLatitude] = React.useState<number>(0);
     const [longitude, setLongitude] = React.useState<number>(0);
+    const [communityStatusId, setCommunityStatusId] = React.useState<number>(0);
+    const [communityStatusList, setCommunityStatusList] = React.useState<CommunityStatusData[]>([]);
     const [latitudeErrors, setLatitudeErrors] = React.useState<string>("");
     const [longitudeErrors, setLongitudeErrors] = React.useState<string>("");
+    const [createdByUserId, setCreatedByUserId] = React.useState<string>();
+    const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
+    const [isDataLoaded, setIsDataLoaded] = React.useState<boolean>(false);
+    const [title, setTitle] = React.useState<string>("Create Community");
 
     React.useEffect(() => {
+
+        const headers = getDefaultHeaders('GET');
+
+        fetch('/api/communitystatuses', {
+            method: 'GET',
+            headers: headers
+        })
+            .then(response => response.json() as Promise<Array<any>>)
+            .then(data => {
+                setCommunityStatusList(data);
+            })
+
+            // This will set state for Edit Community
+            if (communityId !== null && communityId !== "" && communityId !== Guid.EMPTY) {
+            setTitle("Edit Community");
+            fetch('/api/Communities/' + communityId, {
+                method: 'GET',
+                headers: headers
+            })
+                .then(response => response.json() as Promise<CommunityData>)
+                .then(communityData => {
+                    setCommunityId(communityData.id);
+                    setCity(communityData.city);
+                    setCountry(communityData.country);
+                    setRegion(communityData.region);
+                    setPostalCode(communityData.postalCode);
+                    setLatitude(communityData.latitude);
+                    setLongitude(communityData.longitude);
+                    setCreatedByUserId(communityData.createdByUserId);
+                    setCreatedDate(communityData.createdDate);
+                    setCommunityStatusId(communityData.communityStatusId);
+                    setCenter(new data.Position(communityData.longitude, communityData.latitude));
+                    setIsDataLoaded(true);
+                });
+        }
+
         MapStore.getOption().then(opts => {
             setMapOptions(opts);
             setIsMapKeyLoaded(true);
@@ -78,7 +118,7 @@ export const CommunityEdit: React.FC<CommunityEditDataProps> = (props) => {
         setIsSaveEnabled(false);
 
         var communityData = new CommunityData();
-        communityData.id = props.community.id;
+        communityData.id = communityId;
         communityData.city = city ?? "";
         communityData.region = region ?? "";
         communityData.country = country ?? "";
@@ -86,8 +126,8 @@ export const CommunityEdit: React.FC<CommunityEditDataProps> = (props) => {
         communityData.latitude = latitude ?? "";
         communityData.longitude = longitude ?? "";
         communityData.communityStatusId = communityStatusId ?? 2;
-        communityData.createdByUserId = props.community.createdByUserId ?? props.currentUser.id;
-        communityData.createdDate = props.community.createdDate;
+        communityData.createdByUserId = createdByUserId ?? props.currentUser.id;
+        communityData.createdDate = createdDate;
         communityData.lastUpdatedByUserId = props.currentUser.id;
 
         var data = JSON.stringify(communityData);
@@ -108,9 +148,6 @@ export const CommunityEdit: React.FC<CommunityEditDataProps> = (props) => {
                 body: data,
                 headers: headers,
             })
-                .then(() => {
-                    props.onCommunityUpdated()
-                });
         });
     }
 
@@ -258,91 +295,104 @@ export const CommunityEdit: React.FC<CommunityEditDataProps> = (props) => {
 
         validateForm();
     }
+    // Returns the HTML Form to the render() method.  
+    function renderCreateForm(typeList: Array<CommunityStatusData>) {
 
-    return (
-        <div className="container-fluid card">
-            <h1>Edit Community</h1>
-            <Form onSubmit={handleSave} >
-                <Form.Row>
-                    <Col>
-                        <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderCityToolTip}>
-                                <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
-                            </OverlayTrigger >
-                            <Form.Control className="control-label" disabled type="text" name="city" value={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
-                        </Form.Group>
-                    </Col>
-                    <Col>
+        return (
+            <div className="container-fluid card">
+                <h1>Edit Community</h1>
+                <Form onSubmit={handleSave} >
+                    <Form.Row>
+                        <Col>
+                            <Form.Group className="required">
+                                <OverlayTrigger placement="top" overlay={renderCityToolTip}>
+                                    <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
+                                </OverlayTrigger >
+                                <Form.Control className="control-label" disabled type="text" name="city" value={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
+                                    <Form.Label className="control-label" htmlFor="PostalCode">Postal Code:</Form.Label>
+                                </OverlayTrigger >
+                                <Form.Control type="text" disabled name="postalCode" value={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group className="required">
+                                <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
+                                    <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
+                                </OverlayTrigger >
+                                <div>
+                                    <CountryDropdown disabled name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
+                                </div>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group className="required">
+                                <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
+                                    <Form.Label className="control-label" htmlFor="Region">Region:</Form.Label>
+                                </OverlayTrigger >
+                                <div>
+                                    <RegionDropdown disabled
+                                        country={country ?? ""}
+                                        value={region ?? ""}
+                                        onChange={(val) => selectRegion(val)} />
+                                </div>
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderLatitudeToolTip}>
+                                    <Form.Label className="control-label" htmlFor="Latitude">Latitude:</Form.Label>
+                                </OverlayTrigger>
+                                <Form.Control type="text" disabled name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
+                                <span style={{ color: "red" }}>{latitudeErrors}</span>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderLongitudeToolTip}>
+                                    <Form.Label className="control-label" htmlFor="Longitude">Longitude:</Form.Label>
+                                </OverlayTrigger >
+                                <Form.Control type="text" disabled name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
+                                <span style={{ color: "red" }}>{longitudeErrors}</span>
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
                         <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                <Form.Label className="control-label" htmlFor="PostalCode">Postal Code:</Form.Label>
-                            </OverlayTrigger >
-                            <Form.Control type="text" disabled name="postalCode" value={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
+                            <Button disabled={!isSaveEnabled} type="submit" className="btn btn-default">Save</Button>
+                            <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
                         </Form.Group>
-                    </Col>
-                </Form.Row>
-                <Form.Row>
-                    <Col>
-                        <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
-                                <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
-                            </OverlayTrigger >
-                            <div>
-                                <CountryDropdown disabled name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
-                            </div>
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
-                                <Form.Label className="control-label" htmlFor="Region">Region:</Form.Label>
-                            </OverlayTrigger >
-                            <div>
-                                <RegionDropdown disabled
-                                    country={country ?? ""}
-                                    value={region ?? ""}
-                                    onChange={(val) => selectRegion(val)} />
-                            </div>
-                        </Form.Group>
-                    </Col>
-                </Form.Row>
-                <Form.Row>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderLatitudeToolTip}>
-                                <Form.Label className="control-label" htmlFor="Latitude">Latitude:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" disabled name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
-                            <span style={{ color: "red" }}>{latitudeErrors}</span>
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderLongitudeToolTip}>
-                                <Form.Label className="control-label" htmlFor="Longitude">Longitude:</Form.Label>
-                            </OverlayTrigger >
-                            <Form.Control type="text" disabled name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
-                            <span style={{ color: "red" }}>{longitudeErrors}</span>
-                        </Form.Group>
-                    </Col>
-                </Form.Row>
-                <Form.Row>
-                    <Form.Group>
-                        <Button disabled={!isSaveEnabled} type="submit" className="btn btn-default">Save</Button>
-                        <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
-                    </Form.Group>
-                </Form.Row>
-                <Form.Row>
-                    <Form.Label>Search for location or click on the map to set the location for your event. The location fields above will be automatically populated.</Form.Label>
-                </Form.Row>
-                <Form.Row>
-                    <AzureMapsProvider>
-                        <>
-                            <MapControllerSinglePointNoEvent center={center} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isDraggable={true} />
-                        </>
-                    </AzureMapsProvider>
-                </Form.Row>
-            </Form >
-        </div>
-    )
+                    </Form.Row>
+                    <Form.Row>
+                        <Form.Label>Search for location or click on the map to set the location for your event. The location fields above will be automatically populated.</Form.Label>
+                    </Form.Row>
+                    <Form.Row>
+                        <AzureMapsProvider>
+                            <>
+                                <MapControllerSinglePointNoEvent center={center} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isDraggable={true} />
+                            </>
+                        </AzureMapsProvider>
+                    </Form.Row>
+                </Form >
+            </div>
+        )
+    }
+
+    var contents = isDataLoaded && communityId
+        ? renderCreateForm(communityStatusList)
+        : <p><em>Loading...</em></p>;
+
+    return <div>
+        <h3>{title}</h3>
+        <hr />
+        {contents}
+    </div>;
 }

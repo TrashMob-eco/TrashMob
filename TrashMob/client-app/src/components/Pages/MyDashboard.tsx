@@ -533,14 +533,14 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                 </div>
                 <div className="d-flex my-5 mb-4 justify-content-between">
                     <h4 className="font-weight-bold mr-2 mt-0 text-decoration-underline">My Communities ({myCommunities.length})</h4>
-                    <Link className="btn btn-primary banner-button" to="/communitydashbaord">Create Community</Link>
+                    <Link className="btn btn-primary banner-button" to="/managecommunitydashboard">Create Community</Link>
                 </div>
                 <div className="mb-4 bg-white">
                     <CommunitiesTable />
                 </div>
                 <div className="d-flex my-5 mb-4 justify-content-between">
                     <h4 className="font-weight-bold mr-2 mt-0 text-decoration-underline">My Partners ({myPartners.length})</h4>
-                    <Link className="btn btn-primary banner-button" to="/partnerdashbaord">Create Partner</Link>
+                    <Link className="btn btn-primary banner-button" to="/partnerdashboard">Create Partner</Link>
                 </div>
                 <div className="mb-4 bg-white">
                     <PartnersTable />
