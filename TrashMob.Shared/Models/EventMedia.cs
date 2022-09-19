@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class EventMedia : ExtendedBaseModel
+    public class EventMedia : KeyedModel
     {
         public Guid EventId { get; set; }
 

@@ -4,7 +4,7 @@ namespace TrashMob.Shared.Models
 {
     using System;
 
-    public partial class NonEventUserNotification : BaseModel
+    public partial class NonEventUserNotification : KeyedModel
     {
         public Guid UserId { get; set; }
 

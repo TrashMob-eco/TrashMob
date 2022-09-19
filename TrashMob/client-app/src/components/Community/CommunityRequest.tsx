@@ -98,7 +98,7 @@ export const CommunityRequest: React.FC<CommunityRequestProps> = (props) => {
             const headers = getDefaultHeaders('POST');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/CommunityRequest', {
+            fetch('/api/CommunityRequests', {
                 method: 'POST',
                 body: data,
                 headers: headers,

@@ -1,21 +1,23 @@
 ﻿
 namespace TrashMob.Shared.Managers
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    public class CommunityRequestManager : ExtendedManager<CommunityRequest>, IExtendedManager<CommunityRequest>
+    public class CommunityRequestManager : KeyedManager<CommunityRequest>, IKeyedManager<CommunityRequest>
     {
         private readonly IEmailManager emailManager;
 
-        public CommunityRequestManager(IRepository<CommunityRequest> repository, IEmailManager emailManager) : base(repository)
+        public CommunityRequestManager(IKeyedRepository<CommunityRequest> repository, IEmailManager emailManager) : base(repository)
         {
             this.emailManager = emailManager;
-        }      
+        }
 
         public override async Task<CommunityRequest> Add(CommunityRequest communityRequest)
         {

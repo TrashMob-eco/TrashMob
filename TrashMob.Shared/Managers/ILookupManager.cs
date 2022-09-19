@@ -7,18 +7,12 @@
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
 
-    public interface IManager<T> where T : BaseModel
+    public interface ILookupManager<T> where T : LookupModel
     {
         IQueryable<T> Get();
 
         IQueryable<T> Get(Expression<Func<T, bool>> expression);
 
-        Task<T> Add(T instance);
-
-        Task<T> Update(T instance);
-
-        Task<int> Delete(Guid id);
-
-        Task<T> Get(Guid id, CancellationToken cancellationToken = default);
+        Task<T> Get(int id, CancellationToken cancellationToken = default);
     }
 }

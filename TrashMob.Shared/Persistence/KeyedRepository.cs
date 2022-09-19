@@ -2,48 +2,28 @@
 {
     using Microsoft.EntityFrameworkCore;
     using System;
-    using System.Linq;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
     using System.Threading;
-    using System.Linq.Expressions;
 
     /// <summary>
     /// Generic Implementation to save on boilerplate code
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class Repository<T> : IRepository<T> where T : BaseModel
+    public class KeyedRepository<T> : BaseRepository<T>, IKeyedRepository<T> where T : KeyedModel
     {
-        protected readonly MobDbContext mobDbContext;
-        protected readonly DbSet<T> dbSet;
-
-        public Repository(MobDbContext mobDbContext)
+        public KeyedRepository(MobDbContext mobDbContext) : base(mobDbContext)
         {
-            this.mobDbContext = mobDbContext;
-            dbSet = mobDbContext.Set<T>();
-
         }
 
-        public IQueryable<T> Get()
-        {
-            return dbSet.AsNoTracking();
-        }
-
-        public IQueryable<T> Get(Expression<Func<T, bool>> expression)
-        {
-            return dbSet
-                .Where(expression)
-                .AsNoTracking();
-        }
-
-        public async Task<T> Add(T instance)
+        public override async Task<T> Add(T instance)
         {
             dbSet.Add(instance);
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
             return await dbSet.FindAsync(instance.Id).ConfigureAwait(false);
         }
 
-        public async Task<T> Update(T instance)
+        public override async Task<T> Update(T instance)
         {
             dbSet.Update(instance);
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);

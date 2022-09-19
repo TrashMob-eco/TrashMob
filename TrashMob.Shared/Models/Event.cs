@@ -5,7 +5,7 @@ namespace TrashMob.Shared.Models
     using System;
     using System.Collections.Generic;
 
-    public partial class Event : ExtendedBaseModel
+    public partial class Event : KeyedModel
     {
         public Event()
         {

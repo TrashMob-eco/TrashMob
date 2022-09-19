@@ -2,15 +2,11 @@
 
 namespace TrashMob.Shared.Models
 {
-    using System;
-
-    public partial class Community : ExtendedBaseModel
+    public partial class Community : KeyedModel
     {
         public Community()
         {
         }
-
-        public string Name { get; set; }
 
         public string City { get; set; }
 

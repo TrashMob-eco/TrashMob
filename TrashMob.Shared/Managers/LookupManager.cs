@@ -9,25 +9,14 @@ namespace TrashMob.Shared.Managers
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    public abstract class Manager<T> : IManager<T> where T : BaseModel
+    public abstract class LookupManager<T> : ILookupManager<T> where T : LookupModel
     {
-        public Manager(IRepository<T> repository)
+        public LookupManager(ILookupRepository<T> repository)
         {
             Repository = repository;
         }
 
-        protected IRepository<T> Repository { get; }
-
-        public virtual Task<T> Add(T instance)
-        {
-            instance.Id = Guid.NewGuid();
-            return Repository.Add(instance);
-        }
-
-        public virtual Task<int> Delete(Guid id)
-        {
-            return Repository.Delete(id);
-        }
+        protected ILookupRepository<T> Repository { get; }
 
         public virtual IQueryable<T> Get()
         {
@@ -39,14 +28,9 @@ namespace TrashMob.Shared.Managers
             return Repository.Get(expression);
         }
 
-        public virtual Task<T> Get(Guid id, CancellationToken cancellationToken = default)
+        public virtual Task<T> Get(int id, CancellationToken cancellationToken = default)
         {
             return Repository.Get(id, cancellationToken);
-        }
-
-        public virtual Task<T> Update(T instance)
-        {
-            return Repository.Update(instance);
         }
     }
 }

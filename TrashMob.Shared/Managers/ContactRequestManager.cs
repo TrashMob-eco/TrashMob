@@ -8,11 +8,11 @@ namespace TrashMob.Shared.Managers
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    public class ContactRequestManager : Manager<ContactRequest>, IManager<ContactRequest>
+    public class ContactRequestManager : KeyedManager<ContactRequest>, IKeyedManager<ContactRequest>
     {
         private readonly IEmailManager emailManager;
 
-        public ContactRequestManager(IRepository<ContactRequest> repository, IEmailManager emailManager) : base(repository)
+        public ContactRequestManager(IKeyedRepository<ContactRequest> repository, IEmailManager emailManager) : base(repository)
         {
             this.emailManager = emailManager;
         }      

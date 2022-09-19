@@ -4,7 +4,7 @@ namespace TrashMob.Shared.Models
 {
     using System;
 
-    public partial class SiteMetric : BaseModel
+    public partial class SiteMetric : KeyedModel
     {
         public SiteMetric()
         {

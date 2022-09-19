@@ -70,9 +70,6 @@
             mobEvent.EventStatusId = (int)EventStatusEnum.Active;
             mobDbContext.Events.Add(mobEvent);
 
-            var eventHistory = mobEvent.ToEventHistory();
-            mobDbContext.EventHistories.Add(eventHistory);
-
             var newAttendee = new EventAttendee
             {
                 EventId = mobEvent.Id,
@@ -90,8 +87,6 @@
         public async Task<Event> UpdateEvent(Event mobEvent)
         {
             mobDbContext.Entry(mobEvent).State = EntityState.Modified;
-            var eventHistory = mobEvent.ToEventHistory();
-            mobDbContext.EventHistories.Add(eventHistory);
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
             return await mobDbContext.Events.FindAsync(mobEvent.Id).ConfigureAwait(false);
         }

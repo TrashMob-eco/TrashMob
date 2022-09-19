@@ -4,7 +4,7 @@ namespace TrashMob.Shared.Models
 {
     using System;
 
-    public partial class CommunityContact : ExtendedBaseModel
+    public partial class CommunityContact : KeyedModel
     {
         public Guid CommunityId { get; set; }
 
@@ -14,7 +14,7 @@ namespace TrashMob.Shared.Models
         
         public string Email { get; set; }
         
-        public string PhoneNumber { get; set; }
+        public string Phone { get; set; }
 
         public string Notes { get; set; }
 

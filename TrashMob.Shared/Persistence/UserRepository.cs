@@ -96,22 +96,6 @@
 
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
 
-            // Update the history records where the user created or updated the event to set the User to the TrashMob User
-            var eventHistories = mobDbContext.EventHistories.Where(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id);
-
-            foreach (var mobEvent in eventHistories)
-            {
-                if (mobEvent.CreatedByUserId == id)
-                {
-                    mobEvent.CreatedByUserId = TrashMobUserId;
-                }
-
-                if (mobEvent.LastUpdatedByUserId == id)
-                {
-                    mobEvent.LastUpdatedByUserId = TrashMobUserId;
-                }
-            }
-
             // Remove the Partner Requests
             var partnerRequests = mobDbContext.PartnerRequests.Where(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id);
 
