@@ -100,9 +100,9 @@ namespace TrashMob.Shared.Models
 
         public virtual ICollection<CommunityRequest> CommunityRequestsCreated { get; set; }
 
-        public virtual ICollection<CommunityAttachment> CommunityAttachmentsCreated { get; set; }
+        public virtual ICollection<CommunityDocument> CommunityAttachmentsCreated { get; set; }
 
-        public virtual ICollection<CommunityAttachment> CommunityAttachmentsUpdated { get; set; }
+        public virtual ICollection<CommunityDocument> CommunityAttachmentsUpdated { get; set; }
 
         public virtual ICollection<CommunityContact> CommunityContactsCreated { get; set; }
 

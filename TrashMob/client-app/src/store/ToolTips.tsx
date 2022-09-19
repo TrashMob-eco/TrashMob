@@ -93,4 +93,8 @@ export const CommunityStatus = "Whether or not the community is fully onboarded 
 export const CommunityCreatedDate = "Date this record was created."
 export const CommunityLastUpdatedDate = "Date this record was last updated."
 export const CommunityUserNameSearch = "Enter the username of the person you wish to associate to this community."
+export const SocialMediaAccountType = "Enter the provider of this social media account."
+export const SocialMediaAccountName = "Enter the name of this social media account."
+export const CommunityDocumentName = "Enter a friendly name for this document."
+export const CommunityDocumentUrl = "Enter the url where this document is stored."
 

@@ -57,7 +57,7 @@ namespace TrashMob
             services.AddScoped<IDocusignManager, DocusignManager>();
 
             // Migrated Repositories
-            services.AddScoped<IKeyedRepository<CommunityAttachment>, KeyedRepository<CommunityAttachment>>();
+            services.AddScoped<IKeyedRepository<CommunityDocument>, KeyedRepository<CommunityDocument>>();
             services.AddScoped<IKeyedRepository<CommunityContact>, KeyedRepository<CommunityContact>>();
             services.AddScoped<ILookupRepository<CommunityContactType>, LookupRepository<CommunityContactType>>();
             services.AddScoped<IKeyedRepository<Community>, KeyedRepository<Community>>();
@@ -72,7 +72,7 @@ namespace TrashMob
             services.AddScoped<ILookupRepository<SocialMediaAccountType>, LookupRepository<SocialMediaAccountType>>();
 
             // Migrated Managers
-            services.AddScoped<IKeyedManager<CommunityAttachment>, CommunityAttachmentManager>();
+            services.AddScoped<IKeyedManager<CommunityDocument>, CommunityDocumentManager>();
             services.AddScoped<IKeyedManager<CommunityContact>, CommunityContactManager>();
             services.AddScoped<ILookupManager<CommunityContactType>, CommunityContactTypeManager>();
             services.AddScoped<IBaseManager<Community>, CommunityManager>();

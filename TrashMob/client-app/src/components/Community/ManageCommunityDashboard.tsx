@@ -1,14 +1,12 @@
 import * as React from 'react'
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
-import CommunityData from '../Models/CommunityData';
-import { CommunityList } from './CommunityList';
 import { CommunityEdit } from './CommunityEdit';
-import CommunityStatusData from '../Models/CommunityStatusData';
 import { CommunityUsers } from './CommunityUsers';
 import { Button, ButtonGroup, ToggleButton } from 'react-bootstrap';
 import { Guid } from 'guid-typescript';
+import { CommunitySocialMediaAccounts } from './CommunitySocialMediaAccounts';
+import { CommunityDocuments } from './CommunityDocuments';
 
 export interface ManageCommunityDashboardMatchParams {
     communityId?: string;
@@ -28,6 +26,8 @@ const ManageCommunityDashboard: React.FC<ManageCommunityDashboardProps> = (props
     const radios = [
         { name: 'Manage Community', value: '1' },
         { name: 'Manage Community Users', value: '2' },
+        { name: 'Manage Social Media Accounts', value: '3' },
+        { name: 'Manage Documents', value: '4' },
     ];
 
     React.useEffect(() => {
@@ -81,6 +81,24 @@ const ManageCommunityDashboard: React.FC<ManageCommunityDashboardProps> = (props
         )
     }
 
+    function renderSocialMediaAccounts() {
+        return (
+            <div>
+                <h2>Social Media Accounts</h2>
+                <CommunitySocialMediaAccounts communityId={communityId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+            </div >
+        )
+    }
+
+    function renderDocuments() {
+        return (
+            <div>
+                <h2>Documents</h2>
+                <CommunityDocuments communityId={communityId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+            </div >
+        )
+    }
+
     function renderCommunityDashboard() {
         return (
             <div className="card pop">
@@ -104,6 +122,8 @@ const ManageCommunityDashboard: React.FC<ManageCommunityDashboardProps> = (props
 
                 {radioValue === '1' && renderManageCommunity()}
                 {radioValue === '2' && renderCommunityUsers()}
+                {radioValue === '3' && renderSocialMediaAccounts()}
+                {radioValue === '4' && renderDocuments()}
             </div>);
     }
 

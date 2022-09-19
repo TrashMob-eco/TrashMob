@@ -20,7 +20,7 @@
 
         public virtual DbSet<CommunityRequest> CommunityRequests { get; set; }
 
-        public virtual DbSet<CommunityAttachment> CommunityAttachments { get; set; }
+        public virtual DbSet<CommunityDocument> CommunityAttachments { get; set; }
 
         public virtual DbSet<CommunityContact> CommunityContacts { get; set; }
 
@@ -157,13 +157,17 @@
                     .HasConstraintName("FK_Communities_ApplicationUser_LastUpdatedBy");
             });
 
-            modelBuilder.Entity<CommunityAttachment>(entity =>
+            modelBuilder.Entity<CommunityDocument>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.CommunityId);
 
-                entity.Property(e => e.AttachmentUrl)
+                entity.Property(e => e.Name)
+                    .HasMaxLength(64)
+                    .IsRequired();
+
+                entity.Property(e => e.Url)
                     .HasMaxLength(2048)
                     .IsRequired();
 

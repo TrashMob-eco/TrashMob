@@ -1,13 +1,14 @@
 import { Guid } from "guid-typescript";
 
-class CommunityAttachmentData {
+class CommunityDocumentData {
     id: string = Guid.createEmpty().toString();
     communityId: string = Guid.createEmpty().toString();
-    attachmentUrl: string = "";
+    name: string = "";
+    url: string = "";
     createdByUserId: string = "";
     createdDate: Date = new Date();
     lastUpdatedByUserId: string = "";
     lastUpdatedDate: Date = new Date();
 }
 
-export default CommunityAttachmentData;
+export default CommunityDocumentData;
