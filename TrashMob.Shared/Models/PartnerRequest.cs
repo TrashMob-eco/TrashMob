@@ -4,7 +4,7 @@ namespace TrashMob.Shared.Models
 {
     using System;
 
-    public partial class PartnerRequest : ExtendedBaseModel
+    public partial class PartnerRequest : KeyedModel
     {
         public PartnerRequest()
         {

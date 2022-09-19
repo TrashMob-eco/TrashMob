@@ -5,7 +5,7 @@ namespace TrashMob.Shared.Models
     using System;
     using System.Collections.Generic;
 
-    public partial class User : BaseModel
+    public partial class User : KeyedModel
     {
         public User()
         {
@@ -127,5 +127,29 @@ namespace TrashMob.Shared.Models
         public virtual ICollection<CommunitySocialMediaAccount> CommunitySocialMediaAccountsCreated { get; set; }
 
         public virtual ICollection<CommunitySocialMediaAccount> CommunitySocialMediaAccountsUpdated { get; set; }
+
+        public virtual ICollection<NonEventUserNotification> NonEventUserNotificationsCreated { get; set; }
+
+        public virtual ICollection<NonEventUserNotification> NonEventUserNotificationsUpdated { get; set; }
+
+        public virtual ICollection<UserNotification> UserNotificationsCreated { get; set; }
+
+        public virtual ICollection<UserNotification> UserNotificationsUpdated { get; set; }
+
+        public virtual ICollection<User> UsersCreated { get; set; }
+
+        public virtual ICollection<User> UsersUpdated { get; set; }
+
+        public virtual ICollection<ContactRequest> ContactRequestsCreated { get; set; }
+
+        public virtual ICollection<ContactRequest> ContactRequestsUpdated { get; set; }
+
+        public virtual ICollection<MessageRequest> MessageRequestsCreated { get; set; }
+
+        public virtual ICollection<MessageRequest> MessageRequestsUpdated { get; set; }
+
+        public virtual ICollection<SiteMetric> SiteMetricsCreated { get; set; }
+
+        public virtual ICollection<SiteMetric> SiteMetricsUpdated { get; set; }
     }
 }

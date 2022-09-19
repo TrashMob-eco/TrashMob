@@ -1,6 +1,6 @@
 ﻿namespace TrashMob.Shared.Models
 {
-    public class SocialMediaAccount : ExtendedBaseModel
+    public class SocialMediaAccount : KeyedModel
     {
         public int SocialMediaAccountTypeId { get; set; }
         

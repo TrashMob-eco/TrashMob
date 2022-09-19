@@ -13,10 +13,10 @@
     [Route("api/communityattachments")]
     public class CommunityAttachmentsController : BaseController
     {
-        private readonly IExtendedManager<CommunityAttachment> manager;
+        private readonly IBaseManager<CommunityAttachment> manager;
         private readonly IUserRepository userRepository;
 
-        public CommunityAttachmentsController(IExtendedManager<CommunityAttachment> manager, 
+        public CommunityAttachmentsController(IBaseManager<CommunityAttachment> manager, 
                                              IUserRepository userRepository,
                                              TelemetryClient telemetryClient)
             : base(telemetryClient)

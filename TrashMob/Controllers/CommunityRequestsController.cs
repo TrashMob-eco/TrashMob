@@ -15,10 +15,10 @@
     [Route("api/communityrequests")]
     public class CommunityRequestsController : BaseController
     {
-        private readonly IExtendedManager<CommunityRequest> manager;
+        private readonly IBaseManager<CommunityRequest> manager;
         private readonly IUserRepository userRepository;
 
-        public CommunityRequestsController(IExtendedManager<CommunityRequest> manager, 
+        public CommunityRequestsController(IBaseManager<CommunityRequest> manager, 
                                           IUserRepository userRepository,
                                           TelemetryClient telemetryClient)
             : base(telemetryClient)

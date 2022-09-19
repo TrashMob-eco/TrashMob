@@ -13,10 +13,10 @@
     [Route("api/communitynotes")]
     public class CommunityNotesController : BaseController
     {
-        private readonly IExtendedManager<CommunityNote> manager;
+        private readonly IBaseManager<CommunityNote> manager;
         private readonly IUserRepository userRepository;
 
-        public CommunityNotesController(IExtendedManager<CommunityNote> manager, 
+        public CommunityNotesController(IBaseManager<CommunityNote> manager, 
                                              IUserRepository userRepository,
                                              TelemetryClient telemetryClient)
             : base(telemetryClient)

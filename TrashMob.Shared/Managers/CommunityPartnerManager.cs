@@ -4,9 +4,9 @@ namespace TrashMob.Shared.Managers
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    public class CommunityPartnerManager : ExtendedManager<CommunityPartner>, IExtendedManager<CommunityPartner>
+    public class CommunityPartnerManager : BaseManager<CommunityPartner>, IBaseManager<CommunityPartner>
     {
-        public CommunityPartnerManager(IRepository<CommunityPartner> repository) : base(repository)
+        public CommunityPartnerManager(IBaseRepository<CommunityPartner> repository) : base(repository)
         {
         }      
     }

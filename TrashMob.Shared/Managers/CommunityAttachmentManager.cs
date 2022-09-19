@@ -4,9 +4,9 @@ namespace TrashMob.Shared.Managers
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    public class CommunityAttachmentManager : ExtendedManager<CommunityAttachment>, IExtendedManager<CommunityAttachment>
+    public class CommunityAttachmentManager : KeyedManager<CommunityAttachment>, IKeyedManager<CommunityAttachment>
     {
-        public CommunityAttachmentManager(IRepository<CommunityAttachment> repository) : base(repository)
+        public CommunityAttachmentManager(IKeyedRepository<CommunityAttachment> repository) : base(repository)
         {
         }      
     }

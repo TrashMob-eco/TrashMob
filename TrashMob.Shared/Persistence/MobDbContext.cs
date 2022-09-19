@@ -44,8 +44,6 @@
 
         public virtual DbSet<Event> Events { get; set; }
 
-        public virtual DbSet<EventHistory> EventHistories { get; set; }
-
         public virtual DbSet<EventMedia> EventMedias { get; set; }
 
         public virtual DbSet<EventPartnerStatus> EventPartnerStatuses { get; set; }
@@ -105,6 +103,18 @@
                 entity.Property(e => e.Email).HasMaxLength(64);
 
                 entity.Property(e => e.Message).HasMaxLength(2048);
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.ContactRequestsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ContactRequests_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.ContactRequestsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ContactRequests_User_LastUpdatedBy");
             });
 
             modelBuilder.Entity<Community>(entity =>
@@ -498,45 +508,6 @@
                     .HasConstraintName("FK_EventAttendees_ApplicationUser");
             });
 
-            modelBuilder.Entity<EventHistory>(entity =>
-            {
-                entity.ToTable("EventHistory");
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.City)
-                    .IsRequired()
-                    .HasMaxLength(256);
-
-                entity.Property(e => e.Country)
-                    .IsRequired()
-                    .HasMaxLength(64);
-
-                entity.Property(e => e.CreatedByUserId);
-
-                entity.Property(e => e.Description)
-                    .IsRequired()
-                    .HasMaxLength(2048);
-
-                entity.Property(e => e.LastUpdatedByUserId);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(64);
-
-                entity.Property(e => e.Region)
-                    .IsRequired()
-                    .HasMaxLength(256);
-
-                entity.Property(e => e.StreetAddress)
-                    .IsRequired()
-                    .HasMaxLength(256);
-
-                entity.Property(e => e.PostalCode)
-                    .IsRequired()
-                    .HasMaxLength(25);
-            });
-
             modelBuilder.Entity<EventMedia>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -742,6 +713,18 @@
                 entity.Property(e => e.Name).HasMaxLength(64);
 
                 entity.Property(e => e.Message).HasMaxLength(2048);
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.MessageRequestsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_MessageRequests_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.MessageRequestsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_MessageRequests_LastUpdatedByUser_Id");
             });
 
             modelBuilder.Entity<NonEventUserNotification>(entity =>
@@ -759,6 +742,18 @@
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_NonEventUserNotifications_User_Id");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.NonEventUserNotificationsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_NonEventUserNotification_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.NonEventUserNotificationsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_NonEventUserNotification_LastUpdatedByUser_Id");
             });
 
             modelBuilder.Entity<Partner>(entity =>
@@ -995,6 +990,19 @@
 
                 entity.Property(e => e.MetricValue)
                     .IsRequired();
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.SiteMetricsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SiteMetrics_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.SiteMetricsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SiteMetrics_LastUpdatedByUser_Id");
+
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -1027,6 +1035,18 @@
 
                 entity.HasData(
                     new User { Id = Guid.Empty, City = "Anytown", Country = "AnyCountry", Email = "info@trashmob.eco", GivenName = "TrashMob", Region = "AnyState", SurName = "Eco", UserName = "TrashMob" });
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.UsersCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_User_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.UsersUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_User_LastUpdatedByUser_Id");
             });
 
             modelBuilder.Entity<UserNotification>(entity =>
@@ -1050,6 +1070,18 @@
                     .HasForeignKey(d => d.EventId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserNotifications_Event_Id");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.UserNotificationsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserNotification_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.UserNotificationsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserNotification_LastUpdatedByUser_Id");
             });
 
             modelBuilder.Entity<UserNotificationType>(entity =>

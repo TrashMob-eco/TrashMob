@@ -13,12 +13,12 @@
     [Route("api/communities")]
     public class CommunitiesController : BaseController
     {
-        private readonly IExtendedManager<Community> manager;
+        private readonly IBaseManager<Community> manager;
         private readonly IUserRepository userRepository;
 
-        public CommunitiesController(IExtendedManager<Community> manager, 
-                                          IUserRepository userRepository,
-                                          TelemetryClient telemetryClient)
+        public CommunitiesController(IKeyedManager<Community> manager, 
+                                     IUserRepository userRepository,
+                                     TelemetryClient telemetryClient)
             : base(telemetryClient)
         {
             this.manager = manager;

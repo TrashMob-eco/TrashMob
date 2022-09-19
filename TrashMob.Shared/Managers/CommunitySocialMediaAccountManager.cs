@@ -4,9 +4,9 @@ namespace TrashMob.Shared.Managers
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    public class CommunitySocialMediaAccountManager : ExtendedManager<CommunitySocialMediaAccount>, IExtendedManager<CommunitySocialMediaAccount>
+    public class CommunitySocialMediaAccountManager : BaseManager<CommunitySocialMediaAccount>, IBaseManager<CommunitySocialMediaAccount>
     {
-        public CommunitySocialMediaAccountManager(IRepository<CommunitySocialMediaAccount> repository) : base(repository)
+        public CommunitySocialMediaAccountManager(IBaseRepository<CommunitySocialMediaAccount> repository) : base(repository)
         {
         }      
     }

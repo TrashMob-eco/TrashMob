@@ -30,9 +30,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [myCommunities, setMyCommunities] = useState<CommunityData[]>([]);
     const [myPartners, setMyPartners] = useState<PartnerData[]>([]);
     const [isEventDataLoaded, setIsEventDataLoaded] = useState<boolean>(false);
-    const [isCommunityRequestDataLoaded, setIsCommunityRequestDataLoaded] = useState<boolean>(false);
-    const [isCommunityDataLoaded, setIsCommunityDataLoaded] = useState<boolean>(false);
-    const [isPartnerDataLoaded, setIsPartnerDataLoaded] = useState<boolean>(false);
     const [center, setCenter] = useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isMapKeyLoaded, setIsMapKeyLoaded] = useState<boolean>(false);
     const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
@@ -104,11 +101,9 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     })
                     .then(data => {
                         setMyCommunityRequests(data);
-                        setIsCommunityRequestDataLoaded(true);
                         return;
                     })
                     .catch(_ => {
-                        setIsCommunityRequestDataLoaded(false);
                         setMyCommunityRequests([]);
                     });
 
@@ -126,11 +121,9 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     })
                     .then(data => {
                         setMyCommunities(data);
-                        setIsCommunityDataLoaded(true);
                         return;
                     })
                     .catch(_ => {
-                        setIsCommunityDataLoaded(false);
                         setMyCommunities([]);
                     });
 
@@ -148,11 +141,9 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     })
                     .then(data => {
                         setMyPartners(data);
-                        setIsPartnerDataLoaded(true);
                         return;
                     })
                     .catch(_ => {
-                        setIsPartnerDataLoaded(false);
                         setMyPartners([]);
                     });
 

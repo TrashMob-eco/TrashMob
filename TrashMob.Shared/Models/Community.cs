@@ -2,7 +2,7 @@
 
 namespace TrashMob.Shared.Models
 {
-    public partial class Community : ExtendedBaseModel
+    public partial class Community : KeyedModel
     {
         public Community()
         {

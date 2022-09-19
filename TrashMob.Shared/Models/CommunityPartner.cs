@@ -4,7 +4,7 @@ namespace TrashMob.Shared.Models
 {
     using System;
 
-    public partial class CommunityPartner : ExtendedBaseModel
+    public partial class CommunityPartner : BaseModel
     {
         public CommunityPartner()
         {

@@ -11,12 +11,12 @@ namespace TrashMob.Shared.Managers
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    public class CommunityManager : ExtendedManager<Community>, IExtendedManager<Community>
+    public class CommunityManager : BaseManager<Community>, IBaseManager<Community>
     {
-        private readonly IRepository<CommunityUser> communityUserRepository;
+        private readonly IBaseRepository<CommunityUser> communityUserRepository;
         private readonly IEmailManager emailManager;
 
-        public CommunityManager(IRepository<Community> repository, IRepository<CommunityUser> communityUserRepository, IEmailManager emailManager) : base(repository)
+        public CommunityManager(IKeyedRepository<Community> repository, IBaseRepository<CommunityUser> communityUserRepository, IEmailManager emailManager) : base(repository)
         {
             this.communityUserRepository = communityUserRepository;
             this.emailManager = emailManager;

@@ -57,33 +57,33 @@ namespace TrashMob
             services.AddScoped<IDocusignManager, DocusignManager>();
 
             // Migrated Repositories
-            services.AddScoped<IRepository<CommunityAttachment>, Repository<CommunityAttachment>>();
-            services.AddScoped<IRepository<CommunityContact>, Repository<CommunityContact>>();
+            services.AddScoped<IKeyedRepository<CommunityAttachment>, KeyedRepository<CommunityAttachment>>();
+            services.AddScoped<IKeyedRepository<CommunityContact>, KeyedRepository<CommunityContact>>();
             services.AddScoped<ILookupRepository<CommunityContactType>, LookupRepository<CommunityContactType>>();
-            services.AddScoped<IRepository<Community>, Repository<Community>>();
-            services.AddScoped<IRepository<CommunityNote>, Repository<CommunityNote>>();
-            services.AddScoped<IRepository<CommunityPartner>, Repository<CommunityPartner>>();
-            services.AddScoped<IRepository<CommunityRequest>, Repository<CommunityRequest>>();
-            services.AddScoped<IRepository<CommunitySocialMediaAccount>, Repository<CommunitySocialMediaAccount>>();
+            services.AddScoped<IKeyedRepository<Community>, KeyedRepository<Community>>();
+            services.AddScoped<IKeyedRepository<CommunityNote>, KeyedRepository<CommunityNote>>();
+            services.AddScoped<IBaseRepository<CommunityPartner>, BaseRepository<CommunityPartner>>();
+            services.AddScoped<IKeyedRepository<CommunityRequest>, KeyedRepository<CommunityRequest>>();
+            services.AddScoped<IBaseRepository<CommunitySocialMediaAccount>, BaseRepository<CommunitySocialMediaAccount>>();
             services.AddScoped<ILookupRepository<CommunityStatus>, LookupRepository<CommunityStatus>>();
-            services.AddScoped<IRepository<CommunityUser>, Repository<CommunityUser>>();
-            services.AddScoped<IRepository<ContactRequest>, Repository<ContactRequest>>();
-            services.AddScoped<IRepository<SocialMediaAccount>, Repository<SocialMediaAccount>>();
+            services.AddScoped<IBaseRepository<CommunityUser>, BaseRepository<CommunityUser>>();
+            services.AddScoped<IKeyedRepository<ContactRequest>, KeyedRepository<ContactRequest>>();
+            services.AddScoped<IKeyedRepository<SocialMediaAccount>, KeyedRepository<SocialMediaAccount>>();
             services.AddScoped<ILookupRepository<SocialMediaAccountType>, LookupRepository<SocialMediaAccountType>>();
 
             // Migrated Managers
-            services.AddScoped<IExtendedManager<CommunityAttachment>, CommunityAttachmentManager>();
-            services.AddScoped<IExtendedManager<CommunityContact>, CommunityContactManager>();
+            services.AddScoped<IKeyedManager<CommunityAttachment>, CommunityAttachmentManager>();
+            services.AddScoped<IKeyedManager<CommunityContact>, CommunityContactManager>();
             services.AddScoped<ILookupManager<CommunityContactType>, CommunityContactTypeManager>();
-            services.AddScoped<IExtendedManager<Community>, CommunityManager>();
-            services.AddScoped<IExtendedManager<CommunityNote>, CommunityNoteManager>();
-            services.AddScoped<IExtendedManager<CommunityPartner>, CommunityPartnerManager>();
-            services.AddScoped<IExtendedManager<CommunityRequest>, CommunityRequestManager>();
-            services.AddScoped<IExtendedManager<CommunitySocialMediaAccount>, CommunitySocialMediaAccountManager>();
+            services.AddScoped<IBaseManager<Community>, CommunityManager>();
+            services.AddScoped<IKeyedManager<CommunityNote>, CommunityNoteManager>();
+            services.AddScoped<IBaseManager<CommunityPartner>, CommunityPartnerManager>();
+            services.AddScoped<IKeyedManager<CommunityRequest>, CommunityRequestManager>();
+            services.AddScoped<IBaseManager<CommunitySocialMediaAccount>, CommunitySocialMediaAccountManager>();
             services.AddScoped<ILookupManager<CommunityStatus>, CommunityStatusManager>();
-            services.AddScoped<IExtendedManager<CommunityUser>, CommunityUserManager>();
-            services.AddScoped<IManager<ContactRequest>, ContactRequestManager>();
-            services.AddScoped<IExtendedManager<SocialMediaAccount>, SocialMediaAccountManager>();
+            services.AddScoped<IBaseManager<CommunityUser>, CommunityUserManager>();
+            services.AddScoped<IKeyedManager<ContactRequest>, ContactRequestManager>();
+            services.AddScoped<IKeyedManager<SocialMediaAccount>, SocialMediaAccountManager>();
             services.AddScoped<ILookupManager<SocialMediaAccountType>, SocialMediaAccountTypeManager>();
 
             // Not Migrated Repositories and Managers

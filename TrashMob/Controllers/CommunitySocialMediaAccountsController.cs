@@ -13,10 +13,10 @@
     [Route("api/communitysocialmediaaccounts")]
     public class CommunitySocialMediaAccountController : BaseController
     {
-        private readonly IExtendedManager<CommunitySocialMediaAccount> manager;
+        private readonly IBaseManager<CommunitySocialMediaAccount> manager;
         private readonly IUserRepository userRepository;
 
-        public CommunitySocialMediaAccountController(IExtendedManager<CommunitySocialMediaAccount> manager, 
+        public CommunitySocialMediaAccountController(IBaseManager<CommunitySocialMediaAccount> manager, 
                                           IUserRepository userRepository,
                                           TelemetryClient telemetryClient)
             : base(telemetryClient)

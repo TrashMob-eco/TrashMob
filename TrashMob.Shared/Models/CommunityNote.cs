@@ -4,7 +4,7 @@ namespace TrashMob.Shared.Models
 {
     using System;
 
-    public partial class CommunityNote : ExtendedBaseModel
+    public partial class CommunityNote : KeyedModel
     {
         public Guid CommunityId { get; set; }
 

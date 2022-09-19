@@ -9,9 +9,9 @@
     [Route("api/contactrequest")]
     public class ContactRequestController : BaseController
     {
-        private readonly IManager<ContactRequest> contactRequestManager;
+        private readonly IKeyedManager<ContactRequest> contactRequestManager;
 
-        public ContactRequestController(IManager<ContactRequest> contactRequestManager, 
+        public ContactRequestController(IKeyedManager<ContactRequest> contactRequestManager, 
                                         TelemetryClient telemetryClient)
             : base(telemetryClient)
         {

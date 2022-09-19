@@ -2,9 +2,7 @@
 
 namespace TrashMob.Shared.Models
 {
-    using System;
-
-    public partial class ContactRequest : BaseModel
+    public partial class ContactRequest : KeyedModel
     {
         public ContactRequest()
         {
@@ -15,7 +13,5 @@ namespace TrashMob.Shared.Models
         public string Email { get; set; }
 
         public string Message { get; set; }
-
-        public DateTimeOffset? CreatedDate { get; set; }
     }
 }

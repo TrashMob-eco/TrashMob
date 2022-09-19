@@ -4,7 +4,7 @@ namespace TrashMob.Shared.Models
 {
     using System;
 
-    public partial class CommunityAttachment : ExtendedBaseModel
+    public partial class CommunityAttachment : KeyedModel
     {
         public CommunityAttachment()
         {

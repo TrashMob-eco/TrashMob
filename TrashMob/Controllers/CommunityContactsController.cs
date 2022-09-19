@@ -13,10 +13,10 @@
     [Route("api/communitycontacts")]
     public class CommunityContactsController : BaseController
     {
-        private readonly IExtendedManager<CommunityContact> manager;
+        private readonly IBaseManager<CommunityContact> manager;
         private readonly IUserRepository userRepository;
 
-        public CommunityContactsController(IExtendedManager<CommunityContact> manager, 
+        public CommunityContactsController(IBaseManager<CommunityContact> manager, 
                                              IUserRepository userRepository,
                                              TelemetryClient telemetryClient)
             : base(telemetryClient)
