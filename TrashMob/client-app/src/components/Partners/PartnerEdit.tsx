@@ -3,7 +3,6 @@ import UserData from '../Models/UserData';
 import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import PartnerData from '../Models/PartnerData';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
-import * as Constants from '../Models/Constants';
 import * as ToolTips from "../../store/ToolTips";
 import PartnerStatusData from '../Models/PartnerStatusData';
 
@@ -22,11 +21,6 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
     const [name, setName] = React.useState<string>(props.partner.name);
     const [partnerStatusId, setPartnerStatusId] = React.useState<number>(props.partner.partnerStatusId);
     const [nameErrors, setNameErrors] = React.useState<string>("");
-    const [primaryEmailErrors, setPrimaryEmailErrors] = React.useState<string>("");
-    const [secondaryEmailErrors, setSecondaryEmailErrors] = React.useState<string>("");
-    const [primaryPhoneErrors, setPrimaryPhoneErrors] = React.useState<string>("");
-    const [secondaryPhoneErrors, setSecondaryPhoneErrors] = React.useState<string>("");
-    const [notesErrors, setNotesErrors] = React.useState<string>("");
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
     function validateForm() {
