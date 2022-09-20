@@ -5,7 +5,6 @@
     using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Collections.Generic;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared;
@@ -19,25 +18,22 @@
     public class PartnerRequestsController : BaseController
     {
         private readonly IKeyedManager<PartnerRequest> partnerRequestManager;
-        private readonly IUserRepository userRepository;
         private readonly IEmailManager emailManager;
 
-        public PartnerRequestsController(IPartnerRequestRepository partnerRequestRepository, 
-                                         IKeyedManager<PartnerRequest> partnerRequestManager,
-                                         IEmailManager emailManager, 
+        public PartnerRequestsController(TelemetryClient telemetryClient,
                                          IUserRepository userRepository,
-                                         TelemetryClient telemetryClient)
-            : base(telemetryClient)
+                                         IKeyedManager<PartnerRequest> partnerRequestManager,
+                                         IEmailManager emailManager)
+            : base(telemetryClient, userRepository)
         {
             this.partnerRequestManager = partnerRequestManager;
             this.emailManager = emailManager;
-            this.userRepository = userRepository;
         }
 
         [HttpPost]
         public async Task<IActionResult> AddPartnerRequest(PartnerRequest partnerRequest)
         {
-            var user = await userRepository.GetUserByInternalId(partnerRequest.CreatedByUserId).ConfigureAwait(false);
+            var user = await GetUser();
 
             if (user == null || !ValidateUser(user.NameIdentifier))
             {
@@ -70,7 +66,7 @@
         [HttpPut("approve/{partnerRequestId}")]
         public async Task<IActionResult> ApprovePartnerRequest(Guid partnerRequestId)
         {
-            var user = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var user = await GetUser();
 
             if (!user.IsSiteAdmin)
             {
@@ -109,7 +105,7 @@
         [HttpPut("deny/{partnerRequestId}")]
         public async Task<IActionResult> DenyPartnerRequest(Guid partnerRequestId)
         {
-            var user = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var user = await GetUser();
 
             if (!user.IsSiteAdmin)
             {
@@ -147,7 +143,7 @@
         [HttpGet]
         public async Task<IActionResult> GetPartnerRequests(CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value, cancellationToken).ConfigureAwait(false);
+            var user = await GetUser();
 
             if (!user.IsSiteAdmin)
             {
@@ -160,14 +156,14 @@
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetPartnerRequestsByUser(Guid userId, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByInternalId(userId, cancellationToken).ConfigureAwait(false);
+            var user = await GetUser();
 
             if (user == null || !ValidateUser(user.NameIdentifier))
             {
                 return Forbid();
             }
 
-            return Ok(await partnerRequestManager.Get(userId, cancellationToken).ConfigureAwait(false));
+            return Ok(await partnerRequestManager.GetByUserId(userId, cancellationToken).ConfigureAwait(false));
         }
     }
 }

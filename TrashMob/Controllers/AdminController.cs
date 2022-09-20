@@ -16,10 +16,10 @@
         private readonly IPartnerRequestRepository partnerRequestRepository;
         private readonly IUserRepository userRepository;
 
-        public AdminController(IPartnerRequestRepository partnerRequestRepository, 
-                               IUserRepository userRepository, 
-                               TelemetryClient telemetryClient) 
-            : base(telemetryClient)
+        public AdminController(TelemetryClient telemetryClient,
+                               IUserRepository userRepository,
+                               IPartnerRequestRepository partnerRequestRepository) 
+            : base(telemetryClient, userRepository)
         {
             this.partnerRequestRepository = partnerRequestRepository;
             this.userRepository = userRepository;

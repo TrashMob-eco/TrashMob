@@ -28,13 +28,13 @@ namespace TrashMob.Controllers
         private readonly IEmailManager emailManager;
         private readonly IMapRepository mapRepository;
 
-        public EventsController(IEventRepository eventRepository,
-                                IEventAttendeeRepository eventAttendeeRepository,
-                                IUserRepository userRepository,
+        public EventsController(TelemetryClient telemetryClient,
+                                IUserRepository userRepository, 
+                                IEventRepository eventRepository,
+                                IEventAttendeeRepository eventAttendeeRepository,                                
                                 IEmailManager emailManager,
-                                IMapRepository mapRepository,
-                                TelemetryClient telemetryClient)
-            : base(telemetryClient)
+                                IMapRepository mapRepository)
+            : base(telemetryClient, userRepository)
         {
             this.eventRepository = eventRepository;
             this.eventAttendeeRepository = eventAttendeeRepository;

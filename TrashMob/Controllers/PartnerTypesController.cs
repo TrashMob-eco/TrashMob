@@ -7,15 +7,17 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Models;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/partnertypes")]
     public class PartnerTypesController : BaseController
     {
         private readonly ILookupManager<PartnerType> manager;
 
-        public PartnerTypesController(ILookupManager<PartnerType> manager,
-                                      TelemetryClient telemetryClient)
-            : base(telemetryClient)
+        public PartnerTypesController(TelemetryClient telemetryClient,
+                                      IUserRepository userRepository,
+                                      ILookupManager<PartnerType> manager)
+            : base(telemetryClient, userRepository)
         {
             this.manager = manager;
         }

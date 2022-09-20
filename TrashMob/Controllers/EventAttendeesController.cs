@@ -22,10 +22,10 @@ namespace TrashMob.Controllers
         private readonly IEventAttendeeRepository eventAttendeeRepository;
         private readonly IUserRepository userRepository;
 
-        public EventAttendeesController(IEventAttendeeRepository eventAttendeeRepository,
+        public EventAttendeesController(TelemetryClient telemetryClient,
                                         IUserRepository userRepository,
-                                        TelemetryClient telemetryClient) 
-            : base(telemetryClient)
+                                        IEventAttendeeRepository eventAttendeeRepository) 
+            : base(telemetryClient, userRepository)
         {
             this.eventAttendeeRepository = eventAttendeeRepository;
             this.userRepository = userRepository;

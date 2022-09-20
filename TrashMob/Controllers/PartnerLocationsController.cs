@@ -19,11 +19,11 @@
         private readonly IUserRepository userRepository;
         private readonly IPartnerUserRepository partnerUserRepository;
 
-        public PartnerLocationsController(IPartnerLocationRepository partnerLocationRepository,
-                                          IPartnerUserRepository partnerUserRepository,
+        public PartnerLocationsController(TelemetryClient telemetryClient,
                                           IUserRepository userRepository,
-                                          TelemetryClient telemetryClient)
-            : base(telemetryClient)
+                                          IPartnerLocationRepository partnerLocationRepository,
+                                          IPartnerUserRepository partnerUserRepository)
+            : base(telemetryClient, userRepository)
         {
             this.partnerLocationRepository = partnerLocationRepository;
             this.partnerUserRepository = partnerUserRepository;

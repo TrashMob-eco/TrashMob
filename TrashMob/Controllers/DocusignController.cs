@@ -14,8 +14,10 @@
         private readonly IUserRepository userRepository;
         private readonly IDocusignManager docusignManager;
 
-        public DocusignController(TelemetryClient telemetryClient, IUserRepository userRepository, IDocusignManager docusignManager)
-            : base(telemetryClient)
+        public DocusignController(TelemetryClient telemetryClient, 
+                                  IUserRepository userRepository, 
+                                  IDocusignManager docusignManager)
+            : base(telemetryClient, userRepository)
         {
             this.userRepository = userRepository;
             this.docusignManager = docusignManager;

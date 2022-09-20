@@ -16,10 +16,10 @@
         private readonly IBaseManager<PartnerDocument> manager;
         private readonly IUserRepository userRepository;
 
-        public PartnerDocumentsController(IBaseManager<PartnerDocument> manager, 
-                                             IUserRepository userRepository,
-                                             TelemetryClient telemetryClient)
-            : base(telemetryClient)
+        public PartnerDocumentsController(TelemetryClient telemetryClient,
+                                             IUserRepository userRepository, 
+                                             IBaseManager<PartnerDocument> manager)
+            : base(telemetryClient, userRepository)
         {
             this.manager = manager;
             this.userRepository = userRepository;

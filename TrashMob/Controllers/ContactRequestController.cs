@@ -5,15 +5,17 @@
     using System.Threading.Tasks;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Models;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/contactrequest")]
     public class ContactRequestController : BaseController
     {
         private readonly IKeyedManager<ContactRequest> contactRequestManager;
 
-        public ContactRequestController(IKeyedManager<ContactRequest> contactRequestManager, 
-                                        TelemetryClient telemetryClient)
-            : base(telemetryClient)
+        public ContactRequestController(TelemetryClient telemetryClient,
+                                        IUserRepository userRepository, 
+                                        IKeyedManager<ContactRequest> contactRequestManager)
+            : base(telemetryClient, userRepository)
         {
             this.contactRequestManager = contactRequestManager;
         }

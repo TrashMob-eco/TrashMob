@@ -16,10 +16,10 @@
         private readonly IBaseManager<PartnerNote> manager;
         private readonly IUserRepository userRepository;
 
-        public PartnerNotesController(IBaseManager<PartnerNote> manager, 
-                                             IUserRepository userRepository,
-                                             TelemetryClient telemetryClient)
-            : base(telemetryClient)
+        public PartnerNotesController(TelemetryClient telemetryClient, 
+                                      IUserRepository userRepository,
+                                      IBaseManager<PartnerNote> manager)
+            : base(telemetryClient, userRepository)
         {
             this.manager = manager;
             this.userRepository = userRepository;
@@ -28,7 +28,7 @@
         [HttpPost]
         public async Task<IActionResult> AddCommunityNote(PartnerNote partnerNote)
         {
-            var currentUser = await GetUser(userRepository);
+            var currentUser = await GetUser();
 
             if (currentUser == null)
             {

@@ -23,12 +23,12 @@
         private readonly IUserRepository userRepository;
         private readonly IPartnerRepository partnerRepository;
 
-        public PartnerUsersController(IPartnerUserRepository partnerUserRepository,
-                                      IKeyedManager<Partner> partnerManager,
+        public PartnerUsersController(TelemetryClient telemetryClient,
                                       IUserRepository userRepository,
-                                      IPartnerRepository partnerRepository,
-                                      TelemetryClient telemetryClient)
-            : base(telemetryClient)
+                                      IPartnerUserRepository partnerUserRepository,
+                                      IKeyedManager<Partner> partnerManager,
+                                      IPartnerRepository partnerRepository)
+            : base(telemetryClient, userRepository)
         {
             this.partnerUserRepository = partnerUserRepository;
             this.partnerManager = partnerManager;
