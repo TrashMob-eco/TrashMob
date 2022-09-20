@@ -28,7 +28,7 @@
         [HttpPost]
         public async Task<IActionResult> AddCommunityDocument(PartnerDocument partnerDocument)
         {
-            var currentUser = await GetUser(userRepository);
+            var currentUser = await GetUser();
 
             if (currentUser == null)
             {

@@ -111,7 +111,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddEventSummary(EventSummary eventSummary)
         {
-            var currentUser = await GetUser(userRepository);
+            var currentUser = await GetUser();
             if (currentUser == null || !ValidateUser(currentUser.NameIdentifier))
             {
                 return Forbid();

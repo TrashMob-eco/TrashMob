@@ -45,7 +45,7 @@
         [Authorize]
         public async Task<IActionResult> UpdatePartner(Partner partner)
         {
-            var currentUser = await GetUser(userRepository);
+            var currentUser = await GetUser();
 
             if (currentUser == null)
             {
