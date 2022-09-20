@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MudBlazor.Services;
 using Polly;
 using Polly.Extensions.Http;
 using System.Net.Http;
@@ -10,6 +11,7 @@ using System.Reflection;
 using TrashMobMobileApp.Authentication;
 using TrashMobMobileApp.Data;
 using TrashMobMobileApp.Models;
+using TrashMobMobileApp.StateContainers;
 
 public static class MauiProgram
 {
@@ -37,6 +39,12 @@ public static class MauiProgram
         var assembly = IntrospectionExtensions.GetTypeInfo(typeof(MauiProgram)).Assembly;
         var stream = assembly.GetManifestResourceStream(strAppConfigStreamName);
         builder.Configuration.AddJsonStream(stream);
+
+        // Add Mudblazor Services
+        builder.Services.AddMudServices();
+
+        //Add State Container Services
+        builder.Services.AddScoped<PageTitleContainer>();
 
         // Add Services
         builder.Services.AddSingleton<IB2CAuthenticationService, B2CAuthenticationService>();

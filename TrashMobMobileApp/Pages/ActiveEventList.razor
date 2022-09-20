@@ -1,0 +1,47 @@
+﻿@page "/activeevents"
+
+@*TODO: move to css style sheets*@
+<style>
+    .tm-event-list {
+        height: 100%;
+        padding: 20px;
+    }
+
+        .tm-event-list .tm-event-card {
+            margin-top: 10px;
+        }
+
+        .tm-event-list .tm-create-event-btn {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+        }
+</style>
+
+<MudContainer Class="tm-event-list">
+    @if (_isLoading)
+    {
+        <MudProgressCircular Color="Color.Default" Indeterminate />
+    }
+    else
+    {
+        @foreach (var mobEvent in _mobEvents)
+        {
+            <MudCard Class="tm-event-card">
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudAvatar Color="Color.Primary">@mobEvent.Name.FirstOrDefault()</MudAvatar>
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1">@mobEvent.Name</MudText>
+                        <MudText Typo="Typo.body2">@mobEvent.Description</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardActions>
+                    <MudIconButton Color="Color.Default">View</MudIconButton>
+                    <MudIconButton Color="Color.Default">Register</MudIconButton>
+                </MudCardActions>
+            </MudCard>
+        }
+    }
+</MudContainer>
