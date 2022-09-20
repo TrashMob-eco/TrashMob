@@ -86,14 +86,12 @@ namespace TrashMob
 
             // Not Migrated Repositories and Managers
             services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
-            services.AddScoped<IEventMediaRepository, EventMediaRepository>();
             services.AddScoped<IEventPartnerRepository, EventPartnerRepository>();
             services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IEventPartnerStatusRepository, EventPartnerStatusRepository>();
             services.AddScoped<IEventStatusRepository, EventStatusRepository>();
             services.AddScoped<IEventSummaryRepository, EventSummaryRepository>();
             services.AddScoped<IEventTypeRepository, EventTypeRepository>();
-            services.AddScoped<IMediaTypeRepository, MediaTypeRepository>();
             services.AddScoped<IMessageRequestManager, MessageRequestManager>();
             services.AddScoped<IMessageRequestRepository, MessageRequestRepository>();
             services.AddScoped<INonEventUserNotificationRepository, NonEventUserNotificationRepository>();

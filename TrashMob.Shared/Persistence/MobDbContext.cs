@@ -24,8 +24,6 @@
 
         public virtual DbSet<Event> Events { get; set; }
 
-        public virtual DbSet<EventMedia> EventMedias { get; set; }
-
         public virtual DbSet<EventPartnerStatus> EventPartnerStatuses { get; set; }
 
         public virtual DbSet<EventSummary> EventSummaries { get; set; }
@@ -33,10 +31,6 @@
         public virtual DbSet<EventStatus> EventStatuses { get; set; }
 
         public virtual DbSet<EventType> EventTypes { get; set; }
-
-        public virtual DbSet<MediaType> MediaTypes { get; set; }
-
-        public virtual DbSet<MediaType> MediaUsageTypes { get; set; }
 
         public virtual DbSet<MessageRequest> MessageRequests { get; set; }
 
@@ -319,37 +313,6 @@
                     .HasConstraintName("FK_EventAttendees_ApplicationUser");
             });
 
-            modelBuilder.Entity<EventMedia>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.MediaUrl).IsRequired();
-
-                entity.HasOne(d => d.MediaType)
-                    .WithMany(p => p.EventMedias)
-                    .HasForeignKey(d => d.MediaTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_EventMedias_MediaTypes");
-
-                entity.HasOne(d => d.MediaUsageType)
-                    .WithMany(p => p.EventMedias)
-                    .HasForeignKey(d => d.MediaUsageTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_EventMedias_MediaUsageTypes");
-
-                entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.EventMedias)
-                    .HasForeignKey(d => d.CreatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_EventMedias_User_Id");
-
-                entity.HasOne(d => d.Event)
-                    .WithMany(p => p.EventMedias)
-                    .HasForeignKey(d => d.EventId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_EventMedia_Event_Id");
-            });
-
             modelBuilder.Entity<EventPartner>(entity =>
             {
                 entity.HasKey(e => new { e.EventId, e.PartnerId, e.PartnerLocationId });
@@ -486,37 +449,6 @@
                     new EventType { Id = 12, Name = "Vandalism Cleanup", Description = "Vandalism Cleanup", DisplayOrder = 12, IsActive = true },
                     new EventType { Id = 13, Name = "Social Event", Description = "Social Event", DisplayOrder = 13, IsActive = true },
                     new EventType { Id = 14, Name = "Other", Description = "Other", DisplayOrder = 14, IsActive = true });
-            });
-
-            modelBuilder.Entity<MediaType>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Description);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.HasData(
-                    new MediaType { Id = 1, Name = "Instagram", Description = "Instagram Image or Video", DisplayOrder = 1, IsActive = true },
-                    new MediaType { Id = 2, Name = "YouTube", Description = "YouTube Video", DisplayOrder = 2, IsActive = true });
-            });
-
-            modelBuilder.Entity<MediaUsageType>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Description);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.HasData(
-                    new MediaUsageType { Id = 1, Name = "BeforeEvent", Description = "Before a cleanup event", DisplayOrder = 1, IsActive = true },
-                    new MediaUsageType { Id = 2, Name = "AfterEvent", Description = "After a cleanup event", DisplayOrder = 2, IsActive = true });
-
             });
 
             modelBuilder.Entity<MessageRequest>(entity =>

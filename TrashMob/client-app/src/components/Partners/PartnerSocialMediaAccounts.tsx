@@ -182,7 +182,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                                     <Form.Label className="control-label" htmlFor="SocialMediaAccountType">Social Media Account Type:</Form.Label>
                                 </OverlayTrigger>
                                 <div>
-                                    <select data-val="true" name="mediaTypeId" defaultValue={socialMediaAccountTypeId} onChange={(val) => selectSocialMediaAccountType(val.target.value)} required>
+                                    <select data-val="true" name="socialMediaAccountTypeId" defaultValue={socialMediaAccountTypeId} onChange={(val) => selectSocialMediaAccountType(val.target.value)} required>
                                         <option value="">-- Select Media Type --</option>
                                         {socialMediaAccountTypeList.map(type =>
                                             <option key={type.id} value={type.id}>{type.name}</option>

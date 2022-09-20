@@ -13,7 +13,6 @@ namespace TrashMob.Shared.Models
             EventsUpdated = new HashSet<Event>();
             UserNotifications = new HashSet<UserNotification>();
             NonEventUserNotifications = new HashSet<NonEventUserNotification>();
-            EventMedias = new HashSet<EventMedia>();
         }
 
         public string NameIdentifier { get; set; }
@@ -87,8 +86,6 @@ namespace TrashMob.Shared.Models
         public virtual ICollection<EventPartner> EventPartnersCreated { get; set; }
 
         public virtual ICollection<EventPartner> EventPartnersUpdated { get; set; }
-
-        public virtual ICollection<EventMedia> EventMedias { get; set; }
 
         public virtual ICollection<EventSummary> EventSummariesCreated { get; set; }
 

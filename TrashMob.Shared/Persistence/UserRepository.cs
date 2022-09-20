@@ -86,14 +86,6 @@
                 mobDbContext.UserNotifications.Remove(userNotification);
             }
 
-            // Remove the EventMedia records owned by this user
-            var eventMedias = mobDbContext.EventMedias.Where(e => e.CreatedByUserId == id);
-
-            foreach (var eventMedia in eventMedias)
-            {
-                mobDbContext.EventMedias.Remove(eventMedia);
-            }
-
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
 
             // Remove the Partner Requests

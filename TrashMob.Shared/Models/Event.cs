@@ -10,7 +10,6 @@ namespace TrashMob.Shared.Models
         public Event()
         {
             UserNotifications = new HashSet<UserNotification>();
-            EventMedias = new HashSet<EventMedia>();
         }
 
         public string Name { get; set; }
@@ -52,7 +51,5 @@ namespace TrashMob.Shared.Models
         public virtual EventType EventType { get; set; }
 
         public virtual ICollection<UserNotification> UserNotifications { get; set; }
-
-        public virtual ICollection<EventMedia> EventMedias { get; set; }
     }
 }
