@@ -7,21 +7,75 @@ import * as ToolTips from "../../store/ToolTips";
 import PartnerStatusData from '../Models/PartnerStatusData';
 
 export interface PartnerEditDataProps {
-    partner: PartnerData;
-    partnerStatusList: PartnerStatusData[];
-    isPartnerDataLoaded: boolean;
+    partnerId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
-    onPartnerUpdated: any;
-    onEditCanceled: any;
 };
 
 export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
 
-    const [name, setName] = React.useState<string>(props.partner.name);
-    const [partnerStatusId, setPartnerStatusId] = React.useState<number>(props.partner.partnerStatusId);
+    const [isPartnerDataLoaded, setIsPartnerDataLoaded] = React.useState<boolean>(false);
+    const [partnerMessage, setPartnerMessage] = React.useState<string>("");
+    const [partnerStatusList, setPartnerStatusList] = React.useState<PartnerStatusData[]>([]);
+    const [name, setName] = React.useState<string>();
+    const [partnerStatusId, setPartnerStatusId] = React.useState<number>(0);
+    const [city, setCity] = React.useState<string>();
+    const [country, setCountry] = React.useState<string>();
+    const [region, setRegion] = React.useState<string>();
+    const [postalCode, setPostalCode] = React.useState<string>();
+    const [latitude, setLatitude] = React.useState<number>(0);
+    const [longitude, setLongitude] = React.useState<number>(0);
     const [nameErrors, setNameErrors] = React.useState<string>("");
+    const [createdByUserId, setCreatedByUserId] = React.useState<string>("");
+    const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
+    const [lastUpdatedByUserId, setLastUpdatedByUserId] = React.useState<string>("");
+    const [lastUpdatedDate, setLastUpdatedDate] = React.useState<Date>(new Date());
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
+
+    React.useEffect(() => {
+        if (props.isUserLoaded) {
+            const account = msalClient.getAllAccounts()[0];
+
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                fetch('/api/partnerstatuses', {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<PartnerStatusData[]>)
+                    .then(data => {
+                        setPartnerStatusList(data)
+                    })
+                    .then(_ => {
+                        setIsPartnerDataLoaded(false);
+                        setPartnerMessage("Loading");
+
+                        fetch('/api/partners/' + props.partnerId, {
+                            method: 'GET',
+                            headers: headers
+                        })
+                            .then(response => response.json() as Promise<PartnerData>)
+                            .then(data => {
+                                setPartnerStatusId(data.partnerStatusId);
+                                setCity(data.city);
+                                setRegion(data.region);
+                                setCountry(data.country);
+                                setPostalCode(data.postalCode);
+                                setLatitude(data.latitude)
+                                setLongitude(data.longitude)
+                                setIsPartnerDataLoaded(true);
+                            })
+                    })
+            });
+        }
+    }, [props.currentUser, props.isUserLoaded]);
 
     function validateForm() {
         if (name === "" ||
@@ -44,11 +98,11 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
         setIsSaveEnabled(false);
 
         var partnerData = new PartnerData();
-        partnerData.id = props.partner.id;
+        partnerData.id = props.partnerId;
         partnerData.name = name ?? "";
         partnerData.partnerStatusId = partnerStatusId ?? 2;
-        partnerData.createdByUserId = props.partner.createdByUserId ?? props.currentUser.id;
-        partnerData.createdDate = props.partner.createdDate;
+        partnerData.createdByUserId = createdByUserId ?? props.currentUser.id;
+        partnerData.createdDate = createdDate;
         partnerData.lastUpdatedByUserId = props.currentUser.id;
 
         var data = JSON.stringify(partnerData);
@@ -69,16 +123,12 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                 body: data,
                 headers: headers,
             })
-                .then(() => {
-                    props.onPartnerUpdated()
-                });
         });
     }
 
     // This will handle Cancel button click event.  
     function handleCancel(event: any) {
         event.preventDefault();
-        props.onEditCanceled();
     }
 
     function handleNameChanged(val: string) {
@@ -135,7 +185,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                             <div>
                                 <select data-val="true" name="partnerStatusId" defaultValue={partnerStatusId} onChange={(val) => selectPartnerStatus(val.target.value)} required>
                                     <option value="">-- Select Partner Status --</option>
-                                    {props.partnerStatusList.map(status =>
+                                    {partnerStatusList.map(status =>
                                         <option key={status.id} value={status.id}>{status.name}</option>
                                     )}
                                 </select>
@@ -153,7 +203,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                             <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
                                 <Form.Label className="control-label" htmlFor="createdDate">Created Date:</Form.Label>
                             </OverlayTrigger>
-                            <Form.Control type="text" disabled defaultValue={props.partner.createdDate.toString()} />
+                            <Form.Control type="text" disabled defaultValue={createdDate.toString()} />
                         </Form.Group>
                     </Col>
                     <Col>
@@ -161,7 +211,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                             <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
                                 <Form.Label className="control-label" htmlFor="lastUpdatedDate">Last Updated Date:</Form.Label>
                             </OverlayTrigger>
-                            <Form.Control type="text" disabled defaultValue={props.partner.lastUpdatedDate.toString()} />
+                            <Form.Control type="text" disabled defaultValue={lastUpdatedDate.toString()} />
                         </Form.Group>
                     </Col>
                 </Form.Row>
