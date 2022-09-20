@@ -1,0 +1,22 @@
+﻿@page "/"
+
+<MudContainer Style="height: 100%; margin-top: 30%">
+    <MudText Typo="Typo.h4">Welcome to TrashMob</MudText>
+    <MudText Typo="Typo.h5">Meet up. Clean up. Feel good.</MudText>
+    <MudCard>
+        <MudCardContent>
+            <MudCarousel Style="height:200px;" ShowBullets=false EnableSwipeGesture AutoCycle TData="object">
+                <MudCarouselItem Transition="Transition.Slide" Color="@Color.Primary">
+                    <MudImage Src="images/trashmob-banner.png" Height="200" />
+                </MudCarouselItem>
+                <MudCarouselItem Transition="Transition.Slide" Color="@Color.Primary">
+                    <MudImage Src="images/trashmob-bags.png" Height="200" />
+                </MudCarouselItem>
+            </MudCarousel>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" Color="Color.Primary">Share</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudContainer>

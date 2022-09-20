@@ -1,0 +1,53 @@
+﻿@*TODO: move to css style sheets*@
+<style>
+    .tm-event-list {
+        height: 100%;
+        padding: 20px;
+    }
+
+        .tm-event-list .tm-event-card {
+            margin-top: 10px;
+        }
+
+        .tm-event-list .tm-create-event-btn {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+        }
+</style>
+
+<ErrorBoundary>
+    <ChildContent>
+        <EventDetails @bind-Open="@_isViewOpen" Event="@_selectedEvent" />
+
+        <MudContainer Class="tm-event-list">
+            @if (_isLoading)
+            {
+                <MudProgressCircular Color="Color.Default" Indeterminate />
+            }
+            else
+            {
+                <MudVirtualize Context="mob" Items="_mobEvents">
+                    <MudCard Class="tm-event-card">
+                        <MudCardHeader>
+                            <CardHeaderAvatar>
+                                <MudAvatar Color="Color.Primary">@mob.Name.FirstOrDefault()</MudAvatar>
+                            </CardHeaderAvatar>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.body1">@mob.Name</MudText>
+                                <MudText Typo="Typo.body2">@mob.Description</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardActions>
+                            <MudIconButton Style="width: 30%; margin-right: 5px" Color="Color.Primary" Variant="Variant.Outlined" OnClick="@(() => OnViewEventDetails(mob))">View</MudIconButton>
+                            <MudIconButton Style="width: 30%; margin-left: 5px" Color="Color.Primary" Variant="Variant.Filled" OnClick="@(async () => await OnRegisterAsync(mob))">Register</MudIconButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudVirtualize>
+            }
+        </MudContainer>
+    </ChildContent>
+    <ErrorContent>
+        @context.Message
+    </ErrorContent>
+</ErrorBoundary>

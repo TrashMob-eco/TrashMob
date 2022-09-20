@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
+using MudBlazor;
 using TrashMobMobileApp.Data;
 using TrashMobMobileApp.Models;
 using TrashMobMobileApp.Shared;
 
-namespace TrashMobMobileApp.Pages
+namespace TrashMobMobileApp.Pages.Events.Components
 {
     public partial class MyEventList
     {
@@ -11,6 +12,8 @@ namespace TrashMobMobileApp.Pages
         private List<MobEvent> _myEventsStatic = new();
         private bool _isLoading;
         private string _eventSearchText;
+        private bool _isViewOpen;
+        private MobEvent _selectedEvent;
 
         [Inject]
         public IMobEventManager MobEventManager { get; set; }
@@ -19,7 +22,6 @@ namespace TrashMobMobileApp.Pages
         {
             base.OnInitialized();
             await GetMyEventsAsync();
-            TitleContainer.Title = "My Events";
         }
 
         private async Task GetMyEventsAsync()
@@ -28,7 +30,8 @@ namespace TrashMobMobileApp.Pages
             if (currentUser != null)
             {
                 _isLoading = true;
-                _myEventsStatic = (await MobEventManager.GetUserEventsAsync(currentUser.Id, true)).ToList();
+                _myEventsStatic = (await MobEventManager.GetUserEventsAsync(currentUser.Id, true))
+                    .Where(item => item.CreatedByUserId == currentUser.Id).ToList();
                 _myEvents = _myEventsStatic;
                 _isLoading = false;
                 //var randomEvents = new List<MobEvent>
@@ -61,5 +64,32 @@ namespace TrashMobMobileApp.Pages
         }
 
         private void OnCreateEvent() => Navigator.NavigateTo(Routes.CreateEvent);
+
+        private void OnViewEventDetails(MobEvent mobEvent)
+        {
+            _selectedEvent = mobEvent;
+            _isViewOpen = !_isViewOpen;
+        }
+
+        private async Task OnCancelEventAsync(MobEvent mobEvent)
+        {
+            var currentUser = App.CurrentUser;
+            //TODO: dialog confirmation?
+            if (currentUser != null)
+            {
+                var cancelEvent = new CancelEvent
+                {
+                    EventId = mobEvent.Id,
+                    CancellationReason = string.Empty //TODO: UI for this?
+                };
+                _isLoading = true;
+                await MobEventManager.DeleteEventAsync(cancelEvent);
+                await GetMyEventsAsync();
+                _isLoading = false;
+            }
+        }
+
+        private async Task OnEditAsync(MobEvent mobEvent)
+            => Navigator.NavigateTo(string.Format(Routes.EditEvent, mobEvent.Id));
     }
 }

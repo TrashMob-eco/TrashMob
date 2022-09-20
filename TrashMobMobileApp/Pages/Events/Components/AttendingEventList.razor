@@ -1,0 +1,68 @@
+﻿@*TODO: move to css style sheets*@
+<style>
+    .tm-attending-event-list {
+        height: 100vh;
+        padding: 20px;
+    }
+
+        .tm-attending-event-list .tm-event-card {
+            margin-top: 10px;
+        }
+
+        .tm-attending-event-list .tm-create-event-btn-bottom {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .tm-attending-event-list .tm-create-event-btn-center {
+            margin-top: 20px;
+        }
+
+        .tm-attending-event-list .tm-no-event-container {
+            text-align: center;
+        }
+</style>
+
+<ErrorBoundary>
+    <ChildContent>
+        <EventDetails @bind-Open="@_isViewOpen" Event="@_selectedEvent" />
+
+        <MudContainer Class="tm-attending-event-list">
+            @if (_isLoading)
+            {
+                <MudProgressCircular Color="Color.Default" Indeterminate />
+            }
+            else
+            {
+                if (_attendingEventsStatic.Any())
+                {
+                    <MudStack Style="width: 100%" Row>
+                        <MudTextField T="string" Style="width: 100%" Adornment="@Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" Placeholder="Search event.." Text="@_eventSearchText" TextChanged="@OnSearchTextChanged" Immediate />
+                    </MudStack>
+                    <MudVirtualize Context="mob" Items="_attendingEvents">
+                        <MudCard Class="tm-event-card">
+                            <MudCardHeader>
+                                <CardHeaderAvatar>
+                                    <MudAvatar Color="Color.Primary">@mob.Name.FirstOrDefault()</MudAvatar>
+                                </CardHeaderAvatar>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.body1">@mob.Name</MudText>
+                                    <MudText Typo="Typo.body2">@mob.Description</MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardActions>
+                                <MudButton Style="width: 30%; margin-right: 5px" Color="Color.Primary" Variant="Variant.Outlined" OnClick="@(() => OnViewEventDetails(mob))">View</MudButton>
+                                <MudButton Style="width: 30%; margin-left: 5px" Color="Color.Primary" Variant="Variant.Filled" OnClick="@(() => OnUnregisterEventAsync(mob))">Unregister</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </MudVirtualize>
+                    <MudFab Class="tm-create-event-btn-bottom" StartIcon="@Icons.Material.Filled.Edit" Label="Create" OnClick="@OnCreateEvent" />
+                }
+            }
+        </MudContainer>
+    </ChildContent>
+    <ErrorContent>
+        @context.Message
+    </ErrorContent>
+</ErrorBoundary>

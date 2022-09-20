@@ -2,12 +2,14 @@
 using TrashMobMobileApp.Data;
 using TrashMobMobileApp.Models;
 
-namespace TrashMobMobileApp.Pages
+namespace TrashMobMobileApp.Pages.Events.Components
 {
     public partial class ActiveEventList
     {
         private List<MobEvent> _mobEvents = new();
         private bool _isLoading;
+        private MobEvent _selectedEvent;
+        private bool _isViewOpen;
 
         [Inject]
         public IMobEventManager MobEventManager { get; set; }
@@ -35,8 +37,30 @@ namespace TrashMobMobileApp.Pages
                 }
             };
             _mobEvents.AddRange(randomEvents);
-            TitleContainer.Title = "Active Events";
             _isLoading = false;
+        }
+
+        private void OnViewEventDetails(MobEvent mobEvent)
+        {
+            _selectedEvent = mobEvent;
+            _isViewOpen = !_isViewOpen;
+        }
+
+        private async Task OnRegisterAsync(MobEvent mobEvent)
+        {
+            var currentUser = App.CurrentUser;
+            if (currentUser != null)
+            {
+                var attendee = new EventAttendee
+                {
+                    UserId = currentUser.Id,
+                    EventId = mobEvent.Id
+                };
+
+                _isLoading = true;
+                await MobEventManager.AddEventAttendeeAsync(attendee);
+                _isLoading = false;
+            }
         }
     }
 }

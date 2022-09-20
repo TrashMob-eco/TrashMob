@@ -1,0 +1,42 @@
+﻿<MudDrawer Open="@Open" OpenChanged="(open) => OpenChanged.InvokeAsync(open)" Anchor="@Anchor">
+    <MudDrawerHeader>
+        <MudText Typo="Typo.subtitle2">@Event?.Name</MudText>
+    </MudDrawerHeader>
+    <MudDrawerContainer Style="padding: 20px">
+        <MudStack>
+            <MudStack Row>
+                <MudText Typo="@BodyText"><strong>Description: </strong>@Event?.Description</MudText>
+            </MudStack>
+            <MudStack Row>
+                <MudText Typo="@BodyText"><strong>Date: </strong>@Event?.EventDate</MudText>
+            </MudStack>
+            <MudStack Row>
+                <MudText Typo="@BodyText"><strong>Address: </strong>@GetFormattedAddress</MudText>
+            </MudStack>
+            <MudStack Row>
+                <MudText Typo="@BodyText"><strong>Duration: </strong>@GetFormattedDuration</MudText>
+            </MudStack>
+            <MudStack Row>
+                <MudText Typo="@BodyText"><strong>Participants: </strong>@Event?.MaxNumberOfParticipants</MudText>
+            </MudStack>
+            <MudStack Row>
+                <MudText Typo="@BodyText"><strong>Is public: </strong>@PublicEvent</MudText>
+            </MudStack>
+            @if (_summary != null)
+            {
+                <MudStack Row>
+                    <MudText Typo="@BodyText"><strong>Buckets: </strong>@_summary.NumberOfBuckets</MudText>
+                </MudStack>
+                <MudStack Row>
+                    <MudText Typo="@BodyText"><strong>Bags: </strong>@_summary.NumberOfBags</MudText>
+                </MudStack>
+                <MudStack Row>
+                    <MudText Typo="@BodyText"><strong>Notes: </strong>@_summary.Notes</MudText>
+                </MudStack>
+                <MudStack Row>
+                    <MudText Typo="@BodyText"><strong>Attendees: </strong>@_summary.ActualNumberOfAttendees</MudText>
+                </MudStack>
+            }
+        </MudStack>
+    </MudDrawerContainer>
+</MudDrawer>

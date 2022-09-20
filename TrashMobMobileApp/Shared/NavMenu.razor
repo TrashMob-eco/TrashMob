@@ -1,5 +1,7 @@
 ﻿<MudNavMenu Color="Color.Dark">
-    <MudNavLink Href="@Routes.Home" Match="NavLinkMatch.All">Home</MudNavLink>
-    <MudNavLink Href="@Routes.ActiveEvents" Match="NavLinkMatch.Prefix">Active Events</MudNavLink>
-    <MudNavLink Href="@Routes.MyEvents" Match="NavLinkMatch.Prefix">My Events</MudNavLink>
+    <MudNavLink Icon="@Icons.Material.Filled.Home" Href="@Routes.Home" Match="NavLinkMatch.All">Home</MudNavLink>
+@*    <MudNavLink Icon="@Icons.Material.Filled.EventRepeat" Href="@Routes.ActiveEvents" Match="NavLinkMatch.Prefix">Active Events</MudNavLink>
+    <MudNavLink Icon="@Icons.Material.Filled.Event" Href="@Routes.MyEvents" Match="NavLinkMatch.Prefix">My Events</MudNavLink>*@
+    <MudNavLink Icon="@Icons.Material.Filled.Event" Href="@Routes.Events" Match="NavLinkMatch.Prefix">Events</MudNavLink>
+    <MudNavLink Icon="@Icons.Material.Filled.ContactPage" Href="@Routes.ContactUs" Match="NavLinkMatch.Prefix">Contact Us</MudNavLink>
 </MudNavMenu>

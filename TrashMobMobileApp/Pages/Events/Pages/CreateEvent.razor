@@ -1,5 +1,4 @@
 ﻿@page "/createevent"
-@using TrashMobMobileApp.Models
 
 <style>
     .tm-create-event-container {
@@ -17,7 +16,7 @@
             }
             else
             {
-                <MudText Typo="Typo.h3">Add Event</MudText>
+                <MudText Typo="Typo.h6">Add Event</MudText>
                 <MudForm @ref="@_addEventForm" @bind-IsValid="@_success" @bind-Errors="@_errors">
                     <MudTextField FullWidth T="string" Label="Name" @bind-Text="@_event.Name" Required RequiredError="Name is required" />
                     <MudTextField FullWidth T="string" Label="Description" @bind-Text="@_event.Description" Required RequiredError="Description is required" />
