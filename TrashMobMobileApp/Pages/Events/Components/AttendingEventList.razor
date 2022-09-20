@@ -57,7 +57,12 @@
                             </MudCardActions>
                         </MudCard>
                     </MudVirtualize>
-                    <MudFab Class="tm-create-event-btn-bottom" StartIcon="@Icons.Material.Filled.Edit" Label="Create" OnClick="@OnCreateEvent" />
+                }
+                else
+                {
+                    <MudContainer Class="tm-no-event-container">
+                        <MudText>You are not attending any events! Register for an event.</MudText>
+                    </MudContainer>
                 }
             }
         </MudContainer>

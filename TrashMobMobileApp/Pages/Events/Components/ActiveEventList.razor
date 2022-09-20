@@ -14,6 +14,10 @@
             bottom: 10px;
             right: 10px;
         }
+
+        .tm-event-list .tm-no-event-container {
+            text-align: center;
+        }
 </style>
 
 <ErrorBoundary>
@@ -27,23 +31,35 @@
             }
             else
             {
-                <MudVirtualize Context="mob" Items="_mobEvents">
-                    <MudCard Class="tm-event-card">
-                        <MudCardHeader>
-                            <CardHeaderAvatar>
-                                <MudAvatar Color="Color.Primary">@mob.Name.FirstOrDefault()</MudAvatar>
-                            </CardHeaderAvatar>
-                            <CardHeaderContent>
-                                <MudText Typo="Typo.body1">@mob.Name</MudText>
-                                <MudText Typo="Typo.body2">@mob.Description</MudText>
-                            </CardHeaderContent>
-                        </MudCardHeader>
-                        <MudCardActions>
-                            <MudIconButton Style="width: 30%; margin-right: 5px" Color="Color.Primary" Variant="Variant.Outlined" OnClick="@(() => OnViewEventDetails(mob))">View</MudIconButton>
-                            <MudIconButton Style="width: 30%; margin-left: 5px" Color="Color.Primary" Variant="Variant.Filled" OnClick="@(async () => await OnRegisterAsync(mob))">Register</MudIconButton>
-                        </MudCardActions>
-                    </MudCard>
-                </MudVirtualize>
+                @if (_mobEventsStatic.Any())
+                {
+                    <MudStack Style="width: 100%" Row>
+                        <MudTextField T="string" Style="width: 100%" Adornment="@Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" Placeholder="Search event.." Text="@_eventSearchText" TextChanged="@OnSearchTextChanged" Immediate />
+                    </MudStack>
+                    <MudVirtualize Context="mob" Items="_mobEvents">
+                        <MudCard Class="tm-event-card">
+                            <MudCardHeader>
+                                <CardHeaderAvatar>
+                                    <MudAvatar Color="Color.Primary">@mob.Name.FirstOrDefault()</MudAvatar>
+                                </CardHeaderAvatar>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.body1">@mob.Name</MudText>
+                                    <MudText Typo="Typo.body2">@mob.Description</MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardActions>
+                                <MudIconButton Style="width: 30%; margin-right: 5px" Color="Color.Primary" Variant="Variant.Outlined" OnClick="@(() => OnViewEventDetails(mob))">View</MudIconButton>
+                                <MudIconButton Style="width: 30%; margin-left: 5px" Color="Color.Primary" Variant="Variant.Filled" OnClick="@(async () => await OnRegisterAsync(mob))">Register</MudIconButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </MudVirtualize>
+                }
+                else
+                {
+                    <MudContainer Class="tm-no-event-container">
+                        <MudText>There are no events happening! Get started by creating your own.</MudText>
+                    </MudContainer>
+                }
             }
         </MudContainer>
     </ChildContent>

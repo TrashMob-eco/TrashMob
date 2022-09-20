@@ -10,6 +10,7 @@
         private bool _drawerOpen;
         private MudTheme _theme;
         private string _pageTitle;
+        private string _userInitials;
 
         [Inject]
         public IB2CAuthenticationService AuthenticationService { get; set; }
@@ -33,8 +34,8 @@
 
         private async Task PerformAuthenticationAsync()
         {
-            //await AuthenticationService.SignOutAsync(); //sign out on initialize to kick off login
             await AuthenticationService.SignInAsync(UserManager);
+            _userInitials = App.CurrentUser.UserName.First().ToString();
         }
 
         private void SetTheme()
@@ -59,6 +60,12 @@
         {
             _pageTitle = title;
             StateHasChanged();
+        }
+
+        private async Task OnSignOutAsync()
+        {
+            await AuthenticationService.SignOutAsync();
+            await PerformAuthenticationAsync();
         }
     }
 }

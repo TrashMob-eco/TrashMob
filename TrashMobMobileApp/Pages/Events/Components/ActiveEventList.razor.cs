@@ -6,10 +6,12 @@ namespace TrashMobMobileApp.Pages.Events.Components
 {
     public partial class ActiveEventList
     {
+        private List<MobEvent> _mobEventsStatic = new();
         private List<MobEvent> _mobEvents = new();
         private bool _isLoading;
         private MobEvent _selectedEvent;
         private bool _isViewOpen;
+        private string _eventSearchText;
 
         [Inject]
         public IMobEventManager MobEventManager { get; set; }
@@ -17,7 +19,7 @@ namespace TrashMobMobileApp.Pages.Events.Components
         protected override async Task OnInitializedAsync()
         {
             _isLoading = true;
-            _mobEvents = (await MobEventManager.GetActiveEventsAsync()).ToList();
+            _mobEventsStatic = (await MobEventManager.GetActiveEventsAsync()).ToList();
             var randomEvents = new List<MobEvent>
             {
                 new MobEvent
@@ -36,7 +38,8 @@ namespace TrashMobMobileApp.Pages.Events.Components
                     Description = "Event Description 3"
                 }
             };
-            _mobEvents.AddRange(randomEvents);
+            _mobEventsStatic.AddRange(randomEvents);
+            _mobEvents = _mobEventsStatic;
             _isLoading = false;
         }
 
@@ -61,6 +64,18 @@ namespace TrashMobMobileApp.Pages.Events.Components
                 await MobEventManager.AddEventAttendeeAsync(attendee);
                 _isLoading = false;
             }
+        }
+
+        private void OnSearchTextChanged(string searchText)
+        {
+            _eventSearchText = searchText;
+            if (string.IsNullOrEmpty(_eventSearchText))
+            {
+                _mobEvents = _mobEventsStatic;
+                return;
+            }
+
+            _mobEvents = _mobEventsStatic.FindAll(item => item.Name.Contains(_eventSearchText, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

@@ -7,7 +7,15 @@
             @_pageTitle
         </MudContainer>
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Material.Filled.Person" Color="Color.Inherit" />
+        <MudMenu Color="Color.Primary">
+            <ActivatorContent>
+                <MudAvatar Color="Color.Dark">@_userInitials</MudAvatar>
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem>Profile</MudMenuItem>
+                <MudMenuItem OnClick="@OnSignOutAsync">Sign Out</MudMenuItem>
+            </ChildContent>
+        </MudMenu>
     </MudAppBar>
     <MudDrawer @bind-Open="@_drawerOpen">
         <NavMenu/>
