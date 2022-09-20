@@ -2,7 +2,7 @@
 namespace TrashMob.Shared.Engine
 {
     using Microsoft.Extensions.Logging;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     public class UpcomingEventAttendingSoonNotifier : UpcomingEventAttendingBaseNotifier, INotificationEngine
     {

@@ -14,7 +14,7 @@ namespace TrashMob.Controllers
     using TrashMob.Poco;
     using TrashMob.Shared;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/eventsummaries")]
     public class EventSummariesController : BaseController

@@ -7,7 +7,7 @@ namespace TrashMob.Shared.Tests
     using System.Collections.Generic;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     public abstract class NotifierTestsBase
     {

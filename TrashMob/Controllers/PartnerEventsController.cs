@@ -10,7 +10,7 @@ namespace TrashMob.Controllers
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Poco;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/partnerevents")]
     public class PartnerEventsController : BaseController

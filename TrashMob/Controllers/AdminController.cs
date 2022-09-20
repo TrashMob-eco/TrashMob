@@ -8,7 +8,7 @@
     using System.Threading.Tasks;
     using TrashMob.Shared;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/admin")]
     public class AdminController : BaseController

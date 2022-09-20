@@ -8,7 +8,7 @@
     using System.Threading.Tasks;
     using TrashMob.Shared.Extensions;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     public abstract class NotificationEngineBase
     {

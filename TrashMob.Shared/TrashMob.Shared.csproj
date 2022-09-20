@@ -71,4 +71,8 @@
     <PackageReference Include="SendGrid" Version="9.27.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Managers\Events\" />
+  </ItemGroup>
+
 </Project>

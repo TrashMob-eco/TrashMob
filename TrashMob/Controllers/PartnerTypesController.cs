@@ -5,7 +5,7 @@ namespace TrashMob.Controllers
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Mvc;
-    using TrashMob.Shared.Managers;
+    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Models;
 
     [Route("api/partnertypes")]

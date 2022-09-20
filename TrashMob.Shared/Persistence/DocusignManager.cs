@@ -11,6 +11,7 @@ namespace TrashMob.Shared.Persistence
     using static DocuSign.eSign.Client.Auth.OAuth;
     using System.IO;
     using System.Threading.Tasks;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     public class DocusignManager : IDocusignManager
     {

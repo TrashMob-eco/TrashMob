@@ -10,9 +10,9 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Poco;
-    using TrashMob.Shared.Managers;
+    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Authorize]
     [Route("api/partnerusers")]

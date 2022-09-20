@@ -6,7 +6,7 @@
     using System;
     using System.Threading.Tasks;
     using TrashMob.Shared;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/docusign")]
     public class DocusignController : BaseController

@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
     using System.Linq.Expressions;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     /// <summary>
     /// Generic Implementation to save on boilerplate code

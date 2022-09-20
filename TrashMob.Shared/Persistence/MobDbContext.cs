@@ -22,7 +22,7 @@
 
         public virtual DbSet<EventAttendee> EventAttendees { get; set; }
 
-        public virtual DbSet<Event> Events { get; set; }
+        public virtual DbSet<Models.Event> Events { get; set; }
 
         public virtual DbSet<EventPartnerStatus> EventPartnerStatuses { get; set; }
 

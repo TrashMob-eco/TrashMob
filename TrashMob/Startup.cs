@@ -16,9 +16,14 @@ namespace TrashMob
     using System;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers;
+    using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Managers.Partners;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
-    
+    using TrashMob.Shared.Persistence.Events;
+    using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Persistence.Partners;
+
     public class Startup
     {
         public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)

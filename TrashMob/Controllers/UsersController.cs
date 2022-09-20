@@ -11,11 +11,11 @@ namespace TrashMob.Controllers
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
     using TrashMob.Shared;
     using System.Collections.Generic;
     using TrashMob.Shared.Engine;
     using Microsoft.ApplicationInsights;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/users")]
     public class UsersController : BaseController

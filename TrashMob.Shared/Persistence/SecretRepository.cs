@@ -1,6 +1,7 @@
 ﻿namespace TrashMob.Shared.Persistence
 {
     using Microsoft.Extensions.Configuration;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     public class SecretRepository : ISecretRepository
     {

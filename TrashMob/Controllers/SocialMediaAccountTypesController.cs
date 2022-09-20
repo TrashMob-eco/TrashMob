@@ -5,7 +5,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Managers;
+    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Models;
 
     [Authorize]

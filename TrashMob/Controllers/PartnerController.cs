@@ -9,7 +9,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/partners")]
     public class PartnersController : BaseController
