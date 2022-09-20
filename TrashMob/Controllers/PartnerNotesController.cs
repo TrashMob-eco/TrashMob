@@ -28,7 +28,7 @@
         [HttpPost]
         public async Task<IActionResult> AddCommunityNote(PartnerNote partnerNote)
         {
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var currentUser = await GetUser(userRepository);
 
             if (currentUser == null)
             {
