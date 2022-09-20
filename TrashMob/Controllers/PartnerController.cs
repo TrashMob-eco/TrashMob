@@ -45,7 +45,7 @@
         [Authorize]
         public async Task<IActionResult> UpdatePartner(Partner partner)
         {
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var currentUser = await GetUser(userRepository);
 
             if (currentUser == null)
             {

@@ -102,7 +102,7 @@
         public async Task<IActionResult> AddPartnerUser(Guid partnerId, Guid userId)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var currentUser = await GetUser(userRepository);
 
             if (!currentUser.IsSiteAdmin)
             {

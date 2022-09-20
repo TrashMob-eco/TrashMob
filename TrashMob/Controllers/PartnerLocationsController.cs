@@ -53,7 +53,7 @@
         public async Task<IActionResult> AddPartnerLocation(PartnerLocation partnerLocation)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var currentUser = await GetUser(userRepository);
 
             if (!currentUser.IsSiteAdmin)
             {
@@ -75,7 +75,7 @@
         public async Task<IActionResult> UpdatePartnerLocation(PartnerLocation partnerLocation)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var currentUser = await GetUser(userRepository);
 
             if (!currentUser.IsSiteAdmin)
             {
@@ -97,7 +97,7 @@
         public async Task<IActionResult> DeletePartnerLocation(Guid partnerId, Guid partnerLocationId)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var currentUser = await GetUser(userRepository);
 
             if (!currentUser.IsSiteAdmin)
             {
