@@ -80,8 +80,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     function handleSave(event: any) {
         event.preventDefault();
 
-        const form = new FormData(event.target);
-
         if (!isSaveEnabled) {
             return;
         }
