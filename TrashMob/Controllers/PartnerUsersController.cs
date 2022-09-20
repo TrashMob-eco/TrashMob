@@ -10,24 +10,28 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Poco;
+    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Authorize]
     [Route("api/partnerusers")]
     public class PartnerUsersController : BaseController
     {
         private readonly IPartnerUserRepository partnerUserRepository;
+        private readonly IKeyedManager<Partner> partnerManager;
         private readonly IUserRepository userRepository;
         private readonly IPartnerRepository partnerRepository;
 
         public PartnerUsersController(IPartnerUserRepository partnerUserRepository,
+                                      IKeyedManager<Partner> partnerManager,
                                       IUserRepository userRepository,
                                       IPartnerRepository partnerRepository,
                                       TelemetryClient telemetryClient)
             : base(telemetryClient)
         {
             this.partnerUserRepository = partnerUserRepository;
+            this.partnerManager = partnerManager;
             this.userRepository = userRepository;
             this.partnerRepository = partnerRepository;
         }
@@ -52,7 +56,7 @@
 
             foreach (var pu in partnerUsers)
             {
-                var partner = await partnerRepository.GetPartner(pu.PartnerId, cancellationToken).ConfigureAwait(false);
+                var partner = await partnerManager.Get(pu.PartnerId, cancellationToken).ConfigureAwait(false);
                 partners.Add(partner);
             }
 

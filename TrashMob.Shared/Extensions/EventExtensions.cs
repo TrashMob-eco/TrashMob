@@ -5,7 +5,7 @@
     using System.Text;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     public static class EventExtensions
     {

@@ -8,15 +8,6 @@
         public const string TrashMobEmailName = "TrashMob Information";
     }
 
-    public enum CommunityContactTypeEnum
-    {
-        None = 0,
-        Official = 1,
-        TrashMobHeadquarters = 2,
-        TrashMobVolunteer = 3,
-        Partner = 4,
-    }
-
     public enum CommunityStatusEnum
     {
         Inactive = 0,
@@ -101,6 +92,12 @@
     {
         Active = 1,
         Inactive = 2,
+    }
+
+    public enum PartnerTypeEnum
+    {
+        Government = 1,
+        Business = 2,
     }
 
     public enum SocialMediaAccountTypeEnum

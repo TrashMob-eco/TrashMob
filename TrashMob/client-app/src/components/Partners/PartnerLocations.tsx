@@ -37,10 +37,10 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     const [country, setCountry] = React.useState<string>();
     const [region, setRegion] = React.useState<string>();
     const [postalCode, setPostalCode] = React.useState<string>();
-    const [primaryEmail, setPrimaryEmail] = React.useState<string>(props.partner.primaryEmail);
-    const [secondaryEmail, setSecondaryEmail] = React.useState<string>(props.partner.secondaryEmail);
-    const [primaryPhone, setPrimaryPhone] = React.useState<string>(props.partner.primaryPhone);
-    const [secondaryPhone, setSecondaryPhone] = React.useState<string>(props.partner.secondaryPhone);
+    const [primaryEmail, setPrimaryEmail] = React.useState<string>("");
+    const [secondaryEmail, setSecondaryEmail] = React.useState<string>("");
+    const [primaryPhone, setPrimaryPhone] = React.useState<string>("");
+    const [secondaryPhone, setSecondaryPhone] = React.useState<string>("");
     const [latitude, setLatitude] = React.useState<number>(0);
     const [longitude, setLongitude] = React.useState<number>(0);
     const [latitudeErrors, setLatitudeErrors] = React.useState<string>("");

@@ -4,7 +4,7 @@ namespace TrashMobJobs
     using System.Threading.Tasks;
     using Microsoft.Azure.Functions.Worker;
     using Microsoft.Extensions.Logging;
-    using TrashMob.Shared;
+    using TrashMob.Shared.Engine;
 
     public class UserNotifier
     {

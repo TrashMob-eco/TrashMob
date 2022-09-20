@@ -16,35 +16,13 @@
             this.configuration = configuration;
         }
 
-        public virtual DbSet<Community> Communities { get; set; }
-
-        public virtual DbSet<CommunityRequest> CommunityRequests { get; set; }
-
-        public virtual DbSet<CommunityAttachment> CommunityAttachments { get; set; }
-
-        public virtual DbSet<CommunityContact> CommunityContacts { get; set; }
-
-        public virtual DbSet<CommunityContactType> CommunityContactTypes { get; set; }
-
-        public virtual DbSet<CommunityNote> CommunityNotes { get; set; }
-
-        public virtual DbSet<CommunityPartner> CommunityPartners { get; set; }
-
-        public virtual DbSet<CommunitySocialMediaAccount> CommunitySocialMediaAccounts { get; set; }
-
-        public virtual DbSet<CommunityStatus> CommunityStatuses { get; set; }
-
-        public virtual DbSet<CommunityUser> CommunityUsers { get; set; }
-
         public virtual DbSet<ContactRequest> ContactRequests { get; set; }
 
         public virtual DbSet<EventPartner> EventPartners { get; set; }
 
         public virtual DbSet<EventAttendee> EventAttendees { get; set; }
 
-        public virtual DbSet<Event> Events { get; set; }
-
-        public virtual DbSet<EventMedia> EventMedias { get; set; }
+        public virtual DbSet<Models.Event> Events { get; set; }
 
         public virtual DbSet<EventPartnerStatus> EventPartnerStatuses { get; set; }
 
@@ -54,27 +32,29 @@
 
         public virtual DbSet<EventType> EventTypes { get; set; }
 
-        public virtual DbSet<MediaType> MediaTypes { get; set; }
-
-        public virtual DbSet<MediaType> MediaUsageTypes { get; set; }
-
         public virtual DbSet<MessageRequest> MessageRequests { get; set; }
 
         public virtual DbSet<NonEventUserNotification> NonEventUserNotifications { get; set; }
 
+        public virtual DbSet<PartnerContact> PartnerContacts { get; set; }
+
+        public virtual DbSet<PartnerDocument> PartnerDocuments { get; set; }
+
         public virtual DbSet<PartnerLocation> PartnerLocations { get; set; }
+
+        public virtual DbSet<PartnerNote> PartnerNotes { get; set; }
 
         public virtual DbSet<PartnerRequest> PartnerRequests { get; set; }
 
         public virtual DbSet<PartnerRequestStatus> PartnerRequestStatus { get; set; }
+
+        public virtual DbSet<PartnerSocialMediaAccount> PartnerSocialMediaAccounts { get; set; }
 
         public virtual DbSet<Partner> Partners { get; set; }
 
         public virtual DbSet<PartnerStatus> PartnerStatus { get; set; }
 
         public virtual DbSet<PartnerUser> PartnerUsers { get; set; }
-
-        public virtual DbSet<SocialMediaAccount> SocialMediaAccounts { get; set; }
 
         public virtual DbSet<SocialMediaAccountType> SocialMediaAccountTypes { get; set; }
 
@@ -117,53 +97,15 @@
                     .HasConstraintName("FK_ContactRequests_User_LastUpdatedBy");
             });
 
-            modelBuilder.Entity<Community>(entity =>
+            modelBuilder.Entity<PartnerDocument>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.City)
-                    .HasMaxLength(256);
+                entity.Property(e => e.Name)
+                    .HasMaxLength(64)
+                    .IsRequired();
 
-                entity.Property(e => e.Country)
-                    .IsRequired()
-                    .HasMaxLength(64);
-
-                entity.Property(e => e.CreatedByUserId);
-
-                entity.Property(e => e.LastUpdatedByUserId);
-
-                entity.Property(e => e.Region)
-                    .IsRequired()
-                    .HasMaxLength(256);
-
-                entity.Property(e => e.PostalCode)
-                    .HasMaxLength(25);
-
-                entity.HasOne(d => d.CommunityStatus)
-                    .WithMany(p => p.Communities)
-                    .HasForeignKey(d => d.CommunityStatusId)
-                    .HasConstraintName("FK_Communities_CommunityStatuses");
-
-                entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.CommunitiesCreated)
-                    .HasForeignKey(d => d.CreatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Communities_ApplicationUser_CreatedBy");
-
-                entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.CommunitiesUpdated)
-                    .HasForeignKey(d => d.LastUpdatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Communities_ApplicationUser_LastUpdatedBy");
-            });
-
-            modelBuilder.Entity<CommunityAttachment>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.CommunityId);
-
-                entity.Property(e => e.AttachmentUrl)
+                entity.Property(e => e.Url)
                     .HasMaxLength(2048)
                     .IsRequired();
 
@@ -171,30 +113,28 @@
 
                 entity.Property(e => e.LastUpdatedByUserId);
 
-                entity.HasOne(d => d.Community)
-                    .WithMany()
-                    .HasForeignKey(d => d.CommunityId)
+                entity.HasOne(d => d.Partner)
+                    .WithMany(d => d.PartnerDocuments)
+                    .HasForeignKey(d => d.PartnerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityAttachments_Community");
+                    .HasConstraintName("FK_PartnerDocuments_Partner");
 
                 entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.CommunityAttachmentsCreated)
+                    .WithMany(p => p.PartnerDocumentsCreated)
                     .HasForeignKey(d => d.CreatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityAttachments_ApplicationUser_CreatedBy");
+                    .HasConstraintName("FK_PartnerDocuments_User_CreatedBy");
 
                 entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.CommunityAttachmentsUpdated)
+                    .WithMany(p => p.PartnerDocumentsUpdated)
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityAttachments_ApplicationUser_LastUpdatedBy");
+                    .HasConstraintName("FK_PartnerDocuments_User_LastUpdatedBy");
             });
 
-            modelBuilder.Entity<CommunityContact>(entity =>
+            modelBuilder.Entity<PartnerContact>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.CommunityId);
 
                 entity.Property(e => e.Name)
                     .HasMaxLength(64)
@@ -213,54 +153,28 @@
 
                 entity.Property(e => e.LastUpdatedByUserId);
 
-                entity.HasOne(d => d.CommunityContactType)
-                    .WithMany(p => p.CommunityContacts)
-                            .HasForeignKey(d => d.CommunityContactTypeId)
-                            .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityContacts_CommunityContactTypes");
-
-                entity.HasOne(d => d.Community)
-                    .WithMany()
-                    .HasForeignKey(d => d.CommunityId)
+                entity.HasOne(d => d.Partner)
+                    .WithMany(d => d.PartnerContacts)
+                    .HasForeignKey(d => d.PartnerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityContacts_Community");
+                    .HasConstraintName("FK_PartnerContacts_Partner");
 
                 entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.CommunityContactsCreated)
+                    .WithMany(p => p.PartnerContactsCreated)
                     .HasForeignKey(d => d.CreatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityContacts_ApplicationUser_CreatedBy");
+                    .HasConstraintName("FK_PartnerContacts_User_CreatedBy");
 
                 entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.CommunityContactsUpdated)
+                    .WithMany(p => p.PartnerContactsUpdated)
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityContacts_ApplicationUser_LastUpdatedBy");
+                    .HasConstraintName("FK_PartnerContacts_User_LastUpdatedBy");
             });
 
-            modelBuilder.Entity<CommunityContactType>(entity =>
+            modelBuilder.Entity<PartnerNote>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Description);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.HasData(
-                    new CommunityContactType { Id = (int)CommunityContactTypeEnum.None, Name = "None", Description = "Contact is not available", DisplayOrder = 1 },
-                    new CommunityContactType { Id = (int)CommunityContactTypeEnum.Official, Name = "Official", Description = "Contact is an official within the Community", DisplayOrder = 2 },
-                    new CommunityContactType { Id = (int)CommunityContactTypeEnum.TrashMobHeadquarters, Name = "TrashMobHQ", Description = "Contact is TrashMobHeadquarters", DisplayOrder = 3 },
-                    new CommunityContactType { Id = (int)CommunityContactTypeEnum.TrashMobVolunteer, Name = "TrashMob Volunteer", Description = "Contact is a TrashMob Volunteer in the community", DisplayOrder = 4 },
-                    new CommunityContactType { Id = (int)CommunityContactTypeEnum.Partner, Name = "TrashMob Partner", Description = "Contact is a TrashMob Partner in the community", DisplayOrder = 5 });
-            });
-
-            modelBuilder.Entity<CommunityNote>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.CommunityId);
 
                 entity.Property(e => e.Notes)
                   .HasMaxLength(2000);
@@ -269,163 +183,54 @@
 
                 entity.Property(e => e.LastUpdatedByUserId);
 
-                entity.HasOne(d => d.Community)
-                    .WithMany()
-                    .HasForeignKey(d => d.CommunityId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityNotes_Community");
-
-                entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.CommunityNotesCreated)
-                    .HasForeignKey(d => d.CreatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityNotes_ApplicationUser_CreatedBy");
-
-                entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.CommunityNotesUpdated)
-                    .HasForeignKey(d => d.LastUpdatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityNotes_ApplicationUser_LastUpdatedBy");
-            });
-
-            modelBuilder.Entity<CommunityPartner>(entity =>
-            {
-                entity.HasKey(e => new { e.CommunityId, e.PartnerId, e.PartnerLocationId });
-
-                entity.Property(e => e.CommunityId)
-                    .IsRequired();
-
-                entity.Property(e => e.PartnerId)
-                    .IsRequired();
-
-                entity.Property(e => e.PartnerLocationId)
-                    .IsRequired();
-
-                entity.HasOne(d => d.Community)
-                    .WithMany()
-                    .HasForeignKey(d => d.CommunityId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityPartners_Communities");
-
                 entity.HasOne(d => d.Partner)
-                    .WithMany()
+                    .WithMany(d => d.PartnerNotes)
                     .HasForeignKey(d => d.PartnerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityPartners_Partners");
-
-                entity.HasOne(d => d.PartnerLocation)
-                    .WithMany()
-                    .HasForeignKey(d => d.PartnerLocationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityPartners_PartnerLocations");
+                    .HasConstraintName("FK_PartnerNotes_Partner");
 
                 entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.CommunityPartnersCreated)
+                    .WithMany(p => p.PartnerNotesCreated)
                     .HasForeignKey(d => d.CreatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityPartners_User_CreatedBy");
+                    .HasConstraintName("FK_PartnerNotes_User_CreatedBy");
 
                 entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.CommunityPartnersUpdated)
+                    .WithMany(p => p.PartnerNotesUpdated)
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityPartners_User_LastUpdatedBy");
+                    .HasConstraintName("FK_PartnerNotes_User_LastUpdatedBy");
             });
 
-            modelBuilder.Entity<CommunityRequest>(entity =>
-            {
-                entity.Property(e => e.ContactName).HasMaxLength(128);
-
-                entity.Property(e => e.Website).HasMaxLength(1024);
-
-                entity.Property(e => e.Email).HasMaxLength(64);
-
-                entity.Property(e => e.Phone).HasMaxLength(32);
-
-                entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.CommunityRequestsCreated)
-                    .HasForeignKey(d => d.CreatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityRequests_CreatedByUser_Id");
-            });
-
-            modelBuilder.Entity<CommunitySocialMediaAccount>(entity =>
-            {
-                entity.HasKey(e => new { e.CommunityId, e.SocialMediaAccountId, });
-
-                entity.Property(e => e.SocialMediaAccountId)
-                    .IsRequired();
-
-                entity.HasOne(d => d.Community)
-                    .WithMany()
-                    .HasForeignKey(d => d.CommunityId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunitySocialMediaAccount_Communities");
-
-                entity.HasOne(d => d.SocialMediaAccount)
-                    .WithMany()
-                    .HasForeignKey(d => d.SocialMediaAccountId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunitySocialMediaAccount_SocialMediaAccount");
-
-                entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.CommunitySocialMediaAccountsCreated)
-                    .HasForeignKey(d => d.CreatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunitySocialMediaAccount_CreatedByUser_Id");
-
-                entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.CommunitySocialMediaAccountsUpdated)
-                    .HasForeignKey(d => d.LastUpdatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunitySocialMediaAccount_LastUpdatedByUser_Id");
-            });
-
-            modelBuilder.Entity<CommunityStatus>(entity =>
+            modelBuilder.Entity<PartnerSocialMediaAccount>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.Description);
+                entity.Property(e => e.AccountIdentifier).HasMaxLength(128);
 
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.HasData(
-                    new CommunityStatus { Id = (int)CommunityStatusEnum.Active, Name = "Active", Description = "Community is an active TrashMob community", DisplayOrder = 1, IsActive = true },
-                    new CommunityStatus { Id = (int)CommunityStatusEnum.Inactive, Name = "Inactive", Description = "Community is not currently an active TrashMob community", DisplayOrder = 2, IsActive = true });
-            });
-
-            modelBuilder.Entity<CommunityUser>(entity =>
-            {
-                entity.HasKey(e => new { e.CommunityId, e.UserId, });
-
-                entity.Property(e => e.UserId)
-                    .IsRequired();
-
-                entity.HasOne(d => d.Community)
-                    .WithMany()
-                    .HasForeignKey(d => d.CommunityId)
+                entity.HasOne(d => d.Partner)
+                    .WithMany(d => d.PartnerSocialMediaAccounts)
+                    .HasForeignKey(d => d.PartnerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityUser_Communities");
+                    .HasConstraintName("FK_PartnerSocialMediaAccount_Partner");
 
-                entity.HasOne(d => d.User)
-                    .WithMany()
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityUser_User");
+                entity.HasOne(d => d.SocialMediaAccountType)
+                    .WithMany(p => p.PartnerSocialMediaAccounts)
+                    .HasForeignKey(d => d.SocialMediaAccountTypeId)
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_PartnerSocialMediaAccounts_SocialMediaAccountType");
 
                 entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.CommunityUsersCreated)
+                    .WithMany(p => p.PartnerSocialMediaAccountsCreated)
                     .HasForeignKey(d => d.CreatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityUsers_CreatedByUser_Id");
+                    .HasConstraintName("FK_PartnerSocialMediaAccount_CreatedByUser_Id");
 
                 entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.CommunityUsersUpdated)
+                    .WithMany(p => p.PartnerSocialMediaAccountsUpdated)
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommunityUsers_LastUpdatedByUser_Id");
+                    .HasConstraintName("FK_PartnerSocialMediaAccount_LastUpdatedByUser_Id");
             });
 
             modelBuilder.Entity<Event>(entity =>
@@ -506,37 +311,6 @@
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EventAttendees_ApplicationUser");
-            });
-
-            modelBuilder.Entity<EventMedia>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.MediaUrl).IsRequired();
-
-                entity.HasOne(d => d.MediaType)
-                    .WithMany(p => p.EventMedias)
-                    .HasForeignKey(d => d.MediaTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_EventMedias_MediaTypes");
-
-                entity.HasOne(d => d.MediaUsageType)
-                    .WithMany(p => p.EventMedias)
-                    .HasForeignKey(d => d.MediaUsageTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_EventMedias_MediaUsageTypes");
-
-                entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.EventMedias)
-                    .HasForeignKey(d => d.CreatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_EventMedias_User_Id");
-
-                entity.HasOne(d => d.Event)
-                    .WithMany(p => p.EventMedias)
-                    .HasForeignKey(d => d.EventId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_EventMedia_Event_Id");
             });
 
             modelBuilder.Entity<EventPartner>(entity =>
@@ -677,37 +451,6 @@
                     new EventType { Id = 14, Name = "Other", Description = "Other", DisplayOrder = 14, IsActive = true });
             });
 
-            modelBuilder.Entity<MediaType>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Description);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.HasData(
-                    new MediaType { Id = 1, Name = "Instagram", Description = "Instagram Image or Video", DisplayOrder = 1, IsActive = true },
-                    new MediaType { Id = 2, Name = "YouTube", Description = "YouTube Video", DisplayOrder = 2, IsActive = true });
-            });
-
-            modelBuilder.Entity<MediaUsageType>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Description);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.HasData(
-                    new MediaUsageType { Id = 1, Name = "BeforeEvent", Description = "Before a cleanup event", DisplayOrder = 1, IsActive = true },
-                    new MediaUsageType { Id = 2, Name = "AfterEvent", Description = "After a cleanup event", DisplayOrder = 2, IsActive = true });
-
-            });
-
             modelBuilder.Entity<MessageRequest>(entity =>
             {
                 entity.Property(e => e.Name).HasMaxLength(64);
@@ -758,17 +501,11 @@
 
             modelBuilder.Entity<Partner>(entity =>
             {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Name).HasMaxLength(128);
 
-                entity.Property(e => e.PrimaryEmail).HasMaxLength(64);
-
-                entity.Property(e => e.SecondaryEmail).HasMaxLength(64);
-
-                entity.Property(e => e.PrimaryPhone).HasMaxLength(32);
-
-                entity.Property(e => e.SecondaryPhone).HasMaxLength(32);
-
-                entity.Property(e => e.Notes).HasMaxLength(2048);
+                entity.Property(e => e.PartnerTypeId).HasDefaultValue(2);
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.PartnersCreated)
@@ -786,7 +523,13 @@
                     .WithMany(p => p.Partners)
                     .HasForeignKey(d => d.PartnerStatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Partners_PartnerRequestStatus");
+                    .HasConstraintName("FK_Partners_PartnerStatus");
+
+                entity.HasOne(d => d.PartnerType)
+                    .WithMany(p => p.Partners)
+                    .HasForeignKey(d => d.PartnerTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Partners_PartnerType");
             });
 
             modelBuilder.Entity<PartnerLocation>(entity =>
@@ -829,7 +572,7 @@
                     .HasMaxLength(64);
 
                 entity.HasOne(d => d.Partner)
-                    .WithMany()
+                    .WithMany(d => d.PartnerLocations)
                     .HasForeignKey(d => d.PartnerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PartnerLocations_Partners");
@@ -851,13 +594,9 @@
             {
                 entity.Property(e => e.Name).HasMaxLength(128);
 
-                entity.Property(e => e.PrimaryEmail).HasMaxLength(64);
+                entity.Property(e => e.Email).HasMaxLength(64);
 
-                entity.Property(e => e.SecondaryEmail).HasMaxLength(64);
-
-                entity.Property(e => e.PrimaryPhone).HasMaxLength(32);
-
-                entity.Property(e => e.SecondaryPhone).HasMaxLength(32);
+                entity.Property(e => e.Phone).HasMaxLength(32);
 
                 entity.Property(e => e.Notes).HasMaxLength(2048);
 
@@ -911,15 +650,30 @@
                     new PartnerStatus { Id = (int)PartnerStatusEnum.Inactive, Name = "Inactive", Description = "Partner is Inactive", DisplayOrder = 2, IsActive = true });
             });
 
+            modelBuilder.Entity<PartnerType>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Description);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasData(
+                    new PartnerType { Id = (int)PartnerTypeEnum.Government, Name = "Government", Description = "Partner is a Government or Government Agency", DisplayOrder = 1, IsActive = true },
+                    new PartnerType { Id = (int)PartnerTypeEnum.Business, Name = "Business", Description = "Partner is Business", DisplayOrder = 2, IsActive = true });
+            });
+
             modelBuilder.Entity<PartnerUser>(entity =>
             {
-                entity.HasKey(e => new { e.PartnerId, e.UserId, });
+                entity.HasKey(e => new { e.PartnerId, e.UserId });
 
                 entity.Property(e => e.UserId)
                     .IsRequired();
 
                 entity.HasOne(d => d.Partner)
-                    .WithMany()
+                    .WithMany(d => d.PartnerUsers)
                     .HasForeignKey(d => d.PartnerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PartnerUser_Partners");
@@ -941,23 +695,6 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PartnerUsers_LastUpdatedByUser_Id");
-            });
-
-            modelBuilder.Entity<SocialMediaAccount>(entity =>
-            {
-                entity.Property(e => e.AccountIdentifier).HasMaxLength(128);
-
-                entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.SocialMediaAccountsCreated)
-                    .HasForeignKey(d => d.CreatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SocialMediaAccount_CreatedByUser_Id");
-
-                entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.SocialMediaAccountsUpdated)
-                    .HasForeignKey(d => d.LastUpdatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SocialMediaAccount_LastUpdatedByUser_Id");
             });
 
             modelBuilder.Entity<SocialMediaAccountType>(entity =>

@@ -7,6 +7,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     public class UserRepository : IUserRepository
     {
@@ -84,14 +85,6 @@
             foreach (var userNotification in userNotifications)
             {
                 mobDbContext.UserNotifications.Remove(userNotification);
-            }
-
-            // Remove the EventMedia records owned by this user
-            var eventMedias = mobDbContext.EventMedias.Where(e => e.CreatedByUserId == id);
-
-            foreach (var eventMedia in eventMedias)
-            {
-                mobDbContext.EventMedias.Remove(eventMedia);
             }
 
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);

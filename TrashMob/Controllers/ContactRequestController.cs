@@ -3,7 +3,7 @@
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Managers;
+    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Models;
 
     [Route("api/contactrequest")]

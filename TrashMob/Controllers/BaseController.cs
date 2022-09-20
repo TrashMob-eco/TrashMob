@@ -5,7 +5,7 @@
     using System.Security.Claims;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [ApiController]
     public abstract class BaseController : ControllerBase

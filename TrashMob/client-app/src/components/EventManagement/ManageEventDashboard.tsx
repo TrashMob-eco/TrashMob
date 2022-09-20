@@ -5,7 +5,6 @@ import UserData from '../Models/UserData';
 import { ButtonGroup, ToggleButton } from 'react-bootstrap';
 import { EditEvent } from './EditEvent';
 import { ManageEventPartners } from './ManageEventPartners';
-import { ManageEventMedia } from './ManageEventMedia';
 import { ManageEventAttendees } from './ManageEventAttendees';
 import { Guid } from 'guid-typescript';
 import { Button } from 'reactstrap';
@@ -29,7 +28,6 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
         { name: 'Manage Event', value: '1' },
         { name: 'Manage Event Partners', value: '2' },
         { name: 'Manage Event Attendees', value: '3' },
-        { name: 'Manage Event Media', value: '4' },
     ];
 
     React.useEffect(() => {
@@ -88,15 +86,6 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
         )
     }
 
-    function renderManageEventMedia() {
-        return (
-            <div>
-                <h2>Event Media</h2>
-                <ManageEventMedia eventId={eventId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
-            </div>
-        )
-    }
-
     function renderEventDashboard() {
         return (
             <div className="card pop">
@@ -121,7 +110,6 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
                 { radioValue === '1' && renderManageEvent()}
                 { radioValue === '2' && renderManageEventPartners()}
                 { radioValue === '3' && renderManageEventAttendees()}
-                { radioValue === '4' && renderManageEventMedia()}
             </div>);
     }
 

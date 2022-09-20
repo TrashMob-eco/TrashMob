@@ -15,7 +15,7 @@ namespace TrashMob.Controllers
     using TrashMob.Shared;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/eventpartners")]
     public class EventPartnersController : BaseController

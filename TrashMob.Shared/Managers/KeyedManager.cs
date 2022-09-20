@@ -4,8 +4,9 @@ namespace TrashMob.Shared.Managers
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     public abstract class KeyedManager<T> : BaseManager<T>, IKeyedManager<T> where T : KeyedModel
     {

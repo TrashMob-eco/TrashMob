@@ -6,8 +6,9 @@ namespace TrashMob.Shared.Managers
     using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
+    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     public abstract class LookupManager<T> : ILookupManager<T> where T : LookupModel
     {
