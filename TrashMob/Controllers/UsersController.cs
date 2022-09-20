@@ -23,10 +23,10 @@ namespace TrashMob.Controllers
         private readonly IUserRepository userRepository;
         private readonly IEmailManager emailManager;
 
-        public UsersController(IUserRepository userRepository,
-                               IEmailManager emailManager,
-                               TelemetryClient telemetryClient)
-            : base(telemetryClient)
+        public UsersController(TelemetryClient telemetryClient,
+                               IUserRepository userRepository,
+                               IEmailManager emailManager)
+            : base(telemetryClient, userRepository)
         {
             this.userRepository = userRepository;
             this.emailManager = emailManager;

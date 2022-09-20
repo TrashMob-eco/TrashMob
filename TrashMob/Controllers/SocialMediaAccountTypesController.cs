@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Models;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Authorize]
     [Route("api/socialmediaaccounttypes")]
@@ -14,9 +15,10 @@
     {
         private readonly ILookupManager<SocialMediaAccountType> manager;
 
-        public SocialMediaAccountTypesController(ILookupManager<SocialMediaAccountType> manager, 
-                                                 TelemetryClient telemetryClient)
-            : base(telemetryClient)
+        public SocialMediaAccountTypesController(TelemetryClient telemetryClient,
+                                                 IUserRepository userRepository,
+                                                 ILookupManager<SocialMediaAccountType> manager)
+            : base(telemetryClient, userRepository)
         {
             this.manager = manager;
         }

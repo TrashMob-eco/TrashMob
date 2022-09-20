@@ -16,10 +16,10 @@
         private readonly IBaseManager<PartnerSocialMediaAccount> manager;
         private readonly IUserRepository userRepository;
 
-        public PartnerSocialMediaAccountController(IBaseManager<PartnerSocialMediaAccount> manager, 
-                                          IUserRepository userRepository,
-                                          TelemetryClient telemetryClient)
-            : base(telemetryClient)
+        public PartnerSocialMediaAccountController(TelemetryClient telemetryClient,
+                                                   IUserRepository userRepository,
+                                                   IBaseManager<PartnerSocialMediaAccount> manager)
+            : base(telemetryClient, userRepository)
         {
             this.manager = manager;
             this.userRepository = userRepository;

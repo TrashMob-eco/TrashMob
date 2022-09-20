@@ -16,10 +16,10 @@
         private readonly IBaseManager<PartnerContact> manager;
         private readonly IUserRepository userRepository;
 
-        public PartnerContactsController(IBaseManager<PartnerContact> manager, 
-                                             IUserRepository userRepository,
-                                             TelemetryClient telemetryClient)
-            : base(telemetryClient)
+        public PartnerContactsController(TelemetryClient telemetryClient,
+                                         IUserRepository userRepository,
+                                         IBaseManager<PartnerContact> manager)
+            : base(telemetryClient, userRepository)
         {
             this.manager = manager;
             this.userRepository = userRepository;

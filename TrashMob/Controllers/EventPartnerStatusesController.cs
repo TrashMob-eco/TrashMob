@@ -12,9 +12,10 @@ namespace TrashMob.Controllers
     {
         private readonly IEventPartnerStatusRepository eventPartnerStatusRepository;
 
-        public EventPartnerStatusesController(IEventPartnerStatusRepository eventPartnerStatusRepository, 
-                                              TelemetryClient telemetryClient)
-            : base(telemetryClient)
+        public EventPartnerStatusesController(TelemetryClient telemetryClient,
+                                              IUserRepository userRepository,
+                                              IEventPartnerStatusRepository eventPartnerStatusRepository)
+            : base(telemetryClient, userRepository)
         {
             this.eventPartnerStatusRepository = eventPartnerStatusRepository;
         }
