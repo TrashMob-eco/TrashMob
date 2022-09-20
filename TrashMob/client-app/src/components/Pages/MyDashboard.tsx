@@ -314,7 +314,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     }
 
     const PartnerRequestsTable = () => {
-        const headerTitles = ['City', 'Region', 'Country']
+        const headerTitles = ['Name', 'City', 'Region', 'Country']
         if (myPartnerRequests) {
             return (
                 <div className="bg-white p-3 px-4">
@@ -322,6 +322,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         {myPartnerRequests.sort((a, b) => (a.city < b.city) ? 1 : -1).map(partnerRequest => {
                             return (
                                 <tr key={partnerRequest.id.toString()}>
+                                    <td>{partnerRequest.name}</td>
                                     <td>{partnerRequest.city}</td>
                                     <td>{partnerRequest.region}</td>
                                     <td>{partnerRequest.country}</td>
@@ -344,7 +345,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     }
 
     const PartnersTable = () => {
-        const headerTitles = ['Name']
+        const headerTitles = ['Name', 'City', 'Region', 'Country' ]
         if (myPartners) {
             return (
                 <div className="bg-white p-3 px-4">
@@ -353,6 +354,9 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                             return (
                                 <tr key={partner.id.toString()}>
                                     <td>{partner.name}</td>
+                                    <td>{partner.city}</td>
+                                    <td>{partner.region}</td>
+                                    <td>{partner.country}</td>
                                 </tr>
                             )
                         }

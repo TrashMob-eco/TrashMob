@@ -39,7 +39,9 @@
 
         public async Task<Partner> GetPartner(Guid id, CancellationToken cancellationToken = default)
         {
-            return await mobDbContext.Partners.FindAsync(new object[] { id }, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await mobDbContext.Partners
+                .FindAsync(new object[] { id }, cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
         }
 
         // Update the records of a particular Partner

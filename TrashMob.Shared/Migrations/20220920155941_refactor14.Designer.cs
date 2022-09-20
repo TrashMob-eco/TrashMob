@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrashMob.Shared.Persistence;
 
@@ -11,9 +12,10 @@ using TrashMob.Shared.Persistence;
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    partial class MobDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220920155941_refactor14")]
+    partial class refactor14
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -799,6 +801,9 @@ namespace TrashMob.Migrations
                     b.Property<Guid>("PartnerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("PartnerId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Phone")
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
@@ -810,6 +815,8 @@ namespace TrashMob.Migrations
                     b.HasIndex("LastUpdatedByUserId");
 
                     b.HasIndex("PartnerId");
+
+                    b.HasIndex("PartnerId1");
 
                     b.ToTable("PartnerContacts");
                 });
@@ -839,6 +846,9 @@ namespace TrashMob.Migrations
                     b.Property<Guid>("PartnerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("PartnerId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasMaxLength(2048)
@@ -851,6 +861,8 @@ namespace TrashMob.Migrations
                     b.HasIndex("LastUpdatedByUserId");
 
                     b.HasIndex("PartnerId");
+
+                    b.HasIndex("PartnerId1");
 
                     b.ToTable("PartnerDocuments");
                 });
@@ -903,6 +915,9 @@ namespace TrashMob.Migrations
                     b.Property<Guid>("PartnerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("PartnerId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("PostalCode")
                         .IsRequired()
                         .HasMaxLength(25)
@@ -942,6 +957,8 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("PartnerId");
 
+                    b.HasIndex("PartnerId1");
+
                     b.ToTable("PartnerLocations");
                 });
 
@@ -972,6 +989,9 @@ namespace TrashMob.Migrations
                     b.Property<Guid>("PartnerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("PartnerId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedByUserId");
@@ -979,6 +999,8 @@ namespace TrashMob.Migrations
                     b.HasIndex("LastUpdatedByUserId");
 
                     b.HasIndex("PartnerId");
+
+                    b.HasIndex("PartnerId1");
 
                     b.ToTable("PartnerNotes");
                 });
@@ -1129,6 +1151,9 @@ namespace TrashMob.Migrations
                     b.Property<Guid>("PartnerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("PartnerId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("SocialMediaAccountTypeId")
                         .HasColumnType("int");
 
@@ -1139,6 +1164,8 @@ namespace TrashMob.Migrations
                     b.HasIndex("LastUpdatedByUserId");
 
                     b.HasIndex("PartnerId");
+
+                    b.HasIndex("PartnerId1");
 
                     b.HasIndex("SocialMediaAccountTypeId");
 
@@ -1249,11 +1276,16 @@ namespace TrashMob.Migrations
                     b.Property<DateTimeOffset?>("LastUpdatedDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<Guid?>("PartnerId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("PartnerId", "UserId");
 
                     b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("PartnerId1");
 
                     b.HasIndex("UserId");
 
@@ -1918,10 +1950,14 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_PartnerContacts_User_LastUpdatedBy");
 
                     b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
-                        .WithMany("PartnerContacts")
+                        .WithMany()
                         .HasForeignKey("PartnerId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerContacts_Partner");
+
+                    b.HasOne("TrashMob.Shared.Models.Partner", null)
+                        .WithMany("PartnerContacts")
+                        .HasForeignKey("PartnerId1");
 
                     b.Navigation("CreatedByUser");
 
@@ -1945,10 +1981,14 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_PartnerDocuments_User_LastUpdatedBy");
 
                     b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
-                        .WithMany("PartnerDocuments")
+                        .WithMany()
                         .HasForeignKey("PartnerId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerDocuments_Partner");
+
+                    b.HasOne("TrashMob.Shared.Models.Partner", null)
+                        .WithMany("PartnerDocuments")
+                        .HasForeignKey("PartnerId1");
 
                     b.Navigation("CreatedByUser");
 
@@ -1972,10 +2012,14 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_PartnerLocations_LastUpdatedByUser_Id");
 
                     b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
-                        .WithMany("PartnerLocations")
+                        .WithMany()
                         .HasForeignKey("PartnerId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerLocations_Partners");
+
+                    b.HasOne("TrashMob.Shared.Models.Partner", null)
+                        .WithMany("PartnerLocations")
+                        .HasForeignKey("PartnerId1");
 
                     b.Navigation("CreatedByUser");
 
@@ -1999,10 +2043,14 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_PartnerNotes_User_LastUpdatedBy");
 
                     b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
-                        .WithMany("PartnerNotes")
+                        .WithMany()
                         .HasForeignKey("PartnerId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerNotes_Partner");
+
+                    b.HasOne("TrashMob.Shared.Models.Partner", null)
+                        .WithMany("PartnerNotes")
+                        .HasForeignKey("PartnerId1");
 
                     b.Navigation("CreatedByUser");
 
@@ -2053,10 +2101,14 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_PartnerSocialMediaAccount_LastUpdatedByUser_Id");
 
                     b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
-                        .WithMany("PartnerSocialMediaAccounts")
+                        .WithMany()
                         .HasForeignKey("PartnerId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerSocialMediaAccount_Partner");
+
+                    b.HasOne("TrashMob.Shared.Models.Partner", null)
+                        .WithMany("PartnerSocialMediaAccounts")
+                        .HasForeignKey("PartnerId1");
 
                     b.HasOne("TrashMob.Shared.Models.SocialMediaAccountType", "SocialMediaAccountType")
                         .WithMany("PartnerSocialMediaAccounts")
@@ -2088,10 +2140,14 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_PartnerUsers_LastUpdatedByUser_Id");
 
                     b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
-                        .WithMany("PartnerUsers")
+                        .WithMany()
                         .HasForeignKey("PartnerId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerUser_Partners");
+
+                    b.HasOne("TrashMob.Shared.Models.Partner", null)
+                        .WithMany("PartnerUsers")
+                        .HasForeignKey("PartnerId1");
 
                     b.HasOne("TrashMob.Shared.Models.User", "User")
                         .WithMany()

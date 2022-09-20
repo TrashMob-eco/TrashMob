@@ -6,15 +6,18 @@ namespace TrashMob.Shared.Managers
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
 
-    public class PartnerManager : KeyedManager<Partner>, IKeyedManager<Partner>
+    public class PartnerRequestManager : KeyedManager<PartnerRequest>, IKeyedManager<PartnerRequest>
     {
         private readonly IEmailManager emailManager;
+        private readonly IKeyedRepository<Partner> partnerRepository;
         private readonly IBaseRepository<PartnerUser> partnerUserRepository;
 
-        public PartnerManager(IKeyedRepository<Partner> partnerRepository, 
-                              IBaseRepository<PartnerUser> partnerUserRepository,
-                              IEmailManager emailManager) : base(partnerRepository)
+        public PartnerRequestManager(IKeyedRepository<PartnerRequest> partnerRequestRepository, 
+                                     IKeyedRepository<Partner> partnerRepository,
+                                     IBaseRepository<PartnerUser> partnerUserRepository,
+                                     IEmailManager emailManager) : base(partnerRequestRepository)
         {
+            this.partnerRepository = partnerRepository;
             this.partnerUserRepository = partnerUserRepository;
             this.emailManager = emailManager;
         }
@@ -25,7 +28,7 @@ namespace TrashMob.Shared.Managers
             var partner = partnerRequest.ToPartner();
 
             // Add the partner record
-            var newPartner = await Repository.Add(partner).ConfigureAwait(false);
+            var newPartner = await partnerRepository.Add(partner).ConfigureAwait(false);
 
             // Make the creator of the partner request a registered user for the partner
             var partnerUser = new PartnerUser

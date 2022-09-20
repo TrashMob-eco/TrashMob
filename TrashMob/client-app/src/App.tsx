@@ -14,9 +14,7 @@ import EventSummary from './components/EventSummary';
 import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
 import { GettingStarted } from './components/Pages/GettingStarted';
-import { MediaGallery } from './components/MediaGallery';
 import MyDashboard from './components/Pages/MyDashboard';
-import { Partners } from './components/Partners/Partners';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { TermsOfService } from './components/Pages/TermsOfService';
 import { Board } from './components/Board';
@@ -32,7 +30,7 @@ import * as msal from "@azure/msal-browser";
 import { Guid } from 'guid-typescript';
 import UserProfile from './components/Pages/UserProfile';
 import PartnerDashboard from './components/Partners/PartnerDashboard';
-import BecomeAPartner from './components/Partners/BecomeAPartner';
+import BecomeAPartner from './components/Partners/PartnerRequest';
 import SiteAdmin from './components/Admin/SiteAdmin';
 import ManageEventDashboard, { ManageEventDashboardMatchParams } from './components/EventManagement/ManageEventDashboard';
 import { Shop } from './components/Shop';
@@ -344,12 +342,6 @@ export const App: FC = () => {
                             </Route>
                             <Route exact path="/gettingstarted">
                                 <GettingStarted />
-                            </Route>
-                            <Route exact path="/mediagallery">
-                                <MediaGallery />
-                            </Route>
-                            <Route exact path="/partners">
-                                <Partners />
                             </Route>
                             <Route exact path="/privacypolicy">
                                 <PrivacyPolicy />

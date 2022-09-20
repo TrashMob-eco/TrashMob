@@ -106,10 +106,6 @@ namespace TrashMob.Shared.Models
 
         public virtual ICollection<PartnerNote> PartnerNotesUpdated { get; set; }
 
-        public virtual ICollection<SocialMediaAccount> SocialMediaAccountsCreated { get; set; }
-
-        public virtual ICollection<SocialMediaAccount> SocialMediaAccountsUpdated { get; set; }
-
         public virtual ICollection<PartnerSocialMediaAccount> PartnerSocialMediaAccountsCreated { get; set; }
 
         public virtual ICollection<PartnerSocialMediaAccount> PartnerSocialMediaAccountsUpdated { get; set; }

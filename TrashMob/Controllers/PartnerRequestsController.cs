@@ -18,20 +18,18 @@
     [Route("api/partnerrequests")]
     public class PartnerRequestsController : BaseController
     {
-        private readonly IPartnerRequestRepository partnerRequestRepository;
-        private readonly IPartnerManager partnerManager;
+        private readonly IKeyedManager<PartnerRequest> partnerRequestManager;
         private readonly IUserRepository userRepository;
         private readonly IEmailManager emailManager;
 
         public PartnerRequestsController(IPartnerRequestRepository partnerRequestRepository, 
-                                         IPartnerManager partnerManager,
+                                         IKeyedManager<PartnerRequest> partnerRequestManager,
                                          IEmailManager emailManager, 
                                          IUserRepository userRepository,
                                          TelemetryClient telemetryClient)
             : base(telemetryClient)
         {
-            this.partnerRequestRepository = partnerRequestRepository;
-            this.partnerManager = partnerManager;
+            this.partnerRequestManager = partnerRequestManager;
             this.emailManager = emailManager;
             this.userRepository = userRepository;
         }
@@ -46,7 +44,7 @@
                 return Forbid();
             }
 
-            await partnerRequestRepository.AddPartnerRequest(partnerRequest).ConfigureAwait(false);
+            await partnerRequestManager.Add(partnerRequest).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddPartnerRequest));
 
             var message = $"From Email: {partnerRequest.Email}\nFrom Name:{partnerRequest.Name}\nMessage:\n{partnerRequest.Notes}";
@@ -79,13 +77,13 @@
                 return Forbid();
             }
 
-            var partnerRequest = await partnerRequestRepository.GetPartnerRequest(partnerRequestId).ConfigureAwait(false);
+            var partnerRequest = await partnerRequestManager.Get(partnerRequestId).ConfigureAwait(false);
             partnerRequest.PartnerRequestStatusId = (int)PartnerRequestStatusEnum.Approved;
 
-            await partnerRequestRepository.UpdatePartnerRequest(partnerRequest).ConfigureAwait(false);
+            await partnerRequestManager.Update(partnerRequest).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(ApprovePartnerRequest));
 
-            await partnerManager.CreatePartner(partnerRequest).ConfigureAwait(false);
+            await partnerRequestManager.Add(partnerRequest).ConfigureAwait(false);
 
             var partnerMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.PartnerRequestAccepted.ToString());
             partnerMessage = partnerMessage.Replace("{PartnerName}", partnerRequest.Name);
@@ -118,11 +116,11 @@
                 return Forbid();
             }
 
-            var partnerRequest = await partnerRequestRepository.GetPartnerRequest(partnerRequestId).ConfigureAwait(false);
+            var partnerRequest = await partnerRequestManager.Get(partnerRequestId).ConfigureAwait(false);
             
             partnerRequest.PartnerRequestStatusId = (int)PartnerRequestStatusEnum.Denied;
 
-            await partnerRequestRepository.UpdatePartnerRequest(partnerRequest).ConfigureAwait(false);
+            await partnerRequestManager.Update(partnerRequest).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DenyPartnerRequest));
 
             var partnerMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.PartnerRequestDeclined.ToString());
@@ -156,7 +154,20 @@
                 return Forbid();
             }
 
-            return Ok(await partnerRequestRepository.GetPartnerRequests(cancellationToken).ConfigureAwait(false));
+            return Ok(partnerRequestManager.Get());
+        }
+
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetPartnerRequestsByUser(Guid userId, CancellationToken cancellationToken)
+        {
+            var user = await userRepository.GetUserByInternalId(userId, cancellationToken).ConfigureAwait(false);
+
+            if (user == null || !ValidateUser(user.NameIdentifier))
+            {
+                return Forbid();
+            }
+
+            return Ok(await partnerRequestManager.Get(userId, cancellationToken).ConfigureAwait(false));
         }
     }
 }

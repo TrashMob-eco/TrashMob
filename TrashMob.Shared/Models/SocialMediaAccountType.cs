@@ -8,9 +8,9 @@ namespace TrashMob.Shared.Models
     {
         public SocialMediaAccountType()
         {
-            SocialMediaAccounts = new HashSet<SocialMediaAccount>();
+            PartnerSocialMediaAccounts = new HashSet<PartnerSocialMediaAccount>();
         }
 
-        public virtual ICollection<SocialMediaAccount> SocialMediaAccounts { get; set; }
+        public virtual ICollection<PartnerSocialMediaAccount> PartnerSocialMediaAccounts { get; set; }
     }
 }

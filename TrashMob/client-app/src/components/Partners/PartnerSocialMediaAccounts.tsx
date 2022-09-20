@@ -1,11 +1,11 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
-import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Button, Col, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
-import SocialMediaAccountData from '../Models/SocialMediaAccountData';
 import SocialMediaAccountTypeData from '../Models/SocialMediaAccountTypeData';
+import PartnerSocialMediaAccountData from '../Models/PartnerSocialMediaAccountData';
 
 export interface PartnerSocialMediaAccountsDataProps {
     partnerId: string;
@@ -16,7 +16,8 @@ export interface PartnerSocialMediaAccountsDataProps {
 export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsDataProps> = (props) => {
 
     const [accountName, setAccountName] = React.useState<string>("");
-    const [socialMediaAccounts, setSocialMediaAccounts] = React.useState<SocialMediaAccountData[]>([]);
+    const [isActive, setIsActive] = React.useState<boolean>(true);
+    const [socialMediaAccounts, setSocialMediaAccounts] = React.useState<PartnerSocialMediaAccountData[]>([]);
     const [isSocialMediaAccountsDataLoaded, setIsSocialMediaAccountDataLoaded] = React.useState<boolean>(false);
     const [socialMediaAccountTypeId, setSocialMediaAccountTypeId] = React.useState<number>(0);
     const [socialMediaAccountTypeList, setSocialMediaAccountTypeList] = React.useState<SocialMediaAccountTypeData[]>([]);
@@ -49,7 +50,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                     method: 'GET',
                     headers: headers,
                 })
-                    .then(response => response.json() as Promise<SocialMediaAccountData[]>)
+                    .then(response => response.json() as Promise<PartnerSocialMediaAccountData[]>)
                     .then(data => {
                         setSocialMediaAccounts(data);
                         setIsSocialMediaAccountDataLoaded(true);
@@ -93,8 +94,10 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
             account: account
         };
 
-        var socialMediaAccountData = new SocialMediaAccountData();
+        var socialMediaAccountData = new PartnerSocialMediaAccountData();
+        socialMediaAccountData.partnerId = props.partnerId;
         socialMediaAccountData.accountIdentifier = accountName;
+        socialMediaAccountData.isActive = isActive;
         socialMediaAccountData.socialMediaAccountTypeId = socialMediaAccountTypeId ?? 0;
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
@@ -112,6 +115,9 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
         setAccountName(accountName);
     }
 
+    function handleIsActiveChanged(active: boolean) {
+        setIsActive(active);
+    }
 
     function selectSocialMediaAccountType(val: string) {
         setSocialMediaAccountTypeId(parseInt(val));
@@ -125,14 +131,19 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
         return <Tooltip {...props}>{ToolTips.SocialMediaAccountType}</Tooltip>
     }
 
-    function renderPartnerSocialMediaAccountsTable(accounts: SocialMediaAccountData[]) {
+    function renderIsActiveToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.SocialMediaAccountIsActive}</Tooltip>
+    }
+
+    function renderPartnerSocialMediaAccountsTable(accounts: PartnerSocialMediaAccountData[]) {
         return (
             <div>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
-                            <th>Username</th>
-                            <th>Email</th>
+                            <th>Account Name</th>
+                            <th>Account Type</th>
+                            <th>Is Active</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -140,6 +151,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                                     <tr key={account.id.toString()}>
                                         <td>{account.accountIdentifier}</td>
                                         <td>{account.socialMediaAccountTypeId}</td>
+                                        <td>{account.isActive}</td>
                                         <td>
                                             <Button className="action" onClick={() => removeAccount(account.id, account.accountIdentifier)}>Remove Account</Button>
                                         </td>
@@ -177,6 +189,21 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                                         )}
                                     </select>
                                 </div>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderIsActiveToolTip}>
+                                    <ToggleButton
+                                        type="checkbox"
+                                        variant="outline-dark"
+                                        checked={isActive}
+                                        value="1"
+                                        onChange={(e) => handleIsActiveChanged(e.currentTarget.checked)}
+                                    >
+                                        Event is Public
+                                    </ToggleButton>
+                                </OverlayTrigger >
                             </Form.Group>
                         </Col>
                         <Button className="action" onClick={() => handleAddSocialMediaAccount()}>Add Account</Button>

@@ -15,12 +15,12 @@ import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import AddressData from '../Models/AddressData';
 import MapControllerSinglePointNoEvents from '../MapControllerSinglePointNoEvent';
 
-interface BecomeAPartnerProps extends RouteComponentProps<any> {
+interface PartnerRequestProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
     currentUser: UserData;
 }
 
-export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
+export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const [name, setName] = React.useState<string>();
     const [email, setEmail] = React.useState<string>();
     const [website, setWebsite] = React.useState<string>();
@@ -470,4 +470,4 @@ export const BecomeAPartner: React.FC<BecomeAPartnerProps> = (props) => {
     )
 }
 
-export default withRouter(BecomeAPartner);
+export default withRouter(PartnerRequest);

@@ -140,7 +140,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
         );
     }
 
-    function renderAddPartnerSocialMediaAccount() {
+    function renderAddDocument() {
         return (
             <div>
                 <Form onSubmit={handleAddDocument}>
@@ -176,7 +176,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
                 {props.partnerId === Guid.EMPTY && <p> <em>Partner must be created first.</em></p>}
                 {!isDocumentsDataLoaded && props.partnerId !== Guid.EMPTY && <p><em>Loading...</em></p>}
                 {isDocumentsDataLoaded && renderPartnerDocumentsTable(documents)}
-                {renderAddPartnerSocialMediaAccount()}
+                {renderAddDocument()}
             </div>
         </>
     );

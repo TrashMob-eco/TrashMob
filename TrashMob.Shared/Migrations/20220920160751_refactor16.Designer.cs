@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrashMob.Shared.Persistence;
 
@@ -11,9 +12,10 @@ using TrashMob.Shared.Persistence;
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    partial class MobDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220920160751_refactor16")]
+    partial class refactor16
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1918,7 +1920,7 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_PartnerContacts_User_LastUpdatedBy");
 
                     b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
-                        .WithMany("PartnerContacts")
+                        .WithMany()
                         .HasForeignKey("PartnerId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerContacts_Partner");
@@ -1945,7 +1947,7 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_PartnerDocuments_User_LastUpdatedBy");
 
                     b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
-                        .WithMany("PartnerDocuments")
+                        .WithMany()
                         .HasForeignKey("PartnerId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerDocuments_Partner");
@@ -1972,7 +1974,7 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_PartnerLocations_LastUpdatedByUser_Id");
 
                     b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
-                        .WithMany("PartnerLocations")
+                        .WithMany()
                         .HasForeignKey("PartnerId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerLocations_Partners");
@@ -1999,7 +2001,7 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_PartnerNotes_User_LastUpdatedBy");
 
                     b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
-                        .WithMany("PartnerNotes")
+                        .WithMany()
                         .HasForeignKey("PartnerId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerNotes_Partner");
@@ -2053,7 +2055,7 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_PartnerSocialMediaAccount_LastUpdatedByUser_Id");
 
                     b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
-                        .WithMany("PartnerSocialMediaAccounts")
+                        .WithMany()
                         .HasForeignKey("PartnerId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerSocialMediaAccount_Partner");
@@ -2088,7 +2090,7 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_PartnerUsers_LastUpdatedByUser_Id");
 
                     b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
-                        .WithMany("PartnerUsers")
+                        .WithMany()
                         .HasForeignKey("PartnerId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerUser_Partners");
@@ -2219,21 +2221,6 @@ namespace TrashMob.Migrations
             modelBuilder.Entity("TrashMob.Shared.Models.MediaUsageType", b =>
                 {
                     b.Navigation("EventMedias");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.Partner", b =>
-                {
-                    b.Navigation("PartnerContacts");
-
-                    b.Navigation("PartnerDocuments");
-
-                    b.Navigation("PartnerLocations");
-
-                    b.Navigation("PartnerNotes");
-
-                    b.Navigation("PartnerSocialMediaAccounts");
-
-                    b.Navigation("PartnerUsers");
                 });
 
             modelBuilder.Entity("TrashMob.Shared.Models.PartnerRequestStatus", b =>

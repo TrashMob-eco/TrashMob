@@ -88,6 +88,7 @@ export const PartnerLatitude = "The Latitude will auto-populate when clicking a 
 export const PartnerLongitude = "The Longitude will auto-populate when clicking a location on the map. It must be between -180.0 and 180.0"
 export const SocialMediaAccountType = "Enter the provider of this social media account."
 export const SocialMediaAccountName = "Enter the name of this social media account."
+export const SocialMediaAccountIsActive = "Whether or not TrashMob.eco should cc this account when posting relevant TrashMob events to this social media provider."
 export const PartnerDocumentName = "Enter a friendly name for this document."
 export const PartnerDocumentUrl = "Enter the url where this document is stored."
 
