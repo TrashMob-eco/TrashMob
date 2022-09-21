@@ -48,7 +48,6 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
     function renderEditPartner() {
         return (
             <div>
-                <h2>Partner</h2>
                 <PartnerEdit partnerId={partnerId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
             </div >
         )
@@ -57,7 +56,6 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
     function renderPartnerUsers() {
         return (
             <div>
-                <h2>Users</h2>
                 <PartnerUsers partnerId={partnerId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
             </div>
         )
@@ -66,7 +64,6 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
     function renderPartnerLocations() {
         return (
             <div>
-                <h2>Locations</h2>
                 <PartnerLocations partnerId={partnerId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
             </div >
         )
@@ -75,7 +72,6 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
     function renderEventRequests() {
         return (
             <div>
-                <h2>Event Requests</h2>
                 <PartnerEventRequests partnerId={partnerId}  currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
             </div >
         )
@@ -113,7 +109,6 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         : <p><em>Loading...</em></p>;
 
     return <div>
-        <h3>Manage Partner</h3>
         <hr />
         {contents}
     </div>;

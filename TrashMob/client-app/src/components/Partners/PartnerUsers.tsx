@@ -41,7 +41,7 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
                     });
             });
         }
-    }, [props.currentUser, props.isUserLoaded]);
+    }, [props.currentUser, props.isUserLoaded, props.partnerId]);
 
     function removeUser(userId: string, userName: string) {
         if (!window.confirm("Please confirm that you want to remove user with userName: '" + userName + "' as a user from this Partner?"))

@@ -17,6 +17,7 @@ import { Eye, PersonX, Link as LinkIcon, Pencil } from 'react-bootstrap-icons';
 import StatsData from '../Models/StatsData';
 import PartnerData from '../Models/PartnerData';
 import PartnerRequestData from '../Models/PartnerRequestData';
+import { PartnerStatusActive } from '../Models/Constants';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -400,7 +401,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                         <Dropdown role="menuitem">
                                             <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
                                             <Dropdown.Menu id="share-menu">
-                                                {partner.isActive ? activePartnerActionDropdownList(partner.id) : inactivePartnerActionDropdownList(partner.id)}
+                                                {partner.partnerStatusId === PartnerStatusActive ? activePartnerActionDropdownList(partner.id) : inactivePartnerActionDropdownList(partner.id)}
                                             </Dropdown.Menu>
                                         </Dropdown>
                                     </td>

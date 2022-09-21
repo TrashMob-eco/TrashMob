@@ -4,7 +4,11 @@ export const RegexUserName = "^[a-zA-Z0-9_]*$";
 export const RegexWebsite = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/;
 
 export const PartnerRequestStatusPending = 1;
+
 export const EventPartnerStatusNone = 0;
 export const EventPartnerStatusRequested = 1;
 export const EventPartnerStatusAccepted = 2;
 export const EventPartnerStatusDeclined = 3;
+
+export const PartnerStatusActive = 1;
+export const PartnerStatusInactive = 2;

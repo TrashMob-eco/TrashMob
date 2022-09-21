@@ -28,7 +28,9 @@
 
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
 
-            return await mobDbContext.Partners.FindAsync(partner.Id).ConfigureAwait(false);
+            var result = await mobDbContext.Partners.FindAsync(partner.Id).ConfigureAwait(false);
+            mobDbContext.Entry(result).State = EntityState.Detached;
+            return result;
         }
 
         public async Task<IEnumerable<Partner>> GetPartners(CancellationToken cancellationToken = default)
@@ -40,9 +42,9 @@
 
         public async Task<Partner> GetPartner(Guid id, CancellationToken cancellationToken = default)
         {
-            return await mobDbContext.Partners
-                .FindAsync(new object[] { id }, cancellationToken: cancellationToken)
-                .ConfigureAwait(false);
+            var result = await mobDbContext.Partners.FindAsync(new object[] { id }, cancellationToken: cancellationToken).ConfigureAwait(false);
+            mobDbContext.Entry(result).State = EntityState.Detached;
+            return result;
         }
 
         // Update the records of a particular Partner
@@ -52,7 +54,9 @@
             partner.LastUpdatedDate = DateTimeOffset.UtcNow;
             await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
 
-            return await mobDbContext.Partners.FindAsync(partner.Id).ConfigureAwait(false);
+            var result = await mobDbContext.Partners.FindAsync(partner.Id).ConfigureAwait(false);
+            mobDbContext.Entry(result).State = EntityState.Detached;
+            return result;
         }
     }
 }

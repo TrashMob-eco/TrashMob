@@ -14,6 +14,7 @@ namespace TrashMob
     using Microsoft.Identity.Web;
     using Microsoft.OpenApi.Models;
     using System;
+    using System.Text.Json.Serialization;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Managers.Interfaces;
@@ -55,6 +56,9 @@ namespace TrashMob
             {
                 configuration.RootPath = "client-app/build";
             });
+
+            services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
             services.AddDbContext<MobDbContext>();
 

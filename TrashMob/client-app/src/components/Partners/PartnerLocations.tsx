@@ -94,7 +94,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
         } else {
             console.log("Not Available");
         }
-    }, [props.currentUser, props.isUserLoaded]);
+    }, [props.currentUser, props.isUserLoaded, props.partnerId]);
 
     function removeLocation(locationId: string, name: string) {
         if (!window.confirm("Please confirm that you want to remove Location with name: '" + name + "' as a location from this Partner?"))
@@ -369,6 +369,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     setPrimaryPhone(data.primaryPhone);
                     setSecondaryPhone(data.secondaryPhone);
                     setIsPartnerLocationActive(data.isActive);
+                    setCreatedByUserId(data.createdByUserId);
+                    setCreatedDate(data.createdDate);
                     setNotes(data.notes);
                     setIsEditOrAdd(true);
                 });
@@ -672,7 +674,6 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                             </>
                         </AzureMapsProvider>
                     </Form.Row>
-
                 </Form>
             </div>
         );

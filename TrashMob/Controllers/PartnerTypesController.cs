@@ -25,7 +25,7 @@ namespace TrashMob.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPartnerTypes()
         {
-            var types = await manager.Get().ToListAsync();
+            var types = await manager.Get();
             TelemetryClient.TrackEvent(nameof(GetPartnerTypes));
 
             return Ok(types);
