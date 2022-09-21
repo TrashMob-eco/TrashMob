@@ -9,17 +9,12 @@ import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import * as MapStore from '../../store/MapStore';
 import { data } from 'azure-maps-control';
 import { Guid } from 'guid-typescript';
-import PartnerData from '../Models/PartnerData';
 import * as Constants from '../Models/Constants';
 import AddressData from '../Models/AddressData';
-import { RouteComponentProps } from 'react-router-dom';
 import MapControllerSinglePointNoEvent from '../MapControllerSinglePointNoEvent';
 
-export interface PartnerLocationsDataProps extends RouteComponentProps {
-    partner: PartnerData;
-    partnerLocations: PartnerLocationData[];
-    isPartnerLocationDataLoaded: boolean;
-    onPartnerLocationsUpdated: any;
+export interface PartnerLocationsDataProps {
+    partnerId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
 };
@@ -43,6 +38,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     const [secondaryPhone, setSecondaryPhone] = React.useState<string>("");
     const [latitude, setLatitude] = React.useState<number>(0);
     const [longitude, setLongitude] = React.useState<number>(0);
+    const [createdByUserId, setCreatedByUserId] = React.useState<string>();
+    const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
     const [latitudeErrors, setLatitudeErrors] = React.useState<string>("");
     const [longitudeErrors, setLongitudeErrors] = React.useState<string>("");
     const [primaryEmailErrors, setPrimaryEmailErrors] = React.useState<string>("");
@@ -54,8 +51,35 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
+    const [partnerLocations, setPartnerLocations] = React.useState<PartnerLocationData[]>([]);
+    const [isPartnerLocationDataLoaded, setIsPartnerLocationDataLoaded] = React.useState<boolean>(false);
 
     React.useEffect(() => {
+
+        if (props.isUserLoaded) {
+            const account = msalClient.getAllAccounts()[0];
+
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+
+                fetch('/api/partnerlocations/' + props.partnerId, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<PartnerLocationData[]>)
+                    .then(data => {
+                        setPartnerLocations(data);
+                        setIsPartnerLocationDataLoaded(true);
+                    });
+            });
+        }
 
         MapStore.getOption().then(opts => {
             setMapOptions(opts);
@@ -70,7 +94,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
         } else {
             console.log("Not Available");
         }
-    }, [props.currentUser, props.isUserLoaded]);
+    }, [props.currentUser, props.isUserLoaded, props.partnerId]);
 
     function removeLocation(locationId: string, name: string) {
         if (!window.confirm("Please confirm that you want to remove Location with name: '" + name + "' as a location from this Partner?"))
@@ -87,13 +111,10 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerlocations/' + props.partner.id + '/' + locationId, {
+                fetch('/api/partnerlocations/' + props.partnerId + '/' + locationId, {
                     method: 'DELETE',
                     headers: headers,
                 })
-                    .then(() => {
-                        props.onPartnerLocationsUpdated()
-                    });
             });
         }
     }
@@ -328,7 +349,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/partnerlocations/' + props.partner.id + '/' + locationId, {
+            fetch('/api/partnerlocations/' + props.partnerId + '/' + locationId, {
                 method: 'GET',
                 headers: headers,
             })
@@ -348,6 +369,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     setPrimaryPhone(data.primaryPhone);
                     setSecondaryPhone(data.secondaryPhone);
                     setIsPartnerLocationActive(data.isActive);
+                    setCreatedByUserId(data.createdByUserId);
+                    setCreatedDate(data.createdDate);
                     setNotes(data.notes);
                     setIsEditOrAdd(true);
                 });
@@ -385,7 +408,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
 
         var partnerLocationData = new PartnerLocationData();
         partnerLocationData.id = partnerLocationId;
-        partnerLocationData.partnerId = props.partner.id;
+        partnerLocationData.partnerId = props.partnerId;
         partnerLocationData.name = locationName ?? "";
         partnerLocationData.streetAddress = streetAddress ?? "";
         partnerLocationData.city = city ?? "";
@@ -399,8 +422,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
         partnerLocationData.secondaryPhone = secondaryPhone ?? "";
         partnerLocationData.isActive = isPartnerLocationActive;
         partnerLocationData.notes = notes ?? "";
-        partnerLocationData.createdByUserId = props.partner.createdByUserId ?? props.currentUser.id;
-        partnerLocationData.createdDate = props.partner.createdDate;
+        partnerLocationData.createdByUserId = createdByUserId ?? props.currentUser.id;
+        partnerLocationData.createdDate = createdDate;
         partnerLocationData.lastUpdatedByUserId = props.currentUser.id;
 
         var data = JSON.stringify(partnerLocationData);
@@ -428,7 +451,6 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                 headers: headers,
             })
                 .then(() => {
-                    props.onPartnerLocationsUpdated()
                     setIsEditOrAdd(false);
                 });
         });
@@ -540,7 +562,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                                     onChange={(e) => setIsPartnerLocationActive(e.currentTarget.checked)}
                                 >
                                     Is Active
-                                    </ToggleButton>
+                                </ToggleButton>
                             </Form.Group>
                         </Col>
                     </Form.Row>
@@ -652,7 +674,6 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                             </>
                         </AzureMapsProvider>
                     </Form.Row>
-
                 </Form>
             </div>
         );
@@ -661,8 +682,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     return (
         <>
             <div>
-                {!props.isPartnerLocationDataLoaded && <p><em>Loading...</em></p>}
-                {props.isPartnerLocationDataLoaded && props.partnerLocations && renderPartnerLocationsTable(props.partnerLocations)}
+                {!isPartnerLocationDataLoaded && <p><em>Loading...</em></p>}
+                {isPartnerLocationDataLoaded && partnerLocations && renderPartnerLocationsTable(partnerLocations)}
                 {isEditOrAdd && renderEditLocation()}
             </div>
         </>

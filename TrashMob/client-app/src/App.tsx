@@ -29,8 +29,8 @@ import UserData from './components/Models/UserData';
 import * as msal from "@azure/msal-browser";
 import { Guid } from 'guid-typescript';
 import UserProfile from './components/Pages/UserProfile';
-import PartnerDashboard from './components/Partners/PartnerDashboard';
-import BecomeAPartner from './components/Partners/PartnerRequest';
+import PartnerDashboard, { PartnerDashboardMatchParams } from './components/Partners/PartnerDashboard';
+import PartnerRequest from './components/Partners/PartnerRequest';
 import SiteAdmin from './components/Admin/SiteAdmin';
 import ManageEventDashboard, { ManageEventDashboardMatchParams } from './components/EventManagement/ManageEventDashboard';
 import { Shop } from './components/Shop';
@@ -43,6 +43,9 @@ import Waivers from './components/Waivers/Waivers';
 import WaiversReturn from './components/Waivers/WaiversReturn';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
+}
+
+interface PartnerProps extends RouteComponentProps<PartnerDashboardMatchParams> {
 }
 
 interface CancelProps extends RouteComponentProps<CancelEventMatchParams> {
@@ -105,6 +108,16 @@ export const App: FC = () => {
                 errorComponent={ErrorComponent}
                 loadingComponent={LoadingComponent}>
                 <ManageEventDashboard {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+            </MsalAuthenticationTemplate >);
+    }
+
+    function renderPartnerDashboard(inp: PartnerProps) {
+        return (
+            <MsalAuthenticationTemplate
+                interactionType={InteractionType.Redirect}
+                errorComponent={ErrorComponent}
+                loadingComponent={LoadingComponent}>
+                <PartnerDashboard {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </MsalAuthenticationTemplate >);
     }
 
@@ -270,6 +283,7 @@ export const App: FC = () => {
                     <div className="container-fluid px-0">
                         <Switch>
                             <Route path="/manageeventdashboard/:eventId?" render={(props: AppProps) => renderEditEvent(props)} />
+                            <Route path="/partnerdashboard/:partnerId?" render={(props: PartnerProps) => renderPartnerDashboard(props)} />
                             <Route path="/eventsummary/:eventId?" render={(props: AppProps) => renderEventSummary(props)} />
                             <Route path="/eventdetails/:eventId" render={(props: DetailsProps) => renderEventDetails(props)} />
                             <Route path="/cancelevent/:eventId" render={(props: CancelProps) => renderCancelEvent(props)} />
@@ -282,20 +296,12 @@ export const App: FC = () => {
                                     <MyDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
                             </Route>
-                            <Route exact path="/becomeapartner">
+                            <Route exact path="/partnerrequest">
                                 <MsalAuthenticationTemplate
                                     interactionType={InteractionType.Redirect}
                                     errorComponent={ErrorComponent}
                                     loadingComponent={LoadingComponent}>
-                                    <BecomeAPartner currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                                </MsalAuthenticationTemplate >
-                            </Route>
-                            <Route exact path="/partnerdashboard">
-                                <MsalAuthenticationTemplate
-                                    interactionType={InteractionType.Redirect}
-                                    errorComponent={ErrorComponent}
-                                    loadingComponent={LoadingComponent}>
-                                    <PartnerDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                    <PartnerRequest currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
                             </Route>
                             <Route exact path="/siteadmin">

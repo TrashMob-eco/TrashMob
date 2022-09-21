@@ -45,7 +45,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
                     });
             });
         }
-    }, [props.partnerId, props.isUserLoaded])
+    }, [props.partnerId, props.isUserLoaded, props.partnerId])
 
     function removeDocument(documentId: string, documentName: string) {
         if (!window.confirm("Please confirm that you want to remove document with name: '" + documentName + "' as a document from this Partner?"))
