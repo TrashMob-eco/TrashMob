@@ -3,6 +3,7 @@ import { Guid } from "guid-typescript";
 class PartnerData {
     id: string = Guid.createEmpty().toString();
     name: string = "";
+    streetAddress: string = "";
     city: string = "";
     region: string = "";
     country: string = "";
@@ -10,7 +11,7 @@ class PartnerData {
     latitude: number = 0;
     longitude: number = 0;
     partnerStatusId: number = 0;
-    isActive: boolean = true;
+    partnerTypeId: number = 0;
     createdByUserId: string = "";
     createdDate: Date = new Date();
     lastUpdatedByUserId: string = "";

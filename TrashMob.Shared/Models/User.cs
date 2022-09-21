@@ -13,6 +13,8 @@ namespace TrashMob.Shared.Models
             EventsUpdated = new HashSet<Event>();
             UserNotifications = new HashSet<UserNotification>();
             NonEventUserNotifications = new HashSet<NonEventUserNotification>();
+            PartnersCreated = new HashSet<Partner>();
+            PartnersUpdated = new HashSet<Partner>();
         }
 
         public string NameIdentifier { get; set; }

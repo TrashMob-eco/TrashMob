@@ -26,7 +26,7 @@
         [HttpGet]
         public async Task<IActionResult> GetSocialMediaAccountTypes()
         {
-            var types = await manager.Get().ToListAsync();
+            var types = await manager.Get();
             TelemetryClient.TrackEvent(nameof(GetSocialMediaAccountTypes));
 
             return Ok(types);

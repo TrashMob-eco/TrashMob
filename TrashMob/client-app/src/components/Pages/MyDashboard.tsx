@@ -17,6 +17,7 @@ import { Eye, PersonX, Link as LinkIcon, Pencil } from 'react-bootstrap-icons';
 import StatsData from '../Models/StatsData';
 import PartnerData from '../Models/PartnerData';
 import PartnerRequestData from '../Models/PartnerRequestData';
+import { PartnerStatusActive } from '../Models/Constants';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -233,6 +234,37 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         )
     }
 
+    // TODO: update icons
+    const partnerRequestActionDropdownList = (partnerRequestId: string) => {
+        return (
+            <>
+                <Dropdown.Item href={'/partnerRequestDetails/' + partnerRequestId}><Eye />View request form</Dropdown.Item>
+                <Dropdown.Item href={'/partnerRequestStatus/' + partnerRequestId}><Eye />View status</Dropdown.Item>
+                <Dropdown.Item href={'/contactus/' + partnerRequestId}><Pencil />Contact TrashMob</Dropdown.Item>
+            </>
+        )
+    }
+
+    // TODO: update icons
+    const activePartnerActionDropdownList = (partnerId: string) => {
+        return (
+            <>
+                <Dropdown.Item href={'/partnerdashboard/' + partnerId}><Pencil />Manage partnership</Dropdown.Item>
+                <Dropdown.Item href={'/partnerviewupcomingevents/' + partnerId}><Eye />View upcoming events</Dropdown.Item>
+                <Dropdown.Item href={'/partnervieweventsummaries/' + partnerId}><Eye />View event summaries</Dropdown.Item>
+            </>
+        )
+    }
+
+    // TODO: update icons
+    const inactivePartnerActionDropdownList = (partnerId: string) => {
+        return (
+            <>
+                <Dropdown.Item href={'/partnerDashboard/' + partnerId}><Pencil />Reactivate partnership</Dropdown.Item>
+            </>
+        )
+    }
+
     const UpcomingEventsTable = () => {
         const headerTitles = ['Name', 'Role', 'Date', 'Time', 'Location', 'Action']
         return (
@@ -314,7 +346,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     }
 
     const PartnerRequestsTable = () => {
-        const headerTitles = ['Name', 'City', 'Region', 'Country']
+        const headerTitles = ['Name', 'City', 'Region', 'Country', 'Action']
         if (myPartnerRequests) {
             return (
                 <div className="bg-white p-3 px-4">
@@ -326,6 +358,14 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                     <td>{partnerRequest.city}</td>
                                     <td>{partnerRequest.region}</td>
                                     <td>{partnerRequest.country}</td>
+                                    <td className="btn py-0">
+                                        <Dropdown role="menuitem">
+                                            <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                            <Dropdown.Menu id="share-menu">
+                                                {partnerRequestActionDropdownList(partnerRequest.id)}
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                    </td>
                                 </tr>
                             )
                         }
@@ -345,7 +385,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     }
 
     const PartnersTable = () => {
-        const headerTitles = ['Name', 'City', 'Region', 'Country' ]
+        const headerTitles = ['Name', 'City', 'Region', 'Country', 'Action' ]
         if (myPartners) {
             return (
                 <div className="bg-white p-3 px-4">
@@ -357,6 +397,14 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                     <td>{partner.city}</td>
                                     <td>{partner.region}</td>
                                     <td>{partner.country}</td>
+                                    <td className="btn py-0">
+                                        <Dropdown role="menuitem">
+                                            <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                            <Dropdown.Menu id="share-menu">
+                                                {partner.partnerStatusId === PartnerStatusActive ? activePartnerActionDropdownList(partner.id) : inactivePartnerActionDropdownList(partner.id)}
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                    </td>
                                 </tr>
                             )
                         }
