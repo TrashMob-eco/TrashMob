@@ -6,7 +6,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Poco;
@@ -18,34 +17,31 @@
     [Route("api/partnerusers")]
     public class PartnerUsersController : BaseController
     {
-        private readonly IPartnerUserRepository partnerUserRepository;
+        private readonly IBaseManager<PartnerUser> partnerUserManager;
         private readonly IKeyedManager<Partner> partnerManager;
         private readonly IUserRepository userRepository;
-        private readonly IPartnerRepository partnerRepository;
 
         public PartnerUsersController(TelemetryClient telemetryClient,
                                       IUserRepository userRepository,
-                                      IPartnerUserRepository partnerUserRepository,
-                                      IKeyedManager<Partner> partnerManager,
-                                      IPartnerRepository partnerRepository)
+                                      IBaseManager<PartnerUser> partnerUserManager, 
+                                      IKeyedManager<Partner> partnerManager)
             : base(telemetryClient, userRepository)
         {
-            this.partnerUserRepository = partnerUserRepository;
             this.partnerManager = partnerManager;
             this.userRepository = userRepository;
-            this.partnerRepository = partnerRepository;
+            this.partnerUserManager = partnerUserManager;
         }
 
         [HttpGet("{partnerId}")]
         public IActionResult GetPartnerUsers(Guid partnerId, CancellationToken cancellationToken)
         {
-            return Ok(partnerUserRepository.GetPartnerUsers(cancellationToken).Where(pu => pu.PartnerId == partnerId).ToList());
+            return Ok(partnerUserManager.Get().Where(pu => pu.PartnerId == partnerId).ToList());
         }
 
         [HttpGet("getpartnersforuser/{userId}")]
         public async Task<IActionResult> GetPartnersForUser(Guid userId, CancellationToken cancellationToken)
         {
-            var partnerUsers = partnerUserRepository.GetPartnerUsers(cancellationToken).Where(pu => pu.UserId == userId).ToList();
+            var partnerUsers = partnerUserManager.Get().Where(pu => pu.UserId == userId).ToList();
 
             if (!partnerUsers.Any())
             { 
@@ -66,7 +62,7 @@
         [HttpGet("{partnerId}/{userId}")]
         public IActionResult GetPartnerUser(Guid partnerId, Guid userId, CancellationToken cancellationToken = default)
         {
-            var partnerUser = partnerUserRepository.GetPartnerUsers(cancellationToken).FirstOrDefault(pu => pu.PartnerId == partnerId && pu.UserId == userId);
+            var partnerUser = partnerUserManager.Get().FirstOrDefault(pu => pu.PartnerId == partnerId && pu.UserId == userId);
 
             if (partnerUser == null)
             {
@@ -79,7 +75,7 @@
         [HttpGet("users/{partnerId}")]
         public async Task<IActionResult> GetUsers(Guid partnerId, CancellationToken cancellationToken)
         {
-            var partnerUsers = partnerUserRepository.GetPartnerUsers(cancellationToken).Where(pu => pu.PartnerId == partnerId).ToList();
+            var partnerUsers = partnerUserManager.Get().Where(pu => pu.PartnerId == partnerId).ToList();
 
             if (partnerUsers == null || !partnerUsers.Any())
             {
@@ -102,11 +98,11 @@
         public async Task<IActionResult> AddPartnerUser(Guid partnerId, Guid userId)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var currentUser = await GetUser();
 
             if (!currentUser.IsSiteAdmin)
             {
-                var currentUserPartner = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == partnerId && pu.UserId == currentUser.Id);
+                var currentUserPartner = partnerUserManager.Get().FirstOrDefault(pu => pu.PartnerId == partnerId && pu.UserId == currentUser.Id);
 
                 if (currentUserPartner == null)
                 {
@@ -122,7 +118,7 @@
                 LastUpdatedByUserId = currentUser.Id
             };
 
-            await partnerUserRepository.AddPartnerUser(partnerUser).ConfigureAwait(false);
+            await partnerUserManager.Add(partnerUser).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddPartnerUser));
 
             return CreatedAtAction(nameof(GetPartnerUser), new { partnerId, userId });

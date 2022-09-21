@@ -8,15 +8,12 @@
 
     public class PartnerManager : KeyedManager<Partner>, IKeyedManager<Partner>
     {
-        private readonly IEmailManager emailManager;
         private readonly IBaseRepository<PartnerUser> partnerUserRepository;
 
         public PartnerManager(IKeyedRepository<Partner> partnerRepository,
-                              IBaseRepository<PartnerUser> partnerUserRepository,
-                              IEmailManager emailManager) : base(partnerRepository)
+                              IBaseRepository<PartnerUser> partnerUserRepository) : base(partnerRepository)
         {
             this.partnerUserRepository = partnerUserRepository;
-            this.emailManager = emailManager;
         }
 
         public async Task CreatePartner(PartnerRequest partnerRequest)

@@ -104,7 +104,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> UpdateEventPartner(EventPartner eventPartner)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var currentUser = await GetUser();
 
             if (!currentUser.IsSiteAdmin)
             {
@@ -171,7 +171,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddEventPartner(EventPartner eventPartner)
         {
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var currentUser = await GetUser();
             if (currentUser == null || !ValidateUser(currentUser.NameIdentifier))
             {
                 return Forbid();
