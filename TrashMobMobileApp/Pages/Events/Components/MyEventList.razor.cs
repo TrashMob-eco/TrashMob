@@ -33,20 +33,6 @@ namespace TrashMobMobileApp.Pages.Events.Components
                     .Where(item => item.CreatedByUserId == currentUser.Id).ToList();
                 _myEvents = _myEventsStatic;
                 _isLoading = false;
-                //var randomEvents = new List<MobEvent>
-                //{
-                //    new MobEvent
-                //    {
-                //        Name = "Cannon Beach",
-                //        Description = "Garbage collect at cannon beach"
-                //    },
-                //    new MobEvent
-                //    {
-                //        Name = "Lincoln Beach",
-                //        Description = "Meet and help clean lincoln beach"
-                //    }
-                //};
-                //_myEvents.AddRange(randomEvents);
             }
         }
 
@@ -70,25 +56,10 @@ namespace TrashMobMobileApp.Pages.Events.Components
             _isViewOpen = !_isViewOpen;
         }
 
-        private async Task OnCancelEventAsync(MobEvent mobEvent)
-        {
-            var currentUser = App.CurrentUser;
-            //TODO: dialog confirmation?
-            if (currentUser != null)
-            {
-                var cancelEvent = new CancelEvent
-                {
-                    EventId = mobEvent.Id,
-                    CancellationReason = string.Empty //TODO: UI for this?
-                };
-                _isLoading = true;
-                await MobEventManager.DeleteEventAsync(cancelEvent);
-                await GetMyEventsAsync();
-                _isLoading = false;
-            }
-        }
+        private void OnCancelEvent(MobEvent mobEvent) 
+            => Navigator.NavigateTo(string.Format(Routes.CancelEvent, mobEvent.Id.ToString()));
 
-        private async Task OnEditAsync(MobEvent mobEvent)
+        private void OnEdit(MobEvent mobEvent)
             => Navigator.NavigateTo(string.Format(Routes.EditEvent, mobEvent.Id));
     }
 }

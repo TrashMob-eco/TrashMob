@@ -8,6 +8,7 @@
         padding: 20px;
     }
 </style>
+
 <ErrorBoundary>
     <ChildContent>
         <MudContainer Class="tm-user-profile-container">
@@ -18,29 +19,31 @@
             else
             {
                 <MudForm @ref="@_userForm" @bind-IsValid="@_success" @bind-Errors="@_errors">
-                    <MudTextField FullWidth T="string" Label="User name" Required RequiredError="User name is required" />
-                    <MudTextField FullWidth T="string" Label="Email" Required RequiredError="Email is required"
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.UserName" Label="User name" Required RequiredError="User name is required" />
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.Email" Label="Email" Required RequiredError="Email is required"
                               Validation="@(new EmailAddressAttribute() { ErrorMessage = "The email address is invalid"} )" />
-                    <MudTextField FullWidth T="string" Label="Given name" Required RequiredError="Given name is required" />
-                    <MudTextField FullWidth T="string" Label="Name identifier" Required RequiredError="Name identifier is required" />
-                    <MudTextField FullWidth T="string" Label="Source system name" Required RequiredError="Source system name is required" />
-                    <MudTextField FullWidth T="string" Label="Surname" Required RequiredError="Surname is required" />
-                    <MudTextField FullWidth T="string" Label="City" Required RequiredError="City is required" />
-                    <MudTextField FullWidth T="string" Label="Region" Required RequiredError="Region is required" />
-                    <MudTextField FullWidth T="string" Label="Country" Required RequiredError="Country is required" />
-                    <MudTextField FullWidth T="string" Label="Postal code" Required RequiredError="Postal code is required" />
-                    <MudTextField FullWidth T="string" Label="Date agreed to privacy policy" Disabled />
-                    <MudTextField FullWidth T="string" Label="Privacy policy version" Disabled />
-                    <MudTextField FullWidth T="string" Label="Date agreed to terms of service" Disabled />
-                    <MudTextField FullWidth T="string" Label="Terms of service version" Disabled />
-                    <MudNumericField FullWidth T="int" Label="Travel limit for local events" />
-                    <MudTextField FullWidth T="string" Label="Member since" Disabled />
-                    <MudCheckBox T="bool" Label="Prefers Metrics" />
-                    <MudCheckBox T="bool" Label="Is opted out of all emails" />
-                    <MudCheckBox T="bool" Label="Is site admin" />
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.GivenName" Label="Given name" />
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.NameIdentifier" Label="Name identifier" />
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.SourceSystemUserName" Label="Source system name" />
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.Surname" Label="Surname" />
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.City" Label="City" />
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.Region" Label="Region" />
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.Country" Label="Country" />
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.PostalCode" Label="Postal code" />
+                    <MudTextField FullWidth T="string" Text="@(GetDateString(_user.DateAgreedToPrivacyPolicy))" Label="Date agreed to privacy policy" Disabled />
+                    <MudTextField FullWidth T="string" Text="@_user.PrivacyPolicyVersion" Label="Privacy policy version" Disabled />                   
+                    <MudTextField FullWidth T="string" Text="@(GetDateString(_user.DateAgreedToTermsOfService))" Label="Date agreed to terms of service" Disabled />
+                    <MudTextField FullWidth T="string" Text="@_user.TermsOfServiceVersion" Label="Terms of service version" Disabled />
+                    <MudNumericField FullWidth T="int" @bind-Value="@_user.TravelLimitForLocalEvents" Label="Travel limit for local events" />
+                    <MudTextField FullWidth T="string" Text="@(GetDateString(_user.MemberSince))" Label="Member since" Disabled />
+                    <MudCheckBox T="bool" Checked="@_user.IsPrivacyPolicyAgreedTo" Disabled Label="Is privacy policy agreed to" />
+                    <MudCheckBox T="bool" Checked="@_user.IsTermsOfServiceAgreedTo" Disabled Label="Is terms of service agreed to" />
+                    <MudCheckBox T="bool" @bind-Checked="@_user.PrefersMetric" Label="Prefers Metrics" />
+                    <MudCheckBox T="bool" @bind-Checked="@_user.IsOptedOutOfAllEmails" Label="Is opted out of all emails" />
+                    <MudCheckBox T="bool" @bind-Checked="@_user.IsSiteAdmin" Label="Is site admin" />
                     <MudStack Row Style="margin-top: 10px">
-                        <MudButton Style="width: 50%; margin-right: 10px" Variant="Variant.Outlined" Color="Color.Primary">Cancel</MudButton>
-                        <MudButton Style="width: 50%; margin-left: 10px" Variant="Variant.Filled" Color="Color.Primary">Save</MudButton>
+                        <MudButton Style="width: 50%; margin-right: 10px" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => Navigator.NavigateTo(Routes.Home)">Cancel</MudButton>
+                        <MudButton Style="width: 50%; margin-left: 10px" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnSaveUserAsync">Save</MudButton>
                     </MudStack>
                 </MudForm>
             }

@@ -1,4 +1,6 @@
-﻿using MudBlazor;
+﻿using Microsoft.AspNetCore.Components;
+using MudBlazor;
+using TrashMobMobileApp.Data;
 using TrashMobMobileApp.Models;
 
 namespace TrashMobMobileApp.Pages.Profile.Pages
@@ -11,10 +13,44 @@ namespace TrashMobMobileApp.Pages.Profile.Pages
         private bool _success;
         private string[] _errors;
 
-        protected override void OnInitialized()
+        [Inject]
+        public IUserManager UserManager { get; set; } 
+
+        protected override async Task OnInitializedAsync()
         {
             TitleContainer.Title = "Profile";
-            _user = App.CurrentUser;
+            await GetUserAsync();
+        }
+
+        private async Task GetUserAsync()
+        {
+            _isLoading = true;
+            _user = await UserManager.GetUserAsync(App.CurrentUser.Id.ToString());
+            _isLoading = false;
+        }
+
+        private string GetDateString(DateTimeOffset? date)
+        {
+            if (date.HasValue)
+            {
+                return date.Value.DateTime.ToLocalTime().ToString();
+            }
+
+            return string.Empty;
+        }
+
+        private async Task OnSaveUserAsync()
+        {
+            await _userForm.Validate();
+            if (_success)
+            {
+                _isLoading = true;
+                var user = await UserManager.UpdateUserAsync(_user);
+                if (user != null)
+                {
+                    await GetUserAsync();
+                }
+            }
         }
     }
 }

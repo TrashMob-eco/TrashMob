@@ -3,7 +3,7 @@ using MudBlazor;
 using TrashMobMobileApp.Data;
 using TrashMobMobileApp.Models;
 
-namespace TrashMobMobileApp.Pages.ContactUs.Pages
+namespace TrashMobMobileApp.Pages.Contact.Pages
 {
     public partial class ContactUs
     {

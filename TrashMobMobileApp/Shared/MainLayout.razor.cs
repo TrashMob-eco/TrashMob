@@ -24,7 +24,6 @@
             await base.OnInitializedAsync();
             await PerformAuthenticationAsync();
             SetTheme();
-            TitleContainer.Title = "Home";
         }
 
         private void DrawerToggle()
@@ -35,7 +34,9 @@
         private async Task PerformAuthenticationAsync()
         {
             await AuthenticationService.SignInAsync(UserManager);
-            _userInitials = App.CurrentUser.UserName.First().ToString();
+            _userInitials = App.CurrentUser.UserName
+                .ToUpperInvariant().First().ToString();
+            Navigator.NavigateTo(Routes.Home);
         }
 
         private void SetTheme()

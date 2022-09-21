@@ -28,16 +28,13 @@
                 {
                     <MudAlert Severity="Severity.Success">Submitted! Someone will contact you soon.</MudAlert>
                 }
-                else
-                {
-                    <MudForm @ref="_contactForm" @bind-IsValid="@_success" @bind-Errors="@_errors">
-                        <MudTextField FullWidth T="string" Label="Name" Required RequiredError="Name is required" />
-                        <MudTextField FullWidth T="string" Label="Email" Required RequiredError="Email is required"
+                <MudForm @ref="_contactForm" @bind-IsValid="@_success" @bind-Errors="@_errors">
+                    <MudTextField FullWidth T="string" Label="Name" Required RequiredError="Name is required" />
+                    <MudTextField FullWidth T="string" Label="Email" Required RequiredError="Email is required"
                               Validation="@(new EmailAddressAttribute() { ErrorMessage = "The email address is invalid"} )" />
-                        <MudTextField FullWidth T="string" Label="Message" Required RequiredError="Message is required" />
-                        <MudButton Class="tm-contact-submit-btn" Variant="Variant.Filled" Color="Color.Primary" OnClick="OnSubmitAsync">Submit</MudButton>
-                    </MudForm>
-                }
+                    <MudTextField FullWidth T="string" Label="Message" Required RequiredError="Message is required" />
+                    <MudButton Class="tm-contact-submit-btn" Variant="Variant.Filled" Color="Color.Primary" OnClick="OnSubmitAsync">Submit</MudButton>
+                </MudForm>
             </MudContainer>
         }
     </ChildContent>
@@ -45,7 +42,3 @@
         @context.Message
     </ErrorContent>
 </ErrorBoundary>
-
-@code {
-
-}

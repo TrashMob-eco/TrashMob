@@ -43,6 +43,7 @@ namespace TrashMobMobileApp.Pages.Events.Pages
 
         private async Task OnAddAsync()
         {
+            await _addEventForm?.Validate();
             if (_success)
             {
                 _event.EventDate = new DateTime(_eventDate.Value.Year, _eventDate.Value.Month, _eventDate.Value.Day,
@@ -60,10 +61,6 @@ namespace TrashMobMobileApp.Pages.Events.Pages
                 {
                     Navigator.NavigateTo(Routes.Events);
                 }
-            }
-            else
-            {
-                _addEventForm?.Validate();
             }
         }
 

@@ -12,8 +12,8 @@
                 <MudAvatar Color="Color.Dark">@_userInitials</MudAvatar>
             </ActivatorContent>
             <ChildContent>
-                <MudMenuItem OnClick="() => Navigator.NavigateTo(Routes.Profile)">Profile</MudMenuItem>
-                <MudMenuItem OnClick="@OnSignOutAsync">Sign Out</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.Person" IconSize="Size.Small" OnClick="() => Navigator.NavigateTo(Routes.Profile)">Profile</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.ExitToApp" IconSize="Size.Small" OnClick="@OnSignOutAsync">Sign Out</MudMenuItem>
             </ChildContent>
         </MudMenu>
     </MudAppBar>

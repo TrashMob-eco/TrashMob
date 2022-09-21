@@ -54,8 +54,8 @@
                             </MudCardHeader>
                             <MudCardActions>
                                 <MudButton Style="width: 30%; margin-right: 5px" Color="Color.Primary" Variant="Variant.Outlined" OnClick="@(() => OnViewEventDetails(mob))">View</MudButton>
-                                <MudButton Style="width: 30%; margin-left: 5px" Color="Color.Primary" Variant="Variant.Filled" OnClick="@(async () => await OnCancelEventAsync(mob))">Cancel</MudButton>
-                                <MudButton Style="width: 30%; margin-left: 5px" Color="Color.Primary" Variant="Variant.Outlined" OnClick="@(async () => await OnEditAsync(mob))">Edit</MudButton>
+                                <MudButton Style="width: 30%; margin-left: 5px" Color="Color.Primary" Variant="Variant.Filled" OnClick="@(() => OnCancelEvent(mob))">Cancel</MudButton>
+                                <MudButton Style="width: 30%; margin-left: 5px" Color="Color.Primary" Variant="Variant.Outlined" OnClick="@(() => OnEdit(mob))">Edit</MudButton>
                             </MudCardActions>
                         </MudCard>
                     </MudVirtualize>

@@ -60,10 +60,10 @@ namespace TrashMobMobileApp.Pages.Events.Pages
             }
         }
 
-        private async Task OnAddAsync()
+        private async Task OnSaveAsync()
         {
-            var isValid = _editEventForm?.IsValid;
-            if (isValid.HasValue && isValid.Value)
+            await _editEventForm?.Validate();
+            if (_success)
             {
                 _event.EventDate = new DateTime(_eventDate.Value.Year, _eventDate.Value.Month, _eventDate.Value.Day,
                     _eventTime.Value.Hours, _eventTime.Value.Minutes, default);
@@ -74,16 +74,12 @@ namespace TrashMobMobileApp.Pages.Events.Pages
                 _event.EventTypeId = _selectedEventType.Id;
                 _event.EventStatusId = 1;
                 _isLoading = true;
-                var eventAdd = await MobEventManager.AddEventAsync(_event);
+                var eventAdd = await MobEventManager.UpdateEventAsync(_event);
                 _isLoading = false;
                 if (eventAdd != null)
                 {
                     Navigator.NavigateTo(Routes.Events);
                 }
-            }
-            else
-            {
-                _editEventForm?.Validate();
             }
         }
 

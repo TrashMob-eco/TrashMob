@@ -1,0 +1,43 @@
+﻿@page "/cancelevent/{EventId}"
+
+@*TODO: move to styles sheet*@
+<style>
+    .tm-cancel-event-container {
+        height: 100%;
+        padding: 20px;
+    }
+
+        .tm-cancel-event-container .tm-contact-submit-btn {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+        }
+</style>
+
+<ErrorBoundary>
+    <ChildContent>
+        @if (_isLoading)
+        {
+            <MudProgressCircular Indeterminate />
+        }
+        else
+        {
+            @if (_isCancelledEvent)
+            {
+                <MudAlert Severity="Severity.Success">Event cancelled!</MudAlert>
+            }
+            else
+            {
+                <MudContainer Class="tm-contact-container">
+                    <MudForm @ref="_cancelEventForm" @bind-IsValid="@_success" @bind-Errors="@_errors">
+                        <MudTextField FullWidth T="string" @bind-Text="_cancelReason" Label="Cancellation Reason" Required RequiredError="Cancellation reason is required" />
+                        <MudButton Class="tm-contact-submit-btn" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnCancelEventAsync">Cancel Event</MudButton>
+                    </MudForm>
+                </MudContainer>
+            }
+        }
+    </ChildContent>
+    <ErrorContent>
+        @context.Message
+    </ErrorContent>
+</ErrorBoundary>
