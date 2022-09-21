@@ -1,12 +1,11 @@
 namespace TrashMob
 {
     using Azure.Identity;
-    using Azure.Security.KeyVault.Secrets;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
-    using Microsoft.Azure.KeyVault;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Azure;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -60,7 +59,7 @@ namespace TrashMob
             services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
-            services.AddDbContext<MobDbContext>();
+            services.AddDbContext<MobDbContext>(c => c.UseLazyLoadingProxies());
 
             // Non-patterned
             services.AddScoped<IDocusignManager, DocusignManager>();

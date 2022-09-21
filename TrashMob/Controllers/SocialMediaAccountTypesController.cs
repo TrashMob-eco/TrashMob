@@ -9,7 +9,6 @@
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence.Interfaces;
 
-    [Authorize]
     [Route("api/socialmediaaccounttypes")]
     public class SocialMediaAccountTypesController : BaseController
     {

@@ -65,5 +65,10 @@ namespace TrashMob.Shared.Managers
 
             return results;
         }
+
+        public virtual Task<IEnumerable<T>> GetByParentId(Guid parentId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

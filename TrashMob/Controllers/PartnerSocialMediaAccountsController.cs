@@ -3,7 +3,9 @@
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using System;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Models;
@@ -13,16 +15,23 @@
     [Route("api/partnersocialmediaaccounts")]
     public class PartnerSocialMediaAccountController : BaseController
     {
-        private readonly IBaseManager<PartnerSocialMediaAccount> manager;
+        private readonly IKeyedManager<PartnerSocialMediaAccount> manager;
         private readonly IUserRepository userRepository;
 
         public PartnerSocialMediaAccountController(TelemetryClient telemetryClient,
                                                    IUserRepository userRepository,
-                                                   IBaseManager<PartnerSocialMediaAccount> manager)
+                                                   IKeyedManager<PartnerSocialMediaAccount> manager)
             : base(telemetryClient, userRepository)
         {
             this.manager = manager;
             this.userRepository = userRepository;
+        }
+
+        [HttpGet("getbypartner/{partnerId}")]
+        public async Task<IActionResult> GetPartnerSocialMediaAccounts(Guid partnerId, CancellationToken cancellationToken)
+        {
+            var socialMediaAccounts = await manager.GetByParentId(partnerId, cancellationToken);
+            return Ok(socialMediaAccounts);
         }
 
         [HttpPost]

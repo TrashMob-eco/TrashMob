@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrashMob.Shared.Persistence;
 
@@ -11,14 +12,15 @@ using TrashMob.Shared.Persistence;
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    partial class MobDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220921175325_AddPartnerWebsite")]
+    partial class AddPartnerWebsite
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .UseCollation("SQL_Latin1_General_CP1_CI_AS")
-                .HasAnnotation("ProductVersion", "6.0.9")
+                .HasAnnotation("ProductVersion", "6.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -885,12 +887,10 @@ namespace TrashMob.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("City")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Country")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uniqueidentifier");
@@ -925,22 +925,15 @@ namespace TrashMob.Migrations
                     b.Property<int>("PartnerRequestStatusId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PartnerTypeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(2);
-
                     b.Property<string>("Phone")
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
 
                     b.Property<string>("PostalCode")
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Region")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Website")
                         .HasColumnType("nvarchar(max)");
@@ -952,8 +945,6 @@ namespace TrashMob.Migrations
                     b.HasIndex("LastUpdatedByUserId");
 
                     b.HasIndex("PartnerRequestStatusId");
-
-                    b.HasIndex("PartnerTypeId");
 
                     b.ToTable("PartnerRequests");
                 });
@@ -1894,19 +1885,11 @@ namespace TrashMob.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_PartnerRequests_PartnerRequestStatus");
 
-                    b.HasOne("TrashMob.Shared.Models.PartnerType", "PartnerType")
-                        .WithMany("PartnerRequests")
-                        .HasForeignKey("PartnerTypeId")
-                        .IsRequired()
-                        .HasConstraintName("FK_PartnerRequests_PartnerType");
-
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastUpdatedByUser");
 
                     b.Navigation("PartnerRequestStatus");
-
-                    b.Navigation("PartnerType");
                 });
 
             modelBuilder.Entity("TrashMob.Shared.Models.PartnerSocialMediaAccount", b =>
@@ -2107,8 +2090,6 @@ namespace TrashMob.Migrations
 
             modelBuilder.Entity("TrashMob.Shared.Models.PartnerType", b =>
                 {
-                    b.Navigation("PartnerRequests");
-
                     b.Navigation("Partners");
                 });
 

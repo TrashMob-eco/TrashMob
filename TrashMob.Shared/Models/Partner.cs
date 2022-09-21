@@ -22,6 +22,8 @@ namespace TrashMob.Shared.Models
 
         public int PartnerTypeId { get; set; }
 
+        public string Website { get; set; }
+
         public string StreetAddress { get; set; }
 
         public string City { get; set; }

@@ -23,5 +23,7 @@
         IQueryable<T> Get(Expression<Func<T, bool>> expression);
 
         public Task<IEnumerable<T>> GetByUserId(Guid userId, CancellationToken cancellationToken);
+
+        public Task<IEnumerable<T>> GetByParentId(Guid parentId, CancellationToken cancellationToken);
     }
 }

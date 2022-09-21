@@ -25,6 +25,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
     const [partnerStatusList, setPartnerStatusList] = React.useState<PartnerStatusData[]>([]);
     const [partnerTypeList, setPartnerTypeList] = React.useState<PartnerTypeData[]>([]);
     const [name, setName] = React.useState<string>("");
+    const [website, setWebsite] = React.useState<string>("");
     const [partnerStatusId, setPartnerStatusId] = React.useState<number>(0);
     const [partnerTypeId, setPartnerTypeId] = React.useState<number>(0);
     const [streetAddress, setStreetAddress] = React.useState<string>("");
@@ -88,6 +89,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                                         setPartnerStatusId(data.partnerStatusId);
                                         setPartnerTypeId(data.partnerTypeId);
                                         setName(data.name);
+                                        setWebsite(data.website);
                                         setStreetAddress(data.streetAddress);
                                         setCity(data.city);
                                         setRegion(data.region);
@@ -144,6 +146,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
         var partnerData = new PartnerData();
         partnerData.id = props.partnerId;
         partnerData.name = name ?? "";
+        partnerData.website = website ?? "";
         partnerData.partnerStatusId = partnerStatusId ?? 2;
         partnerData.streetAddress = streetAddress;
         partnerData.city = city;
@@ -184,13 +187,19 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
     }
 
     function handleNameChanged(val: string) {
-        if (name === "") {
+        if (val === "") {
             setNameErrors("Name cannot be blank.");
         }
         else {
             setNameErrors("");
             setName(val);
         }
+
+        validateForm();
+    }
+
+    function handleWebsiteChanged(val: string) {
+        setWebsite(val);        
 
         validateForm();
     }
@@ -298,7 +307,11 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
     }
 
     function renderNameToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestName}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.PartnerName}</Tooltip>
+    }
+
+    function renderWebsiteToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerWebsite}</Tooltip>
     }
 
     function renderPartnerStatusToolTip(props: any) {
@@ -367,6 +380,14 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{nameErrors}</span>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderWebsiteToolTip}>
+                                    <Form.Label className="control-label">Website:</Form.Label>
+                                </OverlayTrigger>
+                                <Form.Control type="text" defaultValue={website} maxLength={parseInt('1024')} onChange={(val) => handleWebsiteChanged(val.target.value)} />
                             </Form.Group>
                         </Col>
                         <Col>
@@ -516,5 +537,4 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
         <hr />
         {contents}
     </div>;
-
 }

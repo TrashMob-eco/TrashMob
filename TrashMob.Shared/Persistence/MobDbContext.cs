@@ -600,6 +600,20 @@
 
                 entity.Property(e => e.Notes).HasMaxLength(2048);
 
+                entity.Property(e => e.PartnerTypeId).HasDefaultValue(2);
+
+                entity.Property(e => e.City)
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.Country)
+                    .HasMaxLength(64);
+
+                entity.Property(e => e.Region)
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.PostalCode)
+                    .HasMaxLength(25);
+
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.PartnerRequestsCreated)
                     .HasForeignKey(d => d.CreatedByUserId)
@@ -617,6 +631,12 @@
                     .HasForeignKey(d => d.PartnerRequestStatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PartnerRequests_PartnerRequestStatus");
+
+                entity.HasOne(d => d.PartnerType)
+                    .WithMany(p => p.PartnerRequests)
+                    .HasForeignKey(d => d.PartnerTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerRequests_PartnerType");
             });
 
             modelBuilder.Entity<PartnerRequestStatus>(entity =>
