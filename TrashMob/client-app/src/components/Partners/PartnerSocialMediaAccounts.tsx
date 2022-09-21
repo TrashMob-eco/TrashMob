@@ -6,6 +6,7 @@ import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
 import SocialMediaAccountTypeData from '../Models/SocialMediaAccountTypeData';
 import PartnerSocialMediaAccountData from '../Models/PartnerSocialMediaAccountData';
+import { getSocialMediaAccountType } from '../../store/socialMediaAccountTypeHelper';
 
 export interface PartnerSocialMediaAccountsDataProps {
     partnerId: string;
@@ -46,7 +47,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnersocialmediaaccounts/' + props.partnerId, {
+                fetch('/api/partnersocialmediaaccounts/getbypartner/' + props.partnerId, {
                     method: 'GET',
                     headers: headers,
                 })
@@ -83,7 +84,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
     }
 
     function handleAddSocialMediaAccount() {
-        
+
         if (accountName === "")
             return;
 
@@ -99,15 +100,20 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
         socialMediaAccountData.accountIdentifier = accountName;
         socialMediaAccountData.isActive = isActive;
         socialMediaAccountData.socialMediaAccountTypeId = socialMediaAccountTypeId ?? 0;
+        socialMediaAccountData.createdByUserId = props.currentUser.id
+        socialMediaAccountData.lastUpdatedByUserId = props.currentUser.id
+
+        var data = JSON.stringify(socialMediaAccountData);
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
             const headers = getDefaultHeaders('POST');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/partnersocialmediaaccounts/' + props.partnerId, {
-                  method: 'POST',
-                  headers: headers,
-                 })
+            fetch('/api/partnersocialmediaaccounts', {
+                method: 'POST',
+                headers: headers,
+                body: data,
+            })
         });
     }
 
@@ -147,15 +153,15 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                         </tr>
                     </thead>
                     <tbody>
-                        {accounts.map(account => 
-                                    <tr key={account.id.toString()}>
-                                        <td>{account.accountIdentifier}</td>
-                                        <td>{account.socialMediaAccountTypeId}</td>
-                                        <td>{account.isActive}</td>
-                                        <td>
-                                            <Button className="action" onClick={() => removeAccount(account.id, account.accountIdentifier)}>Remove Account</Button>
-                                        </td>
-                                    </tr>
+                        {accounts.map(account =>
+                            <tr key={account.id.toString()}>
+                                <td>{account.accountIdentifier}</td>
+                                <td>{getSocialMediaAccountType(socialMediaAccountTypeList, account.socialMediaAccountTypeId)}</td>
+                                <td>{account.isActive === true ? "Yes" : "No"} </td>
+                                <td>
+                                    <Button className="action" onClick={() => removeAccount(account.id, account.accountIdentifier)}>Remove Account</Button>
+                                </td>
+                            </tr>
                         )}
                     </tbody>
                 </table>
@@ -201,7 +207,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                                         value="1"
                                         onChange={(e) => handleIsActiveChanged(e.currentTarget.checked)}
                                     >
-                                        Event is Public
+                                        Is Active
                                     </ToggleButton>
                                 </OverlayTrigger >
                             </Form.Group>

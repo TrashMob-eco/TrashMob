@@ -7,6 +7,8 @@ import { PartnerLocations } from './PartnerLocations';
 import { ButtonGroup, ToggleButton } from 'react-bootstrap';
 import { PartnerEventRequests } from './PartnerEventRequests';
 import { Guid } from 'guid-typescript';
+import { PartnerDocuments } from './PartnerDocuments';
+import { PartnerSocialMediaAccounts } from './PartnerSocialMediaAccounts';
 
 export interface PartnerDashboardMatchParams {
     partnerId?: string;
@@ -27,7 +29,9 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         { name: 'Manage Partner', value: '1' },
         { name: 'Manage Partner Users', value: '2' },
         { name: 'Manage Partner Locations', value: '3' },
-        { name: 'Manage Event Requests', value: '4' }
+        { name: 'Manage Partner Documents', value: '4' },
+        { name: 'Manage Partner Social Media Accounts', value: '5' },
+        { name: 'Manage Event Requests', value: '6' }
     ];
 
     React.useEffect(() => {
@@ -69,6 +73,23 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         )
     }
 
+    function renderPartnerDocuments() {
+        return (
+            <div>
+                <PartnerDocuments partnerId={partnerId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+            </div >
+        )
+    }
+
+
+    function renderPartnerSocialMediaAccounts() {
+        return (
+            <div>
+                <PartnerSocialMediaAccounts partnerId={partnerId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+            </div >
+        )
+    }
+
     function renderEventRequests() {
         return (
             <div>
@@ -100,7 +121,9 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                 { radioValue === '1' && renderEditPartner()}
                 { radioValue === '2' && renderPartnerUsers()}
                 { radioValue === '3' && renderPartnerLocations()}
-                { radioValue === '4' && renderEventRequests()}
+                { radioValue === '4' && renderPartnerDocuments()}
+                { radioValue === '5' && renderPartnerSocialMediaAccounts()}
+                { radioValue === '6' && renderEventRequests()}
             </div>);
     }
 

@@ -30,7 +30,7 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
 
-                fetch('/api/partnersusers/' + props.partnerId, {
+                fetch('/api/partnerusers/users/' + props.partnerId, {
                     method: 'GET',
                     headers: headers
                 })
@@ -122,7 +122,7 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
                     </thead>
                     <tbody>
                         {users.map(user =>
-                            <tr key={user.id.toString()}>
+                            <tr key={user.id}>
                                 <td>{user.userName}</td>
                                 <td>{user.email}</td>
                                 <td>
@@ -156,13 +156,13 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
         );
     }
 
-    return (
-        <>
-            <div>
-                {!isPartnerUserDataLoaded && <p><em>Loading...</em></p>}
-                {isPartnerUserDataLoaded && users && renderUsersTable(users)}
-                {renderAddUser()}
-            </div>
-        </>
-    );
+    var contents = isPartnerUserDataLoaded && props.partnerId
+        ? renderUsersTable(users)
+        : <p><em>Loading...</em></p>;
+
+    return <div>
+        <hr />
+        {contents}
+        {renderAddUser()}
+    </div>;
 }

@@ -266,7 +266,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     }
 
     const UpcomingEventsTable = () => {
-        const headerTitles = ['Name', 'Role', 'Date', 'Time', 'Location', 'Action']
+        const headerTitles = ['Name', 'Role', 'Date', 'Time', 'Location', 'Actions']
         return (
             <div className="bg-white p-3 px-4">
                 <Table columnHeaders={headerTitles} >
@@ -304,7 +304,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     }
 
     const PastEventsTable = () => {
-        const headerTitles = ['Name', 'Role', 'Date', 'Time', 'Location', 'Action']
+        const headerTitles = ['Name', 'Role', 'Date', 'Time', 'Location', 'Actions']
         return (
             <div className="bg-white p-3 px-4">
                 <Table columnHeaders={headerTitles}>
@@ -346,7 +346,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     }
 
     const PartnerRequestsTable = () => {
-        const headerTitles = ['Name', 'City', 'Region', 'Country', 'Action']
+        const headerTitles = ['Name', 'City', 'Region', 'Country', 'Status', 'Actions']
         if (myPartnerRequests) {
             return (
                 <div className="bg-white p-3 px-4">
@@ -358,6 +358,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                     <td>{partnerRequest.city}</td>
                                     <td>{partnerRequest.region}</td>
                                     <td>{partnerRequest.country}</td>
+                                    <td>{partnerRequest.partnerRequestStatusId}</td>
                                     <td className="btn py-0">
                                         <Dropdown role="menuitem">
                                             <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
@@ -385,7 +386,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     }
 
     const PartnersTable = () => {
-        const headerTitles = ['Name', 'City', 'Region', 'Country', 'Action' ]
+        const headerTitles = ['Name', 'City', 'Region', 'Country', 'Status',  'Actions' ]
         if (myPartners) {
             return (
                 <div className="bg-white p-3 px-4">
@@ -397,6 +398,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                     <td>{partner.city}</td>
                                     <td>{partner.region}</td>
                                     <td>{partner.country}</td>
+                                    <td>{partner.partnerStatusId === PartnerStatusActive ? 'Active' : 'Inactive'}</td>
                                     <td className="btn py-0">
                                         <Dropdown role="menuitem">
                                             <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
@@ -524,14 +526,14 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                 </div>
                 <div className="d-flex my-5 mb-4 justify-content-between">
                     <h4 className="font-weight-bold mr-2 mt-0 text-decoration-underline">My Partner Requests ({myPartnerRequests.length})</h4>
-                    <Link className="btn btn-primary banner-button" to="/becomeapartner">Create Partner Request</Link>
+                    <Link className="btn btn-primary banner-button" to="/partnerRequest">Send request to potential partner</Link>
                 </div>
                 <div className="mb-4 bg-white">
                     <PartnerRequestsTable />
                 </div>
                 <div className="d-flex my-5 mb-4 justify-content-between">
                     <h4 className="font-weight-bold mr-2 mt-0 text-decoration-underline">My Partners ({myPartners.length})</h4>
-                    <Link className="btn btn-primary banner-button" to="/partnerdashboard">Create Partner</Link>
+                    <Link className="btn btn-primary banner-button" to="/partnerRequest">Apply to become a partner</Link>
                 </div>
                 <div className="mb-4 bg-white">
                     <PartnersTable />

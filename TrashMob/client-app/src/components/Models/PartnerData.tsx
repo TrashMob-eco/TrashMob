@@ -3,6 +3,7 @@ import { Guid } from "guid-typescript";
 class PartnerData {
     id: string = Guid.createEmpty().toString();
     name: string = "";
+    website: string = "";
     streetAddress: string = "";
     city: string = "";
     region: string = "";

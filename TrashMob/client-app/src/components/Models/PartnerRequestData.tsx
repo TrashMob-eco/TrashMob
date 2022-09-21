@@ -13,6 +13,7 @@ class PartnerRequestData {
     latitude: number = 0;
     longitude: number = 0;
     partnerRequestStatusId: number = 0;
+    partnerTypeId: number = 0;
     notes: string = "";
     createdByUserId: string = "";
     createdDate: Date = new Date();

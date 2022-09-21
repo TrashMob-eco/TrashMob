@@ -34,6 +34,10 @@ namespace TrashMob.Shared.Models
 
         public int PartnerRequestStatusId { get; set; }
 
+        public int PartnerTypeId { get; set; }
+
         public virtual PartnerRequestStatus PartnerRequestStatus { get; set; }
+
+        public virtual PartnerType PartnerType { get; set; }
     }
 }

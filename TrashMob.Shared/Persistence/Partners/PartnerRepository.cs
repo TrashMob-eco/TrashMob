@@ -43,7 +43,7 @@
         public async Task<Partner> GetPartner(Guid id, CancellationToken cancellationToken = default)
         {
             var result = await mobDbContext.Partners.FindAsync(new object[] { id }, cancellationToken: cancellationToken).ConfigureAwait(false);
-            mobDbContext.Entry(result).State = EntityState.Detached;
+            // mobDbContext.Entry(result).State = EntityState.Detached;
             return result;
         }
 
