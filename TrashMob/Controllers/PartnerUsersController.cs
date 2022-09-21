@@ -6,12 +6,10 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Poco;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Managers.Partners;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence.Interfaces;
 
@@ -22,19 +20,16 @@
         private readonly IBaseManager<PartnerUser> partnerUserManager;
         private readonly IKeyedManager<Partner> partnerManager;
         private readonly IUserRepository userRepository;
-        private readonly IPartnerRepository partnerRepository;
 
         public PartnerUsersController(TelemetryClient telemetryClient,
                                       IUserRepository userRepository,
-                                      IPartnerUserRepository partnerUserRepository,
                                       IBaseManager<PartnerUser> partnerUserManager, 
-                                      IKeyedManager<Partner> partnerManager,
-                                      IPartnerRepository partnerRepository)
+                                      IKeyedManager<Partner> partnerManager)
             : base(telemetryClient, userRepository)
         {
             this.partnerManager = partnerManager;
             this.userRepository = userRepository;
-            this.partnerRepository = partnerRepository;
+            this.partnerUserManager = partnerUserManager;
         }
 
         [HttpGet("{partnerId}")]
