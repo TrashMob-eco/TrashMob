@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
 using TrashMobMobileApp.Data;
 using TrashMobMobileApp.Models;
 using TrashMobMobileApp.Shared;

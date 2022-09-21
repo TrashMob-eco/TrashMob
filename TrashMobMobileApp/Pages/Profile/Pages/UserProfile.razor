@@ -1,0 +1,52 @@
+﻿@page "/profile"
+@using System.ComponentModel.DataAnnotations
+
+@*TODO: move to styles sheet*@
+<style>
+    .tm-user-profile-container {
+        height: 100%;
+        padding: 20px;
+    }
+</style>
+<ErrorBoundary>
+    <ChildContent>
+        <MudContainer Class="tm-user-profile-container">
+            @if (_isLoading)
+            {
+                <MudProgressCircular Indeterminate />
+            }
+            else
+            {
+                <MudForm @ref="@_userForm" @bind-IsValid="@_success" @bind-Errors="@_errors">
+                    <MudTextField FullWidth T="string" Label="User name" Required RequiredError="User name is required" />
+                    <MudTextField FullWidth T="string" Label="Email" Required RequiredError="Email is required"
+                              Validation="@(new EmailAddressAttribute() { ErrorMessage = "The email address is invalid"} )" />
+                    <MudTextField FullWidth T="string" Label="Given name" Required RequiredError="Given name is required" />
+                    <MudTextField FullWidth T="string" Label="Name identifier" Required RequiredError="Name identifier is required" />
+                    <MudTextField FullWidth T="string" Label="Source system name" Required RequiredError="Source system name is required" />
+                    <MudTextField FullWidth T="string" Label="Surname" Required RequiredError="Surname is required" />
+                    <MudTextField FullWidth T="string" Label="City" Required RequiredError="City is required" />
+                    <MudTextField FullWidth T="string" Label="Region" Required RequiredError="Region is required" />
+                    <MudTextField FullWidth T="string" Label="Country" Required RequiredError="Country is required" />
+                    <MudTextField FullWidth T="string" Label="Postal code" Required RequiredError="Postal code is required" />
+                    <MudTextField FullWidth T="string" Label="Date agreed to privacy policy" Disabled />
+                    <MudTextField FullWidth T="string" Label="Privacy policy version" Disabled />
+                    <MudTextField FullWidth T="string" Label="Date agreed to terms of service" Disabled />
+                    <MudTextField FullWidth T="string" Label="Terms of service version" Disabled />
+                    <MudNumericField FullWidth T="int" Label="Travel limit for local events" />
+                    <MudTextField FullWidth T="string" Label="Member since" Disabled />
+                    <MudCheckBox T="bool" Label="Prefers Metrics" />
+                    <MudCheckBox T="bool" Label="Is opted out of all emails" />
+                    <MudCheckBox T="bool" Label="Is site admin" />
+                    <MudStack Row Style="margin-top: 10px">
+                        <MudButton Style="width: 50%; margin-right: 10px" Variant="Variant.Outlined" Color="Color.Primary">Cancel</MudButton>
+                        <MudButton Style="width: 50%; margin-left: 10px" Variant="Variant.Filled" Color="Color.Primary">Save</MudButton>
+                    </MudStack>
+                </MudForm>
+            }
+        </MudContainer>
+    </ChildContent>
+    <ErrorContent>
+        @context.Message
+    </ErrorContent>
+</ErrorBoundary>

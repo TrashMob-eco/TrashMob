@@ -12,7 +12,7 @@
                 <MudAvatar Color="Color.Dark">@_userInitials</MudAvatar>
             </ActivatorContent>
             <ChildContent>
-                <MudMenuItem>Profile</MudMenuItem>
+                <MudMenuItem OnClick="() => Navigator.NavigateTo(Routes.Profile)">Profile</MudMenuItem>
                 <MudMenuItem OnClick="@OnSignOutAsync">Sign Out</MudMenuItem>
             </ChildContent>
         </MudMenu>

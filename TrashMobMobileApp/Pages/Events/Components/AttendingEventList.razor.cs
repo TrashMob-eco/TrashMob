@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using TrashMobMobileApp.Data;
 using TrashMobMobileApp.Models;
-using TrashMobMobileApp.Shared;
 
 namespace TrashMobMobileApp.Pages.Events.Components
 {
@@ -46,8 +45,6 @@ namespace TrashMobMobileApp.Pages.Events.Components
 
             _attendingEvents = _attendingEventsStatic.FindAll(item => item.Name.Contains(_eventSearchText, StringComparison.OrdinalIgnoreCase));
         }
-
-        private void OnCreateEvent() => Navigator.NavigateTo(Routes.CreateEvent);
 
         private void OnViewEventDetails(MobEvent mobEvent)
         {

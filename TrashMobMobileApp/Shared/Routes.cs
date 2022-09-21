@@ -7,5 +7,6 @@
         public const string EditEvent = "/editevent/{0}";
         public const string Events = "/events";
         public const string ContactUs = "/contactus";
+        public const string Profile = "/profile";
     }
 }
