@@ -9,7 +9,6 @@ namespace TrashMobMobileApp.Pages.Terms.Pages
         private bool _isLoading;
         private bool _agreeTermsOfService;
         private bool _agreePrivacyPolicy;
-        private bool _hasSubmitted;
         private DateTimeOffset? _dateTermsSigned;
         private DateTimeOffset? _datePrivacySigned;
         private User _user;
@@ -63,7 +62,7 @@ namespace TrashMobMobileApp.Pages.Terms.Pages
                 _isLoading = true;
                 await UserManager.UpdateUserAsync(_user);
                 _isLoading = false;
-                _hasSubmitted = true;
+                Snackbar.Add("Changes saved!", MudBlazor.Severity.Success);
             }
         }
     }

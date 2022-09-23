@@ -23,7 +23,6 @@ namespace TrashMobMobileApp.Pages.Events.Components
 
         protected override async Task OnInitializedAsync()
         {
-            base.OnInitialized();
             await GetMyEventsAsync();
         }
 

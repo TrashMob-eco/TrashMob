@@ -78,10 +78,13 @@
             }
             else
             {
-                <MudContainer Class="tm-no-event-container">
-                    <MudText>No events to show. Create an event to get started.</MudText>
-                    <MudFab Class="tm-create-event-btn-center" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Primary" Label="Create" OnClick="@OnCreateEvent" />
-                </MudContainer>
+                if (!_isLoading)
+                {
+                    <MudContainer Class="tm-no-event-container">
+                        <MudText>No events to show. Create an event to get started.</MudText>
+                        <MudFab Class="tm-create-event-btn-center" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Primary" Label="Create" OnClick="@OnCreateEvent" />
+                    </MudContainer>
+                }
             }
         </MudContainer>
     </ChildContent>

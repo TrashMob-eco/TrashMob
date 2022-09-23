@@ -9,12 +9,16 @@
             position: fixed;
         }
 
+        .tm-step2-container .form-item {
+            margin-top: 10%;
+        }
+
         .tm-step2-container .container-item {
             margin-top: 10px;
         }
 
         .tm-step2-container .next-btn {
-            margin-top: 10px;
+            margin-top: 10%;
             width: 100%;
         }
 </style>
@@ -24,7 +28,7 @@
         <MudContainer Class="tm-step2-container">
             <MudText Typo="Typo.subtitle2">Now onto logistics.</MudText>
             <MudText Typo="Typo.body2">Tell us the date of your event, the start time, and intended length of the event. Keep in mind that event lengths are an estimate.</MudText>
-            <MudForm @ref="_form" @bind-IsValid="_success" @bind-Errors="_errors">
+            <MudForm @ref="_form" Class="form-item" @bind-IsValid="_success" @bind-Errors="_errors">
                 <MudDatePicker Variant="Variant.Outlined" @bind-Date="_eventDate" Label="Date" Required RequiredError="Date is required" />
                 <MudTimePicker Class="container-item" Variant="Variant.Outlined" @bind-Time="_eventTime" Label="Time" Required RequiredError="Time is required" />
                 <MudNumericField Class="container-item" T="int" Variant="Variant.Outlined" @bind-Value="Event.DurationHours" Label="Duration Hours" />

@@ -19,6 +19,11 @@ namespace TrashMobMobileApp.Pages.Events.CreateEventStepper
         [Parameter]
         public EventCallback OnStepFinished { get; set; }
 
+        protected override void OnInitialized()
+        {
+            TitleContainer.Title = "Create Event (4/6)";
+        }
+
         private async Task OnStepFinishedAsync()
         {
             await _form.Validate();

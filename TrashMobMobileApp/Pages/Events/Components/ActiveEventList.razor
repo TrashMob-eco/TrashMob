@@ -65,9 +65,12 @@
             }
             else
             {
-                <MudContainer Class="tm-no-event-container">
-                    <MudText>There are no events happening! Get started by creating your own.</MudText>
-                </MudContainer>
+                if (!_isLoading)
+                {
+                    <MudContainer Class="tm-no-event-container">
+                        <MudText>There are no events happening! Get started by creating your own.</MudText>
+                    </MudContainer>
+                }
             }
         </MudContainer>
     </ChildContent>

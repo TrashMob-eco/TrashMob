@@ -28,6 +28,7 @@ namespace TrashMobMobileApp.Pages.Events.CreateEventStepper
 
         protected override async Task OnInitializedAsync()
         {
+            TitleContainer.Title = "Create Event (1/6)";
             await GetEventTypesAsync();
             _selectedEventType = _eventTypes.FirstOrDefault();
         }

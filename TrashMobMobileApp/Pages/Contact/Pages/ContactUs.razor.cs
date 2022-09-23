@@ -12,7 +12,6 @@ namespace TrashMobMobileApp.Pages.Contact.Pages
         private bool _isLoading;
         private string[] _errors;
         private ContactRequest _contact = new();
-        private bool _hasSubmitted;
 
         [Inject]
         public IContactRequestManager ContactRequestManager { get; set; }
@@ -24,16 +23,13 @@ namespace TrashMobMobileApp.Pages.Contact.Pages
 
         private async Task OnSubmitAsync()
         {
+            await _contactForm.Validate();
             if (_success)
             {
                 _isLoading = true;
                 await ContactRequestManager.AddContactRequestAsync(_contact);
                 _isLoading = false;
-                _hasSubmitted = true;
-            }
-            else
-            {
-                _contactForm?.Validate();
+                Snackbar.Add("Submitted!", Severity.Success);
             }
         }
     }

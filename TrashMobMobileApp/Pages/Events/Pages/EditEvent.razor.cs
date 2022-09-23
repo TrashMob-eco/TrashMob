@@ -75,10 +75,7 @@ namespace TrashMobMobileApp.Pages.Events.Pages
                 _isLoading = true;
                 var eventAdd = await MobEventManager.UpdateEventAsync(_event);
                 _isLoading = false;
-                if (eventAdd != null)
-                {
-                    Snackbar.Add("Details saved!", Severity.Success);
-                }
+                Snackbar.Add("Changes saved!", Severity.Success);
             }
         }
 

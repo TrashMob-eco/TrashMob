@@ -27,22 +27,15 @@
             <MudStack Class="tm-back-btn-container" Row AlignItems="AlignItems.Start">
                 <MudFab StartIcon="@Icons.Material.Filled.ArrowLeft" Color="Color.Primary" IconSize="Size.Small" Size="Size.Small" Label="Home" OnClick="() => Navigator.NavigateTo(Routes.Home)" />
             </MudStack>
-            @if (_hasSubmitted)
-            {
-                <MudAlert Severity="Severity.Success">Saved! Thanks for your response.</MudAlert>
-            }
-            else
-            {
-                <MudStack>
-                    <MudLink Style="margin: 20px" Href="https://www.trashmob.eco/termsofservice" Underline="Underline.Always">Terms of Service</MudLink>
-                    <MudCheckBox T="bool" Label="I agree to the terms and service" Checked="_agreeTermsOfService" CheckedChanged="@OnTermsChange" />
-                </MudStack>
-                <MudStack Style="margin-top: 30px">
-                    <MudLink Style="margin: 20px" Href="https://www.trashmob.eco/privacypolicy" Underline="Underline.Always">Privacy Policy</MudLink>
-                    <MudCheckBox T="bool" Label="I agree to the privacy policy" Checked="_agreePrivacyPolicy" CheckedChanged="@OnPrivacyChange" />
-                </MudStack>
-                <MudButton Class="tm-service-submit-btn" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnSaveAsync">Save</MudButton>
-            }
+            <MudStack>
+                <MudLink Style="margin: 20px" Href="https://www.trashmob.eco/termsofservice" Underline="Underline.Always">Terms of Service</MudLink>
+                <MudCheckBox T="bool" Label="I agree to the terms and service" Checked="_agreeTermsOfService" CheckedChanged="@OnTermsChange" />
+            </MudStack>
+            <MudStack Style="margin-top: 30px">
+                <MudLink Style="margin: 20px" Href="https://www.trashmob.eco/privacypolicy" Underline="Underline.Always">Privacy Policy</MudLink>
+                <MudCheckBox T="bool" Label="I agree to the privacy policy" Checked="_agreePrivacyPolicy" CheckedChanged="@OnPrivacyChange" />
+            </MudStack>
+            <MudButton Class="tm-service-submit-btn" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnSaveAsync">Save</MudButton>
         </MudContainer>
     </ChildContent>
     <ErrorContent>

@@ -13,7 +13,6 @@ namespace TrashMobMobileApp.Pages.Events.Pages
         private bool _success;
         private string[] _errors;
         private string? _cancelReason;
-        private bool _isCancelledEvent;
 
         [Inject]
         public IMobEventManager MobEventManager { get; set; }
@@ -44,7 +43,7 @@ namespace TrashMobMobileApp.Pages.Events.Pages
                 _isLoading = true;
                 await MobEventManager.DeleteEventAsync(cancelEvent);
                 _isLoading = false;
-                _isCancelledEvent = true;
+                Snackbar.Add("Event cancelled!", Severity.Success);
             }
 
         }

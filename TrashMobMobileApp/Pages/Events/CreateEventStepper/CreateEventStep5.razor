@@ -9,12 +9,16 @@
             position: fixed;
         }
 
+        .tm-step5-container .form-item {
+            margin-top: 10%;
+        }
+
         .tm-step5-container .container-item {
             margin-top: 10px;
         }
 
         .tm-step5-container .next-btn {
-            margin-top: 10px;
+            margin-top: 10%;
             width: 100%;
         }
 </style>
@@ -24,7 +28,7 @@
         <MudContainer Class="tm-step5-container">
             <MudText Typo="Typo.subtitle2">Confirm your event details.</MudText>
             <MudText Typo="Typo.body2">If there's a maximum number of event participants (sometimes determined by amount of supplies and/or area size) note that here, and add in a description of your event.</MudText>
-            <MudForm @ref="_form" @bind-IsValid="_success" @bind-Errors="_errors">
+            <MudForm @ref="_form" Class="form-item" @bind-IsValid="_success" @bind-Errors="_errors">
                 <MudText Typo="Typo.subtitle2" Class="container-item">Basic</MudText>
                 <MudTextField T="string" Class="container-item" Label="Name" @bind-Text="Event.Name" Variant="Variant.Outlined" Required RequiredError="Name is required" />
                 <MudSelect FullWidth T="EventType" Class="container-item" Label="Event Type" @bind-Value="@_selectedEventType" AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined" Required RequiredError="Event type is required">

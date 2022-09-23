@@ -13,7 +13,6 @@ namespace TrashMobMobileApp.Pages.Events.Pages
         private MobEvent _event;
         private EventSummary _eventSummary = new();
         private bool _isLoading;
-        private bool _hasSubmitted;
 
         [Inject]
         public IMobEventManager MobEventManager { get; set; }
@@ -40,8 +39,10 @@ namespace TrashMobMobileApp.Pages.Events.Pages
                 _eventSummary.LastUpdatedByUserId = App.CurrentUser.Id;
                 _isLoading = true;
                 await MobEventManager.AddEventSummaryAsync(_eventSummary);
+                _event.EventStatusId = 4;
+                await MobEventManager.UpdateEventAsync(_event);
                 _isLoading = false;
-                _hasSubmitted = true;
+                Snackbar.Add("Event completed!", Severity.Success);
             }
         }
     }

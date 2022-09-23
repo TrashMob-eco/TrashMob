@@ -67,9 +67,12 @@
             }
             else
             {
-                <MudContainer Class="tm-no-event-container">
-                    <MudText>You are not attending any events! Register for an event.</MudText>
-                </MudContainer>
+                if (!_isLoading)
+                {
+                    <MudContainer Class="tm-no-event-container">
+                        <MudText>You are not attending any events! Register for an event.</MudText>
+                    </MudContainer>
+                }
             }
         </MudContainer>
     </ChildContent>

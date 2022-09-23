@@ -46,10 +46,12 @@ namespace TrashMobMobileApp.Pages.Profile.Pages
             {
                 _isLoading = true;
                 var user = await UserManager.UpdateUserAsync(_user);
+                _isLoading = false;
                 if (user != null)
                 {
                     await GetUserAsync();
                 }
+                Snackbar.Add("Changes saved!", Severity.Success);
             }
         }
     }

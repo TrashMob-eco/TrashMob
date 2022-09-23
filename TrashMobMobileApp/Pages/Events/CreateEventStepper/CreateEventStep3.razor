@@ -9,12 +9,16 @@
             position: fixed;
         }
 
+        .tm-step3-container .form-item {
+            margin-top: 10%;
+        }
+
         .tm-step3-container .container-item {
             margin-top: 10px;
         }
 
         .tm-step3-container .next-btn {
-            margin-top: 10px;
+            margin-top: 10%;
             width: 100%;
         }
 </style>
@@ -24,11 +28,11 @@
         <MudContainer Class="tm-step3-container">
             <MudText Typo="Typo.subtitle2">Give us the location!</MudText>
             <MudText Typo="Typo.body2">Provide the location of the event.</MudText>
-            <MudForm @ref="_form" @bind-IsValid="_success" @bind-Errors="_errors">
+            <MudForm @ref="_form" Class="form-item" @bind-IsValid="_success" @bind-Errors="_errors">
                 <MudTextField T="string" FullWidth Class="container-item" Variant="Variant.Outlined" @bind-Text="Event.StreetAddress" Label="Street Address" Required RequiredError="Street address is required" />
                 <MudTextField T="string" FullWidth Class="container-item" Variant="Variant.Outlined" @bind-Text="Event.City" Label="City" Required RequiredError="City is required" />
                 <MudTextField T="string" FullWidth Class="container-item" Variant="Variant.Outlined" @bind-Text="Event.Region" Label="State" Required RequiredError="State is required" />
-                <MudNumericField T="int" FullWidth Class="container-item" Variant="Variant.Outlined" @bind-Text="Event.PostalCode" Label="Postal" Required RequiredError="Postal is required" />
+                <MudNumericField T="int" FullWidth Class="container-item" Variant="Variant.Outlined" @bind-Value="_postal" Label="Postal" Required RequiredError="Postal is required" />
                 <MudFab Class="next-btn" Color="Color.Primary" Label="Next" OnClick="OnStepFinishedAsync" />
             </MudForm>
         </MudContainer>

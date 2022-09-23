@@ -9,12 +9,16 @@
             position: fixed;
         }
 
+        .tm-step4-container .form-item {
+            margin-top: 10%;
+        }
+
         .tm-step4-container .container-item {
             margin-top: 10px;
         }
 
         .tm-step4-container .next-btn {
-            margin-top: 10px;
+            margin-top: 10%;
             width: 100%;
         }
 </style>
@@ -24,7 +28,7 @@
         <MudContainer Class="tm-step4-container">
             <MudText Typo="Typo.subtitle2">Help us with some details!</MudText>
             <MudText Typo="Typo.body2">If there's a maximum number of event participants (sometimes determined by amount of supplies and/or area size) note that here, and add in a description of your event.</MudText>
-            <MudForm @ref="_form" @bind-IsValid="_success" @bind-Errors="_errors">
+            <MudForm @ref="_form" Class="form-item" @bind-IsValid="_success" @bind-Errors="_errors">
                 <MudNumericField T="int" FullWidth Class="container-item" Variant="Variant.Outlined" @bind-Value="Event.MaxNumberOfParticipants" Label="Maximum number of participants" Required RequiredError="Max participants is required" />
                 <MudTextField T="string" FullWidth Lines="5" Class="container-item" Variant="Variant.Outlined" @bind-Text="Event.Description" Label="Description" Required RequiredError="Description is required" />
                 <MudFab Class="next-btn" Color="Color.Primary" Label="Next" OnClick="OnStepFinishedAsync" />

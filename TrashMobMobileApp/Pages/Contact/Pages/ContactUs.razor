@@ -8,14 +8,17 @@
         padding: 20px;
     }
 
+        .tm-contact-container .form-item {
+            margin-top: 10%;
+        }
+
         .tm-contact-container .tm-back-btn-container {
-            margin-bottom: 10px;
+        .tm-contact-containerargin-bottom: 10px;
         }
 
         .tm-contact-container .tm-contact-submit-btn {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
+            margin-top: 10%;
+            width: 100%;
         }
 </style>
 
@@ -28,20 +31,13 @@
             <MudStack Class="tm-back-btn-container" Row AlignItems="AlignItems.Start">
                 <MudFab StartIcon="@Icons.Material.Filled.ArrowLeft" Color="Color.Primary" IconSize="Size.Small" Size="Size.Small" Label="Home" OnClick="() => Navigator.NavigateTo(Routes.Home)" />
             </MudStack>
-            @if (_hasSubmitted)
-            {
-                <MudAlert Severity="Severity.Success">Submitted! Someone will contact you soon.</MudAlert>
-            }
-            else
-            {
-                <MudForm @ref="_contactForm" @bind-IsValid="@_success" @bind-Errors="@_errors">
-                    <MudTextField FullWidth T="string" Label="Name" Required RequiredError="Name is required" />
-                    <MudTextField FullWidth T="string" Label="Email" Required RequiredError="Email is required"
-                              Validation="@(new EmailAddressAttribute() { ErrorMessage = "The email address is invalid"} )" />
-                    <MudTextField FullWidth T="string" Label="Message" Required RequiredError="Message is required" />
-                    <MudButton Class="tm-contact-submit-btn" Variant="Variant.Filled" Color="Color.Primary" OnClick="OnSubmitAsync">Submit</MudButton>
-                </MudForm>
-            }
+            <MudForm @ref="_contactForm" Class="form-item" @bind-IsValid="@_success" @bind-Errors="@_errors">
+                <MudTextField FullWidth T="string" Label="Name" Required RequiredError="Name is required" Variant="Variant.Outlined" />
+                <MudTextField FullWidth T="string" Label="Email" Required RequiredError="Email is required"
+                              Validation="@(new EmailAddressAttribute() { ErrorMessage = "The email address is invalid"} )" Variant="Variant.Outlined" />
+                <MudTextField FullWidth T="string" Lines="5" Label="Message" Required RequiredError="Message is required" Variant="Variant.Outlined" />
+                <MudFab Class="tm-contact-submit-btn" Color="Color.Primary" Label="Submit" OnClick="OnSubmitAsync" />
+            </MudForm>
         </MudContainer>
     </ChildContent>
     <ErrorContent>
