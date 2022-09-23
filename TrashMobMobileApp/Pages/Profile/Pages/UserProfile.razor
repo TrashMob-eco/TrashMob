@@ -7,11 +7,18 @@
         height: 100%;
         padding: 20px;
     }
+        
+        .tm-user-profile-container .tm-back-btn-container {
+            margin-bottom: 10px;
+        }
 </style>
 
 <ErrorBoundary>
     <ChildContent>
         <MudContainer Class="tm-user-profile-container">
+            <MudStack Class="tm-back-btn-container" Row AlignItems="AlignItems.Start">
+                <MudFab StartIcon="@Icons.Material.Filled.ArrowLeft" Color="Color.Primary" IconSize="Size.Small" Size="Size.Small" Label="Home" OnClick="() => Navigator.NavigateTo(Routes.Home)" />
+            </MudStack>
             @if (_isLoading)
             {
                 <MudProgressCircular Indeterminate />

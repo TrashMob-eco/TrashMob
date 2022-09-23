@@ -8,6 +8,10 @@
         padding: 20px;
     }
 
+        .tm-contact-container .tm-back-btn-container {
+            margin-bottom: 10px;
+        }
+
         .tm-contact-container .tm-contact-submit-btn {
             position: fixed;
             bottom: 10px;
@@ -24,6 +28,9 @@
         else
         {
             <MudContainer Class="tm-contact-container">
+                <MudStack Class="tm-back-btn-container" Row AlignItems="AlignItems.Start">
+                    <MudFab StartIcon="@Icons.Material.Filled.ArrowLeft" Color="Color.Primary" IconSize="Size.Small" Size="Size.Small" Label="Home" OnClick="() => Navigator.NavigateTo(Routes.Home)" />
+                </MudStack>
                 @if (_hasSubmitted)
                 {
                     <MudAlert Severity="Severity.Success">Submitted! Someone will contact you soon.</MudAlert>

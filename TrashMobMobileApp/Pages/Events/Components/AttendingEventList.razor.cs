@@ -28,7 +28,7 @@ namespace TrashMobMobileApp.Pages.Events.Components
             if (currentUser != null)
             {
                 _isLoading = true;
-                _attendingEventsStatic = (await MobEventManager.GetUserEventsAsync(currentUser.Id, true)).ToList();
+                _attendingEventsStatic = (await MobEventManager.GetEventsUserIsAttending(currentUser.Id)).ToList();
                 _attendingEvents = _attendingEventsStatic;
                 _isLoading = false;
             }

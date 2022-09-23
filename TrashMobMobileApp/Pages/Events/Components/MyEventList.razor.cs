@@ -2,6 +2,7 @@
 using TrashMobMobileApp.Data;
 using TrashMobMobileApp.Models;
 using TrashMobMobileApp.Shared;
+using TrashMobMobileApp.StateContainers;
 
 namespace TrashMobMobileApp.Pages.Events.Components
 {
@@ -17,6 +18,9 @@ namespace TrashMobMobileApp.Pages.Events.Components
         [Inject]
         public IMobEventManager MobEventManager { get; set; }
 
+        [Inject]
+        public UserStateInformation StateInformation { get; set; }
+
         protected override async Task OnInitializedAsync()
         {
             base.OnInitialized();
@@ -29,8 +33,7 @@ namespace TrashMobMobileApp.Pages.Events.Components
             if (currentUser != null)
             {
                 _isLoading = true;
-                _myEventsStatic = (await MobEventManager.GetUserEventsAsync(currentUser.Id, true))
-                    .Where(item => item.CreatedByUserId == currentUser.Id).ToList();
+                _myEventsStatic = (await MobEventManager.GetUserEventsAsync(currentUser.Id, StateInformation.ShowFutureEvents)).ToList();
                 _myEvents = _myEventsStatic;
                 _isLoading = false;
             }
@@ -54,6 +57,15 @@ namespace TrashMobMobileApp.Pages.Events.Components
         {
             _selectedEvent = mobEvent;
             _isViewOpen = !_isViewOpen;
+        }
+
+        private void OnCompleteEvent(MobEvent mobEvent)
+            => Navigator.NavigateTo(string.Format(Routes.CompleteEvent, mobEvent.Id.ToString()));
+
+        private async Task OnShowFutureEventsChangedAsync(bool val)
+        {
+            StateInformation.ShowFutureEvents = val;
+            await GetMyEventsAsync();
         }
 
         private void OnCancelEvent(MobEvent mobEvent) 

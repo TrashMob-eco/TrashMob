@@ -16,6 +16,9 @@
 <ErrorBoundary>
     <ChildContent>
         <MudContainer Class="tm-service-container">
+            <MudStack Class="tm-back-btn-container" Row AlignItems="AlignItems.Start">
+                <MudFab StartIcon="@Icons.Material.Filled.ArrowLeft" Color="Color.Primary" IconSize="Size.Small" Size="Size.Small" Label="Home" OnClick="() => Navigator.NavigateTo(Routes.Home)" />
+            </MudStack>
             @if (_isLoading)
             {
                 <MudProgressCircular Indeterminate />

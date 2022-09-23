@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using MudBlazor;
 using TrashMobMobileApp.Data;
 using TrashMobMobileApp.Models;
 
@@ -12,6 +13,7 @@ namespace TrashMobMobileApp.Pages.Events.Components
         private MobEvent _selectedEvent;
         private bool _isViewOpen;
         private string _eventSearchText;
+        private bool _isButtonLoading;
 
         [Inject]
         public IMobEventManager MobEventManager { get; set; }
@@ -20,25 +22,6 @@ namespace TrashMobMobileApp.Pages.Events.Components
         {
             _isLoading = true;
             _mobEventsStatic = (await MobEventManager.GetActiveEventsAsync()).ToList();
-            var randomEvents = new List<MobEvent>
-            {
-                new MobEvent
-                {
-                    Name = "Event Random 1",
-                    Description = "Event Description 1"
-                },
-                new MobEvent
-                {
-                    Name = "Event Random 2",
-                    Description = "Event Description 2"
-                },
-                new MobEvent
-                {
-                    Name = "Event Random 3",
-                    Description = "Event Description 3"
-                }
-            };
-            _mobEventsStatic.AddRange(randomEvents);
             _mobEvents = _mobEventsStatic;
             _isLoading = false;
         }
@@ -63,6 +46,7 @@ namespace TrashMobMobileApp.Pages.Events.Components
                 _isLoading = true;
                 await MobEventManager.AddEventAttendeeAsync(attendee);
                 _isLoading = false;
+                Snackbar.Add($"Registered successfully!", MudBlazor.Severity.Success);
             }
         }
 

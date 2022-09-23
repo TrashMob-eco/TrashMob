@@ -7,13 +7,11 @@ namespace TrashMobMobileApp.Pages.Events.Components
 {
     public partial class EventDetails
     {
-        private EventSummary? _summary;
-        public string GetFormattedAddress
-            => Event == null ? string.Empty : string.Concat(Event?.StreetAddress, ", ", Event?.City, ", ", Event?.Region, ", ", Event?.Country);
-        public string GetFormattedDuration
-            => Event == null ? string.Empty : string.Concat(Event?.DurationHours, " hr ", Event?.DurationMinutes, " mins");
-        public string PublicEvent => (Event?.IsEventPublic).HasValue && (Event?.IsEventPublic).Value ? "Yes" : "No";
+        private EventSummary _summary;
         private Typo BodyText => Typo.body2;
+
+        [Inject]
+        public IMobEventManager MobEventManager { get; set; }
 
         [Parameter]
         public bool Open { get; set; }
@@ -27,7 +25,12 @@ namespace TrashMobMobileApp.Pages.Events.Components
         [Parameter]
         public MobEvent Event { get; set; }
 
-        [Parameter]
-        public IMobEventManager MobEventManager { get; set; }
+        private async Task OnEventSummaryExpandedAsync(bool expanded)
+        {
+            if (expanded)
+            {
+                _summary = await MobEventManager.GetEventSummaryAsync(Event.Id);
+            }
+        }
     }
 }

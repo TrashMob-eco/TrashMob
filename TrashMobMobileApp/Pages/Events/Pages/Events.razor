@@ -1,13 +1,13 @@
 ﻿@page "/events"
 
-<MudTabs Elevation="2" Rounded="true" Centered Color="@Color.Primary" ApplyEffectsToContainer="true">
-    <MudTabPanel Text="All">
-        <ActiveEventList />
+<MudTabs AlwaysShowScrollButtons=false Color="@Color.Primary" @bind-ActivePanelIndex="@StateInformation.CurrentlyActiveTab" >
+    <MudTabPanel Text="My Events" Style="width: auto">
+        <MyEventList />
     </MudTabPanel>
-    <MudTabPanel Text="Attending">
+    <MudTabPanel Text="Attending" Style="width: auto">
         <AttendingEventList />
     </MudTabPanel>
-    <MudTabPanel Text="My Events">
-        <MyEventList />
+    <MudTabPanel Text="All" Style="width: auto">
+        <ActiveEventList />
     </MudTabPanel>
 </MudTabs>

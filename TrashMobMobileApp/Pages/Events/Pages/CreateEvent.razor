@@ -5,6 +5,16 @@
         height: 100%;
         padding: 20px;
     }
+
+        .tm-create-event-container .tm-back-btn-container {
+            margin-bottom: 10px;
+        }
+
+        .tm-create-event-container .tm-action-btn-container {
+            margin-top: 10px;
+            bottom: 10px;
+            right: 10px;
+        }
 </style>
 
 <ErrorBoundary>
@@ -16,7 +26,9 @@
             }
             else
             {
-                <MudText Typo="Typo.h6">Add Event</MudText>
+                <MudStack Class="tm-back-btn-container" Row AlignItems="AlignItems.Start">
+                    <MudFab StartIcon="@Icons.Material.Filled.ArrowLeft" Color="Color.Primary" IconSize="Size.Small" Size="Size.Small" Label="Events" OnClick="() => Navigator.NavigateTo(Routes.Events)" />
+                </MudStack>
                 <MudForm @ref="@_addEventForm" @bind-IsValid="@_success" @bind-Errors="@_errors">
                     <MudTextField FullWidth T="string" Label="Name" @bind-Text="@_event.Name" Required RequiredError="Name is required" />
                     <MudTextField FullWidth T="string" Label="Description" @bind-Text="@_event.Description" Required RequiredError="Description is required" />
@@ -37,9 +49,8 @@
                             <MudSelectItem T="EventType" Value="@eventType">@eventType.Name</MudSelectItem>
                         }
                     </MudSelect>
-                    <MudStack Row Style="margin-top: 10px">
-                        <MudButton Style="width: 50%; margin-right: 10px" Variant="Variant.Outlined" Color="Color.Primary" OnClick="@OnCancel">Cancel</MudButton>
-                        <MudButton Style="width: 50%; margin-left: 10px" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnAddAsync">Add</MudButton>
+                    <MudStack Row Justify="Justify.FlexEnd" Class="tm-action-btn-container">
+                       <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnAddAsync">Create</MudButton>
                     </MudStack>
                 </MudForm>
             }

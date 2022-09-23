@@ -53,7 +53,7 @@ namespace TrashMobMobileApp.Pages.Events.Pages
             _isLoading = false;
             if (_event != null)
             {
-                _eventDate = new DateTime(_event.EventDate.Year, _event.EventDate.Month, _event.EventDate.Day);
+                _eventDate = _event.EventDate;
                 _eventTime = new TimeSpan(_event.EventDate.Hour, _event.EventDate.Minute, 0);
                 _zip = Convert.ToInt32(_event.PostalCode);
                 _selectedEventType = _eventTypes.FirstOrDefault(item => item.Id == _event.EventTypeId);
@@ -72,13 +72,12 @@ namespace TrashMobMobileApp.Pages.Events.Pages
                 _event.LastUpdatedByUserId = App.CurrentUser.Id;
                 _event.LastUpdatedDate = DateTime.Now;
                 _event.EventTypeId = _selectedEventType.Id;
-                _event.EventStatusId = 1;
                 _isLoading = true;
                 var eventAdd = await MobEventManager.UpdateEventAsync(_event);
                 _isLoading = false;
                 if (eventAdd != null)
                 {
-                    Navigator.NavigateTo(Routes.Events);
+                    Snackbar.Add("Details saved!", Severity.Success);
                 }
             }
         }

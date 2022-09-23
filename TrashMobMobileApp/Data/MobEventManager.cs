@@ -29,6 +29,11 @@
             return mobEventRestService.GetUserEventsAsync(userId, showFutureEventsOnly, cancellationToken);
         }
 
+        public Task<IEnumerable<MobEvent>> GetEventsUserIsAttending(Guid userId, CancellationToken token)
+        {
+            return mobEventRestService.GetEventsUserIsAttending(userId, token);
+        }
+
         public Task<MobEvent> GetEventAsync(Guid eventId, CancellationToken cancellationToken = default)
         {
             return mobEventRestService.GetEventAsync(eventId, cancellationToken);
