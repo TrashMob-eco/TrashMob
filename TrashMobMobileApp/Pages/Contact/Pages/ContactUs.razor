@@ -21,20 +21,19 @@
 
 <ErrorBoundary>
     <ChildContent>
-        @if (_isLoading)
-        {
-            <MudProgressCircular Indeterminate />
-        }
-        else
-        {
-            <MudContainer Class="tm-contact-container">
-                <MudStack Class="tm-back-btn-container" Row AlignItems="AlignItems.Start">
-                    <MudFab StartIcon="@Icons.Material.Filled.ArrowLeft" Color="Color.Primary" IconSize="Size.Small" Size="Size.Small" Label="Home" OnClick="() => Navigator.NavigateTo(Routes.Home)" />
-                </MudStack>
-                @if (_hasSubmitted)
-                {
-                    <MudAlert Severity="Severity.Success">Submitted! Someone will contact you soon.</MudAlert>
-                }
+        <MudContainer Class="tm-contact-container">
+            <MudOverlay @bind-Visible="_isLoading" Absolute>
+                <MudProgressCircular Color="Color.Default" Indeterminate Class="tm-loader" />
+            </MudOverlay>
+            <MudStack Class="tm-back-btn-container" Row AlignItems="AlignItems.Start">
+                <MudFab StartIcon="@Icons.Material.Filled.ArrowLeft" Color="Color.Primary" IconSize="Size.Small" Size="Size.Small" Label="Home" OnClick="() => Navigator.NavigateTo(Routes.Home)" />
+            </MudStack>
+            @if (_hasSubmitted)
+            {
+                <MudAlert Severity="Severity.Success">Submitted! Someone will contact you soon.</MudAlert>
+            }
+            else
+            {
                 <MudForm @ref="_contactForm" @bind-IsValid="@_success" @bind-Errors="@_errors">
                     <MudTextField FullWidth T="string" Label="Name" Required RequiredError="Name is required" />
                     <MudTextField FullWidth T="string" Label="Email" Required RequiredError="Email is required"
@@ -42,8 +41,8 @@
                     <MudTextField FullWidth T="string" Label="Message" Required RequiredError="Message is required" />
                     <MudButton Class="tm-contact-submit-btn" Variant="Variant.Filled" Color="Color.Primary" OnClick="OnSubmitAsync">Submit</MudButton>
                 </MudForm>
-            </MudContainer>
-        }
+            }
+        </MudContainer>
     </ChildContent>
     <ErrorContent>
         @context.Message

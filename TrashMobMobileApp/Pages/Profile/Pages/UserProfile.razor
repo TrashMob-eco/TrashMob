@@ -7,7 +7,12 @@
         height: 100%;
         padding: 20px;
     }
-        
+
+        .tm-user-profile-container .tm-loader {
+            top: 50%;
+            position: fixed;
+        }
+
         .tm-user-profile-container .tm-back-btn-container {
             margin-bottom: 10px;
         }
@@ -16,14 +21,13 @@
 <ErrorBoundary>
     <ChildContent>
         <MudContainer Class="tm-user-profile-container">
+            <MudOverlay @bind-Visible="_isLoading" Absolute>
+                <MudProgressCircular Color="Color.Default" Indeterminate Class="tm-loader" />
+            </MudOverlay>
             <MudStack Class="tm-back-btn-container" Row AlignItems="AlignItems.Start">
                 <MudFab StartIcon="@Icons.Material.Filled.ArrowLeft" Color="Color.Primary" IconSize="Size.Small" Size="Size.Small" Label="Home" OnClick="() => Navigator.NavigateTo(Routes.Home)" />
             </MudStack>
-            @if (_isLoading)
-            {
-                <MudProgressCircular Indeterminate />
-            }
-            else
+            @if (_user != null)
             {
                 <MudForm @ref="@_userForm" @bind-IsValid="@_success" @bind-Errors="@_errors">
                     <MudTextField FullWidth T="string" @bind-Text="@_user.UserName" Label="User name" Required RequiredError="User name is required" />
@@ -38,7 +42,7 @@
                     <MudTextField FullWidth T="string" @bind-Text="@_user.Country" Label="Country" />
                     <MudTextField FullWidth T="string" @bind-Text="@_user.PostalCode" Label="Postal code" />
                     <MudTextField FullWidth T="string" Text="@(GetDateString(_user.DateAgreedToPrivacyPolicy))" Label="Date agreed to privacy policy" Disabled />
-                    <MudTextField FullWidth T="string" Text="@_user.PrivacyPolicyVersion" Label="Privacy policy version" Disabled />                   
+                    <MudTextField FullWidth T="string" Text="@_user.PrivacyPolicyVersion" Label="Privacy policy version" Disabled />
                     <MudTextField FullWidth T="string" Text="@(GetDateString(_user.DateAgreedToTermsOfService))" Label="Date agreed to terms of service" Disabled />
                     <MudTextField FullWidth T="string" Text="@_user.TermsOfServiceVersion" Label="Terms of service version" Disabled />
                     <MudNumericField FullWidth T="int" @bind-Value="@_user.TravelLimitForLocalEvents" Label="Travel limit for local events" />

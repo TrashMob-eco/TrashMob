@@ -20,6 +20,7 @@ namespace TrashMobMobileApp.Pages.Events.Pages
         private TimeSpan? _eventTime
             = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
         private int _zip;
+        private EventStep _step;
 
         [Inject]
         public IEventTypeRestService EventTypesService { get; set; }
@@ -30,6 +31,7 @@ namespace TrashMobMobileApp.Pages.Events.Pages
         protected override async Task OnInitializedAsync()
         {
             TitleContainer.Title = "Create Event";
+            _step = EventStep.STEP_1;
             await GetEventTypesAsync();
         }
 
@@ -65,5 +67,9 @@ namespace TrashMobMobileApp.Pages.Events.Pages
         }
 
         private void OnCancel() => Navigator.NavigateTo(Routes.Events);
+
+        private void OnNextStep(EventStep _nextStep) => _step = _nextStep;
+
+        private void OnFinished() => Navigator.NavigateTo(Routes.Events);
     }
 }

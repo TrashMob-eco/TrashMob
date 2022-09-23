@@ -7,6 +7,11 @@
         padding: 20px;
     }
 
+        .tm-complete-event-container .tm-loader{
+            top: 50%;
+            position: fixed;
+        }
+
         .tm-complete-event-container .tm-back-btn-container {
             margin-bottom: 10px;
         }
@@ -21,30 +26,26 @@
 <ErrorBoundary>
     <ChildContent>
         <MudContainer Class="tm-complete-event-container">
+            <MudOverlay @bind-Visible="_isLoading" Absolute>
+                <MudProgressCircular Color="Color.Default" Indeterminate Class="tm-loader" />
+            </MudOverlay>
             <MudStack Class="tm-back-btn-container" Row AlignItems="AlignItems.Start">
                 <MudFab StartIcon="@Icons.Material.Filled.ArrowLeft" Color="Color.Primary" IconSize="Size.Small" Size="Size.Small" Label="Events" OnClick="() => Navigator.NavigateTo(Routes.Events)" />
             </MudStack>
-            @if (_isLoading)
+            @if (_hasSubmitted)
             {
-                <MudProgressCircular Indeterminate />
+                <MudAlert Severity="Severity.Success">Event completed! Thanks for your response.</MudAlert>
             }
             else
             {
-                @if (_hasSubmitted)
-                {
-                    <MudAlert Severity="Severity.Success">Event completed! Thanks for your response.</MudAlert>
-                }
-                else
-                {
-                    <MudForm @ref="_completeEventForm" @bind-IsValid="@_success" @bind-Errors="@_errors">
-                        <MudNumericField FullWidth T="int" @bind-Value="@_eventSummary.NumberOfBuckets" Label="Number of buckets" />
-                        <MudNumericField FullWidth T="int" @bind-Value="@_eventSummary.NumberOfBags" Label="Number of bags" />
-                        <MudNumericField FullWidth T="int" @bind-Value="@_eventSummary.DurationInMinutes" Label="Duration in minutes" Required RequiredError="Duration is required" />
-                        <MudNumericField FullWidth T="int" @bind-Value="@_eventSummary.ActualNumberOfAttendees" Label="Number of attendees" Required RequiredError="Attendee count is required" />
-                        <MudTextField FullWidth T="string" @bind-Text="@_eventSummary.Notes" Label="Notes" Lines="5" />
-                        <MudButton Class="tm-complete-event-submit-btn" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnSubmitAsync">Submit</MudButton>
-                    </MudForm>
-                }
+                <MudForm @ref="_completeEventForm" @bind-IsValid="@_success" @bind-Errors="@_errors">
+                    <MudNumericField FullWidth T="int" @bind-Value="@_eventSummary.NumberOfBuckets" Label="Number of buckets" />
+                    <MudNumericField FullWidth T="int" @bind-Value="@_eventSummary.NumberOfBags" Label="Number of bags" />
+                    <MudNumericField FullWidth T="int" @bind-Value="@_eventSummary.DurationInMinutes" Label="Duration in minutes" Required RequiredError="Duration is required" />
+                    <MudNumericField FullWidth T="int" @bind-Value="@_eventSummary.ActualNumberOfAttendees" Label="Number of attendees" Required RequiredError="Attendee count is required" />
+                    <MudTextField FullWidth T="string" @bind-Text="@_eventSummary.Notes" Label="Notes" Lines="5" />
+                    <MudButton Class="tm-complete-event-submit-btn" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnSubmitAsync">Submit</MudButton>
+                </MudForm>
             }
         </MudContainer>
     </ChildContent>

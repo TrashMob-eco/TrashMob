@@ -32,7 +32,7 @@
         <EventDetails @bind-Open="@_isViewOpen" Event="@_selectedEvent" />
 
         <MudContainer Class="tm-event-list">
-            <MudOverlay @bind-Visible="_isLoading" Absolute DarkBackground>
+            <MudOverlay @bind-Visible="_isLoading" Absolute>
                 <MudProgressCircular Color="Color.Default" Indeterminate Class="tm-loader" />
             </MudOverlay>
             @if (_mobEventsStatic.Any())
