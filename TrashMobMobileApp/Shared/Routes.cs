@@ -11,5 +11,6 @@
         public const string ContactUs = "/contactus";
         public const string Profile = "/profile";
         public const string Terms = "/terms";
+        public const string Map = "/map";
     }
 }
