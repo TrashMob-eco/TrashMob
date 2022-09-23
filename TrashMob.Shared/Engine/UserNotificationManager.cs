@@ -2,7 +2,7 @@
 {
     using Microsoft.Extensions.Logging;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     public class UserNotificationManager : IUserNotificationManager 
     {

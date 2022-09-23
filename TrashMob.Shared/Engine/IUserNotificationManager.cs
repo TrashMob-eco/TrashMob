@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared
+﻿namespace TrashMob.Shared.Engine
 {
     using System.Threading.Tasks;
 

@@ -11,11 +11,11 @@ namespace TrashMob.Controllers
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
     using TrashMob.Shared;
     using System.Collections.Generic;
     using TrashMob.Shared.Engine;
     using Microsoft.ApplicationInsights;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/users")]
     public class UsersController : BaseController
@@ -23,10 +23,10 @@ namespace TrashMob.Controllers
         private readonly IUserRepository userRepository;
         private readonly IEmailManager emailManager;
 
-        public UsersController(IUserRepository userRepository,
-                               IEmailManager emailManager,
-                               TelemetryClient telemetryClient)
-            : base(telemetryClient)
+        public UsersController(TelemetryClient telemetryClient,
+                               IUserRepository userRepository,
+                               IEmailManager emailManager)
+            : base(telemetryClient, userRepository)
         {
             this.userRepository = userRepository;
             this.emailManager = emailManager;

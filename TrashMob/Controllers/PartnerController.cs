@@ -9,7 +9,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/partners")]
     public class PartnersController : BaseController
@@ -18,11 +18,11 @@
         private readonly IUserRepository userRepository;
         private readonly IPartnerUserRepository partnerUserRepository;
 
-        public PartnersController(IPartnerRepository partnerRepository, 
-                                  IUserRepository userRepository, 
-                                  IPartnerUserRepository partnerUserRepository, 
-                                  TelemetryClient telemetryClient) 
-            : base(telemetryClient)
+        public PartnersController(TelemetryClient telemetryClient,
+                                  IUserRepository userRepository,
+                                  IPartnerRepository partnerRepository, 
+                                  IPartnerUserRepository partnerUserRepository) 
+            : base(telemetryClient, userRepository)
         {
             this.partnerRepository = partnerRepository;
             this.userRepository = userRepository;
@@ -45,7 +45,7 @@
         [Authorize]
         public async Task<IActionResult> UpdatePartner(Partner partner)
         {
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var currentUser = await GetUser();
 
             if (currentUser == null)
             {

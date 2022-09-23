@@ -3,13 +3,13 @@ namespace TrashMob.Controllers
 {
     using System.Linq;
     using Microsoft.AspNetCore.Mvc;
-    using TrashMob.Shared.Persistence;
     using TrashMob.Poco;
     using System.Threading;
     using Microsoft.ApplicationInsights;
     using System;
     using System.Threading.Tasks;
     using TrashMob.Common;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/stats")]
     public class StatsController : BaseController
@@ -18,11 +18,12 @@ namespace TrashMob.Controllers
         private readonly IEventSummaryRepository eventSummaryRepository;
         private readonly IEventAttendeeRepository eventAttendeeRepository;
 
-        public StatsController(IEventRepository eventRepository,
+        public StatsController(TelemetryClient telemetryClient,
+                               IUserRepository userRepository,
+                               IEventRepository eventRepository,
                                IEventSummaryRepository eventSummaryRepository,
-                               IEventAttendeeRepository eventAttendeeRepository,
-                               TelemetryClient telemetryClient)
-            : base(telemetryClient)
+                               IEventAttendeeRepository eventAttendeeRepository)
+            : base(telemetryClient, userRepository)
         {
             this.eventRepository = eventRepository;
             this.eventSummaryRepository = eventSummaryRepository;

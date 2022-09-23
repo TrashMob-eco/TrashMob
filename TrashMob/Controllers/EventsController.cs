@@ -12,12 +12,12 @@ namespace TrashMob.Controllers
     using TrashMob.Common;
     using TrashMob.Shared.Extensions;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
     using TrashMob.Shared;
     using System.Collections.Generic;
     using TrashMob.Shared.Engine;
     using TrashMob.Poco;
     using Microsoft.ApplicationInsights;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/events")]
     public class EventsController : BaseController
@@ -28,13 +28,13 @@ namespace TrashMob.Controllers
         private readonly IEmailManager emailManager;
         private readonly IMapRepository mapRepository;
 
-        public EventsController(IEventRepository eventRepository,
-                                IEventAttendeeRepository eventAttendeeRepository,
-                                IUserRepository userRepository,
+        public EventsController(TelemetryClient telemetryClient,
+                                IUserRepository userRepository, 
+                                IEventRepository eventRepository,
+                                IEventAttendeeRepository eventAttendeeRepository,                                
                                 IEmailManager emailManager,
-                                IMapRepository mapRepository,
-                                TelemetryClient telemetryClient)
-            : base(telemetryClient)
+                                IMapRepository mapRepository)
+            : base(telemetryClient, userRepository)
         {
             this.eventRepository = eventRepository;
             this.eventAttendeeRepository = eventAttendeeRepository;

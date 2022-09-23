@@ -2,8 +2,9 @@
 namespace TrashMob.Shared.Managers
 {
     using System.Threading.Tasks;
+    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     public class MessageRequestManager : IMessageRequestManager
     {

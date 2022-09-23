@@ -5,7 +5,7 @@ namespace TrashMob.Shared.Engine
     using System.Threading;
     using System.Threading.Tasks;
     using System.Linq;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     public class UserProfileLocationNotifier : NotificationEngineBase
     {

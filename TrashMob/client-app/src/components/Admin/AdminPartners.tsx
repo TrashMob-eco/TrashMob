@@ -47,8 +47,9 @@ export const AdminPartners: React.FC<AdminPartnersPropsType> = (props) => {
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Primary Email</th>
-                            <th>Primary Phone</th>
+                            <th>City</th>
+                            <th>Region</th>
+                            <th>Country</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -56,8 +57,9 @@ export const AdminPartners: React.FC<AdminPartnersPropsType> = (props) => {
                             return (
                                 <tr key={partner.id.toString()}>
                                     <td>{partner.name}</td>
-                                    <td>{partner.primaryEmail}</td>
-                                    <td>{partner.primaryPhone}</td>
+                                    <td>{partner.city}</td>
+                                    <td>{partner.region}</td>
+                                    <td>{partner.country}</td>
                                     <td>
                                         <Button className="action" onClick={() => handleDelete(partner.id, partner.name)}>Delete Partner</Button>
                                     </td>

@@ -14,7 +14,7 @@ namespace TrashMob.Controllers
     using TrashMob.Poco;
     using TrashMob.Shared;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/eventsummaries")]
     public class EventSummariesController : BaseController
@@ -23,11 +23,11 @@ namespace TrashMob.Controllers
         private readonly IUserRepository userRepository;
         private readonly IEventRepository eventRepository;
 
-        public EventSummariesController(IEventSummaryRepository eventSummaryRepository,
-                                       IUserRepository userRepository,
-                                       IEventRepository eventRepository,
-                                       TelemetryClient telemetryClient) 
-            : base(telemetryClient)
+        public EventSummariesController(TelemetryClient telemetryClient,
+                                        IUserRepository userRepository,
+                                        IEventSummaryRepository eventSummaryRepository,
+                                        IEventRepository eventRepository) 
+            : base(telemetryClient, userRepository)
         {
             this.eventSummaryRepository = eventSummaryRepository;
             this.userRepository = userRepository;
@@ -111,7 +111,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddEventSummary(EventSummary eventSummary)
         {
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var currentUser = await GetUser();
             if (currentUser == null || !ValidateUser(currentUser.NameIdentifier))
             {
                 return Forbid();

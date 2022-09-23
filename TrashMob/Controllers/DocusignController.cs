@@ -6,7 +6,7 @@
     using System;
     using System.Threading.Tasks;
     using TrashMob.Shared;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/docusign")]
     public class DocusignController : BaseController
@@ -14,8 +14,10 @@
         private readonly IUserRepository userRepository;
         private readonly IDocusignManager docusignManager;
 
-        public DocusignController(TelemetryClient telemetryClient, IUserRepository userRepository, IDocusignManager docusignManager)
-            : base(telemetryClient)
+        public DocusignController(TelemetryClient telemetryClient, 
+                                  IUserRepository userRepository, 
+                                  IDocusignManager docusignManager)
+            : base(telemetryClient, userRepository)
         {
             this.userRepository = userRepository;
             this.docusignManager = docusignManager;

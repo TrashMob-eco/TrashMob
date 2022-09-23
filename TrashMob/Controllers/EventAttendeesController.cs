@@ -11,10 +11,10 @@ namespace TrashMob.Controllers
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Shared;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
     using TrashMob.Poco;
     using System.Threading;
     using Microsoft.ApplicationInsights;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/eventattendees")]
     public class EventAttendeesController : BaseController
@@ -22,10 +22,10 @@ namespace TrashMob.Controllers
         private readonly IEventAttendeeRepository eventAttendeeRepository;
         private readonly IUserRepository userRepository;
 
-        public EventAttendeesController(IEventAttendeeRepository eventAttendeeRepository,
+        public EventAttendeesController(TelemetryClient telemetryClient,
                                         IUserRepository userRepository,
-                                        TelemetryClient telemetryClient) 
-            : base(telemetryClient)
+                                        IEventAttendeeRepository eventAttendeeRepository) 
+            : base(telemetryClient, userRepository)
         {
             this.eventAttendeeRepository = eventAttendeeRepository;
             this.userRepository = userRepository;

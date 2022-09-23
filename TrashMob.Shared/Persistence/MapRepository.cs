@@ -10,6 +10,7 @@
     using System.Text.Json;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     public class MapRepository : IMapRepository
     {

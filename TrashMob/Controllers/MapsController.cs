@@ -4,16 +4,17 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/maps")]
     public class MapsController : BaseController
     {
         private readonly IMapRepository mapRepository;
 
-        public MapsController(IMapRepository mapRepository,
-                              TelemetryClient telemetryClient)
-            : base(telemetryClient)
+        public MapsController(TelemetryClient telemetryClient,
+                              IUserRepository userRepository,
+                              IMapRepository mapRepository)
+            : base(telemetryClient, userRepository)
         {
             this.mapRepository = mapRepository;
         }

@@ -5,16 +5,17 @@ namespace TrashMob.Controllers
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Mvc;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/partnerrequeststatuses")]
     public class PartnerRequestStatusesController : BaseController
     {
         private readonly IPartnerRequestStatusRepository partnerRequestStatusRepository;
 
-        public PartnerRequestStatusesController(IPartnerRequestStatusRepository partnerRequestStatusRepository,
-                                                TelemetryClient telemetryClient)
-            : base(telemetryClient)
+        public PartnerRequestStatusesController(TelemetryClient telemetryClient,
+                                                IUserRepository userRepository,
+                                                IPartnerRequestStatusRepository partnerRequestStatusRepository)
+            : base(telemetryClient, userRepository)
         {
             this.partnerRequestStatusRepository = partnerRequestStatusRepository;
         }

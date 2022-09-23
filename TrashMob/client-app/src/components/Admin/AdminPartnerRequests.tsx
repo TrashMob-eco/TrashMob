@@ -75,10 +75,12 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Primary Email</th>
-                            <th>Secondary Email</th>
-                            <th>Primary Phone</th>
-                            <th>Secondary Phone</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Website</th>
+                            <th>City</th>
+                            <th>Region</th>
+                            <th>Country</th>
                             <th>Request Status</th>
                             <th>Notes</th>
                             <th></th>
@@ -89,10 +91,12 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
                             return (
                                 <tr key={partnerRequest.id.toString()}>
                                     <td>{partnerRequest.name}</td>
-                                    <td>{partnerRequest.primaryEmail}</td>
-                                    <td>{partnerRequest.secondaryEmail}</td>
-                                    <td>{partnerRequest.primaryPhone}</td>
-                                    <td>{partnerRequest.secondaryPhone}</td>
+                                    <td>{partnerRequest.email}</td>
+                                    <td>{partnerRequest.phone}</td>
+                                    <td>{partnerRequest.website}</td>
+                                    <td>{partnerRequest.city}</td>
+                                    <td>{partnerRequest.region}</td>
+                                    <td>{partnerRequest.country}</td>
                                     <td>{getPartnerRequestStatus(props.partnerRequestStatusList, partnerRequest.partnerRequestStatusId)}</td>
                                     <td>{partnerRequest.notes}</td>
                                     <td>

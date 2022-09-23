@@ -1,13 +1,16 @@
 ﻿
 namespace TrashMob.Shared.Managers
 {
+    using Microsoft.EntityFrameworkCore;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
+    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     public abstract class LookupManager<T> : ILookupManager<T> where T : LookupModel
     {
@@ -18,14 +21,14 @@ namespace TrashMob.Shared.Managers
 
         protected ILookupRepository<T> Repository { get; }
 
-        public virtual IQueryable<T> Get()
+        public virtual async Task<IEnumerable<T>> Get()
         {
-            return Repository.Get();
+            return (await Repository.Get().ToListAsync()).AsEnumerable();
         }
 
-        public virtual IQueryable<T> Get(Expression<Func<T, bool>> expression)
+        public virtual async Task<IEnumerable<T>> Get(Expression<Func<T, bool>> expression)
         {
-            return Repository.Get(expression);
+            return (await Repository.Get(expression).ToListAsync()).AsEnumerable();
         }
 
         public virtual Task<T> Get(int id, CancellationToken cancellationToken = default)

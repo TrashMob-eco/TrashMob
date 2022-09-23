@@ -9,6 +9,7 @@ namespace TrashMob.Shared.Managers
     using Microsoft.Extensions.Logging;
     using System;
     using System.Text.Json;
+    using TrashMob.Shared.Managers.Interfaces;
 
     public class NotificationManager : INotificationManager
     {

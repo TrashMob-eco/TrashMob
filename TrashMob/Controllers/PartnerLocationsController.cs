@@ -9,7 +9,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [Authorize]
     [Route("api/partnerlocations")]
@@ -19,11 +19,11 @@
         private readonly IUserRepository userRepository;
         private readonly IPartnerUserRepository partnerUserRepository;
 
-        public PartnerLocationsController(IPartnerLocationRepository partnerLocationRepository,
-                                          IPartnerUserRepository partnerUserRepository,
+        public PartnerLocationsController(TelemetryClient telemetryClient,
                                           IUserRepository userRepository,
-                                          TelemetryClient telemetryClient)
-            : base(telemetryClient)
+                                          IPartnerLocationRepository partnerLocationRepository,
+                                          IPartnerUserRepository partnerUserRepository)
+            : base(telemetryClient, userRepository)
         {
             this.partnerLocationRepository = partnerLocationRepository;
             this.partnerUserRepository = partnerUserRepository;
@@ -53,7 +53,7 @@
         public async Task<IActionResult> AddPartnerLocation(PartnerLocation partnerLocation)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var currentUser = await GetUser();
 
             if (!currentUser.IsSiteAdmin)
             {
@@ -75,7 +75,7 @@
         public async Task<IActionResult> UpdatePartnerLocation(PartnerLocation partnerLocation)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var currentUser = await GetUser();
 
             if (!currentUser.IsSiteAdmin)
             {
@@ -97,7 +97,7 @@
         public async Task<IActionResult> DeletePartnerLocation(Guid partnerId, Guid partnerLocationId)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var currentUser = await GetUser();
 
             if (!currentUser.IsSiteAdmin)
             {

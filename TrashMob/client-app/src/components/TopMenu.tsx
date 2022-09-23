@@ -5,7 +5,7 @@ import UserData from './Models/UserData';
 import logo from './assets/logo.svg'
 import { Button, Dropdown, Nav } from 'react-bootstrap';
 import './assets/styles/header.css';
-import { Building, BoxArrowLeft, Person, PersonBadge, PersonCircle, PlusLg, Speedometer2 } from 'react-bootstrap-icons';
+import { BoxArrowLeft, Person, PersonBadge, PersonCircle, PlusLg, Speedometer2 } from 'react-bootstrap-icons';
 
 interface TopMenuProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -76,11 +76,9 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 <Dropdown.Divider />
                                 <Dropdown.Item eventKey="3" href="/userprofile"><Person aria-hidden="true" />My profile</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="4" href="/partnerdashboard"><Building aria-hidden="true" />Partner dashboard</Dropdown.Item>
+                                <Dropdown.Item eventKey="4" href="/siteadmin" disabled={!props.currentUser.isSiteAdmin}><PersonBadge aria-hidden="true" />Site administration</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="5" href="/siteadmin" disabled={!props.currentUser.isSiteAdmin}><PersonBadge aria-hidden="true" />Site administration</Dropdown.Item>
-                                <Dropdown.Divider />
-                                <Dropdown.Item eventKey="6" onClick={(e) => signOut(e)}><BoxArrowLeft aria-hidden="true" />Sign out</Dropdown.Item>
+                                <Dropdown.Item eventKey="5" onClick={(e) => signOut(e)}><BoxArrowLeft aria-hidden="true" />Sign out</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
                     </div>

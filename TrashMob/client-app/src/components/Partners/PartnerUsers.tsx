@@ -6,9 +6,6 @@ import * as ToolTips from "../../store/ToolTips";
 
 export interface PartnerUsersDataProps {
     partnerId: string;
-    users: UserData[];
-    isUserDataLoaded: boolean;
-    onPartnerUsersUpdated: any;
     isUserLoaded: boolean;
     currentUser: UserData;
 };
@@ -16,6 +13,35 @@ export interface PartnerUsersDataProps {
 export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
 
     const [userName, setUserName] = React.useState<string>("");
+    const [users, setUsers] = React.useState<UserData[]>([]);
+    const [isPartnerUserDataLoaded, setIsPartnerUserDataLoaded] = React.useState<boolean>(false);
+
+    React.useEffect(() => {
+        if (props.isUserLoaded) {
+            const account = msalClient.getAllAccounts()[0];
+
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+
+                fetch('/api/partnerusers/users/' + props.partnerId, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<UserData[]>)
+                    .then(data => {
+                        setUsers(data);
+                        setIsPartnerUserDataLoaded(true);
+                    });
+            });
+        }
+    }, [props.currentUser, props.isUserLoaded, props.partnerId]);
 
     function removeUser(userId: string, userName: string) {
         if (!window.confirm("Please confirm that you want to remove user with userName: '" + userName + "' as a user from this Partner?"))
@@ -36,15 +62,12 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
                     method: 'DELETE',
                     headers: headers,
                 })
-                    .then(() => {
-                        props.onPartnerUsersUpdated()
-                    });
             });
         }
     }
 
     function handleAddUser() {
-        
+
         if (userName === "")
             return;
 
@@ -75,7 +98,7 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
                             headers: headers,
                         })
                     }
-                });        
+                });
         });
     }
 
@@ -98,14 +121,14 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {users.map(user => 
-                                    <tr key={user.id.toString()}>
-                                        <td>{user.userName}</td>
-                                        <td>{user.email}</td>
-                                        <td>
-                                            <Button className="action" onClick={() => removeUser(user.id, user.userName)}>Remove User</Button>
-                                        </td>
-                                    </tr>
+                        {users.map(user =>
+                            <tr key={user.id}>
+                                <td>{user.userName}</td>
+                                <td>{user.email}</td>
+                                <td>
+                                    <Button className="action" onClick={() => removeUser(user.id, user.userName)}>Remove User</Button>
+                                </td>
+                            </tr>
                         )}
                     </tbody>
                 </table>
@@ -133,13 +156,13 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
         );
     }
 
-    return (
-        <>
-            <div>
-                {!props.isUserDataLoaded && <p><em>Loading...</em></p>}
-                {props.isUserDataLoaded && props.users && renderUsersTable(props.users)}
-                {renderAddUser()}
-            </div>
-        </>
-    );
+    var contents = isPartnerUserDataLoaded && props.partnerId
+        ? renderUsersTable(users)
+        : <p><em>Loading...</em></p>;
+
+    return <div>
+        <hr />
+        {contents}
+        {renderAddUser()}
+    </div>;
 }

@@ -10,6 +10,8 @@ namespace TrashMobJobs
     using Microsoft.Extensions.Configuration;
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Managers;
+    using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Persistence.Events;
 
     public class Program
     {
@@ -34,9 +36,7 @@ namespace TrashMobJobs
                      .AddSingleton<IUserRepository, UserRepository>()
                      .AddSingleton<IUserNotificationRepository, UserNotificationRepository>()
                      .AddSingleton<INonEventUserNotificationRepository, NonEventUserNotificationRepository>()
-                     .AddSingleton<IUserNotificationManager, UserNotificationManager>()
-                     .AddSingleton<IMediaTypeRepository, MediaTypeRepository>()
-                     .AddSingleton<IEventMediaRepository, EventMediaRepository>())
+                     .AddSingleton<IUserNotificationManager, UserNotificationManager>())
                 .Build();
 
             await host.RunAsync().ConfigureAwait(false);

@@ -5,16 +5,19 @@
     using System.Security.Claims;
     using System.Threading.Tasks;
     using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     [ApiController]
     public abstract class BaseController : ControllerBase
     {
         protected TelemetryClient TelemetryClient { get; }
 
-        public BaseController(TelemetryClient telemetryClient)
+        public IUserRepository UserRepository { get; }
+
+        public BaseController(TelemetryClient telemetryClient, IUserRepository userRepository)
         {
             TelemetryClient = telemetryClient;
+            UserRepository = userRepository;
         }
 
         // Ensure the user calling in is the owner of the record
@@ -24,10 +27,9 @@
             return userId == nameIdentifier;
         }
 
-        public async Task<User> GetUser(IUserRepository userRepository)
+        public async Task<User> GetUser()
         {
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
-            return currentUser;
+            return await UserRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
         }
     }
 }

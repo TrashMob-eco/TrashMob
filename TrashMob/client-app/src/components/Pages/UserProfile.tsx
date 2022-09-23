@@ -15,9 +15,6 @@ import { data } from 'azure-maps-control';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import * as Constants from '../Models/Constants';
 import MapControllerSinglePoint from '../MapControllerSinglePoint';
-import EventMediaData from '../Models/EventMediaData';
-import MediaTypeData from '../Models/MediaTypeData';
-import { getMediaType } from '../../store/mediaTypeHelper';
 import globes from '../assets/gettingStarted/globes.png';
 
 interface UserProfileProps extends RouteComponentProps<any> {
@@ -65,8 +62,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
     const [isMapKeyLoaded, setIsMapKeyLoaded] = useState<boolean>(false);
     const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
     const [eventName, setEventName] = useState<string>("User's Base Location");
-    const [eventMedias, setEventMedias] = useState<EventMediaData[]>([]);
-    const [mediaTypeList, setMediaTypeList] = useState<MediaTypeData[]>([]);
     const [isSaveEnabled, setIsSaveEnabled] = useState<boolean>(false);
     const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
     const [formSubmitErrors, setFormSubmitErrors] = useState<string>("");
@@ -127,26 +122,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                         setIsDataLoaded(true);
                     });
 
-                fetch('/api/mediatypes', {
-                    method: 'GET',
-                    headers: headers,
-                })
-                    .then(response => response.json() as Promise<Array<any>>)
-                    .then(data => {
-                        setMediaTypeList(data);
-                        setIsDataLoaded(true);
-                    })
-                    .then(() => {
-                    }).then(() => {
-                        fetch('/api/eventmedias/byUserId/' + userId, {
-                            method: 'GET',
-                            headers: headers,
-                        })
-                            .then(response => response.json() as Promise<Array<EventMediaData>>)
-                            .then(data => {
-                                setEventMedias(data);
-                            });
-                    });
                 setIsDataLoaded(true);
             });
         }
@@ -542,54 +517,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
             )
     }
 
-    const onEventMediasUpdated = ()=> {
-        const account = msalClient.getAllAccounts()[0];
-
-        const request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        return msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders('POST');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-            fetch('/api/eventmedias/byUserId/' + userId, {
-                method: 'GET',
-                headers: headers,
-            })
-                .then(response => response.json() as Promise<Array<EventMediaData>>)
-                .then(data => {
-                    setEventMedias(data);
-                });
-        })
-    }
-
-    const removeEventMedia = (eventMediaId: string, mediaUrl: string) => {
-        if (!window.confirm("Please confirm that you want to remove Event Media with Url: '" + mediaUrl + "' as a media from this Event?"))
-            return;
-        else {
-            const account = msalClient.getAllAccounts()[0];
-
-            const request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('DELETE');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/eventMedias/' + eventMediaId, {
-                    method: 'DELETE',
-                    headers: headers,
-                })
-                    .then(() => {
-                        onEventMediasUpdated()
-                    });
-            });
-        }
-    }
-
     return (
         !isDataLoaded ? <div>Loading</div> :
             <div>
@@ -870,30 +797,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                                 </div>
                             </Col>
 
-                        </Row>
-                        <Row className="container p-5">
-                            <div>
-                                <h2>User Media</h2>
-                                <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
-                                    <thead>
-                                        <tr>
-                                            <th>Media Type</th>
-                                            <th>Media</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {eventMedias.map(eventMedia =>
-                                            <tr key={eventMedia.id.toString()}>
-                                                <td>{eventMedia.mediaUrl}</td>
-                                                <td>{getMediaType(mediaTypeList, eventMedia.mediaTypeId)}</td>
-                                                <td>
-                                                    <Button className="action" onClick={() => removeEventMedia(eventMedia.id, eventMedia.mediaUrl)}>Remove Media</Button>
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
                         </Row>
                     </Form >
                 </div>

@@ -4,6 +4,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using TrashMob.Shared.Persistence.Interfaces;
     using static DocuSign.eSign.Client.Auth.OAuth;
 
     public class DocusignStringAuthenticator : IDocusignAuthenticator

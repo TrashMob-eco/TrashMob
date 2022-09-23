@@ -13,7 +13,8 @@ namespace TrashMob.Shared.Models
             EventsUpdated = new HashSet<Event>();
             UserNotifications = new HashSet<UserNotification>();
             NonEventUserNotifications = new HashSet<NonEventUserNotification>();
-            EventMedias = new HashSet<EventMedia>();
+            PartnersCreated = new HashSet<Partner>();
+            PartnersUpdated = new HashSet<Partner>();
         }
 
         public string NameIdentifier { get; set; }
@@ -88,45 +89,25 @@ namespace TrashMob.Shared.Models
 
         public virtual ICollection<EventPartner> EventPartnersUpdated { get; set; }
 
-        public virtual ICollection<EventMedia> EventMedias { get; set; }
-
         public virtual ICollection<EventSummary> EventSummariesCreated { get; set; }
 
         public virtual ICollection<EventSummary> EventSummariesUpdated { get; set; }
 
-        public virtual ICollection<Community> CommunitiesCreated { get; set; }
+        public virtual ICollection<PartnerDocument> PartnerDocumentsCreated { get; set; }
 
-        public virtual ICollection<Community> CommunitiesUpdated { get; set; }
+        public virtual ICollection<PartnerDocument> PartnerDocumentsUpdated { get; set; }
 
-        public virtual ICollection<CommunityRequest> CommunityRequestsCreated { get; set; }
+        public virtual ICollection<PartnerContact> PartnerContactsCreated { get; set; }
 
-        public virtual ICollection<CommunityAttachment> CommunityAttachmentsCreated { get; set; }
+        public virtual ICollection<PartnerContact> PartnerContactsUpdated { get; set; }
 
-        public virtual ICollection<CommunityAttachment> CommunityAttachmentsUpdated { get; set; }
+        public virtual ICollection<PartnerNote> PartnerNotesCreated { get; set; }
 
-        public virtual ICollection<CommunityContact> CommunityContactsCreated { get; set; }
+        public virtual ICollection<PartnerNote> PartnerNotesUpdated { get; set; }
 
-        public virtual ICollection<CommunityContact> CommunityContactsUpdated { get; set; }
+        public virtual ICollection<PartnerSocialMediaAccount> PartnerSocialMediaAccountsCreated { get; set; }
 
-        public virtual ICollection<CommunityNote> CommunityNotesCreated { get; set; }
-
-        public virtual ICollection<CommunityNote> CommunityNotesUpdated { get; set; }
-
-        public virtual ICollection<CommunityPartner> CommunityPartnersCreated { get; set; }
-
-        public virtual ICollection<CommunityPartner> CommunityPartnersUpdated { get; set; }
-
-        public virtual ICollection<CommunityUser> CommunityUsersCreated { get; set; }
-
-        public virtual ICollection<CommunityUser> CommunityUsersUpdated { get; set; }
-
-        public virtual ICollection<SocialMediaAccount> SocialMediaAccountsCreated { get; set; }
-
-        public virtual ICollection<SocialMediaAccount> SocialMediaAccountsUpdated { get; set; }
-
-        public virtual ICollection<CommunitySocialMediaAccount> CommunitySocialMediaAccountsCreated { get; set; }
-
-        public virtual ICollection<CommunitySocialMediaAccount> CommunitySocialMediaAccountsUpdated { get; set; }
+        public virtual ICollection<PartnerSocialMediaAccount> PartnerSocialMediaAccountsUpdated { get; set; }
 
         public virtual ICollection<NonEventUserNotification> NonEventUserNotificationsCreated { get; set; }
 
