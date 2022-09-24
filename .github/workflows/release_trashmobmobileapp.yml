@@ -8,6 +8,7 @@ on:
     branches:
       - Release
     paths: 
+      - '.github/**'
       - 'TrashMobMobileApp/**'
 
   workflow_dispatch:

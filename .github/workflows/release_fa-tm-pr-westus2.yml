@@ -7,7 +7,8 @@ on:
   push:
     branches:
       - release
-    paths: 
+    paths:
+      - '.github/**'
       - 'TrashMobJobs/**'
       - 'TrashMob.Shared/**'
       - 'TrashMob.Shared.Tests/**'
