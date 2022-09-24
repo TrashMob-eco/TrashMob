@@ -7,6 +7,9 @@ on:
   push:
     branches:
       - Release
+    paths: 
+      - 'TrashMobMobileApp/**'
+
   workflow_dispatch:
 
 env:

@@ -6,8 +6,13 @@ name: TrashMobDev - Website
 on:
   push:
     branches:
-      - main
+    - main
+    paths: 
+    - 'TrashMob/**'
+    - 'TrashMob.Shared/**'
+    - 'TrashMob.Shared.Tests/**'
   workflow_dispatch:
+   
 
 env:
   DOTNET_VERSION: '6.0.x'  # set this to the dotnet version to use

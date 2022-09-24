@@ -6,6 +6,8 @@ name: TrashMob Pull Request Build
 on:
   pull_request:
     branches: [ "main" ]
+    paths: 
+      - '!TrashMobMobileApp/**'
   workflow_dispatch:
 
 env:
