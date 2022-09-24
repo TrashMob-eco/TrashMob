@@ -11,7 +11,6 @@ import * as Constants from '../Models/Constants';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import AddressData from '../Models/AddressData';
 import MapControllerSinglePointNoEvents from '../MapControllerSinglePointNoEvent';
 import PartnerTypeData from '../Models/PartnerTypeData';
@@ -232,77 +231,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         validateForm();
     }
 
-    function handleCityChanged(val: string) {
-        setCity(val);
-
-        validateForm();
-    }
-
-    function selectCountry(val: string) {
-        setCountry(val);
-
-        validateForm();
-    }
-
-    function selectRegion(val: string) {
-        setRegion(val);
-
-        validateForm();
-    }
-
-    function handlePostalCodeChanged(val: string) {
-        setPostalCode(val);
-        validateForm();
-    }
-
-    function handleLatitudeChanged(val: string) {
-        try {
-            if (val) {
-                var floatVal = parseFloat(val);
-
-                if (floatVal < -90 || floatVal > 90) {
-                    setLatitudeErrors("Latitude must be => -90 and <= 90");
-                }
-                else {
-                    setLatitude(floatVal);
-                    setLatitudeErrors("");
-                }
-            }
-            else {
-                setLatitudeErrors("Latitude must be => -90 and <= 90");
-            }
-        }
-        catch {
-            setLatitudeErrors("Latitude must be a valid number.");
-        }
-
-        validateForm();
-    }
-
-    function handleLongitudeChanged(val: string) {
-        try {
-            if (val) {
-                var floatVal = parseFloat(val);
-
-                if (floatVal < -180 || floatVal > 180) {
-                    setLongitudeErrors("Longitude must be >= -180 and <= 180");
-                }
-                else {
-                    setLongitude(floatVal);
-                    setLongitudeErrors("");
-                }
-            }
-            else {
-                setLongitudeErrors("Longitude must be >= -180 and <= 180");
-            }
-        }
-        catch {
-            setLongitudeErrors("Longitude must be a valid number");
-        }
-
-        validateForm();
-    }
-
     function selectPartnerType(val: string) {
         setPartnerTypeId(parseInt(val));
     }
@@ -345,14 +273,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
 
     function renderPostalCodeToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerRequestPostalCode}</Tooltip>
-    }
-
-    function renderLatitudeToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestLatitude}</Tooltip>
-    }
-
-    function renderLongitudeToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestLongitude}</Tooltip>
     }
 
     function handleLocationChange(point: data.Position) {

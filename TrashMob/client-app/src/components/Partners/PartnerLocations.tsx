@@ -4,7 +4,6 @@ import { Button, Col, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import PartnerLocationData from '../Models/PartnerLocationData';
-import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import * as MapStore from '../../store/MapStore';
 import { data } from 'azure-maps-control';
