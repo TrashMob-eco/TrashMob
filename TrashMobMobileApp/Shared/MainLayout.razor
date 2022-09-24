@@ -1,17 +1,30 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-	<div class="sidebar">
-		<NavMenu />
-	</div>
+<MudLayout>
+    <MudAppBar>
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudContainer Style="width: 100%; text-align: center;">
+            @_pageTitle
+        </MudContainer>
+        <MudSpacer />
+        <MudMenu Color="Color.Primary">
+            <ActivatorContent>
+                <MudAvatar Color="Color.Dark">@_userInitials</MudAvatar>
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem Icon="@Icons.Material.Filled.Person" IconSize="Size.Small" OnClick="() => Navigator.NavigateTo(Routes.Profile)">Profile</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.ExitToApp" IconSize="Size.Small" OnClick="@OnSignOutAsync">Sign Out</MudMenuItem>
+            </ChildContent>
+        </MudMenu>
+    </MudAppBar>
+    <MudDrawer @bind-Open="@_drawerOpen">
+        <NavMenu/>
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
 
-	<main>
-		<div class="top-row px-4">
-			<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-		</div>
-
-		<article class="content px-4">
-			@Body
-		</article>
-	</main>
-</div>
+<MudThemeProvider Theme="@_theme" />
+<MudDialogProvider />
+<MudSnackbarProvider />

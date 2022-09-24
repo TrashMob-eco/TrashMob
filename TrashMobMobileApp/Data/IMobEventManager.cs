@@ -11,6 +11,8 @@
 
         Task<IEnumerable<MobEvent>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly, CancellationToken cancellationToken = default);
 
+        Task<IEnumerable<MobEvent>> GetEventsUserIsAttending(Guid userId, CancellationToken cancellationToken = default);
+
         Task<MobEvent> GetEventAsync(Guid eventId, CancellationToken cancellationToken = default);
 
         Task<MobEvent> UpdateEventAsync(MobEvent mobEvent, CancellationToken cancellationToken = default);

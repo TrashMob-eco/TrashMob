@@ -1,0 +1,44 @@
+﻿@page "/terms"
+
+<style>
+    .tm-service-container {
+        height: 100%;
+        padding: 20px;
+    }
+
+        .tm-service-container .tm-loader {
+            top: 50%;
+            position: fixed;
+        }
+
+        .tm-service-container .tm-service-submit-btn {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+        }
+</style>
+
+<ErrorBoundary>
+    <ChildContent>
+        <MudContainer Class="tm-service-container">
+            <MudOverlay @bind-Visible="_isLoading" Absolute>
+                <MudProgressCircular Color="Color.Default" Indeterminate Class="tm-loader" />
+            </MudOverlay>
+            <MudStack Class="tm-back-btn-container" Row AlignItems="AlignItems.Start">
+                <MudFab StartIcon="@Icons.Material.Filled.ArrowLeft" Color="Color.Primary" IconSize="Size.Small" Size="Size.Small" Label="Home" OnClick="() => Navigator.NavigateTo(Routes.Home)" />
+            </MudStack>
+            <MudStack>
+                <MudLink Style="margin: 20px" Href="https://www.trashmob.eco/termsofservice" Underline="Underline.Always">Terms of Service</MudLink>
+                <MudCheckBox T="bool" Label="I agree to the terms and service" Checked="_agreeTermsOfService" CheckedChanged="@OnTermsChange" />
+            </MudStack>
+            <MudStack Style="margin-top: 30px">
+                <MudLink Style="margin: 20px" Href="https://www.trashmob.eco/privacypolicy" Underline="Underline.Always">Privacy Policy</MudLink>
+                <MudCheckBox T="bool" Label="I agree to the privacy policy" Checked="_agreePrivacyPolicy" CheckedChanged="@OnPrivacyChange" />
+            </MudStack>
+            <MudButton Class="tm-service-submit-btn" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnSaveAsync">Save</MudButton>
+        </MudContainer>
+    </ChildContent>
+    <ErrorContent>
+        @context.Message
+    </ErrorContent>
+</ErrorBoundary>

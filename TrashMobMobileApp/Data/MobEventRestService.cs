@@ -95,13 +95,11 @@
         {
             try
             {
-                var requestUri = EventsApi + "/" + mobEvent.Id;
-
                 var content = JsonContent.Create(mobEvent, typeof(MobEvent), null, SerializerOptions);
 
                 var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
 
-                using (var response = await authorizedHttpClient.PutAsync(requestUri, content, cancellationToken))
+                using (var response = await authorizedHttpClient.PutAsync(EventsApi, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string returnContent = await response.Content.ReadAsStringAsync(cancellationToken);

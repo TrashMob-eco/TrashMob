@@ -1,0 +1,46 @@
+﻿@page "/contactus"
+@using System.ComponentModel.DataAnnotations
+
+@*TODO: move to styles sheet*@
+<style>
+    .tm-contact-container {
+        height: 100%;
+        padding: 20px;
+    }
+
+        .tm-contact-container .form-item {
+            margin-top: 10%;
+        }
+
+        .tm-contact-container .tm-back-btn-container {
+        .tm-contact-containerargin-bottom: 10px;
+        }
+
+        .tm-contact-container .tm-contact-submit-btn {
+            margin-top: 10%;
+            width: 100%;
+        }
+</style>
+
+<ErrorBoundary>
+    <ChildContent>
+        <MudContainer Class="tm-contact-container">
+            <MudOverlay @bind-Visible="_isLoading" Absolute>
+                <MudProgressCircular Color="Color.Default" Indeterminate Class="tm-loader" />
+            </MudOverlay>
+            <MudStack Class="tm-back-btn-container" Row AlignItems="AlignItems.Start">
+                <MudFab StartIcon="@Icons.Material.Filled.ArrowLeft" Color="Color.Primary" IconSize="Size.Small" Size="Size.Small" Label="Home" OnClick="() => Navigator.NavigateTo(Routes.Home)" />
+            </MudStack>
+            <MudForm @ref="_contactForm" Class="form-item" @bind-IsValid="@_success" @bind-Errors="@_errors">
+                <MudTextField FullWidth T="string" Label="Name" Required RequiredError="Name is required" Variant="Variant.Outlined" />
+                <MudTextField FullWidth T="string" Label="Email" Required RequiredError="Email is required"
+                              Validation="@(new EmailAddressAttribute() { ErrorMessage = "The email address is invalid"} )" Variant="Variant.Outlined" />
+                <MudTextField FullWidth T="string" Lines="5" Label="Message" Required RequiredError="Message is required" Variant="Variant.Outlined" />
+                <MudFab Class="tm-contact-submit-btn" Color="Color.Primary" Label="Submit" OnClick="OnSubmitAsync" />
+            </MudForm>
+        </MudContainer>
+    </ChildContent>
+    <ErrorContent>
+        @context.Message
+    </ErrorContent>
+</ErrorBoundary>
