@@ -21,49 +21,6 @@ jobs:
     runs-on: windows-latest
     environment: test
 
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION2 }}
-
-    - name: Restore
-      run: dotnet restore .\TrashMob.sln
-
-    - name: Publish Web App
-      run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobwebapp --no-restore
-
-  buildFunctionApp:
-
-    runs-on: windows-latest
-    environment: test
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION2 }}
-
-    - name: Restore
-      run: dotnet restore .\TrashMob.sln
-
-    - name: Publish Function App
-      run: dotnet publish TrashMobJobs\TrashMobJobs.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobjobsfunctionapp --no-restore
-
   buildMobileApp:
     runs-on: windows-latest
     environment: test
@@ -104,19 +61,9 @@ jobs:
       shell: bash
       run: |
         cd TrashMobMobileApp
-        echo "****"
-        ls
-        echo "****"
         mkdir android
-        echo "****"
-        ls
-        echo "****"
         echo "${{ secrets.ANDROID_KEYSTORE }}" > android/trashmobmobileapp.jks.base64
-        echo "****"
-        ls android
-        echo "****"
         base64 -d android/trashmobmobileapp.jks.base64 > android/trashmobmobileapp.decrypted.jks
-        echo "****"
     # check android SDK paths etc in installed VM : https://github.com/actions/virtual-environments#available-environments
     - name: Sign dev build
       shell: bash
