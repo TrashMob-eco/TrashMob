@@ -4,7 +4,6 @@ import { Button, Col, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import PartnerLocationData from '../Models/PartnerLocationData';
-import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import * as MapStore from '../../store/MapStore';
 import { data } from 'azure-maps-control';
@@ -40,8 +39,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     const [longitude, setLongitude] = React.useState<number>(0);
     const [createdByUserId, setCreatedByUserId] = React.useState<string>();
     const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
-    const [latitudeErrors, setLatitudeErrors] = React.useState<string>("");
-    const [longitudeErrors, setLongitudeErrors] = React.useState<string>("");
+    const [lastUpdatedDate, setLastUpdatedDate] = React.useState<Date>(new Date());
     const [primaryEmailErrors, setPrimaryEmailErrors] = React.useState<string>("");
     const [secondaryEmailErrors, setSecondaryEmailErrors] = React.useState<string>("");
     const [primaryPhoneErrors, setPrimaryPhoneErrors] = React.useState<string>("");
@@ -144,83 +142,6 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
         validateForm();
     }
 
-    function handleStreetAddressChanged(val: string) {
-        setStreetAddress(val);
-
-        validateForm();
-    }
-
-    function handleCityChanged(val: string) {
-        setCity(val);
-
-        validateForm();
-    }
-
-    function selectCountry(val: string) {
-        setCountry(val);
-
-        validateForm();
-    }
-
-    function selectRegion(val: string) {
-        setRegion(val);
-
-        validateForm();
-    }
-
-    function handlePostalCodeChanged(val: string) {
-        setPostalCode(val);
-        validateForm();
-    }
-
-    function handleLatitudeChanged(val: string) {
-        try {
-            if (val) {
-                var floatVal = parseFloat(val);
-
-                if (floatVal < -90 || floatVal > 90) {
-                    setLatitudeErrors("Latitude must be => -90 and <= 90");
-                }
-                else {
-                    setLatitude(floatVal);
-                    setLatitudeErrors("");
-                }
-            }
-            else {
-                setLatitudeErrors("Latitude must be => -90 and <= 90");
-            }
-        }
-        catch {
-            setLatitudeErrors("Latitude must be a valid number.");
-        }
-
-        validateForm();
-    }
-
-    function handleLongitudeChanged(val: string) {
-        try {
-            if (val) {
-                var floatVal = parseFloat(val);
-
-                if (floatVal < -180 || floatVal > 180) {
-                    setLongitudeErrors("Longitude must be >= -180 and <= 180");
-                }
-                else {
-                    setLongitude(floatVal);
-                    setLongitudeErrors("");
-                }
-            }
-            else {
-                setLongitudeErrors("Longitude must be >= -180 and <= 180");
-            }
-        }
-        catch {
-            setLongitudeErrors("Longitude must be a valid number");
-        }
-
-        validateForm();
-    }
-
     function handlePrimaryEmailChanged(val: string) {
         var pattern = new RegExp(Constants.RegexEmail);
 
@@ -301,14 +222,6 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
         return <Tooltip {...props}>{ToolTips.PartnerLocationPostalCode}</Tooltip>
     }
 
-    function renderLatitudeToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationLatitude}</Tooltip>
-    }
-
-    function renderLongitudeToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationLongitude}</Tooltip>
-    }
-
     function renderPrimaryEmailToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerLocationPrimaryEmail}</Tooltip>
     }
@@ -332,6 +245,15 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     function renderNotesToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerLocationNotes}</Tooltip>
     }
+
+    function renderCreatedDateToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerCreatedDate}</Tooltip>
+    }
+
+    function renderLastUpdatedDateToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerLastUpdatedDate}</Tooltip>
+    }
+
 
     function addLocation() {
         setIsEditOrAdd(true);
@@ -371,6 +293,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     setIsPartnerLocationActive(data.isActive);
                     setCreatedByUserId(data.createdByUserId);
                     setCreatedDate(data.createdDate);
+                    setLastUpdatedDate(data.lastUpdatedDate);
                     setNotes(data.notes);
                     setIsEditOrAdd(true);
                 });
@@ -387,9 +310,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
             primaryPhone === "" ||
             primaryPhoneErrors !== "" ||
             secondaryPhone === "" ||
-            secondaryPhoneErrors !== "" ||
-            latitudeErrors !== "" ||
-            longitudeErrors !== "") {
+            secondaryPhoneErrors !== "") {
             setIsSaveEnabled(false);
         }
         else {
@@ -592,7 +513,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                                 <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
                                     <Form.Label className="control-label" htmlFor="StreetAddress">Street Address:</Form.Label>
                                 </OverlayTrigger>
-                                <Form.Control type="text" name="streetAddress" value={streetAddress} onChange={(val) => handleStreetAddressChanged(val.target.value)} maxLength={parseInt('256')} />
+                                <span>{streetAddress}</span>
                             </Form.Group>
                         </Col>
                         <Col>
@@ -600,7 +521,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                                 <OverlayTrigger placement="top" overlay={renderCityToolTip}>
                                     <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
                                 </OverlayTrigger >
-                                <Form.Control type="text" name="city" value={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
+                                <span>{city}</span>
                             </Form.Group>
                         </Col>
                         <Col>
@@ -608,7 +529,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                                 <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
                                     <Form.Label className="control-label" htmlFor="PostalCode">Postal Code:</Form.Label>
                                 </OverlayTrigger >
-                                <Form.Control type="text" name="postalCode" value={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
+                                <span>{postalCode}</span>
                             </Form.Group>
                         </Col>
                     </Form.Row>
@@ -618,9 +539,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                                 <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
                                     <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
                                 </OverlayTrigger >
-                                <div>
-                                    <CountryDropdown name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
-                                </div>
+                                <span>{country}</span>
                             </Form.Group>
                         </Col>
                         <Col>
@@ -628,32 +547,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                                 <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
                                     <Form.Label className="control-label" htmlFor="Region">Region:</Form.Label>
                                 </OverlayTrigger >
-                                <div>
-                                    <RegionDropdown
-                                        country={country ?? ""}
-                                        value={region ?? ""}
-                                        onChange={(val) => selectRegion(val)} />
-                                </div>
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderLatitudeToolTip}>
-                                    <Form.Label className="control-label" htmlFor="Latitude">Latitude:</Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control type="text" name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
-                                <span style={{ color: "red" }}>{latitudeErrors}</span>
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderLongitudeToolTip}>
-                                    <Form.Label className="control-label" htmlFor="Longitude">Longitude:</Form.Label>
-                                </OverlayTrigger >
-                                <Form.Control type="text" name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
-                                <span style={{ color: "red" }}>{longitudeErrors}</span>
+                                <span>{region}</span>
                             </Form.Group>
                         </Col>
                     </Form.Row>
@@ -674,6 +568,25 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                             </>
                         </AzureMapsProvider>
                     </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
+                                    <Form.Label className="control-label" htmlFor="createdDate">Created Date:</Form.Label>
+                                </OverlayTrigger>
+                                <span>{createdDate.toString()}</span>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
+                                    <Form.Label className="control-label" htmlFor="lastUpdatedDate">Last Updated Date:</Form.Label>
+                                </OverlayTrigger>
+                                <span>{lastUpdatedDate.toString()}</span>
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+
                 </Form>
             </div>
         );

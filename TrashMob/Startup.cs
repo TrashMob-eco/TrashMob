@@ -88,6 +88,7 @@ namespace TrashMob
             services.AddScoped<IKeyedManager<PartnerNote>, PartnerNoteManager>();
             services.AddScoped<IKeyedManager<PartnerRequest>, PartnerRequestManager>();
             services.AddScoped<IKeyedManager<PartnerSocialMediaAccount>, PartnerSocialMediaAccountManager>();
+            services.AddScoped<IBaseManager<PartnerUser>, PartnerUserManager>();
             services.AddScoped<IKeyedManager<ContactRequest>, ContactRequestManager>();
             services.AddScoped<ILookupManager<SocialMediaAccountType>, SocialMediaAccountTypeManager>();
             services.AddScoped<ILookupManager<PartnerType>, PartnerTypeManager>();

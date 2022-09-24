@@ -296,12 +296,20 @@ export const App: FC = () => {
                                     <MyDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
                             </Route>
-                            <Route exact path="/partnerrequest">
+                            <Route exact path="/becomeapartner">
                                 <MsalAuthenticationTemplate
                                     interactionType={InteractionType.Redirect}
                                     errorComponent={ErrorComponent}
                                     loadingComponent={LoadingComponent}>
-                                    <PartnerRequest currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                    <PartnerRequest currentUser={currentUser} isUserLoaded={isUserLoaded} mode="become" />
+                                </MsalAuthenticationTemplate >
+                            </Route>
+                            <Route exact path="/requestapartner">
+                                <MsalAuthenticationTemplate
+                                    interactionType={InteractionType.Redirect}
+                                    errorComponent={ErrorComponent}
+                                    loadingComponent={LoadingComponent}>
+                                    <PartnerRequest currentUser={currentUser} isUserLoaded={isUserLoaded} mode="send" />
                                 </MsalAuthenticationTemplate >
                             </Route>
                             <Route exact path="/siteadmin">

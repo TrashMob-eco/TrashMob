@@ -11,12 +11,12 @@ import * as Constants from '../Models/Constants';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import AddressData from '../Models/AddressData';
 import MapControllerSinglePointNoEvents from '../MapControllerSinglePointNoEvent';
 import PartnerTypeData from '../Models/PartnerTypeData';
 
 interface PartnerRequestProps extends RouteComponentProps<any> {
+    mode: string;
     isUserLoaded: boolean;
     currentUser: UserData;
 }
@@ -36,8 +36,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const [notesErrors, setNotesErrors] = React.useState<string>("");
     const [latitude, setLatitude] = React.useState<number>(0);
     const [longitude, setLongitude] = React.useState<number>(0);
-    const [latitudeErrors, setLatitudeErrors] = React.useState<string>("");
-    const [longitudeErrors, setLongitudeErrors] = React.useState<string>("");
     const [city, setCity] = React.useState<string>();
     const [country, setCountry] = React.useState<string>("");
     const [region, setRegion] = React.useState<string>();
@@ -47,8 +45,14 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
     const [isPartnerTypeDataLoaded, setIsPartnerTypeDataLoaded] = React.useState<boolean>(false);
+    const [title, setTitle] = React.useState<string>("Apply to become a partner");
+
 
     React.useEffect(() => {
+
+        if (props.mode && props.mode === "send") {
+            setTitle("Send invite to join TrashMob as a partner")
+        }
 
         if (props.isUserLoaded) {
             const account = msalClient.getAllAccounts()[0];
@@ -87,16 +91,14 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         } else {
             console.log("Not Available");
         }
-    }, [props.currentUser, props.isUserLoaded]);
+    }, [props.currentUser, props.isUserLoaded, props.mode]);
 
     function validateForm() {
         if (nameErrors !== "" ||
             notesErrors !== "" ||
             emailErrors !== "" ||
             websiteErrors !== "" ||
-            phoneErrors !== "" ||
-            latitudeErrors !== "" ||
-            longitudeErrors !== "") {
+            phoneErrors !== "") {
             setIsSaveEnabled(false);
         }
         else {
@@ -225,77 +227,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         validateForm();
     }
 
-    function handleCityChanged(val: string) {
-        setCity(val);
-
-        validateForm();
-    }
-
-    function selectCountry(val: string) {
-        setCountry(val);
-
-        validateForm();
-    }
-
-    function selectRegion(val: string) {
-        setRegion(val);
-
-        validateForm();
-    }
-
-    function handlePostalCodeChanged(val: string) {
-        setPostalCode(val);
-        validateForm();
-    }
-
-    function handleLatitudeChanged(val: string) {
-        try {
-            if (val) {
-                var floatVal = parseFloat(val);
-
-                if (floatVal < -90 || floatVal > 90) {
-                    setLatitudeErrors("Latitude must be => -90 and <= 90");
-                }
-                else {
-                    setLatitude(floatVal);
-                    setLatitudeErrors("");
-                }
-            }
-            else {
-                setLatitudeErrors("Latitude must be => -90 and <= 90");
-            }
-        }
-        catch {
-            setLatitudeErrors("Latitude must be a valid number.");
-        }
-
-        validateForm();
-    }
-
-    function handleLongitudeChanged(val: string) {
-        try {
-            if (val) {
-                var floatVal = parseFloat(val);
-
-                if (floatVal < -180 || floatVal > 180) {
-                    setLongitudeErrors("Longitude must be >= -180 and <= 180");
-                }
-                else {
-                    setLongitude(floatVal);
-                    setLongitudeErrors("");
-                }
-            }
-            else {
-                setLongitudeErrors("Longitude must be >= -180 and <= 180");
-            }
-        }
-        catch {
-            setLongitudeErrors("Longitude must be a valid number");
-        }
-
-        validateForm();
-    }
-
     function selectPartnerType(val: string) {
         setPartnerTypeId(parseInt(val));
     }
@@ -340,14 +271,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.PartnerRequestPostalCode}</Tooltip>
     }
 
-    function renderLatitudeToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestLatitude}</Tooltip>
-    }
-
-    function renderLongitudeToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestLongitude}</Tooltip>
-    }
-
     function handleLocationChange(point: data.Position) {
         // In an Azure Map point, the longitude is the first position, and latitude is second
         setLatitude(point[1]);
@@ -377,7 +300,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
 
         return (
             <div className="container-fluid card">
-                <h1>Become a Partner!</h1>
+                <h1>{title}</h1>
                 <Form onSubmit={handleSave} >
                     <Form.Row>
                         <Col>
@@ -414,22 +337,22 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                             </Form.Group >
                         </Col>
                         <Col>
-                            <Form.Group className="required">
+                            <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderWebsiteToolTip}>
                                     <Form.Label className="control-label">Website:</Form.Label>
                                 </OverlayTrigger>
-                                <Form.Control type="text" defaultValue={website} maxLength={parseInt('64')} onChange={(val) => handleWebsiteChanged(val.target.value)} required />
+                                <Form.Control type="text" defaultValue={website} maxLength={parseInt('1024')} onChange={(val) => handleWebsiteChanged(val.target.value)} />
                                 <span style={{ color: "red" }}>{websiteErrors}</span>
                             </Form.Group >
                         </Col>
                     </Form.Row>
                     <Form.Row>
                         <Col>
-                            <Form.Group className="required">
+                            <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderPhoneToolTip}>
                                     <Form.Label className="control-label">Phone:</Form.Label>
                                 </OverlayTrigger>
-                                <Form.Control type="text" defaultValue={phone} maxLength={parseInt('64')} onChange={(val) => handlePhoneChanged(val.target.value)} required />
+                                <Form.Control type="text" defaultValue={phone} maxLength={parseInt('64')} onChange={(val) => handlePhoneChanged(val.target.value)} />
                                 <span style={{ color: "red" }}>{phoneErrors}</span>
                             </Form.Group >
                         </Col>
@@ -447,15 +370,15 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                 <OverlayTrigger placement="top" overlay={renderCityToolTip}>
                                     <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
                                 </OverlayTrigger >
-                                <Form.Control type="text" name="city" value={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
+                                <span>{city}</span>
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                    <Form.Label className="control-label" htmlFor="PostalCode">Postal Code:</Form.Label>
+                                    <Form.Label className="control-label" htmlFor="PostalCode">Postal Code</Form.Label>
                                 </OverlayTrigger >
-                                <Form.Control type="text" name="postalCode" value={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
+                                <span>{postalCode}</span>
                             </Form.Group>
                         </Col>
                     </Form.Row>
@@ -466,7 +389,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                     <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
                                 </OverlayTrigger >
                                 <div>
-                                    <CountryDropdown name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
+                                    <span>{country}</span>
                                 </div>
                             </Form.Group>
                         </Col>
@@ -475,32 +398,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                 <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
                                     <Form.Label className="control-label" htmlFor="Region">Region:</Form.Label>
                                 </OverlayTrigger >
-                                <div>
-                                    <RegionDropdown
-                                        country={country ?? ""}
-                                        value={region ?? ""}
-                                        onChange={(val) => selectRegion(val)} />
-                                </div>
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderLatitudeToolTip}>
-                                    <Form.Label className="control-label" htmlFor="Latitude">Latitude:</Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control type="text" name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
-                                <span style={{ color: "red" }}>{latitudeErrors}</span>
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderLongitudeToolTip}>
-                                    <Form.Label className="control-label" htmlFor="Longitude">Longitude:</Form.Label>
-                                </OverlayTrigger >
-                                <Form.Control type="text" name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
-                                <span style={{ color: "red" }}>{longitudeErrors}</span>
+                                <span>{region}</span>                                
                             </Form.Group>
                         </Col>
                     </Form.Row>
