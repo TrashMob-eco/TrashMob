@@ -36,8 +36,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const [notesErrors, setNotesErrors] = React.useState<string>("");
     const [latitude, setLatitude] = React.useState<number>(0);
     const [longitude, setLongitude] = React.useState<number>(0);
-    const [latitudeErrors, setLatitudeErrors] = React.useState<string>("");
-    const [longitudeErrors, setLongitudeErrors] = React.useState<string>("");
     const [city, setCity] = React.useState<string>();
     const [country, setCountry] = React.useState<string>("");
     const [region, setRegion] = React.useState<string>();
@@ -100,9 +98,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
             notesErrors !== "" ||
             emailErrors !== "" ||
             websiteErrors !== "" ||
-            phoneErrors !== "" ||
-            latitudeErrors !== "" ||
-            longitudeErrors !== "") {
+            phoneErrors !== "") {
             setIsSaveEnabled(false);
         }
         else {
