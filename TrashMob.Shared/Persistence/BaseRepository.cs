@@ -4,9 +4,9 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
     using System.Linq.Expressions;
     using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Models;
 
     /// <summary>
     /// Generic Implementation to save on boilerplate code

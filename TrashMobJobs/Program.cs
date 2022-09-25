@@ -8,8 +8,6 @@ namespace TrashMobJobs
     using TrashMob.Shared.Engine;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Configuration;
-    using TrashMob.Shared.Models;
-    using TrashMob.Shared.Managers;
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Shared.Persistence.Events;
 

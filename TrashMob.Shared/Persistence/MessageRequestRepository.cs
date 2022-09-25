@@ -2,7 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
+    using TrashMob.Models;
     using TrashMob.Shared.Persistence.Interfaces;
 
     public class MessageRequestRepository : IMessageRequestRepository

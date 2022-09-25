@@ -9,7 +9,7 @@
     using System.Net;
     using System.Text.Json;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
+    using TrashMob.Models;
     using TrashMob.Shared.Persistence.Interfaces;
 
     public class MapRepository : IMapRepository

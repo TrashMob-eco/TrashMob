@@ -3,7 +3,7 @@
     using System.Threading;
     using System;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
+    using TrashMob.Models;
 
     public interface IKeyedManager<T> : IBaseManager<T> where T : KeyedModel
     {

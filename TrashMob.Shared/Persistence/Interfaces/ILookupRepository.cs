@@ -5,7 +5,7 @@
     using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
+    using TrashMob.Models;
 
     /// <summary>
     /// Generic ILookupRepository to cut down on boilerplate code

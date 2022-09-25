@@ -2,7 +2,7 @@
 namespace TrashMob.Common
 {
     using System.Collections.Generic;
-    using TrashMob.Shared.Models;
+    using TrashMob.Models;
 
     public class EventComparer : IEqualityComparer<Event>
     {

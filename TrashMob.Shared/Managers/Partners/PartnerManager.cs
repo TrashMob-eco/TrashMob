@@ -1,9 +1,9 @@
 ﻿namespace TrashMob.Shared.Managers.Partners
 {
     using System.Threading.Tasks;
+    using TrashMob.Models;
     using TrashMob.Shared.Extensions;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence.Interfaces;
 
     public class PartnerManager : KeyedManager<Partner>, IKeyedManager<Partner>

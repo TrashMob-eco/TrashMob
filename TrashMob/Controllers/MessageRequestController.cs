@@ -5,9 +5,9 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using System.Threading.Tasks;
+    using TrashMob.Models;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/messagerequest")]

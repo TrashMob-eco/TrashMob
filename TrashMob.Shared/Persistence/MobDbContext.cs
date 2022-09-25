@@ -3,9 +3,9 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using System;
+    using TrashMob.Models;
     using TrashMob.Shared;
     using TrashMob.Shared.Engine;
-    using TrashMob.Shared.Models;
 
     public class MobDbContext : DbContext
     {
@@ -22,7 +22,7 @@
 
         public virtual DbSet<EventAttendee> EventAttendees { get; set; }
 
-        public virtual DbSet<Models.Event> Events { get; set; }
+        public virtual DbSet<Event> Events { get; set; }
 
         public virtual DbSet<EventPartnerStatus> EventPartnerStatuses { get; set; }
 

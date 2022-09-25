@@ -5,7 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
-    using TrashMob.Shared.Models;
+    using TrashMob.Models;
     using TrashMob.Shared.Persistence.Interfaces;
 
     public class EventTypeRepository : IEventTypeRepository

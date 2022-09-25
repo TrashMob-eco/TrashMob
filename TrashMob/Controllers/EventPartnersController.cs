@@ -11,10 +11,10 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
+    using TrashMob.Models;
     using TrashMob.Poco;
     using TrashMob.Shared;
     using TrashMob.Shared.Engine;
-    using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/eventpartners")]

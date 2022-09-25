@@ -6,8 +6,8 @@
     using Microsoft.Identity.Web.Resource;
     using System;
     using System.Threading.Tasks;
+    using TrashMob.Models;
     using TrashMob.Shared;
-    using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/admin")]

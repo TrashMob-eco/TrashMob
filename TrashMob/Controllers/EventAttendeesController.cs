@@ -10,11 +10,11 @@ namespace TrashMob.Controllers
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Shared;
-    using TrashMob.Shared.Models;
     using TrashMob.Poco;
     using System.Threading;
     using Microsoft.ApplicationInsights;
     using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Models;
 
     [Route("api/eventattendees")]
     public class EventAttendeesController : BaseController
