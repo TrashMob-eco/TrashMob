@@ -1,7 +1,7 @@
 ﻿namespace TrashMob.Shared.Extensions
 {
     using System;
-    using TrashMob.Shared.Models;
+    using TrashMob.Models;
 
     public static class PartnerRequestExtensions
     {

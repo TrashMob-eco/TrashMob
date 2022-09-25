@@ -5,7 +5,7 @@
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
+    using TrashMob.Models;
     using TrashMob.Shared.Persistence.Interfaces;
 
     public class PartnerRepository : IPartnerRepository

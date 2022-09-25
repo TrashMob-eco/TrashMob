@@ -4,7 +4,7 @@
     using Microsoft.AspNetCore.Mvc;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
+    using TrashMob.Models;
     using TrashMob.Shared.Persistence.Interfaces;
 
     [ApiController]

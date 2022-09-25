@@ -7,8 +7,8 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence.Interfaces;
 
     [Authorize]

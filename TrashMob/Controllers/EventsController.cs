@@ -11,13 +11,14 @@ namespace TrashMob.Controllers
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Common;
     using TrashMob.Shared.Extensions;
-    using TrashMob.Shared.Models;
     using TrashMob.Shared;
     using System.Collections.Generic;
     using TrashMob.Shared.Engine;
     using TrashMob.Poco;
     using Microsoft.ApplicationInsights;
     using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Models;
+    using TrashMob.Models.Extensions;
 
     [Route("api/events")]
     public class EventsController : BaseController

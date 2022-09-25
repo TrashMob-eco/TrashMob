@@ -4,8 +4,8 @@
     using System.Threading;
     using System;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
     using System.Collections.Generic;
+    using TrashMob.Models;
 
     public interface ILookupManager<T> where T : LookupModel
     {

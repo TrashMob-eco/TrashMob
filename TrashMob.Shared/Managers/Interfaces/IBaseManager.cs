@@ -6,7 +6,7 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
+    using TrashMob.Models;
 
     public interface IBaseManager<T> where T : BaseModel
     {

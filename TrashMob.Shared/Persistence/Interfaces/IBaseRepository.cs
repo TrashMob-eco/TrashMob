@@ -4,7 +4,7 @@
     using System.Linq;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
+    using TrashMob.Models;
 
     /// <summary>
     /// Generic IRepository to cut down on boilerplate code

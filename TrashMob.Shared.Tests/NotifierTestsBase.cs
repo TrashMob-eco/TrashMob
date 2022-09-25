@@ -5,8 +5,8 @@ namespace TrashMob.Shared.Tests
     using Moq;
     using System;
     using System.Collections.Generic;
+    using TrashMob.Models;
     using TrashMob.Shared.Engine;
-    using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence.Interfaces;
 
     public abstract class NotifierTestsBase

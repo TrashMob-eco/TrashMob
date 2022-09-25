@@ -3,9 +3,9 @@
     using Microsoft.EntityFrameworkCore;
     using System;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
     using System.Threading;
     using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Models;
 
     /// <summary>
     /// Generic Implementation to save on boilerplate code

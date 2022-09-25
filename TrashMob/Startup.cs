@@ -14,11 +14,11 @@ namespace TrashMob
     using Microsoft.OpenApi.Models;
     using System;
     using System.Text.Json.Serialization;
+    using TrashMob.Models;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Managers.Partners;
-    using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence;
     using TrashMob.Shared.Persistence.Events;
     using TrashMob.Shared.Persistence.Interfaces;

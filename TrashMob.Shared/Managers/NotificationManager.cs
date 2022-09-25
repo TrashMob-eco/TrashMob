@@ -2,7 +2,6 @@
 namespace TrashMob.Shared.Managers
 {
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
     using Microsoft.Azure.NotificationHubs;
     using System.Collections.Generic;
     using Microsoft.Extensions.Configuration;
@@ -10,6 +9,7 @@ namespace TrashMob.Shared.Managers
     using System;
     using System.Text.Json;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Models;
 
     public class NotificationManager : INotificationManager
     {

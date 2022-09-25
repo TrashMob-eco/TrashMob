@@ -10,6 +10,7 @@ on:
     paths:
       - '.github/**'
       - 'TrashMob/**'
+      - 'TrashMob.Models/**'
       - 'TrashMob.Shared/**'
       - 'TrashMob.Shared.Tests/**'
   workflow_dispatch:

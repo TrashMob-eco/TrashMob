@@ -8,7 +8,7 @@
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
+    using TrashMob.Models;
     using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/partners")]

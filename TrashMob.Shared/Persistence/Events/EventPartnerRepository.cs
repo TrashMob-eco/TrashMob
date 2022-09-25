@@ -5,10 +5,10 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
     using System.Data.SqlClient;
     using System.Threading;
     using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Models;
 
     public class EventPartnerRepository : IEventPartnerRepository
     {

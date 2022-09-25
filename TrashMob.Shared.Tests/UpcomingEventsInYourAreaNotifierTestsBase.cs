@@ -5,8 +5,8 @@ namespace TrashMob.Shared.Tests
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using TrashMob.Models;
     using TrashMob.Shared.Engine;
-    using TrashMob.Shared.Models;
     using Xunit;
 
     public abstract class UpcomingEventsInYourAreaNotifierTestsBase : NotifierTestsBase

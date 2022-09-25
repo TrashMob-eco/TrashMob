@@ -7,7 +7,7 @@ namespace TrashMob.Shared.Engine
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
+    using TrashMob.Models;
     using TrashMob.Shared.Persistence.Interfaces;
 
     public abstract class UpcomingEventsInYourAreaBaseNotifier : NotificationEngineBase, INotificationEngine
