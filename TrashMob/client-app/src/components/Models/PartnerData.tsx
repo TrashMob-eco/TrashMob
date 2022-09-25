@@ -11,6 +11,8 @@ class PartnerData {
     postalCode: string = "";
     latitude: number = 0;
     longitude: number = 0;
+    publicNotes: string = "";
+    privateNotes: string = "";
     partnerStatusId: number = 0;
     partnerTypeId: number = 0;
     createdByUserId: string = "";

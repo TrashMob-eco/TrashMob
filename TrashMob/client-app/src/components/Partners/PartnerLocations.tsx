@@ -23,8 +23,9 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     const [partnerLocationId, setPartnerLocationId] = React.useState<string>(Guid.createEmpty().toString());
     const [locationName, setLocationName] = React.useState<string>("");
     const [locationNameErrors, setLocationNameErrors] = React.useState<string>("");
-    const [notes, setNotes] = React.useState<string>();
-    const [notesErrors, setNotesErrors] = React.useState<string>();
+    const [publicNotes, setPublicNotes] = React.useState<string>();
+    const [publicNotesErrors, setPublicNotesErrors] = React.useState<string>();
+    const [privateNotes, setPrivateNotes] = React.useState<string>();
     const [isPartnerLocationActive, setIsPartnerLocationActive] = React.useState<boolean>(true);
     const [streetAddress, setStreetAddress] = React.useState<string>();
     const [city, setCity] = React.useState<string>();
@@ -130,15 +131,20 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
         validateForm();
     }
 
-    function handleNotesChanged(notes: string) {
+    function handlePublicNotesChanged(notes: string) {
         if (notes === "") {
-            setNotesErrors("Notes cannot be empty.");
+            setPublicNotesErrors("Notes cannot be empty.");
         }
         else {
-            setNotes(notes);
-            setNotesErrors("");
+            setPublicNotes(notes);
+            setPublicNotesErrors("");
         }
 
+        validateForm();
+    }
+
+    function handlePrivateNotesChanged(notes: string) {
+        setPrivateNotes(notes);
         validateForm();
     }
 
@@ -242,8 +248,12 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
         return <Tooltip {...props}>{ToolTips.PartnerLocationIsPartnerLocationActive}</Tooltip>
     }
 
-    function renderNotesToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationNotes}</Tooltip>
+    function renderPublicNotesToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerLocationPublicNotes}</Tooltip>
+    }
+
+    function renderPrivateNotesToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerLocationPrivateNotes}</Tooltip>
     }
 
     function renderCreatedDateToolTip(props: any) {
@@ -253,7 +263,6 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     function renderLastUpdatedDateToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerLastUpdatedDate}</Tooltip>
     }
-
 
     function addLocation() {
         setIsEditOrAdd(true);
@@ -294,15 +303,15 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     setCreatedByUserId(data.createdByUserId);
                     setCreatedDate(data.createdDate);
                     setLastUpdatedDate(data.lastUpdatedDate);
-                    setNotes(data.notes);
+                    setPublicNotes(data.publicNotes);
                     setIsEditOrAdd(true);
                 });
         });
     }
 
     function validateForm() {
-        if (notes === "" ||
-            notesErrors !== "" ||
+        if (publicNotes === "" ||
+            publicNotesErrors !== "" ||
             primaryEmail === "" ||
             primaryEmailErrors !== "" ||
             secondaryEmail === "" ||
@@ -342,7 +351,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
         partnerLocationData.primaryPhone = primaryPhone ?? "";
         partnerLocationData.secondaryPhone = secondaryPhone ?? "";
         partnerLocationData.isActive = isPartnerLocationActive;
-        partnerLocationData.notes = notes ?? "";
+        partnerLocationData.publicNotes = publicNotes ?? "";
+        partnerLocationData.privateNotes = privateNotes ?? "";
         partnerLocationData.createdByUserId = createdByUserId ?? props.currentUser.id;
         partnerLocationData.createdDate = createdDate;
         partnerLocationData.lastUpdatedByUserId = props.currentUser.id;
@@ -552,11 +562,17 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                         </Col>
                     </Form.Row>
                     <Form.Group className="required">
-                        <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                            <Form.Label className="control-label">Notes:</Form.Label>
+                        <OverlayTrigger placement="top" overlay={renderPublicNotesToolTip}>
+                            <Form.Label className="control-label">Public Notes:</Form.Label>
                         </OverlayTrigger>
-                        <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} required />
-                        <span style={{ color: "red" }}>{notesErrors}</span>
+                        <Form.Control as="textarea" defaultValue={publicNotes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handlePublicNotesChanged(val.target.value)} required />
+                        <span style={{ color: "red" }}>{publicNotesErrors}</span>
+                    </Form.Group >
+                    <Form.Group>
+                        <OverlayTrigger placement="top" overlay={renderPrivateNotesToolTip}>
+                            <Form.Label className="control-label">Private Notes:</Form.Label>
+                        </OverlayTrigger>
+                        <Form.Control as="textarea" defaultValue={privateNotes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handlePrivateNotesChanged(val.target.value)} />
                     </Form.Group >
                     <Form.Row>
                         <Form.Label>Click on the map to set the location for your Partner. The location fields above will be automatically populated.</Form.Label>

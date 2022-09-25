@@ -4,9 +4,9 @@
     using TrashMob.Shared.Models;
     using TrashMob.Shared.Persistence.Interfaces;
 
-    public class PartnerNoteManager : KeyedManager<PartnerNote>, IKeyedManager<PartnerNote>
+    public class ServiceTypeManager : LookupManager<ServiceType>, ILookupManager<ServiceType>
     {
-        public PartnerNoteManager(IKeyedRepository<PartnerNote> repository) : base(repository)
+        public ServiceTypeManager(ILookupRepository<ServiceType> repository) : base(repository)
         {
         }
     }

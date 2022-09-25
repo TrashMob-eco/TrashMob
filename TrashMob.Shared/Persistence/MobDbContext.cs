@@ -42,7 +42,7 @@
 
         public virtual DbSet<PartnerLocation> PartnerLocations { get; set; }
 
-        public virtual DbSet<PartnerNote> PartnerNotes { get; set; }
+        public virtual DbSet<PartnerLocationService> PartnerLocationServices { get; set; }
 
         public virtual DbSet<PartnerRequest> PartnerRequests { get; set; }
 
@@ -52,9 +52,15 @@
 
         public virtual DbSet<Partner> Partners { get; set; }
 
+        public virtual DbSet<PartnerService> PartnerServices { get; set; }
+
         public virtual DbSet<PartnerStatus> PartnerStatus { get; set; }
 
         public virtual DbSet<PartnerUser> PartnerUsers { get; set; }
+
+        public virtual DbSet<PartnerType> PartnerTypes { get; set; }
+
+        public virtual DbSet<ServiceType> ServiceTypes { get; set; }
 
         public virtual DbSet<SocialMediaAccountType> SocialMediaAccountTypes { get; set; }
 
@@ -170,36 +176,6 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PartnerContacts_User_LastUpdatedBy");
-            });
-
-            modelBuilder.Entity<PartnerNote>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Notes)
-                  .HasMaxLength(2000);
-
-                entity.Property(e => e.CreatedByUserId);
-
-                entity.Property(e => e.LastUpdatedByUserId);
-
-                entity.HasOne(d => d.Partner)
-                    .WithMany(d => d.PartnerNotes)
-                    .HasForeignKey(d => d.PartnerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PartnerNotes_Partner");
-
-                entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.PartnerNotesCreated)
-                    .HasForeignKey(d => d.CreatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PartnerNotes_User_CreatedBy");
-
-                entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.PartnerNotesUpdated)
-                    .HasForeignKey(d => d.LastUpdatedByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PartnerNotes_User_LastUpdatedBy");
             });
 
             modelBuilder.Entity<PartnerSocialMediaAccount>(entity =>
@@ -507,6 +483,10 @@
 
                 entity.Property(e => e.PartnerTypeId).HasDefaultValue(2);
 
+                entity.Property(e => e.PublicNotes).HasMaxLength(2048);
+
+                entity.Property(e => e.PrivateNotes).HasMaxLength(2048);
+
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.PartnersCreated)
                     .HasForeignKey(d => d.CreatedByUserId)
@@ -549,7 +529,9 @@
 
                 entity.Property(e => e.SecondaryPhone).HasMaxLength(32);
 
-                entity.Property(e => e.Notes).HasMaxLength(2048);
+                entity.Property(e => e.PublicNotes).HasMaxLength(2048);
+
+                entity.Property(e => e.PrivateNotes).HasMaxLength(2048);
 
                 entity.Property(e => e.Region)
                     .IsRequired()
@@ -588,6 +570,41 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PartnerLocations_LastUpdatedByUser_Id");
+            });
+
+            modelBuilder.Entity<PartnerLocationService>(entity =>
+            {
+                entity.HasKey(e => new { e.PartnerLocationId, e.ServiceTypeId, });
+
+                entity.Property(e => e.ServiceTypeId)
+                    .IsRequired();
+
+                entity.Property(e => e.PartnerLocationId)
+                    .IsRequired();
+
+                entity.HasOne(d => d.ServiceType)
+                    .WithMany()
+                    .HasForeignKey(d => d.ServiceTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerLocationService_ServiceTypes");
+
+                entity.HasOne(d => d.PartnerLocation)
+                    .WithMany()
+                    .HasForeignKey(d => d.PartnerLocationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnersLocationService_PartnerLocations");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.PartnerLocationServicesCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnersLocationServices_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.PartnerLocationServicesUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerLocationServices_User_LastUpdatedBy");
             });
 
             modelBuilder.Entity<PartnerRequest>(entity =>
@@ -655,6 +672,41 @@
                     new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Denied, Name = "Denied", Description = "Request has been approved by the Site Administrator", DisplayOrder = 3, IsActive = true });
             });
 
+            modelBuilder.Entity<PartnerService>(entity =>
+            {
+                entity.HasKey(e => new { e.PartnerId, e.ServiceTypeId, });
+
+                entity.Property(e => e.ServiceTypeId)
+                    .IsRequired();
+
+                entity.Property(e => e.PartnerId)
+                    .IsRequired();
+
+                entity.HasOne(d => d.ServiceType)
+                    .WithMany()
+                    .HasForeignKey(d => d.ServiceTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerServices_ServiceTypes");
+
+                entity.HasOne(d => d.Partner)
+                    .WithMany()
+                    .HasForeignKey(d => d.PartnerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerServices_Partners");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.PartnerServicesCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerServices_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.PartnerServicesUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerServices_User_LastUpdatedBy");
+            });
+
             modelBuilder.Entity<PartnerStatus>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -715,6 +767,23 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PartnerUsers_LastUpdatedByUser_Id");
+            });
+
+            modelBuilder.Entity<ServiceType>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Description);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasData(
+                    new ServiceType { Id = (int)ServiceTypeEnum.Hauling, Name = "Hauling", Description = "Partner will haul litter away", DisplayOrder = 1, IsActive = true },
+                    new ServiceType { Id = (int)ServiceTypeEnum.DisposalLocation, Name = "Disposal Location", Description = "Partner will dispose of litter", DisplayOrder = 2, IsActive = true },
+                    new ServiceType { Id = (int)ServiceTypeEnum.StartupKits, Name = "Startup Kits", Description = "Partner distributes starter kits", DisplayOrder = 3, IsActive = true },
+                    new ServiceType { Id = (int)ServiceTypeEnum.Supplies, Name = "Supplies", Description = "Partner distributes supplies", DisplayOrder = 4, IsActive = true });
             });
 
             modelBuilder.Entity<SocialMediaAccountType>(entity =>

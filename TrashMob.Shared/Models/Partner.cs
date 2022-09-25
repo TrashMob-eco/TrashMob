@@ -10,7 +10,6 @@ namespace TrashMob.Shared.Models
         {
             PartnerContacts = new HashSet<PartnerContact>();
             PartnerDocuments = new HashSet<PartnerDocument>();
-            PartnerNotes = new HashSet<PartnerNote>();
             PartnerSocialMediaAccounts = new HashSet<PartnerSocialMediaAccount>();
             PartnerLocations = new HashSet<PartnerLocation>();
             PartnerUsers = new HashSet<PartnerUser>();
@@ -38,13 +37,15 @@ namespace TrashMob.Shared.Models
 
         public double? Longitude { get; set; }
 
+        public string PublicNotes { get; set; }
+
+        public string PrivateNotes { get; set; }
+
         public virtual ICollection<PartnerContact> PartnerContacts { get; set; }
 
         public virtual ICollection<PartnerDocument> PartnerDocuments { get; set; }
 
         public virtual ICollection<PartnerLocation> PartnerLocations { get; set; }
-
-        public virtual ICollection<PartnerNote> PartnerNotes { get; set; }
 
         public virtual ICollection<PartnerSocialMediaAccount> PartnerSocialMediaAccounts { get; set; }
 

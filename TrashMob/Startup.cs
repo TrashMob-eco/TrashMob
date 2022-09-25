@@ -74,24 +74,24 @@ namespace TrashMob
             services.AddScoped<IKeyedRepository<Partner>, KeyedRepository<Partner>>();
             services.AddScoped<IKeyedRepository<PartnerContact>, KeyedRepository<PartnerContact>>();
             services.AddScoped<IKeyedRepository<PartnerDocument>, KeyedRepository<PartnerDocument>>();
-            services.AddScoped<IKeyedRepository<PartnerNote>, KeyedRepository<PartnerNote>>();
             services.AddScoped<IKeyedRepository<PartnerRequest>, KeyedRepository<PartnerRequest>>();
             services.AddScoped<IKeyedRepository<PartnerSocialMediaAccount>, KeyedRepository<PartnerSocialMediaAccount>>();
             services.AddScoped<ILookupRepository<PartnerType>, LookupRepository<PartnerType>>();
             services.AddScoped<IBaseRepository<PartnerUser>, BaseRepository<PartnerUser>>();
+            services.AddScoped<ILookupRepository<ServiceType>, LookupRepository<ServiceType>>();
             services.AddScoped<ILookupRepository<SocialMediaAccountType>, LookupRepository<SocialMediaAccountType>>();
 
             // Migrated Managers
             services.AddScoped<IKeyedManager<Partner>, PartnerManager>();
             services.AddScoped<IKeyedManager<PartnerDocument>, PartnerDocumentManager>();
             services.AddScoped<IKeyedManager<PartnerContact>, PartnerContactManager>();
-            services.AddScoped<IKeyedManager<PartnerNote>, PartnerNoteManager>();
             services.AddScoped<IKeyedManager<PartnerRequest>, PartnerRequestManager>();
             services.AddScoped<IKeyedManager<PartnerSocialMediaAccount>, PartnerSocialMediaAccountManager>();
+            services.AddScoped<ILookupManager<PartnerType>, PartnerTypeManager>();
             services.AddScoped<IBaseManager<PartnerUser>, PartnerUserManager>();
             services.AddScoped<IKeyedManager<ContactRequest>, ContactRequestManager>();
+            services.AddScoped<ILookupManager<ServiceType>, ServiceTypeManager>();
             services.AddScoped<ILookupManager<SocialMediaAccountType>, SocialMediaAccountTypeManager>();
-            services.AddScoped<ILookupManager<PartnerType>, PartnerTypeManager>();
 
             // Not Migrated Repositories and Managers
             services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
