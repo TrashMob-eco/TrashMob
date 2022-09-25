@@ -25,5 +25,13 @@
         public Task<IEnumerable<T>> GetByUserId(Guid userId, CancellationToken cancellationToken);
 
         public Task<IEnumerable<T>> GetByParentId(Guid parentId, CancellationToken cancellationToken);
+
+        public Task<T> Get(Guid parentId, int secondId, CancellationToken cancellationToken);
+
+        public Task<T> Get(Guid parentId, Guid secondId, CancellationToken cancellationToken);
+
+        public Task Delete(Guid parentId, int secondId, CancellationToken cancellationToken);
+
+        public Task Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken);
     }
 }

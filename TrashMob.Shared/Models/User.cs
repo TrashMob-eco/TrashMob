@@ -101,10 +101,6 @@ namespace TrashMob.Shared.Models
 
         public virtual ICollection<PartnerContact> PartnerContactsUpdated { get; set; }
 
-        public virtual ICollection<PartnerNote> PartnerNotesCreated { get; set; }
-
-        public virtual ICollection<PartnerNote> PartnerNotesUpdated { get; set; }
-
         public virtual ICollection<PartnerSocialMediaAccount> PartnerSocialMediaAccountsCreated { get; set; }
 
         public virtual ICollection<PartnerSocialMediaAccount> PartnerSocialMediaAccountsUpdated { get; set; }
@@ -132,5 +128,13 @@ namespace TrashMob.Shared.Models
         public virtual ICollection<SiteMetric> SiteMetricsCreated { get; set; }
 
         public virtual ICollection<SiteMetric> SiteMetricsUpdated { get; set; }
+
+        public virtual ICollection<PartnerService> PartnerServicesCreated { get; set; }
+
+        public virtual ICollection<PartnerService> PartnerServicesUpdated { get; set; }
+
+        public virtual ICollection<PartnerLocationService> PartnerLocationServicesCreated { get; set; }
+
+        public virtual ICollection<PartnerLocationService> PartnerLocationServicesUpdated { get; set; }
     }
 }

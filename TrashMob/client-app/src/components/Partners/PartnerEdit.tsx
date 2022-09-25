@@ -35,6 +35,9 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
     const [latitude, setLatitude] = React.useState<number>(0);
     const [longitude, setLongitude] = React.useState<number>(0);
     const [nameErrors, setNameErrors] = React.useState<string>("");
+    const [publicNotes, setPublicNotes] = React.useState<string>("");
+    const [publicNotesErrors, setPublicNotesErrors] = React.useState<string>();
+    const [privateNotes, setPrivateNotes] = React.useState<string>("");
 
     const [createdByUserId, setCreatedByUserId] = React.useState<string>("");
     const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
@@ -86,6 +89,8 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                                         setPartnerStatusId(data.partnerStatusId);
                                         setPartnerTypeId(data.partnerTypeId);
                                         setName(data.name);
+                                        setPublicNotes(data.publicNotes);
+                                        setPrivateNotes(data.privateNotes);
                                         setWebsite(data.website);
                                         setStreetAddress(data.streetAddress);
                                         setCity(data.city);
@@ -152,6 +157,8 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
         partnerData.postalCode = postalCode;
         partnerData.latitude = latitude;
         partnerData.longitude = longitude;
+        partnerData.publicNotes = publicNotes;
+        partnerData.privateNotes = privateNotes;
         partnerData.partnerTypeId = partnerTypeId;
         partnerData.createdByUserId = createdByUserId ?? props.currentUser.id;
         partnerData.createdDate = createdDate;
@@ -195,6 +202,23 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
         validateForm();
     }
 
+    function handlePublicNotesChanged(notes: string) {
+        if (notes === "") {
+            setPublicNotesErrors("Notes cannot be empty.");
+        }
+        else {
+            setPublicNotes(notes);
+            setPublicNotesErrors("");
+        }
+
+        validateForm();
+    }
+
+    function handlePrivateNotesChanged(notes: string) {
+        setPrivateNotes(notes);
+        validateForm();
+    }
+
     function handleWebsiteChanged(val: string) {
         setWebsite(val);        
 
@@ -232,6 +256,14 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
 
     function renderWebsiteToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerWebsite}</Tooltip>
+    }
+
+    function renderPublicNotesToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerPublicNotes}</Tooltip>
+    }
+
+    function renderPrivateNotesToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerPrivateNotes}</Tooltip>
     }
 
     function renderPartnerStatusToolTip(props: any) {
@@ -377,6 +409,19 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                             </Form.Group>
                         </Col>
                     </Form.Row>
+                    <Form.Group className="required">
+                        <OverlayTrigger placement="top" overlay={renderPublicNotesToolTip}>
+                            <Form.Label className="control-label">Public Notes:</Form.Label>
+                        </OverlayTrigger>
+                        <Form.Control as="textarea" defaultValue={publicNotes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handlePublicNotesChanged(val.target.value)} required />
+                        <span style={{ color: "red" }}>{publicNotesErrors}</span>
+                    </Form.Group >
+                    <Form.Group>
+                        <OverlayTrigger placement="top" overlay={renderPrivateNotesToolTip}>
+                            <Form.Label className="control-label">Private Notes:</Form.Label>
+                        </OverlayTrigger>
+                        <Form.Control as="textarea" defaultValue={privateNotes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handlePrivateNotesChanged(val.target.value)} />
+                    </Form.Group >
                     <Form.Row>
                         <Form.Label>Click on the map to set the location for your Partner. The location fields above will be automatically populated.</Form.Label>
                     </Form.Row>

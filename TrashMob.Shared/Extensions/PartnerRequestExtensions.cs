@@ -13,15 +13,11 @@
             partnerContact.Phone = originalPartnerRequest.Phone;
             partnerContact.Email = originalPartnerRequest.Email;
 
-            var partnerNote = new PartnerNote();
-            partnerNote.Id = Guid.NewGuid();
-            partnerNote.Notes = originalPartnerRequest.Notes;
-            partnerNote.IsPublic = true;
-
             var partner = new Partner
             {
                 Id = Guid.NewGuid(),
                 Name = originalPartnerRequest.Name,
+                PrivateNotes = originalPartnerRequest.Notes,
                 PartnerStatusId = (int)PartnerStatusEnum.Inactive,
                 CreatedByUserId = originalPartnerRequest.CreatedByUserId,
                 CreatedDate = originalPartnerRequest.CreatedDate,
@@ -30,7 +26,6 @@
             };
 
             partner.PartnerContacts.Add(partnerContact);
-            partner.PartnerNotes.Add(partnerNote);
 
             return partner;
         }

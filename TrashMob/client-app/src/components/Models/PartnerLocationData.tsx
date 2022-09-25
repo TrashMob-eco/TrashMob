@@ -15,7 +15,8 @@ class PartnerLocationData {
     secondaryPhone: string = "";
     primaryEmail: string = "";
     secondaryEmail: string = "";
-    notes: string = "";
+    publicNotes: string = "";
+    privateNotes: string = "";
     isActive: boolean = true;
     createdByUserId: string = "";
     createdDate: Date = new Date();

@@ -100,6 +100,14 @@
         Business = 2,
     }
 
+    public enum ServiceTypeEnum
+    {
+        Hauling = 1,
+        DisposalLocation = 2,
+        StartupKits = 3,
+        Supplies = 4,
+    }
+
     public enum SocialMediaAccountTypeEnum
     {
         Facebook = 1,

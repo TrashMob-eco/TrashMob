@@ -68,7 +68,7 @@ namespace TrashMob.Controllers
                 var partnerLocation = partnerLocationRepository.GetPartnerLocations(cancellationToken).FirstOrDefault(pl => pl.PartnerId == cp.PartnerId && pl.Id == cp.PartnerLocationId);
 
                 displayEventPartner.PartnerLocationName = partnerLocation.Name;
-                displayEventPartner.PartnerLocationNotes = partnerLocation.Notes;
+                displayEventPartner.PartnerLocationNotes = partnerLocation.PublicNotes;
  
                 displayEventPartners.Add(displayEventPartner);
             }
@@ -85,7 +85,7 @@ namespace TrashMob.Controllers
                         PartnerLocationId = pp.Id,
                         EventPartnerStatusId = (int)EventPartnerStatusEnum.None,
                         PartnerLocationName = pp.Name,
-                        PartnerLocationNotes = pp.Notes,
+                        PartnerLocationNotes = pp.PublicNotes,
                     };
 
                     var partner = await partnerRepository.GetPartner(pp.PartnerId, cancellationToken).ConfigureAwait(false);

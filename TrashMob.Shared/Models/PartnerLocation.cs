@@ -36,7 +36,9 @@ namespace TrashMob.Shared.Models
 
         public string SecondaryPhone { get; set; }
 
-        public string Notes { get; set; }
+        public string PublicNotes { get; set; }
+
+        public string PrivateNotes { get; set; }
 
         public bool IsActive { get; set; }
 
