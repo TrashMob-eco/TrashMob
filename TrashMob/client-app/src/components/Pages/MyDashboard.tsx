@@ -15,9 +15,11 @@ import calendarclock from '../assets/card/calendarclock.svg';
 import bucketplus from '../assets/card/bucketplus.svg';
 import { Eye, PersonX, Link as LinkIcon, Pencil } from 'react-bootstrap-icons';
 import StatsData from '../Models/StatsData';
-import PartnerData from '../Models/PartnerData';
-import PartnerRequestData from '../Models/PartnerRequestData';
 import { PartnerStatusActive } from '../Models/Constants';
+import DisplayPartnershipData from '../Models/DisplayPartnershipData';
+import { getDisplayPartnershipStatus } from '../../store/displayPartnershipStatusHelper';
+import PartnerRequestStatusData from '../Models/PartnerRequestStatusData';
+import PartnerStatusData from '../Models/PartnerStatusData';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -26,8 +28,10 @@ interface MyDashboardProps extends RouteComponentProps<any> {
 
 const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [myEventList, setMyEventList] = useState<EventData[]>([]);
-    const [myPartnerRequests, setMyPartnerRequests] = useState<PartnerRequestData[]>([]);
-    const [myPartners, setMyPartners] = useState<PartnerData[]>([]);
+    const [partnerStatusList, setPartnerStatusList] = useState<PartnerStatusData[]>([]);
+    const [partnerRequestStatusList, setPartnerRequestStatusList] = useState<PartnerRequestStatusData[]>([]);
+    const [myPartnerRequests, setMyPartnerRequests] = useState<DisplayPartnershipData[]>([]);
+    const [myPartners, setMyPartners] = useState<DisplayPartnershipData[]>([]);
     const [isEventDataLoaded, setIsEventDataLoaded] = useState<boolean>(false);
     const [center, setCenter] = useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isMapKeyLoaded, setIsMapKeyLoaded] = useState<boolean>(false);
@@ -86,46 +90,66 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         setIsEventDataLoaded(true);
                     });
 
-                fetch('/api/partnerrequests/' + props.currentUser.id, {
+                fetch('/api/partnerRequestStatuses', {
                     method: 'GET',
                     headers: headers
                 })
-                    .then(response => {
-                        if (response.ok) {
-                            return response.json() as Promise<PartnerRequestData[]>
-                        }
-                        else {
-                            throw new Error("No Partner Requests found for this user");
-                        }
-                    })
+                    .then(response => response.json() as Promise<PartnerRequestStatusData[]>)
                     .then(data => {
-                        setMyPartnerRequests(data);
-                        return;
+                        setPartnerRequestStatusList(data);
                     })
-                    .catch(_ => {
-                        setMyPartnerRequests([]);
+                    .then(() => {
+                        fetch('/api/partnerrequests/byuserid/' + props.currentUser.id, {
+                            method: 'GET',
+                            headers: headers
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    return response.json() as Promise<DisplayPartnershipData[]>
+                                }
+                                else {
+                                    throw new Error("No Partner Requests found for this user");
+                                }
+                            })
+                            .then(data => {
+                                setMyPartnerRequests(data);
+                                return;
+                            })
+                            .catch(_ => {
+                                setMyPartnerRequests([]);
+                            });
                     });
 
-                fetch('/api/partnerusers/getpartnersforuser/' + props.currentUser.id, {
+                fetch('/api/partnerStatuses', {
                     method: 'GET',
                     headers: headers
                 })
-                    .then(response => {
-                        if (response.ok) {
-                            return response.json() as Promise<PartnerData[]>
-                        }
-                        else {
-                            throw new Error("No Partners found for this user");
-                        }
-                    })
+                    .then(response => response.json() as Promise<PartnerStatusData[]>)
                     .then(data => {
-                        setMyPartners(data);
-                        return;
+                        setPartnerStatusList(data);
                     })
-                    .catch(_ => {
-                        setMyPartners([]);
+                    .then(() => {
+                        fetch('/api/partnerusers/getpartnersforuser/' + props.currentUser.id, {
+                            method: 'GET',
+                            headers: headers
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    return response.json() as Promise<DisplayPartnershipData[]>
+                                }
+                                else {
+                                    throw new Error("No Partners found for this user");
+                                }
+                            })
+                            .then(data => {
+                                setMyPartners(data);
+                                return;
+                            })
+                            .catch(_ => {
+                                setMyPartners([]);
+                            });
                     });
-
+            
                 fetch('/api/stats/' + props.currentUser.id, {
                     method: 'GET',
                     headers: headers
@@ -235,23 +259,23 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     }
 
     // TODO: update icons
+    //    <Dropdown.Item href={'/partnerRequestStatus/' + partnerRequestId}><Eye />View status</Dropdown.Item>
+    //    <Dropdown.Item href={'/contactus/' + partnerRequestId}><Pencil />Contact TrashMob</Dropdown.Item>
     const partnerRequestActionDropdownList = (partnerRequestId: string) => {
         return (
             <>
                 <Dropdown.Item href={'/partnerRequestDetails/' + partnerRequestId}><Eye />View request form</Dropdown.Item>
-                <Dropdown.Item href={'/partnerRequestStatus/' + partnerRequestId}><Eye />View status</Dropdown.Item>
-                <Dropdown.Item href={'/contactus/' + partnerRequestId}><Pencil />Contact TrashMob</Dropdown.Item>
             </>
         )
     }
 
     // TODO: update icons
+    //    <Dropdown.Item href={'/partnerviewupcomingevents/' + partnerId}><Eye />View upcoming events</Dropdown.Item>
+    //    <Dropdown.Item href={'/partnervieweventsummaries/' + partnerId}><Eye />View event summaries</Dropdown.Item>
     const activePartnerActionDropdownList = (partnerId: string) => {
         return (
             <>
                 <Dropdown.Item href={'/partnerdashboard/' + partnerId}><Pencil />Manage partnership</Dropdown.Item>
-                <Dropdown.Item href={'/partnerviewupcomingevents/' + partnerId}><Eye />View upcoming events</Dropdown.Item>
-                <Dropdown.Item href={'/partnervieweventsummaries/' + partnerId}><Eye />View event summaries</Dropdown.Item>
             </>
         )
     }
@@ -345,65 +369,32 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         )
     }
 
-    const PartnerRequestsTable = () => {
+    const PartnershipsTable = () => {
         const headerTitles = ['Name', 'City', 'Region', 'Country', 'Status', 'Actions']
-        if (myPartnerRequests) {
-            return (
-                <div className="bg-white p-3 px-4">
-                    <Table columnHeaders={headerTitles} >
-                        {myPartnerRequests.sort((a, b) => (a.city < b.city) ? 1 : -1).map(partnerRequest => {
-                            return (
-                                <tr key={partnerRequest.id.toString()}>
-                                    <td>{partnerRequest.name}</td>
-                                    <td>{partnerRequest.city}</td>
-                                    <td>{partnerRequest.region}</td>
-                                    <td>{partnerRequest.country}</td>
-                                    <td>{partnerRequest.partnerRequestStatusId}</td>
-                                    <td className="btn py-0">
-                                        <Dropdown role="menuitem">
-                                            <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
-                                            <Dropdown.Menu id="share-menu">
-                                                {partnerRequestActionDropdownList(partnerRequest.id)}
-                                            </Dropdown.Menu>
-                                        </Dropdown>
-                                    </td>
-                                </tr>
-                            )
-                        }
-                        )}
-                    </Table>
-                </div >
-            );
-        }
-        else {
-            return (
-                <div className="bg-white p-3 px-4">
-                    <Table columnHeaders={headerTitles} >
-                    </Table>
-                </div >
-            )
-        }
-    }
+        if (myPartnerRequests || myPartners) {
 
-    const PartnersTable = () => {
-        const headerTitles = ['Name', 'City', 'Region', 'Country', 'Status',  'Actions' ]
-        if (myPartners) {
+            var allPartnerships = myPartnerRequests.concat(myPartners);
+
             return (
                 <div className="bg-white p-3 px-4">
                     <Table columnHeaders={headerTitles} >
-                        {myPartners.sort((a, b) => (a.name < b.name) ? 1 : -1).map(partner => {
+                        {allPartnerships.sort((a, b) => (a.city < b.city) ? 1 : -1).map(displayPartner => {
                             return (
-                                <tr key={partner.id.toString()}>
-                                    <td>{partner.name}</td>
-                                    <td>{partner.city}</td>
-                                    <td>{partner.region}</td>
-                                    <td>{partner.country}</td>
-                                    <td>{partner.partnerStatusId === PartnerStatusActive ? 'Active' : 'Inactive'}</td>
+                                <tr key={displayPartner.id.toString()}>
+                                    <td>{displayPartner.name}</td>
+                                    <td>{displayPartner.city}</td>
+                                    <td>{displayPartner.region}</td>
+                                    <td>{displayPartner.country}</td>
+                                    <td>{getDisplayPartnershipStatus(partnerStatusList, partnerRequestStatusList, displayPartner.partnerStatusId, displayPartner.partnerRequestStatusId)}</td>
                                     <td className="btn py-0">
                                         <Dropdown role="menuitem">
                                             <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
                                             <Dropdown.Menu id="share-menu">
-                                                {partner.partnerStatusId === PartnerStatusActive ? activePartnerActionDropdownList(partner.id) : inactivePartnerActionDropdownList(partner.id)}
+                                                {displayPartner.partnerStatusId === PartnerStatusActive ?
+                                                    activePartnerActionDropdownList(displayPartner.id) :
+                                                    !displayPartner.partnerStatusId || displayPartner.partnerStatusId === 0 ?
+                                                        partnerRequestActionDropdownList(displayPartner.id) :
+                                                        inactivePartnerActionDropdownList(displayPartner.id)}
                                             </Dropdown.Menu>
                                         </Dropdown>
                                     </td>
@@ -525,18 +516,12 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         : <PastEventsTable />}
                 </div>
                 <div className="d-flex my-5 mb-4 justify-content-between">
-                    <h4 className="font-weight-bold mr-2 mt-0 text-decoration-underline">My Partner Requests ({myPartnerRequests.length})</h4>
+                    <h4 className="font-weight-bold mr-2 mt-0 text-decoration-underline">My Partnerships ({myPartnerRequests.length + myPartners.length})</h4>
                     <Link className="btn btn-primary banner-button" to="/requestapartner">Send request to potential partner</Link>
-                </div>
-                <div className="mb-4 bg-white">
-                    <PartnerRequestsTable />
-                </div>
-                <div className="d-flex my-5 mb-4 justify-content-between">
-                    <h4 className="font-weight-bold mr-2 mt-0 text-decoration-underline">My Partners ({myPartners.length})</h4>
                     <Link className="btn btn-primary banner-button" to="/becomeapartner">Apply to become a partner</Link>
                 </div>
                 <div className="mb-4 bg-white">
-                    <PartnersTable />
+                    <PartnershipsTable />
                 </div>
             </Container>
         </>
