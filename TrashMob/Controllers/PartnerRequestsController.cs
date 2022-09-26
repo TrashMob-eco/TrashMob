@@ -153,7 +153,20 @@
             return Ok(partnerRequestManager.Get());
         }
 
-        [HttpGet("{userId}")]
+        [HttpGet("{partnerRequestId}")]
+        public async Task<IActionResult> GetPartnerRequest(Guid partnerRequestId, CancellationToken cancellationToken)
+        {
+            var user = await GetUser();
+
+            if (user == null || !ValidateUser(user.NameIdentifier))
+            {
+                return Forbid();
+            }
+
+            return Ok(await partnerRequestManager.Get(partnerRequestId, cancellationToken).ConfigureAwait(false));
+        }
+
+        [HttpGet("byuserid/{userId}")]
         public async Task<IActionResult> GetPartnerRequestsByUser(Guid userId, CancellationToken cancellationToken)
         {
             var user = await GetUser();

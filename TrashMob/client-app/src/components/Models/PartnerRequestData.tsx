@@ -6,6 +6,7 @@ class PartnerRequestData {
     phone: string = "";
     email: string = "";
     website: string = "";
+    streetAddress: string = "";
     city: string = "";
     region: string = "";
     country: string = "";

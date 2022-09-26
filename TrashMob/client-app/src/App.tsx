@@ -41,6 +41,7 @@ import EventData from './components/Models/EventData';
 import './custom.css';
 import Waivers from './components/Waivers/Waivers';
 import WaiversReturn from './components/Waivers/WaiversReturn';
+import PartnerRequestDetails, { PartnerRequestDetailsMatchParams } from './components/Partners/PartnerRequestDetails';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }
@@ -52,6 +53,9 @@ interface CancelProps extends RouteComponentProps<CancelEventMatchParams> {
 }
 
 interface DetailsProps extends RouteComponentProps<DetailsMatchParams> {
+}
+
+interface PartnerRequestDetailsProps extends RouteComponentProps<PartnerRequestDetailsMatchParams> {
 }
 
 interface WaiversReturnProps extends RouteComponentProps {
@@ -124,6 +128,12 @@ export const App: FC = () => {
     function renderEventDetails(inp: DetailsProps) {
         return (
             <EventDetails {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={() => handleAttendanceChanged()} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} />
+        );
+    }
+
+    function renderPartnerRequestDetails(inp: PartnerRequestDetailsProps) {
+        return (
+            <PartnerRequestDetails {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
         );
     }
 
@@ -284,6 +294,7 @@ export const App: FC = () => {
                         <Switch>
                             <Route path="/manageeventdashboard/:eventId?" render={(props: AppProps) => renderEditEvent(props)} />
                             <Route path="/partnerdashboard/:partnerId?" render={(props: PartnerProps) => renderPartnerDashboard(props)} />
+                            <Route path="/partnerrequestdetails/:partnerRequestId" render={(props: PartnerRequestDetailsProps) => renderPartnerRequestDetails(props)} />
                             <Route path="/eventsummary/:eventId?" render={(props: AppProps) => renderEventSummary(props)} />
                             <Route path="/eventdetails/:eventId" render={(props: DetailsProps) => renderEventDetails(props)} />
                             <Route path="/cancelevent/:eventId" render={(props: CancelProps) => renderCancelEvent(props)} />

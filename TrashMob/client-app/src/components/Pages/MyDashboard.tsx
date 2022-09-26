@@ -99,7 +99,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         setPartnerRequestStatusList(data);
                     })
                     .then(() => {
-                        fetch('/api/partnerrequests/' + props.currentUser.id, {
+                        fetch('/api/partnerrequests/byuserid/' + props.currentUser.id, {
                             method: 'GET',
                             headers: headers
                         })

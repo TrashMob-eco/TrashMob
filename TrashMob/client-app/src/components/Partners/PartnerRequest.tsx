@@ -36,6 +36,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const [notesErrors, setNotesErrors] = React.useState<string>("");
     const [latitude, setLatitude] = React.useState<number>(0);
     const [longitude, setLongitude] = React.useState<number>(0);
+    const [streetAddress, setStreetAddress] = React.useState<string>();
     const [city, setCity] = React.useState<string>();
     const [country, setCountry] = React.useState<string>("");
     const [region, setRegion] = React.useState<string>();
@@ -123,6 +124,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         partnerRequestData.website = website ?? "";
         partnerRequestData.partnerRequestStatusId = 1;
         partnerRequestData.notes = notes ?? "";
+        partnerRequestData.streetAddress = streetAddress ?? "";
         partnerRequestData.city = city ?? "";
         partnerRequestData.region = region ?? "";
         partnerRequestData.country = country ?? "";
@@ -240,19 +242,23 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     }
 
     function renderEmailToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestPrimaryEmail}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.PartnerRequestEmail}</Tooltip>
     }
 
     function renderWebsiteToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestSecondaryEmail}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.PartnerRequestWebsite}</Tooltip>
     }
 
     function renderPhoneToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestPrimaryPhone}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.PartnerRequestPhone}</Tooltip>
     }
 
     function renderNotesToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerRequestNotes}</Tooltip>
+    }
+
+    function renderStreetAddressToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerRequestStreetAddress}</Tooltip>
     }
 
     function renderCityToolTip(props: any) {
@@ -286,6 +292,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                 })
                     .then(response => response.json() as Promise<AddressData>)
                     .then(data => {
+                        setStreetAddress(data.addresses[0].address.streetNameAndNumber);
                         setCity(data.addresses[0].address.municipality);
                         setCountry(data.addresses[0].address.country);
                         setRegion(data.addresses[0].address.countrySubdivisionName);
@@ -365,6 +372,14 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                         <span style={{ color: "red" }}>{notesErrors}</span>
                     </Form.Group >
                     <Form.Row>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
+                                    <Form.Label className="control-label" htmlFor="StreetAddress">Street Address:</Form.Label>
+                                </OverlayTrigger >
+                                <span>{streetAddress}</span>
+                            </Form.Group>
+                        </Col>
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderCityToolTip}>
