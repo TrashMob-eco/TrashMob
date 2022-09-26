@@ -18,10 +18,6 @@ env:
   CONFIGURATION: Release
 
 jobs:
-  buildWebapp:
-    runs-on: windows-latest
-    environment: test
-
   buildMobileApp:
     runs-on: windows-latest
     environment: test
