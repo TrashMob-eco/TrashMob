@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using TrashMob.Models;
 using TrashMobMobileApp.Data;
-using TrashMobMobileApp.Models;
 using TrashMobMobileApp.Shared;
 
 namespace TrashMobMobileApp.Pages.Events.Pages
@@ -14,7 +14,7 @@ namespace TrashMobMobileApp.Pages.Events.Pages
         private bool _isLoading;
         private bool _success;
         private string[] _errors;
-        private MobEvent _event = new();
+        private Event _event = new();
         private DateTime? _eventDate
             = DateTime.Now;
         private TimeSpan? _eventTime
@@ -53,7 +53,8 @@ namespace TrashMobMobileApp.Pages.Events.Pages
             _isLoading = false;
             if (_event != null)
             {
-                _eventDate = _event.EventDate;
+                //TODO: get user's timezone
+                _eventDate = TimeZoneInfo.ConvertTime(_event.EventDate, TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time")).DateTime;
                 _eventTime = new TimeSpan(_event.EventDate.Hour, _event.EventDate.Minute, 0);
                 _zip = Convert.ToInt32(_event.PostalCode);
                 _selectedEventType = _eventTypes.FirstOrDefault(item => item.Id == _event.EventTypeId);

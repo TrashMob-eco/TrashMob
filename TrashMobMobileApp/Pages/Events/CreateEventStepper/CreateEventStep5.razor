@@ -48,7 +48,7 @@
                 <MudTextField T="string" FullWidth Class="container-item" Variant="Variant.Outlined" @bind-Text="Event.Region" Label="State" Required RequiredError="State is required" />
                 <MudNumericField T="int" FullWidth Class="container-item" Variant="Variant.Outlined" @bind-Value="_postal" Label="Postal" Required RequiredError="Postal is required" />
                 <MudText Typo="Typo.subtitle2" Class="container-item">Other Details</MudText>
-                <MudNumericField T="int" FullWidth Class="container-item" Variant="Variant.Outlined" @bind-Value="Event.MaxNumberOfParticipants" Label="Maximum number of participants" Required RequiredError="Max participants is required" />
+                <MudNumericField T="int?" FullWidth Class="container-item" Variant="Variant.Outlined" @bind-Value="Event.MaxNumberOfParticipants" Label="Maximum number of participants" Required RequiredError="Max participants is required" />
                 <MudTextField T="string" FullWidth Lines="5" Class="container-item" Variant="Variant.Outlined" @bind-Text="Event.Description" Label="Description" Required RequiredError="Description is required" />
                 <MudFab Class="next-btn" Color="Color.Primary" Label="Next" OnClick="OnStepFinishedAsync" />
             </MudForm>

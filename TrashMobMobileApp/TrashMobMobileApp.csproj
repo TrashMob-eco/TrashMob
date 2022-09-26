@@ -99,4 +99,10 @@
       <Folder Include="wwwroot\images\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Reference Include="TrashMob.Models">
+        <HintPath>..\TrashMob.Models\bin\Debug\net6.0\TrashMob.Models.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>

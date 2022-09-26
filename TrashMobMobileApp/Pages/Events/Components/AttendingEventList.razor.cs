@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Components;
 using TrashMobMobileApp.Data;
-using TrashMobMobileApp.Models;
+using TrashMob.Models;
 
 namespace TrashMobMobileApp.Pages.Events.Components
 {
     public partial class AttendingEventList
     {
-        private List<MobEvent> _attendingEvents = new();
-        private List<MobEvent> _attendingEventsStatic = new();
+        private List<Event> _attendingEvents = new();
+        private List<Event> _attendingEventsStatic = new();
         private bool _isLoading;
         private string _eventSearchText;
         private bool _isViewOpen;
-        private MobEvent _selectedEvent;
+        private Event _selectedEvent;
 
         [Inject]
         public IMobEventManager MobEventManager { get; set; }
@@ -46,13 +46,13 @@ namespace TrashMobMobileApp.Pages.Events.Components
             _attendingEvents = _attendingEventsStatic.FindAll(item => item.Name.Contains(_eventSearchText, StringComparison.OrdinalIgnoreCase));
         }
 
-        private void OnViewEventDetails(MobEvent mobEvent)
+        private void OnViewEventDetails(Event mobEvent)
         {
             _selectedEvent = mobEvent;
             _isViewOpen = !_isViewOpen;
         }
 
-        private async Task OnUnregisterEventAsync(MobEvent mobEvent)
+        private async Task OnUnregisterEventAsync(Event mobEvent)
         {
             var currentUser = App.CurrentUser;
             if (currentUser != null)

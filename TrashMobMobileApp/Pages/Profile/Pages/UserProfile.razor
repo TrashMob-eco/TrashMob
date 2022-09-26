@@ -36,7 +36,6 @@
                     <MudTextField FullWidth T="string" @bind-Text="@_user.GivenName" Label="Given name" />
                     <MudTextField FullWidth T="string" @bind-Text="@_user.NameIdentifier" Label="Name identifier" />
                     <MudTextField FullWidth T="string" @bind-Text="@_user.SourceSystemUserName" Label="Source system name" />
-                    <MudTextField FullWidth T="string" @bind-Text="@_user.Surname" Label="Surname" />
                     <MudTextField FullWidth T="string" @bind-Text="@_user.City" Label="City" />
                     <MudTextField FullWidth T="string" @bind-Text="@_user.Region" Label="Region" />
                     <MudTextField FullWidth T="string" @bind-Text="@_user.Country" Label="Country" />
@@ -47,10 +46,7 @@
                     <MudTextField FullWidth T="string" Text="@_user.TermsOfServiceVersion" Label="Terms of service version" Disabled />
                     <MudNumericField FullWidth T="int" @bind-Value="@_user.TravelLimitForLocalEvents" Label="Travel limit for local events" />
                     <MudTextField FullWidth T="string" Text="@(GetDateString(_user.MemberSince))" Label="Member since" Disabled />
-                    <MudCheckBox T="bool" Checked="@_user.IsPrivacyPolicyAgreedTo" Disabled Label="Is privacy policy agreed to" />
-                    <MudCheckBox T="bool" Checked="@_user.IsTermsOfServiceAgreedTo" Disabled Label="Is terms of service agreed to" />
                     <MudCheckBox T="bool" @bind-Checked="@_user.PrefersMetric" Label="Prefers Metrics" />
-                    <MudCheckBox T="bool" @bind-Checked="@_user.IsOptedOutOfAllEmails" Label="Is opted out of all emails" />
                     <MudCheckBox T="bool" @bind-Checked="@_user.IsSiteAdmin" Label="Is site admin" />
                     <MudStack Row Style="margin-top: 10px">
                         <MudButton Style="width: 50%; margin-right: 10px" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => Navigator.NavigateTo(Routes.Home)">Cancel</MudButton>

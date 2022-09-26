@@ -7,8 +7,8 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using TrashMob.Models;
     using TrashMobMobileApp.Data;
-    using TrashMobMobileApp.Models;
 
     /// <summary>
     ///  For simplicity, we'll have this as a singleton. 
