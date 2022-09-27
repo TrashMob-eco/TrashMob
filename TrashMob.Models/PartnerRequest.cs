@@ -1,11 +1,7 @@
 ﻿#nullable disable
 
-using TrashMob;
-
 namespace TrashMob.Models
 {
-    using System;
-
     public partial class PartnerRequest : KeyedModel
     {
         public PartnerRequest()
@@ -37,6 +33,8 @@ namespace TrashMob.Models
         public int PartnerRequestStatusId { get; set; }
 
         public int PartnerTypeId { get; set; }
+
+        public bool isBecomeAPartnerRequest { get; set; }
 
         public virtual PartnerRequestStatus PartnerRequestStatus { get; set; }
 

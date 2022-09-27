@@ -19,7 +19,7 @@ namespace TrashMob.Shared.Managers
             Repository = repository;
         }
 
-        protected IBaseRepository<T> Repository { get; }
+        protected virtual IBaseRepository<T> Repository { get; }
 
         public virtual Task<T> Add(T instance, Guid userId)
         {

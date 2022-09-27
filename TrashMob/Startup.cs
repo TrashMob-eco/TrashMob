@@ -85,13 +85,15 @@ namespace TrashMob
             services.AddScoped<IKeyedManager<Partner>, PartnerManager>();
             services.AddScoped<IKeyedManager<PartnerDocument>, PartnerDocumentManager>();
             services.AddScoped<IKeyedManager<PartnerContact>, PartnerContactManager>();
-            services.AddScoped<IKeyedManager<PartnerRequest>, PartnerRequestManager>();
             services.AddScoped<IKeyedManager<PartnerSocialMediaAccount>, PartnerSocialMediaAccountManager>();
             services.AddScoped<ILookupManager<PartnerType>, PartnerTypeManager>();
             services.AddScoped<IBaseManager<PartnerUser>, PartnerUserManager>();
             services.AddScoped<IKeyedManager<ContactRequest>, ContactRequestManager>();
             services.AddScoped<ILookupManager<ServiceType>, ServiceTypeManager>();
             services.AddScoped<ILookupManager<SocialMediaAccountType>, SocialMediaAccountTypeManager>();
+
+            // Intentional deviation due to special methods
+            services.AddScoped<IPartnerRequestManager, PartnerRequestManager>();
 
             // Not Migrated Repositories and Managers
             services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
