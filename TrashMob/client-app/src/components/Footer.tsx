@@ -14,6 +14,7 @@ export const Footer: React.FC = () => {
                         <div className="col-md-4">
                             <Link to="/aboutus">About us</Link>
                             <Link to="/board">Board</Link>
+                            <Link to="/partnerships">Partnerships</Link>
                             <Link to="/faq">FAQ</Link>
                         </div>
 

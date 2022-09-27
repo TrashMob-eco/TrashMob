@@ -42,6 +42,7 @@ import './custom.css';
 import Waivers from './components/Waivers/Waivers';
 import WaiversReturn from './components/Waivers/WaiversReturn';
 import PartnerRequestDetails, { PartnerRequestDetailsMatchParams } from './components/Partners/PartnerRequestDetails';
+import { Partnerships } from './components/Partners/Partnerships';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }
@@ -346,6 +347,9 @@ export const App: FC = () => {
                                     loadingComponent={LoadingComponent}>
                                     <Waivers currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
+                            </Route>
+                            <Route exact path="/partnerships">
+                                <Partnerships />
                             </Route>
                             <Route exact path="/shop">
                                 <Shop />
