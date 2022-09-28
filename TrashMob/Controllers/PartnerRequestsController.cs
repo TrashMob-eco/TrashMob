@@ -18,16 +18,13 @@
     public class PartnerRequestsController : BaseController
     {
         private readonly IPartnerRequestManager partnerRequestManager;
-        private readonly IEmailManager emailManager;
 
         public PartnerRequestsController(TelemetryClient telemetryClient,
                                          IUserRepository userRepository,
-                                         IPartnerRequestManager partnerRequestManager,
-                                         IEmailManager emailManager)
+                                         IPartnerRequestManager partnerRequestManager)
             : base(telemetryClient, userRepository)
         {
             this.partnerRequestManager = partnerRequestManager;
-            this.emailManager = emailManager;
         }
 
         [HttpPost]

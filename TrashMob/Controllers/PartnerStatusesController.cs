@@ -1,30 +1,20 @@
 ﻿
 namespace TrashMob.Controllers
 {
-    using System.Threading;
-    using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Mvc;
+    using TrashMob.Models;
+    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/partnerstatuses")]
-    public class PartnerStatusesController : BaseController
+    public class PartnerStatusesController : LookupController<PartnerStatus>
     {
-        private readonly IPartnerStatusRepository partnerStatusRepository;
-
         public PartnerStatusesController(TelemetryClient telemetryClient,
-                                         IUserRepository userRepository,
-                                         IPartnerStatusRepository partnerStatusRepository)
-            : base(telemetryClient, userRepository)
+                                                IUserRepository userRepository,
+                                                ILookupManager<PartnerStatus> manager)
+            : base(telemetryClient, userRepository, manager)
         {
-            this.partnerStatusRepository = partnerStatusRepository;
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetPartnerStatuses(CancellationToken cancellationToken)
-        {
-            var result = await partnerStatusRepository.GetAllPartnerStatuses(cancellationToken).ConfigureAwait(false);
-            return Ok(result);
         }
     }
 }

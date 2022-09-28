@@ -72,10 +72,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Managers\Events\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\TrashMob.Models\TrashMob.Models.csproj" />
   </ItemGroup>
 

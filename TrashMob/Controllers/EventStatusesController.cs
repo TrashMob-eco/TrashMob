@@ -1,30 +1,20 @@
 ﻿
 namespace TrashMob.Controllers
 {
-    using System.Threading;
-    using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Mvc;
+    using TrashMob.Models;
+    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/eventstatuses")]
-    public class EventsStatusesController : BaseController
+    public class EventsStatusesController : LookupController<EventStatus>
     {
-        private readonly IEventStatusRepository eventStatusRepository;
-
         public EventsStatusesController(TelemetryClient telemetryClient,
                                         IUserRepository userRepository,
-                                        IEventStatusRepository eventStatusRepository)
-            : base(telemetryClient, userRepository)
+                                        ILookupManager<EventStatus> manager)
+            : base(telemetryClient, userRepository, manager)
         {
-            this.eventStatusRepository = eventStatusRepository;
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetEventStatuses(CancellationToken cancellationToken)
-        {
-            var result = await eventStatusRepository.GetAllEventStatuses(cancellationToken).ConfigureAwait(false);
-            return Ok(result);
         }
     }
 }

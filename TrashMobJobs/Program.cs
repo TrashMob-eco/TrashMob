@@ -10,6 +10,7 @@ namespace TrashMobJobs
     using Microsoft.Extensions.Configuration;
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Shared.Persistence.Events;
+    using TrashMob.Models;
 
     public class Program
     {
@@ -27,9 +28,9 @@ namespace TrashMobJobs
                      .AddSingleton<IEmailManager, EmailManager>()
                      .AddSingleton<IEventAttendeeRepository, EventAttendeeRepository>()
                      .AddSingleton<IEventRepository, EventRepository>()
-                     .AddSingleton<IEventStatusRepository, EventStatusRepository>()
+                     .AddSingleton<ILookupRepository<EventStatus>, LookupRepository<EventStatus>>()
                      .AddSingleton<IEventSummaryRepository, EventSummaryRepository>()
-                     .AddSingleton<IEventTypeRepository, EventTypeRepository>()
+                     .AddSingleton<ILookupRepository<EventType>, LookupRepository<EventType>>()
                      .AddSingleton<IMapRepository, MapRepository>()
                      .AddSingleton<IUserRepository, UserRepository>()
                      .AddSingleton<IUserNotificationRepository, UserNotificationRepository>()

@@ -17,6 +17,7 @@ namespace TrashMob
     using TrashMob.Models;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers;
+    using TrashMob.Shared.Managers.Events;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Managers.Partners;
     using TrashMob.Shared.Persistence;
@@ -70,22 +71,32 @@ namespace TrashMob
             services.AddScoped<INotificationManager, NotificationManager>();
 
             // Migrated Repositories
+            services.AddScoped<ILookupRepository<EventPartnerStatus>, LookupRepository<EventPartnerStatus>>();
+            services.AddScoped<ILookupRepository<EventStatus>, LookupRepository<EventStatus>>();
+            services.AddScoped<ILookupRepository<EventType>, LookupRepository<EventType>>();
             services.AddScoped<IKeyedRepository<ContactRequest>, KeyedRepository<ContactRequest>>();
             services.AddScoped<IKeyedRepository<Partner>, KeyedRepository<Partner>>();
             services.AddScoped<IKeyedRepository<PartnerContact>, KeyedRepository<PartnerContact>>();
             services.AddScoped<IKeyedRepository<PartnerDocument>, KeyedRepository<PartnerDocument>>();
             services.AddScoped<IKeyedRepository<PartnerRequest>, KeyedRepository<PartnerRequest>>();
+            services.AddScoped<ILookupRepository<PartnerRequestStatus>, LookupRepository<PartnerRequestStatus>>();
             services.AddScoped<IKeyedRepository<PartnerSocialMediaAccount>, KeyedRepository<PartnerSocialMediaAccount>>();
+            services.AddScoped<ILookupRepository<PartnerStatus>, LookupRepository<PartnerStatus>>();
             services.AddScoped<ILookupRepository<PartnerType>, LookupRepository<PartnerType>>();
             services.AddScoped<IBaseRepository<PartnerUser>, BaseRepository<PartnerUser>>();
             services.AddScoped<ILookupRepository<ServiceType>, LookupRepository<ServiceType>>();
             services.AddScoped<ILookupRepository<SocialMediaAccountType>, LookupRepository<SocialMediaAccountType>>();
 
             // Migrated Managers
+            services.AddScoped<ILookupManager<EventPartnerStatus>, EventPartnerStatusManager>();
+            services.AddScoped<ILookupManager<EventStatus>, EventStatusManager>();
+            services.AddScoped<ILookupManager<EventType>, EventTypeManager>();
             services.AddScoped<IKeyedManager<Partner>, PartnerManager>();
             services.AddScoped<IKeyedManager<PartnerDocument>, PartnerDocumentManager>();
             services.AddScoped<IKeyedManager<PartnerContact>, PartnerContactManager>();
+            services.AddScoped<ILookupManager<PartnerRequestStatus>, PartnerRequestStatusManager>();
             services.AddScoped<IKeyedManager<PartnerSocialMediaAccount>, PartnerSocialMediaAccountManager>();
+            services.AddScoped<ILookupManager<PartnerStatus>, PartnerStatusManager>();
             services.AddScoped<ILookupManager<PartnerType>, PartnerTypeManager>();
             services.AddScoped<IBaseManager<PartnerUser>, PartnerUserManager>();
             services.AddScoped<IKeyedManager<ContactRequest>, ContactRequestManager>();
@@ -99,18 +110,13 @@ namespace TrashMob
             services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
             services.AddScoped<IEventPartnerRepository, EventPartnerRepository>();
             services.AddScoped<IEventRepository, EventRepository>();
-            services.AddScoped<IEventPartnerStatusRepository, EventPartnerStatusRepository>();
-            services.AddScoped<IEventStatusRepository, EventStatusRepository>();
             services.AddScoped<IEventSummaryRepository, EventSummaryRepository>();
-            services.AddScoped<IEventTypeRepository, EventTypeRepository>();
             services.AddScoped<IMessageRequestManager, MessageRequestManager>();
             services.AddScoped<IMessageRequestRepository, MessageRequestRepository>();
             services.AddScoped<INonEventUserNotificationRepository, NonEventUserNotificationRepository>();
             services.AddScoped<IPartnerLocationRepository, PartnerLocationRepository>();
             services.AddScoped<IPartnerRepository, PartnerRepository>();
             services.AddScoped<IPartnerRequestRepository, PartnerRequestRepository>();
-            services.AddScoped<IPartnerStatusRepository, PartnerStatusRepository>();
-            services.AddScoped<IPartnerRequestStatusRepository, PartnerRequestStatusRepository>();
             services.AddScoped<IPartnerUserRepository, PartnerUserRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
