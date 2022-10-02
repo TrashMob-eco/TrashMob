@@ -4,12 +4,10 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Managers.Partners;
     using TrashMob.Shared.Persistence.Interfaces;
 
     [Authorize]

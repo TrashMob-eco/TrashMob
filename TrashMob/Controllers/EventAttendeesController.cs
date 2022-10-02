@@ -3,7 +3,6 @@ namespace TrashMob.Controllers
 {
     using System;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -15,13 +14,11 @@ namespace TrashMob.Controllers
     using Microsoft.ApplicationInsights;
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Models;
-    using DocuSign.eSign.Model;
 
     [Route("api/eventattendees")]
     public class EventAttendeesController : SecureController
     {
         private readonly IEventAttendeeRepository eventAttendeeRepository;
-        private readonly IUserRepository userRepository;
 
         public EventAttendeesController(TelemetryClient telemetryClient,
                                         IAuthorizationService authorizationService,

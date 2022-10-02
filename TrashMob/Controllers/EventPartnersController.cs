@@ -4,12 +4,10 @@ namespace TrashMob.Controllers
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
@@ -17,7 +15,6 @@ namespace TrashMob.Controllers
     using TrashMob.Shared;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Managers.Partners;
     using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/eventpartners")]

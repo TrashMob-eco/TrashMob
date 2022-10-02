@@ -11,7 +11,6 @@
     [Route("api/docusign")]
     public class DocusignController : SecureController
     {
-        private readonly IUserRepository userRepository;
         private readonly IDocusignManager docusignManager;
 
         public DocusignController(TelemetryClient telemetryClient, 
