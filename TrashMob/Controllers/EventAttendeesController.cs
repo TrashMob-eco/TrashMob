@@ -15,37 +15,37 @@ namespace TrashMob.Controllers
     using Microsoft.ApplicationInsights;
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Models;
+    using DocuSign.eSign.Model;
 
     [Route("api/eventattendees")]
-    public class EventAttendeesController : BaseController
+    public class EventAttendeesController : SecureController
     {
         private readonly IEventAttendeeRepository eventAttendeeRepository;
         private readonly IUserRepository userRepository;
 
         public EventAttendeesController(TelemetryClient telemetryClient,
-                                        IUserRepository userRepository,
+                                        IAuthorizationService authorizationService,
                                         IEventAttendeeRepository eventAttendeeRepository) 
-            : base(telemetryClient, userRepository)
+            : base(telemetryClient, authorizationService)
         {
             this.eventAttendeeRepository = eventAttendeeRepository;
-            this.userRepository = userRepository;
         }
 
         [HttpGet("{eventId}")]
+        [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetEventAttendees(Guid eventId)
-        {
-            
+        {            
             var result = (await eventAttendeeRepository.GetEventAttendees(eventId, CancellationToken.None).ConfigureAwait(false)).Select(u => u.ToDisplayUser());
             return Ok(result);
         }
 
         [HttpPut("{id}")]
-        [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdateEventAttendee(EventAttendee eventAttendee)
         {
-            var user = await userRepository.GetUserByInternalId(eventAttendee.UserId).ConfigureAwait(false);
-            if (user == null || !ValidateUser(user.NameIdentifier))
+            var authResult = await AuthorizationService.AuthorizeAsync(User, eventAttendee, "UserOwnsEntity");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
@@ -71,12 +71,12 @@ namespace TrashMob.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddEventAttendee(EventAttendee eventAttendee)
         {
-            var user = await userRepository.GetUserByInternalId(eventAttendee.UserId).ConfigureAwait(false);
-            if (user == null || !ValidateUser(user.NameIdentifier))
+            var authResult = await AuthorizationService.AuthorizeAsync(User, eventAttendee, "UserOwnsEntity");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
@@ -89,16 +89,11 @@ namespace TrashMob.Controllers
         }
 
         [HttpDelete("{eventId}/{userId}")]
-        [Authorize]
+        // Todo: Tighten this down
+        [Authorize(Policy = "ValidUser")]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteEventAttendee(Guid eventId, Guid userId)
         {
-            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
-            if (user == null || !ValidateUser(user.NameIdentifier))
-            {
-                return Forbid();
-            }
-
             await eventAttendeeRepository.DeleteEventAttendee(eventId, userId).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeleteEventAttendee));
 

@@ -1,14 +1,12 @@
 ﻿namespace TrashMob.Shared
 {
-    using System;
+    using TrashMob.Models;
 
-    public class EnvelopeRequest
+    public class EnvelopeRequest : BaseModel
     {
         public string SignerEmail{ get; set; }
 
         public string SignerName { get; set; }
-
-        public Guid SignerClientId { get; set; }
 
         public string ReturnUrl { get; set; }
 

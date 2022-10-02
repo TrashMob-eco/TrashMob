@@ -47,14 +47,14 @@ namespace TrashMob.Shared.Managers
             return Repository.Update(instance);
         }
 
-        public virtual IQueryable<T> Get()
+        public virtual async Task<IEnumerable<T>> Get(CancellationToken cancellationToken)
         {
-            return Repository.Get();
+            return await Repository.Get().ToListAsync(cancellationToken);
         }
 
-        public virtual IQueryable<T> Get(Expression<Func<T, bool>> expression)
+        public virtual async Task<IEnumerable<T>> Get(Expression<Func<T, bool>> expression, CancellationToken cancellationToken)
         {
-            return Repository.Get(expression);
+            return await Repository.Get(expression).ToListAsync(cancellationToken);
         }
 
         public virtual async Task<IEnumerable<T>> GetByUserId(Guid userId, CancellationToken cancellationToken)

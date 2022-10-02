@@ -7,14 +7,14 @@
     using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/maps")]
-    public class MapsController : BaseController
+    public class MapsController : SecureController
     {
         private readonly IMapRepository mapRepository;
 
         public MapsController(TelemetryClient telemetryClient,
-                              IUserRepository userRepository,
+                              IAuthorizationService authorizationService,
                               IMapRepository mapRepository)
-            : base(telemetryClient, userRepository)
+            : base(telemetryClient, authorizationService)
         {
             this.mapRepository = mapRepository;
         }
@@ -27,7 +27,7 @@
         }
 
         [HttpGet("GetAddress")]
-        [Authorize]
+        [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetAddressForPoint([FromQuery] double latitude, [FromQuery] double longitude)
         {
             var address = await mapRepository.GetAddress(latitude, longitude);

@@ -17,7 +17,7 @@ namespace TrashMob.Controllers
     using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/eventsummaries")]
-    public class EventSummariesController : BaseController
+    public class EventSummariesController : SecureController
     {
         private readonly IEventSummaryRepository eventSummaryRepository;
         private readonly IUserRepository userRepository;
@@ -25,9 +25,10 @@ namespace TrashMob.Controllers
 
         public EventSummariesController(TelemetryClient telemetryClient,
                                         IUserRepository userRepository,
+                                        IAuthorizationService authorizationService,
                                         IEventSummaryRepository eventSummaryRepository,
                                         IEventRepository eventRepository) 
-            : base(telemetryClient, userRepository)
+            : base(telemetryClient, authorizationService)
         {
             this.eventSummaryRepository = eventSummaryRepository;
             this.userRepository = userRepository;
@@ -90,12 +91,12 @@ namespace TrashMob.Controllers
         }
 
         [HttpPut]
-        [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdateEventSummary(EventSummary eventSummary)
         {
-            var user = await userRepository.GetUserByInternalId(eventSummary.CreatedByUserId).ConfigureAwait(false);
-            if (user == null || !ValidateUser(user.NameIdentifier))
+            var authResult = await AuthorizationService.AuthorizeAsync(User, eventSummary, "UserOwnsEntity");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
@@ -107,18 +108,18 @@ namespace TrashMob.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddEventSummary(EventSummary eventSummary)
         {
-            var currentUser = await GetUser();
-            if (currentUser == null || !ValidateUser(currentUser.NameIdentifier))
+            var authResult = await AuthorizationService.AuthorizeAsync(User, eventSummary, "UserOwnsEntity");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
 
-            eventSummary.CreatedByUserId = currentUser.Id;
-            eventSummary.LastUpdatedByUserId = currentUser.Id;
+            eventSummary.CreatedByUserId = UserId;
+            eventSummary.LastUpdatedByUserId = UserId;
             eventSummary.CreatedDate = DateTimeOffset.UtcNow;
             eventSummary.LastUpdatedDate = DateTimeOffset.UtcNow;
             await eventSummaryRepository.AddEventSummary(eventSummary).ConfigureAwait(false);
@@ -133,9 +134,10 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> DeleteEventSummary(Guid eventId)
         {
             var eventSummary = await eventSummaryRepository.GetEventSummary(eventId).ConfigureAwait(false);
-            var user = await userRepository.GetUserByInternalId(eventSummary.CreatedByUserId).ConfigureAwait(false);
 
-            if (user == null || !ValidateUser(user.NameIdentifier))
+            var authResult = await AuthorizationService.AuthorizeAsync(User, eventSummary, "UserOwnsEntity");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }

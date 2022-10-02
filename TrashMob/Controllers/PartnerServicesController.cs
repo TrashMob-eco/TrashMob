@@ -8,23 +8,28 @@
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Managers.Partners;
     using TrashMob.Shared.Persistence.Interfaces;
 
     [Authorize]
     [Route("api/partnerservices")]
-    public class PartnerServicesController : BaseController
+    public class PartnerServicesController : SecureController
     {
         private readonly IBaseManager<PartnerService> PartnerServicesManager;
+        private readonly IKeyedManager<Partner> partnerManager;
 
         public PartnerServicesController(TelemetryClient telemetryClient,
-                                         IUserRepository userRepository,
-                                         IBaseManager<PartnerService> PartnerServicesManager)
-            : base(telemetryClient, userRepository)
+                                         IAuthorizationService authorizationService,
+                                         IBaseManager<PartnerService> PartnerServicesManager,
+                                         IKeyedManager<Partner> partnerManager)
+            : base(telemetryClient, authorizationService)
         {
             this.PartnerServicesManager = PartnerServicesManager;
+            this.partnerManager = partnerManager;
         }
 
         [HttpGet("{PartnerId}")]
+        [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetPartnerServices(Guid PartnerId, CancellationToken cancellationToken)
         {
             var PartnerServices = await PartnerServicesManager.GetByParentId(PartnerId, cancellationToken);
@@ -33,6 +38,7 @@
         }
 
         [HttpGet("{PartnerId}/{serviceTypeId}")]
+        [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetPartnerService(Guid PartnerId, int serviceTypeId, CancellationToken cancellationToken)
         {
             var PartnerService = await PartnerServicesManager.Get(PartnerId, serviceTypeId, cancellationToken);
@@ -41,55 +47,53 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPartnerService(PartnerService PartnerService)
+        public async Task<IActionResult> AddPartnerService(PartnerService partnerService, CancellationToken cancellationToken)
         {
-            await PartnerServicesManager.Add(PartnerService);
+            var partner = await partnerManager.Get(partnerService.PartnerId, cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
-            return CreatedAtAction(nameof(GetPartnerService), new { PartnerId = PartnerService.PartnerId, serviceTypeId = PartnerService.ServiceTypeId });
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            await PartnerServicesManager.Add(partnerService);
+
+            return CreatedAtAction(nameof(GetPartnerService), new { PartnerId = partnerService.PartnerId, serviceTypeId = partnerService.ServiceTypeId });
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdatePartnerService(PartnerService PartnerService)
+        public async Task<IActionResult> UpdatePartnerService(PartnerService partnerService, CancellationToken cancellationToken)
         {
-            //// Make sure the person adding the user is either an admin or already a user for the partner
-            //var currentUser = await GetUser();
+            var partner = await partnerManager.Get(partnerService.PartnerId, cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
-            //if (!currentUser.IsSiteAdmin)
-            //{
-            //    var currentUserPartner = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == Partner.PartnerId && pu.UserId == currentUser.Id);
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
 
-            //    if (currentUserPartner == null)
-            //    {
-            //        return Forbid();
-            //    }
-            //}
-
-            await PartnerServicesManager.Update(PartnerService).ConfigureAwait(false);
+            await PartnerServicesManager.Update(partnerService).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdatePartnerService));
 
-            return Ok(PartnerService);
+            return Ok(partnerService);
         }
 
         [HttpDelete("{PartnerId}/{serviceTypeId}")]
-        public async Task<IActionResult> DeletePartnerService(Guid PartnerId, int serviceTypeId, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeletePartnerService(Guid partnerId, int serviceTypeId, CancellationToken cancellationToken)
         {
-            //// Make sure the person adding the user is either an admin or already a user for the partner
-            //var currentUser = await GetUser();
+            var partner = await partnerManager.Get(partnerId, cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
-            //if (!currentUser.IsSiteAdmin)
-            //{
-            //    var currentUserPartner = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == partnerId && pu.UserId == currentUser.Id);
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
 
-            //    if (currentUserPartner == null)
-            //    {
-            //        return Forbid();
-            //    }
-            //}
-
-            await PartnerServicesManager.Delete(PartnerId, serviceTypeId, cancellationToken).ConfigureAwait(false);
+            await PartnerServicesManager.Delete(partnerId, serviceTypeId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeletePartnerService));
 
-            return Ok(PartnerId);
+            return Ok(partnerId);
         }
     }
 }

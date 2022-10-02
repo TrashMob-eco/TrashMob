@@ -5,16 +5,14 @@
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Persistence.Interfaces;
 
     public abstract class LookupController<T> : BaseController where T : LookupModel
     {
         protected ILookupManager<T> Manager { get; }
 
         public LookupController(TelemetryClient telemetryClient,
-                                IUserRepository userRepository, 
                                 ILookupManager<T> manager)
-            : base(telemetryClient, userRepository)
+            : base(telemetryClient)
         {
             Manager = manager;
         }

@@ -59,7 +59,7 @@ const Waivers: React.FC<WaiversProps> = (props) => {
             const envelopeRequest = {
                 signerEmail: email,
                 signerName: name,
-                signerClientId: props.currentUser.id,
+                createdByUserId: props.currentUser.id,
                 returnUrl: "https://" + hostname + "/waiversreturn",
             };
             fetch('/api/docusign', {

@@ -9,19 +9,23 @@ namespace TrashMob.Controllers
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
     using TrashMob.Poco;
     using TrashMob.Shared;
     using TrashMob.Shared.Engine;
+    using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Managers.Partners;
     using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/eventpartners")]
-    public class EventPartnersController : BaseController
+    public class EventPartnersController : SecureController
     {
         private readonly IEventPartnerRepository eventPartnerRepository;
         private readonly IUserRepository userRepository;
+        private readonly IKeyedManager<Partner> partnerManager;
         private readonly IPartnerRepository partnerRepository;
         private readonly IPartnerLocationRepository partnerLocationRepository;
         private readonly IPartnerUserRepository partnerUserRepository;
@@ -29,15 +33,18 @@ namespace TrashMob.Controllers
 
         public EventPartnersController(TelemetryClient telemetryClient,
                                        IUserRepository userRepository,
+                                       IKeyedManager<Partner> partnerManager,   
+                                       IAuthorizationService authorizationService,
                                        IEventPartnerRepository eventPartnerRepository, 
                                        IPartnerRepository partnerRepository, 
                                        IPartnerLocationRepository partnerLocationRepository,
                                        IPartnerUserRepository partnerUserRepository,
                                        IEmailManager emailManager) 
-            : base(telemetryClient, userRepository)
+            : base(telemetryClient, authorizationService)
         {
             this.eventPartnerRepository = eventPartnerRepository;
             this.userRepository = userRepository;
+            this.partnerManager = partnerManager;
             this.partnerRepository = partnerRepository;
             this.partnerLocationRepository = partnerLocationRepository;
             this.partnerUserRepository = partnerUserRepository;
@@ -99,24 +106,24 @@ namespace TrashMob.Controllers
         }
 
         [HttpPut]
-        [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdateEventPartner(EventPartner eventPartner)
         {
-            // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await GetUser();
+            var partner = partnerManager.Get(eventPartner.PartnerId);
 
-            if (!currentUser.IsSiteAdmin)
+            if (partner == null)
             {
-                var currentUserPartner = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == eventPartner.PartnerId && pu.UserId == currentUser.Id);
-
-                if (currentUserPartner == null)
-                {
-                    return Forbid();
-                }
+                return NotFound();
             }
 
-            eventPartner.LastUpdatedByUserId = currentUser.Id;
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            eventPartner.LastUpdatedByUserId = UserId;
 
             var updatedEventPartner = await eventPartnerRepository.UpdateEventPartner(eventPartner).ConfigureAwait(false);
 
@@ -167,18 +174,12 @@ namespace TrashMob.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Policy = "ValidUser")]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddEventPartner(EventPartner eventPartner)
         {
-            var currentUser = await GetUser();
-            if (currentUser == null || !ValidateUser(currentUser.NameIdentifier))
-            {
-                return Forbid();
-            }
-
-            eventPartner.CreatedByUserId = currentUser.Id;
-            eventPartner.LastUpdatedByUserId = currentUser.Id;
+            eventPartner.CreatedByUserId = UserId;
+            eventPartner.LastUpdatedByUserId = UserId;
             eventPartner.CreatedDate = DateTimeOffset.UtcNow;
             eventPartner.LastUpdatedDate = DateTimeOffset.UtcNow;
             await eventPartnerRepository.AddEventPartner(eventPartner).ConfigureAwait(false);

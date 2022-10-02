@@ -1,6 +1,7 @@
 ﻿namespace TrashMob.Controllers
 {
     using Microsoft.ApplicationInsights;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
@@ -11,9 +12,10 @@
     {
 
         public ContactRequestController(TelemetryClient telemetryClient,
-                                        IUserRepository userRepository, 
+                                        IUserRepository userRepository,
+                                        IAuthorizationService authorizationService,
                                         IKeyedManager<ContactRequest> manager)
-            : base(telemetryClient, userRepository, manager)
+            : base(telemetryClient, authorizationService, manager)
         {
         }
     }

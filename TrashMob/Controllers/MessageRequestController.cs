@@ -8,23 +8,22 @@
     using TrashMob.Models;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/messagerequest")]
-    public class MessageRequestController : BaseController
+    public class MessageRequestController : SecureController
     {
         private readonly IMessageRequestManager messageRequestManager;
 
         public MessageRequestController(IMessageRequestManager messageRequestManager,
-                                        IUserRepository userRepository,
+                                        IAuthorizationService authorizationService,
                                         TelemetryClient telemetryClient)
-            : base(telemetryClient, userRepository)
+            : base(telemetryClient, authorizationService)
         {
             this.messageRequestManager = messageRequestManager;
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Policy = "UserIsAdmin")]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> SendMessageRequest(MessageRequest messageRequest)
         {

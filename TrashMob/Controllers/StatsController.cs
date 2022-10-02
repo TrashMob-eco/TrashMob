@@ -19,11 +19,10 @@ namespace TrashMob.Controllers
         private readonly IEventAttendeeRepository eventAttendeeRepository;
 
         public StatsController(TelemetryClient telemetryClient,
-                               IUserRepository userRepository,
                                IEventRepository eventRepository,
                                IEventSummaryRepository eventSummaryRepository,
                                IEventAttendeeRepository eventAttendeeRepository)
-            : base(telemetryClient, userRepository)
+            : base(telemetryClient)
         {
             this.eventRepository = eventRepository;
             this.eventSummaryRepository = eventSummaryRepository;

@@ -5,29 +5,27 @@
     using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
 
     [Authorize]
     [Route("api/partnerlocations")]
-    public class PartnerLocationsController : BaseController
+    public class PartnerLocationsController : SecureController
     {
         private readonly IPartnerLocationRepository partnerLocationRepository;
-        private readonly IUserRepository userRepository;
-        private readonly IPartnerUserRepository partnerUserRepository;
+        private readonly IKeyedManager<Partner> partnerManager;
 
         public PartnerLocationsController(TelemetryClient telemetryClient,
-                                          IUserRepository userRepository,
+                                          IAuthorizationService authorizationService,
                                           IPartnerLocationRepository partnerLocationRepository,
-                                          IPartnerUserRepository partnerUserRepository)
-            : base(telemetryClient, userRepository)
+                                          IKeyedManager<Partner> partnerManager)
+            : base(telemetryClient, authorizationService)
         {
             this.partnerLocationRepository = partnerLocationRepository;
-            this.partnerUserRepository = partnerUserRepository;
-            this.userRepository = userRepository;
+            this.partnerManager = partnerManager;
         }
 
         [HttpGet("{partnerId}")]
@@ -50,19 +48,14 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPartnerLocation(PartnerLocation partnerLocation)
+        public async Task<IActionResult> AddPartnerLocation(PartnerLocation partnerLocation, CancellationToken cancellationToken)
         {
-            // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await GetUser();
+            var partner = await partnerManager.Get(partnerLocation.PartnerId, cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
-            if (!currentUser.IsSiteAdmin)
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
-                var currentUserPartner = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == partnerLocation.PartnerId && pu.UserId == currentUser.Id);
-
-                if (currentUserPartner == null)
-                {
-                    return Forbid();
-                }
+                return Forbid();
             }
 
             await partnerLocationRepository.AddPartnerLocation(partnerLocation).ConfigureAwait(false);
@@ -72,19 +65,15 @@
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdatePartnerLocation(PartnerLocation partnerLocation)
+        public async Task<IActionResult> UpdatePartnerLocation(PartnerLocation partnerLocation, CancellationToken cancellationToken)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await GetUser();
+            var partner = await partnerManager.Get(partnerLocation.PartnerId, cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
-            if (!currentUser.IsSiteAdmin)
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
-                var currentUserPartner = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == partnerLocation.PartnerId && pu.UserId == currentUser.Id);
-
-                if (currentUserPartner == null)
-                {
-                    return Forbid();
-                }
+                return Forbid();
             }
 
             await partnerLocationRepository.UpdatePartnerLocation(partnerLocation).ConfigureAwait(false);
@@ -94,19 +83,14 @@
         }
 
         [HttpDelete("{partnerId}/{partnerLocationId}")]
-        public async Task<IActionResult> DeletePartnerLocation(Guid partnerId, Guid partnerLocationId)
+        public async Task<IActionResult> DeletePartnerLocation(Guid partnerId, Guid partnerLocationId, CancellationToken cancellationToken)
         {
-            // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await GetUser();
+            var partner = await partnerManager.Get(partnerId, cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
-            if (!currentUser.IsSiteAdmin)
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
-                var currentUserPartner = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == partnerId && pu.UserId == currentUser.Id);
-
-                if (currentUserPartner == null)
-                {
-                    return Forbid();
-                }
+                return Forbid();
             }
 
             await partnerLocationRepository.DeletePartnerLocation(partnerLocationId).ConfigureAwait(false);

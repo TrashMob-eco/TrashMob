@@ -73,13 +73,13 @@ namespace TrashMob.Shared.Persistence
 
             EnvelopesApi envelopesApi = new EnvelopesApi(apiClient);
 
-            EnvelopeDefinition envelope = MakeEnvelope(envelopeRequest.SignerEmail, envelopeRequest.SignerName, envelopeRequest.SignerClientId, docxDocument);
+            EnvelopeDefinition envelope = MakeEnvelope(envelopeRequest.SignerEmail, envelopeRequest.SignerName, envelopeRequest.CreatedByUserId, docxDocument);
             EnvelopeSummary result = envelopesApi.CreateEnvelope(accountId, envelope);
 
             var envelopeId = result.EnvelopeId;
 
             // Step 3. create the recipient view, the Signing Ceremony
-            RecipientViewRequest viewRequest = MakeRecipientViewRequest(envelopeRequest.SignerEmail, envelopeRequest.SignerName, envelopeRequest.ReturnUrl, envelopeRequest.SignerClientId, envelopeRequest.PingUrl);
+            RecipientViewRequest viewRequest = MakeRecipientViewRequest(envelopeRequest.SignerEmail, envelopeRequest.SignerName, envelopeRequest.ReturnUrl, envelopeRequest.CreatedByUserId, envelopeRequest.PingUrl);
 
             // call the CreateRecipientView API
             ViewUrl results1 = envelopesApi.CreateRecipientView(accountId, envelopeId, viewRequest);

@@ -21,7 +21,7 @@ namespace TrashMob.Controllers
     using TrashMob.Models.Extensions;
 
     [Route("api/events")]
-    public class EventsController : BaseController
+    public class EventsController : SecureController
     {
         private readonly IEventRepository eventRepository;
         private readonly IEventAttendeeRepository eventAttendeeRepository;
@@ -30,12 +30,13 @@ namespace TrashMob.Controllers
         private readonly IMapRepository mapRepository;
 
         public EventsController(TelemetryClient telemetryClient,
-                                IUserRepository userRepository, 
+                                IUserRepository userRepository,
+                                IAuthorizationService authorizationService,
                                 IEventRepository eventRepository,
                                 IEventAttendeeRepository eventAttendeeRepository,                                
                                 IEmailManager emailManager,
                                 IMapRepository mapRepository)
-            : base(telemetryClient, userRepository)
+            : base(telemetryClient, authorizationService)
         {
             this.eventRepository = eventRepository;
             this.eventAttendeeRepository = eventAttendeeRepository;
@@ -70,32 +71,20 @@ namespace TrashMob.Controllers
 
         [HttpGet]
         [Route("eventsuserisattending/{userId}")]
-        [Authorize]
+        [Authorize(Policy = "ValidUser")]
         [RequiredScope(Constants.TrashMobReadScope)]
         public async Task<IActionResult> GetEventsUserIsAttending(Guid userId, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByInternalId(userId, cancellationToken).ConfigureAwait(false);
-            if (user == null || !ValidateUser(user.NameIdentifier))
-            {
-                return Forbid();
-            }
-
             var result = await eventAttendeeRepository.GetEventsUserIsAttending(userId, cancellationToken: cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy = "ValidUser")]
         [RequiredScope(Constants.TrashMobReadScope)]
         [Route("userevents/{userId}/{futureEventsOnly}")]
         public async Task<IActionResult> GetUserEvents(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByInternalId(userId, cancellationToken).ConfigureAwait(false);
-            if (user == null || !ValidateUser(user.NameIdentifier))
-            {
-                return Forbid();
-            }
-
             var result1 = await eventRepository.GetUserEvents(userId, futureEventsOnly, cancellationToken).ConfigureAwait(false);
             var result2 = await eventAttendeeRepository.GetEventsUserIsAttending(userId, futureEventsOnly, cancellationToken).ConfigureAwait(false);
 
@@ -104,17 +93,11 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy = "ValidUser")]
         [RequiredScope(Constants.TrashMobReadScope)]
         [Route("canceleduserevents/{userId}/{futureEventsOnly}")]
         public async Task<IActionResult> GetCanceledUserEvents(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByInternalId(userId, cancellationToken).ConfigureAwait(false);
-            if (user == null || !ValidateUser(user.NameIdentifier))
-            {
-                return Forbid();
-            }
-
             var result1 = await eventRepository.GetCanceledUserEvents(userId, futureEventsOnly, cancellationToken).ConfigureAwait(false);
             var result2 = await eventAttendeeRepository.GetCanceledEventsUserIsAttending(userId, futureEventsOnly, cancellationToken).ConfigureAwait(false);
 
@@ -136,12 +119,12 @@ namespace TrashMob.Controllers
         }
 
         [HttpPut]
-        [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdateEvent(Event mobEvent)
         {
-            var user = await userRepository.GetUserByInternalId(mobEvent.CreatedByUserId).ConfigureAwait(false);
-            if (user == null || !ValidateUser(user.NameIdentifier))
+            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, "UserOwnsEntity");
+            
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded )
             {
                 return Forbid();
             }
@@ -213,16 +196,10 @@ namespace TrashMob.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Policy = "ValidUser")]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddEvent(Event mobEvent)
         {
-            var user = await userRepository.GetUserByInternalId(mobEvent.CreatedByUserId).ConfigureAwait(false);
-            if (user == null || !ValidateUser(user.NameIdentifier))
-            {
-                return Forbid();
-            }
-
             var newEvent = await eventRepository.AddEvent(mobEvent).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddEvent));
 
@@ -260,9 +237,10 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> DeleteEvent(EventCancellationRequest eventCancellationRequest)
         {
             var mobEvent = await eventRepository.GetEvent(eventCancellationRequest.EventId).ConfigureAwait(false);
-            var user = await userRepository.GetUserByInternalId(mobEvent.CreatedByUserId).ConfigureAwait(false);
 
-            if (user == null || !ValidateUser(user.NameIdentifier))
+            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, "UserOwnsEntity");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }

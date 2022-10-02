@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq.Expressions;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
@@ -14,24 +13,24 @@
 
         Task<T> Update(T instance);
 
-        public Task<T> Add(T instance, Guid userId);
+        Task<T> Add(T instance, Guid userId);
 
-        public Task<T> Update(T instance, Guid userId);
+        Task<T> Update(T instance, Guid userId);
 
-        IQueryable<T> Get();
+        Task<IEnumerable<T>> Get(CancellationToken cancellationToken);
 
-        IQueryable<T> Get(Expression<Func<T, bool>> expression);
+        Task<IEnumerable<T>> Get(Expression<Func<T, bool>> expression, CancellationToken cancellationToken);
 
-        public Task<IEnumerable<T>> GetByUserId(Guid userId, CancellationToken cancellationToken);
+        Task<IEnumerable<T>> GetByUserId(Guid userId, CancellationToken cancellationToken);
 
-        public Task<IEnumerable<T>> GetByParentId(Guid parentId, CancellationToken cancellationToken);
+        Task<IEnumerable<T>> GetByParentId(Guid parentId, CancellationToken cancellationToken);
 
-        public Task<T> Get(Guid parentId, int secondId, CancellationToken cancellationToken);
+        Task<T> Get(Guid parentId, int secondId, CancellationToken cancellationToken);
 
-        public Task<T> Get(Guid parentId, Guid secondId, CancellationToken cancellationToken);
+        Task<T> Get(Guid parentId, Guid secondId, CancellationToken cancellationToken);
 
-        public Task Delete(Guid parentId, int secondId, CancellationToken cancellationToken);
+        Task Delete(Guid parentId, int secondId, CancellationToken cancellationToken);
 
-        public Task Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken);
+        Task Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken);
     }
 }

@@ -1,24 +1,26 @@
 ﻿namespace TrashMob.Controllers
 {
     using Microsoft.ApplicationInsights;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
     using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/secrets")]
-    public class SecretsController : BaseController
+    public class SecretsController : SecureController
     {
         private readonly ISecretRepository secretRepository;
 
         public SecretsController(TelemetryClient telemetryClient,
-                                 IUserRepository userRepository,
+                                 IAuthorizationService authorizationService,
                                  ISecretRepository secretRepository)
-            : base(telemetryClient, userRepository)
+            : base(telemetryClient, authorizationService)
         {
             this.secretRepository = secretRepository;
         }
 
         [HttpGet]
+        [Authorize(Policy = "ValidUser")]
         [Route("{name}")]
         public async Task<IActionResult> GetSecret(string name)
         {

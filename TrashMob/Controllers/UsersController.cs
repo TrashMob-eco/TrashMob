@@ -18,21 +18,23 @@ namespace TrashMob.Controllers
     using TrashMob.Models;
 
     [Route("api/users")]
-    public class UsersController : BaseController
+    public class UsersController : SecureController
     {
         private readonly IUserRepository userRepository;
         private readonly IEmailManager emailManager;
 
         public UsersController(TelemetryClient telemetryClient,
                                IUserRepository userRepository,
+                               IAuthorizationService authorizationService,
                                IEmailManager emailManager)
-            : base(telemetryClient, userRepository)
+            : base(telemetryClient, authorizationService)
         {
             this.userRepository = userRepository;
             this.emailManager = emailManager;
         }
 
         [HttpGet]
+        [Authorize(Policy = "UserIsAdmin")]
         public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
         {
             var result = await userRepository.GetAllUsers(cancellationToken).ConfigureAwait(false);
@@ -40,6 +42,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("getUserByUserName/{userName}")]
+        [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetUser(string userName, CancellationToken cancellationToken)
         {
             var user = await userRepository.GetUserByUserName(userName, cancellationToken).ConfigureAwait(false);
@@ -53,6 +56,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("verifyunique/{userId}/{userName}")]
+        [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> VerifyUnique(Guid userId, string userName, CancellationToken cancellationToken)
         {
             var user = await userRepository.GetUserByUserName(userName, cancellationToken).ConfigureAwait(false);
@@ -71,6 +75,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetUserByInternalId(Guid id, CancellationToken cancellationToken = default)
         {
             var user = await userRepository.GetUserByInternalId(id, cancellationToken).ConfigureAwait(false);
@@ -86,13 +91,9 @@ namespace TrashMob.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut()]
+        [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> PutUser(User user)
         {
-            if (user == null || !ValidateUser(user.NameIdentifier))
-            {
-                return Forbid();
-            }
-
             try
             {
                 var updatedUser = await userRepository.UpdateUser(user).ConfigureAwait(false);
@@ -124,10 +125,11 @@ namespace TrashMob.Controllers
 
             if ((originalUser = await UserExists(user.NameIdentifier).ConfigureAwait(false)) != null)
             {
-                if (!ValidateUser(originalUser.NameIdentifier))
-                {
-                    return Forbid();
-                }
+                // TODO: Fix this
+                //if (!ValidateUser(originalUser.NameIdentifier))
+                //{
+                //    return Forbid();
+                //}
 
                 originalUser.Email = user.Email;
                 originalUser.SourceSystemUserName = user.SourceSystemUserName;
@@ -192,17 +194,10 @@ namespace TrashMob.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
+        [Authorize(Policy = "ValidUser")]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
-            var user = await userRepository.GetUserByInternalId(id).ConfigureAwait(false);
-
-            if (user == null || !ValidateUser(user.NameIdentifier))
-            {
-                return Forbid();
-            }
-
             await userRepository.DeleteUserByInternalId(id).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeleteUser));
 

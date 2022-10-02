@@ -11,34 +11,27 @@
     using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/admin")]
-    public class AdminController : BaseController
+    public class AdminController : SecureController
     {
         private readonly IPartnerRequestRepository partnerRequestRepository;
-        private readonly IUserRepository userRepository;
 
         public AdminController(TelemetryClient telemetryClient,
-                               IUserRepository userRepository,
-                               IPartnerRequestRepository partnerRequestRepository) 
-            : base(telemetryClient, userRepository)
+                               IAuthorizationService authorizationService,
+                               IPartnerRequestRepository partnerRequestRepository)
+            : base(telemetryClient, authorizationService)
         {
             this.partnerRequestRepository = partnerRequestRepository;
-            this.userRepository = userRepository;
         }
 
         [HttpPut("partnerrequestupdate/{userId}")]
-        [Authorize]
+        [Authorize(Policy = "UserIsAdmin")]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdatePartnerRequest(Guid userId, PartnerRequest partnerRequest)
         {
-            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
-
-            if (user == null || !ValidateUser(user.NameIdentifier) || user.IsSiteAdmin)
-            {
-                return Forbid();
-            }
-
+            var result = await partnerRequestRepository.UpdatePartnerRequest(partnerRequest).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdatePartnerRequest));
-            return Ok(await partnerRequestRepository.UpdatePartnerRequest(partnerRequest).ConfigureAwait(false));
+
+            return Ok(result);
         }
     }
 }

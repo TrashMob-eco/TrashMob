@@ -2,8 +2,10 @@ namespace TrashMob
 {
     using Azure.Identity;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Azure;
@@ -15,6 +17,7 @@ namespace TrashMob
     using System;
     using System.Text.Json.Serialization;
     using TrashMob.Models;
+    using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Managers.Events;
@@ -41,15 +44,24 @@ namespace TrashMob
         {
             // The following line enables Application Insights telemetry collection.
             services.AddApplicationInsightsTelemetry();
-            
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(options => {
-                Configuration.Bind("AzureAdB2C", options);
+                    Configuration.Bind("AzureAdB2C", options);
 
-                options.TokenValidationParameters.NameClaimType = "name";
-            },
+                    options.TokenValidationParameters.NameClaimType = "name";
+                },
 
             options => { Configuration.Bind("AzureAdB2C", options); });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ValidUser", policy => policy.AddRequirements(new UserIsValidUserRequirement()));
+                options.AddPolicy("UserOwnsEntity", policy => policy.AddRequirements(new UserOwnsEntityRequirement()));
+                options.AddPolicy("UserOwnsEntityOrIsAdmin", policy => policy.AddRequirements(new UserOwnsEntityOrIsAdminRequirement()));
+                options.AddPolicy("UserIsPartnerUserOrIsAdmin", policy => policy.AddRequirements(new UserIsPartnerUserOrIsAdminRequirement()));
+                options.AddPolicy("UserIsAdmin", policy => policy.AddRequirements(new UserIsAdminRequirement()));
+            });
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -61,6 +73,13 @@ namespace TrashMob
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
             services.AddDbContext<MobDbContext>(c => c.UseLazyLoadingProxies());
+
+            // Security 
+            services.AddScoped<IAuthorizationHandler, UserOwnsEntityAuthHandler>();
+            services.AddScoped<IAuthorizationHandler, UserIsValidUserAuthHandler>();
+            services.AddScoped<IAuthorizationHandler, UserIsAdminAuthHandler>();
+            services.AddScoped<IAuthorizationHandler, UserOwnsEntityOrIsAdminAuthHandler>();
+            services.AddScoped<IAuthorizationHandler, UserIsPartnerUserOrIsAdminAuthHandler>();
 
             // Non-patterned
             services.AddScoped<IDocusignManager, DocusignManager>();
@@ -144,9 +163,7 @@ namespace TrashMob
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "trashmobapi", Version = "v1" });
-            });
-
-            
+            });            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -169,6 +186,7 @@ namespace TrashMob
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
