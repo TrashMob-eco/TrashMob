@@ -8,9 +8,8 @@
     [Route("api/socialmediaaccounttypes")]
     public class SocialMediaAccountTypesController : LookupController<SocialMediaAccountType>
     {
-        public SocialMediaAccountTypesController(TelemetryClient telemetryClient,
-                                                 ILookupManager<SocialMediaAccountType> manager)
-            : base(telemetryClient, manager)
+        public SocialMediaAccountTypesController(ILookupManager<SocialMediaAccountType> manager)
+            : base(manager)
         {
         }
     }

@@ -20,10 +20,7 @@ namespace TrashMob.Controllers
     {
         private readonly IEventAttendeeRepository eventAttendeeRepository;
 
-        public EventAttendeesController(TelemetryClient telemetryClient,
-                                        IAuthorizationService authorizationService,
-                                        IEventAttendeeRepository eventAttendeeRepository) 
-            : base(telemetryClient, authorizationService)
+        public EventAttendeesController(IEventAttendeeRepository eventAttendeeRepository) : base()
         {
             this.eventAttendeeRepository = eventAttendeeRepository;
         }

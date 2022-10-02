@@ -14,10 +14,7 @@
     {
         private readonly IMessageRequestManager messageRequestManager;
 
-        public MessageRequestController(IMessageRequestManager messageRequestManager,
-                                        IAuthorizationService authorizationService,
-                                        TelemetryClient telemetryClient)
-            : base(telemetryClient, authorizationService)
+        public MessageRequestController(IMessageRequestManager messageRequestManager) : base()
         {
             this.messageRequestManager = messageRequestManager;
         }

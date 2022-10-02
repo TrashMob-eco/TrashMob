@@ -9,9 +9,8 @@ namespace TrashMob.Controllers
     [Route("api/servicetypes")]
     public class ServiceTypesController : LookupController<ServiceType>
     {
-        public ServiceTypesController(TelemetryClient telemetryClient,
-                                      ILookupManager<ServiceType> manager)
-            : base(telemetryClient, manager)
+        public ServiceTypesController(ILookupManager<ServiceType> manager)
+            : base(manager)
         {
         }
     }

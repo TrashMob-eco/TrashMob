@@ -15,10 +15,7 @@
     {
         private readonly IPartnerRequestRepository partnerRequestRepository;
 
-        public AdminController(TelemetryClient telemetryClient,
-                               IAuthorizationService authorizationService,
-                               IPartnerRequestRepository partnerRequestRepository)
-            : base(telemetryClient, authorizationService)
+        public AdminController(IPartnerRequestRepository partnerRequestRepository) : base()
         {
             this.partnerRequestRepository = partnerRequestRepository;
         }

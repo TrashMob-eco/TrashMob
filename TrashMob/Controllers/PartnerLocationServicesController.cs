@@ -16,12 +16,10 @@
         private readonly IKeyedManager<Partner> partnerManager;
         private readonly IKeyedManager<PartnerLocation> partnerLocationManager;
 
-        public PartnerLocationServicesController(TelemetryClient telemetryClient,
-                                                 IAuthorizationService authorizationService,
-                                                 IBaseManager<PartnerLocationService> partnerLocationServicesManager,
+        public PartnerLocationServicesController(IBaseManager<PartnerLocationService> partnerLocationServicesManager,
                                                  IKeyedManager<Partner> partnerManager,
                                                  IKeyedManager<PartnerLocation> partnerLocationManager)
-            : base(telemetryClient, authorizationService)
+            : base()
         {
             this.partnerLocationServicesManager = partnerLocationServicesManager;
             this.partnerManager = partnerManager;

@@ -22,13 +22,11 @@ namespace TrashMob.Controllers
         private readonly IEventRepository eventRepository;
         private readonly IKeyedManager<Partner> partnerManager;
 
-        public PartnerEventsController(TelemetryClient telemetryClient,
-                                       IAuthorizationService authorizationService,
-                                       IEventPartnerRepository eventPartnerRepository, 
+        public PartnerEventsController(IEventPartnerRepository eventPartnerRepository, 
                                        IPartnerLocationRepository partnerLocationRepository, 
                                        IEventRepository eventRepository,
                                        IKeyedManager<Partner> partnerManager)
-            : base(telemetryClient, authorizationService)
+            : base()
         {
             this.eventPartnerRepository = eventPartnerRepository;
             this.partnerLocationRepository = partnerLocationRepository;

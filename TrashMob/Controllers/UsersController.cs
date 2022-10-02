@@ -3,7 +3,6 @@ namespace TrashMob.Controllers
 {
     using System;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
@@ -23,11 +22,9 @@ namespace TrashMob.Controllers
         private readonly IUserRepository userRepository;
         private readonly IEmailManager emailManager;
 
-        public UsersController(TelemetryClient telemetryClient,
-                               IUserRepository userRepository,
-                               IAuthorizationService authorizationService,
+        public UsersController(IUserRepository userRepository,
                                IEmailManager emailManager)
-            : base(telemetryClient, authorizationService)
+            : base()
         {
             this.userRepository = userRepository;
             this.emailManager = emailManager;

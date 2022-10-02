@@ -3,11 +3,9 @@
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Persistence.Interfaces;
 
     [Authorize]
     [Route("api/partnercontacts")]
@@ -16,11 +14,9 @@
         private readonly IKeyedManager<Partner> partnerManager;
         private readonly IBaseManager<PartnerContact> manager;
 
-        public PartnerContactsController(TelemetryClient telemetryClient,
-                                         IKeyedManager<Partner> partnerManager,
-                                         IAuthorizationService authorizationService,
+        public PartnerContactsController(IKeyedManager<Partner> partnerManager,
                                          IBaseManager<PartnerContact> manager)
-            : base(telemetryClient, authorizationService)
+            : base()
         {
             this.partnerManager = partnerManager;
             this.manager = manager;            

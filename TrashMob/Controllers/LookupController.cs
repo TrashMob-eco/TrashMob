@@ -10,9 +10,7 @@
     {
         protected ILookupManager<T> Manager { get; }
 
-        public LookupController(TelemetryClient telemetryClient,
-                                ILookupManager<T> manager)
-            : base(telemetryClient)
+        public LookupController(ILookupManager<T> manager) : base()
         {
             Manager = manager;
         }

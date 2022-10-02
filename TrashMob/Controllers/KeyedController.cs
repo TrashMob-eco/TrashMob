@@ -12,10 +12,7 @@
     {
         protected IKeyedManager<T> Manager { get; }
 
-        public KeyedController(TelemetryClient telemetryClient,
-                               IAuthorizationService authorizationService,
-                               IKeyedManager<T> manager)
-            : base(telemetryClient, authorizationService)
+        public KeyedController(IKeyedManager<T> manager) : base()
         {
             Manager = manager;
         }

@@ -1,7 +1,5 @@
 ﻿namespace TrashMob.Controllers
 {
-    using Microsoft.ApplicationInsights;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Threading.Tasks;
@@ -13,10 +11,7 @@
     {
         private readonly IDocusignManager docusignManager;
 
-        public DocusignController(TelemetryClient telemetryClient, 
-                                  IAuthorizationService authorizationService,
-                                  IDocusignManager docusignManager)
-            : base(telemetryClient, authorizationService)
+        public DocusignController(IDocusignManager docusignManager) : base()
         {
             this.docusignManager = docusignManager;
         }

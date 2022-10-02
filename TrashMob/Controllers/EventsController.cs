@@ -29,14 +29,12 @@ namespace TrashMob.Controllers
         private readonly IEmailManager emailManager;
         private readonly IMapRepository mapRepository;
 
-        public EventsController(TelemetryClient telemetryClient,
-                                IUserRepository userRepository,
-                                IAuthorizationService authorizationService,
+        public EventsController(IUserRepository userRepository,
                                 IEventRepository eventRepository,
                                 IEventAttendeeRepository eventAttendeeRepository,                                
                                 IEmailManager emailManager,
                                 IMapRepository mapRepository)
-            : base(telemetryClient, authorizationService)
+            : base()
         {
             this.eventRepository = eventRepository;
             this.eventAttendeeRepository = eventAttendeeRepository;

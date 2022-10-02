@@ -18,11 +18,9 @@
         private readonly IPartnerLocationRepository partnerLocationRepository;
         private readonly IKeyedManager<Partner> partnerManager;
 
-        public PartnerLocationsController(TelemetryClient telemetryClient,
-                                          IAuthorizationService authorizationService,
-                                          IPartnerLocationRepository partnerLocationRepository,
+        public PartnerLocationsController(IPartnerLocationRepository partnerLocationRepository,
                                           IKeyedManager<Partner> partnerManager)
-            : base(telemetryClient, authorizationService)
+            : base()
         {
             this.partnerLocationRepository = partnerLocationRepository;
             this.partnerManager = partnerManager;

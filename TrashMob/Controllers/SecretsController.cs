@@ -11,10 +11,7 @@
     {
         private readonly ISecretRepository secretRepository;
 
-        public SecretsController(TelemetryClient telemetryClient,
-                                 IAuthorizationService authorizationService,
-                                 ISecretRepository secretRepository)
-            : base(telemetryClient, authorizationService)
+        public SecretsController(ISecretRepository secretRepository) : base()
         {
             this.secretRepository = secretRepository;
         }

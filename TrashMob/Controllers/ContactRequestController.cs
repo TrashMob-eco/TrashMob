@@ -10,10 +10,8 @@
     public class ContactRequestController : KeyedController<ContactRequest>
     {
 
-        public ContactRequestController(TelemetryClient telemetryClient,
-                                        IAuthorizationService authorizationService,
-                                        IKeyedManager<ContactRequest> manager)
-            : base(telemetryClient, authorizationService, manager)
+        public ContactRequestController(IKeyedManager<ContactRequest> manager)
+            : base(manager)
         {
         }
     }

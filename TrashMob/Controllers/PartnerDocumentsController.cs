@@ -14,11 +14,9 @@
         private readonly IBaseManager<PartnerDocument> manager;
         private readonly IKeyedManager<Partner> partnerManager;
 
-        public PartnerDocumentsController(TelemetryClient telemetryClient,
-                                          IAuthorizationService authorizationService,
-                                          IKeyedManager<Partner> partnerManager,
+        public PartnerDocumentsController(IKeyedManager<Partner> partnerManager,
                                           IBaseManager<PartnerDocument> manager)
-            : base(telemetryClient, authorizationService)
+            : base()
         {
             this.manager = manager;
             this.partnerManager = partnerManager;

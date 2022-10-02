@@ -9,9 +9,8 @@ namespace TrashMob.Controllers
     [Route("api/partnerrequeststatuses")]
     public class PartnerRequestStatusesController : LookupController<PartnerRequestStatus>
     {
-        public PartnerRequestStatusesController(TelemetryClient telemetryClient,
-                                                ILookupManager<PartnerRequestStatus> manager)
-            : base(telemetryClient, manager)
+        public PartnerRequestStatusesController(ILookupManager<PartnerRequestStatus> manager)
+            : base(manager)
         {
         }
     }

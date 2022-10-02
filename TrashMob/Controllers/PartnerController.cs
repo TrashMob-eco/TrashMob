@@ -1,7 +1,6 @@
 ﻿namespace TrashMob.Controllers
 {
     using Microsoft.ApplicationInsights;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Threading;
@@ -12,20 +11,15 @@
     [Route("api/partners")]
     public class PartnersController : KeyedController<Partner>
     {
-        private readonly IKeyedManager<Partner> partnerManager;
-
-        public PartnersController(TelemetryClient telemetryClient,
-                                  IAuthorizationService authorizationService,
-                                  IKeyedManager<Partner> partnerManager) 
-            : base(telemetryClient, authorizationService, partnerManager)
+        public PartnersController(IKeyedManager<Partner> partnerManager) 
+            : base(partnerManager)
         {
-            this.partnerManager = partnerManager;
         }
 
         [HttpGet("{partnerId}")]
         public async Task<IActionResult> Get(Guid partnerId, CancellationToken cancellationToken)
         {
-            return Ok(await partnerManager.Get(partnerId, cancellationToken).ConfigureAwait(false));
+            return Ok(await Manager.Get(partnerId, cancellationToken).ConfigureAwait(false));
         }
 
         [HttpPut]
@@ -38,7 +32,7 @@
                 return Forbid();
             }
 
-            var result = await partnerManager.Update(partner).ConfigureAwait(false);
+            var result = await Manager.Update(partner).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(Update) + typeof(Partner));
 
             return Ok(result);

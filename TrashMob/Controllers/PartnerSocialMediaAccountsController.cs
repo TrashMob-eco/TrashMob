@@ -16,18 +16,13 @@
     {
         private readonly IKeyedManager<PartnerSocialMediaAccount> manager;
         private readonly IKeyedManager<Partner> partnerManager;
-        private readonly IUserRepository userRepository;
 
-        public PartnerSocialMediaAccountController(TelemetryClient telemetryClient,
-                                                   IUserRepository userRepository,
-                                                   IAuthorizationService authorizationService,
-                                                   IKeyedManager<PartnerSocialMediaAccount> manager,
+        public PartnerSocialMediaAccountController(IKeyedManager<PartnerSocialMediaAccount> manager,
                                                    IKeyedManager<Partner> partnerManager)
-            : base(telemetryClient, authorizationService)
+            : base()
         {
             this.manager = manager;
             this.partnerManager = partnerManager;
-            this.userRepository = userRepository;
         }
 
         [HttpGet("getbypartner/{partnerId}")]

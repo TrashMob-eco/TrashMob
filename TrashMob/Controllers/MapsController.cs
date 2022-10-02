@@ -11,10 +11,7 @@
     {
         private readonly IMapRepository mapRepository;
 
-        public MapsController(TelemetryClient telemetryClient,
-                              IAuthorizationService authorizationService,
-                              IMapRepository mapRepository)
-            : base(telemetryClient, authorizationService)
+        public MapsController(IMapRepository mapRepository) : base()
         {
             this.mapRepository = mapRepository;
         }
