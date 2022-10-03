@@ -21,13 +21,6 @@
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsValidUserRequirement requirement)
         {
-            var authFilterContext = context.Resource as AuthorizationFilterContext;
-
-            if (authFilterContext == null)
-            {
-                return;
-            }
-
             var userName = context.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             var user = await userRepository.GetUserByNameIdentifier(userName);

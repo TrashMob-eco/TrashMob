@@ -6,7 +6,7 @@ namespace TrashMob.Models
 {
     using System;
 
-    public partial class EventPartner
+    public partial class EventPartner : BaseModel
     {
         public EventPartner()
         {
@@ -19,18 +19,6 @@ namespace TrashMob.Models
         public Guid PartnerLocationId { get; set; }
 
         public int EventPartnerStatusId { get; set; }
-
-        public Guid CreatedByUserId { get; set; }
-
-        public DateTimeOffset? CreatedDate { get; set; }
-
-        public Guid LastUpdatedByUserId { get; set; }
-
-        public DateTimeOffset? LastUpdatedDate { get; set; }
-
-        public virtual User CreatedByUser { get; set; }
-
-        public virtual User LastUpdatedByUser { get; set; }
 
         public virtual Partner Partner { get; set; }
 

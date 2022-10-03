@@ -20,5 +20,10 @@
         {
             return await Repository.Get().FirstOrDefaultAsync(p => p.PartnerLocationId == parentId && p.ServiceTypeId == secondId, cancellationToken: cancellationToken);
         }
+
+        public override async Task<IEnumerable<PartnerLocationService>> GetByParentId(Guid parentId, CancellationToken cancellationToken)
+        {
+            return (await Repository.Get().Where(p => p.PartnerLocationId == parentId).ToListAsync(cancellationToken)).AsEnumerable();
+        }
     }
 }

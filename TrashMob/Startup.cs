@@ -90,13 +90,18 @@ namespace TrashMob
             services.AddScoped<INotificationManager, NotificationManager>();
 
             // Migrated Repositories
+            services.AddScoped<IKeyedRepository<Event>, KeyedRepository<Event>>();
+            services.AddScoped<IBaseRepository<EventAttendee>, BaseRepository<EventAttendee>>();
+            services.AddScoped<IBaseRepository<EventPartner>, BaseRepository<EventPartner>>();
             services.AddScoped<ILookupRepository<EventPartnerStatus>, LookupRepository<EventPartnerStatus>>();
             services.AddScoped<ILookupRepository<EventStatus>, LookupRepository<EventStatus>>();
+            services.AddScoped<IBaseRepository<EventSummary>, BaseRepository<EventSummary>>();
             services.AddScoped<ILookupRepository<EventType>, LookupRepository<EventType>>();
             services.AddScoped<IKeyedRepository<ContactRequest>, KeyedRepository<ContactRequest>>();
             services.AddScoped<IKeyedRepository<Partner>, KeyedRepository<Partner>>();
             services.AddScoped<IKeyedRepository<PartnerContact>, KeyedRepository<PartnerContact>>();
             services.AddScoped<IKeyedRepository<PartnerDocument>, KeyedRepository<PartnerDocument>>();
+            services.AddScoped<IBaseRepository<PartnerLocation>, BaseRepository<PartnerLocation>>();
             services.AddScoped<IKeyedRepository<PartnerRequest>, KeyedRepository<PartnerRequest>>();
             services.AddScoped<ILookupRepository<PartnerRequestStatus>, LookupRepository<PartnerRequestStatus>>();
             services.AddScoped<IKeyedRepository<PartnerSocialMediaAccount>, KeyedRepository<PartnerSocialMediaAccount>>();
@@ -105,6 +110,8 @@ namespace TrashMob
             services.AddScoped<IBaseRepository<PartnerUser>, BaseRepository<PartnerUser>>();
             services.AddScoped<ILookupRepository<ServiceType>, LookupRepository<ServiceType>>();
             services.AddScoped<ILookupRepository<SocialMediaAccountType>, LookupRepository<SocialMediaAccountType>>();
+            services.AddScoped<IKeyedRepository<User>, KeyedRepository<User>>();
+            services.AddScoped<IKeyedRepository<UserNotification>, KeyedRepository<UserNotification>>();
 
             // Migrated Managers
             services.AddScoped<ILookupManager<EventPartnerStatus>, EventPartnerStatusManager>();
@@ -122,8 +129,9 @@ namespace TrashMob
             services.AddScoped<ILookupManager<ServiceType>, ServiceTypeManager>();
             services.AddScoped<ILookupManager<SocialMediaAccountType>, SocialMediaAccountTypeManager>();
 
-            // Intentional deviation due to special methods
+            // Intentional deviation due to unique methods
             services.AddScoped<IPartnerRequestManager, PartnerRequestManager>();
+            services.AddScoped<IUserManager, UserManager>();
 
             // Not Migrated Repositories and Managers
             services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();

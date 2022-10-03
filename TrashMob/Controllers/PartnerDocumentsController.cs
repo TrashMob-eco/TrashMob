@@ -3,6 +3,8 @@
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using System.Threading;
+    using System;
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
@@ -11,15 +13,30 @@
     [Route("api/partnerdocuments")]
     public class PartnerDocumentsController : SecureController
     {
-        private readonly IBaseManager<PartnerDocument> manager;
+        private readonly IKeyedManager<PartnerDocument> manager;
         private readonly IKeyedManager<Partner> partnerManager;
 
         public PartnerDocumentsController(IKeyedManager<Partner> partnerManager,
-                                          IBaseManager<PartnerDocument> manager)
+                                          IKeyedManager<PartnerDocument> manager)
             : base()
         {
             this.manager = manager;
             this.partnerManager = partnerManager;
+        }
+
+        [HttpGet("getbypartner/{partnerId}")]
+        public async Task<IActionResult> GetPartnerDocuments(Guid partnerId, CancellationToken cancellationToken)
+        {
+            var partner = await partnerManager.Get(partnerId, cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var documents = await manager.GetByParentId(partnerId, cancellationToken);
+            return Ok(documents);
         }
 
         [HttpPost]

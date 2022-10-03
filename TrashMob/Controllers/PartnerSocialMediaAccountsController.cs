@@ -8,7 +8,6 @@
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Persistence.Interfaces;
 
     [Authorize]
     [Route("api/partnersocialmediaaccounts")]
