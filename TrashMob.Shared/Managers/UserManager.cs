@@ -223,12 +223,22 @@ namespace TrashMob.Shared.Managers
             return result;
         }
 
-        public override async Task<User> Add(User instance)
+        public override async Task<User> Add(User user)
         {
-            var addedUser = await base.Add(instance);
+            user.Id = Guid.NewGuid();
+            user.MemberSince = DateTimeOffset.UtcNow;
+            user.DateAgreedToPrivacyPolicy = DateTimeOffset.MinValue;
+            user.DateAgreedToTermsOfService = DateTimeOffset.MinValue;
+            user.DateAgreedToTrashMobWaiver = DateTimeOffset.MinValue;
+            user.PrivacyPolicyVersion = string.Empty;
+            user.TermsOfServiceVersion = string.Empty;
+            user.TrashMobWaiverVersion = string.Empty;
+            user.IsSiteAdmin = false;
+
+            var addedUser = await base.Add(user);
 
             // Notify Admins that a new user has joined
-            var message = $"A new user: {instance.Email} has joined TrashMob.eco!";
+            var message = $"A new user: {user.Email} has joined TrashMob.eco!";
             var subject = "New User Alert";
 
             var dynamicTemplateData = new
@@ -251,14 +261,14 @@ namespace TrashMob.Shared.Managers
 
             var userDynamicTemplateData = new
             {
-                username = instance.UserName,
+                username = user.UserName,
                 emailCopy = welcomeMessage,
                 subject = welcomeSubject,
             };
 
             var welcomeRecipients = new List<EmailAddress>
             {
-                new EmailAddress { Name = instance.UserName, Email = instance.Email }
+                new EmailAddress { Name = user.UserName, Email = user.Email }
             };
 
             await emailManager.SendTemplatedEmail(welcomeSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients, CancellationToken.None).ConfigureAwait(false);

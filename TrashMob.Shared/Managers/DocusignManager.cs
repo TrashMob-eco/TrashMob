@@ -1,5 +1,5 @@
 ﻿
-namespace TrashMob.Shared.Persistence
+namespace TrashMob.Shared.Managers
 {
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -12,6 +12,7 @@ namespace TrashMob.Shared.Persistence
     using System.IO;
     using System.Threading.Tasks;
     using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared;
 
     public class DocusignManager : IDocusignManager
     {
@@ -55,9 +56,9 @@ namespace TrashMob.Shared.Persistence
                     // build a URL to provide consent for this Integratio Key and this userId
                     string url = "https://" + authServer + "/oauth/auth?response_type=code^&scope=impersonation%20signature&client_id=" +
                                 clientId + "&redirect_uri=" + redirectHome;
-                    logger.LogError($"Consent is required - launch browser (URL is {url})");                    
+                    logger.LogError($"Consent is required - launch browser (URL is {url})");
                 }
- 
+
                 throw;
             }
 

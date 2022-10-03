@@ -29,6 +29,8 @@
 
         Task<T> Get(Guid parentId, Guid secondId, CancellationToken cancellationToken);
 
+        Task<IEnumerable<T>> GetCollection(Guid parentId, Guid secondId, CancellationToken cancellationToken);
+
         Task Delete(Guid parentId, int secondId, CancellationToken cancellationToken);
 
         Task Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken);

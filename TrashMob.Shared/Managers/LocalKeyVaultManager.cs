@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Persistence
+﻿namespace TrashMob.Shared.Managers
 {
     using Microsoft.Extensions.Configuration;
     using System.Security.Cryptography.X509Certificates;

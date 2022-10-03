@@ -11,7 +11,6 @@
     using TrashMob.Models;
     using TrashMob.Poco;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Persistence.Interfaces;
 
     [Authorize]
     [Route("api/partnerusers")]
@@ -19,15 +18,15 @@
     {
         private readonly IBaseManager<PartnerUser> partnerUserManager;
         private readonly IKeyedManager<Partner> partnerManager;
-        private readonly IUserRepository userRepository;
+        private readonly IKeyedManager<User> userManager;
 
-        public PartnerUsersController(IUserRepository userRepository,
+        public PartnerUsersController(IKeyedManager<User> userManager,
                                       IBaseManager<PartnerUser> partnerUserManager, 
                                       IKeyedManager<Partner> partnerManager)
             : base()
         {
             this.partnerManager = partnerManager;
-            this.userRepository = userRepository;
+            this.userManager = userManager;
             this.partnerUserManager = partnerUserManager;
         }
 
@@ -111,7 +110,7 @@
 
             foreach (var pu in partnerUsers)
             {
-                var user = await userRepository.GetUserByInternalId(pu.UserId, cancellationToken).ConfigureAwait(false);
+                var user = await userManager.Get(pu.UserId, cancellationToken).ConfigureAwait(false);
                 users.Add(user.ToDisplayUser());
             }
 

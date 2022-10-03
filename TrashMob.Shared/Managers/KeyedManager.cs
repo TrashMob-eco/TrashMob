@@ -26,7 +26,7 @@ namespace TrashMob.Shared.Managers
         public override Task<T> Add(T instance)
         {
             instance.Id = Guid.NewGuid();
-            return Repo.Add(instance);
+            return base.Add(instance);
         }
 
         public virtual Task<int> Delete(Guid id)

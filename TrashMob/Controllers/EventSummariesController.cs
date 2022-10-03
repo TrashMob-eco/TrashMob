@@ -19,16 +19,13 @@ namespace TrashMob.Controllers
     public class EventSummariesController : SecureController
     {
         private readonly IEventSummaryRepository eventSummaryRepository;
-        private readonly IUserRepository userRepository;
         private readonly IEventRepository eventRepository;
 
-        public EventSummariesController(IUserRepository userRepository,
-                                        IEventSummaryRepository eventSummaryRepository,
+        public EventSummariesController(IEventSummaryRepository eventSummaryRepository,
                                         IEventRepository eventRepository) 
             : base()
         {
             this.eventSummaryRepository = eventSummaryRepository;
-            this.userRepository = userRepository;
             this.eventRepository = eventRepository;
         }
 

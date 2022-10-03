@@ -90,6 +90,7 @@ namespace TrashMob
             services.AddScoped<INotificationManager, NotificationManager>();
 
             // Migrated Repositories
+            services.AddScoped<IKeyedRepository<ContactRequest>, KeyedRepository<ContactRequest>>();
             services.AddScoped<IKeyedRepository<Event>, KeyedRepository<Event>>();
             services.AddScoped<IBaseRepository<EventAttendee>, BaseRepository<EventAttendee>>();
             services.AddScoped<IBaseRepository<EventPartner>, BaseRepository<EventPartner>>();
@@ -97,7 +98,8 @@ namespace TrashMob
             services.AddScoped<ILookupRepository<EventStatus>, LookupRepository<EventStatus>>();
             services.AddScoped<IBaseRepository<EventSummary>, BaseRepository<EventSummary>>();
             services.AddScoped<ILookupRepository<EventType>, LookupRepository<EventType>>();
-            services.AddScoped<IKeyedRepository<ContactRequest>, KeyedRepository<ContactRequest>>();
+            services.AddScoped<IKeyedRepository<MessageRequest>, KeyedRepository<MessageRequest>>();
+            services.AddScoped<IKeyedRepository<NonEventUserNotification>, KeyedRepository<NonEventUserNotification>>();
             services.AddScoped<IKeyedRepository<Partner>, KeyedRepository<Partner>>();
             services.AddScoped<IKeyedRepository<PartnerContact>, KeyedRepository<PartnerContact>>();
             services.AddScoped<IKeyedRepository<PartnerDocument>, KeyedRepository<PartnerDocument>>();
@@ -114,9 +116,11 @@ namespace TrashMob
             services.AddScoped<IKeyedRepository<UserNotification>, KeyedRepository<UserNotification>>();
 
             // Migrated Managers
+            services.AddScoped<IKeyedManager<ContactRequest>, ContactRequestManager>();
             services.AddScoped<ILookupManager<EventPartnerStatus>, EventPartnerStatusManager>();
             services.AddScoped<ILookupManager<EventStatus>, EventStatusManager>();
             services.AddScoped<ILookupManager<EventType>, EventTypeManager>();
+            services.AddScoped<IKeyedManager<MessageRequest>, MessageRequestManager>();
             services.AddScoped<IKeyedManager<Partner>, PartnerManager>();
             services.AddScoped<IKeyedManager<PartnerDocument>, PartnerDocumentManager>();
             services.AddScoped<IKeyedManager<PartnerContact>, PartnerContactManager>();
@@ -125,9 +129,11 @@ namespace TrashMob
             services.AddScoped<ILookupManager<PartnerStatus>, PartnerStatusManager>();
             services.AddScoped<ILookupManager<PartnerType>, PartnerTypeManager>();
             services.AddScoped<IBaseManager<PartnerUser>, PartnerUserManager>();
-            services.AddScoped<IKeyedManager<ContactRequest>, ContactRequestManager>();
             services.AddScoped<ILookupManager<ServiceType>, ServiceTypeManager>();
             services.AddScoped<ILookupManager<SocialMediaAccountType>, SocialMediaAccountTypeManager>();
+            services.AddScoped<IKeyedManager<NonEventUserNotification>, NonEventUserNotificationManager>();
+            services.AddScoped<IKeyedManager<User>, UserManager>();
+            services.AddScoped<IKeyedManager<UserNotification>, UserNotificationManager>();
 
             // Intentional deviation due to unique methods
             services.AddScoped<IPartnerRequestManager, PartnerRequestManager>();
@@ -138,15 +144,10 @@ namespace TrashMob
             services.AddScoped<IEventPartnerRepository, EventPartnerRepository>();
             services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IEventSummaryRepository, EventSummaryRepository>();
-            services.AddScoped<IMessageRequestManager, MessageRequestManager>();
-            services.AddScoped<IMessageRequestRepository, MessageRequestRepository>();
-            services.AddScoped<INonEventUserNotificationRepository, NonEventUserNotificationRepository>();
             services.AddScoped<IPartnerLocationRepository, PartnerLocationRepository>();
             services.AddScoped<IPartnerRepository, PartnerRepository>();
             services.AddScoped<IPartnerRequestRepository, PartnerRequestRepository>();
             services.AddScoped<IPartnerUserRepository, PartnerUserRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             

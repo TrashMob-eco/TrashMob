@@ -19,17 +19,18 @@ namespace TrashMob.Controllers
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Models;
     using TrashMob.Models.Extensions;
+    using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/events")]
     public class EventsController : SecureController
     {
         private readonly IEventRepository eventRepository;
         private readonly IEventAttendeeRepository eventAttendeeRepository;
-        private readonly IUserRepository userRepository;
+        private readonly IKeyedManager<User> userManager;
         private readonly IEmailManager emailManager;
         private readonly IMapRepository mapRepository;
 
-        public EventsController(IUserRepository userRepository,
+        public EventsController(IKeyedManager<User> userManager,
                                 IEventRepository eventRepository,
                                 IEventAttendeeRepository eventAttendeeRepository,                                
                                 IEmailManager emailManager,
@@ -38,7 +39,7 @@ namespace TrashMob.Controllers
         {
             this.eventRepository = eventRepository;
             this.eventAttendeeRepository = eventAttendeeRepository;
-            this.userRepository = userRepository;
+            this.userManager = userManager;
             this.emailManager = emailManager;
             this.mapRepository = mapRepository;
         }
@@ -60,7 +61,7 @@ namespace TrashMob.Controllers
 
             foreach (var mobEvent in results)
             {
-                var user = await userRepository.GetUserByInternalId(mobEvent.CreatedByUserId, cancellationToken);
+                var user = await userManager.Get(mobEvent.CreatedByUserId, cancellationToken);
                 displayResults.Add(mobEvent.ToDisplayEvent(user.UserName));
             }
 

@@ -3,26 +3,27 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
-    using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Managers.Interfaces;
 
     public class UserOwnsEntityOrIsAdminAuthHandler : AuthorizationHandler<UserOwnsEntityOrIsAdminRequirement, BaseModel>
     {
         private readonly IHttpContextAccessor httpContext;
-        private readonly IUserRepository userRepository;
+        private readonly IUserManager userManager;
 
-        public UserOwnsEntityOrIsAdminAuthHandler(IHttpContextAccessor httpContext, IUserRepository userRepository)
+        public UserOwnsEntityOrIsAdminAuthHandler(IHttpContextAccessor httpContext, IUserManager userManager)
         {
             this.httpContext = httpContext;
-            this.userRepository = userRepository;
+            this.userManager = userManager;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, UserOwnsEntityOrIsAdminRequirement requirement, BaseModel resource)
         {
             var userName = context.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            var user = await userRepository.GetUserByNameIdentifier(userName);
+            var user = await userManager.GetUserByUserName(userName, CancellationToken.None);
 
             if (user == null)
             {

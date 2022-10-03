@@ -2,28 +2,27 @@
 {
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc.Filters;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Persistence;
-    using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Managers.Interfaces;
 
     public class UserIsValidUserAuthHandler : AuthorizationHandler<UserIsValidUserRequirement>
     {
         private readonly IHttpContextAccessor httpContext;
-        private readonly IUserRepository userRepository;
+        private readonly IUserManager userManager;
 
-        public UserIsValidUserAuthHandler(IHttpContextAccessor httpContext, IUserRepository userRepository)
+        public UserIsValidUserAuthHandler(IHttpContextAccessor httpContext, IUserManager userManager)
         {
             this.httpContext = httpContext;
-            this.userRepository = userRepository;
+            this.userManager = userManager;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsValidUserRequirement requirement)
         {
             var userName = context.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            var user = await userRepository.GetUserByNameIdentifier(userName);
+            var user = await userManager.GetUserByUserName(userName, CancellationToken.None);
 
             if (user == null)
             {

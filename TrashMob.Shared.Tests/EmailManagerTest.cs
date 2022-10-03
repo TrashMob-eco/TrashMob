@@ -6,7 +6,7 @@
     using System;
     using System.Collections.Generic;
     using TrashMob.Shared.Engine;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Managers;
     using TrashMob.Shared.Persistence.Interfaces;
     using Xunit;
 

@@ -4,20 +4,22 @@
     using Microsoft.AspNetCore.Http;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
 
     public class UserIsPartnerUserOrIsAdminAuthHandler : AuthorizationHandler<UserIsPartnerUserOrIsAdminRequirement, Partner>
     {
         private readonly IHttpContextAccessor httpContext;
-        private readonly IUserRepository userRepository;
+        private readonly IUserManager userManager;
         private readonly IPartnerUserRepository partnerUserRepository;
 
-        public UserIsPartnerUserOrIsAdminAuthHandler(IHttpContextAccessor httpContext, IUserRepository userRepository, IPartnerUserRepository partnerUserRepository)
+        public UserIsPartnerUserOrIsAdminAuthHandler(IHttpContextAccessor httpContext, IUserManager userManager, IPartnerUserRepository partnerUserRepository)
         {
             this.httpContext = httpContext;
-            this.userRepository = userRepository;
+            this.userManager = userManager;
             this.partnerUserRepository = partnerUserRepository;
         }
 
@@ -25,7 +27,7 @@
         {
             var userName = context.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            var user = await userRepository.GetUserByNameIdentifier(userName);
+            var user = await userManager.GetUserByUserName(userName, CancellationToken.None);
 
             if (user == null)
             {

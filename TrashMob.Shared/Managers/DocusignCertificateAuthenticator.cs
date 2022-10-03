@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Persistence
+﻿namespace TrashMob.Shared.Managers
 {
     using DocuSign.eSign.Client;
     using System;
@@ -41,7 +41,7 @@
                 };
 
             var token = apiClient.RequestJWTUserToken(clientId, impersonatedUserId, authServer, bytes.ToArray(), 1, scopes);
-            
+
             var userInfo = apiClient.GetUserInfo(token.access_token);
 
             if (userInfo?.Accounts?.Count > 0)

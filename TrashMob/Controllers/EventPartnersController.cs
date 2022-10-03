@@ -21,15 +21,15 @@ namespace TrashMob.Controllers
     public class EventPartnersController : SecureController
     {
         private readonly IEventPartnerRepository eventPartnerRepository;
-        private readonly IUserRepository userRepository;
         private readonly IKeyedManager<Partner> partnerManager;
+        private readonly IKeyedManager<User> userManager;
         private readonly IPartnerRepository partnerRepository;
         private readonly IPartnerLocationRepository partnerLocationRepository;
         private readonly IPartnerUserRepository partnerUserRepository;
         private readonly IEmailManager emailManager;
 
-        public EventPartnersController(IUserRepository userRepository,
-                                       IKeyedManager<Partner> partnerManager,   
+        public EventPartnersController(IKeyedManager<Partner> partnerManager,
+                                       IKeyedManager<User> userManager,
                                        IEventPartnerRepository eventPartnerRepository, 
                                        IPartnerRepository partnerRepository, 
                                        IPartnerLocationRepository partnerLocationRepository,
@@ -38,8 +38,8 @@ namespace TrashMob.Controllers
             : base()
         {
             this.eventPartnerRepository = eventPartnerRepository;
-            this.userRepository = userRepository;
             this.partnerManager = partnerManager;
+            this.userManager = userManager;
             this.partnerRepository = partnerRepository;
             this.partnerLocationRepository = partnerLocationRepository;
             this.partnerUserRepository = partnerUserRepository;
@@ -122,7 +122,7 @@ namespace TrashMob.Controllers
 
             var updatedEventPartner = await eventPartnerRepository.UpdateEventPartner(eventPartner).ConfigureAwait(false);
 
-            var user = await userRepository.GetUserByInternalId(eventPartner.CreatedByUserId).ConfigureAwait(false);
+            var user = await userManager.Get(eventPartner.CreatedByUserId).ConfigureAwait(false);
 
             // Notify Admins that a partner request has been responded to
             var subject = "A partner request for an event has been responded to!";

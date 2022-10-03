@@ -11,6 +11,7 @@ namespace TrashMobJobs
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Shared.Persistence.Events;
     using TrashMob.Models;
+    using TrashMob.Shared.Managers;
 
     public class Program
     {
@@ -32,10 +33,8 @@ namespace TrashMobJobs
                      .AddSingleton<IEventSummaryRepository, EventSummaryRepository>()
                      .AddSingleton<ILookupRepository<EventType>, LookupRepository<EventType>>()
                      .AddSingleton<IMapRepository, MapRepository>()
-                     .AddSingleton<IUserRepository, UserRepository>()
-                     .AddSingleton<IUserNotificationRepository, UserNotificationRepository>()
-                     .AddSingleton<INonEventUserNotificationRepository, NonEventUserNotificationRepository>()
-                     .AddSingleton<IUserNotificationManager, UserNotificationManager>())
+                     .AddSingleton<IKeyedRepository<UserNotification>, KeyedRepository<UserNotification>>()
+                     .AddSingleton<IKeyedRepository<NonEventUserNotification>, KeyedRepository<NonEventUserNotification>>())
                 .Build();
 
             await host.RunAsync().ConfigureAwait(false);

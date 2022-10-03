@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Persistence
+﻿namespace TrashMob.Shared.Managers
 {
     using Azure.Security.KeyVault.Secrets;
     using System;
@@ -18,7 +18,7 @@
         public async Task<X509Certificate2> GetCertificateAsync(string certificateSecretName)
         {
             var secret = await secretClient.GetSecretAsync(certificateSecretName).ConfigureAwait(false);
-            
+
             if (secret == null)
             {
                 throw new InvalidOperationException($"Unable to find certificate with secret name {certificateSecretName}");
