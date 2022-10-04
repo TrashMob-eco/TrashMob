@@ -10,32 +10,34 @@ namespace TrashMob.Controllers
     using System.Threading.Tasks;
     using TrashMob.Common;
     using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Models;
+    using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/stats")]
     public class StatsController : BaseController
     {
         private readonly IEventRepository eventRepository;
-        private readonly IEventSummaryRepository eventSummaryRepository;
+        private readonly IBaseManager<EventSummary> eventSummaryManager;
         private readonly IEventAttendeeRepository eventAttendeeRepository;
 
         public StatsController(IEventRepository eventRepository,
-                               IEventSummaryRepository eventSummaryRepository,
+                               IBaseManager<EventSummary> eventSummaryManager,
                                IEventAttendeeRepository eventAttendeeRepository)
             : base()
         {
             this.eventRepository = eventRepository;
-            this.eventSummaryRepository = eventSummaryRepository;
+            this.eventSummaryManager = eventSummaryManager;
             this.eventAttendeeRepository = eventAttendeeRepository;
         }
 
         [HttpGet]
-        public IActionResult GetStats(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetStats(CancellationToken cancellationToken)
         {
             var stats = new Stats();
             var events = eventRepository.GetEvents(cancellationToken);
             stats.TotalEvents = events.Count();
 
-            var eventSummaries = eventSummaryRepository.GetEventSummaries(cancellationToken);
+            var eventSummaries = await eventSummaryManager.Get(cancellationToken);
             stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) + (eventSummaries.Sum(es => es.NumberOfBuckets) / 3);
             stats.TotalHours = eventSummaries.Sum(es => es.DurationInMinutes * es.ActualNumberOfAttendees / 60);
             stats.TotalParticipants = eventSummaries.Sum(es => es.ActualNumberOfAttendees);
@@ -55,7 +57,7 @@ namespace TrashMob.Controllers
             stats.TotalEvents = allResults.Count();
             var eventIds = allResults.Select(e => e.Id);
 
-            var eventSummaries = eventSummaryRepository.GetEventSummaries(cancellationToken).Where(es => eventIds.Contains(es.EventId));
+            var eventSummaries = await eventSummaryManager.Get(es => eventIds.Contains(es.EventId), cancellationToken);
             stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) + (eventSummaries.Sum(es => es.NumberOfBuckets) / 3);
             stats.TotalHours = eventSummaries.Sum(es => es.DurationInMinutes) / 60;
 

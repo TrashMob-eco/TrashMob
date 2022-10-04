@@ -16,7 +16,7 @@
         private readonly IEmailSender emailSender;
         private readonly IEmailManager emailManager;
         private readonly IMapRepository mapRepository;
-        private readonly IEventSummaryRepository eventSummaryRepository;
+        private readonly IBaseManager<EventSummary> eventSummaryManager;
         private readonly ILogger<UserNotificationManager> logger;
 
         public UserNotificationManager(IEventRepository eventRepository,
@@ -27,7 +27,7 @@
                                        IEmailSender emailSender,
                                        IEmailManager emailManager,
                                        IMapRepository mapRepository,
-                                       IEventSummaryRepository eventSummaryRepository,
+                                       IBaseManager<EventSummary> eventSummaryManager,
                                        ILogger<UserNotificationManager> logger)
         {
             this.eventRepository = eventRepository;
@@ -38,7 +38,7 @@
             this.emailSender = emailSender;
             this.emailManager = emailManager;
             this.mapRepository = mapRepository;
-            this.eventSummaryRepository = eventSummaryRepository;
+            this.eventSummaryManager = eventSummaryManager;
             this.logger = logger;
         }
 
@@ -52,7 +52,7 @@
             var eventSummaryHostReminderNotifier = new EventSummaryHostReminderNotifier(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
             await eventSummaryHostReminderNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
-            var eventSummaryHostWeekReminderNotifier = new EventSummaryHostWeekReminderNotifier(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, eventSummaryRepository, logger);
+            var eventSummaryHostWeekReminderNotifier = new EventSummaryHostWeekReminderNotifier(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, eventSummaryManager, logger);
             await eventSummaryHostWeekReminderNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
             var upcomingEventAttendingThisWeekNotifier = new UpcomingEventAttendingThisWeekNotifier(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);

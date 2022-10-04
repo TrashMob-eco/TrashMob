@@ -14,13 +14,13 @@
     {
         private readonly IHttpContextAccessor httpContext;
         private readonly IUserManager userManager;
-        private readonly IPartnerUserRepository partnerUserRepository;
+        private readonly IBaseManager<PartnerUser> partnerUserManager;
 
-        public UserIsPartnerUserOrIsAdminAuthHandler(IHttpContextAccessor httpContext, IUserManager userManager, IPartnerUserRepository partnerUserRepository)
+        public UserIsPartnerUserOrIsAdminAuthHandler(IHttpContextAccessor httpContext, IUserManager userManager, IBaseManager<PartnerUser> partnerUserManager)
         {
             this.httpContext = httpContext;
             this.userManager = userManager;
-            this.partnerUserRepository = partnerUserRepository;
+            this.partnerUserManager = partnerUserManager;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsPartnerUserOrIsAdminRequirement requirement, Partner resource)
@@ -42,7 +42,7 @@
             }
             else
             {
-                var currentUserPartner = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == resource.Id && pu.UserId == user.Id);
+                var currentUserPartner = (await partnerUserManager.Get(pu => pu.PartnerId == resource.Id && pu.UserId == user.Id, CancellationToken.None)).FirstOrDefault();
 
                 if (currentUserPartner != null)
                 {

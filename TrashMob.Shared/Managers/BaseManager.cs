@@ -81,12 +81,17 @@ namespace TrashMob.Shared.Managers
             throw new NotImplementedException();
         }
 
-        public virtual Task Delete(Guid parentId, int secondId, CancellationToken cancellationToken)
+        public virtual Task<int> Delete(Guid parentId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public virtual Task Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken)
+        public virtual Task<int> Delete(Guid parentId, int secondId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Task<int> Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

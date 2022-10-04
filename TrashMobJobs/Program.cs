@@ -12,6 +12,8 @@ namespace TrashMobJobs
     using TrashMob.Shared.Persistence.Events;
     using TrashMob.Models;
     using TrashMob.Shared.Managers;
+    using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Managers.Events;
 
     public class Program
     {
@@ -30,7 +32,7 @@ namespace TrashMobJobs
                      .AddSingleton<IEventAttendeeRepository, EventAttendeeRepository>()
                      .AddSingleton<IEventRepository, EventRepository>()
                      .AddSingleton<ILookupRepository<EventStatus>, LookupRepository<EventStatus>>()
-                     .AddSingleton<IEventSummaryRepository, EventSummaryRepository>()
+                     .AddSingleton<IBaseManager<EventSummary>, EventSummaryManager>()
                      .AddSingleton<ILookupRepository<EventType>, LookupRepository<EventType>>()
                      .AddSingleton<IMapRepository, MapRepository>()
                      .AddSingleton<IKeyedRepository<UserNotification>, KeyedRepository<UserNotification>>()

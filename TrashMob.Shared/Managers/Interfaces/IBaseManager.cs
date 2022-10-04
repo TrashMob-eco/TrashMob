@@ -31,8 +31,10 @@
 
         Task<IEnumerable<T>> GetCollection(Guid parentId, Guid secondId, CancellationToken cancellationToken);
 
-        Task Delete(Guid parentId, int secondId, CancellationToken cancellationToken);
+        Task<int> Delete(Guid parentId, CancellationToken cancellationToken);
 
-        Task Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken);
+        Task<int> Delete(Guid parentId, int secondId, CancellationToken cancellationToken);
+
+        Task<int> Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken);
     }
 }

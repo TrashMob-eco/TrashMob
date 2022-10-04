@@ -6,8 +6,6 @@ namespace TrashMob.Controllers
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.ApplicationInsights;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Poco;
@@ -17,19 +15,19 @@ namespace TrashMob.Controllers
     [Route("api/partnerevents")]
     public class PartnerEventsController : SecureController
     {
-        private readonly IEventPartnerRepository eventPartnerRepository;
-        private readonly IPartnerLocationRepository partnerLocationRepository;
+        private readonly IBaseManager<EventPartner> eventPartnerManager;
+        private readonly IKeyedManager<PartnerLocation> partnerLocationManager;
         private readonly IEventRepository eventRepository;
         private readonly IKeyedManager<Partner> partnerManager;
 
-        public PartnerEventsController(IEventPartnerRepository eventPartnerRepository, 
-                                       IPartnerLocationRepository partnerLocationRepository, 
+        public PartnerEventsController(IBaseManager<EventPartner> eventPartnerManager,
+                                       IKeyedManager<PartnerLocation> partnerLocationManager, 
                                        IEventRepository eventRepository,
                                        IKeyedManager<Partner> partnerManager)
             : base()
         {
-            this.eventPartnerRepository = eventPartnerRepository;
-            this.partnerLocationRepository = partnerLocationRepository;
+            this.eventPartnerManager = eventPartnerManager;
+            this.partnerLocationManager = partnerLocationManager;
             this.eventRepository = eventRepository;
             this.partnerManager = partnerManager;
         }
@@ -46,7 +44,7 @@ namespace TrashMob.Controllers
             }
 
             var displayPartnerEvents = new List<DisplayPartnerEvent>();
-            var currentPartners = await eventPartnerRepository.GetPartnerEvents(partnerId, cancellationToken).ConfigureAwait(false);
+            var currentPartners = await eventPartnerManager.Get(p => p.PartnerId == partnerId, cancellationToken).ConfigureAwait(false);
 
             if (currentPartners.Any())
             {
@@ -63,7 +61,7 @@ namespace TrashMob.Controllers
 
                     displayPartnerEvent.PartnerName = partner.Name;
 
-                    var partnerLocation = partnerLocationRepository.GetPartnerLocations(cancellationToken).FirstOrDefault(pl => pl.PartnerId == cp.PartnerId && pl.Id == cp.PartnerLocationId);
+                    var partnerLocation = (await partnerLocationManager.Get(pl => pl.PartnerId == cp.PartnerId && pl.Id == cp.PartnerLocationId, cancellationToken)).FirstOrDefault();
 
                     displayPartnerEvent.PartnerLocationName = partnerLocation.Name;
 

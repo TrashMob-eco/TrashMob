@@ -8,16 +8,16 @@
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Shared;
-    using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/admin")]
     public class AdminController : SecureController
     {
-        private readonly IPartnerRequestRepository partnerRequestRepository;
+        private readonly IBaseManager<PartnerRequest> partnerRequestManager;
 
-        public AdminController(IPartnerRequestRepository partnerRequestRepository) : base()
+        public AdminController(IBaseManager<PartnerRequest> partnerRequestManager) : base()
         {
-            this.partnerRequestRepository = partnerRequestRepository;
+            this.partnerRequestManager = partnerRequestManager;
         }
 
         [HttpPut("partnerrequestupdate/{userId}")]
@@ -25,7 +25,7 @@
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdatePartnerRequest(Guid userId, PartnerRequest partnerRequest)
         {
-            var result = await partnerRequestRepository.UpdatePartnerRequest(partnerRequest).ConfigureAwait(false);
+            var result = await partnerRequestManager.Update(partnerRequest).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdatePartnerRequest));
 
             return Ok(result);

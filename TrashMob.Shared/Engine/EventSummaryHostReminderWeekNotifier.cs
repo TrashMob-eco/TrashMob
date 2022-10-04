@@ -13,7 +13,7 @@ namespace TrashMob.Shared.Engine
 
     public class EventSummaryHostWeekReminderNotifier : NotificationEngineBase, INotificationEngine
     {
-        private readonly IEventSummaryRepository eventSummaryRepository;
+        private readonly IBaseManager<EventSummary> eventSummaryManager;
 
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.EventSummaryHostWeekReminder;
 
@@ -29,11 +29,11 @@ namespace TrashMob.Shared.Engine
                                                 IEmailSender emailSender,
                                                 IEmailManager emailManager,
                                                 IMapRepository mapRepository,
-                                                IEventSummaryRepository eventSummaryRepository,
+                                                IBaseManager<EventSummary> eventSummaryManager,
                                                 ILogger logger) :
             base(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
         {
-            this.eventSummaryRepository = eventSummaryRepository;
+            this.eventSummaryManager = eventSummaryManager;
         }
 
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
@@ -67,7 +67,7 @@ namespace TrashMob.Shared.Engine
                         continue;
                     }
 
-                    var eventSummary = await eventSummaryRepository.GetEventSummary(mobEvent.Id, cancellationToken).ConfigureAwait(false);
+                    var eventSummary = await eventSummaryManager.Get(es => es.EventId == mobEvent.Id, cancellationToken).ConfigureAwait(false);
 
                     // Only send an email if the summary has not been completed.
                     if (eventSummary == null)

@@ -26,7 +26,6 @@ namespace TrashMob
     using TrashMob.Shared.Persistence;
     using TrashMob.Shared.Persistence.Events;
     using TrashMob.Shared.Persistence.Interfaces;
-    using TrashMob.Shared.Persistence.Partners;
 
     public class Startup
     {
@@ -117,13 +116,19 @@ namespace TrashMob
 
             // Migrated Managers
             services.AddScoped<IKeyedManager<ContactRequest>, ContactRequestManager>();
+            services.AddScoped<IBaseManager<EventAttendee>, EventAttendeeManager>();
+            services.AddScoped<IKeyedManager<Event>, EventManager>();
             services.AddScoped<ILookupManager<EventPartnerStatus>, EventPartnerStatusManager>();
+            services.AddScoped<IBaseManager<EventPartner>, EventPartnerManager>();
             services.AddScoped<ILookupManager<EventStatus>, EventStatusManager>();
+            services.AddScoped<IBaseManager<EventSummary>, EventSummaryManager>();
             services.AddScoped<ILookupManager<EventType>, EventTypeManager>();
             services.AddScoped<IKeyedManager<MessageRequest>, MessageRequestManager>();
             services.AddScoped<IKeyedManager<Partner>, PartnerManager>();
             services.AddScoped<IKeyedManager<PartnerDocument>, PartnerDocumentManager>();
             services.AddScoped<IKeyedManager<PartnerContact>, PartnerContactManager>();
+            services.AddScoped<IKeyedManager<PartnerLocation>, PartnerLocationManager>();
+            services.AddScoped<IKeyedManager<PartnerRequest>, PartnerRequestManager>();
             services.AddScoped<ILookupManager<PartnerRequestStatus>, PartnerRequestStatusManager>();
             services.AddScoped<IKeyedManager<PartnerSocialMediaAccount>, PartnerSocialMediaAccountManager>();
             services.AddScoped<ILookupManager<PartnerStatus>, PartnerStatusManager>();
@@ -136,18 +141,13 @@ namespace TrashMob
             services.AddScoped<IKeyedManager<UserNotification>, UserNotificationManager>();
 
             // Intentional deviation due to unique methods
+            services.AddScoped<IEventPartnerManager, EventPartnerManager>();
             services.AddScoped<IPartnerRequestManager, PartnerRequestManager>();
             services.AddScoped<IUserManager, UserManager>();
 
             // Not Migrated Repositories and Managers
             services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
-            services.AddScoped<IEventPartnerRepository, EventPartnerRepository>();
             services.AddScoped<IEventRepository, EventRepository>();
-            services.AddScoped<IEventSummaryRepository, EventSummaryRepository>();
-            services.AddScoped<IPartnerLocationRepository, PartnerLocationRepository>();
-            services.AddScoped<IPartnerRepository, PartnerRepository>();
-            services.AddScoped<IPartnerRequestRepository, PartnerRequestRepository>();
-            services.AddScoped<IPartnerUserRepository, PartnerUserRepository>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             
