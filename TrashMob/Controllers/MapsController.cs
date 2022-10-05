@@ -27,7 +27,7 @@
         [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetAddressForPoint([FromQuery] double latitude, [FromQuery] double longitude)
         {
-            var address = await mapRepository.GetAddress(latitude, longitude);
+            var address = await mapRepository.GetAddressAsync(latitude, longitude);
             TelemetryClient.TrackEvent(nameof(GetAddressForPoint));
             return Ok(address);
         }

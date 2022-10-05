@@ -27,7 +27,7 @@
         [HttpGet("getbypartner/{partnerId}")]
         public async Task<IActionResult> GetPartnerSocialMediaAccounts(Guid partnerId, CancellationToken cancellationToken)
         {
-            var partner = await partnerManager.Get(partnerId, cancellationToken);
+            var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
@@ -35,14 +35,14 @@
                 return Forbid();
             }
 
-            var socialMediaAccounts = await manager.GetByParentId(partnerId, cancellationToken);
+            var socialMediaAccounts = await manager.GetByParentIdAsync(partnerId, cancellationToken);
             return Ok(socialMediaAccounts);
         }
 
         [HttpPost]
         public async Task<IActionResult> AddPartnerSocialMediaAccount(PartnerSocialMediaAccount partnerSocialMediaAccount, CancellationToken cancellationToken)
         {
-            var partner = await partnerManager.Get(partnerSocialMediaAccount.PartnerId, cancellationToken);
+            var partner = await partnerManager.GetAsync(partnerSocialMediaAccount.PartnerId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
@@ -50,7 +50,7 @@
                 return Forbid();
             }
 
-            await manager.Add(partnerSocialMediaAccount, UserId).ConfigureAwait(false);
+            await manager.AddAsync(partnerSocialMediaAccount, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddPartnerSocialMediaAccount));
 
             return Ok();

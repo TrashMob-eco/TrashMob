@@ -35,7 +35,7 @@ namespace TrashMob.Controllers
         [HttpGet("{partnerId}")]
         public async Task<IActionResult> GetPartnerEvents(Guid partnerId, CancellationToken cancellationToken)
         {
-            var partner = await partnerManager.Get(partnerId, cancellationToken);
+            var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
@@ -44,7 +44,7 @@ namespace TrashMob.Controllers
             }
 
             var displayPartnerEvents = new List<DisplayPartnerEvent>();
-            var currentPartners = await eventPartnerManager.Get(p => p.PartnerId == partnerId, cancellationToken).ConfigureAwait(false);
+            var currentPartners = await eventPartnerManager.GetAsync(p => p.PartnerId == partnerId, cancellationToken).ConfigureAwait(false);
 
             if (currentPartners.Any())
             {
@@ -61,11 +61,11 @@ namespace TrashMob.Controllers
 
                     displayPartnerEvent.PartnerName = partner.Name;
 
-                    var partnerLocation = (await partnerLocationManager.Get(pl => pl.PartnerId == cp.PartnerId && pl.Id == cp.PartnerLocationId, cancellationToken)).FirstOrDefault();
+                    var partnerLocation = (await partnerLocationManager.GetAsync(pl => pl.PartnerId == cp.PartnerId && pl.Id == cp.PartnerLocationId, cancellationToken)).FirstOrDefault();
 
                     displayPartnerEvent.PartnerLocationName = partnerLocation.Name;
 
-                    var mobEvent = await eventManager.Get(cp.EventId, cancellationToken).ConfigureAwait(false);
+                    var mobEvent = await eventManager.GetAsync(cp.EventId, cancellationToken).ConfigureAwait(false);
 
                     displayPartnerEvent.EventName = mobEvent.Name;
                     displayPartnerEvent.EventStreetAddress = mobEvent.StreetAddress;

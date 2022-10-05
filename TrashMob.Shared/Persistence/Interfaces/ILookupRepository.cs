@@ -17,6 +17,6 @@
 
         IQueryable<T> Get(Expression<Func<T, bool>> expression);
 
-        Task<T> Get(int id, CancellationToken cancellationToken = default);
+        Task<T> GetAsync(int id, CancellationToken cancellationToken);
     }
 }

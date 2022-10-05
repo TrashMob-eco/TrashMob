@@ -24,9 +24,9 @@
             this.emailManager = emailManager;
         }
 
-        public override async Task<EventPartner> Add(EventPartner instance)
+        public override async Task<EventPartner> AddAsync(EventPartner instance, CancellationToken cancellationToken = default)
         {
-            var eventPartner = await base.Add(instance);
+            var eventPartner = await base.AddAsync(instance, cancellationToken);
 
             // Notify Admins that a new partner request has been made
             var subject = "A New Partner Request for an Event has been made!";
@@ -44,7 +44,7 @@
                 subject = subject,
             };
 
-            await emailManager.SendTemplatedEmail(subject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.EventRelated, adminDynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.EventRelated, adminDynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
 
             var partnerMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventPartnerRequest.ToString());
             var partnerSubject = "A TrashMob.eco Event would like to Partner with you!";
@@ -64,21 +64,21 @@
                 new EmailAddress { Name = eventPartner.PartnerLocation.Name, Email = eventPartner.PartnerLocation.SecondaryEmail }
             };
 
-            await emailManager.SendTemplatedEmail(partnerSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendTemplatedEmailAsync(partnerSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
 
             return eventPartner;
         }
 
-        public async Task<IEnumerable<EventPartner>> GetCurrentPartners(Guid eventId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<EventPartner>> GetCurrentPartnersAsync(Guid eventId, CancellationToken cancellationToken)
         {
             var eventPartners = await Repository.Get(ea => ea.EventId == eventId).ToListAsync(cancellationToken).ConfigureAwait(false);
 
             return eventPartners;
         }
 
-        public async Task<IEnumerable<PartnerLocation>> GetPotentialPartnerLocations(Guid eventId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<PartnerLocation>> GetPotentialPartnerLocationsAsync(Guid eventId, CancellationToken cancellationToken)
         {
-            var mobEvent = await eventRepository.Get(eventId, cancellationToken);
+            var mobEvent = await eventRepository.GetAsync(eventId, cancellationToken);
 
             // Simple match on postal code or city first. Radius later
             var partnerLocations = partnerLocationRepository.Get(pl => pl.IsActive && pl.Partner.PartnerStatusId == (int)PartnerStatusEnum.Active &&

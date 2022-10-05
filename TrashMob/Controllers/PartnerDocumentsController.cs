@@ -27,7 +27,7 @@
         [HttpGet("getbypartner/{partnerId}")]
         public async Task<IActionResult> GetPartnerDocuments(Guid partnerId, CancellationToken cancellationToken)
         {
-            var partner = await partnerManager.Get(partnerId, cancellationToken);
+            var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
@@ -35,14 +35,14 @@
                 return Forbid();
             }
 
-            var documents = await manager.GetByParentId(partnerId, cancellationToken);
+            var documents = await manager.GetByParentIdAsync(partnerId, cancellationToken);
             return Ok(documents);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(PartnerDocument partnerDocument)
+        public async Task<IActionResult> Add(PartnerDocument partnerDocument, CancellationToken cancellationToken)
         {
-            var partner = partnerManager.Get(partnerDocument.PartnerId);
+            var partner = partnerManager.GetAsync(partnerDocument.PartnerId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
@@ -50,7 +50,7 @@
                 return Forbid();
             }
 
-            await manager.Add(partnerDocument, UserId).ConfigureAwait(false);
+            await manager.AddAsync(partnerDocument, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(Add) + typeof(PartnerDocument));
 
             return Ok();

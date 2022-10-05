@@ -13,6 +13,7 @@ namespace TrashMob.Shared.Managers
     using System.Threading.Tasks;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
+    using System.Threading;
 
     public class DocusignManager : IDocusignManager
     {
@@ -223,7 +224,7 @@ namespace TrashMob.Shared.Managers
             return viewRequest;
         }
 
-        public async Task<string> GetEnvelopeStatus(string envelopeId)
+        public async Task<string> GetEnvelopeStatusAsync(string envelopeId, CancellationToken cancellationToken = default)
         {
             OAuthToken accessToken;
             string localBaseUri;

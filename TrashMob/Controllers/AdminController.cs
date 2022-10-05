@@ -5,6 +5,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Shared;
@@ -23,9 +24,9 @@
         [HttpPut("partnerrequestupdate/{userId}")]
         [Authorize(Policy = "UserIsAdmin")]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> UpdatePartnerRequest(Guid userId, PartnerRequest partnerRequest)
+        public async Task<IActionResult> UpdatePartnerRequest(Guid userId, PartnerRequest partnerRequest, CancellationToken cancellationToken)
         {
-            var result = await partnerRequestManager.Update(partnerRequest).ConfigureAwait(false);
+            var result = await partnerRequestManager.UpdateAsync(partnerRequest, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdatePartnerRequest));
 
             return Ok(result);

@@ -9,7 +9,7 @@
     {      
         public static async Task<Tuple<string, string>> GetLocalEventTime(this Event mobEvent, IMapManager mapRepository)
         {
-            var localTime = await mapRepository.GetTimeForPoint(new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false);
+            var localTime = await mapRepository.GetTimeForPointAsync(new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false);
 
             if (string.IsNullOrWhiteSpace(localTime))
             {

@@ -37,7 +37,7 @@
                 .AsNoTracking();
         }
 
-        public async Task<T> Get(int id, CancellationToken cancellationToken = default)
+        public async Task<T> GetAsync(int id, CancellationToken cancellationToken = default)
         {
             return await dbSet.AsNoTracking().SingleOrDefaultAsync(e => e.Id == id, cancellationToken: cancellationToken).ConfigureAwait(false);
         }

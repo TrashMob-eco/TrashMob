@@ -10,6 +10,7 @@ namespace TrashMob.Shared.Managers
     using System.Text.Json;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Models;
+    using System.Threading;
 
     public class NotificationManager : INotificationManager
     {
@@ -25,7 +26,7 @@ namespace TrashMob.Shared.Managers
             this.logger = logger;
         }
 
-        public async Task SendMessageRequest(MessageRequest messageRequest)
+        public async Task SendMessageRequestAsync(MessageRequest messageRequest, CancellationToken cancellationToken = default)
         {
             // Apple requires the apns-push-type header for all requests
             var headers = new Dictionary<string, string> { { "apns-push-type", "alert" } };
@@ -40,7 +41,7 @@ namespace TrashMob.Shared.Managers
 
             try
             {
-                var result = await hub.SendTemplateNotificationAsync(templateParams);
+                var result = await hub.SendTemplateNotificationAsync(templateParams, cancellationToken);
 
                 logger.LogInformation("Result from sending notification:  {0}", JsonSerializer.Serialize(result));
             }

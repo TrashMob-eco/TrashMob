@@ -19,11 +19,11 @@
         [HttpGet("{partnerId}")]
         public async Task<IActionResult> Get(Guid partnerId, CancellationToken cancellationToken)
         {
-            return Ok(await Manager.Get(partnerId, cancellationToken).ConfigureAwait(false));
+            return Ok(await Manager.GetAsync(partnerId, cancellationToken).ConfigureAwait(false));
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update(Partner partner)
+        public async Task<IActionResult> Update(Partner partner, CancellationToken cancellationToken)
         {
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
@@ -32,7 +32,7 @@
                 return Forbid();
             }
 
-            var result = await Manager.Update(partner).ConfigureAwait(false);
+            var result = await Manager.UpdateAsync(partner, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(Update) + typeof(Partner));
 
             return Ok(result);

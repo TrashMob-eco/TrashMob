@@ -47,7 +47,7 @@ namespace TrashMob.Controllers
         [HttpGet]
         public async Task<IActionResult> GetEvents(CancellationToken cancellationToken)
         {
-            var result = await eventManager.Get(cancellationToken).ConfigureAwait(false);
+            var result = await eventManager.GetAsync(cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
@@ -55,13 +55,13 @@ namespace TrashMob.Controllers
         [Route("active")]
         public async Task<IActionResult> GetActiveEvents(CancellationToken cancellationToken)
         {
-            var results = await eventManager.GetActiveEvents(cancellationToken).ConfigureAwait(false);
+            var results = await eventManager.GetActiveEventsAsync(cancellationToken).ConfigureAwait(false);
 
             var displayResults = new List<DisplayEvent>();
 
             foreach (var mobEvent in results)
             {
-                var user = await userManager.Get(mobEvent.CreatedByUserId, cancellationToken);
+                var user = await userManager.GetAsync(mobEvent.CreatedByUserId, cancellationToken);
                 displayResults.Add(mobEvent.ToDisplayEvent(user.UserName));
             }
 
@@ -74,7 +74,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobReadScope)]
         public async Task<IActionResult> GetEventsUserIsAttending(Guid userId, CancellationToken cancellationToken)
         {
-            var result = await eventAttendeeManager.GetEventsUserIsAttending(userId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var result = await eventAttendeeManager.GetEventsUserIsAttendingAsync(userId, cancellationToken: cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
@@ -84,8 +84,8 @@ namespace TrashMob.Controllers
         [Route("userevents/{userId}/{futureEventsOnly}")]
         public async Task<IActionResult> GetUserEvents(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken)
         {
-            var result1 = await eventManager.GetUserEvents(userId, futureEventsOnly, cancellationToken).ConfigureAwait(false);
-            var result2 = await eventAttendeeManager.GetEventsUserIsAttending(userId, futureEventsOnly, cancellationToken).ConfigureAwait(false);
+            var result1 = await eventManager.GetUserEventsAsync(userId, futureEventsOnly, cancellationToken).ConfigureAwait(false);
+            var result2 = await eventAttendeeManager.GetEventsUserIsAttendingAsync(userId, futureEventsOnly, cancellationToken).ConfigureAwait(false);
 
             var allResults = result1.Union(result2, new EventComparer());
             return Ok(allResults);
@@ -97,8 +97,8 @@ namespace TrashMob.Controllers
         [Route("canceleduserevents/{userId}/{futureEventsOnly}")]
         public async Task<IActionResult> GetCanceledUserEvents(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken)
         {
-            var result1 = await eventManager.GetCanceledUserEvents(userId, futureEventsOnly, cancellationToken).ConfigureAwait(false);
-            var result2 = await eventAttendeeManager.GetCanceledEventsUserIsAttending(userId, futureEventsOnly, cancellationToken).ConfigureAwait(false);
+            var result1 = await eventManager.GetCanceledUserEventsAsync(userId, futureEventsOnly, cancellationToken).ConfigureAwait(false);
+            var result2 = await eventAttendeeManager.GetCanceledEventsUserIsAttendingAsync(userId, futureEventsOnly, cancellationToken).ConfigureAwait(false);
 
             var allResults = result1.Union(result2, new EventComparer());
             return Ok(allResults);
@@ -107,7 +107,7 @@ namespace TrashMob.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEvent(Guid id, CancellationToken cancellationToken = default)
         {
-            var mobEvent = await eventManager.Get(id, cancellationToken).ConfigureAwait(false);
+            var mobEvent = await eventManager.GetAsync(id, cancellationToken).ConfigureAwait(false);
 
             if (mobEvent == null)
             {
@@ -130,9 +130,9 @@ namespace TrashMob.Controllers
 
             try
             {
-                var oldEvent = await eventManager.Get(mobEvent.Id, cancellationToken).ConfigureAwait(false);
+                var oldEvent = await eventManager.GetAsync(mobEvent.Id, cancellationToken).ConfigureAwait(false);
 
-                var updatedEvent = await eventManager.Update(mobEvent).ConfigureAwait(false);
+                var updatedEvent = await eventManager.UpdateAsync(mobEvent, cancellationToken).ConfigureAwait(false);
                 TelemetryClient.TrackEvent(nameof(UpdateEvent));
 
                 if (oldEvent.EventDate != mobEvent.EventDate
@@ -153,7 +153,7 @@ namespace TrashMob.Controllers
 
                     var subject = "A TrashMob.eco event you were scheduled to attend has been updated!";
 
-                    var eventAttendees = await eventAttendeeManager.Get(m => m.EventId == mobEvent.Id, cancellationToken).ConfigureAwait(false);
+                    var eventAttendees = await eventAttendeeManager.GetAsync(m => m.EventId == mobEvent.Id, cancellationToken).ConfigureAwait(false);
 
                     foreach (var attendee in eventAttendees)
                     {
@@ -175,7 +175,7 @@ namespace TrashMob.Controllers
                             new EmailAddress { Name = attendee.User.UserName, Email = attendee.User.Email },
                         };
 
-                        await emailManager.SendTemplatedEmail(subject, SendGridEmailTemplateId.EventEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+                        await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.EventEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
                     }
                 }
 
@@ -197,9 +197,9 @@ namespace TrashMob.Controllers
         [HttpPost]
         [Authorize(Policy = "ValidUser")]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> AddEvent(Event mobEvent)
+        public async Task<IActionResult> AddEvent(Event mobEvent, CancellationToken cancellationToken)
         {
-            var newEvent = await eventManager.Add(mobEvent).ConfigureAwait(false);
+            var newEvent = await eventManager.AddAsync(mobEvent, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddEvent));
 
             var message = $"A new event: {mobEvent.Name} in {mobEvent.City} has been created on TrashMob.eco!";
@@ -225,7 +225,7 @@ namespace TrashMob.Controllers
                 googleMapsUrl = mobEvent.GoogleMapsUrl(),
             };
 
-            await emailManager.SendTemplatedEmail(subject, SendGridEmailTemplateId.EventEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.EventEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
 
             return Ok(newEvent);
         }
@@ -235,7 +235,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteEvent(EventCancellationRequest eventCancellationRequest, CancellationToken cancellationToken)
         {
-            var mobEvent = await eventManager.Get(eventCancellationRequest.EventId, cancellationToken).ConfigureAwait(false);
+            var mobEvent = await eventManager.GetAsync(eventCancellationRequest.EventId, cancellationToken).ConfigureAwait(false);
 
             var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, "UserOwnsEntity");
 
@@ -244,9 +244,9 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var eventAttendees = await eventAttendeeManager.Get(e => e.EventId == eventCancellationRequest.EventId, cancellationToken).ConfigureAwait(false);
+            var eventAttendees = await eventAttendeeManager.GetAsync(e => e.EventId == eventCancellationRequest.EventId, cancellationToken).ConfigureAwait(false);
 
-            await eventManager.Delete(eventCancellationRequest.EventId, eventCancellationRequest.CancellationReason, cancellationToken).ConfigureAwait(false);
+            await eventManager.DeleteAsync(eventCancellationRequest.EventId, eventCancellationRequest.CancellationReason, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeleteEvent));
 
             var subject = "A TrashMob.eco event you were scheduled to attend has been cancelled!";
@@ -276,7 +276,7 @@ namespace TrashMob.Controllers
                     new EmailAddress { Name = attendee.User.UserName, Email = attendee.User.Email },
                 };
 
-                await emailManager.SendTemplatedEmail(subject, SendGridEmailTemplateId.EventEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+                await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.EventEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
             }
 
             return Ok(eventCancellationRequest.EventId);
@@ -284,7 +284,7 @@ namespace TrashMob.Controllers
 
         private async Task<bool> EventExists(Guid id, CancellationToken cancellationToken)
         {
-            var mobEvent = await eventManager.Get(id, cancellationToken).ConfigureAwait(false);
+            var mobEvent = await eventManager.GetAsync(id, cancellationToken).ConfigureAwait(false);
 
             return mobEvent != null;
         }

@@ -7,12 +7,12 @@
 
     public interface IUserManager : IKeyedManager<User>
     {
-        Task<User> GetUserByUserName(string userName, CancellationToken cancellationToken);
+        Task<User> GetUserByUserNameAsync(string userName, CancellationToken cancellationToken);
 
-        Task<User> GetUserByInternalId(Guid id, CancellationToken cancellationToken);
+        Task<User> GetUserByInternalIdAsync(Guid id, CancellationToken cancellationToken);
 
-        Task<bool> UserExists(Guid id);
+        Task<bool> UserExistsAsync(Guid id, CancellationToken cancellationToken);
 
-        Task<User> UserExists(string nameIdentifier);
+        Task<User> UserExistsAsync(string nameIdentifier, CancellationToken cancellationToken);
     }
 }

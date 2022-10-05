@@ -3,6 +3,7 @@
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
@@ -23,9 +24,9 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPartnerContact(PartnerContact partnerContact)
+        public async Task<IActionResult> AddPartnerContact(PartnerContact partnerContact, CancellationToken cancellationToken = default)
         {
-            var partner = partnerManager.Get(partnerContact.PartnerId);
+            var partner = partnerManager.GetAsync(partnerContact.PartnerId, cancellationToken);
             
             if (partner == null)
             {
@@ -39,7 +40,7 @@
                 return Forbid();
             }
 
-            await manager.Add(partnerContact, UserId).ConfigureAwait(false);
+            await manager.AddAsync(partnerContact, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddPartnerContact));
 
             return Ok();

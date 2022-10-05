@@ -1,5 +1,6 @@
 ﻿namespace TrashMob.Shared.Managers.Partners
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Shared.Extensions;
@@ -16,13 +17,13 @@
             this.partnerUserRepository = partnerUserRepository;
         }
 
-        public async Task CreatePartner(PartnerRequest partnerRequest)
+        public async Task CreatePartner(PartnerRequest partnerRequest, CancellationToken cancellationToken = default)
         {
             // Convert the partner request to a new partner
             var partner = partnerRequest.ToPartner();
 
             // Add the partner record
-            var newPartner = await Repository.Add(partner).ConfigureAwait(false);
+            var newPartner = await Repository.AddAsync(partner, cancellationToken).ConfigureAwait(false);
 
             // Make the creator of the partner request a registered user for the partner
             var partnerUser = new PartnerUser
@@ -33,7 +34,7 @@
                 LastUpdatedByUserId = partnerRequest.LastUpdatedByUserId,
             };
 
-            await partnerUserRepository.Add(partnerUser).ConfigureAwait(false);
+            await partnerUserRepository.AddAsync(partnerUser, cancellationToken).ConfigureAwait(false);
 
             // Notify user when their request has been approved and what to do next
             // Need a template for this

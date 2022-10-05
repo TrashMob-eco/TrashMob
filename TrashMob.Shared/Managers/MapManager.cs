@@ -31,7 +31,7 @@
             return configuration[AzureMapKeyName];
         }
 
-        public async Task<double> GetDistanceBetweenTwoPoints(Tuple<double, double> pointA, Tuple<double, double> pointB, bool IsMetric = true)
+        public async Task<double> GetDistanceBetweenTwoPointsAsync(Tuple<double, double> pointA, Tuple<double, double> pointB, bool IsMetric = true)
         {
             var azureMaps = new AzureMapsToolkit.AzureMapsServices(GetMapKey());
             var distanceRequest = new GreatCircleDistanceRequest
@@ -78,7 +78,7 @@
             }
         }
 
-        public async Task<string> GetTimeForPoint(Tuple<double, double> pointA, DateTimeOffset dateTimeOffset)
+        public async Task<string> GetTimeForPointAsync(Tuple<double, double> pointA, DateTimeOffset dateTimeOffset)
         {
             var azureMaps = new AzureMapsToolkit.AzureMapsServices(GetMapKey());
 
@@ -108,7 +108,7 @@
             return response?.Result?.TimeZones[0]?.ReferenceTime?.WallTime;
         }
 
-        public async Task<Address> GetAddress(double latitude, double longitude)
+        public async Task<Address> GetAddressAsync(double latitude, double longitude)
         {
             var azureMaps = new AzureMapsToolkit.AzureMapsServices(GetMapKey());
 

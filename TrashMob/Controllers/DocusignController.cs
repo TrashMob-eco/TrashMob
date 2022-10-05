@@ -2,6 +2,7 @@
 {
     using Microsoft.AspNetCore.Mvc;
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
@@ -33,7 +34,7 @@
         }
 
         [HttpGet("{userId}/{envelopeId}")]
-        public async Task<IActionResult> GetEnvelopeStatus(Guid userId, string envelopeId)
+        public async Task<IActionResult> GetEnvelopeStatus(Guid userId, string envelopeId, CancellationToken cancellationToken)
         {
             // This is a cheesy way to do this, but works for now
             var envelope = new EnvelopeRequest { CreatedByUserId = userId };
@@ -45,7 +46,7 @@
             }
 
             // Get the Envelope Status
-            var result = await docusignManager.GetEnvelopeStatus(envelopeId);
+            var result = await docusignManager.GetEnvelopeStatusAsync(envelopeId, cancellationToken);
 
             return Ok(result);
         }

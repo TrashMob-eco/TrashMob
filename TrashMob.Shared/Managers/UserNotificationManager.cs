@@ -15,7 +15,7 @@
         {
         }
 
-        public override async Task<IEnumerable<UserNotification>> GetCollection(Guid parentId, Guid secondId, CancellationToken cancellationToken)
+        public override async Task<IEnumerable<UserNotification>> GetCollectionAsync(Guid parentId, Guid secondId, CancellationToken cancellationToken)
         {
             var result = await Repo.Get(un => un.UserId == parentId && un.EventId == secondId).ToListAsync(cancellationToken);
 

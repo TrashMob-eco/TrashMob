@@ -18,7 +18,7 @@
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var types = await Manager.Get();
+            var types = await Manager.GetAsync();
             TelemetryClient.TrackEvent("Get" + nameof(T));
 
             return Ok(types);
