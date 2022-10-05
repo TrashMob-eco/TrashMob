@@ -9,10 +9,10 @@
 
     public interface ILookupManager<T> where T : LookupModel
     {
-        Task<IEnumerable<T>> Get();
+        Task<IEnumerable<T>> GetAsync();
 
-        Task<IEnumerable<T>> Get(Expression<Func<T, bool>> expression);
+        Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> expression);
 
-        Task<T> Get(int id, CancellationToken cancellationToken = default);
+        Task<T> GetAsync(int id, CancellationToken cancellationToken = default);
     }
 }

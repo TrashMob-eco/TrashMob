@@ -27,9 +27,9 @@
             this.emailManager = emailManager;
         }
 
-        public override async Task<PartnerRequest> Add(PartnerRequest instance)
+        public override async Task<PartnerRequest> AddAsync(PartnerRequest instance, CancellationToken cancellationToken = default)
         {
-            var result = await Repository.Add(instance);
+            var result = await Repository.AddAsync(instance, cancellationToken);
 
             if (instance.isBecomeAPartnerRequest)
             {
@@ -48,7 +48,7 @@
                     subject = subject,
                 };
 
-                await emailManager.SendTemplatedEmail(subject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+                await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
             }
             else
             {
@@ -58,14 +58,14 @@
             return result;
         }
 
-        public async Task<PartnerRequest> ApproveBecomeAPartner(Guid partnerRequestId, CancellationToken cancellationToken)
+        public async Task<PartnerRequest> ApproveBecomeAPartnerAsync(Guid partnerRequestId, CancellationToken cancellationToken)
         {
-            var partnerRequest = await Repo.Get(partnerRequestId, cancellationToken).ConfigureAwait(false);
+            var partnerRequest = await Repo.GetAsync(partnerRequestId, cancellationToken).ConfigureAwait(false);
             partnerRequest.PartnerRequestStatusId = (int)PartnerRequestStatusEnum.Approved;
 
-            var result = await Repo.Update(partnerRequest).ConfigureAwait(false);
+            var result = await Repo.UpdateAsync(partnerRequest, cancellationToken).ConfigureAwait(false);
 
-            await CreatePartner(partnerRequest).ConfigureAwait(false);
+            await CreatePartner(partnerRequest, cancellationToken).ConfigureAwait(false);
 
             var partnerMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.PartnerRequestAccepted.ToString());
             partnerMessage = partnerMessage.Replace("{PartnerName}", partnerRequest.Name);
@@ -83,17 +83,17 @@
                 new EmailAddress { Name = partnerRequest.Name, Email = partnerRequest.Email },
             };
 
-            await emailManager.SendTemplatedEmail(partnerSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendTemplatedEmailAsync(partnerSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
 
             return result;
         }
 
-        public async Task<PartnerRequest> DenyBecomeAPartner(Guid partnerRequestId, CancellationToken cancellationToken)
+        public async Task<PartnerRequest> DenyBecomeAPartnerAsync(Guid partnerRequestId, CancellationToken cancellationToken)
         {
-            var partnerRequest = await Repo.Get(partnerRequestId, cancellationToken).ConfigureAwait(false);
+            var partnerRequest = await Repo.GetAsync(partnerRequestId, cancellationToken).ConfigureAwait(false);
             partnerRequest.PartnerRequestStatusId = (int)PartnerRequestStatusEnum.Denied;
 
-            var result = await Repo.Update(partnerRequest).ConfigureAwait(false);
+            var result = await Repo.UpdateAsync(partnerRequest, cancellationToken).ConfigureAwait(false);
 
             var partnerMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.PartnerRequestDeclined.ToString());
             partnerMessage = partnerMessage.Replace("{PartnerName}", partnerRequest.Name);
@@ -111,18 +111,18 @@
                 new EmailAddress { Name = partnerRequest.Name, Email = partnerRequest.Email },
             };
 
-            await emailManager.SendTemplatedEmail(partnerSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendTemplatedEmailAsync(partnerSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
 
             return result;
         }
 
-        private async Task CreatePartner(PartnerRequest partnerRequest)
+        private async Task CreatePartner(PartnerRequest partnerRequest, CancellationToken cancellationToken = default)
         {
             // Convert the partner request to a new partner
             var partner = partnerRequest.ToPartner();
 
             // Add the partner record
-            var newPartner = await partnerRepository.Add(partner).ConfigureAwait(false);
+            var newPartner = await partnerRepository.AddAsync(partner, cancellationToken).ConfigureAwait(false);
 
             // Make the creator of the partner request a registered user for the partner
             var partnerUser = new PartnerUser
@@ -133,7 +133,7 @@
                 LastUpdatedByUserId = partnerRequest.LastUpdatedByUserId,
             };
 
-            await partnerUserRepository.Add(partnerUser).ConfigureAwait(false);
+            await partnerUserRepository.AddAsync(partnerUser, cancellationToken).ConfigureAwait(false);
         }
     }
 }

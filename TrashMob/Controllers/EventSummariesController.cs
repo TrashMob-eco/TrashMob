@@ -33,7 +33,7 @@ namespace TrashMob.Controllers
         [HttpGet("{eventId}")]
         public async Task<IActionResult> GetEventSummary(Guid eventId, CancellationToken cancellationToken = default)
         {
-            var eventSummary = await eventSummaryManager.Get(es => es.EventId == eventId, cancellationToken).ConfigureAwait(false);
+            var eventSummary = await eventSummaryManager.GetAsync(es => es.EventId == eventId, cancellationToken).ConfigureAwait(false);
 
             if (eventSummary != null)
             {
@@ -47,11 +47,11 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetEventSummaries([FromQuery] string country = "", [FromQuery] string region = "", [FromQuery] string city = "", [FromQuery] string postalCode = "", CancellationToken cancellationToken = default)
         {
             // Todo make this more efficient
-            var eventSummaries = await eventSummaryManager.Get(cancellationToken);
+            var eventSummaries = await eventSummaryManager.GetAsync(cancellationToken);
             var displaySummaries = new List<DisplayEventSummary>();
             foreach (var eventSummary in eventSummaries)
             {
-                var mobEvent = await eventManager.Get(eventSummary.EventId, cancellationToken).ConfigureAwait(false);
+                var mobEvent = await eventManager.GetAsync(eventSummary.EventId, cancellationToken).ConfigureAwait(false);
 
                 if (mobEvent != null)
                 {
@@ -87,7 +87,7 @@ namespace TrashMob.Controllers
 
         [HttpPut]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> UpdateEventSummary(EventSummary eventSummary)
+        public async Task<IActionResult> UpdateEventSummary(EventSummary eventSummary, CancellationToken cancellationToken)
         {
             var authResult = await AuthorizationService.AuthorizeAsync(User, eventSummary, "UserOwnsEntity");
 
@@ -96,7 +96,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var updatedEvent = await eventSummaryManager.Update(eventSummary).ConfigureAwait(false);
+            var updatedEvent = await eventSummaryManager.UpdateAsync(eventSummary, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdateEventSummary));
 
             return Ok(updatedEvent);
@@ -104,7 +104,7 @@ namespace TrashMob.Controllers
 
         [HttpPost]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> AddEventSummary(EventSummary eventSummary)
+        public async Task<IActionResult> AddEventSummary(EventSummary eventSummary, CancellationToken cancellationToken)
         {
             var authResult = await AuthorizationService.AuthorizeAsync(User, eventSummary, "UserOwnsEntity");
 
@@ -117,7 +117,7 @@ namespace TrashMob.Controllers
             eventSummary.LastUpdatedByUserId = UserId;
             eventSummary.CreatedDate = DateTimeOffset.UtcNow;
             eventSummary.LastUpdatedDate = DateTimeOffset.UtcNow;
-            await eventSummaryManager.Add(eventSummary).ConfigureAwait(false);
+            await eventSummaryManager.AddAsync(eventSummary, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddEventSummary));
 
             return CreatedAtAction(nameof(GetEventSummary), new { eventId = eventSummary.EventId });
@@ -128,7 +128,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteEventSummary(Guid eventId, CancellationToken cancellationToken)
         {
-            var eventSummary = await eventSummaryManager.Get(es => es.EventId == eventId, cancellationToken).ConfigureAwait(false);
+            var eventSummary = await eventSummaryManager.GetAsync(es => es.EventId == eventId, cancellationToken).ConfigureAwait(false);
 
             var authResult = await AuthorizationService.AuthorizeAsync(User, eventSummary, "UserOwnsEntity");
 
@@ -137,7 +137,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            await eventSummaryManager.Delete(eventId, cancellationToken).ConfigureAwait(false);
+            await eventSummaryManager.DeleteAsync(eventId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeleteEventSummary));
 
             return Ok(eventId);

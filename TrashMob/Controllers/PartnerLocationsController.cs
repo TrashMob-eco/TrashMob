@@ -28,14 +28,14 @@
         [HttpGet("{partnerId}")]
         public async Task<IActionResult> GetPartnerLocations(Guid partnerId, CancellationToken cancellationToken)
         {
-            var results = await partnerLocationRepository.Get(pl => pl.PartnerId == partnerId, cancellationToken);
+            var results = await partnerLocationRepository.GetAsync(pl => pl.PartnerId == partnerId, cancellationToken);
             return Ok(results);
         }
 
         [HttpGet("{partnerId}/{locationId}")]
         public async Task<IActionResult> GetPartnerLocation(Guid partnerId, Guid locationId, CancellationToken cancellationToken = default)
         {
-            var partnerLocation = (await partnerLocationRepository.Get(pl => pl.PartnerId == partnerId && pl.Id == locationId, cancellationToken)).FirstOrDefault();
+            var partnerLocation = (await partnerLocationRepository.GetAsync(pl => pl.PartnerId == partnerId && pl.Id == locationId, cancellationToken)).FirstOrDefault();
 
             if (partnerLocation == null)
             {
@@ -48,7 +48,7 @@
         [HttpPost]
         public async Task<IActionResult> AddPartnerLocation(PartnerLocation partnerLocation, CancellationToken cancellationToken)
         {
-            var partner = await partnerManager.Get(partnerLocation.PartnerId, cancellationToken);
+            var partner = await partnerManager.GetAsync(partnerLocation.PartnerId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
@@ -56,7 +56,7 @@
                 return Forbid();
             }
 
-            await partnerLocationRepository.Add(partnerLocation).ConfigureAwait(false);
+            await partnerLocationRepository.AddAsync(partnerLocation, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddPartnerLocation));
 
             return CreatedAtAction(nameof(GetPartnerLocation), new { partnerId = partnerLocation.PartnerId, locationId = partnerLocation.Id });
@@ -66,7 +66,7 @@
         public async Task<IActionResult> UpdatePartnerLocation(PartnerLocation partnerLocation, CancellationToken cancellationToken)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var partner = await partnerManager.Get(partnerLocation.PartnerId, cancellationToken);
+            var partner = await partnerManager.GetAsync(partnerLocation.PartnerId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
@@ -74,7 +74,7 @@
                 return Forbid();
             }
 
-            await partnerLocationRepository.Update(partnerLocation).ConfigureAwait(false);
+            await partnerLocationRepository.UpdateAsync(partnerLocation, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdatePartnerLocation));
 
             return Ok(partnerLocation);
@@ -83,7 +83,7 @@
         [HttpDelete("{partnerId}/{partnerLocationId}")]
         public async Task<IActionResult> DeletePartnerLocation(Guid partnerId, Guid partnerLocationId, CancellationToken cancellationToken)
         {
-            var partner = await partnerManager.Get(partnerId, cancellationToken);
+            var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
@@ -91,7 +91,7 @@
                 return Forbid();
             }
 
-            await partnerLocationRepository.Delete(partnerLocationId).ConfigureAwait(false);
+            await partnerLocationRepository.DeleteAsync(partnerLocationId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeletePartnerLocation));
 
             return Ok(partnerLocationId);

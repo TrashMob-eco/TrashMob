@@ -22,7 +22,7 @@
             this.emailManager = emailManager;
         }
 
-        public async Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid attendeeId, bool futureEventsOnly = false, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Event>> GetEventsUserIsAttendingAsync(Guid attendeeId, bool futureEventsOnly = false, CancellationToken cancellationToken = default)
         {
             var eventAttendees = Repository.Get(ea => ea.UserId == attendeeId);
 
@@ -33,7 +33,7 @@
             return events;
         }
 
-        public async Task<IEnumerable<Event>> GetCanceledEventsUserIsAttending(Guid attendeeId, bool futureEventsOnly = false, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Event>> GetCanceledEventsUserIsAttendingAsync(Guid attendeeId, bool futureEventsOnly = false, CancellationToken cancellationToken = default)
         {
             // TODO: Are there are better ways to do this?
             var eventAttendees = Repository.Get(ea => ea.UserId == attendeeId);
@@ -49,7 +49,7 @@
         {
             var eventAttendee = await Repository.Get(ea => ea.EventId == parentId && ea.UserId == secondId).FirstOrDefaultAsync(cancellationToken);
 
-            return await Repository.Delete(eventAttendee);
+            return await Repository.DeleteAsync(eventAttendee, cancellationToken);
         }
     }
 }

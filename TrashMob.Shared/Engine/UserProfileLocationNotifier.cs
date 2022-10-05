@@ -36,7 +36,7 @@ namespace TrashMob.Shared.Engine
             Logger.LogInformation("Generating Notifications for {0}", NotificationType);
 
             // Get list of all users
-            var users = await UserManager.Get(cancellationToken).ConfigureAwait(false);
+            var users = await UserManager.GetAsync(cancellationToken).ConfigureAwait(false);
             
             int notificationCounter = 0;
 

@@ -19,9 +19,9 @@
 
         [HttpPost]
         [Authorize(Policy = "ValidUser")]
-        public virtual async Task<IActionResult> Add(T instance)
+        public virtual async Task<IActionResult> Add(T instance, CancellationToken cancellationToken)
         {
-            await Manager.Add(instance).ConfigureAwait(false);
+            await Manager.AddAsync(instance, cancellationToken).ConfigureAwait(false);
 
             TelemetryClient.TrackEvent("Add" + nameof(T));
 
@@ -31,7 +31,7 @@
         [HttpGet]
         public virtual async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            await Manager.Get(cancellationToken).ConfigureAwait(false);
+            await Manager.GetAsync(cancellationToken).ConfigureAwait(false);
 
             TelemetryClient.TrackEvent("Get" + nameof(T));
 

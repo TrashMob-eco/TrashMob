@@ -8,8 +8,8 @@
 
     public interface IEventPartnerManager : IBaseManager<EventPartner>
     {
-        Task<IEnumerable<EventPartner>> GetCurrentPartners(Guid eventId, CancellationToken cancellationToken);
+        Task<IEnumerable<EventPartner>> GetCurrentPartnersAsync(Guid eventId, CancellationToken cancellationToken);
         
-        Task<IEnumerable<PartnerLocation>> GetPotentialPartnerLocations(Guid eventId, CancellationToken cancellationToken);
+        Task<IEnumerable<PartnerLocation>> GetPotentialPartnerLocationsAsync(Guid eventId, CancellationToken cancellationToken);
     }
 }

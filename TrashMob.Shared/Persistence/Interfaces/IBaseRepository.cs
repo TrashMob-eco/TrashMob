@@ -3,6 +3,7 @@
     using System;
     using System.Linq;
     using System.Linq.Expressions;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
 
@@ -12,14 +13,14 @@
     /// <typeparam name="T"></typeparam>
     public interface IBaseRepository<T> where T : BaseModel
     {
-        Task<T> Add(T instance);
+        Task<T> AddAsync(T instance, CancellationToken cancellationToken);
 
-        Task<T> Update(T instance);
+        Task<T> UpdateAsync(T instance, CancellationToken cancellationToken);
 
         IQueryable<T> Get();
 
         IQueryable<T> Get(Expression<Func<T, bool>> expression);
 
-        Task<int> Delete(T instance);
+        Task<int> DeleteAsync(T instance, CancellationToken cancellationToken);
     }
 }

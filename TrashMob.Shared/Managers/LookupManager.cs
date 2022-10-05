@@ -21,19 +21,19 @@ namespace TrashMob.Shared.Managers
 
         protected ILookupRepository<T> Repository { get; }
 
-        public virtual async Task<IEnumerable<T>> Get()
+        public virtual async Task<IEnumerable<T>> GetAsync()
         {
             return (await Repository.Get().ToListAsync()).AsEnumerable();
         }
 
-        public virtual async Task<IEnumerable<T>> Get(Expression<Func<T, bool>> expression)
+        public virtual async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> expression)
         {
             return (await Repository.Get(expression).ToListAsync()).AsEnumerable();
         }
 
-        public virtual Task<T> Get(int id, CancellationToken cancellationToken = default)
+        public virtual Task<T> GetAsync(int id, CancellationToken cancellationToken = default)
         {
-            return Repository.Get(id, cancellationToken);
+            return Repository.GetAsync(id, cancellationToken);
         }
     }
 }

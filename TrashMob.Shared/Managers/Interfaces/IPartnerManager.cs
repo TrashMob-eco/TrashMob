@@ -5,6 +5,6 @@
 
     public interface IPartnerManager
     {
-        Task CreatePartner(PartnerRequest partnerRequest);
+        Task CreatePartnerAsync(PartnerRequest partnerRequest);
     }
 }

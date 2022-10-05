@@ -5,6 +5,6 @@
 
     public interface IMessageRequestManager
     {
-        Task SendMessageRequest(MessageRequest messageRequest);
+        Task SendMessageRequestAsync(MessageRequest messageRequest);
     }
 }

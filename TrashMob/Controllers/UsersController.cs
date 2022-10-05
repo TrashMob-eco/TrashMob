@@ -32,7 +32,7 @@ namespace TrashMob.Controllers
         [Authorize(Policy = "UserIsAdmin")]
         public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
         {
-            var result = await userManager.Get(cancellationToken).ConfigureAwait(false);
+            var result = await userManager.GetAsync(cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
@@ -40,7 +40,7 @@ namespace TrashMob.Controllers
         [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetUser(string userName, CancellationToken cancellationToken)
         {
-            var user = await userManager.GetUserByUserName(userName, cancellationToken).ConfigureAwait(false);
+            var user = await userManager.GetUserByUserNameAsync(userName, cancellationToken).ConfigureAwait(false);
 
             if (user == null)
             {
@@ -54,7 +54,7 @@ namespace TrashMob.Controllers
         [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> VerifyUnique(Guid userId, string userName, CancellationToken cancellationToken)
         {
-            var user = await userManager.GetUserByUserName(userName, cancellationToken).ConfigureAwait(false);
+            var user = await userManager.GetUserByUserNameAsync(userName, cancellationToken).ConfigureAwait(false);
 
             if (user == null)
             {
@@ -73,7 +73,7 @@ namespace TrashMob.Controllers
         [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetUserByInternalId(Guid id, CancellationToken cancellationToken = default)
         {
-            var user = await userManager.GetUserByInternalId(id, cancellationToken).ConfigureAwait(false);
+            var user = await userManager.GetUserByInternalIdAsync(id, cancellationToken).ConfigureAwait(false);
 
             if (user == null)
             {
@@ -87,17 +87,17 @@ namespace TrashMob.Controllers
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut()]
         [Authorize(Policy = "ValidUser")]
-        public async Task<IActionResult> PutUser(User user)
+        public async Task<IActionResult> PutUser(User user, CancellationToken cancellationToken)
         {
             try
             {
-                var updatedUser = await userManager.Update(user).ConfigureAwait(false);
+                var updatedUser = await userManager.UpdateAsync(user, cancellationToken).ConfigureAwait(false);
                 TelemetryClient.TrackEvent("UpdateUser");
                 return Ok(updatedUser);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await userManager.UserExists(user.Id).ConfigureAwait(false))
+                if (!await userManager.UserExistsAsync(user.Id, cancellationToken).ConfigureAwait(false))
                 {
                     return NotFound();
                 }
@@ -113,11 +113,11 @@ namespace TrashMob.Controllers
         [HttpPost]
         [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> PostUser(User user)
+        public async Task<IActionResult> PostUser(User user, CancellationToken cancellationToken)
         {
             User originalUser;
 
-            if ((originalUser = await userManager.UserExists(user.NameIdentifier).ConfigureAwait(false)) != null)
+            if ((originalUser = await userManager.UserExistsAsync(user.NameIdentifier, cancellationToken).ConfigureAwait(false)) != null)
             {
                 // TODO: Fix this
                 //if (!ValidateUser(originalUser.NameIdentifier))
@@ -128,7 +128,7 @@ namespace TrashMob.Controllers
                 originalUser.Email = user.Email;
                 originalUser.SourceSystemUserName = user.SourceSystemUserName;
 
-                var updatedUser = await userManager.Update(originalUser).ConfigureAwait(false);
+                var updatedUser = await userManager.UpdateAsync(originalUser, cancellationToken).ConfigureAwait(false);
                 TelemetryClient.TrackEvent("UpdateUser");
 
                 return Ok(updatedUser);
@@ -144,7 +144,7 @@ namespace TrashMob.Controllers
                 user.UserName = first.Substring(0, Math.Min(first.Length - 1, 8)) + userNum;
             }
 
-            var newUser = await userManager.Add(user).ConfigureAwait(false);
+            var newUser = await userManager.AddAsync(user, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent("AddUser");
 
             return CreatedAtAction(nameof(GetUserByInternalId), new { id = newUser.Id }, newUser);
@@ -153,9 +153,9 @@ namespace TrashMob.Controllers
         [HttpDelete("{id}")]
         [Authorize(Policy = "ValidUser")]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> DeleteUser(Guid id)
+        public async Task<IActionResult> DeleteUser(Guid id, CancellationToken cancellationToken)
         {
-            await userManager.Delete(id).ConfigureAwait(false);
+            await userManager.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeleteUser));
 
             return Ok(id);

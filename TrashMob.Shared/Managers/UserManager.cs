@@ -50,33 +50,33 @@ namespace TrashMob.Shared.Managers
             this.emailManager = emailManager;
         }      
 
-        public async Task<User> GetUserByUserName(string userName, CancellationToken cancellationToken = default)
+        public async Task<User> GetUserByUserNameAsync(string userName, CancellationToken cancellationToken = default)
         {
             return await Repo.Get(u => u.NameIdentifier == userName).FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<User> GetUserByInternalId(Guid id, CancellationToken cancellationToken = default)
+        public async Task<User> GetUserByInternalIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await Repo.Get(u => u.Id == id).FirstOrDefaultAsync(cancellationToken);
         }
 
-        public override async Task<User> Update(User user)
+        public override async Task<User> UpdateAsync(User user, CancellationToken cancellationToken = default)
         {
             // The IsSiteAdmin flag can only be changed directly in the database, so once set, we need to preserve that, no matter what the user passes in
-            var matchedUser = await GetUserByInternalId(user.Id).ConfigureAwait(false);
+            var matchedUser = await GetUserByInternalIdAsync(user.Id, cancellationToken).ConfigureAwait(false);
             user.IsSiteAdmin = matchedUser.IsSiteAdmin;
 
-            return await base.Update(user);
+            return await base.UpdateAsync(user, cancellationToken);
         }
 
-        public override async Task<int> Delete(Guid id)
+        public override async Task<int> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             // Remove the records where the user is attending an event
             var attendees = eventAttendeesRepository.Get(ea => ea.UserId == id);
 
             foreach (var attendee in attendees)
             {
-                await eventAttendeesRepository.Delete(attendee);
+                await eventAttendeesRepository.DeleteAsync(attendee, cancellationToken);
             }
 
             // Remove the userNotification records where the user created or updated the event
@@ -84,7 +84,7 @@ namespace TrashMob.Shared.Managers
 
             foreach (var userNotification in userNotifications)
             {
-                await userNotificationRepository.Delete(userNotification);
+                await userNotificationRepository.DeleteAsync(userNotification, cancellationToken);
             }
 
             // Remove the Partner Requests
@@ -102,7 +102,7 @@ namespace TrashMob.Shared.Managers
                     partnerRequest.LastUpdatedByUserId = TrashMobUserId;
                 }
 
-                await partnerRequestRepository.Update(partnerRequest);
+                await partnerRequestRepository.UpdateAsync(partnerRequest, cancellationToken);
             }
 
             // Remove the records where the user created or updated the event
@@ -120,7 +120,7 @@ namespace TrashMob.Shared.Managers
                     eventSummary.LastUpdatedByUserId = TrashMobUserId;
                 }
 
-                await eventSummaryRepository.Update(eventSummary);
+                await eventSummaryRepository.UpdateAsync(eventSummary, cancellationToken);
             }
 
             // Remove the event partner records for this event
@@ -138,7 +138,7 @@ namespace TrashMob.Shared.Managers
                     eventPartner.LastUpdatedByUserId = TrashMobUserId;
                 }
 
-                await eventPartnerRepository.Update(eventPartner);
+                await eventPartnerRepository.UpdateAsync(eventPartner, cancellationToken);
             }
 
             var events = eventRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id);
@@ -155,7 +155,7 @@ namespace TrashMob.Shared.Managers
                     mobEvent.LastUpdatedByUserId = TrashMobUserId;
                 }
 
-                await eventRepository.Update(mobEvent);
+                await eventRepository.UpdateAsync(mobEvent, cancellationToken);
             }
 
             var partners = partnerRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id);
@@ -172,7 +172,7 @@ namespace TrashMob.Shared.Managers
                     partner.LastUpdatedByUserId = TrashMobUserId;
                 }
 
-                await partnerRepository.Update(partner);
+                await partnerRepository.UpdateAsync(partner, cancellationToken);
             }
 
             var partnerUsers = partnerUserRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id || e.UserId == id);
@@ -181,7 +181,7 @@ namespace TrashMob.Shared.Managers
             {
                 if (partnerUser.UserId == id)
                 {
-                    await partnerUserRepository.Delete(partnerUser);
+                    await partnerUserRepository.DeleteAsync(partnerUser, cancellationToken);
                 }
                 else
                 {
@@ -195,7 +195,7 @@ namespace TrashMob.Shared.Managers
                         partnerUser.LastUpdatedByUserId = TrashMobUserId;
                     }
 
-                    await partnerUserRepository.Update(partnerUser);
+                    await partnerUserRepository.UpdateAsync(partnerUser, cancellationToken);
                 }
             }
 
@@ -214,17 +214,17 @@ namespace TrashMob.Shared.Managers
                     partnerLocation.LastUpdatedByUserId = TrashMobUserId;
                 }
 
-                await partnerLocationRepository.Update(partnerLocation);
+                await partnerLocationRepository.UpdateAsync(partnerLocation, cancellationToken);
             }
 
             // Remove the user's profile
-            var user = await Repo.Get(id).ConfigureAwait(false);
-            var result = await Repo.Delete(user);
+            var user = await Repo.GetAsync(id, cancellationToken).ConfigureAwait(false);
+            var result = await Repo.DeleteAsync(user, cancellationToken);
 
             return result;
         }
 
-        public override async Task<User> Add(User user)
+        public override async Task<User> AddAsync(User user, CancellationToken cancellationToken)
         {
             user.Id = Guid.NewGuid();
             user.MemberSince = DateTimeOffset.UtcNow;
@@ -236,7 +236,7 @@ namespace TrashMob.Shared.Managers
             user.TrashMobWaiverVersion = string.Empty;
             user.IsSiteAdmin = false;
 
-            var addedUser = await base.Add(user);
+            var addedUser = await base.AddAsync(user);
 
             // Notify Admins that a new user has joined
             var message = $"A new user: {user.Email} has joined TrashMob.eco!";
@@ -254,7 +254,7 @@ namespace TrashMob.Shared.Managers
                 new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
             };
 
-            await emailManager.SendTemplatedEmail(subject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
 
             // Send welcome email to new User
             var welcomeMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.WelcomeToTrashMob.ToString());
@@ -272,19 +272,19 @@ namespace TrashMob.Shared.Managers
                 new EmailAddress { Name = user.UserName, Email = user.Email }
             };
 
-            await emailManager.SendTemplatedEmail(welcomeSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients, CancellationToken.None).ConfigureAwait(false);
 
             return addedUser;
         }
 
-        public async Task<bool> UserExists(Guid id)
+        public async Task<bool> UserExistsAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return await Repository.Get(e => e.Id == id).AnyAsync();
+            return await Repository.Get(e => e.Id == id).AnyAsync(cancellationToken);
         }
 
-        public async Task<User> UserExists(string nameIdentifier)
+        public async Task<User> UserExistsAsync(string nameIdentifier, CancellationToken cancellationToken = default)
         {
-            return await Repository.Get(u => u.NameIdentifier == nameIdentifier).FirstOrDefaultAsync();
+            return await Repository.Get(u => u.NameIdentifier == nameIdentifier).FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

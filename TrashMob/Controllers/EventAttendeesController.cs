@@ -29,7 +29,7 @@ namespace TrashMob.Controllers
         [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetEventAttendees(Guid eventId)
         {            
-            var result = (await eventAttendeeManager.Get(ea => ea.EventId == eventId, CancellationToken.None).ConfigureAwait(false)).Select(u => u.User.ToDisplayUser());
+            var result = (await eventAttendeeManager.GetAsync(ea => ea.EventId == eventId, CancellationToken.None).ConfigureAwait(false)).Select(u => u.User.ToDisplayUser());
             return Ok(result);
         }
 
@@ -46,7 +46,7 @@ namespace TrashMob.Controllers
 
             try
             {
-                var updatedEventAttendee = await eventAttendeeManager.Update(eventAttendee).ConfigureAwait(false);
+                var updatedEventAttendee = await eventAttendeeManager.UpdateAsync(eventAttendee, cancellationToken).ConfigureAwait(false);
                 TelemetryClient.TrackEvent(nameof(UpdateEventAttendee));
 
                 return Ok(updatedEventAttendee);
@@ -66,7 +66,7 @@ namespace TrashMob.Controllers
 
         [HttpPost]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> AddEventAttendee(EventAttendee eventAttendee)
+        public async Task<IActionResult> AddEventAttendee(EventAttendee eventAttendee, CancellationToken cancellationToken)
         {
             var authResult = await AuthorizationService.AuthorizeAsync(User, eventAttendee, "UserOwnsEntity");
 
@@ -75,10 +75,10 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
             
-            await eventAttendeeManager.Add(eventAttendee).ConfigureAwait(false);
+            await eventAttendeeManager.AddAsync(eventAttendee, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddEventAttendee));
 
-            var result = (await eventAttendeeManager.Get(e => e.EventId == eventAttendee.EventId, CancellationToken.None).ConfigureAwait(false)).Select(u => u.User.ToDisplayUser());
+            var result = (await eventAttendeeManager.GetAsync(e => e.EventId == eventAttendee.EventId, CancellationToken.None).ConfigureAwait(false)).Select(u => u.User.ToDisplayUser());
             return Ok(result);
         }
 
@@ -96,7 +96,7 @@ namespace TrashMob.Controllers
 
         private async Task<bool> EventAttendeeExists(Guid eventId, Guid userId, CancellationToken cancellationToken)
         {
-            var attendee = await eventAttendeeManager.Get(ea => ea.EventId == eventId && ea.UserId == userId, cancellationToken).ConfigureAwait(false);
+            var attendee = await eventAttendeeManager.GetAsync(ea => ea.EventId == eventId && ea.UserId == userId, cancellationToken).ConfigureAwait(false);
 
             return attendee != null;
         }

@@ -16,12 +16,12 @@
         {
         }
 
-        public override async Task<PartnerLocationService> Get(Guid parentId, int secondId, CancellationToken cancellationToken)
+        public override async Task<PartnerLocationService> GetAsync(Guid parentId, int secondId, CancellationToken cancellationToken)
         {
             return await Repository.Get().FirstOrDefaultAsync(p => p.PartnerLocationId == parentId && p.ServiceTypeId == secondId, cancellationToken: cancellationToken);
         }
 
-        public override async Task<IEnumerable<PartnerLocationService>> GetByParentId(Guid parentId, CancellationToken cancellationToken)
+        public override async Task<IEnumerable<PartnerLocationService>> GetByParentIdAsync(Guid parentId, CancellationToken cancellationToken)
         {
             return (await Repository.Get().Where(p => p.PartnerLocationId == parentId).ToListAsync(cancellationToken)).AsEnumerable();
         }

@@ -6,9 +6,9 @@
 
     public interface IEmailSender
     {
-        public Task SendEmailAsync(Email email, CancellationToken cancellationToken = default);
+        public Task SendEmailAsync(Email email, CancellationToken cancellationToken);
 
-        public Task SendTemplatedEmailAsync(Email email, CancellationToken cancellationToken = default);
+        public Task SendTemplatedEmailAsync(Email email, CancellationToken cancellationToken);
 
         public string ApiKey { get; set; }
     }

@@ -8,10 +8,10 @@
     {
         string GetMapKey();
 
-        Task<double> GetDistanceBetweenTwoPoints(Tuple<double, double> pointA, Tuple<double, double> pointB, bool IsMetric = true);
+        Task<double> GetDistanceBetweenTwoPointsAsync(Tuple<double, double> pointA, Tuple<double, double> pointB, bool IsMetric = true);
 
-        Task<string> GetTimeForPoint(Tuple<double, double> pointA, DateTimeOffset dateTimeOffset);
+        Task<string> GetTimeForPointAsync(Tuple<double, double> pointA, DateTimeOffset dateTimeOffset);
 
-        Task<Address> GetAddress(double latitude, double longitude);
+        Task<Address> GetAddressAsync(double latitude, double longitude);
     }
 }

@@ -21,43 +21,43 @@ namespace TrashMob.Shared.Managers
 
         protected virtual IBaseRepository<T> Repository { get; }
 
-        public virtual Task<T> Add(T instance, Guid userId)
+        public virtual Task<T> AddAsync(T instance, Guid userId, CancellationToken cancellationToken = default)
         {
             instance.CreatedByUserId = userId;
             instance.CreatedDate = DateTimeOffset.UtcNow;
             instance.LastUpdatedByUserId = userId;
             instance.LastUpdatedDate = DateTimeOffset.UtcNow;
-            return Repository.Add(instance);
+            return Repository.AddAsync(instance, cancellationToken);
         }
 
-        public virtual Task<T> Update(T instance, Guid userId)
+        public virtual Task<T> UpdateAsync(T instance, Guid userId, CancellationToken cancellationToken = default)
         {
             instance.LastUpdatedByUserId = userId;
             instance.LastUpdatedDate = DateTimeOffset.UtcNow;
-            return Repository.Update(instance);
+            return Repository.UpdateAsync(instance, cancellationToken);
         }
 
-        public virtual Task<T> Add(T instance)
+        public virtual Task<T> AddAsync(T instance, CancellationToken cancellationToken = default)
         {
-            return Repository.Add(instance);
+            return Repository.AddAsync(instance, cancellationToken);
         }
 
-        public virtual Task<T> Update(T instance)
+        public virtual Task<T> UpdateAsync(T instance, CancellationToken cancellationToken = default)
         {
-            return Repository.Update(instance);
+            return Repository.UpdateAsync(instance, cancellationToken);
         }
 
-        public virtual async Task<IEnumerable<T>> Get(CancellationToken cancellationToken)
+        public virtual async Task<IEnumerable<T>> GetAsync(CancellationToken cancellationToken = default)
         {
             return await Repository.Get().ToListAsync(cancellationToken);
         }
 
-        public virtual async Task<IEnumerable<T>> Get(Expression<Func<T, bool>> expression, CancellationToken cancellationToken)
+        public virtual async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> expression, CancellationToken cancellationToken = default)
         {
             return await Repository.Get(expression).ToListAsync(cancellationToken);
         }
 
-        public virtual async Task<IEnumerable<T>> GetByUserId(Guid userId, CancellationToken cancellationToken)
+        public virtual async Task<IEnumerable<T>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             var results = await Repository.Get()
                 .Where(t => t.CreatedByUserId == userId)
@@ -66,37 +66,37 @@ namespace TrashMob.Shared.Managers
             return results;
         }
 
-        public virtual Task<IEnumerable<T>> GetByParentId(Guid parentId, CancellationToken cancellationToken)
+        public virtual Task<IEnumerable<T>> GetByParentIdAsync(Guid parentId, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public virtual Task<T> Get(Guid parentId, int secondId, CancellationToken cancellationToken)
+        public virtual Task<T> GetAsync(Guid parentId, int secondId, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public virtual Task<T> Get(Guid parentId, Guid secondId, CancellationToken cancellationToken)
+        public virtual Task<T> GetAsync(Guid parentId, Guid secondId, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public virtual Task<int> Delete(Guid parentId, CancellationToken cancellationToken)
+        public virtual Task<int> DeleteAsync(Guid parentId, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public virtual Task<int> Delete(Guid parentId, int secondId, CancellationToken cancellationToken)
+        public virtual Task<int> Delete(Guid parentId, int secondId, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public virtual Task<int> Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken)
+        public virtual Task<int> Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public virtual Task<IEnumerable<T>> GetCollection(Guid parentId, Guid secondId, CancellationToken cancellationToken)
+        public virtual Task<IEnumerable<T>> GetCollectionAsync(Guid parentId, Guid secondId, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

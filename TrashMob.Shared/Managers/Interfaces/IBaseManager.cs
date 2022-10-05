@@ -9,29 +9,29 @@
 
     public interface IBaseManager<T> where T : BaseModel
     {
-        Task<T> Add(T instance);
+        Task<T> AddAsync(T instance, CancellationToken cancellationToken);
 
-        Task<T> Update(T instance);
+        Task<T> UpdateAsync(T instance, CancellationToken cancellationToken);
 
-        Task<T> Add(T instance, Guid userId);
+        Task<T> AddAsync(T instance, Guid userId, CancellationToken cancellationToken);
 
-        Task<T> Update(T instance, Guid userId);
+        Task<T> UpdateAsync(T instance, Guid userId, CancellationToken cancellationToken);
 
-        Task<IEnumerable<T>> Get(CancellationToken cancellationToken);
+        Task<IEnumerable<T>> GetAsync(CancellationToken cancellationToken);
 
-        Task<IEnumerable<T>> Get(Expression<Func<T, bool>> expression, CancellationToken cancellationToken);
+        Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> expression, CancellationToken cancellationToken);
 
-        Task<IEnumerable<T>> GetByUserId(Guid userId, CancellationToken cancellationToken);
+        Task<IEnumerable<T>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken);
 
-        Task<IEnumerable<T>> GetByParentId(Guid parentId, CancellationToken cancellationToken);
+        Task<IEnumerable<T>> GetByParentIdAsync(Guid parentId, CancellationToken cancellationToken);
 
-        Task<T> Get(Guid parentId, int secondId, CancellationToken cancellationToken);
+        Task<T> GetAsync(Guid parentId, int secondId, CancellationToken cancellationToken);
 
-        Task<T> Get(Guid parentId, Guid secondId, CancellationToken cancellationToken);
+        Task<T> GetAsync(Guid parentId, Guid secondId, CancellationToken cancellationToken);
 
-        Task<IEnumerable<T>> GetCollection(Guid parentId, Guid secondId, CancellationToken cancellationToken);
-
-        Task<int> Delete(Guid parentId, CancellationToken cancellationToken);
+        Task<IEnumerable<T>> GetCollectionAsync(Guid parentId, Guid secondId, CancellationToken cancellationToken);
+        
+        Task<int> DeleteAsync(Guid parentId, CancellationToken cancellationToken);
 
         Task<int> Delete(Guid parentId, int secondId, CancellationToken cancellationToken);
 

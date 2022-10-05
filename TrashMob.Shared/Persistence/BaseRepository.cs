@@ -7,6 +7,7 @@
     using System.Linq.Expressions;
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Models;
+    using System.Threading;
 
     /// <summary>
     /// Generic Implementation to save on boilerplate code
@@ -24,17 +25,17 @@
 
         }
 
-        public virtual async Task<T> Add(T instance)
+        public virtual async Task<T> AddAsync(T instance, CancellationToken cancellationToken = default)
         {
             dbSet.Add(instance);
-            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+            await mobDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return instance;
         }
 
-        public virtual async Task<T> Update(T instance)
+        public virtual async Task<T> UpdateAsync(T instance, CancellationToken cancellationToken = default)
         {
             dbSet.Update(instance);
-            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+            await mobDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return instance;
         }
 
@@ -50,10 +51,10 @@
                 .AsNoTracking();
         }
 
-        public async Task<int> Delete(T instance)
+        public async Task<int> DeleteAsync(T instance, CancellationToken cancellationToken = default)
         {
             dbSet.Remove(instance);
-            var result = await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+            var result = await mobDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return result;
         }
     }

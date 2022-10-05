@@ -32,10 +32,10 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetStats(CancellationToken cancellationToken)
         {
             var stats = new Stats();
-            var events = await eventManager.Get(cancellationToken);
+            var events = await eventManager.GetAsync(cancellationToken);
             stats.TotalEvents = events.Count();
 
-            var eventSummaries = await eventSummaryManager.Get(cancellationToken);
+            var eventSummaries = await eventSummaryManager.GetAsync(cancellationToken);
             stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) + (eventSummaries.Sum(es => es.NumberOfBuckets) / 3);
             stats.TotalHours = eventSummaries.Sum(es => es.DurationInMinutes * es.ActualNumberOfAttendees / 60);
             stats.TotalParticipants = eventSummaries.Sum(es => es.ActualNumberOfAttendees);
@@ -47,15 +47,15 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetStatsByUser(Guid userId, CancellationToken cancellationToken)
         {
             var stats = new Stats();
-            var result1 = await eventManager.GetUserEvents(userId, false, cancellationToken);
-            var result2 = await eventAttendeeManager.GetEventsUserIsAttending(userId, false, cancellationToken).ConfigureAwait(false);
+            var result1 = await eventManager.GetUserEventsAsync(userId, false, cancellationToken);
+            var result2 = await eventAttendeeManager.GetEventsUserIsAttendingAsync(userId, false, cancellationToken).ConfigureAwait(false);
 
             var allResults = result1.Union(result2, new EventComparer());
 
             stats.TotalEvents = allResults.Count();
             var eventIds = allResults.Select(e => e.Id);
 
-            var eventSummaries = await eventSummaryManager.Get(es => eventIds.Contains(es.EventId), cancellationToken);
+            var eventSummaries = await eventSummaryManager.GetAsync(es => eventIds.Contains(es.EventId), cancellationToken);
             stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) + (eventSummaries.Sum(es => es.NumberOfBuckets) / 3);
             stats.TotalHours = eventSummaries.Sum(es => es.DurationInMinutes) / 60;
 

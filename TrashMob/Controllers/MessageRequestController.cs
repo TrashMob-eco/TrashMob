@@ -24,7 +24,7 @@
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> SendMessageRequest(MessageRequest messageRequest)
         {
-            await messageRequestManager.SendMessageRequest(messageRequest).ConfigureAwait(false);
+            await messageRequestManager.SendMessageRequestAsync(messageRequest).ConfigureAwait(false);
 
             TelemetryClient.TrackEvent(nameof(SendMessageRequest));
 

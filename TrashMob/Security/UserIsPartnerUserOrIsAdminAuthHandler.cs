@@ -27,7 +27,7 @@
         {
             var userName = context.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            var user = await userManager.GetUserByUserName(userName, CancellationToken.None);
+            var user = await userManager.GetUserByUserNameAsync(userName, CancellationToken.None);
 
             if (user == null)
             {
@@ -42,7 +42,7 @@
             }
             else
             {
-                var currentUserPartner = (await partnerUserManager.Get(pu => pu.PartnerId == resource.Id && pu.UserId == user.Id, CancellationToken.None)).FirstOrDefault();
+                var currentUserPartner = (await partnerUserManager.GetAsync(pu => pu.PartnerId == resource.Id && pu.UserId == user.Id, CancellationToken.None)).FirstOrDefault();
 
                 if (currentUserPartner != null)
                 {

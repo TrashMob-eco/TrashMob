@@ -71,7 +71,7 @@ namespace TrashMob.Shared.Managers
             return result;
         }
 
-        public async Task SendTemplatedEmail(string subject, string templateId, int groupId, object dynamicTemplateData, List<EmailAddress> recipients, CancellationToken cancellationToken = default)
+        public async Task SendTemplatedEmailAsync(string subject, string templateId, int groupId, object dynamicTemplateData, List<EmailAddress> recipients, CancellationToken cancellationToken = default)
         {
             var email = new Email
             {

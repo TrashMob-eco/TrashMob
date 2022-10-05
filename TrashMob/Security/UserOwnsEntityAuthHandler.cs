@@ -24,7 +24,7 @@
         {
             var userName = context.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            var user = await userManager.GetUserByUserName(userName, CancellationToken.None);
+            var user = await userManager.GetUserByUserNameAsync(userName, CancellationToken.None);
 
             if (user == null)
             {

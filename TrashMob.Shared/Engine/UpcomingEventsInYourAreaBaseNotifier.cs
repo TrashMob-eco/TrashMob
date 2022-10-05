@@ -31,7 +31,7 @@ namespace TrashMob.Shared.Engine
             Logger.LogInformation("Generating Notifications for {0}", NotificationType);
 
             // Get list of users who have notifications turned on for locations
-            var users = await UserManager.Get(cancellationToken).ConfigureAwait(false);
+            var users = await UserManager.GetAsync(cancellationToken).ConfigureAwait(false);
             int notificationCounter = 0;
 
             Logger.LogInformation("Generating {0} Notifications for {1} total users", NotificationType, users.Count());
@@ -48,10 +48,10 @@ namespace TrashMob.Shared.Engine
                 var eventsToNotifyUserFor = new List<Event>();
 
                 // Get list of active events
-                var events = await EventManager.GetActiveEvents(cancellationToken).ConfigureAwait(false);
+                var events = await EventManager.GetActiveEventsAsync(cancellationToken).ConfigureAwait(false);
 
                 // Get list of events user is already attending
-                var eventsUserIsAttending = await EventAttendeeManager.GetEventsUserIsAttending(user.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var eventsUserIsAttending = await EventAttendeeManager.GetEventsUserIsAttendingAsync(user.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 // Limit the list of events to process to those in the next window UTC
                 foreach (var mobEvent in events.Where(e => e.EventDate <= DateTimeOffset.UtcNow.AddHours(NumberOfHoursInWindow)))
@@ -78,7 +78,7 @@ namespace TrashMob.Shared.Engine
                     var userLocation = new Tuple<double, double>(user.Latitude.Value, user.Longitude.Value);
                     var eventLocation = new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value);
 
-                    var distance = await MapRepository.GetDistanceBetweenTwoPoints(userLocation, eventLocation, user.PrefersMetric).ConfigureAwait(false);
+                    var distance = await MapRepository.GetDistanceBetweenTwoPointsAsync(userLocation, eventLocation, user.PrefersMetric).ConfigureAwait(false);
 
                     // If the distance to the event is greater than the User's preference for distance, ignore it
                     if (distance > user.TravelLimitForLocalEvents)

@@ -64,7 +64,7 @@
             EmailSender.ApiKey = Environment.GetEnvironmentVariable("SendGridApiKey");
         }
 
-        protected async Task<int> SendNotifications(User user, IEnumerable<Event> eventsToNotifyUserFor, CancellationToken cancellationToken)
+        protected async Task<int> SendNotifications(User user, IEnumerable<Event> eventsToNotifyUserFor, CancellationToken cancellationToken = default)
         {
             // Populate email
             if (eventsToNotifyUserFor.Any())
@@ -81,7 +81,7 @@
                         UserNotificationTypeId = (int)NotificationType,
                     };
 
-                    await UserNotificationManager.Add(userNotification).ConfigureAwait(false);
+                    await UserNotificationManager.AddAsync(userNotification, cancellationToken).ConfigureAwait(false);
                 }
 
                 var emailCopy = EmailManager.GetHtmlEmailCopy(NotificationType.ToString());
@@ -119,7 +119,7 @@
 
                     Logger.LogInformation("Sending email to {0}, Subject {0}", user.Email, EmailSubject);
 
-                    await EmailManager.SendTemplatedEmail(EmailSubject, SendGridEmailTemplateId.EventEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+                    await EmailManager.SendTemplatedEmailAsync(EmailSubject, SendGridEmailTemplateId.EventEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
                 }
 
                 return 1;
@@ -128,7 +128,7 @@
             return 0;
         }
 
-        protected async Task<int> SendNotification(User user, CancellationToken cancellationToken)
+        protected async Task<int> SendNotification(User user, CancellationToken cancellationToken = default)
         {
             // Populate email
             var userNotification = new NonEventUserNotification
@@ -139,7 +139,7 @@
                 UserNotificationTypeId = (int)NotificationType,
             };
 
-            await NonEventUserNotificationManager.Add(userNotification).ConfigureAwait(false);
+            await NonEventUserNotificationManager.AddAsync(userNotification, cancellationToken).ConfigureAwait(false);
 
             var emailCopy = EmailManager.GetHtmlEmailCopy(NotificationType.ToString());
 
@@ -157,24 +157,24 @@
 
             Logger.LogInformation("Sending email to {0}, Subject {0}", user.Email, EmailSubject);
 
-            await EmailManager.SendTemplatedEmail(EmailSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+            await EmailManager.SendTemplatedEmailAsync(EmailSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
 
             return 1;
         }
 
-        protected async Task<bool> UserHasAlreadyReceivedNotification(User user, Event mobEvent, CancellationToken cancellationToken)
+        protected async Task<bool> UserHasAlreadyReceivedNotification(User user, Event mobEvent, CancellationToken cancellationToken = default)
         {
             // Get list of notification events user has already received for the event
-            var notifications = await UserNotificationManager.Get(u => u.UserId == user.Id && u.EventId == mobEvent.Id, cancellationToken).ConfigureAwait(false);
+            var notifications = await UserNotificationManager.GetAsync(u => u.UserId == user.Id && u.EventId == mobEvent.Id, cancellationToken).ConfigureAwait(false);
 
             // Verify that the user has not already received this type of notification for this event
             return notifications.Any(un => un.UserNotificationTypeId == (int)NotificationType);
         }
 
-        protected async Task<bool> UserHasAlreadyReceivedNotification(User user, CancellationToken cancellationToken)
+        protected async Task<bool> UserHasAlreadyReceivedNotification(User user, CancellationToken cancellationToken = default)
         {
             // Get list of notification events user has already received for the event
-            var notifications = await NonEventUserNotificationManager.GetByUserId(user.Id, cancellationToken).ConfigureAwait(false);
+            var notifications = await NonEventUserNotificationManager.GetByUserIdAsync(user.Id, cancellationToken).ConfigureAwait(false);
 
             // Verify that the user has not already received this type of notification for this event
             return notifications.Any(un => un.UserNotificationTypeId == (int)NotificationType);

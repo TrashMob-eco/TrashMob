@@ -28,7 +28,7 @@
         [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetPartnerServices(Guid PartnerId, CancellationToken cancellationToken)
         {
-            var PartnerServices = await PartnerServicesManager.GetByParentId(PartnerId, cancellationToken);
+            var PartnerServices = await PartnerServicesManager.GetByParentIdAsync(PartnerId, cancellationToken);
 
             return Ok(PartnerServices);
         }
@@ -37,7 +37,7 @@
         [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetPartnerService(Guid PartnerId, int serviceTypeId, CancellationToken cancellationToken)
         {
-            var PartnerService = await PartnerServicesManager.Get(PartnerId, serviceTypeId, cancellationToken);
+            var PartnerService = await PartnerServicesManager.GetAsync(PartnerId, serviceTypeId, cancellationToken);
 
             return Ok(PartnerService);
         }
@@ -45,7 +45,7 @@
         [HttpPost]
         public async Task<IActionResult> AddPartnerService(PartnerService partnerService, CancellationToken cancellationToken)
         {
-            var partner = await partnerManager.Get(partnerService.PartnerId, cancellationToken);
+            var partner = await partnerManager.GetAsync(partnerService.PartnerId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
@@ -53,7 +53,7 @@
                 return Forbid();
             }
 
-            await PartnerServicesManager.Add(partnerService);
+            await PartnerServicesManager.AddAsync(partnerService, cancellationToken);
 
             return CreatedAtAction(nameof(GetPartnerService), new { PartnerId = partnerService.PartnerId, serviceTypeId = partnerService.ServiceTypeId });
         }
@@ -61,7 +61,7 @@
         [HttpPut]
         public async Task<IActionResult> UpdatePartnerService(PartnerService partnerService, CancellationToken cancellationToken)
         {
-            var partner = await partnerManager.Get(partnerService.PartnerId, cancellationToken);
+            var partner = await partnerManager.GetAsync(partnerService.PartnerId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
@@ -69,7 +69,7 @@
                 return Forbid();
             }
 
-            await PartnerServicesManager.Update(partnerService).ConfigureAwait(false);
+            await PartnerServicesManager.UpdateAsync(partnerService, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdatePartnerService));
 
             return Ok(partnerService);
@@ -78,7 +78,7 @@
         [HttpDelete("{PartnerId}/{serviceTypeId}")]
         public async Task<IActionResult> DeletePartnerService(Guid partnerId, int serviceTypeId, CancellationToken cancellationToken)
         {
-            var partner = await partnerManager.Get(partnerId, cancellationToken);
+            var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)

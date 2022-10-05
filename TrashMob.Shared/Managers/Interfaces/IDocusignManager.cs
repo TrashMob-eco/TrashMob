@@ -1,5 +1,6 @@
 ﻿namespace TrashMob.Shared.Managers.Interfaces
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Poco;
 
@@ -7,6 +8,6 @@
     {
         EnvelopeResponse SendEnvelope(EnvelopeRequest envelopeRequest);
 
-        Task<string> GetEnvelopeStatus(string envelopeId);
+        Task<string> GetEnvelopeStatusAsync(string envelopeId, CancellationToken cancellationToken);
     }
 }

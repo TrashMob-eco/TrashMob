@@ -16,7 +16,7 @@
         {
         }
 
-        public override async Task<IEnumerable<PartnerSocialMediaAccount>> GetByParentId(Guid parentId, CancellationToken cancellationToken)
+        public override async Task<IEnumerable<PartnerSocialMediaAccount>> GetByParentIdAsync(Guid parentId, CancellationToken cancellationToken)
         {
             return (await Repository.Get().Where(p => p.PartnerId == parentId).ToListAsync(cancellationToken)).AsEnumerable();
         }

@@ -8,14 +8,14 @@
 
     public interface IEventManager : IKeyedManager<Event>
     {
-        Task<IEnumerable<Event>> GetActiveEvents(CancellationToken cancellationToken = default);
+        Task<IEnumerable<Event>> GetActiveEventsAsync(CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<Event>> GetCompletedEvents(CancellationToken cancellationToken = default);
+        Task<IEnumerable<Event>> GetCompletedEventsAsync(CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<Event>> GetUserEvents(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<Event>> GetCanceledUserEvents(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Event>> GetCanceledUserEventsAsync(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken = default);
 
-        Task<int> Delete(Guid id, string cancellationReason, CancellationToken cancellationToken);
+        Task<int> DeleteAsync(Guid id, string cancellationReason, CancellationToken cancellationToken = default);
     }
 }

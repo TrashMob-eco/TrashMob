@@ -19,9 +19,9 @@ namespace TrashMob.Shared.Managers
             this.emailManager = emailManager;
         }      
 
-        public override async Task<ContactRequest> Add(ContactRequest contactRequest)
+        public override async Task<ContactRequest> AddAsync(ContactRequest contactRequest, CancellationToken cancellationToken = default)
         {
-            var outputContactRequest = await Repository.Add(contactRequest);
+            var outputContactRequest = await Repository.AddAsync(contactRequest, cancellationToken);
 
             var message = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.ContactRequestReceived.ToString());
             var subject = "A Contact Request has been received on TrashMob.eco!";
@@ -42,7 +42,7 @@ namespace TrashMob.Shared.Managers
                 subject = subject,
             };
 
-            await emailManager.SendTemplatedEmail(subject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
 
             return outputContactRequest;
         }

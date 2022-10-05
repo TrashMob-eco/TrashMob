@@ -23,20 +23,20 @@ namespace TrashMob.Shared.Managers
             }
         }
 
-        public override Task<T> Add(T instance)
+        public override Task<T> AddAsync(T instance, CancellationToken cancellationToken = default)
         {
             instance.Id = Guid.NewGuid();
-            return base.Add(instance);
+            return base.AddAsync(instance, cancellationToken);
         }
 
-        public virtual Task<int> Delete(Guid id)
+        public override Task<int> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return Repo.Delete(id);
+            return Repo.DeleteAsync(id, cancellationToken);
         }
 
-        public virtual Task<T> Get(Guid id, CancellationToken cancellationToken = default)
+        public virtual Task<T> GetAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return Repo.Get(id, cancellationToken);
+            return Repo.GetAsync(id, cancellationToken);
         }
     }
 }

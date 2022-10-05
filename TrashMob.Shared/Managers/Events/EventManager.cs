@@ -20,7 +20,7 @@
             this.emailManager = emailManager;
         }
 
-        public async Task<IEnumerable<Event>> GetActiveEvents(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Event>> GetActiveEventsAsync(CancellationToken cancellationToken = default)
         {
             return await Repo.Get(e => (e.EventStatusId == (int)EventStatusEnum.Active || e.EventStatusId == (int)EventStatusEnum.Full) 
                                         && e.IsEventPublic 
@@ -28,14 +28,14 @@
                              .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<Event>> GetCompletedEvents(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Event>> GetCompletedEventsAsync(CancellationToken cancellationToken = default)
         {
             return await Repo.Get(e => e.EventDate < DateTimeOffset.UtcNow 
                                   && e.EventStatusId != (int)EventStatusEnum.Canceled)
                              .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<Event>> GetUserEvents(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken = default)
         {
             return await Repo.Get(e => e.CreatedByUserId == userId
                                   && e.EventStatusId != (int)EventStatusEnum.Canceled
@@ -43,7 +43,7 @@
                              .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<Event>> GetCanceledUserEvents(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Event>> GetCanceledUserEventsAsync(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken = default)
         {
             return await Repo.Get(e => e.CreatedByUserId == userId
                                   && e.EventStatusId == (int)EventStatusEnum.Canceled
@@ -52,12 +52,12 @@
         }
 
         // Delete the record of a particular Mob Event    
-        public async Task<int> Delete(Guid id, string cancellationReason, CancellationToken cancellationToken)
+        public async Task<int> DeleteAsync(Guid id, string cancellationReason, CancellationToken cancellationToken)
         {
-            var mobEvent = await Repo.Get(id, cancellationToken).ConfigureAwait(false);
+            var mobEvent = await Repo.GetAsync(id, cancellationToken).ConfigureAwait(false);
             mobEvent.EventStatusId = (int)EventStatusEnum.Canceled;
             mobEvent.CancellationReason = cancellationReason;
-            await base.Update(mobEvent);
+            await base.UpdateAsync(mobEvent, cancellationToken);
             return 1;
         }
     }
