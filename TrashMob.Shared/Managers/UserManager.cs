@@ -23,7 +23,7 @@ namespace TrashMob.Shared.Managers
         private readonly IKeyedRepository<Event> eventRepository;
         private readonly IKeyedRepository<Partner> partnerRepository;
         private readonly IBaseRepository<PartnerUser> partnerUserRepository;
-        private readonly IBaseRepository<PartnerLocation> partnerLocationRepository;
+        private readonly IKeyedRepository<PartnerLocation> partnerLocationRepository;
         private readonly IEmailManager emailManager;
 
         public UserManager(IKeyedRepository<User> repository,
@@ -35,7 +35,7 @@ namespace TrashMob.Shared.Managers
                            IKeyedRepository<Event> eventRepository,
                            IKeyedRepository<Partner> partnerRepository,
                            IBaseRepository<PartnerUser> partnerUserRepository,
-                           IBaseRepository<PartnerLocation> partnerLocationRepository,
+                           IKeyedRepository<PartnerLocation> partnerLocationRepository,
                            IEmailManager emailManager) : base(repository)
         {
             this.eventAttendeesRepository = eventAttendeesRepository;

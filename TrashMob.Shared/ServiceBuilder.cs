@@ -71,7 +71,7 @@
             services.AddScoped<IKeyedRepository<Partner>, KeyedRepository<Partner>>();
             services.AddScoped<IKeyedRepository<PartnerContact>, KeyedRepository<PartnerContact>>();
             services.AddScoped<IKeyedRepository<PartnerDocument>, KeyedRepository<PartnerDocument>>();
-            services.AddScoped<IBaseRepository<PartnerLocation>, BaseRepository<PartnerLocation>>();
+            services.AddScoped<IKeyedRepository<PartnerLocation>, KeyedRepository<PartnerLocation>>();
             services.AddScoped<IKeyedRepository<PartnerRequest>, KeyedRepository<PartnerRequest>>();
             services.AddScoped<ILookupRepository<PartnerRequestStatus>, LookupRepository<PartnerRequestStatus>>();
             services.AddScoped<IKeyedRepository<PartnerSocialMediaAccount>, KeyedRepository<PartnerSocialMediaAccount>>();
