@@ -19,16 +19,16 @@ namespace TrashMob.Shared.Engine
 
         protected override string EmailSubject => "Your TrashMob.eco event has completed. We'd love to know how it went!";
 
-        public EventSummaryHostReminderNotifier(IEventRepository eventRepository,
+        public EventSummaryHostReminderNotifier(IEventManager eventManager,
                                                 IKeyedManager<User> userManager,
-                                                IEventAttendeeRepository eventAttendeeRepository,
+                                                IEventAttendeeManager eventAttendeeManager,
                                                 IKeyedManager<UserNotification> userNotificationManager,
                                                 IKeyedManager<NonEventUserNotification> nonEventUserNotificationManager,
                                                 IEmailSender emailSender,
                                                 IEmailManager emailManager,
-                                                IMapRepository mapRepository,
+                                                IMapManager mapRepository,
                                                 ILogger logger) :
-            base(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
+            base(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
         {
         }
 
@@ -48,7 +48,7 @@ namespace TrashMob.Shared.Engine
                 var eventsToNotifyUserFor = new List<Event>();
 
                 // Get list of active events
-                var events = await EventRepository.GetCompletedEvents(cancellationToken).ConfigureAwait(false);
+                var events = await EventManager.GetCompletedEvents(cancellationToken).ConfigureAwait(false);
 
                 foreach (var mobEvent in events.Where(e => e.CreatedByUserId == user.Id))
                 {

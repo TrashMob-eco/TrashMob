@@ -14,16 +14,16 @@ namespace TrashMob.Shared.Engine
 
         protected override string EmailSubject => "You're attending a TrashMob.eco event this week!";
 
-        public UpcomingEventAttendingThisWeekNotifier(IEventRepository eventRepository, 
+        public UpcomingEventAttendingThisWeekNotifier(IEventManager eventManager, 
                                                       IKeyedManager<User> userManager, 
-                                                      IEventAttendeeRepository eventAttendeeRepository,
+                                                      IEventAttendeeManager eventAttendeeManager,
                                                       IKeyedManager<UserNotification> userNotificationManager,
                                                       IKeyedManager<NonEventUserNotification> nonEventUserNotificationManager,
                                                       IEmailSender emailSender,
                                                       IEmailManager emailManager,
-                                                      IMapRepository mapRepository,
+                                                      IMapManager mapRepository,
                                                       ILogger logger) :
-            base(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
+            base(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
         {
         }
     }

@@ -20,14 +20,14 @@ namespace TrashMob.Controllers
     public class EventSummariesController : SecureController
     {
         private readonly IBaseManager<EventSummary> eventSummaryManager;
-        private readonly IEventRepository eventRepository;
+        private readonly IKeyedManager<Event> eventManager;
 
         public EventSummariesController(IBaseManager<EventSummary> eventSummaryManager,
-                                        IEventRepository eventRepository) 
+                                        IKeyedManager<Event> eventManager) 
             : base()
         {
             this.eventSummaryManager = eventSummaryManager;
-            this.eventRepository = eventRepository;
+            this.eventManager = eventManager;
         }
 
         [HttpGet("{eventId}")]
@@ -51,7 +51,7 @@ namespace TrashMob.Controllers
             var displaySummaries = new List<DisplayEventSummary>();
             foreach (var eventSummary in eventSummaries)
             {
-                var mobEvent = await eventRepository.GetEvent(eventSummary.EventId, cancellationToken).ConfigureAwait(false);
+                var mobEvent = await eventManager.Get(eventSummary.EventId, cancellationToken).ConfigureAwait(false);
 
                 if (mobEvent != null)
                 {

@@ -13,16 +13,16 @@ namespace TrashMob.Shared.Engine
 
     public abstract class UpcomingEventsInYourAreaBaseNotifier : NotificationEngineBase, INotificationEngine
     {
-        public UpcomingEventsInYourAreaBaseNotifier(IEventRepository eventRepository,
+        public UpcomingEventsInYourAreaBaseNotifier(IEventManager eventManager,
                                                     IKeyedManager<User> userManager,
-                                                    IEventAttendeeRepository eventAttendeeRepository,
+                                                    IEventAttendeeManager eventAttendeeManager,
                                                     IKeyedManager<UserNotification> userNotificationManager,
                                                     IKeyedManager<NonEventUserNotification> nonEventUserNotificationManager,
                                                     IEmailSender emailSender,
                                                     IEmailManager emailManager,
-                                                    IMapRepository mapRepository,
+                                                    IMapManager mapRepository,
                                                     ILogger logger) :
-            base(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
+            base(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
         {
         }
 
@@ -48,10 +48,10 @@ namespace TrashMob.Shared.Engine
                 var eventsToNotifyUserFor = new List<Event>();
 
                 // Get list of active events
-                var events = await EventRepository.GetActiveEvents(cancellationToken).ConfigureAwait(false);
+                var events = await EventManager.GetActiveEvents(cancellationToken).ConfigureAwait(false);
 
                 // Get list of events user is already attending
-                var eventsUserIsAttending = await EventAttendeeRepository.GetEventsUserIsAttending(user.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var eventsUserIsAttending = await EventAttendeeManager.GetEventsUserIsAttending(user.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 // Limit the list of events to process to those in the next window UTC
                 foreach (var mobEvent in events.Where(e => e.EventDate <= DateTimeOffset.UtcNow.AddHours(NumberOfHoursInWindow)))

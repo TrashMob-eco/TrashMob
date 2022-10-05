@@ -8,31 +8,31 @@
 
     public class UserNotificationManager : IUserNotificationManager 
     {
-        private readonly IEventRepository eventRepository;
+        private readonly IEventManager eventManager;
         private readonly IKeyedManager<User> userManager;
-        private readonly IEventAttendeeRepository eventAttendeeRepository;
+        private readonly IEventAttendeeManager eventAttendeeManager;
         private readonly IKeyedManager<UserNotification> userNotificationManager;
         private readonly IKeyedManager<NonEventUserNotification> nonEventUserNotificationManager;
         private readonly IEmailSender emailSender;
         private readonly IEmailManager emailManager;
-        private readonly IMapRepository mapRepository;
+        private readonly IMapManager mapRepository;
         private readonly IBaseManager<EventSummary> eventSummaryManager;
         private readonly ILogger<UserNotificationManager> logger;
 
-        public UserNotificationManager(IEventRepository eventRepository,
+        public UserNotificationManager(IEventManager eventManager,
                                        IKeyedManager<User> userManager,
-                                       IEventAttendeeRepository eventAttendeeRepository,
+                                       IEventAttendeeManager eventAttendeeManager,
                                        IKeyedManager<UserNotification> userNotificationManager,
                                        IKeyedManager<NonEventUserNotification> nonEventUserNotificationManager,
                                        IEmailSender emailSender,
                                        IEmailManager emailManager,
-                                       IMapRepository mapRepository,
+                                       IMapManager mapRepository,
                                        IBaseManager<EventSummary> eventSummaryManager,
                                        ILogger<UserNotificationManager> logger)
         {
-            this.eventRepository = eventRepository;
+            this.eventManager = eventManager;
             this.userManager = userManager;
-            this.eventAttendeeRepository = eventAttendeeRepository;
+            this.eventAttendeeManager = eventAttendeeManager;
             this.userNotificationManager = userNotificationManager;
             this.nonEventUserNotificationManager = nonEventUserNotificationManager;
             this.emailSender = emailSender;
@@ -46,34 +46,34 @@
         {
             logger.LogInformation("Starting RunAllNotifications");
 
-            var eventSummaryAttendeeNotifier = new EventSummaryAttendeeNotifier(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
+            var eventSummaryAttendeeNotifier = new EventSummaryAttendeeNotifier(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
             await eventSummaryAttendeeNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
-            var eventSummaryHostReminderNotifier = new EventSummaryHostReminderNotifier(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
+            var eventSummaryHostReminderNotifier = new EventSummaryHostReminderNotifier(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
             await eventSummaryHostReminderNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
-            var eventSummaryHostWeekReminderNotifier = new EventSummaryHostWeekReminderNotifier(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, eventSummaryManager, logger);
+            var eventSummaryHostWeekReminderNotifier = new EventSummaryHostWeekReminderNotifier(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, eventSummaryManager, logger);
             await eventSummaryHostWeekReminderNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
-            var upcomingEventAttendingThisWeekNotifier = new UpcomingEventAttendingThisWeekNotifier(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
+            var upcomingEventAttendingThisWeekNotifier = new UpcomingEventAttendingThisWeekNotifier(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
             await upcomingEventAttendingThisWeekNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
-            var upcomingEventAttendingSoonNotifier = new UpcomingEventAttendingSoonNotifier(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
+            var upcomingEventAttendingSoonNotifier = new UpcomingEventAttendingSoonNotifier(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
             await upcomingEventAttendingSoonNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
-            var upcomingEventHostingThisWeekNotifier = new UpcomingEventHostingThisWeekNotifier(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
+            var upcomingEventHostingThisWeekNotifier = new UpcomingEventHostingThisWeekNotifier(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
             await upcomingEventHostingThisWeekNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
-            var upcomingEventHostingSoonNotifier = new UpcomingEventHostingSoonNotifier(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
+            var upcomingEventHostingSoonNotifier = new UpcomingEventHostingSoonNotifier(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
             await upcomingEventHostingSoonNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
-            var upcomingEventsInYourAreaThisWeekNotifier = new UpcomingEventsInYourAreaThisWeekNotifier(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
+            var upcomingEventsInYourAreaThisWeekNotifier = new UpcomingEventsInYourAreaThisWeekNotifier(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
             await upcomingEventsInYourAreaThisWeekNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
-            var upcomingEventsInYourAreaSoonNotifier = new UpcomingEventsInYourAreaSoonNotifier(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
+            var upcomingEventsInYourAreaSoonNotifier = new UpcomingEventsInYourAreaSoonNotifier(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
             await upcomingEventsInYourAreaSoonNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
-            var userProfileLocationNotifier = new UserProfileLocationNotifier(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
+            var userProfileLocationNotifier = new UserProfileLocationNotifier(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger);
             await userProfileLocationNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
             logger.LogInformation("Completed RunAllNotifications");

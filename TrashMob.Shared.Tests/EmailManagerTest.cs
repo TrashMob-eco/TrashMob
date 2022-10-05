@@ -7,7 +7,7 @@
     using System.Collections.Generic;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers;
-    using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Managers.Interfaces;
     using Xunit;
 
     public class EmailManagerTest  

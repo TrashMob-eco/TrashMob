@@ -1,10 +1,10 @@
-﻿namespace TrashMob.Shared.Persistence.Interfaces
+﻿namespace TrashMob.Shared.Managers.Interfaces
 {
     using System;
     using System.Threading.Tasks;
     using TrashMob.Models;
 
-    public interface IMapRepository
+    public interface IMapManager
     {
         string GetMapKey();
 

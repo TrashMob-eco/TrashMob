@@ -17,16 +17,16 @@ namespace TrashMob.Shared.Engine
 
         protected override string EmailSubject => "Set your User Location in TrashMob to get Upcoming Event Notifications!";
 
-        public UserProfileLocationNotifier(IEventRepository eventRepository, 
-                                                        IKeyedManager<User> userManager, 
-                                                        IEventAttendeeRepository eventAttendeeRepository,
-                                                        IKeyedManager<UserNotification> userNotificationManager,
-                                                        IKeyedManager<NonEventUserNotification> nonEventUserNotificationManager,
-                                                        IEmailSender emailSender,
-                                                        IEmailManager emailManager,
-                                                        IMapRepository mapRepository,
-                                                        ILogger logger) : 
-            base(eventRepository, userManager, eventAttendeeRepository, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
+        public UserProfileLocationNotifier(IEventManager eventManager, 
+                                           IKeyedManager<User> userManager, 
+                                           IEventAttendeeManager eventAttendeeManager,
+                                           IKeyedManager<UserNotification> userNotificationManager,
+                                           IKeyedManager<NonEventUserNotification> nonEventUserNotificationManager,
+                                           IEmailSender emailSender,
+                                           IEmailManager emailManager,
+                                           IMapManager mapRepository,
+                                           ILogger logger) : 
+            base(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
         {
 
         }

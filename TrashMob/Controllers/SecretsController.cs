@@ -21,7 +21,7 @@
         [Route("{name}")]
         public async Task<IActionResult> GetSecret(string name)
         {
-            var secret = await Task.FromResult(secretRepository.GetSecret(name));
+            var secret = await Task.FromResult(secretRepository.Get(name));
             return Ok(secret);
         }
     }

@@ -9,9 +9,9 @@
     [Route("api/maps")]
     public class MapsController : SecureController
     {
-        private readonly IMapRepository mapRepository;
+        private readonly IMapManager mapRepository;
 
-        public MapsController(IMapRepository mapRepository) : base()
+        public MapsController(IMapManager mapRepository) : base()
         {
             this.mapRepository = mapRepository;
         }

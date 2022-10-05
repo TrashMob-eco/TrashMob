@@ -5,7 +5,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Cryptography.X509Certificates;
-    using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Managers.Interfaces;
     using static DocuSign.eSign.Client.Auth.OAuth;
 
     public class DocusignCertificateAuthenticator : IDocusignAuthenticator

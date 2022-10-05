@@ -14,11 +14,11 @@
 
     public abstract class NotificationEngineBase
     {
-        protected IEventRepository EventRepository { get; }
+        protected IEventManager EventManager { get; }
 
         protected IKeyedManager<User> UserManager { get; }
 
-        protected IEventAttendeeRepository EventAttendeeRepository { get; }
+        protected IEventAttendeeManager EventAttendeeManager { get; }
 
         protected IKeyedManager<UserNotification> UserNotificationManager { get; }
 
@@ -28,7 +28,7 @@
 
         protected IEmailSender EmailSender { get; }
 
-        protected IMapRepository MapRepository { get; }
+        protected IMapManager MapRepository { get; }
 
         public ILogger Logger { get; }
 
@@ -40,19 +40,19 @@
 
         protected string SendGridApiKey { get; }
 
-        public NotificationEngineBase(IEventRepository eventRepository,
+        public NotificationEngineBase(IEventManager eventManager,
                                       IKeyedManager<User> userManager,
-                                      IEventAttendeeRepository eventAttendeeRepository,
+                                      IEventAttendeeManager eventAttendeeManager,
                                       IKeyedManager<UserNotification> userNotificationManager,
                                       IKeyedManager<NonEventUserNotification> nonEventUserNotificationManager,
                                       IEmailSender emailSender,
                                       IEmailManager emailManager,
-                                      IMapRepository mapRepository,
+                                      IMapManager mapRepository,
                                       ILogger logger)
         {
-            EventRepository = eventRepository;
+            EventManager = eventManager;
             UserManager = userManager;
-            EventAttendeeRepository = eventAttendeeRepository;
+            EventAttendeeManager = eventAttendeeManager;
             UserNotificationManager = userNotificationManager;
             EmailSender = emailSender;
             EmailManager = emailManager;

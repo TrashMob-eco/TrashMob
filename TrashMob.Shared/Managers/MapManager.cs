@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Persistence
+﻿namespace TrashMob.Shared.Managers
 {
     using AzureMapsToolkit.Search;
     using AzureMapsToolkit.Spatial;
@@ -10,17 +10,17 @@
     using System.Text.Json;
     using System.Threading.Tasks;
     using TrashMob.Models;
-    using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Managers.Interfaces;
 
-    public class MapRepository : IMapRepository
+    public class MapManager : IMapManager
     {
         private readonly IConfiguration configuration;
-        private readonly ILogger<MapRepository> logger;
+        private readonly ILogger<MapManager> logger;
         private const string AzureMapKeyName = "AzureMapsKey";
         private const int MetersPerKilometer = 1000;
         private const int MetersPerMile = 1609;
 
-        public MapRepository(IConfiguration configuration, ILogger<MapRepository> logger)
+        public MapManager(IConfiguration configuration, ILogger<MapManager> logger)
         {
             this.configuration = configuration;
             this.logger = logger;

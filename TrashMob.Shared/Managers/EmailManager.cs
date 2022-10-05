@@ -9,7 +9,7 @@ namespace TrashMob.Shared.Managers
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared;
-    using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Managers.Interfaces;
 
     public class EmailManager : IEmailManager
     {

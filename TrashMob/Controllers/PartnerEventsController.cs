@@ -17,18 +17,18 @@ namespace TrashMob.Controllers
     {
         private readonly IBaseManager<EventPartner> eventPartnerManager;
         private readonly IKeyedManager<PartnerLocation> partnerLocationManager;
-        private readonly IEventRepository eventRepository;
+        private readonly IKeyedManager<Event> eventManager;
         private readonly IKeyedManager<Partner> partnerManager;
 
         public PartnerEventsController(IBaseManager<EventPartner> eventPartnerManager,
-                                       IKeyedManager<PartnerLocation> partnerLocationManager, 
-                                       IEventRepository eventRepository,
+                                       IKeyedManager<PartnerLocation> partnerLocationManager,
+                                       IKeyedManager<Event> eventManager,
                                        IKeyedManager<Partner> partnerManager)
             : base()
         {
             this.eventPartnerManager = eventPartnerManager;
             this.partnerLocationManager = partnerLocationManager;
-            this.eventRepository = eventRepository;
+            this.eventManager = eventManager;
             this.partnerManager = partnerManager;
         }
 
@@ -65,7 +65,7 @@ namespace TrashMob.Controllers
 
                     displayPartnerEvent.PartnerLocationName = partnerLocation.Name;
 
-                    var mobEvent = await eventRepository.GetEvent(cp.EventId, cancellationToken).ConfigureAwait(false);
+                    var mobEvent = await eventManager.Get(cp.EventId, cancellationToken).ConfigureAwait(false);
 
                     displayPartnerEvent.EventName = mobEvent.Name;
                     displayPartnerEvent.EventStreetAddress = mobEvent.StreetAddress;

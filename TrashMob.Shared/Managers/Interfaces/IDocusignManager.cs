@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Persistence.Interfaces
+﻿namespace TrashMob.Shared.Managers.Interfaces
 {
     using System.Threading.Tasks;
     using TrashMob.Shared;

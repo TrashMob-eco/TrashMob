@@ -12,30 +12,30 @@ namespace TrashMob.Controllers
     using TrashMob.Poco;
     using System.Threading;
     using Microsoft.ApplicationInsights;
-    using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Models;
+    using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/eventattendees")]
     public class EventAttendeesController : SecureController
     {
-        private readonly IEventAttendeeRepository eventAttendeeRepository;
+        private readonly IEventAttendeeManager eventAttendeeManager;
 
-        public EventAttendeesController(IEventAttendeeRepository eventAttendeeRepository) : base()
+        public EventAttendeesController(IEventAttendeeManager eventAttendeeManager) : base()
         {
-            this.eventAttendeeRepository = eventAttendeeRepository;
+            this.eventAttendeeManager = eventAttendeeManager;
         }
 
         [HttpGet("{eventId}")]
         [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetEventAttendees(Guid eventId)
         {            
-            var result = (await eventAttendeeRepository.GetEventAttendees(eventId, CancellationToken.None).ConfigureAwait(false)).Select(u => u.ToDisplayUser());
+            var result = (await eventAttendeeManager.Get(ea => ea.EventId == eventId, CancellationToken.None).ConfigureAwait(false)).Select(u => u.User.ToDisplayUser());
             return Ok(result);
         }
 
         [HttpPut("{id}")]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> UpdateEventAttendee(EventAttendee eventAttendee)
+        public async Task<IActionResult> UpdateEventAttendee(EventAttendee eventAttendee, CancellationToken cancellationToken)
         {
             var authResult = await AuthorizationService.AuthorizeAsync(User, eventAttendee, "UserOwnsEntity");
 
@@ -46,14 +46,14 @@ namespace TrashMob.Controllers
 
             try
             {
-                var updatedEventAttendee = await eventAttendeeRepository.UpdateEventAttendee(eventAttendee).ConfigureAwait(false);
+                var updatedEventAttendee = await eventAttendeeManager.Update(eventAttendee).ConfigureAwait(false);
                 TelemetryClient.TrackEvent(nameof(UpdateEventAttendee));
 
                 return Ok(updatedEventAttendee);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await EventAttendeeExists(eventAttendee.EventId, eventAttendee.UserId).ConfigureAwait(false))
+                if (!await EventAttendeeExists(eventAttendee.EventId, eventAttendee.UserId, cancellationToken).ConfigureAwait(false))
                 {
                     return NotFound();
                 }
@@ -74,11 +74,11 @@ namespace TrashMob.Controllers
             {
                 return Forbid();
             }
-
-            await eventAttendeeRepository.AddEventAttendee(eventAttendee.EventId, eventAttendee.UserId).ConfigureAwait(false);
+            
+            await eventAttendeeManager.Add(eventAttendee).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddEventAttendee));
 
-            var result = (await eventAttendeeRepository.GetEventAttendees(eventAttendee.EventId, CancellationToken.None).ConfigureAwait(false)).Select(u => u.ToDisplayUser());
+            var result = (await eventAttendeeManager.Get(e => e.EventId == eventAttendee.EventId, CancellationToken.None).ConfigureAwait(false)).Select(u => u.User.ToDisplayUser());
             return Ok(result);
         }
 
@@ -86,17 +86,19 @@ namespace TrashMob.Controllers
         // Todo: Tighten this down
         [Authorize(Policy = "ValidUser")]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> DeleteEventAttendee(Guid eventId, Guid userId)
+        public async Task<IActionResult> DeleteEventAttendee(Guid eventId, Guid userId, CancellationToken cancellationToken)
         {
-            await eventAttendeeRepository.DeleteEventAttendee(eventId, userId).ConfigureAwait(false);
+            await eventAttendeeManager.Delete(eventId, userId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeleteEventAttendee));
 
             return Ok();
         }
 
-        private async Task<bool> EventAttendeeExists(Guid eventId, Guid userId)
+        private async Task<bool> EventAttendeeExists(Guid eventId, Guid userId, CancellationToken cancellationToken)
         {
-            return (await eventAttendeeRepository.GetEventAttendees(eventId).ConfigureAwait(false)).Any(e => e.Id == userId);
+            var attendee = await eventAttendeeManager.Get(ea => ea.EventId == eventId && ea.UserId == userId, cancellationToken).ConfigureAwait(false);
+
+            return attendee != null;
         }
     }
 }

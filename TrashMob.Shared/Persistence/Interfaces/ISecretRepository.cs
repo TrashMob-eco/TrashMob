@@ -2,6 +2,6 @@
 {
     public interface ISecretRepository
     {
-        string GetSecret(string name);
+        string Get(string name);
     }
 }

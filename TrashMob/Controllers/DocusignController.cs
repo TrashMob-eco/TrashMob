@@ -4,7 +4,7 @@
     using System;
     using System.Threading.Tasks;
     using TrashMob.Shared;
-    using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/docusign")]
     public class DocusignController : SecureController

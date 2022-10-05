@@ -12,7 +12,7 @@
             this.configuration = configuration;
         }
 
-        public string GetSecret(string name)
+        public string Get(string name)
         {
             return configuration[name];
         }

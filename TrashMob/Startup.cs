@@ -24,7 +24,6 @@ namespace TrashMob
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Managers.Partners;
     using TrashMob.Shared.Persistence;
-    using TrashMob.Shared.Persistence.Events;
     using TrashMob.Shared.Persistence.Interfaces;
 
     public class Startup
@@ -84,7 +83,7 @@ namespace TrashMob
             services.AddScoped<IDocusignManager, DocusignManager>();
             services.AddScoped<IEmailManager, EmailManager>();
             services.AddScoped<IEmailSender, EmailSender>();
-            services.AddScoped<IMapRepository, MapRepository>();
+            services.AddScoped<IMapManager, MapManager>();
             services.AddScoped<ISecretRepository, SecretRepository>();
             services.AddScoped<INotificationManager, NotificationManager>();
 
@@ -141,13 +140,11 @@ namespace TrashMob
             services.AddScoped<IKeyedManager<UserNotification>, UserNotificationManager>();
 
             // Intentional deviation due to unique methods
+            services.AddScoped<IEventAttendeeManager, EventAttendeeManager>();
+            services.AddScoped<IEventManager, EventManager>();
             services.AddScoped<IEventPartnerManager, EventPartnerManager>();
             services.AddScoped<IPartnerRequestManager, PartnerRequestManager>();
             services.AddScoped<IUserManager, UserManager>();
-
-            // Not Migrated Repositories and Managers
-            services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
-            services.AddScoped<IEventRepository, EventRepository>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             

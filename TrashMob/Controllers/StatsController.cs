@@ -5,36 +5,34 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Poco;
     using System.Threading;
-    using Microsoft.ApplicationInsights;
     using System;
     using System.Threading.Tasks;
     using TrashMob.Common;
-    using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/stats")]
     public class StatsController : BaseController
     {
-        private readonly IEventRepository eventRepository;
+        private readonly IEventManager eventManager;
         private readonly IBaseManager<EventSummary> eventSummaryManager;
-        private readonly IEventAttendeeRepository eventAttendeeRepository;
+        private readonly IEventAttendeeManager eventAttendeeManager;
 
-        public StatsController(IEventRepository eventRepository,
+        public StatsController(IEventManager eventManager,
                                IBaseManager<EventSummary> eventSummaryManager,
-                               IEventAttendeeRepository eventAttendeeRepository)
+                               IEventAttendeeManager eventAttendeeManager)
             : base()
         {
-            this.eventRepository = eventRepository;
+            this.eventManager = eventManager;
             this.eventSummaryManager = eventSummaryManager;
-            this.eventAttendeeRepository = eventAttendeeRepository;
+            this.eventAttendeeManager = eventAttendeeManager;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetStats(CancellationToken cancellationToken)
         {
             var stats = new Stats();
-            var events = eventRepository.GetEvents(cancellationToken);
+            var events = await eventManager.Get(cancellationToken);
             stats.TotalEvents = events.Count();
 
             var eventSummaries = await eventSummaryManager.Get(cancellationToken);
@@ -49,8 +47,8 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetStatsByUser(Guid userId, CancellationToken cancellationToken)
         {
             var stats = new Stats();
-            var result1 = await eventRepository.GetUserEvents(userId, false, cancellationToken);
-            var result2 = await eventAttendeeRepository.GetEventsUserIsAttending(userId, false, cancellationToken).ConfigureAwait(false);
+            var result1 = await eventManager.GetUserEvents(userId, false, cancellationToken);
+            var result2 = await eventAttendeeManager.GetEventsUserIsAttending(userId, false, cancellationToken).ConfigureAwait(false);
 
             var allResults = result1.Union(result2, new EventComparer());
 

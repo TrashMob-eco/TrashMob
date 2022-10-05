@@ -18,9 +18,9 @@ namespace TrashMob.Shared.Tests
 
         protected abstract NotificationTypeEnum NotificationType { get; }
 
-        protected Mock<IEventRepository> EventRepository { get; }
+        protected Mock<IEventManager> EventManager { get; }
         
-        protected Mock<IEventAttendeeRepository> EventAttendeeRepository { get; }
+        protected Mock<IEventAttendeeManager> EventAttendeeManager { get; }
         
         protected Mock<IKeyedManager<User>> UserManager { get; }
         
@@ -32,7 +32,7 @@ namespace TrashMob.Shared.Tests
 
         protected Mock<IEmailManager> EmailManager { get; }
 
-        protected Mock<IMapRepository> MapRepository { get; }
+        protected Mock<IMapManager> MapRepository { get; }
 
         protected Mock<ILogger> Logger { get; }
 
@@ -42,14 +42,14 @@ namespace TrashMob.Shared.Tests
             userId2 = Guid.NewGuid();
             createdById = Guid.NewGuid();
 
-            EventRepository = new Mock<IEventRepository>();
-            EventAttendeeRepository = new Mock<IEventAttendeeRepository>();
+            EventManager = new Mock<IEventManager>();
+            EventAttendeeManager = new Mock<IEventAttendeeManager>();
             UserManager = new Mock<IKeyedManager<User>>();
             UserNotificationManager = new Mock<IKeyedManager<UserNotification>>();
             NonEventUserNotificationManager = new Mock<IKeyedManager<NonEventUserNotification>>();
             EmailSender = new Mock<IEmailSender>();
             EmailManager = new Mock<IEmailManager>();
-            MapRepository = new Mock<IMapRepository>();
+            MapRepository = new Mock<IMapManager>();
             Logger = new Mock<ILogger>();
 
             // Setup a default return of distance between User and Event of 10 (in whatever units)
