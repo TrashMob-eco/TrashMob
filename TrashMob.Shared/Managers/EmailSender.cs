@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared
+﻿namespace TrashMob.Shared.Managers
 {
     using SendGrid;
     using SendGrid.Helpers.Mail;
@@ -7,6 +7,9 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Engine;
+    using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
+    using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 
     public class EmailSender : IEmailSender
     {
@@ -20,12 +23,12 @@
                 return;
             }
 
-            var from = new SendGrid.Helpers.Mail.EmailAddress(Constants.TrashMobEmailAddress, Constants.TrashMobEmailName);
+            var from = new EmailAddress(Constants.TrashMobEmailAddress, Constants.TrashMobEmailName);
 
-            var tos = new List<SendGrid.Helpers.Mail.EmailAddress>();
+            var tos = new List<EmailAddress>();
             foreach (var address in email.Addresses)
             {
-                tos.Add(new SendGrid.Helpers.Mail.EmailAddress(address.Email, address.Name));
+                tos.Add(new EmailAddress(address.Email, address.Name));
             }
 
             try
@@ -49,19 +52,19 @@
                 return;
             }
 
-            var from = new SendGrid.Helpers.Mail.EmailAddress(Constants.TrashMobEmailAddress, Constants.TrashMobEmailName);
+            var from = new EmailAddress(Constants.TrashMobEmailAddress, Constants.TrashMobEmailName);
 
-            var tos = new List<SendGrid.Helpers.Mail.EmailAddress>();
+            var tos = new List<EmailAddress>();
             foreach (var address in email.Addresses)
             {
-                tos.Add(new SendGrid.Helpers.Mail.EmailAddress(address.Email, address.Name));
+                tos.Add(new EmailAddress(address.Email, address.Name));
             }
 
             try
             {
                 var client = new SendGridClient(ApiKey);
                 var message = MailHelper.CreateSingleTemplateEmailToMultipleRecipients(from, tos, email.TemplateId, email.DynamicTemplateData);
-                
+
                 message.Asm = new ASM
                 {
                     GroupId = email.GroupId,

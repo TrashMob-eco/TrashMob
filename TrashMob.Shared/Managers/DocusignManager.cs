@@ -11,8 +11,8 @@ namespace TrashMob.Shared.Managers
     using static DocuSign.eSign.Client.Auth.OAuth;
     using System.IO;
     using System.Threading.Tasks;
-    using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
 
     public class DocusignManager : IDocusignManager
     {

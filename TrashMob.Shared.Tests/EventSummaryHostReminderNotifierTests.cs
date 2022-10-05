@@ -5,6 +5,7 @@ namespace TrashMob.Shared.Tests
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Engine;
+    using TrashMob.Shared.Poco;
     using Xunit;
 
     public class EventSummaryHostReminderNotifierTests : NotifierTestsBase

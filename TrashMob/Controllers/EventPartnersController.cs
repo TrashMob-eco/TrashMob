@@ -15,6 +15,7 @@ namespace TrashMob.Controllers
     using TrashMob.Shared;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
 
     [Route("api/eventpartners")]
     public class EventPartnersController : SecureController

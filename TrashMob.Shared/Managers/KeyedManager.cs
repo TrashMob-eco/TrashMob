@@ -8,7 +8,7 @@ namespace TrashMob.Shared.Managers
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
 
-    public abstract class KeyedManager<T> : BaseManager<T>, IKeyedManager<T> where T : KeyedModel
+    public class KeyedManager<T> : BaseManager<T>, IKeyedManager<T> where T : KeyedModel
     {
         public KeyedManager(IKeyedRepository<T> repository) : base(repository)
         {

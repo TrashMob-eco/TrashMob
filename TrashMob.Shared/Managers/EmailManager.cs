@@ -8,8 +8,8 @@ namespace TrashMob.Shared.Managers
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
 
     public class EmailManager : IEmailManager
     {

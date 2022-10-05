@@ -10,6 +10,7 @@ namespace TrashMob.Shared.Managers
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Poco;
 
     public class UserManager : KeyedManager<User>, IUserManager
     {

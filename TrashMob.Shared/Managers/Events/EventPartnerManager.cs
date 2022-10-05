@@ -9,7 +9,7 @@
     using TrashMob.Shared.Persistence.Interfaces;
     using System;
     using Microsoft.EntityFrameworkCore;
-    using System.Linq;
+    using TrashMob.Shared.Poco;
 
     public class EventPartnerManager : BaseManager<EventPartner>, IEventPartnerManager
     {

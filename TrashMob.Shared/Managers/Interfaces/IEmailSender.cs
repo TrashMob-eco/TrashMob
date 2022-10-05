@@ -1,7 +1,8 @@
-﻿namespace TrashMob.Shared
+﻿namespace TrashMob.Shared.Managers.Interfaces
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using TrashMob.Shared.Poco;
 
     public interface IEmailSender
     {

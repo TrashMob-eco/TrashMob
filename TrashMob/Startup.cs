@@ -5,7 +5,6 @@ namespace TrashMob
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Azure;
@@ -16,15 +15,11 @@ namespace TrashMob
     using Microsoft.OpenApi.Models;
     using System;
     using System.Text.Json.Serialization;
-    using TrashMob.Models;
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers;
-    using TrashMob.Shared.Managers.Events;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Managers.Partners;
     using TrashMob.Shared.Persistence;
-    using TrashMob.Shared.Persistence.Interfaces;
 
     public class Startup
     {
@@ -79,72 +74,8 @@ namespace TrashMob
             services.AddScoped<IAuthorizationHandler, UserOwnsEntityOrIsAdminAuthHandler>();
             services.AddScoped<IAuthorizationHandler, UserIsPartnerUserOrIsAdminAuthHandler>();
 
-            // Non-patterned
-            services.AddScoped<IDocusignManager, DocusignManager>();
-            services.AddScoped<IEmailManager, EmailManager>();
-            services.AddScoped<IEmailSender, EmailSender>();
-            services.AddScoped<IMapManager, MapManager>();
-            services.AddScoped<ISecretRepository, SecretRepository>();
-            services.AddScoped<INotificationManager, NotificationManager>();
-
-            // Migrated Repositories
-            services.AddScoped<IKeyedRepository<ContactRequest>, KeyedRepository<ContactRequest>>();
-            services.AddScoped<IKeyedRepository<Event>, KeyedRepository<Event>>();
-            services.AddScoped<IBaseRepository<EventAttendee>, BaseRepository<EventAttendee>>();
-            services.AddScoped<IBaseRepository<EventPartner>, BaseRepository<EventPartner>>();
-            services.AddScoped<ILookupRepository<EventPartnerStatus>, LookupRepository<EventPartnerStatus>>();
-            services.AddScoped<ILookupRepository<EventStatus>, LookupRepository<EventStatus>>();
-            services.AddScoped<IBaseRepository<EventSummary>, BaseRepository<EventSummary>>();
-            services.AddScoped<ILookupRepository<EventType>, LookupRepository<EventType>>();
-            services.AddScoped<IKeyedRepository<MessageRequest>, KeyedRepository<MessageRequest>>();
-            services.AddScoped<IKeyedRepository<NonEventUserNotification>, KeyedRepository<NonEventUserNotification>>();
-            services.AddScoped<IKeyedRepository<Partner>, KeyedRepository<Partner>>();
-            services.AddScoped<IKeyedRepository<PartnerContact>, KeyedRepository<PartnerContact>>();
-            services.AddScoped<IKeyedRepository<PartnerDocument>, KeyedRepository<PartnerDocument>>();
-            services.AddScoped<IBaseRepository<PartnerLocation>, BaseRepository<PartnerLocation>>();
-            services.AddScoped<IKeyedRepository<PartnerRequest>, KeyedRepository<PartnerRequest>>();
-            services.AddScoped<ILookupRepository<PartnerRequestStatus>, LookupRepository<PartnerRequestStatus>>();
-            services.AddScoped<IKeyedRepository<PartnerSocialMediaAccount>, KeyedRepository<PartnerSocialMediaAccount>>();
-            services.AddScoped<ILookupRepository<PartnerStatus>, LookupRepository<PartnerStatus>>();
-            services.AddScoped<ILookupRepository<PartnerType>, LookupRepository<PartnerType>>();
-            services.AddScoped<IBaseRepository<PartnerUser>, BaseRepository<PartnerUser>>();
-            services.AddScoped<ILookupRepository<ServiceType>, LookupRepository<ServiceType>>();
-            services.AddScoped<ILookupRepository<SocialMediaAccountType>, LookupRepository<SocialMediaAccountType>>();
-            services.AddScoped<IKeyedRepository<User>, KeyedRepository<User>>();
-            services.AddScoped<IKeyedRepository<UserNotification>, KeyedRepository<UserNotification>>();
-
-            // Migrated Managers
-            services.AddScoped<IKeyedManager<ContactRequest>, ContactRequestManager>();
-            services.AddScoped<IBaseManager<EventAttendee>, EventAttendeeManager>();
-            services.AddScoped<IKeyedManager<Event>, EventManager>();
-            services.AddScoped<ILookupManager<EventPartnerStatus>, EventPartnerStatusManager>();
-            services.AddScoped<IBaseManager<EventPartner>, EventPartnerManager>();
-            services.AddScoped<ILookupManager<EventStatus>, EventStatusManager>();
-            services.AddScoped<IBaseManager<EventSummary>, EventSummaryManager>();
-            services.AddScoped<ILookupManager<EventType>, EventTypeManager>();
-            services.AddScoped<IKeyedManager<MessageRequest>, MessageRequestManager>();
-            services.AddScoped<IKeyedManager<Partner>, PartnerManager>();
-            services.AddScoped<IKeyedManager<PartnerDocument>, PartnerDocumentManager>();
-            services.AddScoped<IKeyedManager<PartnerContact>, PartnerContactManager>();
-            services.AddScoped<IKeyedManager<PartnerLocation>, PartnerLocationManager>();
-            services.AddScoped<IKeyedManager<PartnerRequest>, PartnerRequestManager>();
-            services.AddScoped<ILookupManager<PartnerRequestStatus>, PartnerRequestStatusManager>();
-            services.AddScoped<IKeyedManager<PartnerSocialMediaAccount>, PartnerSocialMediaAccountManager>();
-            services.AddScoped<ILookupManager<PartnerStatus>, PartnerStatusManager>();
-            services.AddScoped<ILookupManager<PartnerType>, PartnerTypeManager>();
-            services.AddScoped<IBaseManager<PartnerUser>, PartnerUserManager>();
-            services.AddScoped<ILookupManager<ServiceType>, ServiceTypeManager>();
-            services.AddScoped<ILookupManager<SocialMediaAccountType>, SocialMediaAccountTypeManager>();
-            services.AddScoped<IKeyedManager<NonEventUserNotification>, NonEventUserNotificationManager>();
-            services.AddScoped<IKeyedManager<User>, UserManager>();
-            services.AddScoped<IKeyedManager<UserNotification>, UserNotificationManager>();
-
-            // Intentional deviation due to unique methods
-            services.AddScoped<IEventAttendeeManager, EventAttendeeManager>();
-            services.AddScoped<IEventManager, EventManager>();
-            services.AddScoped<IEventPartnerManager, EventPartnerManager>();
-            services.AddScoped<IPartnerRequestManager, PartnerRequestManager>();
-            services.AddScoped<IUserManager, UserManager>();
+            ServiceBuilder.AddManagers(services);
+            ServiceBuilder.AddRepositories(services);
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             

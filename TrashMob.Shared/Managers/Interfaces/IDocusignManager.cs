@@ -1,7 +1,7 @@
 ﻿namespace TrashMob.Shared.Managers.Interfaces
 {
     using System.Threading.Tasks;
-    using TrashMob.Shared;
+    using TrashMob.Shared.Poco;
 
     public interface IDocusignManager
     {

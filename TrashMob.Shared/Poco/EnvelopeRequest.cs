@@ -1,10 +1,10 @@
-﻿namespace TrashMob.Shared
+﻿namespace TrashMob.Shared.Poco
 {
     using TrashMob.Models;
 
     public class EnvelopeRequest : BaseModel
     {
-        public string SignerEmail{ get; set; }
+        public string SignerEmail { get; set; }
 
         public string SignerName { get; set; }
 

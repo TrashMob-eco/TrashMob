@@ -10,7 +10,7 @@
     using TrashMob.Models.Extensions;
     using TrashMob.Shared.Extensions;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Poco;
 
     public abstract class NotificationEngineBase
     {

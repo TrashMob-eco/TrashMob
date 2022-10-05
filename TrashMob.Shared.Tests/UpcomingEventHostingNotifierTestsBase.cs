@@ -7,6 +7,7 @@ namespace TrashMob.Shared.Tests
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Shared.Engine;
+    using TrashMob.Shared.Poco;
     using Xunit;
 
     public abstract class UpcomingEventHostingNotifierTestsBase : NotifierTestsBase

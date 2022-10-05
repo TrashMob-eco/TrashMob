@@ -3,8 +3,8 @@
     using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Threading.Tasks;
-    using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
 
     [Route("api/docusign")]
     public class DocusignController : SecureController

@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared
+﻿namespace TrashMob.Shared.Poco
 {
     public class EnvelopeResponse
     {
