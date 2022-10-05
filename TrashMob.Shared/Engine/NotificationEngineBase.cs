@@ -9,25 +9,26 @@
     using TrashMob.Models;
     using TrashMob.Models.Extensions;
     using TrashMob.Shared.Extensions;
-    using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
 
     public abstract class NotificationEngineBase
     {
-        protected IEventRepository EventRepository { get; }
+        protected IEventManager EventManager { get; }
 
-        protected IUserRepository UserRepository { get; }
+        protected IKeyedManager<User> UserManager { get; }
 
-        protected IEventAttendeeRepository EventAttendeeRepository { get; }
+        protected IEventAttendeeManager EventAttendeeManager { get; }
 
-        protected IUserNotificationRepository UserNotificationRepository { get; }
+        protected IKeyedManager<UserNotification> UserNotificationManager { get; }
 
-        protected INonEventUserNotificationRepository NonEventUserNotificationRepository { get; }
+        protected IKeyedManager<NonEventUserNotification> NonEventUserNotificationManager { get; }
 
         protected IEmailManager EmailManager { get; }
 
         protected IEmailSender EmailSender { get; }
 
-        protected IMapRepository MapRepository { get; }
+        protected IMapManager MapRepository { get; }
 
         public ILogger Logger { get; }
 
@@ -39,24 +40,24 @@
 
         protected string SendGridApiKey { get; }
 
-        public NotificationEngineBase(IEventRepository eventRepository,
-                                      IUserRepository userRepository,
-                                      IEventAttendeeRepository eventAttendeeRepository,
-                                      IUserNotificationRepository userNotificationRepository,
-                                      INonEventUserNotificationRepository nonEventUserNotificationRepository,
+        public NotificationEngineBase(IEventManager eventManager,
+                                      IKeyedManager<User> userManager,
+                                      IEventAttendeeManager eventAttendeeManager,
+                                      IKeyedManager<UserNotification> userNotificationManager,
+                                      IKeyedManager<NonEventUserNotification> nonEventUserNotificationManager,
                                       IEmailSender emailSender,
                                       IEmailManager emailManager,
-                                      IMapRepository mapRepository,
+                                      IMapManager mapRepository,
                                       ILogger logger)
         {
-            EventRepository = eventRepository;
-            UserRepository = userRepository;
-            EventAttendeeRepository = eventAttendeeRepository;
-            UserNotificationRepository = userNotificationRepository;
+            EventManager = eventManager;
+            UserManager = userManager;
+            EventAttendeeManager = eventAttendeeManager;
+            UserNotificationManager = userNotificationManager;
             EmailSender = emailSender;
             EmailManager = emailManager;
             MapRepository = mapRepository;
-            NonEventUserNotificationRepository = nonEventUserNotificationRepository;
+            NonEventUserNotificationManager = nonEventUserNotificationManager;
             Logger = logger;
 
             // Set the Api Key Here
@@ -80,7 +81,7 @@
                         UserNotificationTypeId = (int)NotificationType,
                     };
 
-                    await UserNotificationRepository.AddUserNotification(userNotification).ConfigureAwait(false);
+                    await UserNotificationManager.Add(userNotification).ConfigureAwait(false);
                 }
 
                 var emailCopy = EmailManager.GetHtmlEmailCopy(NotificationType.ToString());
@@ -138,7 +139,7 @@
                 UserNotificationTypeId = (int)NotificationType,
             };
 
-            await NonEventUserNotificationRepository.AddNonEventUserNotification(userNotification).ConfigureAwait(false);
+            await NonEventUserNotificationManager.Add(userNotification).ConfigureAwait(false);
 
             var emailCopy = EmailManager.GetHtmlEmailCopy(NotificationType.ToString());
 
@@ -161,22 +162,22 @@
             return 1;
         }
 
-protected async Task<bool> UserHasAlreadyReceivedNotification(User user, Event mobEvent)
-{
-    // Get list of notification events user has already received for the event
-    var notifications = await UserNotificationRepository.GetUserNotifications(user.Id, mobEvent.Id).ConfigureAwait(false);
+        protected async Task<bool> UserHasAlreadyReceivedNotification(User user, Event mobEvent, CancellationToken cancellationToken)
+        {
+            // Get list of notification events user has already received for the event
+            var notifications = await UserNotificationManager.Get(u => u.UserId == user.Id && u.EventId == mobEvent.Id, cancellationToken).ConfigureAwait(false);
 
-    // Verify that the user has not already received this type of notification for this event
-    return notifications.Any(un => un.UserNotificationTypeId == (int)NotificationType);
-}
+            // Verify that the user has not already received this type of notification for this event
+            return notifications.Any(un => un.UserNotificationTypeId == (int)NotificationType);
+        }
 
-protected async Task<bool> UserHasAlreadyReceivedNotification(User user)
-{
-    // Get list of notification events user has already received for the event
-    var notifications = await NonEventUserNotificationRepository.GetNonEventUserNotifications(user.Id).ConfigureAwait(false);
+        protected async Task<bool> UserHasAlreadyReceivedNotification(User user, CancellationToken cancellationToken)
+        {
+            // Get list of notification events user has already received for the event
+            var notifications = await NonEventUserNotificationManager.GetByUserId(user.Id, cancellationToken).ConfigureAwait(false);
 
-    // Verify that the user has not already received this type of notification for this event
-    return notifications.Any(un => un.UserNotificationTypeId == (int)NotificationType);
-}
+            // Verify that the user has not already received this type of notification for this event
+            return notifications.Any(un => un.UserNotificationTypeId == (int)NotificationType);
+        }
     }
 }

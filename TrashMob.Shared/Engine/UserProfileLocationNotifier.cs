@@ -6,6 +6,8 @@ namespace TrashMob.Shared.Engine
     using System.Threading.Tasks;
     using System.Linq;
     using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Models;
+    using TrashMob.Shared.Managers.Interfaces;
 
     public class UserProfileLocationNotifier : NotificationEngineBase
     {
@@ -15,16 +17,16 @@ namespace TrashMob.Shared.Engine
 
         protected override string EmailSubject => "Set your User Location in TrashMob to get Upcoming Event Notifications!";
 
-        public UserProfileLocationNotifier(IEventRepository eventRepository, 
-                                                        IUserRepository userRepository, 
-                                                        IEventAttendeeRepository eventAttendeeRepository,
-                                                        IUserNotificationRepository userNotificationRepository,
-                                                        INonEventUserNotificationRepository nonEventUserNotificationRepository,
-                                                        IEmailSender emailSender,
-                                                        IEmailManager emailManager,
-                                                        IMapRepository mapRepository,
-                                                        ILogger logger) : 
-            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, nonEventUserNotificationRepository, emailSender, emailManager, mapRepository, logger)
+        public UserProfileLocationNotifier(IEventManager eventManager, 
+                                           IKeyedManager<User> userManager, 
+                                           IEventAttendeeManager eventAttendeeManager,
+                                           IKeyedManager<UserNotification> userNotificationManager,
+                                           IKeyedManager<NonEventUserNotification> nonEventUserNotificationManager,
+                                           IEmailSender emailSender,
+                                           IEmailManager emailManager,
+                                           IMapManager mapRepository,
+                                           ILogger logger) : 
+            base(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
         {
 
         }
@@ -34,7 +36,7 @@ namespace TrashMob.Shared.Engine
             Logger.LogInformation("Generating Notifications for {0}", NotificationType);
 
             // Get list of all users
-            var users = await UserRepository.GetAllUsers(cancellationToken).ConfigureAwait(false);
+            var users = await UserManager.Get(cancellationToken).ConfigureAwait(false);
             
             int notificationCounter = 0;
 
@@ -43,7 +45,7 @@ namespace TrashMob.Shared.Engine
             // for each user
             foreach (var user in users)
             {
-                if (await UserHasAlreadyReceivedNotification(user).ConfigureAwait(false))
+                if (await UserHasAlreadyReceivedNotification(user, cancellationToken).ConfigureAwait(false))
                 {
                     continue;
                 }
@@ -57,6 +59,5 @@ namespace TrashMob.Shared.Engine
 
             Logger.LogInformation("Generating {0} Total {1} Notifications", notificationCounter, NotificationType);
         }
-
     }
 }

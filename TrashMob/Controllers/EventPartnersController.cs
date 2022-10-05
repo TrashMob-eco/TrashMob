@@ -4,7 +4,6 @@ namespace TrashMob.Controllers
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
@@ -15,32 +14,32 @@ namespace TrashMob.Controllers
     using TrashMob.Poco;
     using TrashMob.Shared;
     using TrashMob.Shared.Engine;
-    using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
 
     [Route("api/eventpartners")]
-    public class EventPartnersController : BaseController
+    public class EventPartnersController : SecureController
     {
-        private readonly IEventPartnerRepository eventPartnerRepository;
-        private readonly IUserRepository userRepository;
-        private readonly IPartnerRepository partnerRepository;
-        private readonly IPartnerLocationRepository partnerLocationRepository;
-        private readonly IPartnerUserRepository partnerUserRepository;
+        private readonly IEventPartnerManager eventPartnerManager;
+        private readonly IKeyedManager<Partner> partnerManager;
+        private readonly IKeyedManager<User> userManager;
+        private readonly IKeyedManager<PartnerLocation> partnerLocationManager;
+        private readonly IBaseManager<PartnerUser> partnerUserManager;
         private readonly IEmailManager emailManager;
 
-        public EventPartnersController(TelemetryClient telemetryClient,
-                                       IUserRepository userRepository,
-                                       IEventPartnerRepository eventPartnerRepository, 
-                                       IPartnerRepository partnerRepository, 
-                                       IPartnerLocationRepository partnerLocationRepository,
-                                       IPartnerUserRepository partnerUserRepository,
+        public EventPartnersController(IKeyedManager<Partner> partnerManager,
+                                       IKeyedManager<User> userManager,
+                                       IEventPartnerManager eventPartnerManager,
+                                       IKeyedManager<PartnerLocation> partnerLocationManager,
+                                       IBaseManager<PartnerUser> partnerUserManager,
                                        IEmailManager emailManager) 
-            : base(telemetryClient, userRepository)
+            : base()
         {
-            this.eventPartnerRepository = eventPartnerRepository;
-            this.userRepository = userRepository;
-            this.partnerRepository = partnerRepository;
-            this.partnerLocationRepository = partnerLocationRepository;
-            this.partnerUserRepository = partnerUserRepository;
+            this.eventPartnerManager = eventPartnerManager;
+            this.partnerManager = partnerManager;
+            this.userManager = userManager;
+            this.partnerLocationManager = partnerLocationManager;
+            this.partnerUserManager = partnerUserManager;
             this.emailManager = emailManager;
         }
 
@@ -48,8 +47,8 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetEventPartners(Guid eventId, CancellationToken cancellationToken)
         {
             var displayEventPartners = new List<DisplayEventPartner>();
-            var currentPartners = await eventPartnerRepository.GetEventPartners(eventId, cancellationToken).ConfigureAwait(false);
-            var possiblePartners = await eventPartnerRepository.GetPotentialEventPartners(eventId, cancellationToken).ConfigureAwait(false);
+            var currentPartners = await eventPartnerManager.GetCurrentPartners(eventId, cancellationToken).ConfigureAwait(false);
+            var possiblePartners = await eventPartnerManager.GetPotentialPartnerLocations(eventId, cancellationToken).ConfigureAwait(false);
 
             // Convert the current list of partners for the event to a display partner (reduces round trips)
             foreach (var cp in currentPartners.ToList())
@@ -62,10 +61,10 @@ namespace TrashMob.Controllers
                     EventPartnerStatusId = cp.EventPartnerStatusId,
                 };
 
-                var partner = await partnerRepository.GetPartner(cp.PartnerId, cancellationToken).ConfigureAwait(false);
+                var partner = await partnerManager.Get(cp.PartnerId, cancellationToken).ConfigureAwait(false);
                 displayEventPartner.PartnerName = partner.Name;
 
-                var partnerLocation = partnerLocationRepository.GetPartnerLocations(cancellationToken).FirstOrDefault(pl => pl.PartnerId == cp.PartnerId && pl.Id == cp.PartnerLocationId);
+                var partnerLocation = (await partnerLocationManager.Get(pl => pl.PartnerId == cp.PartnerId && pl.Id == cp.PartnerLocationId, cancellationToken)).FirstOrDefault();
 
                 displayEventPartner.PartnerLocationName = partnerLocation.Name;
                 displayEventPartner.PartnerLocationNotes = partnerLocation.PublicNotes;
@@ -88,7 +87,7 @@ namespace TrashMob.Controllers
                         PartnerLocationNotes = pp.PublicNotes,
                     };
 
-                    var partner = await partnerRepository.GetPartner(pp.PartnerId, cancellationToken).ConfigureAwait(false);
+                    var partner = await partnerManager.Get(pp.PartnerId, cancellationToken).ConfigureAwait(false);
                     displayEventPartner.PartnerName = partner.Name;
 
                     displayEventPartners.Add(displayEventPartner);
@@ -99,28 +98,28 @@ namespace TrashMob.Controllers
         }
 
         [HttpPut]
-        [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdateEventPartner(EventPartner eventPartner)
         {
-            // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await GetUser();
+            var partner = partnerManager.Get(eventPartner.PartnerId);
 
-            if (!currentUser.IsSiteAdmin)
+            if (partner == null)
             {
-                var currentUserPartner = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == eventPartner.PartnerId && pu.UserId == currentUser.Id);
-
-                if (currentUserPartner == null)
-                {
-                    return Forbid();
-                }
+                return NotFound();
             }
 
-            eventPartner.LastUpdatedByUserId = currentUser.Id;
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
-            var updatedEventPartner = await eventPartnerRepository.UpdateEventPartner(eventPartner).ConfigureAwait(false);
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
 
-            var user = await userRepository.GetUserByInternalId(eventPartner.CreatedByUserId).ConfigureAwait(false);
+            eventPartner.LastUpdatedByUserId = UserId;
+
+            var updatedEventPartner = await eventPartnerManager.Update(eventPartner).ConfigureAwait(false);
+
+            var user = await userManager.Get(eventPartner.CreatedByUserId).ConfigureAwait(false);
 
             // Notify Admins that a partner request has been responded to
             var subject = "A partner request for an event has been responded to!";
@@ -167,64 +166,17 @@ namespace TrashMob.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Policy = "ValidUser")]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> AddEventPartner(EventPartner eventPartner)
+        public async Task<IActionResult> AddEventPartner(EventPartner eventPartner, CancellationToken cancellationToken)
         {
-            var currentUser = await GetUser();
-            if (currentUser == null || !ValidateUser(currentUser.NameIdentifier))
-            {
-                return Forbid();
-            }
+            await eventPartnerManager.Add(eventPartner).ConfigureAwait(false);
 
-            eventPartner.CreatedByUserId = currentUser.Id;
-            eventPartner.LastUpdatedByUserId = currentUser.Id;
-            eventPartner.CreatedDate = DateTimeOffset.UtcNow;
-            eventPartner.LastUpdatedDate = DateTimeOffset.UtcNow;
-            await eventPartnerRepository.AddEventPartner(eventPartner).ConfigureAwait(false);
+            var partnerLocation = partnerLocationManager.Get(eventPartner.PartnerLocationId, cancellationToken);
 
-            var partnerLocation = partnerLocationRepository.GetPartnerLocations().FirstOrDefault(pl => pl.Id == eventPartner.PartnerLocationId);
-
-            // Notify Admins that a new partner request has been made
-            var subject = "A New Partner Request for an Event has been made!";
-            var message = $"A new partner request for an event has been made for event {eventPartner.EventId}!";
-
-            var recipients = new List<EmailAddress>
-            {
-                new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
-            };
-
-            var adminDynamicTemplateData = new
-            {
-                username = Constants.TrashMobEmailName,
-                emailCopy = message,
-                subject = subject,
-            };
-
-            await emailManager.SendTemplatedEmail(subject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.EventRelated, adminDynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
-
-            var partnerMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventPartnerRequest.ToString());
-            var partnerSubject = "A TrashMob.eco Event would like to Partner with you!";
-
-            partnerMessage = partnerMessage.Replace("{PartnerLocationName}", partnerLocation.Name);
-
-            var dynamicTemplateData = new
-            {
-                username = partnerLocation.Name,
-                emailCopy = partnerMessage,
-                subject = subject,
-            };
-
-            var partnerRecipients = new List<EmailAddress>
-            {
-                new EmailAddress { Name = partnerLocation.Name, Email = partnerLocation.PrimaryEmail },
-                new EmailAddress { Name = partnerLocation.Name, Email = partnerLocation.SecondaryEmail }
-            };
-
-            await emailManager.SendTemplatedEmail(partnerSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddEventPartner));
 
-            return Ok();
+            return Ok(partnerLocation);
         }
     }
 }

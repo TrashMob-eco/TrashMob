@@ -3,7 +3,6 @@ namespace TrashMob.Controllers
 {
     using System;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -13,53 +12,48 @@ namespace TrashMob.Controllers
     using TrashMob.Poco;
     using System.Threading;
     using Microsoft.ApplicationInsights;
-    using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Models;
+    using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/eventattendees")]
-    public class EventAttendeesController : BaseController
+    public class EventAttendeesController : SecureController
     {
-        private readonly IEventAttendeeRepository eventAttendeeRepository;
-        private readonly IUserRepository userRepository;
+        private readonly IEventAttendeeManager eventAttendeeManager;
 
-        public EventAttendeesController(TelemetryClient telemetryClient,
-                                        IUserRepository userRepository,
-                                        IEventAttendeeRepository eventAttendeeRepository) 
-            : base(telemetryClient, userRepository)
+        public EventAttendeesController(IEventAttendeeManager eventAttendeeManager) : base()
         {
-            this.eventAttendeeRepository = eventAttendeeRepository;
-            this.userRepository = userRepository;
+            this.eventAttendeeManager = eventAttendeeManager;
         }
 
         [HttpGet("{eventId}")]
+        [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetEventAttendees(Guid eventId)
-        {
-            
-            var result = (await eventAttendeeRepository.GetEventAttendees(eventId, CancellationToken.None).ConfigureAwait(false)).Select(u => u.ToDisplayUser());
+        {            
+            var result = (await eventAttendeeManager.Get(ea => ea.EventId == eventId, CancellationToken.None).ConfigureAwait(false)).Select(u => u.User.ToDisplayUser());
             return Ok(result);
         }
 
         [HttpPut("{id}")]
-        [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> UpdateEventAttendee(EventAttendee eventAttendee)
+        public async Task<IActionResult> UpdateEventAttendee(EventAttendee eventAttendee, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByInternalId(eventAttendee.UserId).ConfigureAwait(false);
-            if (user == null || !ValidateUser(user.NameIdentifier))
+            var authResult = await AuthorizationService.AuthorizeAsync(User, eventAttendee, "UserOwnsEntity");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
 
             try
             {
-                var updatedEventAttendee = await eventAttendeeRepository.UpdateEventAttendee(eventAttendee).ConfigureAwait(false);
+                var updatedEventAttendee = await eventAttendeeManager.Update(eventAttendee).ConfigureAwait(false);
                 TelemetryClient.TrackEvent(nameof(UpdateEventAttendee));
 
                 return Ok(updatedEventAttendee);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await EventAttendeeExists(eventAttendee.EventId, eventAttendee.UserId).ConfigureAwait(false))
+                if (!await EventAttendeeExists(eventAttendee.EventId, eventAttendee.UserId, cancellationToken).ConfigureAwait(false))
                 {
                     return NotFound();
                 }
@@ -71,43 +65,40 @@ namespace TrashMob.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddEventAttendee(EventAttendee eventAttendee)
         {
-            var user = await userRepository.GetUserByInternalId(eventAttendee.UserId).ConfigureAwait(false);
-            if (user == null || !ValidateUser(user.NameIdentifier))
+            var authResult = await AuthorizationService.AuthorizeAsync(User, eventAttendee, "UserOwnsEntity");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
-
-            await eventAttendeeRepository.AddEventAttendee(eventAttendee.EventId, eventAttendee.UserId).ConfigureAwait(false);
+            
+            await eventAttendeeManager.Add(eventAttendee).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddEventAttendee));
 
-            var result = (await eventAttendeeRepository.GetEventAttendees(eventAttendee.EventId, CancellationToken.None).ConfigureAwait(false)).Select(u => u.ToDisplayUser());
+            var result = (await eventAttendeeManager.Get(e => e.EventId == eventAttendee.EventId, CancellationToken.None).ConfigureAwait(false)).Select(u => u.User.ToDisplayUser());
             return Ok(result);
         }
 
         [HttpDelete("{eventId}/{userId}")]
-        [Authorize]
+        // Todo: Tighten this down
+        [Authorize(Policy = "ValidUser")]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> DeleteEventAttendee(Guid eventId, Guid userId)
+        public async Task<IActionResult> DeleteEventAttendee(Guid eventId, Guid userId, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
-            if (user == null || !ValidateUser(user.NameIdentifier))
-            {
-                return Forbid();
-            }
-
-            await eventAttendeeRepository.DeleteEventAttendee(eventId, userId).ConfigureAwait(false);
+            await eventAttendeeManager.Delete(eventId, userId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeleteEventAttendee));
 
             return Ok();
         }
 
-        private async Task<bool> EventAttendeeExists(Guid eventId, Guid userId)
+        private async Task<bool> EventAttendeeExists(Guid eventId, Guid userId, CancellationToken cancellationToken)
         {
-            return (await eventAttendeeRepository.GetEventAttendees(eventId).ConfigureAwait(false)).Any(e => e.Id == userId);
+            var attendee = await eventAttendeeManager.Get(ea => ea.EventId == eventId && ea.UserId == userId, cancellationToken).ConfigureAwait(false);
+
+            return attendee != null;
         }
     }
 }

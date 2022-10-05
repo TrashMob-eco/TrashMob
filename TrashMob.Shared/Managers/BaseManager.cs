@@ -19,7 +19,7 @@ namespace TrashMob.Shared.Managers
             Repository = repository;
         }
 
-        protected IBaseRepository<T> Repository { get; }
+        protected virtual IBaseRepository<T> Repository { get; }
 
         public virtual Task<T> Add(T instance, Guid userId)
         {
@@ -47,14 +47,14 @@ namespace TrashMob.Shared.Managers
             return Repository.Update(instance);
         }
 
-        public virtual IQueryable<T> Get()
+        public virtual async Task<IEnumerable<T>> Get(CancellationToken cancellationToken)
         {
-            return Repository.Get();
+            return await Repository.Get().ToListAsync(cancellationToken);
         }
 
-        public virtual IQueryable<T> Get(Expression<Func<T, bool>> expression)
+        public virtual async Task<IEnumerable<T>> Get(Expression<Func<T, bool>> expression, CancellationToken cancellationToken)
         {
-            return Repository.Get(expression);
+            return await Repository.Get(expression).ToListAsync(cancellationToken);
         }
 
         public virtual async Task<IEnumerable<T>> GetByUserId(Guid userId, CancellationToken cancellationToken)
@@ -81,12 +81,22 @@ namespace TrashMob.Shared.Managers
             throw new NotImplementedException();
         }
 
-        public Task Delete(Guid parentId, int secondId, CancellationToken cancellationToken)
+        public virtual Task<int> Delete(Guid parentId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken)
+        public virtual Task<int> Delete(Guid parentId, int secondId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Task<int> Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Task<IEnumerable<T>> GetCollection(Guid parentId, Guid secondId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

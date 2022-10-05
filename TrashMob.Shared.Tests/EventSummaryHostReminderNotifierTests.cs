@@ -5,6 +5,7 @@ namespace TrashMob.Shared.Tests
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Engine;
+    using TrashMob.Shared.Poco;
     using Xunit;
 
     public class EventSummaryHostReminderNotifierTests : NotifierTestsBase
@@ -15,7 +16,7 @@ namespace TrashMob.Shared.Tests
         public async Task GenerateNotificationsAsync_WithNoDataAvailable_Succeeds()
         {
             // Arrange
-            var engine = new EventSummaryHostReminderNotifier(EventRepository.Object, UserRepository.Object, EventAttendeeRepository.Object, UserNotificationRepository.Object, NonEventUserNotificationRepository.Object, EmailSender.Object, EmailManager.Object, MapRepository.Object, Logger.Object);
+            var engine = new EventSummaryHostReminderNotifier(EventManager.Object, UserManager.Object, EventAttendeeManager.Object, UserNotificationManager.Object, NonEventUserNotificationManager.Object, EmailSender.Object, EmailManager.Object, MapRepository.Object, Logger.Object);
 
             // Act
             await engine.GenerateNotificationsAsync().ConfigureAwait(false);

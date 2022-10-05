@@ -7,6 +7,7 @@ namespace TrashMob.Shared.Managers
     using TrashMob.Models;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
     using TrashMob.Shared.Persistence.Interfaces;
 
     public class ContactRequestManager : KeyedManager<ContactRequest>, IKeyedManager<ContactRequest>

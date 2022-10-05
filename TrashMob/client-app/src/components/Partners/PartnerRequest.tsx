@@ -52,7 +52,8 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     React.useEffect(() => {
 
         if (props.mode && props.mode === "send") {
-            setTitle("Send invite to join TrashMob as a partner")
+            setTitle("Send invite to join TrashMob as a partner");
+
         }
 
         if (props.isUserLoaded) {
@@ -133,6 +134,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         partnerRequestData.createdByUserId = props.currentUser.id;
         partnerRequestData.lastUpdatedByUserId = props.currentUser.id;
         partnerRequestData.partnerTypeId = partnerTypeId;
+        partnerRequestData.isBecomeAPartnerRequest = (props.mode !== 'send')
 
         var data = JSON.stringify(partnerRequestData);
 

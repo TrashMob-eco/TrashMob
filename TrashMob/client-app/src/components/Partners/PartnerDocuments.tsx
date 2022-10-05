@@ -34,7 +34,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerdocuments/' + props.partnerId, {
+                fetch('/api/partnerdocuments/getbypartner/' + props.partnerId, {
                     method: 'GET',
                     headers: headers,
                 })

@@ -13,6 +13,7 @@ class PartnerRequestData {
     postalCode: string = "";
     latitude: number = 0;
     longitude: number = 0;
+    isBecomeAPartnerRequest: boolean = false;
     partnerRequestStatusId: number = 0;
     partnerTypeId: number = 0;
     notes: string = "";

@@ -3,40 +3,55 @@
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using System.Security.Claims;
+    using System.Threading;
+    using System;
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Persistence.Interfaces;
 
     [Authorize]
     [Route("api/partnerdocuments")]
-    public class PartnerDocumentsController : BaseController
+    public class PartnerDocumentsController : SecureController
     {
-        private readonly IBaseManager<PartnerDocument> manager;
-        private readonly IUserRepository userRepository;
+        private readonly IKeyedManager<PartnerDocument> manager;
+        private readonly IKeyedManager<Partner> partnerManager;
 
-        public PartnerDocumentsController(TelemetryClient telemetryClient,
-                                             IUserRepository userRepository, 
-                                             IBaseManager<PartnerDocument> manager)
-            : base(telemetryClient, userRepository)
+        public PartnerDocumentsController(IKeyedManager<Partner> partnerManager,
+                                          IKeyedManager<PartnerDocument> manager)
+            : base()
         {
             this.manager = manager;
-            this.userRepository = userRepository;
+            this.partnerManager = partnerManager;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddCommunityDocument(PartnerDocument partnerDocument)
+        [HttpGet("getbypartner/{partnerId}")]
+        public async Task<IActionResult> GetPartnerDocuments(Guid partnerId, CancellationToken cancellationToken)
         {
-            var currentUser = await GetUser();
+            var partner = await partnerManager.Get(partnerId, cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
-            if (currentUser == null)
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
 
-            await manager.Add(partnerDocument, currentUser.Id).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddCommunityDocument));
+            var documents = await manager.GetByParentId(partnerId, cancellationToken);
+            return Ok(documents);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Add(PartnerDocument partnerDocument)
+        {
+            var partner = partnerManager.Get(partnerDocument.PartnerId);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            await manager.Add(partnerDocument, UserId).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(Add) + typeof(PartnerDocument));
 
             return Ok();
         }

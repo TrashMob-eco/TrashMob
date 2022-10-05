@@ -3,40 +3,44 @@
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Persistence.Interfaces;
 
     [Authorize]
     [Route("api/partnercontacts")]
-    public class PartnerContactsController : BaseController
+    public class PartnerContactsController : SecureController
     {
+        private readonly IKeyedManager<Partner> partnerManager;
         private readonly IBaseManager<PartnerContact> manager;
-        private readonly IUserRepository userRepository;
 
-        public PartnerContactsController(TelemetryClient telemetryClient,
-                                         IUserRepository userRepository,
+        public PartnerContactsController(IKeyedManager<Partner> partnerManager,
                                          IBaseManager<PartnerContact> manager)
-            : base(telemetryClient, userRepository)
+            : base()
         {
-            this.manager = manager;
-            this.userRepository = userRepository;
+            this.partnerManager = partnerManager;
+            this.manager = manager;            
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCommunityContact(PartnerContact partnerContact)
+        public async Task<IActionResult> AddPartnerContact(PartnerContact partnerContact)
         {
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var partner = partnerManager.Get(partnerContact.PartnerId);
+            
+            if (partner == null)
+            {
+                return NotFound();
+            }
 
-            if (currentUser == null)
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
 
-            await manager.Add(partnerContact, currentUser.Id).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddCommunityContact));
+            await manager.Add(partnerContact, UserId).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(AddPartnerContact));
 
             return Ok();
         }

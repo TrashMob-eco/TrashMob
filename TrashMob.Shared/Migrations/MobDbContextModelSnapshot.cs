@@ -23,7 +23,7 @@ namespace TrashMob.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("TrashMob.Shared.Models.ContactRequest", b =>
+            modelBuilder.Entity("TrashMob.Models.ContactRequest", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -62,7 +62,7 @@ namespace TrashMob.Migrations
                     b.ToTable("ContactRequests");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.Event", b =>
+            modelBuilder.Entity("TrashMob.Models.Event", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -157,7 +157,7 @@ namespace TrashMob.Migrations
                     b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventAttendee", b =>
+            modelBuilder.Entity("TrashMob.Models.EventAttendee", b =>
                 {
                     b.Property<Guid>("EventId")
                         .HasColumnType("uniqueidentifier");
@@ -178,7 +178,7 @@ namespace TrashMob.Migrations
                     b.ToTable("EventAttendees");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventPartner", b =>
+            modelBuilder.Entity("TrashMob.Models.EventPartner", b =>
                 {
                     b.Property<Guid>("EventId")
                         .HasColumnType("uniqueidentifier");
@@ -219,7 +219,7 @@ namespace TrashMob.Migrations
                     b.ToTable("EventPartners");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventPartnerStatus", b =>
+            modelBuilder.Entity("TrashMob.Models.EventPartnerStatus", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -277,7 +277,7 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventStatus", b =>
+            modelBuilder.Entity("TrashMob.Models.EventStatus", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -335,7 +335,7 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventSummary", b =>
+            modelBuilder.Entity("TrashMob.Models.EventSummary", b =>
                 {
                     b.Property<Guid>("EventId")
                         .HasColumnType("uniqueidentifier");
@@ -377,7 +377,7 @@ namespace TrashMob.Migrations
                     b.ToTable("EventSummaries");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventType", b =>
+            modelBuilder.Entity("TrashMob.Models.EventType", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -515,7 +515,7 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.MessageRequest", b =>
+            modelBuilder.Entity("TrashMob.Models.MessageRequest", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -550,7 +550,7 @@ namespace TrashMob.Migrations
                     b.ToTable("MessageRequests");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.NonEventUserNotification", b =>
+            modelBuilder.Entity("TrashMob.Models.NonEventUserNotification", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -589,7 +589,7 @@ namespace TrashMob.Migrations
                     b.ToTable("NonEventUserNotifications");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.Partner", b =>
+            modelBuilder.Entity("TrashMob.Models.Partner", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -663,7 +663,7 @@ namespace TrashMob.Migrations
                     b.ToTable("Partners");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerContact", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerContact", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -717,7 +717,7 @@ namespace TrashMob.Migrations
                     b.ToTable("PartnerContacts");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerDocument", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerDocument", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -758,7 +758,7 @@ namespace TrashMob.Migrations
                     b.ToTable("PartnerDocuments");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerLocation", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerLocation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -852,7 +852,7 @@ namespace TrashMob.Migrations
                     b.ToTable("PartnerLocations");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerLocationService", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerLocationService", b =>
                 {
                     b.Property<Guid>("PartnerLocationId")
                         .HasColumnType("uniqueidentifier");
@@ -891,7 +891,7 @@ namespace TrashMob.Migrations
                     b.ToTable("PartnerLocationServices");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerRequest", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerRequest", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -958,6 +958,9 @@ namespace TrashMob.Migrations
                     b.Property<string>("Website")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("isBecomeAPartnerRequest")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedByUserId");
@@ -971,7 +974,7 @@ namespace TrashMob.Migrations
                     b.ToTable("PartnerRequests");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerRequestStatus", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerRequestStatus", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -1021,7 +1024,7 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerService", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerService", b =>
                 {
                     b.Property<Guid>("PartnerId")
                         .HasColumnType("uniqueidentifier");
@@ -1055,7 +1058,7 @@ namespace TrashMob.Migrations
                     b.ToTable("PartnerServices");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerSocialMediaAccount", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerSocialMediaAccount", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -1098,7 +1101,7 @@ namespace TrashMob.Migrations
                     b.ToTable("PartnerSocialMediaAccounts");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerStatus", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerStatus", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -1140,7 +1143,7 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerType", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerType", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -1182,7 +1185,7 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerUser", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerUser", b =>
                 {
                     b.Property<Guid>("PartnerId")
                         .HasColumnType("uniqueidentifier");
@@ -1213,7 +1216,7 @@ namespace TrashMob.Migrations
                     b.ToTable("PartnerUsers");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.ServiceType", b =>
+            modelBuilder.Entity("TrashMob.Models.ServiceType", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -1271,7 +1274,7 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.SiteMetric", b =>
+            modelBuilder.Entity("TrashMob.Models.SiteMetric", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -1308,7 +1311,7 @@ namespace TrashMob.Migrations
                     b.ToTable("SiteMetrics");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.SocialMediaAccountType", b =>
+            modelBuilder.Entity("TrashMob.Models.SocialMediaAccountType", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -1362,7 +1365,7 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.User", b =>
+            modelBuilder.Entity("TrashMob.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -1486,7 +1489,7 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.UserNotification", b =>
+            modelBuilder.Entity("TrashMob.Models.UserNotification", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -1530,7 +1533,7 @@ namespace TrashMob.Migrations
                     b.ToTable("UserNotifications");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.UserNotificationType", b =>
+            modelBuilder.Entity("TrashMob.Models.UserNotificationType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1629,15 +1632,15 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.ContactRequest", b =>
+            modelBuilder.Entity("TrashMob.Models.ContactRequest", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("ContactRequestsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_ContactRequests_User_CreatedBy");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("ContactRequestsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
@@ -1648,28 +1651,28 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.Event", b =>
+            modelBuilder.Entity("TrashMob.Models.Event", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("EventsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_Events_ApplicationUser_CreatedBy");
 
-                    b.HasOne("TrashMob.Shared.Models.EventStatus", "EventStatus")
+                    b.HasOne("TrashMob.Models.EventStatus", "EventStatus")
                         .WithMany("Events")
                         .HasForeignKey("EventStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_Events_EventStatuses");
 
-                    b.HasOne("TrashMob.Shared.Models.EventType", "EventType")
+                    b.HasOne("TrashMob.Models.EventType", "EventType")
                         .WithMany("Events")
                         .HasForeignKey("EventTypeId")
                         .IsRequired()
                         .HasConstraintName("FK_Events_EventTypes");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("EventsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
@@ -1684,15 +1687,15 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventAttendee", b =>
+            modelBuilder.Entity("TrashMob.Models.EventAttendee", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.Event", "Event")
+                    b.HasOne("TrashMob.Models.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventId")
                         .IsRequired()
                         .HasConstraintName("FK_EventAttendees_Events");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "User")
+                    b.HasOne("TrashMob.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .IsRequired()
@@ -1703,40 +1706,40 @@ namespace TrashMob.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventPartner", b =>
+            modelBuilder.Entity("TrashMob.Models.EventPartner", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("EventPartnersCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_EventPartners_User_CreatedBy");
 
-                    b.HasOne("TrashMob.Shared.Models.Event", "Event")
+                    b.HasOne("TrashMob.Models.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventId")
                         .IsRequired()
                         .HasConstraintName("FK_EventPartners_Events");
 
-                    b.HasOne("TrashMob.Shared.Models.EventPartnerStatus", "EventPartnerStatus")
+                    b.HasOne("TrashMob.Models.EventPartnerStatus", "EventPartnerStatus")
                         .WithMany("EventPartners")
                         .HasForeignKey("EventPartnerStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_EventPartners_EventPartnerStatuses");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("EventPartnersUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_EventPartners_User_LastUpdatedBy");
 
-                    b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
                         .WithMany()
                         .HasForeignKey("PartnerId")
                         .IsRequired()
                         .HasConstraintName("FK_EventPartners_Partners");
 
-                    b.HasOne("TrashMob.Shared.Models.PartnerLocation", "PartnerLocation")
+                    b.HasOne("TrashMob.Models.PartnerLocation", "PartnerLocation")
                         .WithMany()
                         .HasForeignKey("PartnerLocationId")
                         .IsRequired()
@@ -1755,21 +1758,21 @@ namespace TrashMob.Migrations
                     b.Navigation("PartnerLocation");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventSummary", b =>
+            modelBuilder.Entity("TrashMob.Models.EventSummary", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("EventSummariesCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_EventSummaries_User_CreatedBy");
 
-                    b.HasOne("TrashMob.Shared.Models.Event", "Event")
+                    b.HasOne("TrashMob.Models.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventId")
                         .IsRequired()
                         .HasConstraintName("FK_EventSummary_Events");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("EventSummariesUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
@@ -1782,15 +1785,15 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.MessageRequest", b =>
+            modelBuilder.Entity("TrashMob.Models.MessageRequest", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("MessageRequestsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_MessageRequests_CreatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("MessageRequestsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
@@ -1801,27 +1804,27 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.NonEventUserNotification", b =>
+            modelBuilder.Entity("TrashMob.Models.NonEventUserNotification", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("NonEventUserNotificationsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_NonEventUserNotification_CreatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("NonEventUserNotificationsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_NonEventUserNotification_LastUpdatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "User")
+                    b.HasOne("TrashMob.Models.User", "User")
                         .WithMany("NonEventUserNotifications")
                         .HasForeignKey("UserId")
                         .IsRequired()
                         .HasConstraintName("FK_NonEventUserNotifications_User_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.UserNotificationType", "UserNotificationType")
+                    b.HasOne("TrashMob.Models.UserNotificationType", "UserNotificationType")
                         .WithMany("NonEventUserNotifications")
                         .HasForeignKey("UserNotificationTypeId")
                         .IsRequired()
@@ -1836,27 +1839,27 @@ namespace TrashMob.Migrations
                     b.Navigation("UserNotificationType");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.Partner", b =>
+            modelBuilder.Entity("TrashMob.Models.Partner", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("PartnersCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_Partners_CreatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("PartnersUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_Partners_LastUpdatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.PartnerStatus", "PartnerStatus")
+                    b.HasOne("TrashMob.Models.PartnerStatus", "PartnerStatus")
                         .WithMany("Partners")
                         .HasForeignKey("PartnerStatusId")
                         .IsRequired()
                         .HasConstraintName("FK_Partners_PartnerStatus");
 
-                    b.HasOne("TrashMob.Shared.Models.PartnerType", "PartnerType")
+                    b.HasOne("TrashMob.Models.PartnerType", "PartnerType")
                         .WithMany("Partners")
                         .HasForeignKey("PartnerTypeId")
                         .IsRequired()
@@ -1871,21 +1874,21 @@ namespace TrashMob.Migrations
                     b.Navigation("PartnerType");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerContact", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerContact", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("PartnerContactsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerContacts_User_CreatedBy");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("PartnerContactsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerContacts_User_LastUpdatedBy");
 
-                    b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
                         .WithMany("PartnerContacts")
                         .HasForeignKey("PartnerId")
                         .IsRequired()
@@ -1898,21 +1901,21 @@ namespace TrashMob.Migrations
                     b.Navigation("Partner");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerDocument", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerDocument", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("PartnerDocumentsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerDocuments_User_CreatedBy");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("PartnerDocumentsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerDocuments_User_LastUpdatedBy");
 
-                    b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
                         .WithMany("PartnerDocuments")
                         .HasForeignKey("PartnerId")
                         .IsRequired()
@@ -1925,21 +1928,21 @@ namespace TrashMob.Migrations
                     b.Navigation("Partner");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerLocation", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerLocation", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("PartnerLocationsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerLocations_CreatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("PartnerLocationsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerLocations_LastUpdatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
                         .WithMany("PartnerLocations")
                         .HasForeignKey("PartnerId")
                         .IsRequired()
@@ -1952,31 +1955,31 @@ namespace TrashMob.Migrations
                     b.Navigation("Partner");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerLocationService", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerLocationService", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("PartnerLocationServicesCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnersLocationServices_User_CreatedBy");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("PartnerLocationServicesUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerLocationServices_User_LastUpdatedBy");
 
-                    b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
                         .WithMany()
                         .HasForeignKey("PartnerId");
 
-                    b.HasOne("TrashMob.Shared.Models.PartnerLocation", "PartnerLocation")
+                    b.HasOne("TrashMob.Models.PartnerLocation", "PartnerLocation")
                         .WithMany()
                         .HasForeignKey("PartnerLocationId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnersLocationService_PartnerLocations");
 
-                    b.HasOne("TrashMob.Shared.Models.ServiceType", "ServiceType")
+                    b.HasOne("TrashMob.Models.ServiceType", "ServiceType")
                         .WithMany()
                         .HasForeignKey("ServiceTypeId")
                         .IsRequired()
@@ -1993,27 +1996,27 @@ namespace TrashMob.Migrations
                     b.Navigation("ServiceType");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerRequest", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerRequest", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("PartnerRequestsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerRequests_CreatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("PartnerRequestsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerRequests_LastUpdatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.PartnerRequestStatus", "PartnerRequestStatus")
+                    b.HasOne("TrashMob.Models.PartnerRequestStatus", "PartnerRequestStatus")
                         .WithMany("PartnerRequests")
                         .HasForeignKey("PartnerRequestStatusId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerRequests_PartnerRequestStatus");
 
-                    b.HasOne("TrashMob.Shared.Models.PartnerType", "PartnerType")
+                    b.HasOne("TrashMob.Models.PartnerType", "PartnerType")
                         .WithMany("PartnerRequests")
                         .HasForeignKey("PartnerTypeId")
                         .IsRequired()
@@ -2028,27 +2031,27 @@ namespace TrashMob.Migrations
                     b.Navigation("PartnerType");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerService", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerService", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("PartnerServicesCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerServices_User_CreatedBy");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("PartnerServicesUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerServices_User_LastUpdatedBy");
 
-                    b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
                         .WithMany()
                         .HasForeignKey("PartnerId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerServices_Partners");
 
-                    b.HasOne("TrashMob.Shared.Models.ServiceType", "ServiceType")
+                    b.HasOne("TrashMob.Models.ServiceType", "ServiceType")
                         .WithMany()
                         .HasForeignKey("ServiceTypeId")
                         .IsRequired()
@@ -2063,27 +2066,27 @@ namespace TrashMob.Migrations
                     b.Navigation("ServiceType");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerSocialMediaAccount", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerSocialMediaAccount", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("PartnerSocialMediaAccountsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerSocialMediaAccount_CreatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("PartnerSocialMediaAccountsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerSocialMediaAccount_LastUpdatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
                         .WithMany("PartnerSocialMediaAccounts")
                         .HasForeignKey("PartnerId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerSocialMediaAccount_Partner");
 
-                    b.HasOne("TrashMob.Shared.Models.SocialMediaAccountType", "SocialMediaAccountType")
+                    b.HasOne("TrashMob.Models.SocialMediaAccountType", "SocialMediaAccountType")
                         .WithMany("PartnerSocialMediaAccounts")
                         .HasForeignKey("SocialMediaAccountTypeId")
                         .IsRequired()
@@ -2098,27 +2101,27 @@ namespace TrashMob.Migrations
                     b.Navigation("SocialMediaAccountType");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerUser", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerUser", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("PartnerUsersCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerUsers_CreatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("PartnerUsersUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerUsers_LastUpdatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
                         .WithMany("PartnerUsers")
                         .HasForeignKey("PartnerId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerUser_Partners");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "User")
+                    b.HasOne("TrashMob.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .IsRequired()
@@ -2133,15 +2136,15 @@ namespace TrashMob.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.SiteMetric", b =>
+            modelBuilder.Entity("TrashMob.Models.SiteMetric", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("SiteMetricsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_SiteMetrics_CreatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("SiteMetricsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
@@ -2152,15 +2155,15 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.User", b =>
+            modelBuilder.Entity("TrashMob.Models.User", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("UsersCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_User_CreatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("UsersUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
@@ -2171,33 +2174,33 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.UserNotification", b =>
+            modelBuilder.Entity("TrashMob.Models.UserNotification", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("UserNotificationsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_UserNotification_CreatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.Event", "Event")
+                    b.HasOne("TrashMob.Models.Event", "Event")
                         .WithMany("UserNotifications")
                         .HasForeignKey("EventId")
                         .IsRequired()
                         .HasConstraintName("FK_UserNotifications_Event_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("UserNotificationsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_UserNotification_LastUpdatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "User")
+                    b.HasOne("TrashMob.Models.User", "User")
                         .WithMany("UserNotifications")
                         .HasForeignKey("UserId")
                         .IsRequired()
                         .HasConstraintName("FK_UserNotifications_User_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.UserNotificationType", "UserNotificationType")
+                    b.HasOne("TrashMob.Models.UserNotificationType", "UserNotificationType")
                         .WithMany("UserNotifications")
                         .HasForeignKey("UserNotificationTypeId")
                         .IsRequired()
@@ -2214,27 +2217,27 @@ namespace TrashMob.Migrations
                     b.Navigation("UserNotificationType");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.Event", b =>
+            modelBuilder.Entity("TrashMob.Models.Event", b =>
                 {
                     b.Navigation("UserNotifications");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventPartnerStatus", b =>
+            modelBuilder.Entity("TrashMob.Models.EventPartnerStatus", b =>
                 {
                     b.Navigation("EventPartners");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventStatus", b =>
+            modelBuilder.Entity("TrashMob.Models.EventStatus", b =>
                 {
                     b.Navigation("Events");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventType", b =>
+            modelBuilder.Entity("TrashMob.Models.EventType", b =>
                 {
                     b.Navigation("Events");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.Partner", b =>
+            modelBuilder.Entity("TrashMob.Models.Partner", b =>
                 {
                     b.Navigation("PartnerContacts");
 
@@ -2247,29 +2250,29 @@ namespace TrashMob.Migrations
                     b.Navigation("PartnerUsers");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerRequestStatus", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerRequestStatus", b =>
                 {
                     b.Navigation("PartnerRequests");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerStatus", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerStatus", b =>
                 {
                     b.Navigation("Partners");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerType", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerType", b =>
                 {
                     b.Navigation("PartnerRequests");
 
                     b.Navigation("Partners");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.SocialMediaAccountType", b =>
+            modelBuilder.Entity("TrashMob.Models.SocialMediaAccountType", b =>
                 {
                     b.Navigation("PartnerSocialMediaAccounts");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.User", b =>
+            modelBuilder.Entity("TrashMob.Models.User", b =>
                 {
                     b.Navigation("ContactRequestsCreated");
 
@@ -2348,7 +2351,7 @@ namespace TrashMob.Migrations
                     b.Navigation("UsersUpdated");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.UserNotificationType", b =>
+            modelBuilder.Entity("TrashMob.Models.UserNotificationType", b =>
                 {
                     b.Navigation("NonEventUserNotifications");
 

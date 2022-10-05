@@ -4,64 +4,50 @@ namespace TrashMob.Controllers
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Mvc;
+    using TrashMob.Models;
     using TrashMob.Poco;
+    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/partnerevents")]
-    public class PartnerEventsController : BaseController
+    public class PartnerEventsController : SecureController
     {
-        private readonly IEventPartnerRepository eventPartnerRepository;
-        private readonly IUserRepository userRepository;
-        private readonly IPartnerRepository partnerRepository;
-        private readonly IPartnerLocationRepository partnerLocationRepository;
-        private readonly IEventRepository eventRepository;
-        private readonly IPartnerUserRepository partnerUserRepository;
+        private readonly IBaseManager<EventPartner> eventPartnerManager;
+        private readonly IKeyedManager<PartnerLocation> partnerLocationManager;
+        private readonly IKeyedManager<Event> eventManager;
+        private readonly IKeyedManager<Partner> partnerManager;
 
-        public PartnerEventsController(TelemetryClient telemetryClient,
-                                       IUserRepository userRepository,
-                                       IEventPartnerRepository eventPartnerRepository, 
-                                       IPartnerRepository partnerRepository, 
-                                       IPartnerLocationRepository partnerLocationRepository, 
-                                       IEventRepository eventRepository,
-                                       IPartnerUserRepository partnerUserRepository)
-            : base(telemetryClient, userRepository)
+        public PartnerEventsController(IBaseManager<EventPartner> eventPartnerManager,
+                                       IKeyedManager<PartnerLocation> partnerLocationManager,
+                                       IKeyedManager<Event> eventManager,
+                                       IKeyedManager<Partner> partnerManager)
+            : base()
         {
-            this.eventPartnerRepository = eventPartnerRepository;
-            this.userRepository = userRepository;
-            this.partnerRepository = partnerRepository;
-            this.partnerLocationRepository = partnerLocationRepository;
-            this.eventRepository = eventRepository;
-            this.partnerUserRepository = partnerUserRepository;
+            this.eventPartnerManager = eventPartnerManager;
+            this.partnerLocationManager = partnerLocationManager;
+            this.eventManager = eventManager;
+            this.partnerManager = partnerManager;
         }
 
         [HttpGet("{partnerId}")]
         public async Task<IActionResult> GetPartnerEvents(Guid partnerId, CancellationToken cancellationToken)
         {
-            // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value, cancellationToken).ConfigureAwait(false);
+            var partner = await partnerManager.Get(partnerId, cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
-            if (!currentUser.IsSiteAdmin)
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
-                var currentUserPartner = partnerUserRepository.GetPartnerUsers(cancellationToken).FirstOrDefault(pu => pu.PartnerId == partnerId && pu.UserId == currentUser.Id);
-
-                if (currentUserPartner == null)
-                {
-                    return Forbid();
-                }
+                return Forbid();
             }
 
             var displayPartnerEvents = new List<DisplayPartnerEvent>();
-            var currentPartners = await eventPartnerRepository.GetPartnerEvents(partnerId, cancellationToken).ConfigureAwait(false);
+            var currentPartners = await eventPartnerManager.Get(p => p.PartnerId == partnerId, cancellationToken).ConfigureAwait(false);
 
             if (currentPartners.Any())
             {
-                var partner = await partnerRepository.GetPartner(partnerId, cancellationToken).ConfigureAwait(false);
-
                 // Convert the current list of partner events for the event to a display partner (reduces round trips)
                 foreach (var cp in currentPartners.ToList())
                 {
@@ -75,11 +61,11 @@ namespace TrashMob.Controllers
 
                     displayPartnerEvent.PartnerName = partner.Name;
 
-                    var partnerLocation = partnerLocationRepository.GetPartnerLocations(cancellationToken).FirstOrDefault(pl => pl.PartnerId == cp.PartnerId && pl.Id == cp.PartnerLocationId);
+                    var partnerLocation = (await partnerLocationManager.Get(pl => pl.PartnerId == cp.PartnerId && pl.Id == cp.PartnerLocationId, cancellationToken)).FirstOrDefault();
 
                     displayPartnerEvent.PartnerLocationName = partnerLocation.Name;
 
-                    var mobEvent = await eventRepository.GetEvent(cp.EventId, cancellationToken).ConfigureAwait(false);
+                    var mobEvent = await eventManager.Get(cp.EventId, cancellationToken).ConfigureAwait(false);
 
                     displayPartnerEvent.EventName = mobEvent.Name;
                     displayPartnerEvent.EventStreetAddress = mobEvent.StreetAddress;

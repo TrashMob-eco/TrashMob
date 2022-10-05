@@ -1,34 +1,27 @@
 ﻿namespace TrashMob.Controllers
 {
-    using Microsoft.ApplicationInsights;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Threading.Tasks;
-    using TrashMob.Shared;
-    using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
 
     [Route("api/docusign")]
-    public class DocusignController : BaseController
+    public class DocusignController : SecureController
     {
-        private readonly IUserRepository userRepository;
         private readonly IDocusignManager docusignManager;
 
-        public DocusignController(TelemetryClient telemetryClient, 
-                                  IUserRepository userRepository, 
-                                  IDocusignManager docusignManager)
-            : base(telemetryClient, userRepository)
+        public DocusignController(IDocusignManager docusignManager) : base()
         {
-            this.userRepository = userRepository;
             this.docusignManager = docusignManager;
         }
 
-        [Authorize]
         [HttpPost()]
         public async Task<IActionResult> SendEnvelope(EnvelopeRequest envelope)
         {
-            var user = await userRepository.GetUserByInternalId(envelope.SignerClientId).ConfigureAwait(false);
-            if (user == null || !ValidateUser(user.NameIdentifier))
+            var authResult = await AuthorizationService.AuthorizeAsync(User, envelope, "UserOwnsEntity");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
@@ -39,12 +32,14 @@
             return Ok(result);
         }
 
-        [Authorize]
         [HttpGet("{userId}/{envelopeId}")]
         public async Task<IActionResult> GetEnvelopeStatus(Guid userId, string envelopeId)
         {
-            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
-            if (user == null || !ValidateUser(user.NameIdentifier))
+            // This is a cheesy way to do this, but works for now
+            var envelope = new EnvelopeRequest { CreatedByUserId = userId };
+            var authResult = await AuthorizationService.AuthorizeAsync(User, envelope, "UserOwnsEntityOrIsAdmin");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }

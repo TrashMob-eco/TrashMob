@@ -1,14 +1,13 @@
 ﻿namespace TrashMob.Shared.Extensions
 {
     using System;
-    using System.Text;
     using System.Threading.Tasks;
     using TrashMob.Models;
-    using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Managers.Interfaces;
 
     public static class EventExtensions
     {      
-        public static async Task<Tuple<string, string>> GetLocalEventTime(this Event mobEvent, IMapRepository mapRepository)
+        public static async Task<Tuple<string, string>> GetLocalEventTime(this Event mobEvent, IMapManager mapRepository)
         {
             var localTime = await mapRepository.GetTimeForPoint(new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false);
 

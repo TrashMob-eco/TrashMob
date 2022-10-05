@@ -8,37 +8,27 @@
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Shared;
-    using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/admin")]
-    public class AdminController : BaseController
+    public class AdminController : SecureController
     {
-        private readonly IPartnerRequestRepository partnerRequestRepository;
-        private readonly IUserRepository userRepository;
+        private readonly IBaseManager<PartnerRequest> partnerRequestManager;
 
-        public AdminController(TelemetryClient telemetryClient,
-                               IUserRepository userRepository,
-                               IPartnerRequestRepository partnerRequestRepository) 
-            : base(telemetryClient, userRepository)
+        public AdminController(IBaseManager<PartnerRequest> partnerRequestManager) : base()
         {
-            this.partnerRequestRepository = partnerRequestRepository;
-            this.userRepository = userRepository;
+            this.partnerRequestManager = partnerRequestManager;
         }
 
         [HttpPut("partnerrequestupdate/{userId}")]
-        [Authorize]
+        [Authorize(Policy = "UserIsAdmin")]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdatePartnerRequest(Guid userId, PartnerRequest partnerRequest)
         {
-            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
-
-            if (user == null || !ValidateUser(user.NameIdentifier) || user.IsSiteAdmin)
-            {
-                return Forbid();
-            }
-
+            var result = await partnerRequestManager.Update(partnerRequest).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdatePartnerRequest));
-            return Ok(await partnerRequestRepository.UpdatePartnerRequest(partnerRequest).ConfigureAwait(false));
+
+            return Ok(result);
         }
     }
 }

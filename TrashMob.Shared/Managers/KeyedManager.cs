@@ -8,7 +8,7 @@ namespace TrashMob.Shared.Managers
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
 
-    public abstract class KeyedManager<T> : BaseManager<T>, IKeyedManager<T> where T : KeyedModel
+    public class KeyedManager<T> : BaseManager<T>, IKeyedManager<T> where T : KeyedModel
     {
         public KeyedManager(IKeyedRepository<T> repository) : base(repository)
         {
@@ -26,7 +26,7 @@ namespace TrashMob.Shared.Managers
         public override Task<T> Add(T instance)
         {
             instance.Id = Guid.NewGuid();
-            return Repo.Add(instance);
+            return base.Add(instance);
         }
 
         public virtual Task<int> Delete(Guid id)

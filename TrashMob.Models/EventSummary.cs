@@ -1,12 +1,10 @@
 ﻿#nullable disable
 
-using TrashMob;
-
 namespace TrashMob.Models
 {
     using System;
 
-    public partial class EventSummary
+    public partial class EventSummary : BaseModel
     {
         public EventSummary()
         {
@@ -23,18 +21,6 @@ namespace TrashMob.Models
         public int ActualNumberOfAttendees { get; set; }
 
         public string Notes { get; set; }
-
-        public Guid CreatedByUserId { get; set; }
-
-        public DateTimeOffset? CreatedDate { get; set; }
-
-        public Guid LastUpdatedByUserId { get; set; }
-
-        public DateTimeOffset? LastUpdatedDate { get; set; }
-
-        public virtual User CreatedByUser { get; set; }
-
-        public virtual User LastUpdatedByUser { get; set; }
 
         public virtual Event Event { get; set; }
     }

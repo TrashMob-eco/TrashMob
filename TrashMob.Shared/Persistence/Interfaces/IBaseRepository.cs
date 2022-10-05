@@ -19,5 +19,7 @@
         IQueryable<T> Get();
 
         IQueryable<T> Get(Expression<Func<T, bool>> expression);
+
+        Task<int> Delete(T instance);
     }
 }

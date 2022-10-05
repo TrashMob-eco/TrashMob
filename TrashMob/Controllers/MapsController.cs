@@ -4,17 +4,14 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/maps")]
-    public class MapsController : BaseController
+    public class MapsController : SecureController
     {
-        private readonly IMapRepository mapRepository;
+        private readonly IMapManager mapRepository;
 
-        public MapsController(TelemetryClient telemetryClient,
-                              IUserRepository userRepository,
-                              IMapRepository mapRepository)
-            : base(telemetryClient, userRepository)
+        public MapsController(IMapManager mapRepository) : base()
         {
             this.mapRepository = mapRepository;
         }
@@ -27,7 +24,7 @@
         }
 
         [HttpGet("GetAddress")]
-        [Authorize]
+        [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetAddressForPoint([FromQuery] double latitude, [FromQuery] double longitude)
         {
             var address = await mapRepository.GetAddress(latitude, longitude);

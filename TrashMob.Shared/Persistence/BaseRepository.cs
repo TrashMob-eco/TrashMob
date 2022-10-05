@@ -49,5 +49,12 @@
                 .Where(expression)
                 .AsNoTracking();
         }
+
+        public async Task<int> Delete(T instance)
+        {
+            dbSet.Remove(instance);
+            var result = await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+            return result;
+        }
     }
 }

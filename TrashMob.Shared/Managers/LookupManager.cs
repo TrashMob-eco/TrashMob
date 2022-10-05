@@ -12,7 +12,7 @@ namespace TrashMob.Shared.Managers
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
 
-    public abstract class LookupManager<T> : ILookupManager<T> where T : LookupModel
+    public class LookupManager<T> : ILookupManager<T> where T : LookupModel
     {
         public LookupManager(ILookupRepository<T> repository)
         {

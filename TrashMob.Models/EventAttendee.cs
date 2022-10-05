@@ -1,12 +1,10 @@
 ﻿#nullable disable
 
-using TrashMob;
-
 namespace TrashMob.Models
 {
     using System;
 
-    public partial class EventAttendee
+    public partial class EventAttendee : BaseModel
     {
         public Guid EventId { get; set; }
 
