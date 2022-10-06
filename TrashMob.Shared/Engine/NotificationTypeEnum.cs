@@ -21,7 +21,5 @@
         EventUpdatedNotice = 17,
         EventSummaryHostWeekReminder = 18,
         UserProfileUpdateLocation = 19,
-        CommunityRequestReceived = 20,
-        CommunityCreated = 21,
     }
 }
