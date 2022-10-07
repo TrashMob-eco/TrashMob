@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
+using TrashMob.Models;
 using TrashMobMobileApp.Data;
-using TrashMobMobileApp.Models;
 
 namespace TrashMobMobileApp.Pages.Terms.Pages
 {
@@ -22,8 +22,8 @@ namespace TrashMobMobileApp.Pages.Terms.Pages
             _isLoading = true;
             _user = await UserManager.GetUserAsync(App.CurrentUser.Id.ToString());
             _isLoading = false;
-            _agreeTermsOfService = _user?.IsTermsOfServiceAgreedTo ?? default;
-            _agreePrivacyPolicy = _user?.IsPrivacyPolicyAgreedTo ?? default;
+            _agreeTermsOfService = _user.DateAgreedToTermsOfService.HasValue ? true : false;
+            _agreePrivacyPolicy = _user.DateAgreedToPrivacyPolicy.HasValue ? true : false;
         }
 
         private void OnTermsChange(bool val)

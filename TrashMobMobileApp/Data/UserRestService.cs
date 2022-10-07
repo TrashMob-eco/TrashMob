@@ -3,11 +3,10 @@
     using Newtonsoft.Json;
     using System;
     using System.Diagnostics;
-    using System.Net.Http;
     using System.Net.Http.Json;
     using System.Threading.Tasks;
+    using TrashMob.Models;
     using TrashMobMobileApp.Authentication;
-    using TrashMobMobileApp.Models;
 
     public class UserRestService : RestServiceBase, IUserRestService
     {

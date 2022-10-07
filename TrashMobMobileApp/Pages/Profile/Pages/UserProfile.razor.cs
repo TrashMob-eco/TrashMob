@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using TrashMob.Models;
 using TrashMobMobileApp.Data;
-using TrashMobMobileApp.Models;
 
 namespace TrashMobMobileApp.Pages.Profile.Pages
 {

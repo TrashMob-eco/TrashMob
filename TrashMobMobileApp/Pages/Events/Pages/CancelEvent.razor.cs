@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using TrashMobMobileApp.Data;
-using TrashMobMobileApp.Models;
+using TrashMob.Models;
 
 namespace TrashMobMobileApp.Pages.Events.Pages
 {
     public partial class CancelEvent
     {
         private bool _isLoading;
-        private MobEvent _event;
+        private Event _event;
         private MudForm _cancelEventForm;
         private bool _success;
         private string[] _errors;

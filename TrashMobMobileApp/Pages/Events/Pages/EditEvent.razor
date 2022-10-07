@@ -44,7 +44,7 @@
                 <MudCheckBox T="bool" Label="Public event" @bind-Checked="@_event.IsEventPublic" />
                 <MudNumericField FullWidth T="int" Label="Duration Hours" @bind-Value="@_event.DurationHours" />
                 <MudNumericField FullWidth T="int" Label="Duration Minutes" @bind-Value="@_event.DurationMinutes" />
-                <MudNumericField FullWidth T="int" Label="Max Participants" @bind-Value="@_event.MaxNumberOfParticipants" />
+                <MudNumericField FullWidth T="int?" Label="Max Participants" @bind-Value="@_event.MaxNumberOfParticipants" />
                 <MudSelect FullWidth T="EventType" Label="Event Type" @bind-Value="@_selectedEventType" AnchorOrigin="Origin.BottomCenter">
                     @foreach (var eventType in _eventTypes)
                     {

@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components;
 using TrashMobMobileApp.Data;
-using TrashMobMobileApp.Models;
 using TrashMobMobileApp.Shared;
+using TrashMob.Models;
 
 namespace TrashMobMobileApp.Pages.Events.Pages
 {
     public partial class CreateEvent
     {
-        private MobEvent _event = new();
+        private Event _event = new();
         private EventStep _step;
 
         [Inject]

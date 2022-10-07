@@ -69,6 +69,41 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Include="..\TrashMob.Models\Address.cs" Link="Models\Address.cs" />
+	  <Compile Include="..\TrashMob.Models\BaseModel.cs" Link="Models\BaseModel.cs" />
+	  <Compile Include="..\TrashMob.Models\ContactRequest.cs" Link="Models\ContactRequest.cs" />
+	  <Compile Include="..\TrashMob.Models\Event.cs" Link="Models\Event.cs" />
+	  <Compile Include="..\TrashMob.Models\EventAttendee.cs" Link="Models\EventAttendee.cs" />
+	  <Compile Include="..\TrashMob.Models\EventPartner.cs" Link="Models\EventPartner.cs" />
+	  <Compile Include="..\TrashMob.Models\EventPartnerStatus.cs" Link="Models\EventPartnerStatus.cs" />
+	  <Compile Include="..\TrashMob.Models\EventStatus.cs" Link="Models\EventStatus.cs" />
+	  <Compile Include="..\TrashMob.Models\EventSummary.cs" Link="Models\EventSummary.cs" />
+	  <Compile Include="..\TrashMob.Models\EventType.cs" Link="Models\EventType.cs" />
+	  <Compile Include="..\TrashMob.Models\KeyedModel.cs" Link="Models\KeyedModel.cs" />
+	  <Compile Include="..\TrashMob.Models\LookupModel.cs" Link="Models\LookupModel.cs" />
+	  <Compile Include="..\TrashMob.Models\MessageRequest.cs" Link="Models\MessageRequest.cs" />
+	  <Compile Include="..\TrashMob.Models\NonEventUserNotification.cs" Link="Models\NonEventUserNotification.cs" />
+	  <Compile Include="..\TrashMob.Models\Partner.cs" Link="Models\Partner.cs" />
+	  <Compile Include="..\TrashMob.Models\PartnerContact.cs" Link="Models\PartnerContact.cs" />
+	  <Compile Include="..\TrashMob.Models\PartnerDocument.cs" Link="Models\PartnerDocument.cs" />
+	  <Compile Include="..\TrashMob.Models\PartnerLocation.cs" Link="Models\PartnerLocation.cs" />
+	  <Compile Include="..\TrashMob.Models\PartnerLocationService.cs" Link="Models\PartnerLocationService.cs" />
+	  <Compile Include="..\TrashMob.Models\PartnerRequest.cs" Link="Models\PartnerRequest.cs" />
+	  <Compile Include="..\TrashMob.Models\PartnerRequestStatus.cs" Link="Models\PartnerRequestStatus.cs" />
+	  <Compile Include="..\TrashMob.Models\PartnerService.cs" Link="Models\PartnerService.cs" />
+	  <Compile Include="..\TrashMob.Models\PartnerSocialMediaAccount.cs" Link="Models\PartnerSocialMediaAccount.cs" />
+	  <Compile Include="..\TrashMob.Models\PartnerStatus.cs" Link="Models\PartnerStatus.cs" />
+	  <Compile Include="..\TrashMob.Models\PartnerType.cs" Link="Models\PartnerType.cs" />
+	  <Compile Include="..\TrashMob.Models\PartnerUser.cs" Link="Models\PartnerUser.cs" />
+	  <Compile Include="..\TrashMob.Models\ServiceType.cs" Link="Models\ServiceType.cs" />
+	  <Compile Include="..\TrashMob.Models\SiteMetric.cs" Link="Models\SiteMetric.cs" />
+	  <Compile Include="..\TrashMob.Models\SocialMediaAccountType.cs" Link="Models\SocialMediaAccountType.cs" />
+	  <Compile Include="..\TrashMob.Models\User.cs" Link="Models\User.cs" />
+	  <Compile Include="..\TrashMob.Models\UserNotification.cs" Link="Models\UserNotification.cs" />
+	  <Compile Include="..\TrashMob.Models\UserNotificationType.cs" Link="Models\UserNotificationType.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <EmbeddedResource Include="appSettings.Development.json" />
 	  <EmbeddedResource Include="appSettings.json" />
 	</ItemGroup>
@@ -98,5 +133,6 @@
     <ItemGroup>
       <Folder Include="wwwroot\images\" />
     </ItemGroup>
+
 
 </Project>

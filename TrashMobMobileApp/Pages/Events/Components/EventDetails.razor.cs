@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using TrashMob.Models;
 using TrashMobMobileApp.Data;
-using TrashMobMobileApp.Models;
 
 namespace TrashMobMobileApp.Pages.Events.Components
 {
@@ -23,7 +23,7 @@ namespace TrashMobMobileApp.Pages.Events.Components
         public Anchor Anchor { get; set; } = Anchor.End;
 
         [Parameter]
-        public MobEvent Event { get; set; }
+        public Event Event { get; set; }
 
         private async Task OnEventSummaryExpandedAsync(bool expanded)
         {

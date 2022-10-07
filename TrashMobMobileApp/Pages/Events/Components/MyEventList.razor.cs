@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
+using TrashMob.Models;
 using TrashMobMobileApp.Data;
-using TrashMobMobileApp.Models;
 using TrashMobMobileApp.Shared;
 using TrashMobMobileApp.StateContainers;
 
@@ -8,12 +8,12 @@ namespace TrashMobMobileApp.Pages.Events.Components
 {
     public partial class MyEventList
     {
-        private List<MobEvent> _myEvents = new();
-        private List<MobEvent> _myEventsStatic = new();
+        private List<Event> _myEvents = new();
+        private List<Event> _myEventsStatic = new();
         private bool _isLoading;
         private string _eventSearchText;
         private bool _isViewOpen;
-        private MobEvent _selectedEvent;
+        private Event _selectedEvent;
 
         [Inject]
         public IMobEventManager MobEventManager { get; set; }
@@ -52,13 +52,13 @@ namespace TrashMobMobileApp.Pages.Events.Components
 
         private void OnCreateEvent() => Navigator.NavigateTo(Routes.CreateEvent);
 
-        private void OnViewEventDetails(MobEvent mobEvent)
+        private void OnViewEventDetails(Event mobEvent)
         {
             _selectedEvent = mobEvent;
             _isViewOpen = !_isViewOpen;
         }
 
-        private void OnCompleteEvent(MobEvent mobEvent)
+        private void OnCompleteEvent(Event mobEvent)
             => Navigator.NavigateTo(string.Format(Routes.CompleteEvent, mobEvent.Id.ToString()));
 
         private async Task OnShowFutureEventsChangedAsync(bool val)
@@ -67,10 +67,10 @@ namespace TrashMobMobileApp.Pages.Events.Components
             await GetMyEventsAsync();
         }
 
-        private void OnCancelEvent(MobEvent mobEvent) 
+        private void OnCancelEvent(Event mobEvent) 
             => Navigator.NavigateTo(string.Format(Routes.CancelEvent, mobEvent.Id.ToString()));
 
-        private void OnEdit(MobEvent mobEvent)
+        private void OnEdit(Event mobEvent)
             => Navigator.NavigateTo(string.Format(Routes.EditEvent, mobEvent.Id));
     }
 }

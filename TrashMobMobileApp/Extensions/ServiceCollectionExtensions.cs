@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using MudBlazor;
 using MudBlazor.Services;
-using Polly.Extensions.Http;
 using Polly;
+using Polly.Extensions.Http;
 using TrashMobMobileApp.Authentication;
 using TrashMobMobileApp.Data;
-using TrashMobMobileApp.Models;
 using TrashMobMobileApp.StateContainers;
 
 namespace TrashMobMobileApp.Extensions
@@ -44,7 +43,6 @@ namespace TrashMobMobileApp.Extensions
             services.AddSingleton<HttpClientService>();
             services.AddSingleton<IContactRequestManager, ContactRequestManager>();
             services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
-            services.AddSingleton<IDataStore<Item>, MockDataStore>();
             services.AddSingleton<IEventAttendeeRestService, EventAttendeeRestService>();
             services.AddSingleton<IEventSummaryRestService, EventSummaryRestService>();
             services.AddSingleton<IEventTypeRestService, EventTypeRestService>();
