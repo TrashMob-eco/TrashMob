@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using TrashMob.Models;
 using TrashMobMobileApp.Data;
-using TrashMobMobileApp.Models;
 
 namespace TrashMobMobileApp.Pages.Events.CreateEventStepper
 {
@@ -21,10 +21,10 @@ namespace TrashMobMobileApp.Pages.Events.CreateEventStepper
         public IEventTypeRestService EventTypesService { get; set; }
 
         [Parameter]
-        public MobEvent Event { get; set; }
+        public Event Event { get; set; }
 
         [Parameter]
-        public EventCallback<MobEvent> EventChanged { get; set; }
+        public EventCallback<Event> EventChanged { get; set; }
 
         [Parameter]
         public EventCallback OnStepFinished { get; set; }
@@ -34,7 +34,8 @@ namespace TrashMobMobileApp.Pages.Events.CreateEventStepper
             TitleContainer.Title = "Create Event (5/6)";
             await GetEventTypesAsync();
             _selectedEventType = _eventTypes.Find(item => item.Id == Event.EventTypeId);
-            _eventDate = Event.EventDate;
+            //TODO: get user's timezone
+            _eventDate = TimeZoneInfo.ConvertTime(Event.EventDate, TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time")).DateTime;
             _eventTime = new TimeSpan(Event.EventDate.Hour, Event.EventDate.Minute, 0);
             _postal = Convert.ToInt32(Event.PostalCode);
         }
@@ -52,8 +53,8 @@ namespace TrashMobMobileApp.Pages.Events.CreateEventStepper
             if (_success)
             {
                 Event.EventTypeId = _selectedEventType.Id;
-                Event.EventDate = new DateTime(_eventDate.Value.Year, _eventDate.Value.Month, _eventDate.Value.Day,
-                    _eventTime.Value.Hours, _eventTime.Value.Minutes, 0);
+                Event.EventDate = new DateTimeOffset(new DateTime(_eventDate.Value.Year, _eventDate.Value.Month, _eventDate.Value.Day,
+                    _eventTime.Value.Hours, _eventTime.Value.Minutes, 0));
                 Event.PostalCode = _postal.ToString();
                 if (OnStepFinished.HasDelegate)
                 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using TrashMob.Models;
 using TrashMobMobileApp.Data;
-using TrashMobMobileApp.Models;
 
 namespace TrashMobMobileApp.Pages.Events.CreateEventStepper
 {
@@ -18,10 +18,10 @@ namespace TrashMobMobileApp.Pages.Events.CreateEventStepper
         public IEventTypeRestService EventTypesService { get; set; }
 
         [Parameter]
-        public MobEvent Event { get; set; }
+        public Event Event { get; set; }
 
         [Parameter]
-        public EventCallback<MobEvent> EventChanged { get; set; }
+        public EventCallback<Event> EventChanged { get; set; }
 
         [Parameter]
         public EventCallback OnStepFinished { get; set; }

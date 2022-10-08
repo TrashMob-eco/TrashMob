@@ -1,16 +1,16 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using TrashMob.Models;
 using TrashMobMobileApp.Data;
-using TrashMobMobileApp.Models;
 
 namespace TrashMobMobileApp.Pages.Events.Components
 {
     public partial class ActiveEventList
     {
-        private List<MobEvent> _mobEventsStatic = new();
-        private List<MobEvent> _mobEvents = new();
+        private List<Event> _mobEventsStatic = new();
+        private List<Event> _mobEvents = new();
         private bool _isLoading;
-        private MobEvent _selectedEvent;
+        private Event _selectedEvent;
         private bool _isViewOpen;
         private string _eventSearchText;
         private bool _isButtonLoading;
@@ -26,13 +26,13 @@ namespace TrashMobMobileApp.Pages.Events.Components
             _isLoading = false;
         }
 
-        private void OnViewEventDetails(MobEvent mobEvent)
+        private void OnViewEventDetails(Event mobEvent)
         {
             _selectedEvent = mobEvent;
             _isViewOpen = !_isViewOpen;
         }
 
-        private async Task OnRegisterAsync(MobEvent mobEvent)
+        private async Task OnRegisterAsync(Event mobEvent)
         {
             var currentUser = App.CurrentUser;
             if (currentUser != null)

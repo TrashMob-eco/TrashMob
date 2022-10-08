@@ -2,7 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
-    using TrashMobMobileApp.Models;
+    using TrashMob.Models;
 
     public interface IEventSummaryRestService
     {

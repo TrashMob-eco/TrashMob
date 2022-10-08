@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using TrashMob.Models;
 using TrashMobMobileApp.Data;
-using TrashMobMobileApp.Models;
 
 namespace TrashMobMobileApp.Pages.Events.Pages
 {
@@ -10,7 +10,7 @@ namespace TrashMobMobileApp.Pages.Events.Pages
         MudForm _completeEventForm;
         private bool _success;
         private string[] _errors;
-        private MobEvent _event;
+        private Event _event;
         private EventSummary _eventSummary = new();
         private bool _isLoading;
 

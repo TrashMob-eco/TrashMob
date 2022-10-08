@@ -4,10 +4,9 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Net.Http;
     using System.Threading.Tasks;
+    using TrashMob.Models;
     using TrashMobMobileApp.Authentication;
-    using TrashMobMobileApp.Models;
 
     public class EventTypeRestService : RestServiceBase, IEventTypeRestService
     {

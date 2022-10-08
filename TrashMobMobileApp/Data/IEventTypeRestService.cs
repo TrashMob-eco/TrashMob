@@ -1,9 +1,8 @@
 ﻿namespace TrashMobMobileApp.Data
 {
-    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using TrashMobMobileApp.Models;
+    using TrashMob.Models;
 
     public interface IEventTypeRestService
     {

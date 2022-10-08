@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31611.283
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrashMobMobileApp", "TrashMobMobileApp.csproj", "{690EBF5D-247D-4F68-8B68-62A2A843B94B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrashMobMobileApp", "TrashMobMobileApp\TrashMobMobileApp.csproj", "{690EBF5D-247D-4F68-8B68-62A2A843B94B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
