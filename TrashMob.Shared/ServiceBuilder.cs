@@ -41,6 +41,7 @@
 
             // Intentional deviation due to unique methods
             services.AddScoped<IEventAttendeeManager, EventAttendeeManager>();
+            services.AddScoped<IEventSummaryManager, EventSummaryManager>();
             services.AddScoped<IEventManager, EventManager>();
             services.AddScoped<IEventPartnerManager, EventPartnerManager>();
             services.AddScoped<IPartnerRequestManager, PartnerRequestManager>();
