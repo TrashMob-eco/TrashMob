@@ -3,7 +3,7 @@ export const RegexEmail = /^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w -\s]+")([\
 export const RegexUserName = "^[a-zA-Z0-9_]*$";
 export const RegexWebsite = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/;
 
-export const PartnerRequestStatusPending = 1;
+export const PartnerRequestStatusSent = 1;
 
 export const EventPartnerStatusNone = 0;
 export const EventPartnerStatusRequested = 1;

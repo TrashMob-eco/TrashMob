@@ -82,6 +82,7 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
                             <th>Region</th>
                             <th>Country</th>
                             <th>Request Status</th>
+                            <th>Is Become Partner Request</th>
                             <th>Notes</th>
                             <th></th>
                         </tr>
@@ -98,10 +99,11 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
                                     <td>{partnerRequest.region}</td>
                                     <td>{partnerRequest.country}</td>
                                     <td>{getPartnerRequestStatus(props.partnerRequestStatusList, partnerRequest.partnerRequestStatusId)}</td>
+                                    <td>{partnerRequest.isBecomeAPartnerRequest}</td>
                                     <td>{partnerRequest.notes}</td>
                                     <td>
-                                        <Button hidden={partnerRequest.partnerRequestStatusId !== Constants.PartnerRequestStatusPending } className="action" onClick={() => handleApprove(partnerRequest.id, partnerRequest.name)}>Approve Partner</Button>
-                                        <Button hidden={partnerRequest.partnerRequestStatusId !== Constants.PartnerRequestStatusPending} className="action" onClick={() => handleDeny(partnerRequest.id, partnerRequest.name)}>Deny Partner</Button>
+                                        <Button hidden={!partnerRequest.isBecomeAPartnerRequest || partnerRequest.partnerRequestStatusId !== Constants.PartnerRequestStatusSent } className="action" onClick={() => handleApprove(partnerRequest.id, partnerRequest.name)}>Approve Partner</Button>
+                                        <Button hidden={!partnerRequest.isBecomeAPartnerRequest || partnerRequest.partnerRequestStatusId !== Constants.PartnerRequestStatusSent} className="action" onClick={() => handleDeny(partnerRequest.id, partnerRequest.name)}>Deny Partner</Button>
                                     </td>
                                 </tr>)
                         }

@@ -21,5 +21,7 @@
         EventUpdatedNotice = 17,
         EventSummaryHostWeekReminder = 18,
         UserProfileUpdateLocation = 19,
+        InviteGovernmentPartner = 20,
+        InviteBusinessPartner = 21
     }
 }

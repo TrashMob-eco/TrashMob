@@ -27,8 +27,8 @@
         public override async Task<T> UpdateAsync(T instance, CancellationToken cancellationToken = default)
         {
             dbSet.Update(instance);
-            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
-            return await dbSet.FindAsync(instance.Id).ConfigureAwait(false);
+            await mobDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return await dbSet.FindAsync(instance.Id, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<T> GetAsync(Guid id, CancellationToken cancellationToken = default)
