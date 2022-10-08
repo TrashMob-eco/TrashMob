@@ -287,6 +287,18 @@
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EventAttendees_ApplicationUser");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.EventAttendeesCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventAttendees_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.EventAttendeesUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventAttendees_User_LastUpdatedBy");
             });
 
             modelBuilder.Entity<EventPartner>(entity =>
