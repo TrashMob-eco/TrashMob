@@ -9,7 +9,6 @@ on:
     paths: 
       - '.github/**'
       - '!TrashMobMobileApp/**'
-  workflow_dispatch:
 
 env:
   DOTNET_VERSION: '6.0.x'  # set this to the dotnet version to use
