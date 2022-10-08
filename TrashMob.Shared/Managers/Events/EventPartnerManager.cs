@@ -12,6 +12,7 @@
     using TrashMob.Shared.Poco;
     using System.Linq;
     using EmailAddress = Poco.EmailAddress;
+    using TrashMob.Poco;
 
     public class EventPartnerManager : BaseManager<EventPartner>, IEventPartnerManager
     {
@@ -130,7 +131,50 @@
             return updatedEventPartner;
         }
 
-        public async Task<IEnumerable<DisplayEventPartner>> GetByEventIdAsync(Guid eventId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<DisplayPartnerEvent>> GetByPartnerIdAsync(Guid partnerId, CancellationToken cancellationToken = default)
+        {
+            var displayEventPartners = new List<DisplayPartnerEvent>();
+
+            var currentPartners = Repository.Get(p => p.PartnerId == partnerId);
+
+            if (currentPartners.Any())
+            {
+                // Convert the current list of partner events for the event to a display partner (reduces round trips)
+                foreach (var cp in await currentPartners.ToListAsync(cancellationToken))
+                {
+                    var displayPartnerEvent = new DisplayPartnerEvent
+                    {
+                        EventId = cp.EventId,
+                        PartnerId = partnerId,
+                        PartnerLocationId = cp.PartnerLocationId,
+                        EventPartnerStatusId = cp.EventPartnerStatusId,
+                    };
+
+                    displayPartnerEvent.PartnerName = cp.Partner.Name;
+
+                    var partnerLocation = await partnerLocationRepository.Get(pl => pl.PartnerId == cp.PartnerId && pl.Id == cp.PartnerLocationId).FirstOrDefaultAsync(cancellationToken);
+
+                    displayPartnerEvent.PartnerLocationName = partnerLocation.Name;
+
+                    var mobEvent = await eventRepository.GetAsync(cp.EventId, cancellationToken).ConfigureAwait(false);
+
+                    displayPartnerEvent.EventName = mobEvent.Name;
+                    displayPartnerEvent.EventStreetAddress = mobEvent.StreetAddress;
+                    displayPartnerEvent.EventCity = mobEvent.City;
+                    displayPartnerEvent.EventRegion = mobEvent.Region;
+                    displayPartnerEvent.EventCountry = mobEvent.Country;
+                    displayPartnerEvent.EventPostalCode = mobEvent.PostalCode;
+                    displayPartnerEvent.EventDescription = mobEvent.Description;
+                    displayPartnerEvent.EventDate = mobEvent.EventDate;
+
+                    displayEventPartners.Add(displayPartnerEvent);
+                }
+            }
+
+            return displayEventPartners;
+        }
+
+            public async Task<IEnumerable<DisplayEventPartner>> GetByEventIdAsync(Guid eventId, CancellationToken cancellationToken = default)
         {
             var displayEventPartners = new List<DisplayEventPartner>();
             var currentPartners = await GetCurrentPartnersAsync(eventId, cancellationToken).ConfigureAwait(false);

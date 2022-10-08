@@ -5,6 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Poco;
     using TrashMob.Shared.Poco;
 
     public interface IEventPartnerManager : IBaseManager<EventPartner>
@@ -14,5 +15,7 @@
         Task<IEnumerable<PartnerLocation>> GetPotentialPartnerLocationsAsync(Guid eventId, CancellationToken cancellationToken);
 
         Task<IEnumerable<DisplayEventPartner>> GetByEventIdAsync(Guid eventId, CancellationToken cancellationToken);
+
+        Task<IEnumerable<DisplayPartnerEvent>> GetByPartnerIdAsync(Guid partnerId, CancellationToken cancellationToken);
     }
 }

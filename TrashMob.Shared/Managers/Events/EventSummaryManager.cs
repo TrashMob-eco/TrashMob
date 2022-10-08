@@ -3,6 +3,7 @@
     using Microsoft.EntityFrameworkCore;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
@@ -13,10 +14,49 @@
     public class EventSummaryManager : BaseManager<EventSummary>,  IEventSummaryManager
     {
         private readonly IKeyedRepository<Event> eventRepository;
+        private readonly IEventManager eventManager;
+        private readonly IEventAttendeeManager eventAttendeeManager;
 
-        public EventSummaryManager(IBaseRepository<EventSummary> repository, IKeyedRepository<Event> eventRepository) : base(repository)
+        public EventSummaryManager(IBaseRepository<EventSummary> repository, 
+                                   IKeyedRepository<Event> eventRepository, 
+                                   IEventManager eventManager,
+                                   IEventAttendeeManager eventAttendeeManager) : base(repository)
         {
             this.eventRepository = eventRepository;
+            this.eventManager = eventManager;
+            this.eventAttendeeManager = eventAttendeeManager;
+        }
+
+        public async Task<Stats> GetStatsAsync(CancellationToken cancellationToken)
+        {
+            var stats = new Stats();
+            var events = eventRepository.Get();
+            stats.TotalEvents = await events.CountAsync(cancellationToken);
+
+            var eventSummaries = await Repository.Get().ToListAsync(cancellationToken);
+            stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) + (eventSummaries.Sum(es => es.NumberOfBuckets) / 3);
+            stats.TotalHours = eventSummaries.Sum(es => es.DurationInMinutes * es.ActualNumberOfAttendees / 60);
+            stats.TotalParticipants = eventSummaries.Sum(es => es.ActualNumberOfAttendees);
+
+            return stats;
+        }
+
+        public async Task<Stats> GetStatsByUser(Guid userId, CancellationToken cancellationToken)
+        {
+            var stats = new Stats();
+            var result1 = await eventManager.GetUserEventsAsync(userId, false, cancellationToken);
+            var result2 = await eventAttendeeManager.GetEventsUserIsAttendingAsync(userId, false, cancellationToken).ConfigureAwait(false);
+
+            var allResults = result1.Union(result2, new EventComparer());
+
+            stats.TotalEvents = allResults.Count();
+            var eventIds = allResults.Select(e => e.Id);
+
+            var eventSummaries = await Repository.Get(es => eventIds.Contains(es.EventId)).ToListAsync(cancellationToken);
+            stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) + (eventSummaries.Sum(es => es.NumberOfBuckets) / 3);
+            stats.TotalHours = eventSummaries.Sum(es => es.DurationInMinutes) / 60;
+
+            return stats;
         }
 
         public async Task<IEnumerable<DisplayEventSummary>> GetFilteredAsync(LocationFilter locationFilter, CancellationToken cancellationToken = default)

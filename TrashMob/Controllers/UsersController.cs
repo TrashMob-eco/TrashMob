@@ -2,7 +2,6 @@
 namespace TrashMob.Controllers
 {
     using System;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
@@ -10,12 +9,10 @@ namespace TrashMob.Controllers
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Shared;
-    using System.Collections.Generic;
-    using TrashMob.Shared.Engine;
     using Microsoft.ApplicationInsights;
-    using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
+    using System.Security.Claims;
 
     [Route("api/users")]
     public class UsersController : SecureController
@@ -119,11 +116,10 @@ namespace TrashMob.Controllers
 
             if ((originalUser = await userManager.UserExistsAsync(user.NameIdentifier, cancellationToken).ConfigureAwait(false)) != null)
             {
-                // TODO: Fix this
-                //if (!ValidateUser(originalUser.NameIdentifier))
-                //{
-                //    return Forbid();
-                //}
+                if (!ValidateUser(originalUser.NameIdentifier))
+                {
+                    return Forbid();
+                }
 
                 originalUser.Email = user.Email;
                 originalUser.SourceSystemUserName = user.SourceSystemUserName;
@@ -159,6 +155,12 @@ namespace TrashMob.Controllers
             TelemetryClient.TrackEvent(nameof(DeleteUser));
 
             return Ok(id);
+        }
+
+        private bool ValidateUser(string userId)
+        {
+            var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            return userId == nameIdentifier;
         }
     }
 }

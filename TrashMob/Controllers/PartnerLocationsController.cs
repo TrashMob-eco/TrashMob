@@ -14,28 +14,28 @@
     [Route("api/partnerlocations")]
     public class PartnerLocationsController : SecureController
     {
-        private readonly IKeyedManager<PartnerLocation> partnerLocationRepository;
+        private readonly IKeyedManager<PartnerLocation> partnerLocationManager;
         private readonly IKeyedManager<Partner> partnerManager;
 
         public PartnerLocationsController(IKeyedManager<PartnerLocation> partnerLocationManager,
                                           IKeyedManager<Partner> partnerManager)
             : base()
         {
-            this.partnerLocationRepository = partnerLocationManager;
+            this.partnerLocationManager = partnerLocationManager;
             this.partnerManager = partnerManager;
         }
 
         [HttpGet("{partnerId}")]
         public async Task<IActionResult> GetPartnerLocations(Guid partnerId, CancellationToken cancellationToken)
         {
-            var results = await partnerLocationRepository.GetAsync(pl => pl.PartnerId == partnerId, cancellationToken);
+            var results = await partnerLocationManager.GetAsync(pl => pl.PartnerId == partnerId, cancellationToken);
             return Ok(results);
         }
 
         [HttpGet("{partnerId}/{locationId}")]
         public async Task<IActionResult> GetPartnerLocation(Guid partnerId, Guid locationId, CancellationToken cancellationToken = default)
         {
-            var partnerLocation = (await partnerLocationRepository.GetAsync(pl => pl.PartnerId == partnerId && pl.Id == locationId, cancellationToken)).FirstOrDefault();
+            var partnerLocation = (await partnerLocationManager.GetAsync(pl => pl.PartnerId == partnerId && pl.Id == locationId, cancellationToken)).FirstOrDefault();
 
             if (partnerLocation == null)
             {
@@ -56,7 +56,7 @@
                 return Forbid();
             }
 
-            await partnerLocationRepository.AddAsync(partnerLocation, cancellationToken).ConfigureAwait(false);
+            await partnerLocationManager.AddAsync(partnerLocation, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddPartnerLocation));
 
             return CreatedAtAction(nameof(GetPartnerLocation), new { partnerId = partnerLocation.PartnerId, locationId = partnerLocation.Id });
@@ -74,7 +74,7 @@
                 return Forbid();
             }
 
-            await partnerLocationRepository.UpdateAsync(partnerLocation, cancellationToken).ConfigureAwait(false);
+            await partnerLocationManager.UpdateAsync(partnerLocation, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdatePartnerLocation));
 
             return Ok(partnerLocation);
@@ -91,7 +91,7 @@
                 return Forbid();
             }
 
-            await partnerLocationRepository.DeleteAsync(partnerLocationId, cancellationToken).ConfigureAwait(false);
+            await partnerLocationManager.DeleteAsync(partnerLocationId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeletePartnerLocation));
 
             return Ok(partnerLocationId);
