@@ -31,11 +31,11 @@
         [HttpGet]
         public virtual async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            await Manager.GetAsync(cancellationToken).ConfigureAwait(false);
+            var results = await Manager.GetAsync(cancellationToken).ConfigureAwait(false);
 
             TelemetryClient.TrackEvent("Get" + nameof(T));
 
-            return Ok();
+            return Ok(results);
         }
     }
 }
