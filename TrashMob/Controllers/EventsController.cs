@@ -10,16 +10,12 @@ namespace TrashMob.Controllers
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Common;
-    using TrashMob.Shared.Extensions;
     using TrashMob.Shared;
     using System.Collections.Generic;
-    using TrashMob.Shared.Engine;
     using TrashMob.Poco;
     using Microsoft.ApplicationInsights;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Models;
-    using TrashMob.Models.Extensions;
-    using TrashMob.Shared.Poco;
 
     [Route("api/events")]
     public class EventsController : SecureController
@@ -27,21 +23,15 @@ namespace TrashMob.Controllers
         private readonly IEventManager eventManager;
         private readonly IEventAttendeeManager eventAttendeeManager;
         private readonly IKeyedManager<User> userManager;
-        private readonly IEmailManager emailManager;
-        private readonly IMapManager mapRepository;
 
         public EventsController(IKeyedManager<User> userManager,
                                 IEventManager eventManager,
-                                IEventAttendeeManager eventAttendeeManager,                                
-                                IEmailManager emailManager,
-                                IMapManager mapRepository)
+                                IEventAttendeeManager eventAttendeeManager)
             : base()
         {
             this.eventManager = eventManager;
             this.eventAttendeeManager = eventAttendeeManager;
             this.userManager = userManager;
-            this.emailManager = emailManager;
-            this.mapRepository = mapRepository;
         }
 
         [HttpGet]
@@ -130,54 +120,8 @@ namespace TrashMob.Controllers
 
             try
             {
-                var oldEvent = await eventManager.GetAsync(mobEvent.Id, cancellationToken).ConfigureAwait(false);
-
-                var updatedEvent = await eventManager.UpdateAsync(mobEvent, cancellationToken).ConfigureAwait(false);
+                var updatedEvent = await eventManager.UpdateAsync(mobEvent, UserId, cancellationToken);
                 TelemetryClient.TrackEvent(nameof(UpdateEvent));
-
-                if (oldEvent.EventDate != mobEvent.EventDate
-                    || oldEvent.City != mobEvent.City
-                    || oldEvent.Country != mobEvent.Country
-                    || oldEvent.Region != mobEvent.Region
-                    || oldEvent.PostalCode != mobEvent.PostalCode
-                    || oldEvent.StreetAddress != mobEvent.StreetAddress)
-                {
-                    var emailCopy = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventUpdatedNotice.ToString());
-                    emailCopy = emailCopy.Replace("{EventName}", mobEvent.Name);
-
-                    var oldLocalDate = await oldEvent.GetLocalEventTime(mapRepository).ConfigureAwait(false);
-                    var newLocalDate = await mobEvent.GetLocalEventTime(mapRepository).ConfigureAwait(false);
-
-                    emailCopy = emailCopy.Replace("{EventDate}", oldLocalDate.Item1);
-                    emailCopy = emailCopy.Replace("{EventTime}", oldLocalDate.Item2);
-
-                    var subject = "A TrashMob.eco event you were scheduled to attend has been updated!";
-
-                    var eventAttendees = await eventAttendeeManager.GetAsync(m => m.EventId == mobEvent.Id, cancellationToken).ConfigureAwait(false);
-
-                    foreach (var attendee in eventAttendees)
-                    {
-                        var dynamicTemplateData = new
-                        {
-                            username = attendee.User.UserName,
-                            eventName = mobEvent.Name,
-                            eventDate = newLocalDate.Item1,
-                            eventTime = newLocalDate.Item2,
-                            eventAddress = mobEvent.EventAddress(),
-                            emailCopy = emailCopy,
-                            subject = subject,
-                            eventDetailsUrl = mobEvent.EventDetailsUrl(),
-                            googleMapsUrl = mobEvent.GoogleMapsUrl(),
-                        };
-
-                        var recipients = new List<EmailAddress>
-                        {
-                            new EmailAddress { Name = attendee.User.UserName, Email = attendee.User.Email },
-                        };
-
-                        await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.EventEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
-                    }
-                }
 
                 return Ok(updatedEvent);
             }
@@ -202,31 +146,6 @@ namespace TrashMob.Controllers
             var newEvent = await eventManager.AddAsync(mobEvent, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddEvent));
 
-            var message = $"A new event: {mobEvent.Name} in {mobEvent.City} has been created on TrashMob.eco!";
-            var subject = "New Event Alert";
-
-            var recipients = new List<EmailAddress>
-            {
-                new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
-            };
-
-            var localTime = await mobEvent.GetLocalEventTime(mapRepository).ConfigureAwait(false);
-
-            var dynamicTemplateData = new
-            {
-                username = Constants.TrashMobEmailName,
-                eventName = mobEvent.Name,
-                eventDate = localTime.Item1,
-                eventTime = localTime.Item2,
-                eventAddress = mobEvent.EventAddress(),
-                emailCopy = message,
-                subject = subject,
-                eventDetailsUrl = mobEvent.EventDetailsUrl(),
-                googleMapsUrl = mobEvent.GoogleMapsUrl(),
-            };
-
-            await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.EventEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
-
             return Ok(newEvent);
         }
 
@@ -244,40 +163,8 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var eventAttendees = await eventAttendeeManager.GetAsync(e => e.EventId == eventCancellationRequest.EventId, cancellationToken).ConfigureAwait(false);
-
             await eventManager.DeleteAsync(eventCancellationRequest.EventId, eventCancellationRequest.CancellationReason, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeleteEvent));
-
-            var subject = "A TrashMob.eco event you were scheduled to attend has been cancelled!";
-
-            var emailCopy = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventCancelledNotice.ToString());
-            emailCopy = emailCopy.Replace("{CancellationReason}", eventCancellationRequest.CancellationReason);
-
-            var localDate = await mobEvent.GetLocalEventTime(mapRepository).ConfigureAwait(false);
-
-            foreach (var attendee in eventAttendees)
-            {
-                var dynamicTemplateData = new
-                {
-                    username = attendee.User.UserName,
-                    eventName = mobEvent.Name,
-                    eventDate = localDate.Item1,
-                    eventTime = localDate.Item2,
-                    eventAddress = mobEvent.EventAddress(),
-                    emailCopy = emailCopy,
-                    subject = subject,
-                    eventDetailsUrl = mobEvent.EventDetailsUrl(),
-                    googleMapsUrl = mobEvent.GoogleMapsUrl(),
-                };
-
-                var recipients = new List<EmailAddress>
-                {
-                    new EmailAddress { Name = attendee.User.UserName, Email = attendee.User.Email },
-                };
-
-                await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.EventEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
-            }
 
             return Ok(eventCancellationRequest.EventId);
         }

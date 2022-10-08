@@ -136,5 +136,9 @@ namespace TrashMob.Models
         public virtual ICollection<PartnerLocationService> PartnerLocationServicesCreated { get; set; }
 
         public virtual ICollection<PartnerLocationService> PartnerLocationServicesUpdated { get; set; }
+
+        public virtual ICollection<EventAttendee> EventAttendeesCreated { get; set; }
+
+        public virtual ICollection<EventAttendee> EventAttendeesUpdated { get; set; }
     }
 }

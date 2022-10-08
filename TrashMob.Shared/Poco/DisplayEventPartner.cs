@@ -1,5 +1,5 @@
 ﻿
-namespace TrashMob.Poco
+namespace TrashMob.Shared.Poco
 {
     using System;
 

@@ -2,8 +2,6 @@
 namespace TrashMob.Controllers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
@@ -14,15 +12,14 @@ namespace TrashMob.Controllers
     using TrashMob.Poco;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/eventsummaries")]
     public class EventSummariesController : SecureController
     {
-        private readonly IBaseManager<EventSummary> eventSummaryManager;
+        private readonly IEventSummaryManager eventSummaryManager;
         private readonly IKeyedManager<Event> eventManager;
 
-        public EventSummariesController(IBaseManager<EventSummary> eventSummaryManager,
+        public EventSummariesController(IEventSummaryManager eventSummaryManager,
                                         IKeyedManager<Event> eventManager) 
             : base()
         {
@@ -46,43 +43,17 @@ namespace TrashMob.Controllers
         [HttpGet]
         public async Task<IActionResult> GetEventSummaries([FromQuery] string country = "", [FromQuery] string region = "", [FromQuery] string city = "", [FromQuery] string postalCode = "", CancellationToken cancellationToken = default)
         {
-            // Todo make this more efficient
-            var eventSummaries = await eventSummaryManager.GetAsync(cancellationToken);
-            var displaySummaries = new List<DisplayEventSummary>();
-            foreach (var eventSummary in eventSummaries)
+            var locationFilter = new LocationFilter()
             {
-                var mobEvent = await eventManager.GetAsync(eventSummary.EventId, cancellationToken).ConfigureAwait(false);
+                City = city,
+                Region = region,
+                Country = country,
+                PostalCode = postalCode
+            };
 
-                if (mobEvent != null)
-                {
-                    if ((string.IsNullOrWhiteSpace(country) || string.Equals(mobEvent.Country, country, StringComparison.OrdinalIgnoreCase)) &&
-                        (string.IsNullOrWhiteSpace(region) || string.Equals(mobEvent.Region, region, StringComparison.OrdinalIgnoreCase)) &&
-                        (string.IsNullOrWhiteSpace(city) || mobEvent.City.Contains(city, StringComparison.OrdinalIgnoreCase)) &&
-                        (string.IsNullOrWhiteSpace(postalCode) || mobEvent.PostalCode.Contains(postalCode, StringComparison.OrdinalIgnoreCase)))
-                    {
-                        var displayEvent = new DisplayEventSummary()
-                        {
-                            ActualNumberOfAttendees = eventSummary.ActualNumberOfAttendees,
-                            City = mobEvent.City,
-                            Country = mobEvent.Country,
-                            DurationInMinutes = eventSummary.DurationInMinutes,
-                            EventDate = mobEvent.EventDate,
-                            EventId = mobEvent.Id,
-                            EventTypeId = mobEvent.EventTypeId,
-                            Name = mobEvent.Name,
-                            NumberOfBags = eventSummary.NumberOfBags + eventSummary.NumberOfBuckets / 3.0,
-                            PostalCode = mobEvent.PostalCode,
-                            Region = mobEvent.Region,
-                            StreetAddress = mobEvent.StreetAddress,
-                            TotalWorkHours = eventSummary.ActualNumberOfAttendees * eventSummary.DurationInMinutes / 60.0
-                        };
+            var eventSummaries = await eventSummaryManager.GetFilteredAsync(locationFilter, cancellationToken);
 
-                        displaySummaries.Add(displayEvent);
-                    }
-                }
-            }
-
-            return Ok(displaySummaries);
+            return Ok(eventSummaries);
         }
 
         [HttpPut]
@@ -113,11 +84,8 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            eventSummary.CreatedByUserId = UserId;
-            eventSummary.LastUpdatedByUserId = UserId;
-            eventSummary.CreatedDate = DateTimeOffset.UtcNow;
-            eventSummary.LastUpdatedDate = DateTimeOffset.UtcNow;
-            await eventSummaryManager.AddAsync(eventSummary, cancellationToken).ConfigureAwait(false);
+            await eventSummaryManager.AddAsync(eventSummary, UserId, cancellationToken).ConfigureAwait(false);
+
             TelemetryClient.TrackEvent(nameof(AddEventSummary));
 
             return CreatedAtAction(nameof(GetEventSummary), new { eventId = eventSummary.EventId });
