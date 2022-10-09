@@ -679,7 +679,7 @@
                     .HasMaxLength(50);
 
                 entity.HasData(
-                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Pending, Name = "Pending", Description = "Request is Pending Approval by Site Administrator", DisplayOrder = 1, IsActive = true },
+                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Sent, Name = "Sent", Description = "Request has been sent", DisplayOrder = 1, IsActive = true },
                     new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Approved, Name = "Approved", Description = "Request has been approved by the Site Administrator", DisplayOrder = 2, IsActive = true },
                     new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Denied, Name = "Denied", Description = "Request has been approved by the Site Administrator", DisplayOrder = 3, IsActive = true });
             });

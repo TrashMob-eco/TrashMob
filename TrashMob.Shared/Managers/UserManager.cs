@@ -236,7 +236,7 @@ namespace TrashMob.Shared.Managers
             user.TrashMobWaiverVersion = string.Empty;
             user.IsSiteAdmin = false;
 
-            var addedUser = await base.AddAsync(user);
+            var addedUser = await base.AddAsync(user, cancellationToken);
 
             // Notify Admins that a new user has joined
             var message = $"A new user: {user.Email} has joined TrashMob.eco!";

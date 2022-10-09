@@ -83,7 +83,7 @@
 
     public enum PartnerRequestStatusEnum
     {
-        Pending = 1,
+        Sent = 1,
         Approved = 2,
         Denied = 3,
     }

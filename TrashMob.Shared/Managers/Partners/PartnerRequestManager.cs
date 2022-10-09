@@ -31,6 +31,7 @@
         {
             var result = await Repository.AddAsync(instance, cancellationToken);
 
+            // If this is a become a partner request, the mail gets routed to the TrashMobAdmin for approval
             if (instance.isBecomeAPartnerRequest)
             {
                 var message = $"From Email: {instance.Email}\nFrom Name:{instance.Name}\nMessage:\n{instance.Notes}";
@@ -52,7 +53,51 @@
             }
             else
             {
-                // Todo send email to partner requesting they become a trashmob partner
+                // If this is a send a partner request, the mail gets routed to the targeted email address. 
+                string welcomeMessage;
+                string welcomeSubject;
+                if (instance.PartnerTypeId == (int)PartnerTypeEnum.Business)
+                {
+                    welcomeMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.InviteBusinessPartner.ToString());
+                    welcomeSubject = "Someone in your community wants you to become a TrashMob Partner!";
+                }
+                else
+                {
+                    welcomeMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.InviteGovernmentPartner.ToString());
+                    welcomeSubject = "Someone in your community wants your community to become a TrashMob Community!";
+                }
+
+                var userDynamicTemplateData = new
+                {
+                    partnerName = instance.Name,
+                    emailCopy = welcomeMessage,
+                    subject = welcomeSubject,
+                };
+
+                var welcomeRecipients = new List<EmailAddress>
+                    {
+                        new EmailAddress { Name = instance.Name, Email = instance.Email }
+                    };
+
+                await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients, CancellationToken.None).ConfigureAwait(false);
+
+                // Also gets sent to the TrashMob Admin for informational purposes
+                var message = $"Sent to Email: {instance.Email}\nTo Partner Name:{instance.Name}\nCity: {instance.City}\nRegion: {instance.Region}\nMessage:\n{instance.Notes}";
+                var subject = "Partner Request Sent";
+
+                var recipients = new List<EmailAddress>
+                {
+                new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
+                };
+
+                var dynamicTemplateData = new
+                {
+                    username = Constants.TrashMobEmailName,
+                    emailCopy = message,
+                    subject = subject,
+                };
+
+                await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
             }
 
             return result;

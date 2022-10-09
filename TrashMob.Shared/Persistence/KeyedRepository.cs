@@ -21,24 +21,24 @@
         {
             dbSet.Add(instance);
             await mobDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            return await dbSet.FindAsync(instance.Id, cancellationToken).ConfigureAwait(false);
+            return await dbSet.FindAsync(new object[] { instance.Id }, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<T> UpdateAsync(T instance, CancellationToken cancellationToken = default)
         {
             dbSet.Update(instance);
-            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
-            return await dbSet.FindAsync(instance.Id).ConfigureAwait(false);
+            await mobDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return await dbSet.FindAsync(new object[] { instance.Id }, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<T> GetAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return await dbSet.AsNoTracking().SingleOrDefaultAsync(e => e.Id == id, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await dbSet.FindAsync(new object[] { id }, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<int> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var instance = await dbSet.FindAsync(id, cancellationToken).ConfigureAwait(false);
+            var instance = await dbSet.FindAsync(new object[] { id }, cancellationToken: cancellationToken).ConfigureAwait(false);
             dbSet.Remove(instance);
             return await mobDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }

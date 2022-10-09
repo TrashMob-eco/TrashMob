@@ -123,7 +123,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         partnerRequestData.email = email ?? "";
         partnerRequestData.phone = phone ?? "";
         partnerRequestData.website = website ?? "";
-        partnerRequestData.partnerRequestStatusId = 1;
+        partnerRequestData.partnerRequestStatusId = Constants.PartnerRequestStatusSent;
         partnerRequestData.notes = notes ?? "";
         partnerRequestData.streetAddress = streetAddress ?? "";
         partnerRequestData.city = city ?? "";
