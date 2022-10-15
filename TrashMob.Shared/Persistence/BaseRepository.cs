@@ -44,11 +44,17 @@
             return dbSet.AsNoTracking();
         }
 
-        public IQueryable<T> Get(Expression<Func<T, bool>> expression)
+        public IQueryable<T> Get(Expression<Func<T, bool>> expression, bool withNoTracking = true)
         {
+            if (withNoTracking)
+            {
+                return dbSet
+                    .Where(expression)
+                    .AsNoTracking();
+            }
+
             return dbSet
-                .Where(expression)
-                .AsNoTracking();
+                .Where(expression);                
         }
 
         public async Task<int> DeleteAsync(T instance, CancellationToken cancellationToken = default)

@@ -16,28 +16,28 @@
         private readonly IBaseManager<PartnerService> PartnerServicesManager;
         private readonly IKeyedManager<Partner> partnerManager;
 
-        public PartnerServicesController(IBaseManager<PartnerService> PartnerServicesManager,
+        public PartnerServicesController(IBaseManager<PartnerService> partnerServicesManager,
                                          IKeyedManager<Partner> partnerManager)
             : base()
         {
-            this.PartnerServicesManager = PartnerServicesManager;
+            this.PartnerServicesManager = partnerServicesManager;
             this.partnerManager = partnerManager;
         }
 
-        [HttpGet("{PartnerId}")]
+        [HttpGet("{partnerId}")]
         [Authorize(Policy = "ValidUser")]
-        public async Task<IActionResult> GetPartnerServices(Guid PartnerId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetPartnerServices(Guid partnerId, CancellationToken cancellationToken)
         {
-            var PartnerServices = await PartnerServicesManager.GetByParentIdAsync(PartnerId, cancellationToken);
+            var PartnerServices = await PartnerServicesManager.GetByParentIdAsync(partnerId, cancellationToken);
 
             return Ok(PartnerServices);
         }
 
-        [HttpGet("{PartnerId}/{serviceTypeId}")]
+        [HttpGet("{partnerId}/{serviceTypeId}")]
         [Authorize(Policy = "ValidUser")]
-        public async Task<IActionResult> GetPartnerService(Guid PartnerId, int serviceTypeId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetPartnerService(Guid partnerId, int serviceTypeId, CancellationToken cancellationToken)
         {
-            var PartnerService = await PartnerServicesManager.GetAsync(PartnerId, serviceTypeId, cancellationToken);
+            var PartnerService = await PartnerServicesManager.GetAsync(partnerId, serviceTypeId, cancellationToken);
 
             return Ok(PartnerService);
         }
@@ -53,9 +53,9 @@
                 return Forbid();
             }
 
-            await PartnerServicesManager.AddAsync(partnerService, cancellationToken);
+            var result = await PartnerServicesManager.AddAsync(partnerService, cancellationToken);
 
-            return CreatedAtAction(nameof(GetPartnerService), new { PartnerId = partnerService.PartnerId, serviceTypeId = partnerService.ServiceTypeId });
+            return CreatedAtAction(nameof(GetPartnerService), new { partnerId = partnerService.PartnerId, serviceTypeId = partnerService.ServiceTypeId, cancellationToken = cancellationToken }, result);
         }
 
         [HttpPut]
@@ -75,7 +75,7 @@
             return Ok(partnerService);
         }
 
-        [HttpDelete("{PartnerId}/{serviceTypeId}")]
+        [HttpDelete("{partnerId}/{serviceTypeId}")]
         public async Task<IActionResult> DeletePartnerService(Guid partnerId, int serviceTypeId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);

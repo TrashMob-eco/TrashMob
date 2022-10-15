@@ -135,12 +135,12 @@
         {
             var displayEventPartners = new List<DisplayPartnerEvent>();
 
-            var currentPartners = Repository.Get(p => p.PartnerId == partnerId);
+            var currentPartners = await Repository.Get(p => p.PartnerId == partnerId, withNoTracking: false).ToListAsync(cancellationToken: cancellationToken);
 
             if (currentPartners.Any())
             {
                 // Convert the current list of partner events for the event to a display partner (reduces round trips)
-                foreach (var cp in await currentPartners.ToListAsync(cancellationToken))
+                foreach (var cp in currentPartners)
                 {
                     var displayPartnerEvent = new DisplayPartnerEvent
                     {

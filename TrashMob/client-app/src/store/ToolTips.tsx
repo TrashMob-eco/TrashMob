@@ -99,4 +99,6 @@ export const SocialMediaAccountName = "Enter the name of this social media accou
 export const SocialMediaAccountIsActive = "Whether or not TrashMob.eco should cc this account when posting relevant TrashMob events to this social media provider."
 export const PartnerDocumentName = "Enter a friendly name for this document."
 export const PartnerDocumentUrl = "Enter the url where this document is stored."
+export const PartnerServiceType = "The Type of Service this Partner offers."
+export const PartnerServiceNotes = "Notes related to this type of service."
 

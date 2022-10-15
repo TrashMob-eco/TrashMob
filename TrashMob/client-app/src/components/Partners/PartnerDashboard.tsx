@@ -9,6 +9,7 @@ import { PartnerEventRequests } from './PartnerEventRequests';
 import { Guid } from 'guid-typescript';
 import { PartnerDocuments } from './PartnerDocuments';
 import { PartnerSocialMediaAccounts } from './PartnerSocialMediaAccounts';
+import { PartnerServices } from './PartnerServices';
 
 export interface PartnerDashboardMatchParams {
     partnerId?: string;
@@ -31,7 +32,8 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         { name: 'Manage Partner Locations', value: '3' },
         { name: 'Manage Partner Documents', value: '4' },
         { name: 'Manage Partner Social Media Accounts', value: '5' },
-        { name: 'Manage Event Requests', value: '6' }
+        { name: 'Manage Partner Services', value: '6' },
+        { name: 'Manage Event Requests', value: '7' }
     ];
 
     React.useEffect(() => {
@@ -73,6 +75,14 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         )
     }
 
+    function renderPartnerServices() {
+        return (
+            <div>
+                <PartnerServices partnerId={partnerId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+            </div >
+        )
+    }
+
     function renderPartnerDocuments() {
         return (
             <div>
@@ -80,7 +90,6 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
             </div >
         )
     }
-
 
     function renderPartnerSocialMediaAccounts() {
         return (
@@ -123,7 +132,8 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                 { radioValue === '3' && renderPartnerLocations()}
                 { radioValue === '4' && renderPartnerDocuments()}
                 { radioValue === '5' && renderPartnerSocialMediaAccounts()}
-                { radioValue === '6' && renderEventRequests()}
+                { radioValue === '6' && renderPartnerServices()}
+                { radioValue === '7' && renderEventRequests()}
             </div>);
     }
 
