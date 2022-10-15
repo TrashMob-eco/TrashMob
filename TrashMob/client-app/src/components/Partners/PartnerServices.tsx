@@ -222,8 +222,8 @@ export const PartnerServices: React.FC<PartnerServicesDataProps> = (props) => {
                             <tr key={service.serviceTypeId}>
                                 <td>{getServiceType(serviceTypeList, service.serviceTypeId)}</td>
                                 <td>{service.notes}</td>
-                                <td>{service.createdDate}</td>
-                                <td>{service.lastUpdatedDate}</td>
+                                <td>{createdDate ? createdDate.toLocaleString() : ""}</td>
+                                <td>{lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""}</td>
                                 <td>
                                     <Button className="action" onClick={() => editService(service.serviceTypeId)}>Edit Service</Button>
                                     <Button className="action" onClick={() => removeService(service.serviceTypeId)}>Remove Service</Button>

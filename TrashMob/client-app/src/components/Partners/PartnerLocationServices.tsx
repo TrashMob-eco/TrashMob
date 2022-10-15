@@ -17,10 +17,15 @@ export interface PartnerLocationServicesDataProps {
 export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps> = (props) => {
 
     const [notes, setNotes] = React.useState<string>("");
-    const [partnerLocationServices, setPartnerLocationServices] = React.useState<PartnerLocationServiceData[]>([]);
-    const [isPartnerLocationServicesDataLoaded, setIsPartnerServicesDataLoaded] = React.useState<boolean>(false);
+    const [partnerServices, setPartnerLocationServices] = React.useState<PartnerLocationServiceData[]>([]);
+    const [createdByUserId, setCreatedByUserId] = React.useState<string>(Guid.EMPTY);
+    const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
+    const [lastUpdatedDate, setLastUpdatedDate] = React.useState<Date>(new Date());
+    const [isPartnerLocationServicesDataLoaded, setIsPartnerLocationServicesDataLoaded] = React.useState<boolean>(false);
     const [serviceTypeId, setServiceTypeId] = React.useState<number>(0);
     const [serviceTypeList, setServiceTypeList] = React.useState<ServiceTypeData[]>([]);
+    const [isEdit, setIsEdit] = React.useState<boolean>(false);
+    const [isAdd, setIsAdd] = React.useState<boolean>(false);
 
     React.useEffect(() => {
 
@@ -46,21 +51,53 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerlocationservices/' + props.partnerLocationId, {
+                fetch('/api/partnerservices/' + props.partnerLocationId, {
                     method: 'GET',
                     headers: headers,
                 })
                     .then(response => response.json() as Promise<PartnerLocationServiceData[]>)
                     .then(data => {
                         setPartnerLocationServices(data);
-                        setIsPartnerServicesDataLoaded(true);
+                        setIsPartnerLocationServicesDataLoaded(true);
                     });
             });
         }
     }, [props.partnerLocationId, props.isUserLoaded])
 
+    function addService() {
+        setIsAdd(true);
+    }
+
+    function editService(serviceTypeId: number) {
+        const account = msalClient.getAllAccounts()[0];
+
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = getDefaultHeaders('GET');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+            fetch('/api/partnerservices/' + props.partnerLocationId + '/' + serviceTypeId, {
+                method: 'GET',
+                headers: headers,
+            })
+                .then(response => response.json() as Promise<PartnerLocationServiceData>)
+                .then(data => {
+                    setServiceTypeId(data.serviceTypeId);
+                    setNotes(data.notes);
+                    setCreatedByUserId(data.createdByUserId);
+                    setCreatedDate(data.createdDate);
+                    setLastUpdatedDate(data.lastUpdatedDate);
+                    setIsEdit(true);
+                });
+        });
+    }
+
     function removeService(serviceTypeId: number) {
-        if (!window.confirm("Please confirm that you want to remove service type: '" + getServiceType(serviceTypeList, serviceTypeId) + "' from this Partner Location?"))
+        if (!window.confirm("Please confirm that you want to remove service type: '" + getServiceType(serviceTypeList, serviceTypeId) + "' from this Partner?"))
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
@@ -74,15 +111,28 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerlocationservices/' + props.partnerLocationId + '/' + serviceTypeId, {
+                fetch('/api/partnerservices/' + props.partnerLocationId + '/' + serviceTypeId, {
                     method: 'DELETE',
                     headers: headers,
                 })
+                    .then(() => {
+                        setIsPartnerLocationServicesDataLoaded(false);
+
+                        fetch('/api/partnerservices/' + props.partnerLocationId, {
+                            method: 'GET',
+                            headers: headers,
+                        })
+                            .then(response => response.json() as Promise<PartnerLocationServiceData[]>)
+                            .then(data => {
+                                setPartnerLocationServices(data);
+                                setIsPartnerLocationServicesDataLoaded(true);
+                            });
+                    })
             });
         }
     }
 
-    function handleAddServiceType() {
+    function handleSave() {
 
         const account = msalClient.getAllAccounts()[0];
 
@@ -91,24 +141,51 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
             account: account
         };
 
-        var partnerLocationService = new PartnerLocationServiceData();
-        partnerLocationService.partnerLocationId = props.partnerLocationId;
-        partnerLocationService.serviceTypeId = serviceTypeId ?? 0;
-        partnerLocationService.notes = notes;
-        partnerLocationService.createdByUserId = props.currentUser.id
-        partnerLocationService.lastUpdatedByUserId = props.currentUser.id
+        var method = "PUT";
 
-        var data = JSON.stringify(partnerLocationService);
+        if (createdByUserId === Guid.EMPTY) {
+            method = "POST";
+
+            // We need to prevent an additional add of an existing service type
+            if (partnerServices.find(obj => obj.serviceTypeId === serviceTypeId)) {
+                window.alert("Adding more than one instance of an existing service type is not allowed.")
+                return;
+            }
+        }
+
+        var partnerService = new PartnerLocationServiceData();
+        partnerService.partnerLocationId = props.partnerLocationId;
+        partnerService.serviceTypeId = serviceTypeId ?? 0;
+        partnerService.notes = notes;
+        partnerService.createdByUserId = createdByUserId;
+        partnerService.lastUpdatedByUserId = props.currentUser.id
+
+        var data = JSON.stringify(partnerService);
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders('POST');
+            const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/partnerlocationservices', {
-                method: 'POST',
+            fetch('/api/partnerservices', {
+                method: method,
                 headers: headers,
                 body: data,
             })
+                .then(() => {
+                    setIsAdd(false);
+                    setIsEdit(false);
+                    setIsPartnerLocationServicesDataLoaded(false);
+
+                    fetch('/api/partnerservices/' + props.partnerLocationId, {
+                        method: 'GET',
+                        headers: headers,
+                    })
+                        .then(response => response.json() as Promise<PartnerLocationServiceData[]>)
+                        .then(data => {
+                            setPartnerLocationServices(data);
+                            setIsPartnerLocationServicesDataLoaded(true);
+                        });
+                });
         });
     }
 
@@ -136,6 +213,8 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                         <tr>
                             <th>Service Type</th>
                             <th>Notes</th>
+                            <th>Created Date</th>
+                            <th>Last Updated Date</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -143,21 +222,25 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                             <tr key={service.serviceTypeId}>
                                 <td>{getServiceType(serviceTypeList, service.serviceTypeId)}</td>
                                 <td>{service.notes}</td>
+                                <td>{createdDate ? createdDate.toLocaleString() : ""}</td>
+                                <td>{lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""}</td>
                                 <td>
+                                    <Button className="action" onClick={() => editService(service.serviceTypeId)}>Edit Service</Button>
                                     <Button className="action" onClick={() => removeService(service.serviceTypeId)}>Remove Service</Button>
                                 </td>
                             </tr>
                         )}
                     </tbody>
                 </table>
+                <Button className="action" onClick={() => addService()}>Add Service</Button>
             </div>
         );
     }
 
-    function renderAddPartnerLocationService() {
+    function renderAddPartnerService() {
         return (
             <div>
-                <Form onSubmit={handleAddServiceType}>
+                <Form onSubmit={handleSave}>
                     <Form.Row>
                         <Col>
                             <Form.Group>
@@ -165,7 +248,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                                     <Form.Label className="control-label" htmlFor="ServiceType">Service Type:</Form.Label>
                                 </OverlayTrigger>
                                 <div>
-                                    <select data-val="true" name="serviceTypeId" defaultValue={serviceTypeId} onChange={(val) => selectServiceType(val.target.value)} required>
+                                    <select disabled={isEdit} data-val="true" name="serviceTypeId" defaultValue={serviceTypeId} onChange={(val) => selectServiceType(val.target.value)} required>
                                         <option value="">-- Select Service Type --</option>
                                         {serviceTypeList.map(type =>
                                             <option key={type.id} value={type.id}>{type.name}</option>
@@ -182,7 +265,19 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                                 <Form.Control type="text" name="notes" defaultValue={notes} onChange={val => handleNotesChanged(val.target.value)} maxLength={parseInt('64')} required />
                             </Form.Group>
                         </Col>
-                        <Button className="action" onClick={() => handleAddServiceType()}>Add Service</Button>
+                        <Col>
+                            <Form.Group>
+                                <Form.Label className="control-label" htmlFor="createdDate">Created Date</Form.Label>
+                                <Form.Label defaultValue={createdDate ? createdDate.toLocaleString() : ""} />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <Form.Label className="control-label" htmlFor="lastUpdatedDate">Last Updated Date</Form.Label>
+                                <Form.Label defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
+                            </Form.Group>
+                        </Col>
+                        <Button className="action" onClick={() => handleSave()}>Save</Button>
                     </Form.Row>
                 </Form>
             </div>
@@ -192,10 +287,10 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
     return (
         <>
             <div>
-                {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner Location must be created first.</em></p>}
+                {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner must be created first.</em></p>}
                 {!isPartnerLocationServicesDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-                {isPartnerLocationServicesDataLoaded && renderPartnerLocationServicesTable(partnerLocationServices)}
-                {renderAddPartnerLocationService()}
+                {isPartnerLocationServicesDataLoaded && renderPartnerLocationServicesTable(partnerServices)}
+                {(isEdit || isAdd) && renderAddPartnerService()}
             </div>
         </>
     );
