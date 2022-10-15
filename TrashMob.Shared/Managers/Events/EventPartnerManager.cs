@@ -71,11 +71,13 @@
                 subject = subject,
             };
 
-            var partnerRecipients = new List<EmailAddress>
+            var partnerRecipients = new List<EmailAddress>();
+
+            foreach (var contact in eventPartner.PartnerLocation.PartnerLocationContacts)
             {
-                new EmailAddress { Name = eventPartner.PartnerLocation.Name, Email = eventPartner.PartnerLocation.PrimaryEmail },
-                new EmailAddress { Name = eventPartner.PartnerLocation.Name, Email = eventPartner.PartnerLocation.SecondaryEmail }
-            };
+                var newEmailAddress = new EmailAddress { Name = contact.Name, Email = contact.Email };
+                partnerRecipients.Add(newEmailAddress);
+            }
 
             await emailManager.SendTemplatedEmailAsync(partnerSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
 

@@ -5,16 +5,16 @@ import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore'
 import * as Constants from '../Models/Constants';
 import EventPartnerStatusData from '../Models/EventPartnerStatusData';
 import DisplayPartnerEventData from '../Models/DisplayPartnerEventData';
-import EventPartnerData from '../Models/EventPartnerData';
+import EventPartnerLocationData from '../Models/EventPartnerLocationData';
 import { getEventPartnerStatus } from '../../store/eventPartnerStatusHelper';
 
-export interface PartnerEventRequestsDataProps {
+export interface PartnerLocationEventRequestsDataProps {
     partnerId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
 };
 
-export const PartnerEventRequests: React.FC<PartnerEventRequestsDataProps> = (props) => {
+export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequestsDataProps> = (props) => {
 
     const [isPartnerEventDataLoaded, setIsPartnerEventDataLoaded] = React.useState<boolean>(false);
     const [eventPartnerStatusList, setEventPartnerStatusList] = React.useState<EventPartnerStatusData[]>([]);
@@ -84,7 +84,7 @@ export const PartnerEventRequests: React.FC<PartnerEventRequestsDataProps> = (pr
     // This will handle the submit form event.  
     function handleRequestPartnerAssistance(eventId: string, partnerId: string, partnerLocationId: string, eventPartnerStatusId: number) {
 
-        var eventData = new EventPartnerData();
+        var eventData = new EventPartnerLocationData();
         eventData.eventId = eventId;
         eventData.partnerId = partnerId;
         eventData.partnerLocationId = partnerLocationId;

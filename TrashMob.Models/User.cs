@@ -129,9 +129,9 @@ namespace TrashMob.Models
 
         public virtual ICollection<SiteMetric> SiteMetricsUpdated { get; set; }
 
-        public virtual ICollection<PartnerService> PartnerServicesCreated { get; set; }
+        public virtual ICollection<PartnerLocationContact> PartnerLocationContactsCreated { get; set; }
 
-        public virtual ICollection<PartnerService> PartnerServicesUpdated { get; set; }
+        public virtual ICollection<PartnerLocationContact> PartnerLocationContactsUpdated { get; set; }
 
         public virtual ICollection<PartnerLocationService> PartnerLocationServicesCreated { get; set; }
 

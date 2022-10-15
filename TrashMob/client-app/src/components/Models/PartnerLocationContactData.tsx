@@ -1,18 +1,13 @@
 import { Guid } from "guid-typescript";
 
-class PartnerLocationData {
+class PartnerContactData {
     id: string = Guid.createEmpty().toString();
     partnerId: string = Guid.createEmpty().toString();
+    partnerLocationId: string = Guid.createEmpty().toString();
     name: string = "";
-    streetAddress: string = "";
-    city: string = "";
-    region: string = "";
-    country: string = "";
-    latitude: number = 0;
-    longitude: number = 0;
-    postalCode: string = "";
-    publicNotes: string = "";
-    privateNotes: string = "";
+    email: string = "";
+    phone: string = "";
+    notes: string = "";
     isActive: boolean = true;
     createdByUserId: string = "";
     createdDate: Date = new Date();
@@ -20,4 +15,4 @@ class PartnerLocationData {
     lastUpdatedDate: Date = new Date();
 }
 
-export default PartnerLocationData;
+export default PartnerContactData;
