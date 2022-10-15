@@ -27,9 +27,11 @@
             services.AddScoped<IKeyedManager<PartnerDocument>, PartnerDocumentManager>();
             services.AddScoped<IKeyedManager<PartnerContact>, KeyedManager<PartnerContact>>();
             services.AddScoped<IKeyedManager<PartnerLocation>, KeyedManager<PartnerLocation>>();
+            services.AddScoped<IBaseManager<PartnerLocationService>, PartnerLocationServiceManager>();
             services.AddScoped<IKeyedManager<PartnerRequest>, PartnerRequestManager>();
             services.AddScoped<ILookupManager<PartnerRequestStatus>, LookupManager<PartnerRequestStatus>>();
             services.AddScoped<IKeyedManager<PartnerSocialMediaAccount>, PartnerSocialMediaAccountManager>();
+            services.AddScoped<IBaseManager<PartnerService>, PartnerServiceManager>();
             services.AddScoped<ILookupManager<PartnerStatus>, LookupManager<PartnerStatus>>();
             services.AddScoped<ILookupManager<PartnerType>, LookupManager<PartnerType>>();
             services.AddScoped<IBaseManager<PartnerUser>, PartnerUserManager>();
@@ -73,8 +75,10 @@
             services.AddScoped<IKeyedRepository<PartnerContact>, KeyedRepository<PartnerContact>>();
             services.AddScoped<IKeyedRepository<PartnerDocument>, KeyedRepository<PartnerDocument>>();
             services.AddScoped<IKeyedRepository<PartnerLocation>, KeyedRepository<PartnerLocation>>();
+            services.AddScoped<IBaseRepository<PartnerLocationService>, BaseRepository<PartnerLocationService>>();
             services.AddScoped<IKeyedRepository<PartnerRequest>, KeyedRepository<PartnerRequest>>();
             services.AddScoped<ILookupRepository<PartnerRequestStatus>, LookupRepository<PartnerRequestStatus>>();
+            services.AddScoped<IBaseRepository<PartnerService>, BaseRepository<PartnerService>>();
             services.AddScoped<IKeyedRepository<PartnerSocialMediaAccount>, KeyedRepository<PartnerSocialMediaAccount>>();
             services.AddScoped<ILookupRepository<PartnerStatus>, LookupRepository<PartnerStatus>>();
             services.AddScoped<ILookupRepository<PartnerType>, LookupRepository<PartnerType>>();

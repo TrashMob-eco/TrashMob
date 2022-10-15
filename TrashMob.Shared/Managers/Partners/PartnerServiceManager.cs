@@ -16,10 +16,20 @@
         {
         }
 
+        public override async Task<PartnerService> GetAsync(Guid parentId, int secondId, CancellationToken cancellationToken)
+        {
+            return await Repository.Get().FirstOrDefaultAsync(p => p.PartnerId == parentId && p.ServiceTypeId == secondId, cancellationToken: cancellationToken);
+        }
+
         public override async Task<IEnumerable<PartnerService>> GetByParentIdAsync(Guid parentId, CancellationToken cancellationToken)
         {
             return (await Repository.Get().Where(p => p.PartnerId == parentId).ToListAsync(cancellationToken)).AsEnumerable();
         }
 
+        public override async Task<int> Delete(Guid parentId, int secondId, CancellationToken cancellationToken = default)
+        {
+            var instance = await Repository.Get().FirstOrDefaultAsync(p => p.PartnerId == parentId && p.ServiceTypeId == secondId, cancellationToken: cancellationToken);
+            return await Repository.DeleteAsync(instance, cancellationToken);
+        }
     }
 }

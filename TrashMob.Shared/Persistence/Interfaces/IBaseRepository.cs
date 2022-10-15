@@ -19,7 +19,7 @@
 
         IQueryable<T> Get();
 
-        IQueryable<T> Get(Expression<Func<T, bool>> expression);
+        IQueryable<T> Get(Expression<Func<T, bool>> expression, bool withNoTracking = true);
 
         Task<int> DeleteAsync(T instance, CancellationToken cancellationToken);
     }

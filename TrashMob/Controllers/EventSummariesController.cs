@@ -84,11 +84,11 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            await eventSummaryManager.AddAsync(eventSummary, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await eventSummaryManager.AddAsync(eventSummary, UserId, cancellationToken).ConfigureAwait(false);
 
             TelemetryClient.TrackEvent(nameof(AddEventSummary));
 
-            return CreatedAtAction(nameof(GetEventSummary), new { eventId = eventSummary.EventId });
+            return CreatedAtAction(nameof(GetEventSummary), new { eventId = eventSummary.EventId }, result);
         }
 
         [HttpDelete("{id}")]

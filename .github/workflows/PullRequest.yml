@@ -8,6 +8,12 @@ on:
     branches: [ "main" ]
     paths: 
       - '.github/**'
+      - 'TrashMob/**'
+      - 'TrashMob.Models/**'
+      - 'TrashMob.Shared/**'
+      - 'TrashMob.Shared.Tests/**'
+      - 'TrashMobJobs/**'
+      - 'TrashMob.sln'
       - '!TrashMobMobileApp/**'
 
 env:

@@ -56,9 +56,9 @@
                 return Forbid();
             }
 
-            await partnerLocationServicesManager.AddAsync(partnerLocationService, cancellationToken);
+            var result = await partnerLocationServicesManager.AddAsync(partnerLocationService, cancellationToken);
 
-            return CreatedAtAction(nameof(Get), new { partnerLocationId = partnerLocationService.PartnerLocationId, serviceTypeId = partnerLocationService.ServiceTypeId });
+            return CreatedAtAction(nameof(Get), new { partnerLocationId = partnerLocationService.PartnerLocationId, serviceTypeId = partnerLocationService.ServiceTypeId }, result);
         }
 
         [HttpPut]
