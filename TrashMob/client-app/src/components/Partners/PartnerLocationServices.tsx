@@ -51,7 +51,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerservices/' + props.partnerLocationId, {
+                fetch('/api/partnerlocationservices/' + props.partnerLocationId, {
                     method: 'GET',
                     headers: headers,
                 })
@@ -80,7 +80,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/partnerservices/' + props.partnerLocationId + '/' + serviceTypeId, {
+            fetch('/api/partnerlocationservices/' + props.partnerLocationId + '/' + serviceTypeId, {
                 method: 'GET',
                 headers: headers,
             })
@@ -111,14 +111,14 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerservices/' + props.partnerLocationId + '/' + serviceTypeId, {
+                fetch('/api/partnerlocationservices/' + props.partnerLocationId + '/' + serviceTypeId, {
                     method: 'DELETE',
                     headers: headers,
                 })
                     .then(() => {
                         setIsPartnerLocationServicesDataLoaded(false);
 
-                        fetch('/api/partnerservices/' + props.partnerLocationId, {
+                        fetch('/api/partnerlocationservices/' + props.partnerLocationId, {
                             method: 'GET',
                             headers: headers,
                         })
@@ -166,7 +166,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/partnerservices', {
+            fetch('/api/partnerlocationservices', {
                 method: method,
                 headers: headers,
                 body: data,
@@ -176,7 +176,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                     setIsEdit(false);
                     setIsPartnerLocationServicesDataLoaded(false);
 
-                    fetch('/api/partnerservices/' + props.partnerLocationId, {
+                    fetch('/api/partnerlocationservices/' + props.partnerLocationId, {
                         method: 'GET',
                         headers: headers,
                     })

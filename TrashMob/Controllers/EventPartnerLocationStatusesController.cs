@@ -5,7 +5,7 @@ namespace TrashMob.Controllers
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
-    [Route("api/eventpartnerstatuses")]
+    [Route("api/eventpartnerlocationstatuses")]
     public class EventPartnerLocationStatusesController : LookupController<EventPartnerLocationStatus>
     {
         public EventPartnerLocationStatusesController(ILookupManager<EventPartnerLocationStatus> manager)

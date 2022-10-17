@@ -48,6 +48,7 @@
             services.AddScoped<IEventPartnerLocationManager, EventPartnerLocationManager>();
             services.AddScoped<IPartnerRequestManager, PartnerRequestManager>();
             services.AddScoped<IPartnerLocationManager, PartnerLocationManager>();
+            services.AddScoped<IPartnerLocationContactManager, PartnerLocationContactManager>();
             services.AddScoped<IUserManager, UserManager>();
 
             // Non-patterned

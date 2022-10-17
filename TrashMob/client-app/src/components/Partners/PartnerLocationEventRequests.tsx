@@ -154,7 +154,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
         <>
             <div>
                 {!isPartnerLocationEventDataLoaded && <p><em>Loading...</em></p>}
-                {isPartnerLocationEventDataLoaded && partnerLocationEvents.length === 0 && <p> <em>Sorry, there are no registered partners in your area.</em></p>}
+                {isPartnerLocationEventDataLoaded && partnerLocationEvents.length === 0 && <p> <em>There are no event requests for this location.</em></p>}
                 {isPartnerLocationEventDataLoaded && partnerLocationEvents.length !== 0 && renderPartnerLocationEventsTable(partnerLocationEvents)}
             </div>
         </>

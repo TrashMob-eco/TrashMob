@@ -80,7 +80,7 @@
             return Ok(partnerLocation);
         }
 
-        [HttpDelete("{partnerId}/{partnerLocationId}")]
+        [HttpDelete("{partnerLocationId}")]
         public async Task<IActionResult> DeletePartnerLocation(Guid partnerLocationId, CancellationToken cancellationToken)
         {
             var partner = await partnerLocationManager.GetPartnerForLocation(partnerLocationId, cancellationToken);

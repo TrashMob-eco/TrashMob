@@ -37,7 +37,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerlocationcontacts/' + props.partnerLocationId, {
+                fetch('/api/partnerlocationcontacts/getbypartnerlocation/' + props.partnerLocationId, {
                     method: 'GET',
                     headers: headers,
                 })
