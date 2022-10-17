@@ -20,7 +20,7 @@ export interface PartnerLocationEditDataProps {
 
 export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (props) => {
 
-    const [partnerLocationId, setPartnerLocationId] = React.useState<string>(Guid.createEmpty().toString());
+    const [partnerLocationId, setPartnerLocationId] = React.useState<string>(Guid.EMPTY);
     const [locationName, setLocationName] = React.useState<string>("");
     const [locationNameErrors, setLocationNameErrors] = React.useState<string>("");
     const [publicNotes, setPublicNotes] = React.useState<string>();
@@ -37,7 +37,6 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
     const [createdByUserId, setCreatedByUserId] = React.useState<string>();
     const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
     const [lastUpdatedDate, setLastUpdatedDate] = React.useState<Date>(new Date());
-    const [isEditOrAdd, setIsEditOrAdd] = React.useState<boolean>(false);
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
@@ -46,7 +45,8 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
 
     React.useEffect(() => {
 
-        if (props.isUserLoaded) {
+        if (props.isUserLoaded && props.partnerLocationId && props.partnerLocationId !== Guid.EMPTY) {
+
             const account = msalClient.getAllAccounts()[0];
 
             var request = {
@@ -58,7 +58,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerlocations/' + props.partnerId + '/' + props.partnerLocationId, {
+                fetch('/api/partnerlocations/' + props.partnerLocationId, {
                     method: 'GET',
                     headers: headers,
                 })
@@ -78,7 +78,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         setCreatedDate(data.createdDate);
                         setLastUpdatedDate(data.lastUpdatedDate);
                         setPublicNotes(data.publicNotes);
-                        setIsEditOrAdd(true);
+                        setIsPartnerLocationDataLoaded(true);
                     });
             });
         }
@@ -96,30 +96,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         } else {
             console.log("Not Available");
         }
-    }, [props.currentUser, props.isUserLoaded, props.partnerId]);
-
-    function removeLocation(locationId: string, name: string) {
-        if (!window.confirm("Please confirm that you want to remove Location with name: '" + name + "' as a location from this Partner?"))
-            return;
-        else {
-            const account = msalClient.getAllAccounts()[0];
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('DELETE');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/partnerlocations/' + props.partnerId + '/' + locationId, {
-                    method: 'DELETE',
-                    headers: headers,
-                })
-            });
-        }
-    }
+    }, [props.currentUser, props.partnerLocationId, props.isUserLoaded, props.partnerId]);
 
     function handleLocationNameChanged(locationName: string) {
 
@@ -136,7 +113,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
 
     function handlePublicNotesChanged(notes: string) {
         if (notes === "") {
-            setPublicNotesErrors("Notes cannot be empty.");
+            setPublicNotesErrors("Public notes cannot be empty.");
         }
         else {
             setPublicNotes(notes);
@@ -175,22 +152,6 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         return <Tooltip {...props}>{ToolTips.PartnerLocationPostalCode}</Tooltip>
     }
 
-    function renderPrimaryEmailToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationPrimaryEmail}</Tooltip>
-    }
-
-    function renderSecondaryEmailToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationSecondaryEmail}</Tooltip>
-    }
-
-    function renderPrimaryPhoneToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationPrimaryPhone}</Tooltip>
-    }
-
-    function renderSecondaryPhoneToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationSecondaryPhone}</Tooltip>
-    }
-
     function renderIsPartnerLocationActiveToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerLocationIsPartnerLocationActive}</Tooltip>
     }
@@ -209,10 +170,6 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
 
     function renderLastUpdatedDateToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerLastUpdatedDate}</Tooltip>
-    }
-
-    function addLocation() {
-        setIsEditOrAdd(true);
     }
 
     function validateForm() {
@@ -276,7 +233,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                 headers: headers,
             })
                 .then(() => {
-                    setIsEditOrAdd(false);
+                    setIsPartnerLocationDataLoaded(false);
                 });
         });
     }
@@ -311,7 +268,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
             <div>
                 <Form onSubmit={handleSave}>
                     <Form.Row>
-                        <input type="hidden" name="Id" value={partnerLocationId.toString()} />
+                        <input type="hidden" name="Id" value={partnerLocationId} />
                     </Form.Row>
                     <Button disabled={!isSaveEnabled} className="action" onClick={(e) => handleSave(e)}>Save</Button>
                     <Form.Row>
@@ -414,7 +371,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                                 <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
                                     <Form.Label className="control-label" htmlFor="createdDate">Created Date:</Form.Label>
                                 </OverlayTrigger>
-                                <span>{createdDate.toString()}</span>
+                                <span>{createdDate ? createdDate.toLocaleString() : ""}</span>
                             </Form.Group>
                         </Col>
                         <Col>
@@ -422,7 +379,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                                 <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
                                     <Form.Label className="control-label" htmlFor="lastUpdatedDate">Last Updated Date:</Form.Label>
                                 </OverlayTrigger>
-                                <span>{lastUpdatedDate.toString()}</span>
+                                <span>{lastUpdatedDate ? lastUpdatedDate.toLocaleString() : "" }</span>
                             </Form.Group>
                         </Col>
                     </Form.Row>

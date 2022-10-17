@@ -1,21 +1,21 @@
-import EventPartnerStatusData from "../components/Models/EventPartnerStatusData";
+import EventPartnerLocationStatusData from "../components/Models/EventPartnerLocationStatusData";
 import { getDefaultHeaders } from "./AuthStore";
 
-export function getEventPartnerStatus(eventPartnerStatusList: EventPartnerStatusData[], eventPartnerStatusId: any): string {
-    if (eventPartnerStatusList === null || eventPartnerStatusList.length === 0) {
-        eventPartnerStatusList = getEventPartnerStatuses();
+export function getEventPartnerStatus(eventPartnerLocationStatusList: EventPartnerLocationStatusData[], eventPartnerLocationStatusId: any): string {
+    if (eventPartnerLocationStatusList === null || eventPartnerLocationStatusList.length === 0) {
+        eventPartnerLocationStatusList = getEventPartnerLocationStatuses();
     }
 
-    var eventPartnerStatus = eventPartnerStatusList.find(et => et.id === eventPartnerStatusId)
+    var eventPartnerStatus = eventPartnerLocationStatusList.find(et => et.id === eventPartnerLocationStatusId)
     if (eventPartnerStatus)
         return eventPartnerStatus.name;
     return "None";
 }
 
-function getEventPartnerStatuses(): EventPartnerStatusData[] {
+function getEventPartnerLocationStatuses(): EventPartnerLocationStatusData[] {
     const headers = getDefaultHeaders('GET');
 
-    fetch('/api/eventPartnerStatuses', {
+    fetch('/api/eventPartnerLocationStatuses', {
         method: 'GET',
         headers: headers
     })

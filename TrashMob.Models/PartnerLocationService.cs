@@ -16,8 +16,6 @@ namespace TrashMob.Models
 
         public string Notes { get; set; }
 
-        public virtual Partner Partner { get; set; }
-
         public virtual PartnerLocation PartnerLocation { get; set; }
 
         public virtual ServiceType ServiceType { get; set; }

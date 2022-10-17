@@ -5,11 +5,6 @@ import PartnerData from '../Models/PartnerData';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import PartnerStatusData from '../Models/PartnerStatusData';
-import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import * as MapStore from '../../store/MapStore';
-import { data } from 'azure-maps-control';
-import AddressData from '../Models/AddressData';
-import MapControllerSinglePointNoEvent from '../MapControllerSinglePointNoEvent';
 import PartnerTypeData from '../Models/PartnerTypeData';
 
 export interface PartnerEditDataProps {

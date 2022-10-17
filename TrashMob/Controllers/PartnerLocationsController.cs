@@ -14,10 +14,10 @@
     [Route("api/partnerlocations")]
     public class PartnerLocationsController : SecureController
     {
-        private readonly IKeyedManager<PartnerLocation> partnerLocationManager;
+        private readonly IPartnerLocationManager partnerLocationManager;
         private readonly IKeyedManager<Partner> partnerManager;
 
-        public PartnerLocationsController(IKeyedManager<PartnerLocation> partnerLocationManager,
+        public PartnerLocationsController(IPartnerLocationManager partnerLocationManager,
                                           IKeyedManager<Partner> partnerManager)
             : base()
         {
@@ -25,17 +25,17 @@
             this.partnerManager = partnerManager;
         }
 
-        [HttpGet("{partnerId}")]
+        [HttpGet("ByPartner/{partnerId}")]
         public async Task<IActionResult> GetPartnerLocations(Guid partnerId, CancellationToken cancellationToken)
         {
             var results = await partnerLocationManager.GetAsync(pl => pl.PartnerId == partnerId, cancellationToken);
             return Ok(results);
         }
 
-        [HttpGet("{partnerId}/{locationId}")]
-        public async Task<IActionResult> GetPartnerLocation(Guid partnerId, Guid locationId, CancellationToken cancellationToken = default)
+        [HttpGet("{partnerLocationId}")]
+        public async Task<IActionResult> GetPartnerLocation(Guid partnerLocationId, CancellationToken cancellationToken = default)
         {
-            var partnerLocation = (await partnerLocationManager.GetAsync(pl => pl.PartnerId == partnerId && pl.Id == locationId, cancellationToken)).FirstOrDefault();
+            var partnerLocation = (await partnerLocationManager.GetAsync(pl => pl.Id == partnerLocationId, cancellationToken)).FirstOrDefault();
 
             if (partnerLocation == null)
             {
@@ -48,7 +48,7 @@
         [HttpPost]
         public async Task<IActionResult> AddPartnerLocation(PartnerLocation partnerLocation, CancellationToken cancellationToken)
         {
-            var partner = await partnerManager.GetAsync(partnerLocation.PartnerId, cancellationToken);
+            var partner = await partnerLocationManager.GetPartnerForLocation(partnerLocation.Id, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
@@ -66,7 +66,7 @@
         public async Task<IActionResult> UpdatePartnerLocation(PartnerLocation partnerLocation, CancellationToken cancellationToken)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var partner = await partnerManager.GetAsync(partnerLocation.PartnerId, cancellationToken);
+            var partner = await partnerLocationManager.GetPartnerForLocation(partnerLocation.Id, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
@@ -81,9 +81,9 @@
         }
 
         [HttpDelete("{partnerId}/{partnerLocationId}")]
-        public async Task<IActionResult> DeletePartnerLocation(Guid partnerId, Guid partnerLocationId, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeletePartnerLocation(Guid partnerLocationId, CancellationToken cancellationToken)
         {
-            var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
+            var partner = await partnerLocationManager.GetPartnerForLocation(partnerLocationId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)

@@ -3,7 +3,7 @@ namespace TrashMob.Shared.Poco
 {
     using System;
 
-    public class DisplayEventPartner
+    public class DisplayEventPartnerLocation
     {
         public Guid EventId { get; set; }
 

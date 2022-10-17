@@ -6,8 +6,6 @@ namespace TrashMob.Models
 
     public partial class PartnerLocationContact : KeyedModel
     {
-        public Guid PartnerId { get; set; }
-
         public Guid PartnerLocationId { get; set; }
 
         public string Name { get; set; }
@@ -19,8 +17,6 @@ namespace TrashMob.Models
         public string Notes { get; set; }
 
         public bool? IsActive { get; set; }
-
-        public virtual Partner Partner { get; set; }
 
         public virtual PartnerLocation PartnerLocation { get; set; }
     }

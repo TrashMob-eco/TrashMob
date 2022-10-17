@@ -85,9 +85,9 @@ namespace TrashMob.Models
 
         public virtual ICollection<PartnerLocation> PartnerLocationsUpdated { get; set; }
 
-        public virtual ICollection<EventPartner> EventPartnersCreated { get; set; }
+        public virtual ICollection<EventPartnerLocation> EventPartnerLocationsCreated { get; set; }
 
-        public virtual ICollection<EventPartner> EventPartnersUpdated { get; set; }
+        public virtual ICollection<EventPartnerLocation> EventPartnerLocationsUpdated { get; set; }
 
         public virtual ICollection<EventSummary> EventSummariesCreated { get; set; }
 

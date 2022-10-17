@@ -4,9 +4,6 @@ import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
-import ServiceTypeData from '../Models/ServiceTypeData';
-import { getServiceType } from '../../store/serviceTypeHelper';
-import PartnerLocationServiceData from '../Models/PartnerLocationServiceData';
 import PartnerLocationContactData from '../Models/PartnerLocationContactData';
 
 export interface PartnerLocationContactsDataProps {
@@ -99,7 +96,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerlocationcontact/' + props.partnerLocationId + '/' + id, {
+                fetch('/api/partnerlocationcontacts/' + props.partnerLocationId + '/' + id, {
                     method: 'DELETE',
                     headers: headers,
                 })
@@ -147,7 +144,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/partnerservices', {
+            fetch('/api/partnerlocationcontacts', {
                 method: method,
                 headers: headers,
                 body: data,

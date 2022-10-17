@@ -2,8 +2,6 @@
 namespace TrashMob.Controllers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
@@ -14,19 +12,19 @@ namespace TrashMob.Controllers
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
 
-    [Route("api/eventpartners")]
-    public class EventPartnersController : SecureController
+    [Route("api/eventpartnerlocations")]
+    public class EventPartnerLocationsController : SecureController
     {
-        private readonly IEventPartnerManager eventPartnerManager;
+        private readonly IEventPartnerLocationManager eventPartnerLocationManager;
         private readonly IKeyedManager<Partner> partnerManager;
         private readonly IKeyedManager<PartnerLocation> partnerLocationManager;
 
-        public EventPartnersController(IKeyedManager<Partner> partnerManager,
-                                       IEventPartnerManager eventPartnerManager,
-                                       IKeyedManager<PartnerLocation> partnerLocationManager) 
+        public EventPartnerLocationsController(IKeyedManager<Partner> partnerManager,
+                                               IEventPartnerLocationManager eventPartnerLocationManager,
+                                               IKeyedManager<PartnerLocation> partnerLocationManager) 
             : base()
         {
-            this.eventPartnerManager = eventPartnerManager;
+            this.eventPartnerLocationManager = eventPartnerLocationManager;
             this.partnerManager = partnerManager;
             this.partnerLocationManager = partnerLocationManager;
         }
@@ -34,15 +32,15 @@ namespace TrashMob.Controllers
         [HttpGet("{eventId}")]
         public async Task<IActionResult> GetEventPartners(Guid eventId, CancellationToken cancellationToken)
         {
-            var displayEventPartners = await eventPartnerManager.GetByParentIdAsync(eventId, cancellationToken);
+            var displayEventPartners = await eventPartnerLocationManager.GetByParentIdAsync(eventId, cancellationToken);
             return Ok(displayEventPartners);
         }
 
         [HttpPut]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> UpdateEventPartner(EventPartner eventPartner, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> UpdateEventPartner(EventPartnerLocation eventPartnerLocation, CancellationToken cancellationToken = default)
         {
-            var partner = await partnerManager.GetAsync(eventPartner.PartnerId, cancellationToken);
+            var partner = await partnerManager.GetAsync(eventPartnerLocation.PartnerLocation.PartnerId, cancellationToken);
 
             if (partner == null)
             {
@@ -56,7 +54,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var updatedEventPartner = await eventPartnerManager.UpdateAsync(eventPartner, UserId, cancellationToken).ConfigureAwait(false);
+            var updatedEventPartner = await eventPartnerLocationManager.UpdateAsync(eventPartnerLocation, UserId, cancellationToken).ConfigureAwait(false);
 
             TelemetryClient.TrackEvent(nameof(UpdateEventPartner));
 
@@ -66,9 +64,9 @@ namespace TrashMob.Controllers
         [HttpPost]
         [Authorize(Policy = "ValidUser")]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> AddEventPartner(EventPartner eventPartner, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddEventPartner(EventPartnerLocation eventPartner, CancellationToken cancellationToken)
         {
-            await eventPartnerManager.AddAsync(eventPartner, cancellationToken).ConfigureAwait(false);
+            await eventPartnerLocationManager.AddAsync(eventPartner, cancellationToken).ConfigureAwait(false);
 
             var partnerLocation = partnerLocationManager.GetAsync(eventPartner.PartnerLocationId, cancellationToken);
 

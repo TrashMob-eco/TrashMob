@@ -19,7 +19,7 @@ namespace TrashMob.Shared.Managers
         private readonly IKeyedRepository<UserNotification> userNotificationRepository;
         private readonly IKeyedRepository<PartnerRequest> partnerRequestRepository;
         private readonly IBaseRepository<EventSummary> eventSummaryRepository;
-        private readonly IBaseRepository<EventPartner> eventPartnerRepository;
+        private readonly IBaseRepository<EventPartnerLocation> eventPartnerRepository;
         private readonly IKeyedRepository<Event> eventRepository;
         private readonly IKeyedRepository<Partner> partnerRepository;
         private readonly IBaseRepository<PartnerUser> partnerUserRepository;
@@ -31,7 +31,7 @@ namespace TrashMob.Shared.Managers
                            IKeyedRepository<UserNotification> userNotificationRepository,
                            IKeyedRepository<PartnerRequest> partnerRequestRepository,
                            IBaseRepository<EventSummary> eventSummaryRepository,
-                           IBaseRepository<EventPartner> eventPartnerRepository,
+                           IBaseRepository<EventPartnerLocation> eventPartnerRepository,
                            IKeyedRepository<Event> eventRepository,
                            IKeyedRepository<Partner> partnerRepository,
                            IBaseRepository<PartnerUser> partnerUserRepository,

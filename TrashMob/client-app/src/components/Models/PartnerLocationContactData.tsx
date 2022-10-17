@@ -1,8 +1,7 @@
 import { Guid } from "guid-typescript";
 
-class PartnerContactData {
+class PartnerLocationContactData {
     id: string = Guid.createEmpty().toString();
-    partnerId: string = Guid.createEmpty().toString();
     partnerLocationId: string = Guid.createEmpty().toString();
     name: string = "";
     email: string = "";
@@ -15,4 +14,4 @@ class PartnerContactData {
     lastUpdatedDate: Date = new Date();
 }
 
-export default PartnerContactData;
+export default PartnerLocationContactData;

@@ -5,6 +5,9 @@ import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore'
 import PartnerLocationData from '../Models/PartnerLocationData';
 import { PartnerLocationEdit } from './PartnerLocationEdit';
 import { PartnerLocationServices } from './PartnerLocationServices';
+import { PartnerLocationContacts } from './PartnerLocationContacts';
+import { PartnerLocationEventRequests } from './PartnerLocationEventRequests';
+import { Guid } from 'guid-typescript';
 
 export interface PartnerLocationsDataProps {
     partnerId: string;
@@ -17,6 +20,9 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     const [radioValue, setRadioValue] = React.useState('1');
     const [partnerLocations, setPartnerLocations] = React.useState<PartnerLocationData[]>([]);
     const [isPartnerLocationDataLoaded, setIsPartnerLocationDataLoaded] = React.useState<boolean>(false);
+    const [partnerLocationId, setPartnerLocationId] = React.useState<string>("");
+    const [isEdit, setIsEdit] = React.useState<boolean>(false);
+    const [isAdd, setIsAdd] = React.useState<boolean>(false);
 
     const radios = [
         { name: 'Manage Partner Location', value: '1' },
@@ -40,7 +46,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
 
-                fetch('/api/partnerlocations/' + props.partnerId, {
+                fetch('/api/partnerlocations/ByPartner/' + props.partnerId, {
                     method: 'GET',
                     headers: headers
                 })
@@ -77,7 +83,13 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     }
 
     function addLocation() {
-        setIsEditOrAdd(true);
+        setPartnerLocationId(Guid.EMPTY);
+        setIsAdd(true);
+    }
+
+    function editLocation(partnerLocationId: string) {
+        setPartnerLocationId(partnerLocationId);
+        setIsEdit(true);
     }
 
     function renderPartnerLocationsTable(locations: PartnerLocationData[]) {
@@ -115,7 +127,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     function renderEditPartnerLocation() {
         return (
             <div>
-                <PartnerLocationEdit partnerId={partnerId} partnerLocationId={partnerLocationId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                <PartnerLocationEdit partnerId={props.partnerId} partnerLocationId={partnerLocationId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
             </div >
         )
     }
@@ -123,7 +135,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     function renderPartnerLocationContacts() {
         return (
             <div>
-                <PartnerLocationContacts partnerId={partnerId} partnerLocationId={partnerLocationId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                <PartnerLocationContacts partnerLocationId={partnerLocationId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
             </div >
         )
     }
@@ -131,7 +143,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     function renderPartnerLocationServices() {
         return (
             <div>
-                <PartnerLocationServices partnerId={partnerId} partnerLocationId={partnerLocationId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                <PartnerLocationServices partnerLocationId={partnerLocationId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
             </div >
         )
     }
@@ -139,7 +151,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     function renderPartnerLocationEventRequests() {
         return (
             <div>
-                <PartnerLocationEventRequests partnerId={partnerId} partnerLocationId={partnerLocationId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                <PartnerLocationEventRequests partnerLocationId={partnerLocationId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
             </div >
         )
     }
@@ -176,6 +188,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
             <div>
                 {!isPartnerLocationDataLoaded && <p><em>Loading...</em></p>}
                 {isPartnerLocationDataLoaded && partnerLocations && renderPartnerLocationsTable(partnerLocations)}
+                {(isEdit || isAdd) && renderPartnerLocationDashboard() }
             </div>
         </>
     );

@@ -1,4 +1,4 @@
-﻿class EventPartnerStatusData {
+﻿class EventPartnerLocationStatusData {
     id: number = 0;
     name: string = "";
     description: string = "";
@@ -6,4 +6,4 @@
     isActive: boolean = true;
 }
 
-export default EventPartnerStatusData;
+export default EventPartnerLocationStatusData;

@@ -3,11 +3,9 @@ namespace TrashMob.Poco
 {
     using System;
 
-    public class DisplayPartnerEvent
+    public class DisplayPartnerLocationEvent
     {
         public Guid EventId { get; set; }
-
-        public Guid PartnerId { get; set; }
 
         public Guid PartnerLocationId { get; set; }
 
@@ -31,6 +29,6 @@ namespace TrashMob.Poco
 
         public string PartnerLocationName { get; set; }
 
-        public int EventPartnerStatusId { get; set; }
+        public int EventPartnerLocationStatusId { get; set; }
     }
 }
