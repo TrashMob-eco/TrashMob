@@ -1,10 +1,9 @@
 import { Guid } from "guid-typescript";
 
-class DisplayEventPartnerData {
+class DisplayPartnerLocationEventData {
     eventId: string = Guid.createEmpty().toString();
-    partnerId: string = Guid.createEmpty().toString();
     partnerLocationId: string = Guid.createEmpty().toString();
-    eventPartnerStatusId: number = 0;
+    eventPartnerLocationStatusId: number = 0;
     partnerName: string = "";
     partnerLocationName: string = "";
     eventName: string = "";
@@ -17,4 +16,4 @@ class DisplayEventPartnerData {
     eventPostalCode: string = "";
 }
 
-export default DisplayEventPartnerData;
+export default DisplayPartnerLocationEventData;

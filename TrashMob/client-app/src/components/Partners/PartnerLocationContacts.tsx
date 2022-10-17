@@ -4,43 +4,29 @@ import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
-import ServiceTypeData from '../Models/ServiceTypeData';
-import { getServiceType } from '../../store/serviceTypeHelper';
-import PartnerServiceData from '../Models/PartnerServiceData';
+import PartnerLocationContactData from '../Models/PartnerLocationContactData';
 
-export interface PartnerServicesDataProps {
-    partnerId: string;
+export interface PartnerLocationContactsDataProps {
+    partnerLocationId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
 };
 
-export const PartnerServices: React.FC<PartnerServicesDataProps> = (props) => {
+export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps> = (props) => {
 
     const [notes, setNotes] = React.useState<string>("");
-    const [partnerServices, setPartnerServices] = React.useState<PartnerServiceData[]>([]);
+    const [partnerLocationContacts, setPartnerLocationContacts] = React.useState<PartnerLocationContactData[]>([]);
     const [createdByUserId, setCreatedByUserId] = React.useState<string>(Guid.EMPTY);
     const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
     const [lastUpdatedDate, setLastUpdatedDate] = React.useState<Date>(new Date());
-    const [isPartnerServicesDataLoaded, setIsPartnerServicesDataLoaded] = React.useState<boolean>(false);
-    const [serviceTypeId, setServiceTypeId] = React.useState<number>(0);
-    const [serviceTypeList, setServiceTypeList] = React.useState<ServiceTypeData[]>([]);
-    const [isEdit, setIsEdit] = React.useState<boolean>(false);
-    const [isAdd, setIsAdd] = React.useState<boolean>(false);
+    const [isPartnerLocationContactsDataLoaded, setIsPartnerLocationContactsDataLoaded] = React.useState<boolean>(false);
+    const [isEditOrAdd, setIsEditOrAdd] = React.useState<boolean>(false);
 
     React.useEffect(() => {
 
         const headers = getDefaultHeaders('GET');
 
-        fetch('/api/servicetypes', {
-            method: 'GET',
-            headers: headers,
-        })
-            .then(response => response.json() as Promise<Array<any>>)
-            .then(data => {
-                setServiceTypeList(data);
-            });
-
-        if (props.isUserLoaded && props.partnerId && props.partnerId !== Guid.EMPTY) {
+        if (props.isUserLoaded && props.partnerLocationId && props.partnerLocationId !== Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
 
             var request = {
@@ -51,24 +37,24 @@ export const PartnerServices: React.FC<PartnerServicesDataProps> = (props) => {
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerservices/' + props.partnerId, {
+                fetch('/api/partnerlocationcontacts/getbypartnerlocation/' + props.partnerLocationId, {
                     method: 'GET',
                     headers: headers,
                 })
-                    .then(response => response.json() as Promise<PartnerServiceData[]>)
+                    .then(response => response.json() as Promise<PartnerLocationContactData[]>)
                     .then(data => {
-                        setPartnerServices(data);
-                        setIsPartnerServicesDataLoaded(true);
+                        setPartnerLocationContacts(data);
+                        setIsPartnerLocationContactsDataLoaded(true);
                     });
             });
         }
-    }, [props.partnerId, props.isUserLoaded])
+    }, [props.partnerLocationId, props.isUserLoaded])
 
-    function addService() {
-        setIsAdd(true);
+    function addContact() {
+        setIsEditOrAdd(true);
     }
 
-    function editService(serviceTypeId: number) {
+    function editContact(partnerLocationContactId: string) {
         const account = msalClient.getAllAccounts()[0];
 
         var request = {
@@ -80,24 +66,23 @@ export const PartnerServices: React.FC<PartnerServicesDataProps> = (props) => {
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/partnerservices/' + props.partnerId + '/' + serviceTypeId, {
+            fetch('/api/partnerlocationcontacts/' + props.partnerLocationId + '/' + partnerLocationContactId, {
                 method: 'GET',
                 headers: headers,
             })
-                .then(response => response.json() as Promise<PartnerServiceData>)
+                .then(response => response.json() as Promise<PartnerLocationContactData>)
                 .then(data => {
-                    setServiceTypeId(data.serviceTypeId);
                     setNotes(data.notes);
                     setCreatedByUserId(data.createdByUserId);
                     setCreatedDate(data.createdDate);
                     setLastUpdatedDate(data.lastUpdatedDate);
-                    setIsEdit(true);
+                    setIsEditOrAdd(true);
                 });
         });
     }
 
-    function removeService(serviceTypeId: number) {
-        if (!window.confirm("Please confirm that you want to remove service type: '" + getServiceType(serviceTypeList, serviceTypeId) + "' from this Partner?"))
+    function removeContact(id: string, name: string, ) {
+        if (!window.confirm("Please confirm that you want to remove contact: '" + name + "' from this Partner Location?"))
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
@@ -111,21 +96,21 @@ export const PartnerServices: React.FC<PartnerServicesDataProps> = (props) => {
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerservices/' + props.partnerId + '/' + serviceTypeId, {
+                fetch('/api/partnerlocationcontacts/' + props.partnerLocationId + '/' + id, {
                     method: 'DELETE',
                     headers: headers,
                 })
                     .then(() => {
-                        setIsPartnerServicesDataLoaded(false);
+                        setIsPartnerLocationContactsDataLoaded(false);
 
-                        fetch('/api/partnerservices/' + props.partnerId, {
+                        fetch('/api/partnerlocationcontacts/' + props.partnerLocationId, {
                             method: 'GET',
                             headers: headers,
                         })
-                            .then(response => response.json() as Promise<PartnerServiceData[]>)
+                            .then(response => response.json() as Promise<PartnerLocationContactData[]>)
                             .then(data => {
-                                setPartnerServices(data);
-                                setIsPartnerServicesDataLoaded(true);
+                                setPartnerLocationContacts(data);
+                                setIsPartnerLocationContactsDataLoaded(true);
                             });
                     })
             });
@@ -145,45 +130,37 @@ export const PartnerServices: React.FC<PartnerServicesDataProps> = (props) => {
 
         if (createdByUserId === Guid.EMPTY) {
             method = "POST";
-
-            // We need to prevent an additional add of an existing service type
-            if (partnerServices.find(obj => obj.serviceTypeId === serviceTypeId)) {
-                window.alert("Adding more than one instance of an existing service type is not allowed.")
-                return;
-            }
         }
 
-        var partnerService = new PartnerServiceData();
-        partnerService.partnerId = props.partnerId;
-        partnerService.serviceTypeId = serviceTypeId ?? 0;
-        partnerService.notes = notes;
-        partnerService.createdByUserId = createdByUserId;
-        partnerService.lastUpdatedByUserId = props.currentUser.id
+        var partnerLocationContact = new PartnerLocationContactData();
+        partnerLocationContact.partnerLocationId = props.partnerLocationId;
+        partnerLocationContact.notes = notes;
+        partnerLocationContact.createdByUserId = createdByUserId;
+        partnerLocationContact.lastUpdatedByUserId = props.currentUser.id
 
-        var data = JSON.stringify(partnerService);
+        var data = JSON.stringify(partnerLocationContact);
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/partnerservices', {
+            fetch('/api/partnerlocationcontacts', {
                 method: method,
                 headers: headers,
                 body: data,
             })
                 .then(() => {
-                    setIsAdd(false);
-                    setIsEdit(false);
-                    setIsPartnerServicesDataLoaded(false);
+                    setIsEditOrAdd(false);
+                    setIsPartnerLocationContactsDataLoaded(false);
 
-                    fetch('/api/partnerservices/' + props.partnerId, {
+                    fetch('/api/partnerlocationcontacts/' + props.partnerLocationId, {
                         method: 'GET',
                         headers: headers,
                     })
-                        .then(response => response.json() as Promise<PartnerServiceData[]>)
+                        .then(response => response.json() as Promise<PartnerLocationContactData[]>)
                         .then(data => {
-                            setPartnerServices(data);
-                            setIsPartnerServicesDataLoaded(true);
+                            setPartnerLocationContacts(data);
+                            setIsPartnerLocationContactsDataLoaded(true);
                         });
                 });
         });
@@ -193,70 +170,46 @@ export const PartnerServices: React.FC<PartnerServicesDataProps> = (props) => {
         setNotes(notes);
     }
 
-    function selectServiceType(val: string) {
-        setServiceTypeId(parseInt(val));
-    }
-
     function renderNotesToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerServiceNotes}</Tooltip>
     }
 
-    function renderServiceTypeToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerServiceType}</Tooltip>
-    }
-
-    function renderPartnerServicesTable(services: PartnerServiceData[]) {
+    function renderPartnerLocationServicesTable(contacts: PartnerLocationContactData[]) {
         return (
             <div>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
-                            <th>Service Type</th>
+                            <th>Name</th>
                             <th>Notes</th>
                             <th>Created Date</th>
                             <th>Last Updated Date</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {services.map(service =>
-                            <tr key={service.serviceTypeId}>
-                                <td>{getServiceType(serviceTypeList, service.serviceTypeId)}</td>
-                                <td>{service.notes}</td>
+                        {contacts.map(contact =>
+                            <tr key={contact.id}>
+                                <td>{contact.notes}</td>
                                 <td>{createdDate ? createdDate.toLocaleString() : ""}</td>
                                 <td>{lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""}</td>
                                 <td>
-                                    <Button className="action" onClick={() => editService(service.serviceTypeId)}>Edit Service</Button>
-                                    <Button className="action" onClick={() => removeService(service.serviceTypeId)}>Remove Service</Button>
+                                    <Button className="action" onClick={() => editContact(contact.id)}>Edit Contact</Button>
+                                    <Button className="action" onClick={() => removeContact(contact.name, contact.id)}>Remove Contact</Button>
                                 </td>
                             </tr>
                         )}
                     </tbody>
                 </table>
-                <Button className="action" onClick={() => addService()}>Add Service</Button>
+                <Button className="action" onClick={() => addContact()}>Add Contact</Button>
             </div>
         );
     }
 
-    function renderAddPartnerService() {
+    function renderAddPartnerLocationContact() {
         return (
             <div>
                 <Form onSubmit={handleSave}>
                     <Form.Row>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderServiceTypeToolTip}>
-                                    <Form.Label className="control-label" htmlFor="ServiceType">Service Type:</Form.Label>
-                                </OverlayTrigger>
-                                <div>
-                                    <select disabled={isEdit} data-val="true" name="serviceTypeId" defaultValue={serviceTypeId} onChange={(val) => selectServiceType(val.target.value)} required>
-                                        <option value="">-- Select Service Type --</option>
-                                        {serviceTypeList.map(type =>
-                                            <option key={type.id} value={type.id}>{type.name}</option>
-                                        )}
-                                    </select>
-                                </div>
-                            </Form.Group>
-                        </Col>
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
@@ -287,10 +240,10 @@ export const PartnerServices: React.FC<PartnerServicesDataProps> = (props) => {
     return (
         <>
             <div>
-                {props.partnerId === Guid.EMPTY && <p> <em>Partner must be created first.</em></p>}
-                {!isPartnerServicesDataLoaded && props.partnerId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-                {isPartnerServicesDataLoaded && renderPartnerServicesTable(partnerServices)}
-                {(isEdit || isAdd) && renderAddPartnerService()}
+                {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner Location must be created first.</em></p>}
+                {!isPartnerLocationContactsDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
+                {isPartnerLocationContactsDataLoaded && renderPartnerLocationServicesTable(partnerLocationContacts)}
+                {isEditOrAdd && renderAddPartnerLocationContact()}
             </div>
         </>
     );

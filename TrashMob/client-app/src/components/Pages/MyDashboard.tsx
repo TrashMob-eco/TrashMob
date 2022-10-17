@@ -370,7 +370,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     }
 
     const PartnershipsTable = () => {
-        const headerTitles = ['Name', 'City', 'Region', 'Country', 'Status', 'Actions']
+        const headerTitles = ['Name', 'Status', 'Actions']
         if (myPartnerRequests || myPartners) {
 
             var allPartnerships = myPartnerRequests.concat(myPartners);
@@ -378,13 +378,10 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             return (
                 <div className="bg-white p-3 px-4">
                     <Table columnHeaders={headerTitles} >
-                        {allPartnerships.sort((a, b) => (a.city < b.city) ? 1 : -1).map(displayPartner => {
+                        {allPartnerships.sort((a, b) => (a.name < b.name) ? 1 : -1).map(displayPartner => {
                             return (
                                 <tr key={displayPartner.id.toString()}>
                                     <td>{displayPartner.name}</td>
-                                    <td>{displayPartner.city}</td>
-                                    <td>{displayPartner.region}</td>
-                                    <td>{displayPartner.country}</td>
                                     <td>{getDisplayPartnershipStatus(partnerStatusList, partnerRequestStatusList, displayPartner.partnerStatusId, displayPartner.partnerRequestStatusId)}</td>
                                     <td className="btn py-0">
                                         <Dropdown role="menuitem">

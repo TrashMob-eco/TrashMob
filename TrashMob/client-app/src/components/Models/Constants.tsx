@@ -7,8 +7,8 @@ export const PartnerRequestStatusSent = 1;
 
 export const EventPartnerStatusNone = 0;
 export const EventPartnerStatusRequested = 1;
-export const EventPartnerStatusAccepted = 2;
-export const EventPartnerStatusDeclined = 3;
+export const EventPartnerLocationStatusAccepted = 2;
+export const EventPartnerLocationStatusDeclined = 3;
 
 export const PartnerStatusActive = 1;
 export const PartnerStatusInactive = 2;

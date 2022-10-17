@@ -8,14 +8,14 @@
     using TrashMob.Poco;
     using TrashMob.Shared.Poco;
 
-    public interface IEventPartnerManager : IBaseManager<EventPartner>
+    public interface IEventPartnerLocationManager : IBaseManager<EventPartnerLocation>
     {
-        Task<IEnumerable<EventPartner>> GetCurrentPartnersAsync(Guid eventId, CancellationToken cancellationToken);
+        Task<IEnumerable<EventPartnerLocation>> GetCurrentPartnersAsync(Guid eventId, CancellationToken cancellationToken);
         
         Task<IEnumerable<PartnerLocation>> GetPotentialPartnerLocationsAsync(Guid eventId, CancellationToken cancellationToken);
 
-        Task<IEnumerable<DisplayEventPartner>> GetByEventIdAsync(Guid eventId, CancellationToken cancellationToken);
+        Task<IEnumerable<DisplayEventPartnerLocation>> GetByEventIdAsync(Guid eventId, CancellationToken cancellationToken);
 
-        Task<IEnumerable<DisplayPartnerEvent>> GetByPartnerIdAsync(Guid partnerId, CancellationToken cancellationToken);
+        Task<IEnumerable<DisplayPartnerLocationEvent>> GetByPartnerLocationIdAsync(Guid partnerId, CancellationToken cancellationToken);
     }
 }

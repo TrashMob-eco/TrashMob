@@ -1,7 +1,5 @@
 ﻿#nullable disable
 
-using TrashMob;
-
 namespace TrashMob.Models
 {
     using System.Collections.Generic;
@@ -24,20 +22,6 @@ namespace TrashMob.Models
         public int PartnerTypeId { get; set; }
 
         public string Website { get; set; }
-
-        public string StreetAddress { get; set; }
-
-        public string City { get; set; }
-
-        public string Region { get; set; }
-
-        public string Country { get; set; }
-
-        public string PostalCode { get; set; }
-
-        public double? Latitude { get; set; }
-
-        public double? Longitude { get; set; }
 
         public string PublicNotes { get; set; }
 

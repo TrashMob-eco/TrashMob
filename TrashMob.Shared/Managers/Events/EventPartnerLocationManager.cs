@@ -14,7 +14,7 @@
     using EmailAddress = Poco.EmailAddress;
     using TrashMob.Poco;
 
-    public class EventPartnerManager : BaseManager<EventPartner>, IEventPartnerManager
+    public class EventPartnerLocationManager : BaseManager<EventPartnerLocation>, IEventPartnerLocationManager
     {
         private readonly IKeyedRepository<Event> eventRepository;
         private readonly IKeyedRepository<Partner> partnerRepository;
@@ -22,12 +22,12 @@
         private readonly IKeyedRepository<User> userRepository;
         private readonly IEmailManager emailManager;
 
-        public EventPartnerManager(IBaseRepository<EventPartner> repository, 
-                                   IKeyedRepository<Event> eventRepository, 
-                                   IKeyedRepository<Partner> partnerRepository, 
-                                   IKeyedRepository<PartnerLocation> partnerLocationRepository, 
-                                   IKeyedRepository<User> userRepository,
-                                   IEmailManager emailManager) 
+        public EventPartnerLocationManager(IBaseRepository<EventPartnerLocation> repository,
+                                           IKeyedRepository<Event> eventRepository,
+                                           IKeyedRepository<Partner> partnerRepository,
+                                           IKeyedRepository<PartnerLocation> partnerLocationRepository,
+                                           IKeyedRepository<User> userRepository,
+                                           IEmailManager emailManager)
             : base(repository)
         {
             this.eventRepository = eventRepository;
@@ -37,7 +37,7 @@
             this.emailManager = emailManager;
         }
 
-        public override async Task<EventPartner> AddAsync(EventPartner instance, CancellationToken cancellationToken = default)
+        public override async Task<EventPartnerLocation> AddAsync(EventPartnerLocation instance, CancellationToken cancellationToken = default)
         {
             var eventPartner = await base.AddAsync(instance, cancellationToken);
 
@@ -66,26 +66,28 @@
 
             var dynamicTemplateData = new
             {
-                username = eventPartner.Partner.Name,
+                username = eventPartner.PartnerLocation.Partner.Name,
                 emailCopy = partnerMessage,
                 subject = subject,
             };
 
-            var partnerRecipients = new List<EmailAddress>
+            var partnerRecipients = new List<EmailAddress>();
+
+            foreach (var contact in eventPartner.PartnerLocation.PartnerLocationContacts)
             {
-                new EmailAddress { Name = eventPartner.PartnerLocation.Name, Email = eventPartner.PartnerLocation.PrimaryEmail },
-                new EmailAddress { Name = eventPartner.PartnerLocation.Name, Email = eventPartner.PartnerLocation.SecondaryEmail }
-            };
+                var newEmailAddress = new EmailAddress { Name = contact.Name, Email = contact.Email };
+                partnerRecipients.Add(newEmailAddress);
+            }
 
             await emailManager.SendTemplatedEmailAsync(partnerSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
 
             return eventPartner;
         }
 
-        public override async Task<EventPartner> UpdateAsync(EventPartner instance, Guid userId, CancellationToken cancellationToken = default)
+        public override async Task<EventPartnerLocation> UpdateAsync(EventPartnerLocation instance, Guid userId, CancellationToken cancellationToken = default)
         {
             var updatedEventPartner = await base.UpdateAsync(instance, userId, cancellationToken);
-            
+
             var user = await userRepository.GetAsync(instance.CreatedByUserId, cancellationToken).ConfigureAwait(false);
 
             // Notify Admins that a partner request has been responded to
@@ -131,70 +133,62 @@
             return updatedEventPartner;
         }
 
-        public async Task<IEnumerable<DisplayPartnerEvent>> GetByPartnerIdAsync(Guid partnerId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<DisplayPartnerLocationEvent>> GetByPartnerLocationIdAsync(Guid partnerLocationId, CancellationToken cancellationToken = default)
         {
-            var displayEventPartners = new List<DisplayPartnerEvent>();
+            var displayEventPartners = new List<DisplayPartnerLocationEvent>();
 
-            var currentPartners = await Repository.Get(p => p.PartnerId == partnerId, withNoTracking: false).ToListAsync(cancellationToken: cancellationToken);
+            var currentPartnerLocations = await Repository.Get(p => p.PartnerLocation.Id == partnerLocationId, withNoTracking: false).ToListAsync(cancellationToken: cancellationToken);
 
-            if (currentPartners.Any())
+            if (currentPartnerLocations.Any())
             {
                 // Convert the current list of partner events for the event to a display partner (reduces round trips)
-                foreach (var cp in currentPartners)
+                foreach (var cpl in currentPartnerLocations)
                 {
-                    var displayPartnerEvent = new DisplayPartnerEvent
+                    var displayPartnerLocationEvent = new DisplayPartnerLocationEvent
                     {
-                        EventId = cp.EventId,
-                        PartnerId = partnerId,
-                        PartnerLocationId = cp.PartnerLocationId,
-                        EventPartnerStatusId = cp.EventPartnerStatusId,
+                        EventId = cpl.EventId,
+                        PartnerLocationId = partnerLocationId,
+                        EventPartnerLocationStatusId = cpl.EventPartnerLocationStatusId,
+                        PartnerName = cpl.PartnerLocation.Partner.Name,
+                        PartnerLocationName = cpl.PartnerLocation.Name,
+                        EventName = cpl.Event.Name,
+                        EventStreetAddress = cpl.Event.StreetAddress,
+                        EventCity = cpl.Event.City,
+                        EventRegion = cpl.Event.Region,
+                        EventCountry = cpl.Event.Country,
+                        EventPostalCode = cpl.Event.PostalCode,
+                        EventDescription = cpl.Event.Description,
+                        EventDate = cpl.Event.EventDate
                     };
 
-                    displayPartnerEvent.PartnerName = cp.Partner.Name;
-
-                    var partnerLocation = await partnerLocationRepository.Get(pl => pl.PartnerId == cp.PartnerId && pl.Id == cp.PartnerLocationId).FirstOrDefaultAsync(cancellationToken);
-
-                    displayPartnerEvent.PartnerLocationName = partnerLocation.Name;
-
-                    var mobEvent = await eventRepository.GetAsync(cp.EventId, cancellationToken).ConfigureAwait(false);
-
-                    displayPartnerEvent.EventName = mobEvent.Name;
-                    displayPartnerEvent.EventStreetAddress = mobEvent.StreetAddress;
-                    displayPartnerEvent.EventCity = mobEvent.City;
-                    displayPartnerEvent.EventRegion = mobEvent.Region;
-                    displayPartnerEvent.EventCountry = mobEvent.Country;
-                    displayPartnerEvent.EventPostalCode = mobEvent.PostalCode;
-                    displayPartnerEvent.EventDescription = mobEvent.Description;
-                    displayPartnerEvent.EventDate = mobEvent.EventDate;
-
-                    displayEventPartners.Add(displayPartnerEvent);
+                    displayEventPartners.Add(displayPartnerLocationEvent);
                 }
             }
 
             return displayEventPartners;
         }
 
-            public async Task<IEnumerable<DisplayEventPartner>> GetByEventIdAsync(Guid eventId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<DisplayEventPartnerLocation>> GetByEventIdAsync(Guid eventId, CancellationToken cancellationToken = default)
         {
-            var displayEventPartners = new List<DisplayEventPartner>();
+            var displayEventPartners = new List<DisplayEventPartnerLocation>();
             var currentPartners = await GetCurrentPartnersAsync(eventId, cancellationToken).ConfigureAwait(false);
             var possiblePartners = await GetPotentialPartnerLocationsAsync(eventId, cancellationToken).ConfigureAwait(false);
 
             // Convert the current list of partners for the event to a display partner (reduces round trips)
             foreach (var cp in currentPartners.ToList())
             {
-                var displayEventPartner = new DisplayEventPartner
+                var displayEventPartner = new DisplayEventPartnerLocation
                 {
                     EventId = eventId,
-                    PartnerId = cp.PartnerId,
+                    PartnerId = cp.PartnerLocation.PartnerId,
                     PartnerLocationId = cp.PartnerLocationId,
-                    EventPartnerStatusId = cp.EventPartnerStatusId,
+                    EventPartnerStatusId = cp.EventPartnerLocationStatusId,
                 };
 
-                var partner = await partnerRepository.GetAsync(cp.PartnerId, cancellationToken).ConfigureAwait(false);
+                var partner = await partnerRepository.GetAsync(cp.PartnerLocation.PartnerId, cancellationToken).ConfigureAwait(false);
                 displayEventPartner.PartnerName = partner.Name;
 
-                var partnerLocation = partnerLocationRepository.Get(pl => pl.PartnerId == cp.PartnerId && pl.Id == cp.PartnerLocationId).FirstOrDefault();
+                var partnerLocation = partnerLocationRepository.Get(pl => pl.PartnerId == cp.PartnerLocation.PartnerId && pl.Id == cp.PartnerLocationId).FirstOrDefault();
 
                 displayEventPartner.PartnerLocationName = partnerLocation.Name;
                 displayEventPartner.PartnerLocationNotes = partnerLocation.PublicNotes;
@@ -207,12 +201,12 @@
             {
                 if (!displayEventPartners.Any(ep => ep.PartnerLocationId == pp.Id))
                 {
-                    var displayEventPartner = new DisplayEventPartner
+                    var displayEventPartner = new DisplayEventPartnerLocation
                     {
                         EventId = eventId,
                         PartnerId = pp.PartnerId,
                         PartnerLocationId = pp.Id,
-                        EventPartnerStatusId = (int)EventPartnerStatusEnum.None,
+                        EventPartnerStatusId = (int)EventPartnerLocationStatusEnum.None,
                         PartnerLocationName = pp.Name,
                         PartnerLocationNotes = pp.PublicNotes,
                     };
@@ -227,7 +221,7 @@
             return displayEventPartners;
         }
 
-        public async Task<IEnumerable<EventPartner>> GetCurrentPartnersAsync(Guid eventId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<EventPartnerLocation>> GetCurrentPartnersAsync(Guid eventId, CancellationToken cancellationToken)
         {
             var eventPartners = await Repository.Get(ea => ea.EventId == eventId).ToListAsync(cancellationToken).ConfigureAwait(false);
 

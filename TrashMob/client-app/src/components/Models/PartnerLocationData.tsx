@@ -11,10 +11,6 @@ class PartnerLocationData {
     latitude: number = 0;
     longitude: number = 0;
     postalCode: string = "";
-    primaryPhone: string = "";
-    secondaryPhone: string = "";
-    primaryEmail: string = "";
-    secondaryEmail: string = "";
     publicNotes: string = "";
     privateNotes: string = "";
     isActive: boolean = true;

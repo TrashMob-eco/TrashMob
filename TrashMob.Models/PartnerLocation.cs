@@ -1,7 +1,5 @@
 ﻿#nullable disable
 
-using TrashMob;
-
 namespace TrashMob.Models
 {
     using System;
@@ -10,6 +8,7 @@ namespace TrashMob.Models
     {
         public PartnerLocation()
         {
+            PartnerLocationContacts = new HashSet<PartnerLocationContact>();
         }
 
         public Guid PartnerId { get; set; }
@@ -30,14 +29,6 @@ namespace TrashMob.Models
 
         public double? Longitude { get; set; }
 
-        public string PrimaryEmail { get; set; }
-
-        public string SecondaryEmail { get; set; }
-
-        public string PrimaryPhone { get; set; }
-
-        public string SecondaryPhone { get; set; }
-
         public string PublicNotes { get; set; }
 
         public string PrivateNotes { get; set; }
@@ -45,5 +36,7 @@ namespace TrashMob.Models
         public bool IsActive { get; set; }
 
         public virtual Partner Partner { get; set; }
+
+        public virtual ICollection<PartnerLocationContact> PartnerLocationContacts { get; set; }
     }
 }

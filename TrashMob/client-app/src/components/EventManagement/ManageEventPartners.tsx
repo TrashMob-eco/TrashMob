@@ -3,10 +3,10 @@ import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore'
 import UserData from '../Models/UserData';
 import { Button } from 'react-bootstrap';
 import * as Constants from '../Models/Constants';
-import DisplayEventPartnerData from '../Models/DisplayEventPartnerData';
-import EventPartnerStatusData from '../Models/EventPartnerStatusData';
+import DisplayEventPartnerLocationData from '../Models/DisplayEventPartnerLocationData';
+import EventPartnerLocationStatusData from '../Models/EventPartnerLocationStatusData';
 import { getEventPartnerStatus } from '../../store/eventPartnerStatusHelper';
-import EventPartnerData from '../Models/EventPartnerData';
+import EventPartnerLocationData from '../Models/EventPartnerLocationData';
 import { Guid } from 'guid-typescript';
 
 export interface ManageEventPartnersProps {
@@ -17,8 +17,8 @@ export interface ManageEventPartnersProps {
 
 export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) => {
     const [isEventPartnerDataLoaded, setIsEventPartnerDataLoaded] = React.useState<boolean>(false);
-    const [eventPartnerStatusList, setEventPartnerStatusList] = React.useState<EventPartnerStatusData[]>([]);
-    const [eventPartners, setEventPartners] = React.useState<DisplayEventPartnerData[]>([]);
+    const [eventPartnerStatusList, setEventPartnerStatusList] = React.useState<EventPartnerLocationStatusData[]>([]);
+    const [eventPartners, setEventPartners] = React.useState<DisplayEventPartnerLocationData[]>([]);
 
     React.useEffect(() => {
         if (props.isUserLoaded && props.eventId && props.eventId !== Guid.EMPTY) {
@@ -37,7 +37,7 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
                     method: 'GET',
                     headers: headers
                 })
-                    .then(response => response.json() as Promise<EventPartnerStatusData[]>)
+                    .then(response => response.json() as Promise<EventPartnerLocationStatusData[]>)
                     .then(data => {
                         setEventPartnerStatusList(data)
                     })
@@ -47,7 +47,7 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
                             method: 'GET',
                             headers: headers
                         })
-                            .then(response => response.json() as Promise<DisplayEventPartnerData[]>)
+                            .then(response => response.json() as Promise<DisplayEventPartnerLocationData[]>)
                             .then(data => {
                                 setEventPartners(data);
                                 setIsEventPartnerDataLoaded(true)
@@ -73,7 +73,7 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
                 method: 'GET',
                 headers: headers
             })
-                .then(response => response.json() as Promise<DisplayEventPartnerData[]>)
+                .then(response => response.json() as Promise<DisplayEventPartnerLocationData[]>)
                 .then(data => {
                     setEventPartners(data);
                     setIsEventPartnerDataLoaded(true)
@@ -82,13 +82,12 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
     }
 
     // This will handle the submit form event.  
-    function handleRequestPartnerAssistance(eventId: string, partnerId: string, partnerLocationId: string) {
+    function handleRequestPartnerAssistance(eventId: string, partnerLocationId: string) {
 
-        var eventData = new EventPartnerData();
+        var eventData = new EventPartnerLocationData();
         eventData.eventId = eventId;
-        eventData.partnerId = partnerId;
         eventData.partnerLocationId = partnerLocationId;
-        eventData.eventPartnerStatusId = Constants.EventPartnerStatusRequested;
+        eventData.eventPartnerLocationStatusId = Constants.EventPartnerStatusRequested;
 
         var method = "POST";
 
@@ -116,7 +115,7 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
         })
     }
 
-    function renderEventPartnersTable(eventPartners: DisplayEventPartnerData[]) {
+    function renderEventPartnersTable(eventPartners: DisplayEventPartnerLocationData[]) {
         return (
             <div>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
@@ -134,9 +133,9 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
                                 <td>{eventPartner.partnerName}</td>
                                 <td>{eventPartner.partnerLocationName}</td>
                                 <td>{eventPartner.partnerLocationNotes}</td>
-                                <td>{getEventPartnerStatus(eventPartnerStatusList, eventPartner.eventPartnerStatusId)}</td>
+                                <td>{getEventPartnerStatus(eventPartnerStatusList, eventPartner.eventPartnerLocationStatusId)}</td>
                                 <td>
-                                    <Button hidden={eventPartner.eventPartnerStatusId !== Constants.EventPartnerStatusNone} className="action" onClick={() => handleRequestPartnerAssistance(eventPartner.eventId, eventPartner.partnerId, eventPartner.partnerLocationId)}>Request Partner Assistance</Button>
+                                    <Button hidden={eventPartner.eventPartnerLocationStatusId !== Constants.EventPartnerStatusNone} className="action" onClick={() => handleRequestPartnerAssistance(eventPartner.eventId, eventPartner.partnerLocationId)}>Request Partner Assistance</Button>
                                 </td>
                             </tr>
                         )}
