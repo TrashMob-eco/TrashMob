@@ -84,7 +84,7 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
                             <th>Request Status</th>
                             <th>Is Become Partner Request</th>
                             <th>Notes</th>
-                            <th></th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>

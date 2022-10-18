@@ -23,15 +23,15 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
     const [partnerLocationId, setPartnerLocationId] = React.useState<string>(Guid.EMPTY);
     const [locationName, setLocationName] = React.useState<string>("");
     const [locationNameErrors, setLocationNameErrors] = React.useState<string>("");
-    const [publicNotes, setPublicNotes] = React.useState<string>();
-    const [publicNotesErrors, setPublicNotesErrors] = React.useState<string>();
-    const [privateNotes, setPrivateNotes] = React.useState<string>();
+    const [publicNotes, setPublicNotes] = React.useState<string>("");
+    const [publicNotesErrors, setPublicNotesErrors] = React.useState<string>("");
+    const [privateNotes, setPrivateNotes] = React.useState<string>("");
     const [isPartnerLocationActive, setIsPartnerLocationActive] = React.useState<boolean>(true);
-    const [streetAddress, setStreetAddress] = React.useState<string>();
-    const [city, setCity] = React.useState<string>();
-    const [country, setCountry] = React.useState<string>();
-    const [region, setRegion] = React.useState<string>();
-    const [postalCode, setPostalCode] = React.useState<string>();
+    const [streetAddress, setStreetAddress] = React.useState<string>("");
+    const [city, setCity] = React.useState<string>("");
+    const [country, setCountry] = React.useState<string>("");
+    const [region, setRegion] = React.useState<string>("");
+    const [postalCode, setPostalCode] = React.useState<string>("");
     const [latitude, setLatitude] = React.useState<number>(0);
     const [longitude, setLongitude] = React.useState<number>(0);
     const [createdByUserId, setCreatedByUserId] = React.useState<string>();
@@ -234,6 +234,32 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
             })
                 .then(() => {
                     setIsPartnerLocationDataLoaded(false);
+
+                    var getHeaders = getDefaultHeaders('GET');
+                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                    fetch('/api/partnerlocations/' + props.partnerLocationId, {
+                        method: 'GET',
+                        headers: getHeaders,
+                    })
+                        .then(response => response.json() as Promise<PartnerLocationData>)
+                        .then(data => {
+                            setPartnerLocationId(data.id);
+                            setLocationName(data.name);
+                            setStreetAddress(data.streetAddress);
+                            setCity(data.city);
+                            setCountry(data.country);
+                            setRegion(data.region);
+                            setPostalCode(data.postalCode);
+                            setLatitude(data.latitude);
+                            setLongitude(data.longitude);
+                            setIsPartnerLocationActive(data.isActive);
+                            setCreatedByUserId(data.createdByUserId);
+                            setCreatedDate(data.createdDate);
+                            setLastUpdatedDate(data.lastUpdatedDate);
+                            setPublicNotes(data.publicNotes);
+                            setIsPartnerLocationDataLoaded(true);
+                        });
                 });
         });
     }

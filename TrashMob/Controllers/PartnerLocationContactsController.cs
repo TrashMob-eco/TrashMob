@@ -6,6 +6,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using TrashMob.Migrations;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
@@ -45,8 +46,8 @@
         [HttpPost]
         public async Task<IActionResult> AddPartnerLocationContact(PartnerLocationContact partnerLocationContact, CancellationToken cancellationToken = default)
         {
-            var partner = partnerLocationManager.GetAsync(partnerLocationContact.PartnerLocation.PartnerId, cancellationToken);
-            
+            var partner = await partnerLocationManager.GetPartnerForLocation(partnerLocationContact.PartnerLocationId, cancellationToken);
+
             if (partner == null)
             {
                 return NotFound();

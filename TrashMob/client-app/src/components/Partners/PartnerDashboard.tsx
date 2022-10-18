@@ -8,6 +8,7 @@ import { ButtonGroup, ToggleButton } from 'react-bootstrap';
 import { Guid } from 'guid-typescript';
 import { PartnerDocuments } from './PartnerDocuments';
 import { PartnerSocialMediaAccounts } from './PartnerSocialMediaAccounts';
+import { PartnerContacts } from './PartnerContacts';
 
 export interface PartnerDashboardMatchParams {
     partnerId?: string;
@@ -26,10 +27,11 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
 
     const radios = [
         { name: 'Manage Partner', value: '1' },
-        { name: 'Manage Partner Users', value: '2' },
-        { name: 'Manage Partner Locations', value: '3' },
-        { name: 'Manage Partner Documents', value: '4' },
-        { name: 'Manage Partner Social Media Accounts', value: '5' },
+        { name: 'Manage Partner Locations', value: '2' },
+        { name: 'Manage Partner Contacts', value: '3' },
+        { name: 'Manage Partner Users', value: '4' },
+        { name: 'Manage Partner Documents', value: '5' },
+        { name: 'Manage Partner Social Media Accounts', value: '6' },
     ];
 
     React.useEffect(() => {
@@ -71,6 +73,14 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         )
     }
 
+    function renderPartnerContacts() {
+        return (
+            <div>
+                <PartnerContacts partnerId={partnerId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+            </div >
+        )
+    }
+
     function renderPartnerDocuments() {
         return (
             <div>
@@ -108,10 +118,11 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                 </ButtonGroup>
 
                 { radioValue === '1' && renderEditPartner()}
-                { radioValue === '2' && renderPartnerUsers()}
-                { radioValue === '3' && renderPartnerLocations()}
-                { radioValue === '4' && renderPartnerDocuments()}
-                { radioValue === '5' && renderPartnerSocialMediaAccounts()}
+                { radioValue === '2' && renderPartnerLocations()}
+                { radioValue === '3' && renderPartnerContacts()}
+                { radioValue === '4' && renderPartnerUsers()}
+                { radioValue === '5' && renderPartnerDocuments()}
+                { radioValue === '6' && renderPartnerSocialMediaAccounts()}
             </div>);
     }
 
