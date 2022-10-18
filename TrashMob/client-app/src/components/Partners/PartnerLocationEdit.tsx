@@ -235,11 +235,12 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                 .then(() => {
                     setIsPartnerLocationDataLoaded(false);
 
-                    var headers = getDefaultHeaders('GET');
+                    var getHeaders = getDefaultHeaders('GET');
+                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
                     fetch('/api/partnerlocations/' + props.partnerLocationId, {
                         method: 'GET',
-                        headers: headers,
+                        headers: getHeaders,
                     })
                         .then(response => response.json() as Promise<PartnerLocationData>)
                         .then(data => {

@@ -4,16 +4,16 @@ import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
-import PartnerLocationContactData from '../Models/PartnerLocationContactData';
+import PartnerContactData from '../Models/PartnerContactData';
 import * as Constants from '../Models/Constants';
 
-export interface PartnerLocationContactsDataProps {
-    partnerLocationId: string;
+export interface PartnerContactsDataProps {
+    partnerId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
 };
 
-export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps> = (props) => {
+export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
 
     const [name, setName] = React.useState<string>("");
     const [email, setEmail] = React.useState<string>("");
@@ -23,11 +23,11 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
     const [emailErrors, setEmailErrors] = React.useState<string>("");
     const [phoneErrors, setPhoneErrors] = React.useState<string>("");
     const [notesErrors, setNotesErrors] = React.useState<string>("");
-    const [partnerLocationContacts, setPartnerLocationContacts] = React.useState<PartnerLocationContactData[]>([]);
+    const [partnerContacts, setPartnerContacts] = React.useState<PartnerContactData[]>([]);
     const [createdByUserId, setCreatedByUserId] = React.useState<string>(Guid.EMPTY);
     const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
     const [lastUpdatedDate, setLastUpdatedDate] = React.useState<Date>(new Date());
-    const [isPartnerLocationContactsDataLoaded, setIsPartnerLocationContactsDataLoaded] = React.useState<boolean>(false);
+    const [isPartnerContactsDataLoaded, setIsPartnerContactsDataLoaded] = React.useState<boolean>(false);
     const [isEditOrAdd, setIsEditOrAdd] = React.useState<boolean>(false);
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
@@ -35,7 +35,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
 
         const headers = getDefaultHeaders('GET');
 
-        if (props.isUserLoaded && props.partnerLocationId && props.partnerLocationId !== Guid.EMPTY) {
+        if (props.isUserLoaded && props.partnerId && props.partnerId !== Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
 
             var request = {
@@ -46,24 +46,24 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerlocationcontacts/getbypartnerlocation/' + props.partnerLocationId, {
+                fetch('/api/partnercontacts/getbypartner/' + props.partnerId, {
                     method: 'GET',
                     headers: headers,
                 })
-                    .then(response => response.json() as Promise<PartnerLocationContactData[]>)
+                    .then(response => response.json() as Promise<PartnerContactData[]>)
                     .then(data => {
-                        setPartnerLocationContacts(data);
-                        setIsPartnerLocationContactsDataLoaded(true);
+                        setPartnerContacts(data);
+                        setIsPartnerContactsDataLoaded(true);
                     });
             });
         }
-    }, [props.partnerLocationId, props.isUserLoaded])
+    }, [props.partnerId, props.isUserLoaded])
 
     function addContact() {
         setIsEditOrAdd(true);
     }
 
-    function editContact(partnerLocationContactId: string) {
+    function editContact(partnerContactId: string) {
         const account = msalClient.getAllAccounts()[0];
 
         var request = {
@@ -75,11 +75,11 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/partnerlocationcontacts/' + props.partnerLocationId + '/' + partnerLocationContactId, {
+            fetch('/api/partnercontacts/' + props.partnerId + '/' + partnerContactId, {
                 method: 'GET',
                 headers: headers,
             })
-                .then(response => response.json() as Promise<PartnerLocationContactData>)
+                .then(response => response.json() as Promise<PartnerContactData>)
                 .then(data => {
                     setName(data.name);
                     setPhone(data.phone);
@@ -94,7 +94,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
     }
 
     function removeContact(id: string, name: string,) {
-        if (!window.confirm("Please confirm that you want to remove contact: '" + name + "' from this Partner Location?"))
+        if (!window.confirm("Please confirm that you want to remove contact: '" + name + "' from this Partner ?"))
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
@@ -108,21 +108,21 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerlocationcontacts/' + props.partnerLocationId + '/' + id, {
+                fetch('/api/partnercontacts/' + props.partnerId + '/' + id, {
                     method: 'DELETE',
                     headers: headers,
                 })
                     .then(() => {
-                        setIsPartnerLocationContactsDataLoaded(false);
+                        setIsPartnerContactsDataLoaded(false);
 
-                        fetch('/api/partnerlocationcontacts/' + props.partnerLocationId, {
+                        fetch('/api/partnercontacts/' + props.partnerId, {
                             method: 'GET',
                             headers: headers,
                         })
-                            .then(response => response.json() as Promise<PartnerLocationContactData[]>)
+                            .then(response => response.json() as Promise<PartnerContactData[]>)
                             .then(data => {
-                                setPartnerLocationContacts(data);
-                                setIsPartnerLocationContactsDataLoaded(true);
+                                setPartnerContacts(data);
+                                setIsPartnerContactsDataLoaded(true);
                             });
                     })
             });
@@ -144,38 +144,38 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             method = "POST";
         }
 
-        var partnerLocationContact = new PartnerLocationContactData();
-        partnerLocationContact.partnerLocationId = props.partnerLocationId;
-        partnerLocationContact.name = name;
-        partnerLocationContact.phone = phone;
-        partnerLocationContact.email = email;
-        partnerLocationContact.notes = notes;
-        partnerLocationContact.createdByUserId = createdByUserId;
-        partnerLocationContact.lastUpdatedByUserId = props.currentUser.id
+        var partnerContact = new PartnerContactData();
+        partnerContact.partnerId = props.partnerId;
+        partnerContact.name = name;
+        partnerContact.phone = phone;
+        partnerContact.email = email;
+        partnerContact.notes = notes;
+        partnerContact.createdByUserId = createdByUserId;
+        partnerContact.lastUpdatedByUserId = props.currentUser.id
 
-        var data = JSON.stringify(partnerLocationContact);
+        var data = JSON.stringify(partnerContact);
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/partnerlocationcontacts', {
+            fetch('/api/partnercontacts', {
                 method: method,
                 headers: headers,
                 body: data,
             })
                 .then(() => {
                     setIsEditOrAdd(false);
-                    setIsPartnerLocationContactsDataLoaded(false);
+                    setIsPartnerContactsDataLoaded(false);
 
-                    fetch('/api/partnerlocationcontacts/' + props.partnerLocationId, {
+                    fetch('/api/partnercontacts/' + props.partnerId, {
                         method: 'GET',
                         headers: headers,
                     })
-                        .then(response => response.json() as Promise<PartnerLocationContactData[]>)
+                        .then(response => response.json() as Promise<PartnerContactData[]>)
                         .then(data => {
-                            setPartnerLocationContacts(data);
-                            setIsPartnerLocationContactsDataLoaded(true);
+                            setPartnerContacts(data);
+                            setIsPartnerContactsDataLoaded(true);
                         });
                 });
         });
@@ -257,30 +257,30 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
     }
 
     function renderNameToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationContactName}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.PartnerContactName}</Tooltip>
     }
 
     function renderEmailToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationContactEmail}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.PartnerContactEmail}</Tooltip>
     }
 
     function renderPhoneToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationContactPhone}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.PartnerContactPhone}</Tooltip>
     }
 
     function renderNotesToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationContactNotes}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.PartnerContactNotes}</Tooltip>
     }
 
     function renderCreatedDateToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationContactCreatedDate}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.PartnerContactCreatedDate}</Tooltip>
     }
 
     function renderLastUpdatedDateToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationContactLastUpdatedDate}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.PartnerContactLastUpdatedDate}</Tooltip>
     }
 
-    function renderPartnerLocationServicesTable(contacts: PartnerLocationContactData[]) {
+    function renderPartnerServicesTable(contacts: PartnerContactData[]) {
         return (
             <div>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
@@ -316,7 +316,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
         );
     }
 
-    function renderAddPartnerLocationContact() {
+    function renderAddPartnerContact() {
         return (
             <div>
                 <Form onSubmit={handleSave} >
@@ -385,10 +385,10 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
     return (
         <>
             <div>
-                {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner Location must be created first.</em></p>}
-                {!isPartnerLocationContactsDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-                {isPartnerLocationContactsDataLoaded && renderPartnerLocationServicesTable(partnerLocationContacts)}
-                {isEditOrAdd && renderAddPartnerLocationContact()}
+                {props.partnerId === Guid.EMPTY && <p> <em>Partner must be created first.</em></p>}
+                {!isPartnerContactsDataLoaded && props.partnerId !== Guid.EMPTY && <p><em>Loading...</em></p>}
+                {isPartnerContactsDataLoaded && renderPartnerServicesTable(partnerContacts)}
+                {isEditOrAdd && renderAddPartnerContact()}
             </div>
         </>
     );
