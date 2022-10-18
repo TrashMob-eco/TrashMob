@@ -74,8 +74,8 @@
 	  <Compile Include="..\TrashMob.Models\ContactRequest.cs" Link="Models\ContactRequest.cs" />
 	  <Compile Include="..\TrashMob.Models\Event.cs" Link="Models\Event.cs" />
 	  <Compile Include="..\TrashMob.Models\EventAttendee.cs" Link="Models\EventAttendee.cs" />
-	  <Compile Include="..\TrashMob.Models\EventPartner.cs" Link="Models\EventPartner.cs" />
-	  <Compile Include="..\TrashMob.Models\EventPartnerStatus.cs" Link="Models\EventPartnerStatus.cs" />
+	  <Compile Include="..\TrashMob.Models\EventPartnerLocation.cs" Link="Models\EventPartnerLocation.cs" />
+	  <Compile Include="..\TrashMob.Models\EventPartnerLocationStatus.cs" Link="Models\EventPartnerLocationStatus.cs" />
 	  <Compile Include="..\TrashMob.Models\EventStatus.cs" Link="Models\EventStatus.cs" />
 	  <Compile Include="..\TrashMob.Models\EventSummary.cs" Link="Models\EventSummary.cs" />
 	  <Compile Include="..\TrashMob.Models\EventType.cs" Link="Models\EventType.cs" />
@@ -87,10 +87,10 @@
 	  <Compile Include="..\TrashMob.Models\PartnerContact.cs" Link="Models\PartnerContact.cs" />
 	  <Compile Include="..\TrashMob.Models\PartnerDocument.cs" Link="Models\PartnerDocument.cs" />
 	  <Compile Include="..\TrashMob.Models\PartnerLocation.cs" Link="Models\PartnerLocation.cs" />
+	  <Compile Include="..\TrashMob.Models\PartnerLocationContact.cs" Link="Models\PartnerLocationContact.cs" />
 	  <Compile Include="..\TrashMob.Models\PartnerLocationService.cs" Link="Models\PartnerLocationService.cs" />
 	  <Compile Include="..\TrashMob.Models\PartnerRequest.cs" Link="Models\PartnerRequest.cs" />
 	  <Compile Include="..\TrashMob.Models\PartnerRequestStatus.cs" Link="Models\PartnerRequestStatus.cs" />
-	  <Compile Include="..\TrashMob.Models\PartnerService.cs" Link="Models\PartnerService.cs" />
 	  <Compile Include="..\TrashMob.Models\PartnerSocialMediaAccount.cs" Link="Models\PartnerSocialMediaAccount.cs" />
 	  <Compile Include="..\TrashMob.Models\PartnerStatus.cs" Link="Models\PartnerStatus.cs" />
 	  <Compile Include="..\TrashMob.Models\PartnerType.cs" Link="Models\PartnerType.cs" />
