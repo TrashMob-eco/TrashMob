@@ -49,7 +49,7 @@
         {
             var eventAttendee = await Repository.Get(ea => ea.EventId == parentId && ea.UserId == secondId).FirstOrDefaultAsync(cancellationToken);
 
-            return await Repository.DeleteAsync(eventAttendee, cancellationToken);
+            return await Repository.DeleteAsync(eventAttendee);
         }
     }
 }

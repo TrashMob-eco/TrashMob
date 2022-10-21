@@ -11,7 +11,7 @@
     /// <typeparam name="T"></typeparam>
     public interface IKeyedRepository<T> : IBaseRepository<T> where T : KeyedModel
     {
-        Task<int> DeleteAsync(Guid id, CancellationToken cancellationToken);
+        Task<int> DeleteAsync(Guid id);
 
         Task<T> GetAsync(Guid id, CancellationToken cancellationToken);
     }

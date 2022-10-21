@@ -104,7 +104,7 @@
         public override async Task<int> DeleteAsync(Guid parentId, CancellationToken cancellationToken)
         {
             var eventSummary = await Repository.Get(es => es.EventId == parentId).FirstOrDefaultAsync(cancellationToken);
-            return await Repository.DeleteAsync(eventSummary, cancellationToken);
+            return await Repository.DeleteAsync(eventSummary);
         }
     }
 }

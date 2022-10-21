@@ -25,17 +25,17 @@
 
         }
 
-        public virtual async Task<T> AddAsync(T instance, CancellationToken cancellationToken = default)
+        public virtual async Task<T> AddAsync(T instance)
         {
             dbSet.Add(instance);
-            await mobDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
             return instance;
         }
 
-        public virtual async Task<T> UpdateAsync(T instance, CancellationToken cancellationToken = default)
+        public virtual async Task<T> UpdateAsync(T instance)
         {
             dbSet.Update(instance);
-            await mobDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
             return instance;
         }
 
@@ -57,10 +57,10 @@
                 .Where(expression);                
         }
 
-        public async Task<int> DeleteAsync(T instance, CancellationToken cancellationToken = default)
+        public async Task<int> DeleteAsync(T instance)
         {
             dbSet.Remove(instance);
-            var result = await mobDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            var result = await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
             return result;
         }
     }

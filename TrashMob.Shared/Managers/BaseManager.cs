@@ -27,24 +27,24 @@ namespace TrashMob.Shared.Managers
             instance.CreatedDate = DateTimeOffset.UtcNow;
             instance.LastUpdatedByUserId = userId;
             instance.LastUpdatedDate = DateTimeOffset.UtcNow;
-            return Repository.AddAsync(instance, cancellationToken);
+            return Repository.AddAsync(instance);
         }
 
         public virtual Task<T> UpdateAsync(T instance, Guid userId, CancellationToken cancellationToken = default)
         {
             instance.LastUpdatedByUserId = userId;
             instance.LastUpdatedDate = DateTimeOffset.UtcNow;
-            return Repository.UpdateAsync(instance, cancellationToken);
+            return Repository.UpdateAsync(instance);
         }
 
         public virtual Task<T> AddAsync(T instance, CancellationToken cancellationToken = default)
         {
-            return Repository.AddAsync(instance, cancellationToken);
+            return Repository.AddAsync(instance);
         }
 
         public virtual Task<T> UpdateAsync(T instance, CancellationToken cancellationToken = default)
         {
-            return Repository.UpdateAsync(instance, cancellationToken);
+            return Repository.UpdateAsync(instance);
         }
 
         public virtual async Task<IEnumerable<T>> GetAsync(CancellationToken cancellationToken = default)

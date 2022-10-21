@@ -167,10 +167,12 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                 .then(() => {
                     setIsEditOrAdd(false);
                     setIsPartnerContactsDataLoaded(false);
+                    var getHeaders = getDefaultHeaders("GET");
+                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
                     fetch('/api/partnercontacts/' + props.partnerId, {
                         method: 'GET',
-                        headers: headers,
+                        headers: getHeaders,
                     })
                         .then(response => response.json() as Promise<PartnerContactData[]>)
                         .then(data => {
