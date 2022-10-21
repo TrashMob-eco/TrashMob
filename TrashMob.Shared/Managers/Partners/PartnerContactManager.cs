@@ -26,5 +26,10 @@
         {
             return (await Repository.Get().Where(p => p.PartnerId == parentId).ToListAsync(cancellationToken)).AsEnumerable();
         }
+
+        public override async Task<PartnerContact> AddAsync(PartnerContact instance, Guid userId, CancellationToken cancellationToken = default)
+        {
+            return await base.AddAsync(instance, userId, cancellationToken);
+        }
     }
 }

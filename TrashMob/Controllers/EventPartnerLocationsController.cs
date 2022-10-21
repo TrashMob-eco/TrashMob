@@ -68,7 +68,7 @@ namespace TrashMob.Controllers
         {
             await eventPartnerLocationManager.AddAsync(eventPartner, cancellationToken).ConfigureAwait(false);
 
-            var partnerLocation = partnerLocationManager.GetAsync(eventPartner.PartnerLocationId, cancellationToken);
+            var partnerLocation = await partnerLocationManager.GetAsync(eventPartner.PartnerLocationId, cancellationToken);
 
             TelemetryClient.TrackEvent(nameof(AddEventPartner));
 

@@ -31,7 +31,7 @@ namespace TrashMob.Shared.Managers
 
         public override Task<int> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return Repo.DeleteAsync(id, cancellationToken);
+            return Repo.DeleteAsync(id);
         }
 
         public virtual Task<T> GetAsync(Guid id, CancellationToken cancellationToken = default)

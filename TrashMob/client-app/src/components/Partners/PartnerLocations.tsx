@@ -45,7 +45,6 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-
                 fetch('/api/partnerlocations/ByPartner/' + props.partnerId, {
                     method: 'GET',
                     headers: headers

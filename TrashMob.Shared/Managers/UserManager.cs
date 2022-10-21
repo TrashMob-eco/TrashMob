@@ -76,7 +76,7 @@ namespace TrashMob.Shared.Managers
 
             foreach (var attendee in attendees)
             {
-                await eventAttendeesRepository.DeleteAsync(attendee, cancellationToken);
+                await eventAttendeesRepository.DeleteAsync(attendee);
             }
 
             // Remove the userNotification records where the user created or updated the event
@@ -84,7 +84,7 @@ namespace TrashMob.Shared.Managers
 
             foreach (var userNotification in userNotifications)
             {
-                await userNotificationRepository.DeleteAsync(userNotification, cancellationToken);
+                await userNotificationRepository.DeleteAsync(userNotification);
             }
 
             // Remove the Partner Requests
@@ -102,7 +102,7 @@ namespace TrashMob.Shared.Managers
                     partnerRequest.LastUpdatedByUserId = TrashMobUserId;
                 }
 
-                await partnerRequestRepository.UpdateAsync(partnerRequest, cancellationToken);
+                await partnerRequestRepository.UpdateAsync(partnerRequest);
             }
 
             // Remove the records where the user created or updated the event
@@ -120,7 +120,7 @@ namespace TrashMob.Shared.Managers
                     eventSummary.LastUpdatedByUserId = TrashMobUserId;
                 }
 
-                await eventSummaryRepository.UpdateAsync(eventSummary, cancellationToken);
+                await eventSummaryRepository.UpdateAsync(eventSummary);
             }
 
             // Remove the event partner records for this event
@@ -138,7 +138,7 @@ namespace TrashMob.Shared.Managers
                     eventPartner.LastUpdatedByUserId = TrashMobUserId;
                 }
 
-                await eventPartnerRepository.UpdateAsync(eventPartner, cancellationToken);
+                await eventPartnerRepository.UpdateAsync(eventPartner);
             }
 
             var events = eventRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id);
@@ -155,7 +155,7 @@ namespace TrashMob.Shared.Managers
                     mobEvent.LastUpdatedByUserId = TrashMobUserId;
                 }
 
-                await eventRepository.UpdateAsync(mobEvent, cancellationToken);
+                await eventRepository.UpdateAsync(mobEvent);
             }
 
             var partners = partnerRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id);
@@ -172,7 +172,7 @@ namespace TrashMob.Shared.Managers
                     partner.LastUpdatedByUserId = TrashMobUserId;
                 }
 
-                await partnerRepository.UpdateAsync(partner, cancellationToken);
+                await partnerRepository.UpdateAsync(partner);
             }
 
             var partnerUsers = partnerUserRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id || e.UserId == id);
@@ -181,7 +181,7 @@ namespace TrashMob.Shared.Managers
             {
                 if (partnerUser.UserId == id)
                 {
-                    await partnerUserRepository.DeleteAsync(partnerUser, cancellationToken);
+                    await partnerUserRepository.DeleteAsync(partnerUser);
                 }
                 else
                 {
@@ -195,7 +195,7 @@ namespace TrashMob.Shared.Managers
                         partnerUser.LastUpdatedByUserId = TrashMobUserId;
                     }
 
-                    await partnerUserRepository.UpdateAsync(partnerUser, cancellationToken);
+                    await partnerUserRepository.UpdateAsync(partnerUser);
                 }
             }
 
@@ -214,12 +214,12 @@ namespace TrashMob.Shared.Managers
                     partnerLocation.LastUpdatedByUserId = TrashMobUserId;
                 }
 
-                await partnerLocationRepository.UpdateAsync(partnerLocation, cancellationToken);
+                await partnerLocationRepository.UpdateAsync(partnerLocation);
             }
 
             // Remove the user's profile
             var user = await Repo.GetAsync(id, cancellationToken).ConfigureAwait(false);
-            var result = await Repo.DeleteAsync(user, cancellationToken);
+            var result = await Repo.DeleteAsync(user);
 
             return result;
         }

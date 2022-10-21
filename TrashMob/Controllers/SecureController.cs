@@ -40,6 +40,6 @@
             this.authorizationService = authorizationService;
         }
 
-        protected Guid UserId => new(HttpContext.Items["Userid"].ToString());
+        protected Guid UserId => new(HttpContext.Items["UserId"].ToString());
     }
 }

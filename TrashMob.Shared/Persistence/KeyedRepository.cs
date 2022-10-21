@@ -17,18 +17,18 @@
         {
         }
 
-        public override async Task<T> AddAsync(T instance, CancellationToken cancellationToken = default)
+        public override async Task<T> AddAsync(T instance)
         {
             dbSet.Add(instance);
-            await mobDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            return await dbSet.FindAsync(new object[] { instance.Id }, cancellationToken: cancellationToken).ConfigureAwait(false);
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+            return await dbSet.FindAsync(new object[] { instance.Id }).ConfigureAwait(false);
         }
 
-        public override async Task<T> UpdateAsync(T instance, CancellationToken cancellationToken = default)
+        public override async Task<T> UpdateAsync(T instance)
         {
             dbSet.Update(instance);
-            await mobDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            return await dbSet.FindAsync(new object[] { instance.Id }, cancellationToken: cancellationToken).ConfigureAwait(false);
+            await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
+            return await dbSet.FindAsync(new object[] { instance.Id }).ConfigureAwait(false);
         }
 
         public async Task<T> GetAsync(Guid id, CancellationToken cancellationToken = default)
@@ -36,11 +36,11 @@
             return await dbSet.FindAsync(new object[] { id }, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<int> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<int> DeleteAsync(Guid id)
         {
-            var instance = await dbSet.FindAsync(new object[] { id }, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var instance = await dbSet.FindAsync(new object[] { id }).ConfigureAwait(false);
             dbSet.Remove(instance);
-            return await mobDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return await mobDbContext.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }

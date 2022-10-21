@@ -21,7 +21,7 @@ namespace TrashMob.Shared.Managers
 
         public override async Task<ContactRequest> AddAsync(ContactRequest contactRequest, CancellationToken cancellationToken = default)
         {
-            var outputContactRequest = await Repository.AddAsync(contactRequest, cancellationToken);
+            var outputContactRequest = await Repository.AddAsync(contactRequest);
 
             var message = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.ContactRequestReceived.ToString());
             var subject = "A Contact Request has been received on TrashMob.eco!";

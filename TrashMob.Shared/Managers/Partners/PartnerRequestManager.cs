@@ -29,7 +29,7 @@
 
         public override async Task<PartnerRequest> AddAsync(PartnerRequest instance, CancellationToken cancellationToken = default)
         {
-            var result = await Repository.AddAsync(instance, cancellationToken);
+            var result = await Repository.AddAsync(instance);
 
             // If this is a become a partner request, the mail gets routed to the TrashMobAdmin for approval
             if (instance.isBecomeAPartnerRequest)
@@ -108,7 +108,7 @@
             var partnerRequest = await Repo.GetAsync(partnerRequestId, cancellationToken).ConfigureAwait(false);
             partnerRequest.PartnerRequestStatusId = (int)PartnerRequestStatusEnum.Approved;
 
-            var result = await Repo.UpdateAsync(partnerRequest, cancellationToken).ConfigureAwait(false);
+            var result = await Repo.UpdateAsync(partnerRequest).ConfigureAwait(false);
 
             await CreatePartner(partnerRequest, cancellationToken).ConfigureAwait(false);
 
@@ -138,7 +138,7 @@
             var partnerRequest = await Repo.GetAsync(partnerRequestId, cancellationToken).ConfigureAwait(false);
             partnerRequest.PartnerRequestStatusId = (int)PartnerRequestStatusEnum.Denied;
 
-            var result = await Repo.UpdateAsync(partnerRequest, cancellationToken).ConfigureAwait(false);
+            var result = await Repo.UpdateAsync(partnerRequest).ConfigureAwait(false);
 
             var partnerMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.PartnerRequestDeclined.ToString());
             partnerMessage = partnerMessage.Replace("{PartnerName}", partnerRequest.Name);
@@ -167,7 +167,7 @@
             var partner = partnerRequest.ToPartner();
 
             // Add the partner record
-            var newPartner = await partnerRepository.AddAsync(partner, cancellationToken).ConfigureAwait(false);
+            var newPartner = await partnerRepository.AddAsync(partner).ConfigureAwait(false);
 
             // Make the creator of the partner request a registered user for the partner
             var partnerUser = new PartnerUser
@@ -178,7 +178,7 @@
                 LastUpdatedByUserId = partnerRequest.LastUpdatedByUserId,
             };
 
-            await partnerUserRepository.AddAsync(partnerUser, cancellationToken).ConfigureAwait(false);
+            await partnerUserRepository.AddAsync(partnerUser).ConfigureAwait(false);
         }
     }
 }

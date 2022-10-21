@@ -45,7 +45,7 @@
         [HttpPost]
         public async Task<IActionResult> AddPartnerContact(PartnerContact partnerContact, CancellationToken cancellationToken = default)
         {
-            var partner = partnerManager.GetAsync(partnerContact.PartnerId, cancellationToken);
+            var partner = await partnerManager.GetAsync(partnerContact.PartnerId, cancellationToken);
             
             if (partner == null)
             {
@@ -59,7 +59,7 @@
                 return Forbid();
             }
 
-            await partnerContactManager.AddAsync(partnerContact, UserId, cancellationToken).ConfigureAwait(false);
+            await partnerContactManager.AddAsync(partnerContact, UserId, cancellationToken);
             TelemetryClient.TrackEvent(nameof(AddPartnerContact));
 
             return Ok();

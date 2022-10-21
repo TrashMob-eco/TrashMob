@@ -18,7 +18,7 @@ namespace TrashMob.Shared.Managers
 
         public async Task SendMessageRequest(MessageRequest messageRequest, CancellationToken cancellationToken = default)
         {
-            await Repository.AddAsync(messageRequest, cancellationToken);
+            await Repository.AddAsync(messageRequest);
             await notificationManager.SendMessageRequestAsync(messageRequest, cancellationToken);
         }
     }

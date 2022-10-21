@@ -23,7 +23,7 @@
             var partner = partnerRequest.ToPartner();
 
             // Add the partner record
-            var newPartner = await Repository.AddAsync(partner, cancellationToken).ConfigureAwait(false);
+            var newPartner = await Repository.AddAsync(partner).ConfigureAwait(false);
 
             // Make the creator of the partner request a registered user for the partner
             var partnerUser = new PartnerUser
@@ -34,7 +34,7 @@
                 LastUpdatedByUserId = partnerRequest.LastUpdatedByUserId,
             };
 
-            await partnerUserRepository.AddAsync(partnerUser, cancellationToken).ConfigureAwait(false);
+            await partnerUserRepository.AddAsync(partnerUser).ConfigureAwait(false);
 
             // Notify user when their request has been approved and what to do next
             // Need a template for this
