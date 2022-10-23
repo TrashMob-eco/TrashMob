@@ -120,14 +120,32 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                     method: 'DELETE',
                     headers: headers,
                 })
+                    .then(() => {
+                        setIsSocialMediaAccountDataLoaded(false);
+
+                        fetch('/api/partnersocialmediaaccounts/getbypartner/' + props.partnerId, {
+                        method: 'GET',
+                        headers: headers,
+                    })
+                        .then(response => response.json() as Promise<PartnerSocialMediaAccountData[]>)
+                        .then(data => {
+                            setSocialMediaAccounts(data);
+                            setIsSocialMediaAccountDataLoaded(true);
+                        });
+                })
             });
         }
     }
 
-    function handleSave() {
+    function handleSave(event: any) {
 
-        if (accountName === "")
+        event.preventDefault();
+
+        if (!isSaveEnabled) {
             return;
+        }
+
+        setIsSaveEnabled(false);
 
         const account = msalClient.getAllAccounts()[0];
 
@@ -168,7 +186,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                     var getHeaders = getDefaultHeaders("GET");
                     getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                    fetch('/api/partnersocialmediaaccounts/' + props.partnerId, {
+                    fetch('/api/partnersocialmediaaccounts/getbypartner/' + props.partnerId, {
                         method: 'GET',
                         headers: getHeaders,
                     })

@@ -100,6 +100,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
+
         event.preventDefault();
 
         if (!isSaveEnabled) {

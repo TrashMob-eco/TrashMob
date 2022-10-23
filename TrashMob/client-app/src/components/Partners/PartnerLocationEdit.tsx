@@ -183,6 +183,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
     }
 
     function handleSave(event: any) {
+
         event.preventDefault();
 
         if (!isSaveEnabled) {
@@ -296,7 +297,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                     <Form.Row>
                         <input type="hidden" name="Id" value={partnerLocationId} />
                     </Form.Row>
-                    <Button disabled={!isSaveEnabled} className="action" onClick={(e) => handleSave(e)}>Save</Button>
+                    <Button disabled={!isSaveEnabled} type="submit" className="btn btn-default">Save</Button>
                     <Form.Row>
                         <Col>
                             <Form.Group className="required">

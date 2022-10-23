@@ -61,6 +61,14 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
     }, [props.partnerId, props.isUserLoaded])
 
     function addContact() {
+        setPartnerContactId(Guid.EMPTY);
+        setName("");
+        setPhone("");
+        setEmail("");
+        setNotes("");
+        setCreatedByUserId(props.currentUser.id);
+        setCreatedDate(new Date);
+        setLastUpdatedDate(new Date);
         setIsEditOrAdd(true);
     }
 
@@ -117,7 +125,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                     .then(() => {
                         setIsPartnerContactsDataLoaded(false);
 
-                        fetch('/api/partnercontacts/' + props.partnerId, {
+                        fetch('/api/partnercontacts/getbypartner/' + props.partnerId, {
                             method: 'GET',
                             headers: headers,
                         })
@@ -131,7 +139,15 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
         }
     }
 
-    function handleSave() {
+    function handleSave(event: any) {
+
+        event.preventDefault();
+
+        if (!isSaveEnabled) {
+            return;
+        }
+
+        setIsSaveEnabled(false);
 
         const account = msalClient.getAllAccounts()[0];
 
@@ -173,7 +189,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                     var getHeaders = getDefaultHeaders("GET");
                     getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                    fetch('/api/partnercontacts/' + props.partnerId, {
+                    fetch('/api/partnercontacts/getbypartner/' + props.partnerId, {
                         method: 'GET',
                         headers: getHeaders,
                     })

@@ -45,7 +45,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerlocations/ByPartner/' + props.partnerId, {
+                fetch('/api/partnerlocations/getbypartner/' + props.partnerId, {
                     method: 'GET',
                     headers: headers
                 })
@@ -77,6 +77,19 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                     method: 'DELETE',
                     headers: headers,
                 })
+                    .then(() => {
+                        setIsPartnerLocationDataLoaded(false);
+
+                        fetch('/api/partnerlocations/getbypartner/' + props.partnerId, {
+                            method: 'GET',
+                            headers: headers,
+                        })
+                            .then(response => response.json() as Promise<PartnerLocationData[]>)
+                            .then(data => {
+                                setPartnerLocations(data);
+                                setIsPartnerLocationDataLoaded(true);
+                            });
+                    })
             });
         }
     }
