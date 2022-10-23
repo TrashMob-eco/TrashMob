@@ -199,6 +199,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
 
     // This will handle the submit form event.  
     const handleSave = (event: ChangeEvent<HTMLFormElement>) => {
+
         event.preventDefault();
 
         if (!isSaveEnabled) {

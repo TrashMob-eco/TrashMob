@@ -27,6 +27,8 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
     // This will handle the submit form event.  
     function handleSave(event: any) {
 
+        event.preventDefault();
+
         if (!isSaveEnabled) {
             return;
         }

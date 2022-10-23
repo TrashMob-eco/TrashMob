@@ -26,6 +26,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
     const [serviceTypeList, setServiceTypeList] = React.useState<ServiceTypeData[]>([]);
     const [isEdit, setIsEdit] = React.useState<boolean>(false);
     const [isAdd, setIsAdd] = React.useState<boolean>(false);
+    const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
     React.useEffect(() => {
 
@@ -51,7 +52,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerlocationservices/' + props.partnerLocationId, {
+                fetch('/api/partnerlocationservices/getbypartnerlocation/' + props.partnerLocationId, {
                     method: 'GET',
                     headers: headers,
                 })
@@ -65,6 +66,12 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
     }, [props.partnerLocationId, props.isUserLoaded])
 
     function addService() {
+        setNotes("");
+        setServiceTypeId(0);
+        setNotes("");
+        setCreatedByUserId(props.currentUser.id);
+        setCreatedDate(new Date());
+        setLastUpdatedDate(new Date());
         setIsAdd(true);
     }
 
@@ -118,7 +125,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                     .then(() => {
                         setIsPartnerLocationServicesDataLoaded(false);
 
-                        fetch('/api/partnerlocationservices/' + props.partnerLocationId, {
+                        fetch('/api/partnerlocationservices/getbypartnerlocation/' + props.partnerLocationId, {
                             method: 'GET',
                             headers: headers,
                         })
@@ -132,7 +139,15 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
         }
     }
 
-    function handleSave() {
+    function handleSave(event: any) {
+
+        event.preventDefault();
+
+        if (!isSaveEnabled) {
+            return;
+        }
+
+        setIsSaveEnabled(false);
 
         const account = msalClient.getAllAccounts()[0];
 
@@ -176,7 +191,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                     setIsEdit(false);
                     setIsPartnerLocationServicesDataLoaded(false);
 
-                    fetch('/api/partnerlocationservices/' + props.partnerLocationId, {
+                    fetch('/api/partnerlocationservices/getbypartnerlocation/' + props.partnerLocationId, {
                         method: 'GET',
                         headers: headers,
                     })
@@ -277,7 +292,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                                 <Form.Control type="text" disabled defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
                             </Form.Group>
                         </Col>
-                        <Button className="action" onClick={() => handleSave()}>Save</Button>
+                        <Button disabled={!isSaveEnabled} type="submit" className="btn btn-default">Save</Button>
                     </Form.Row>
                 </Form>
             </div>

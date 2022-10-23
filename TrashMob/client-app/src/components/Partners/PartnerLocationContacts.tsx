@@ -15,6 +15,7 @@ export interface PartnerLocationContactsDataProps {
 
 export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps> = (props) => {
 
+    const [partnerLocationContactId, setPartnerLocationContactId] = React.useState<string>(Guid.EMPTY);
     const [name, setName] = React.useState<string>("");
     const [email, setEmail] = React.useState<string>("");
     const [phone, setPhone] = React.useState<string>("");
@@ -60,6 +61,14 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
     }, [props.partnerLocationId, props.isUserLoaded])
 
     function addContact() {
+        setPartnerLocationContactId(Guid.EMPTY);
+        setName("");
+        setPhone("");
+        setEmail("");
+        setNotes("");
+        setCreatedByUserId(props.currentUser.id);
+        setCreatedDate(new Date());
+        setLastUpdatedDate(new Date());
         setIsEditOrAdd(true);
     }
 
@@ -75,12 +84,13 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/partnerlocationcontacts/' + props.partnerLocationId + '/' + partnerLocationContactId, {
+            fetch('/api/partnerlocationcontacts/' + partnerLocationContactId, {
                 method: 'GET',
                 headers: headers,
             })
                 .then(response => response.json() as Promise<PartnerLocationContactData>)
                 .then(data => {
+                    setPartnerLocationContactId(data.id);
                     setName(data.name);
                     setPhone(data.phone);
                     setEmail(data.email);
@@ -108,14 +118,14 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerlocationcontacts/' + props.partnerLocationId + '/' + id, {
+                fetch('/api/partnerlocationcontacts/' + id, {
                     method: 'DELETE',
                     headers: headers,
                 })
                     .then(() => {
                         setIsPartnerLocationContactsDataLoaded(false);
 
-                        fetch('/api/partnerlocationcontacts/' + props.partnerLocationId, {
+                        fetch('/api/partnerlocationcontacts/getbypartnerlocation/' + props.partnerLocationId, {
                             method: 'GET',
                             headers: headers,
                         })
@@ -129,7 +139,15 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
         }
     }
 
-    function handleSave() {
+    function handleSave(event: any) {
+
+        event.preventDefault();
+
+        if (!isSaveEnabled) {
+            return;
+        }
+
+        setIsSaveEnabled(false);
 
         const account = msalClient.getAllAccounts()[0];
 
@@ -145,6 +163,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
         }
 
         var partnerLocationContact = new PartnerLocationContactData();
+        partnerLocationContact.id = partnerLocationContactId;
         partnerLocationContact.partnerLocationId = props.partnerLocationId;
         partnerLocationContact.name = name;
         partnerLocationContact.phone = phone;
@@ -168,7 +187,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                     setIsEditOrAdd(false);
                     setIsPartnerLocationContactsDataLoaded(false);
 
-                    fetch('/api/partnerlocationcontacts/' + props.partnerLocationId, {
+                    fetch('/api/partnerlocationcontacts/getbypartnerlocation/' + props.partnerLocationId, {
                         method: 'GET',
                         headers: headers,
                     })
@@ -239,7 +258,6 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             setPhoneErrors("");
             setPhone(val);
         }
-
 
         validateForm();
     }

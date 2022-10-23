@@ -425,6 +425,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
+
         event.preventDefault();
 
         if (!isSaveEnabled) {

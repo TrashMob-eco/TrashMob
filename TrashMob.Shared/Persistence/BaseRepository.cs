@@ -7,7 +7,6 @@
     using System.Linq.Expressions;
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Models;
-    using System.Threading;
 
     /// <summary>
     /// Generic Implementation to save on boilerplate code
@@ -22,7 +21,6 @@
         {
             this.mobDbContext = mobDbContext;
             dbSet = mobDbContext.Set<T>();
-
         }
 
         public virtual async Task<T> AddAsync(T instance)

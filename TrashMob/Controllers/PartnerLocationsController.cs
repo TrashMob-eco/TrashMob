@@ -25,7 +25,7 @@
             this.partnerManager = partnerManager;
         }
 
-        [HttpGet("ByPartner/{partnerId}")]
+        [HttpGet("getbypartner/{partnerId}")]
         public async Task<IActionResult> GetPartnerLocations(Guid partnerId, CancellationToken cancellationToken)
         {
             var results = await partnerLocationManager.GetAsync(pl => pl.PartnerId == partnerId, cancellationToken);
