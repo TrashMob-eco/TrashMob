@@ -68,7 +68,7 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
                     .then(data => {
                         setActualNumberOfAttendees(data.actualNumberOfAttendees);
                         setCreatedByUserId(data.createdByUserId);
-                        setCreatedDate(data.createdDate);
+                        setCreatedDate(new Date(data.createdDate));
                         setDurationInMinutes(data.durationInMinutes);
                         setNotes(data.notes);
                         setNumberOfBags(data.numberOfBags);

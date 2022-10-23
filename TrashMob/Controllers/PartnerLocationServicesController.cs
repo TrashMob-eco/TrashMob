@@ -73,7 +73,7 @@
                 return Forbid();
             }
 
-            await partnerLocationServicesManager.UpdateAsync(partnerLocationService, cancellationToken).ConfigureAwait(false);
+            await partnerLocationServicesManager.UpdateAsync(partnerLocationService, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdatePartnerLocationService));
 
             return Ok(partnerLocationService);

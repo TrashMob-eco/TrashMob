@@ -26,7 +26,7 @@
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdatePartnerRequest(Guid userId, PartnerRequest partnerRequest, CancellationToken cancellationToken)
         {
-            var result = await partnerRequestManager.UpdateAsync(partnerRequest, cancellationToken).ConfigureAwait(false);
+            var result = await partnerRequestManager.UpdateAsync(partnerRequest, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdatePartnerRequest));
 
             return Ok(result);

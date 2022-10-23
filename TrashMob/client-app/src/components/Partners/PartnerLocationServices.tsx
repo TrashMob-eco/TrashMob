@@ -89,8 +89,8 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                     setServiceTypeId(data.serviceTypeId);
                     setNotes(data.notes);
                     setCreatedByUserId(data.createdByUserId);
-                    setCreatedDate(data.createdDate);
-                    setLastUpdatedDate(data.lastUpdatedDate);
+                    setCreatedDate(new Date(data.createdDate));
+                    setLastUpdatedDate(new Date(data.lastUpdatedDate));
                     setIsEdit(true);
                 });
         });
@@ -268,13 +268,13 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                         <Col>
                             <Form.Group>
                                 <Form.Label className="control-label" htmlFor="createdDate">Created Date</Form.Label>
-                                <Form.Label defaultValue={createdDate ? createdDate.toLocaleString() : ""} />
+                                <Form.Control type="text" disabled defaultValue={createdDate ? createdDate.toLocaleString() : ""} />
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group>
                                 <Form.Label className="control-label" htmlFor="lastUpdatedDate">Last Updated Date</Form.Label>
-                                <Form.Label defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
+                                <Form.Control type="text" disabled defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
                             </Form.Group>
                         </Col>
                         <Button className="action" onClick={() => handleSave()}>Save</Button>

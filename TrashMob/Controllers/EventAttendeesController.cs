@@ -46,7 +46,7 @@ namespace TrashMob.Controllers
 
             try
             {
-                var updatedEventAttendee = await eventAttendeeManager.UpdateAsync(eventAttendee, cancellationToken).ConfigureAwait(false);
+                var updatedEventAttendee = await eventAttendeeManager.UpdateAsync(eventAttendee, UserId, cancellationToken).ConfigureAwait(false);
                 TelemetryClient.TrackEvent(nameof(UpdateEventAttendee));
 
                 return Ok(updatedEventAttendee);

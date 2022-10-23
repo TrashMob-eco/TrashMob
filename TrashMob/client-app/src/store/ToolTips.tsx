@@ -109,4 +109,6 @@ export const PartnerDocumentName = "Enter a friendly name for this document."
 export const PartnerDocumentUrl = "Enter the url where this document is stored."
 export const PartnerServiceType = "The Type of Service this Partner offers."
 export const PartnerServiceNotes = "Notes related to this type of service."
+export const PartnerSocialMediaAccountCreatedDate = "Date this record was created."
+export const PartnerSocialMediaAccountLastUpdatedDate = "Date this record was last updated."
 

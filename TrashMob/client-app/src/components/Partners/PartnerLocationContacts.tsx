@@ -86,8 +86,8 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                     setEmail(data.email);
                     setNotes(data.notes);
                     setCreatedByUserId(data.createdByUserId);
-                    setCreatedDate(data.createdDate);
-                    setLastUpdatedDate(data.lastUpdatedDate);
+                    setCreatedDate(new Date(data.createdDate));
+                    setLastUpdatedDate(new Date(data.lastUpdatedDate));
                     setIsEditOrAdd(true);
                 });
         });
@@ -365,7 +365,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                                 <Form.Label className="control-label">Created Date:</Form.Label>
                             </OverlayTrigger>
                             <Form.Group>
-                                <Form.Label defaultValue={createdDate ? createdDate.toLocaleString() : ""} />
+                                <Form.Control type="text" disabled defaultValue={createdDate ? createdDate.toLocaleString() : ""} />
                             </Form.Group>
                         </Col>
                         <Col>
@@ -373,7 +373,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                                 <Form.Label className="control-label">Last Updated Date:</Form.Label>
                             </OverlayTrigger>
                             <Form.Group>
-                                <Form.Label defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
+                                <Form.Control type="text" disabled defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
                             </Form.Group>
                         </Col>
                     </Form.Group >
