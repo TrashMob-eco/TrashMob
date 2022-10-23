@@ -59,8 +59,8 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
         setDocumentName("");
         setDocumentUrl("");
         setCreatedByUserId(props.currentUser.id);
-        setCreatedDate(new Date);
-        setLastUpdatedDate(new Date);
+        setCreatedDate(new Date());
+        setLastUpdatedDate(new Date());
         setIsEditOrAdd(true);
     }
 

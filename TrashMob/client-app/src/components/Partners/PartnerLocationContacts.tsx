@@ -67,8 +67,8 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
         setEmail("");
         setNotes("");
         setCreatedByUserId(props.currentUser.id);
-        setCreatedDate(new Date);
-        setLastUpdatedDate(new Date);
+        setCreatedDate(new Date());
+        setLastUpdatedDate(new Date());
         setIsEditOrAdd(true);
     }
 
