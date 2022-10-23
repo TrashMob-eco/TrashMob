@@ -67,7 +67,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var updatedEvent = await eventSummaryManager.UpdateAsync(eventSummary, cancellationToken).ConfigureAwait(false);
+            var updatedEvent = await eventSummaryManager.UpdateAsync(eventSummary, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdateEventSummary));
 
             return Ok(updatedEvent);

@@ -78,8 +78,8 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                                         setPrivateNotes(data.privateNotes);
                                         setWebsite(data.website);
                                         setCreatedByUserId(data.createdByUserId);
-                                        setCreatedDate(data.createdDate);
-                                        setLastUpdatedDate(data.lastUpdatedDate);
+                                        setCreatedDate(new Date(data.createdDate));
+                                        setLastUpdatedDate(new Date(data.lastUpdatedDate));
                                         setIsPartnerDataLoaded(true);
                                     })
                             })

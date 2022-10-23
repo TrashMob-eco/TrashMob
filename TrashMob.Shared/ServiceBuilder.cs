@@ -50,6 +50,7 @@
             services.AddScoped<IPartnerRequestManager, PartnerRequestManager>();
             services.AddScoped<IPartnerLocationManager, PartnerLocationManager>();
             services.AddScoped<IPartnerLocationContactManager, PartnerLocationContactManager>();
+            services.AddScoped<IPartnerSocialMediaAccountManager, PartnerSocialMediaAccountManager>();
             services.AddScoped<IUserManager, UserManager>();
 
             // Non-patterned

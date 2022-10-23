@@ -18,7 +18,9 @@
 
         public async Task<Partner> GetPartnerForContact(Guid partnerContactId, CancellationToken cancellationToken)
         {
-            var partnerContact = await Repository.Get(plc => plc.Id == partnerContactId, false).FirstOrDefaultAsync(cancellationToken);
+            var partnerContact = await Repository.Get(plc => plc.Id == partnerContactId, false)
+                                        .Include(p => p.Partner)
+                                        .FirstOrDefaultAsync(cancellationToken);
             return partnerContact.Partner;
         }
 

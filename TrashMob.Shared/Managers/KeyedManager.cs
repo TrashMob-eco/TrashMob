@@ -29,6 +29,12 @@ namespace TrashMob.Shared.Managers
             return base.AddAsync(instance, cancellationToken);
         }
 
+        public override Task<T> AddAsync(T instance, Guid userId, CancellationToken cancellationToken = default)
+        {
+            instance.Id = Guid.NewGuid();
+            return base.AddAsync(instance, userId, cancellationToken);
+        }
+
         public override Task<int> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return Repo.DeleteAsync(id);

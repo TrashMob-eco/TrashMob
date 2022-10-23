@@ -75,8 +75,8 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         setLongitude(data.longitude);
                         setIsPartnerLocationActive(data.isActive);
                         setCreatedByUserId(data.createdByUserId);
-                        setCreatedDate(data.createdDate);
-                        setLastUpdatedDate(data.lastUpdatedDate);
+                        setCreatedDate(new Date(data.createdDate));
+                        setLastUpdatedDate(new Date(data.lastUpdatedDate));
                         setPublicNotes(data.publicNotes);
                         setIsPartnerLocationDataLoaded(true);
                     });
@@ -255,8 +255,8 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                             setLongitude(data.longitude);
                             setIsPartnerLocationActive(data.isActive);
                             setCreatedByUserId(data.createdByUserId);
-                            setCreatedDate(data.createdDate);
-                            setLastUpdatedDate(data.lastUpdatedDate);
+                            setCreatedDate(new Date(data.createdDate));
+                            setLastUpdatedDate(new Date(data.lastUpdatedDate));
                             setPublicNotes(data.publicNotes);
                             setIsPartnerLocationDataLoaded(true);
                         });

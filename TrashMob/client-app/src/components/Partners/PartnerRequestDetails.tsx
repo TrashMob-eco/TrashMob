@@ -123,8 +123,8 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
                                         setPartnerRequestStatusId(data.partnerRequestStatusId);
                                         setPartnerTypeId(data.partnerTypeId);
                                         setNotes(data.notes);
-                                        setCreatedDate(data.createdDate ?? "");
-                                        setLastUpdatedDate(data.lastUpdatedDate ?? "");
+                                        setCreatedDate(data.createdDate ? new Date(data.createdDate) : new Date());
+                                        setLastUpdatedDate(data.lastUpdatedDate ? new Date(data.lastUpdatedDate) : new Date());
                                         setIsPartnerRequestDataLoaded(true);
                                     });
                             })

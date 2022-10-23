@@ -39,11 +39,14 @@ namespace TrashMob.Shared.Managers
 
         public virtual Task<T> AddAsync(T instance, CancellationToken cancellationToken = default)
         {
+            instance.CreatedDate = DateTimeOffset.UtcNow;
+            instance.LastUpdatedDate = DateTimeOffset.UtcNow;
             return Repository.AddAsync(instance);
         }
 
         public virtual Task<T> UpdateAsync(T instance, CancellationToken cancellationToken = default)
         {
+            instance.LastUpdatedDate = DateTimeOffset.UtcNow;
             return Repository.UpdateAsync(instance);
         }
 

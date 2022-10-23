@@ -32,7 +32,7 @@
                 return Forbid();
             }
 
-            var result = await Manager.UpdateAsync(partner, cancellationToken).ConfigureAwait(false);
+            var result = await Manager.UpdateAsync(partner, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(Update) + typeof(Partner));
 
             return Ok(result);

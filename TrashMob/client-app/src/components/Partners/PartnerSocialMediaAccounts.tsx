@@ -16,12 +16,19 @@ export interface PartnerSocialMediaAccountsDataProps {
 
 export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsDataProps> = (props) => {
 
+    const [socialMediaAccountId, setSocialMediaAccountId] = React.useState<string>(Guid.EMPTY);
     const [accountName, setAccountName] = React.useState<string>("");
     const [isActive, setIsActive] = React.useState<boolean>(true);
     const [socialMediaAccounts, setSocialMediaAccounts] = React.useState<PartnerSocialMediaAccountData[]>([]);
     const [isSocialMediaAccountsDataLoaded, setIsSocialMediaAccountDataLoaded] = React.useState<boolean>(false);
     const [socialMediaAccountTypeId, setSocialMediaAccountTypeId] = React.useState<number>(0);
+    const [accountNameErrors, setAccountNameErrors] = React.useState<string>("");
     const [socialMediaAccountTypeList, setSocialMediaAccountTypeList] = React.useState<SocialMediaAccountTypeData[]>([]);
+    const [isEditOrAdd, setIsEditOrAdd] = React.useState<boolean>(false);
+    const [createdByUserId, setCreatedByUserId] = React.useState<string>(Guid.EMPTY);
+    const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
+    const [lastUpdatedDate, setLastUpdatedDate] = React.useState<Date>(new Date());
+    const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
     React.useEffect(() => {
 
@@ -60,7 +67,41 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
         }
     }, [props.partnerId, props.isUserLoaded])
 
-    function removeAccount(userId: string, accountName: string) {
+    function addSocialMediaAccount() {
+        setIsEditOrAdd(true);
+    }
+
+    function editAccount(partnerAccountId: string) {
+        const account = msalClient.getAllAccounts()[0];
+
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = getDefaultHeaders('GET');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+            fetch('/api/partnersocialmediaaccounts/' + partnerAccountId, {
+                method: 'GET',
+                headers: headers,
+            })
+                .then(response => response.json() as Promise<PartnerSocialMediaAccountData>)
+                .then(data => {
+                    setSocialMediaAccountId(data.id);
+                    setAccountName(data.accountIdentifier);
+                    setSocialMediaAccountTypeId(data.socialMediaAccountTypeId);
+                    setIsActive(data.isActive);
+                    setCreatedByUserId(data.createdByUserId);
+                    setCreatedDate(new Date(data.createdDate));
+                    setLastUpdatedDate(new Date(data.lastUpdatedDate));
+                    setIsEditOrAdd(true);
+                });
+        });
+    }
+
+    function removeAccount(accountId: string, accountName: string) {
         if (!window.confirm("Please confirm that you want to remove social media account with name: '" + accountName + "' as a social media account from this Partner?"))
             return;
         else {
@@ -75,7 +116,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnersocialmediaaccounts/' + props.partnerId + '/' + userId, {
+                fetch('/api/partnersocialmediaaccounts/' + accountId, {
                     method: 'DELETE',
                     headers: headers,
                 })
@@ -83,7 +124,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
         }
     }
 
-    function handleAddSocialMediaAccount() {
+    function handleSave() {
 
         if (accountName === "")
             return;
@@ -96,37 +137,80 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
         };
 
         var socialMediaAccountData = new PartnerSocialMediaAccountData();
+        socialMediaAccountData.id = socialMediaAccountId;
         socialMediaAccountData.partnerId = props.partnerId;
         socialMediaAccountData.accountIdentifier = accountName;
         socialMediaAccountData.isActive = isActive;
         socialMediaAccountData.socialMediaAccountTypeId = socialMediaAccountTypeId ?? 0;
-        socialMediaAccountData.createdByUserId = props.currentUser.id
+        socialMediaAccountData.createdByUserId = createdByUserId;
         socialMediaAccountData.lastUpdatedByUserId = props.currentUser.id
 
         var data = JSON.stringify(socialMediaAccountData);
 
+        var method = "PUT";
+
+        if (createdByUserId === Guid.EMPTY) {
+            method = "POST";
+        }
+
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders('POST');
+            const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
             fetch('/api/partnersocialmediaaccounts', {
-                method: 'POST',
+                method: method,
                 headers: headers,
                 body: data,
             })
+                .then(() => {
+                    setIsEditOrAdd(false);
+                    setIsSocialMediaAccountDataLoaded(false);
+                    var getHeaders = getDefaultHeaders("GET");
+                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                    fetch('/api/partnersocialmediaaccounts/' + props.partnerId, {
+                        method: 'GET',
+                        headers: getHeaders,
+                    })
+                        .then(response => response.json() as Promise<PartnerSocialMediaAccountData[]>)
+                        .then(data => {
+                            setSocialMediaAccounts(data);
+                            setIsSocialMediaAccountDataLoaded(true);
+                        });
+                });
         });
     }
 
-    function handleAccountNameChanged(accountName: string) {
-        setAccountName(accountName);
+    function validateForm() {
+        if (accountName === "" ||
+            accountNameErrors !== "") {
+            setIsSaveEnabled(false);
+        }
+        else {
+            setIsSaveEnabled(true);
+        }
+    }
+
+    function handleAccountNameChanged(val: string) {
+        if (val === "") {
+            setAccountNameErrors("Name cannot be blank.");
+        }
+        else {
+            setAccountNameErrors("");
+            setAccountName(val);
+        }
+
+        validateForm();
     }
 
     function handleIsActiveChanged(active: boolean) {
         setIsActive(active);
+        validateForm();
     }
 
     function selectSocialMediaAccountType(val: string) {
         setSocialMediaAccountTypeId(parseInt(val));
+        validateForm();
     }
 
     function renderSocialMediaAccountNameToolTip(props: any) {
@@ -139,6 +223,14 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
 
     function renderIsActiveToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.SocialMediaAccountIsActive}</Tooltip>
+    }
+
+    function renderCreatedDateToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerSocialMediaAccountCreatedDate}</Tooltip>
+    }
+
+    function renderLastUpdatedDateToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerSocialMediaAccountLastUpdatedDate}</Tooltip>
     }
 
     function renderPartnerSocialMediaAccountsTable(accounts: PartnerSocialMediaAccountData[]) {
@@ -159,12 +251,14 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                                 <td>{getSocialMediaAccountType(socialMediaAccountTypeList, account.socialMediaAccountTypeId)}</td>
                                 <td>{account.isActive === true ? "Yes" : "No"} </td>
                                 <td>
+                                    <Button className="action" onClick={() => editAccount(account.id)}>Edit</Button>
                                     <Button className="action" onClick={() => removeAccount(account.id, account.accountIdentifier)}>Remove Account</Button>
-                                </td>
+                                 </td>
                             </tr>
                         )}
                     </tbody>
                 </table>
+                <Button className="action" onClick={() => addSocialMediaAccount()}>Add SocialMediaAccount</Button>
             </div>
         );
     }
@@ -172,7 +266,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
     function renderAddPartnerSocialMediaAccount() {
         return (
             <div>
-                <Form onSubmit={handleAddSocialMediaAccount}>
+                <Form onSubmit={handleSave}>
                     <Form.Row>
                         <Col>
                             <Form.Group className="required">
@@ -212,8 +306,28 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                                 </OverlayTrigger >
                             </Form.Group>
                         </Col>
-                        <Button className="action" onClick={() => handleAddSocialMediaAccount()}>Add Account</Button>
                     </Form.Row>
+                    <Form.Group className="form-group">
+                        <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Save</Button>
+                    </Form.Group >
+                    <Form.Group className="form-group">
+                        <Col>
+                            <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
+                                <Form.Label className="control-label">Created Date:</Form.Label>
+                            </OverlayTrigger>
+                            <Form.Group>
+                                <Form.Control type="text" disabled defaultValue={createdDate ? createdDate.toLocaleString() : ""} />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
+                                <Form.Label className="control-label">Last Updated Date:</Form.Label>
+                            </OverlayTrigger>
+                            <Form.Group>
+                                <Form.Control type="text" disabled defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
+                            </Form.Group>
+                        </Col>
+                    </Form.Group >
                 </Form>
             </div>
         );
@@ -225,7 +339,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                 {props.partnerId === Guid.EMPTY && <p> <em>Partner must be created first.</em></p>}
                 {!isSocialMediaAccountsDataLoaded && props.partnerId !== Guid.EMPTY && <p><em>Loading...</em></p>}
                 {isSocialMediaAccountsDataLoaded && renderPartnerSocialMediaAccountsTable(socialMediaAccounts)}
-                {renderAddPartnerSocialMediaAccount()}
+                {isEditOrAdd && renderAddPartnerSocialMediaAccount()}
             </div>
         </>
     );

@@ -15,6 +15,7 @@ export interface PartnerContactsDataProps {
 
 export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
 
+    const [partnerContactId, setPartnerContactId] = React.useState<string>(Guid.EMPTY);
     const [name, setName] = React.useState<string>("");
     const [email, setEmail] = React.useState<string>("");
     const [phone, setPhone] = React.useState<string>("");
@@ -75,25 +76,26 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/partnercontacts/' + props.partnerId + '/' + partnerContactId, {
+            fetch('/api/partnercontacts/' + partnerContactId, {
                 method: 'GET',
                 headers: headers,
             })
                 .then(response => response.json() as Promise<PartnerContactData>)
                 .then(data => {
+                    setPartnerContactId(data.id);
                     setName(data.name);
                     setPhone(data.phone);
                     setEmail(data.email);
                     setNotes(data.notes);
                     setCreatedByUserId(data.createdByUserId);
-                    setCreatedDate(data.createdDate);
-                    setLastUpdatedDate(data.lastUpdatedDate);
+                    setCreatedDate(new Date(data.createdDate));
+                    setLastUpdatedDate(new Date(data.lastUpdatedDate));
                     setIsEditOrAdd(true);
                 });
         });
     }
 
-    function removeContact(id: string, name: string,) {
+    function removeContact(partnerContactId: string, name: string,) {
         if (!window.confirm("Please confirm that you want to remove contact: '" + name + "' from this Partner ?"))
             return;
         else {
@@ -108,7 +110,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnercontacts/' + props.partnerId + '/' + id, {
+                fetch('/api/partnercontacts/' + partnerContactId, {
                     method: 'DELETE',
                     headers: headers,
                 })
@@ -145,6 +147,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
         }
 
         var partnerContact = new PartnerContactData();
+        partnerContact.id = partnerContactId;
         partnerContact.partnerId = props.partnerId;
         partnerContact.name = name;
         partnerContact.phone = phone;
@@ -303,11 +306,11 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                                 <td>{contact.email}</td>
                                 <td>{contact.phone}</td>
                                 <td>{contact.notes}</td>
-                                <td>{createdDate ? createdDate.toLocaleString() : ""}</td>
-                                <td>{lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""}</td>
+                                <td>{contact.createdDate ? contact.createdDate.toLocaleString() : ""}</td>
+                                <td>{contact.lastUpdatedDate ? contact.lastUpdatedDate.toLocaleString() : ""}</td>
                                 <td>
                                     <Button className="action" onClick={() => editContact(contact.id)}>Edit Contact</Button>
-                                    <Button className="action" onClick={() => removeContact(contact.name, contact.id)}>Remove Contact</Button>
+                                    <Button className="action" onClick={() => removeContact(contact.id, contact.name)}>Remove Contact</Button>
                                 </td>
                             </tr>
                         )}
@@ -366,8 +369,8 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                             <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
                                 <Form.Label className="control-label">Created Date:</Form.Label>
                             </OverlayTrigger>
-                            <Form.Group>
-                                <Form.Label defaultValue={createdDate ? createdDate.toLocaleString() : ""} />
+                           <Form.Group>
+                                <Form.Control type="text" disabled defaultValue={createdDate ? createdDate.toLocaleString() : ""} />
                             </Form.Group>
                         </Col>
                         <Col>
@@ -375,7 +378,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                                 <Form.Label className="control-label">Last Updated Date:</Form.Label>
                             </OverlayTrigger>
                             <Form.Group>
-                                <Form.Label defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
+                                <Form.Control type="text" disabled defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
                             </Form.Group>
                         </Col>
                     </Form.Group >
