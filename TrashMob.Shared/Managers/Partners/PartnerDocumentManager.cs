@@ -10,10 +10,18 @@
     using TrashMob.Shared.Persistence.Interfaces;
     using Microsoft.EntityFrameworkCore;
 
-    public class PartnerDocumentManager : KeyedManager<PartnerDocument>, IKeyedManager<PartnerDocument>
+    public class PartnerDocumentManager : KeyedManager<PartnerDocument>, IPartnerDocumentManager
     {
         public PartnerDocumentManager(IKeyedRepository<PartnerDocument> repository) : base(repository)
         {
+        }
+
+        public async Task<Partner> GetPartnerForDocument(Guid partnerDocumentId, CancellationToken cancellationToken)
+        {
+            var partnerDocument = await Repository.Get(plc => plc.Id == partnerDocumentId, false)
+                                        .Include(p => p.Partner)
+                                        .FirstOrDefaultAsync(cancellationToken);
+            return partnerDocument.Partner;
         }
 
         public override async Task<IEnumerable<PartnerDocument>> GetByParentIdAsync(Guid parentId, CancellationToken cancellationToken)

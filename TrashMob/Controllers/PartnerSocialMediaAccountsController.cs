@@ -84,7 +84,7 @@
             return Ok(result);
         }
 
-        [HttpDelete("{partnerContactId}")]
+        [HttpDelete("{partnerSocialMediaAccountId}")]
         public async Task<IActionResult> DeletePartnerSocialMediaAccount(Guid partnerSocialMediaAccountId, CancellationToken cancellationToken)
         {
             var partner = await manager.GetPartnerForSocialMediaAccount(partnerSocialMediaAccountId, cancellationToken);

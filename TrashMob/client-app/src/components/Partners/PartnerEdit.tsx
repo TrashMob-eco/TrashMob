@@ -178,7 +178,16 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
 
     function handleWebsiteChanged(val: string) {
         setWebsite(val);        
+        validateForm();
+    }
 
+    function selectPartnerStatus(val: string) {
+        setPartnerStatusId(parseInt(val));
+        validateForm();
+    }
+
+    function selectPartnerType(val: string) {
+        setPartnerTypeId(parseInt(val));
         validateForm();
     }
 
@@ -212,14 +221,6 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
 
     function renderLastUpdatedDateToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerLastUpdatedDate}</Tooltip>
-    }
-
-    function selectPartnerStatus(val: string) {
-        setPartnerStatusId(parseInt(val));
-    }
-
-    function selectPartnerType(val: string) {
-        setPartnerTypeId(parseInt(val));
     }
 
     // Returns the HTML Form to the render() method.  

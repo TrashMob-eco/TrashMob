@@ -69,7 +69,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
         setNotes("");
         setServiceTypeId(0);
         setNotes("");
-        setCreatedByUserId(props.currentUser.id);
+        setCreatedByUserId(Guid.EMPTY);
         setCreatedDate(new Date());
         setLastUpdatedDate(new Date());
         setIsAdd(true);
@@ -302,7 +302,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
     return (
         <>
             <div>
-                {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner must be created first.</em></p>}
+                {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner location must be created first.</em></p>}
                 {!isPartnerLocationServicesDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
                 {isPartnerLocationServicesDataLoaded && renderPartnerLocationServicesTable(partnerServices)}
                 {(isEdit || isAdd) && renderAddPartnerService()}
