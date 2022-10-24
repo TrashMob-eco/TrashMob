@@ -17,7 +17,8 @@ export interface PartnerLocationServicesDataProps {
 export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps> = (props) => {
 
     const [notes, setNotes] = React.useState<string>("");
-    const [partnerServices, setPartnerLocationServices] = React.useState<PartnerLocationServiceData[]>([]);
+    const [notesErrors, setNotesErrors] = React.useState<string>("");
+    const [partnerLocationServices, setPartnerLocationServices] = React.useState<PartnerLocationServiceData[]>([]);
     const [createdByUserId, setCreatedByUserId] = React.useState<string>(Guid.EMPTY);
     const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
     const [lastUpdatedDate, setLastUpdatedDate] = React.useState<Date>(new Date());
@@ -162,7 +163,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
             method = "POST";
 
             // We need to prevent an additional add of an existing service type
-            if (partnerServices.find(obj => obj.serviceTypeId === serviceTypeId)) {
+            if (partnerLocationServices.find(obj => obj.serviceTypeId === serviceTypeId)) {
                 window.alert("Adding more than one instance of an existing service type is not allowed.")
                 return;
             }
@@ -204,12 +205,32 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
         });
     }
 
-    function handleNotesChanged(notes: string) {
-        setNotes(notes);
+    function validateForm() {
+        if (notes === "" ||
+            notesErrors !== "" ||
+            serviceTypeId === 0) {
+            setIsSaveEnabled(false);
+        }
+        else {
+            setIsSaveEnabled(true);
+        }
+    }
+
+    function handleNotesChanged(val: string) {
+        if (val === "") {
+            setNotesErrors("Notes cannot be blank.");
+        }
+        else {
+            setNotesErrors("");
+            setNotes(val);
+        }
+
+        validateForm();
     }
 
     function selectServiceType(val: string) {
         setServiceTypeId(parseInt(val));
+        validateForm();
     }
 
     function renderNotesToolTip(props: any) {
@@ -278,6 +299,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                                     <Form.Label className="control-label" htmlFor="serviceType">Notes</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="notes" defaultValue={notes} onChange={val => handleNotesChanged(val.target.value)} maxLength={parseInt('64')} required />
+                                <span style={{ color: "red" }}>{notesErrors}</span>
                             </Form.Group>
                         </Col>
                         <Col>
@@ -304,7 +326,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
             <div>
                 {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner location must be created first.</em></p>}
                 {!isPartnerLocationServicesDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-                {isPartnerLocationServicesDataLoaded && renderPartnerLocationServicesTable(partnerServices)}
+                {isPartnerLocationServicesDataLoaded && partnerLocationServices && renderPartnerLocationServicesTable(partnerLocationServices)}
                 {(isEdit || isAdd) && renderAddPartnerService()}
             </div>
         </>

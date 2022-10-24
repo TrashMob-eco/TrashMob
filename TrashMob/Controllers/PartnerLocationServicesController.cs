@@ -26,7 +26,7 @@
             this.partnerLocationManager = partnerLocationManager;
         }
 
-        [HttpGet("{partnerLocationId}")]
+        [HttpGet("getbypartnerlocation/{partnerLocationId}")]
         [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> Get(Guid partnerLocationId, CancellationToken cancellationToken)
         {
