@@ -179,7 +179,8 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
 
     function validateForm() {
         if (publicNotes === "" ||
-            publicNotesErrors !== "") {
+            publicNotesErrors !== "" ||
+            country === "") {
             setIsSaveEnabled(false);
         }
         else {
@@ -239,34 +240,23 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                 body: data,
                 headers: headers,
             })
-                .then(() => {
-                    setIsPartnerLocationDataLoaded(false);
-
-                    var getHeaders = getDefaultHeaders('GET');
-                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                    fetch('/api/partnerlocations/' + props.partnerLocationId, {
-                        method: 'GET',
-                        headers: getHeaders,
-                    })
-                        .then(response => response.json() as Promise<PartnerLocationData>)
-                        .then(data => {
-                            setPartnerLocationId(data.id);
-                            setLocationName(data.name);
-                            setStreetAddress(data.streetAddress);
-                            setCity(data.city);
-                            setCountry(data.country);
-                            setRegion(data.region);
-                            setPostalCode(data.postalCode);
-                            setLatitude(data.latitude);
-                            setLongitude(data.longitude);
-                            setIsPartnerLocationActive(data.isActive);
-                            setCreatedByUserId(data.createdByUserId);
-                            setCreatedDate(new Date(data.createdDate));
-                            setLastUpdatedDate(new Date(data.lastUpdatedDate));
-                            setPublicNotes(data.publicNotes);
-                            setIsPartnerLocationDataLoaded(true);
-                        });
+                .then(response => response.json() as Promise<PartnerLocationData>)
+                .then(data => {
+                    setPartnerLocationId(data.id);
+                    setLocationName(data.name);
+                    setStreetAddress(data.streetAddress);
+                    setCity(data.city);
+                    setCountry(data.country);
+                    setRegion(data.region);
+                    setPostalCode(data.postalCode);
+                    setLatitude(data.latitude);
+                    setLongitude(data.longitude);
+                    setIsPartnerLocationActive(data.isActive);
+                    setCreatedByUserId(data.createdByUserId);
+                    setCreatedDate(new Date(data.createdDate));
+                    setLastUpdatedDate(new Date(data.lastUpdatedDate));
+                    setPublicNotes(data.publicNotes);
+                    setIsPartnerLocationDataLoaded(true);
                 });
         });
     }
@@ -412,7 +402,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                                 <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
                                     <Form.Label className="control-label" htmlFor="lastUpdatedDate">Last Updated Date:</Form.Label>
                                 </OverlayTrigger>
-                                <span>{lastUpdatedDate ? lastUpdatedDate.toLocaleString() : "" }</span>
+                                <span>{lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""}</span>
                             </Form.Group>
                         </Col>
                     </Form.Row>

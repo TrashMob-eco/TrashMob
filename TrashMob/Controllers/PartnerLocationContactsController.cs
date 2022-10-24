@@ -95,7 +95,7 @@
                 return Forbid();
             }
 
-            await partnerLocationManager.DeleteAsync(partnerLocationContactId, cancellationToken).ConfigureAwait(false);
+            await partnerLocationContactManager.DeleteAsync(partnerLocationContactId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeletePartnerLocationContact));
 
             return Ok(partnerLocationContactId);
