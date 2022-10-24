@@ -158,7 +158,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
 
         var method = "PUT";
 
-        if (createdByUserId === Guid.EMPTY) {
+        if (partnerContactId === Guid.EMPTY) {
             method = "POST";
         }
 

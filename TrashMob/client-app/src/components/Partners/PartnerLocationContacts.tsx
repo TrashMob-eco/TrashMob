@@ -158,7 +158,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
 
         var method = "PUT";
 
-        if (createdByUserId === Guid.EMPTY) {
+        if (partnerLocationContactId === Guid.EMPTY) {
             method = "POST";
         }
 
@@ -323,7 +323,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                                 <td>{lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""}</td>
                                 <td>
                                     <Button className="action" onClick={() => editContact(contact.id)}>Edit Contact</Button>
-                                    <Button className="action" onClick={() => removeContact(contact.name, contact.id)}>Remove Contact</Button>
+                                    <Button className="action" onClick={() => removeContact(contact.id, contact.name)}>Remove Contact</Button>
                                 </td>
                             </tr>
                         )}
@@ -403,7 +403,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
     return (
         <>
             <div>
-                {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner Location must be created first.</em></p>}
+                {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner location must be created first.</em></p>}
                 {!isPartnerLocationContactsDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
                 {isPartnerLocationContactsDataLoaded && renderPartnerLocationServicesTable(partnerLocationContacts)}
                 {isEditOrAdd && renderAddPartnerLocationContact()}

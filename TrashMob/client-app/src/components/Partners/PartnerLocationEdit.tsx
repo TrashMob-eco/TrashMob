@@ -82,6 +82,11 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                     });
             });
         }
+        else {
+            if (props.isUserLoaded && props.partnerLocationId === Guid.EMPTY) {
+                setIsPartnerLocationDataLoaded(true);
+            }
+        }
 
         MapStore.getOption().then(opts => {
             setMapOptions(opts);
@@ -200,8 +205,9 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         partnerLocationData.city = city ?? "";
         partnerLocationData.region = region ?? "";
         partnerLocationData.country = country ?? "";
-        partnerLocationData.latitude = latitude ?? "";
-        partnerLocationData.longitude = longitude ?? "";
+        partnerLocationData.postalCode = postalCode ?? "";
+        partnerLocationData.latitude = latitude ?? 0;
+        partnerLocationData.longitude = longitude ?? 0;
         partnerLocationData.isActive = isPartnerLocationActive;
         partnerLocationData.publicNotes = publicNotes ?? "";
         partnerLocationData.privateNotes = privateNotes ?? "";
@@ -221,7 +227,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
             var method = "PUT";
 
-            if (partnerLocationData.id === Guid.EMPTY) {
+            if (partnerLocationId === Guid.EMPTY) {
                 method = "POST";
             }
 

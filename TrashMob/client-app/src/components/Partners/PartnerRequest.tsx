@@ -53,7 +53,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
 
         if (props.mode && props.mode === "send") {
             setTitle("Send invite to join TrashMob as a partner");
-
         }
 
         if (props.isUserLoaded) {
@@ -129,8 +128,8 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         partnerRequestData.city = city ?? "";
         partnerRequestData.region = region ?? "";
         partnerRequestData.country = country ?? "";
-        partnerRequestData.latitude = latitude ?? "";
-        partnerRequestData.longitude = longitude ?? "";
+        partnerRequestData.latitude = latitude ?? 0;
+        partnerRequestData.longitude = longitude ?? 0;
         partnerRequestData.createdByUserId = props.currentUser.id;
         partnerRequestData.lastUpdatedByUserId = props.currentUser.id;
         partnerRequestData.partnerTypeId = partnerTypeId;

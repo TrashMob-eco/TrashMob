@@ -148,12 +148,13 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
 
         var method = "PUT";
 
-        if (createdByUserId === Guid.EMPTY) {
+        if (partnerDocumentId === Guid.EMPTY) {
             method = "POST";
         }
 
         var documentData = new PartnerDocumentData();
         documentData.id = partnerDocumentId;
+        documentData.partnerId = props.partnerId;
         documentData.name = documentName;
         documentData.url = documentUrl ?? 0;
         documentData.createdDate = createdDate;

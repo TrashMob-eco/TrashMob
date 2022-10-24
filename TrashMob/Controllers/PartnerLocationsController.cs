@@ -48,7 +48,7 @@
         [HttpPost]
         public async Task<IActionResult> AddPartnerLocation(PartnerLocation partnerLocation, CancellationToken cancellationToken)
         {
-            var partner = await partnerLocationManager.GetPartnerForLocation(partnerLocation.Id, cancellationToken);
+            var partner = await partnerManager.GetAsync(partnerLocation.PartnerId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)

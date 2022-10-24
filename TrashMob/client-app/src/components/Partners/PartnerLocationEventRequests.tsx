@@ -7,6 +7,7 @@ import EventPartnerLocationStatusData from '../Models/EventPartnerLocationStatus
 import EventPartnerLocationData from '../Models/EventPartnerLocationData';
 import { getEventPartnerStatus } from '../../store/eventPartnerStatusHelper';
 import DisplayPartnerLocationEventData from '../Models/DisplayPartnerLocationEventData';
+import { Guid } from 'guid-typescript';
 
 export interface PartnerLocationEventRequestsDataProps {
     partnerLocationId: string;
@@ -21,7 +22,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
     const [partnerLocationEvents, setPartnerLocationEvents] = React.useState<DisplayPartnerLocationEventData[]>([]);
 
     React.useEffect(() => {
-        if (props.isUserLoaded) {
+        if (props.isUserLoaded && props.partnerLocationId && props.partnerLocationId !== Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
 
             var request = {
@@ -58,27 +59,29 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
     }, [props.partnerLocationId, props.isUserLoaded])
 
     function OnEventPartnerLocationsUpdated() {
-        const account = msalClient.getAllAccounts()[0];
+        if (props.partnerLocationId && props.partnerLocationId !== Guid.EMPTY) {
+            const account = msalClient.getAllAccounts()[0];
 
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
 
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/partnerlocationevents/' + props.partnerLocationId, {
-                method: 'GET',
-                headers: headers
-            })
-                .then(response => response.json() as Promise<DisplayPartnerLocationEventData[]>)
-                .then(data => {
-                    setPartnerLocationEvents(data);
-                    setIsPartnerLocationEventDataLoaded(true)
+                fetch('/api/partnerlocationevents/' + props.partnerLocationId, {
+                    method: 'GET',
+                    headers: headers
                 })
-        });
+                    .then(response => response.json() as Promise<DisplayPartnerLocationEventData[]>)
+                    .then(data => {
+                        setPartnerLocationEvents(data);
+                        setIsPartnerLocationEventDataLoaded(true)
+                    })
+            });
+        }
     }
 
     // This will handle the submit form event.  
@@ -153,7 +156,8 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
     return (
         <>
             <div>
-                {!isPartnerLocationEventDataLoaded && <p><em>Loading...</em></p>}
+                {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner location must be created first.</em></p>}
+                {!isPartnerLocationEventDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
                 {isPartnerLocationEventDataLoaded && partnerLocationEvents.length === 0 && <p> <em>There are no event requests for this location.</em></p>}
                 {isPartnerLocationEventDataLoaded && partnerLocationEvents.length !== 0 && renderPartnerLocationEventsTable(partnerLocationEvents)}
             </div>

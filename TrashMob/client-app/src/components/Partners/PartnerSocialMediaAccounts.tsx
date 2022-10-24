@@ -167,7 +167,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
 
         var method = "PUT";
 
-        if (createdByUserId === Guid.EMPTY) {
+        if (socialMediaAccountId === Guid.EMPTY) {
             method = "POST";
         }
 
