@@ -1,6 +1,7 @@
 ﻿
 namespace TrashMob.Shared.Managers
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
@@ -16,9 +17,9 @@ namespace TrashMob.Shared.Managers
             this.notificationManager = notificationManager;
         }      
 
-        public async Task SendMessageRequest(MessageRequest messageRequest, CancellationToken cancellationToken = default)
+        public async Task SendMessageRequest(MessageRequest messageRequest, Guid userId, CancellationToken cancellationToken = default)
         {
-            await Repository.AddAsync(messageRequest);
+            await base.AddAsync(messageRequest, userId, cancellationToken);
             await notificationManager.SendMessageRequestAsync(messageRequest, cancellationToken);
         }
     }

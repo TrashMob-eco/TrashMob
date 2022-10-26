@@ -131,7 +131,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         partnerRequestData.latitude = latitude ?? 0;
         partnerRequestData.longitude = longitude ?? 0;
         partnerRequestData.createdByUserId = props.currentUser.id;
-        partnerRequestData.lastUpdatedByUserId = props.currentUser.id;
         partnerRequestData.partnerTypeId = partnerTypeId;
         partnerRequestData.isBecomeAPartnerRequest = (props.mode !== 'send')
 

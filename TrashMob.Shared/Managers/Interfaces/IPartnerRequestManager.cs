@@ -7,8 +7,8 @@
 
     public interface IPartnerRequestManager : IKeyedManager<PartnerRequest>
     {
-        Task<PartnerRequest> ApproveBecomeAPartnerAsync(Guid partnerRequestId, CancellationToken cancellationToken);
+        Task<PartnerRequest> ApproveBecomeAPartnerAsync(Guid partnerRequestId, Guid userId, CancellationToken cancellationToken);
 
-        Task<PartnerRequest> DenyBecomeAPartnerAsync(Guid partnerRequestId, CancellationToken cancellationToken);
+        Task<PartnerRequest> DenyBecomeAPartnerAsync(Guid partnerRequestId, Guid userId, CancellationToken cancellationToken);
     }
 }

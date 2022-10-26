@@ -28,6 +28,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
     const [isEdit, setIsEdit] = React.useState<boolean>(false);
     const [isAdd, setIsAdd] = React.useState<boolean>(false);
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
+    const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
 
     React.useEffect(() => {
 
@@ -74,6 +75,21 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
         setCreatedDate(new Date());
         setLastUpdatedDate(new Date());
         setIsAdd(true);
+        setIsAddEnabled(false);
+    }
+
+    // This will handle Cancel button click event.
+    function handleCancel(event: any) {
+        event.preventDefault();
+        setNotes("");
+        setServiceTypeId(0);
+        setNotes("");
+        setCreatedByUserId(Guid.EMPTY);
+        setCreatedDate(new Date());
+        setLastUpdatedDate(new Date());
+        setIsAdd(false);
+        setIsEdit(false);
+        setIsAddEnabled(true);
     }
 
     function editService(serviceTypeId: number) {
@@ -99,6 +115,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                     setCreatedByUserId(data.createdByUserId);
                     setCreatedDate(new Date(data.createdDate));
                     setLastUpdatedDate(new Date(data.lastUpdatedDate));
+                    setIsAddEnabled(false);
                     setIsEdit(true);
                 });
         });
@@ -174,7 +191,6 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
         partnerService.serviceTypeId = serviceTypeId ?? 0;
         partnerService.notes = notes;
         partnerService.createdByUserId = createdByUserId;
-        partnerService.lastUpdatedByUserId = props.currentUser.id
 
         var data = JSON.stringify(partnerService);
 
@@ -200,6 +216,9 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                         .then(data => {
                             setPartnerLocationServices(data);
                             setIsPartnerLocationServicesDataLoaded(true);
+                            setIsEdit(false);
+                            setIsAdd(false);
+                            setIsAddEnabled(true);
                         });
                 });
         });
@@ -268,7 +287,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                         )}
                     </tbody>
                 </table>
-                <Button className="action" onClick={() => addService()}>Add Service</Button>
+                <Button disabled={!isAddEnabled} className="action" onClick={() => addService()}>Add Service</Button>
             </div>
         );
     }
@@ -315,6 +334,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                             </Form.Group>
                         </Col>
                         <Button disabled={!isSaveEnabled} type="submit" className="btn btn-default">Save</Button>
+                        <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
                     </Form.Row>
                 </Form>
             </div>

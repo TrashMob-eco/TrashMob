@@ -25,6 +25,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
     const [isPartnerDocumentsDataLoaded, setIsPartnerDocumentsDataLoaded] = React.useState<boolean>(false);
     const [isEditOrAdd, setIsEditOrAdd] = React.useState<boolean>(false);
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
+    const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
 
     React.useEffect(() => {
 
@@ -62,8 +63,22 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
         setCreatedDate(new Date());
         setLastUpdatedDate(new Date());
         setIsEditOrAdd(true);
+        setIsAddEnabled(false);
     }
 
+    // This will handle Cancel button click event.
+    function handleCancel(event: any) {
+        event.preventDefault();
+
+        setPartnerDocumentId(Guid.EMPTY);
+        setDocumentName("");
+        setDocumentUrl("");
+        setCreatedByUserId(props.currentUser.id);
+        setCreatedDate(new Date());
+        setLastUpdatedDate(new Date());
+        setIsEditOrAdd(false);
+        setIsAddEnabled(true);
+    }
     function editDocument(partnerDocumentId: string) {
         const account = msalClient.getAllAccounts()[0];
 
@@ -89,6 +104,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
                     setCreatedDate(new Date(data.createdDate));
                     setLastUpdatedDate(new Date(data.lastUpdatedDate));
                     setIsEditOrAdd(true);
+                    setIsAddEnabled(false);
                 });
         });
     }
@@ -159,7 +175,6 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
         documentData.url = documentUrl ?? 0;
         documentData.createdDate = createdDate;
         documentData.createdByUserId = createdByUserId;
-        documentData.lastUpdatedByUserId = props.currentUser.id
 
         var data = JSON.stringify(documentData);
 
@@ -186,6 +201,8 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
                         .then(data => {
                             setPartnerDocuments(data);
                             setIsPartnerDocumentsDataLoaded(true);
+                            setIsEditOrAdd(false);
+                            setIsAddEnabled(true);
                         });
                 });
         });
@@ -263,7 +280,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
                         )}
                     </tbody>
                 </table>
-                <Button className="action" onClick={() => addDocument()}>Add Document</Button>
+                <Button disabled={!isAddEnabled} className="action" onClick={() => addDocument()}>Add Document</Button>
             </div>
         );
     }
@@ -294,6 +311,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
                     </Form.Row>
                     <Form.Group className="form-group">
                         <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Save</Button>
+                        <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
                     </Form.Group >
                     <Form.Group className="form-group">
                         <Col>

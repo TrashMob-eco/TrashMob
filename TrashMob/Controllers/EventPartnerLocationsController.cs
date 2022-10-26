@@ -66,7 +66,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddEventPartner(EventPartnerLocation eventPartner, CancellationToken cancellationToken)
         {
-            await eventPartnerLocationManager.AddAsync(eventPartner, cancellationToken).ConfigureAwait(false);
+            await eventPartnerLocationManager.AddAsync(eventPartner, UserId, cancellationToken).ConfigureAwait(false);
 
             var partnerLocation = await partnerLocationManager.GetAsync(eventPartner.PartnerLocationId, cancellationToken);
 

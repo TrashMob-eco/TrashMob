@@ -14,9 +14,9 @@ class PartnerLocationData {
     publicNotes: string = "";
     privateNotes: string = "";
     isActive: boolean = true;
-    createdByUserId: string = "";
+    createdByUserId: string = Guid.EMPTY;
     createdDate: Date = new Date();
-    lastUpdatedByUserId: string = "";
+    lastUpdatedByUserId: string = Guid.EMPTY;
     lastUpdatedDate: Date = new Date();
 }
 

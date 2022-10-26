@@ -31,6 +31,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
     const [isPartnerLocationContactsDataLoaded, setIsPartnerLocationContactsDataLoaded] = React.useState<boolean>(false);
     const [isEditOrAdd, setIsEditOrAdd] = React.useState<boolean>(false);
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
+    const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
 
     React.useEffect(() => {
 
@@ -70,6 +71,22 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
         setCreatedDate(new Date());
         setLastUpdatedDate(new Date());
         setIsEditOrAdd(true);
+        setIsAddEnabled(false);
+    }
+
+    // This will handle Cancel button click event.
+    function handleCancel(event: any) {
+        event.preventDefault();
+        setPartnerLocationContactId(Guid.EMPTY);
+        setName("");
+        setPhone("");
+        setEmail("");
+        setNotes("");
+        setCreatedByUserId(props.currentUser.id);
+        setCreatedDate(new Date());
+        setLastUpdatedDate(new Date());
+        setIsEditOrAdd(false);
+        setIsAddEnabled(true);
     }
 
     function editContact(partnerLocationContactId: string) {
@@ -99,6 +116,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                     setCreatedDate(new Date(data.createdDate));
                     setLastUpdatedDate(new Date(data.lastUpdatedDate));
                     setIsEditOrAdd(true);
+                    setIsAddEnabled(false);
                 });
         });
     }
@@ -170,7 +188,6 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
         partnerLocationContact.email = email;
         partnerLocationContact.notes = notes;
         partnerLocationContact.createdByUserId = createdByUserId;
-        partnerLocationContact.lastUpdatedByUserId = props.currentUser.id
 
         var data = JSON.stringify(partnerLocationContact);
 
@@ -195,6 +212,8 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                         .then(data => {
                             setPartnerLocationContacts(data);
                             setIsPartnerLocationContactsDataLoaded(true);
+                            setIsEditOrAdd(false);
+                            setIsAddEnabled(true);
                         });
                 });
         });
@@ -329,7 +348,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                         )}
                     </tbody>
                 </table>
-                <Button className="action" onClick={() => addContact()}>Add Contact</Button>
+                <Button disabled={!isAddEnabled} className="action" onClick={() => addContact()}>Add Contact</Button>
             </div>
         );
     }
@@ -376,6 +395,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                     </Form.Group >
                     <Form.Group className="form-group">
                         <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Save</Button>
+                        <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
                     </Form.Group >
                     <Form.Group className="form-group">
                         <Col>

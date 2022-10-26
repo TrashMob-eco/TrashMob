@@ -56,7 +56,7 @@
                 return Forbid();
             }
 
-            var result = await partnerLocationServicesManager.AddAsync(partnerLocationService, cancellationToken);
+            var result = await partnerLocationServicesManager.AddAsync(partnerLocationService, UserId, cancellationToken);
 
             return CreatedAtAction(nameof(Get), new { partnerLocationId = partnerLocationService.PartnerLocationId, serviceTypeId = partnerLocationService.ServiceTypeId }, result);
         }

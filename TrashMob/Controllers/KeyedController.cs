@@ -21,7 +21,7 @@
         [Authorize(Policy = "ValidUser")]
         public virtual async Task<IActionResult> Add(T instance, CancellationToken cancellationToken)
         {
-            await Manager.AddAsync(instance, cancellationToken).ConfigureAwait(false);
+            await Manager.AddAsync(instance, UserId, cancellationToken).ConfigureAwait(false);
 
             TelemetryClient.TrackEvent("Add" + nameof(T));
 
