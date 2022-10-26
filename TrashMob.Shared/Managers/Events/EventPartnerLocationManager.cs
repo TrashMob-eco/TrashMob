@@ -37,9 +37,9 @@
             this.emailManager = emailManager;
         }
 
-        public override async Task<EventPartnerLocation> AddAsync(EventPartnerLocation instance, CancellationToken cancellationToken = default)
+        public override async Task<EventPartnerLocation> AddAsync(EventPartnerLocation instance, Guid userId, CancellationToken cancellationToken = default)
         {
-            var eventPartner = await base.AddAsync(instance, cancellationToken);
+            var eventPartner = await base.AddAsync(instance, userId, cancellationToken);
 
             // Notify Admins that a new partner request has been made
             var subject = "A New Partner Request for an Event has been made!";

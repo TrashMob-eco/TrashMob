@@ -9,12 +9,12 @@
 
     public class PartnerManager : KeyedManager<Partner>, IKeyedManager<Partner>
     {
-        private readonly IBaseRepository<PartnerUser> partnerUserRepository;
+        private readonly IBaseManager<PartnerUser> partnerUserManager;
 
         public PartnerManager(IKeyedRepository<Partner> partnerRepository,
-                              IBaseRepository<PartnerUser> partnerUserRepository) : base(partnerRepository)
+                              IBaseManager<PartnerUser> partnerUserManager) : base(partnerRepository)
         {
-            this.partnerUserRepository = partnerUserRepository;
+            this.partnerUserManager = partnerUserManager;
         }
 
         public async Task CreatePartner(PartnerRequest partnerRequest, CancellationToken cancellationToken = default)
@@ -23,7 +23,7 @@
             var partner = partnerRequest.ToPartner();
 
             // Add the partner record
-            var newPartner = await Repository.AddAsync(partner).ConfigureAwait(false);
+            var newPartner = await base.AddAsync(partner, partnerRequest.CreatedByUserId, cancellationToken).ConfigureAwait(false);
 
             // Make the creator of the partner request a registered user for the partner
             var partnerUser = new PartnerUser
@@ -34,7 +34,7 @@
                 LastUpdatedByUserId = partnerRequest.LastUpdatedByUserId,
             };
 
-            await partnerUserRepository.AddAsync(partnerUser).ConfigureAwait(false);
+            await partnerUserManager.AddAsync(partnerUser, partnerRequest.CreatedByUserId, cancellationToken).ConfigureAwait(false);
 
             // Notify user when their request has been approved and what to do next
             // Need a template for this

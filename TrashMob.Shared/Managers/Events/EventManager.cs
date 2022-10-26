@@ -146,14 +146,14 @@
         }
 
         // Delete the record of a particular Mob Event    
-        public async Task<int> DeleteAsync(Guid id, string cancellationReason, CancellationToken cancellationToken)
+        public async Task<int> DeleteAsync(Guid id, string cancellationReason, Guid userId, CancellationToken cancellationToken)
         {
             var instance = await Repo.GetAsync(id, cancellationToken).ConfigureAwait(false);
 
             instance.EventStatusId = (int)EventStatusEnum.Canceled;
             instance.CancellationReason = cancellationReason;
             
-            await base.UpdateAsync(instance, cancellationToken);
+            await base.UpdateAsync(instance, userId, cancellationToken);
 
             var eventAttendees = eventAttendeeRepository.Get(e => e.EventId == id);
 

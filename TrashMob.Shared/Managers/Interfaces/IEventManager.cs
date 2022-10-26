@@ -16,6 +16,6 @@
 
         Task<IEnumerable<Event>> GetCanceledUserEventsAsync(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken = default);
 
-        Task<int> DeleteAsync(Guid id, string cancellationReason, CancellationToken cancellationToken = default);
+        Task<int> DeleteAsync(Guid id, string cancellationReason, Guid userId, CancellationToken cancellationToken = default);
     }
 }

@@ -5,9 +5,9 @@ class PartnerDocumentData {
     partnerId: string = Guid.createEmpty().toString();
     name: string = "";
     url: string = "";
-    createdByUserId: string = "";
+    createdByUserId: string = Guid.EMPTY;
     createdDate: Date = new Date();
-    lastUpdatedByUserId: string = "";
+    lastUpdatedByUserId: string = Guid.EMPTY;
     lastUpdatedDate: Date = new Date();
 }
 

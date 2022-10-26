@@ -116,7 +116,6 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
         eventSummaryData.notes = notes ?? "";
         eventSummaryData.createdByUserId = createdByUserId ?? props.currentUser.id;
         eventSummaryData.createdDate = createdDate;
-        eventSummaryData.lastUpdatedByUserId = props.currentUser.id;
 
         var data = JSON.stringify(eventSummaryData);
 

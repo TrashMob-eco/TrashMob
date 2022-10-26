@@ -23,7 +23,7 @@
         [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> AddPartnerRequest(PartnerRequest partnerRequest, CancellationToken cancellationToken)
         {
-            await partnerRequestManager.AddAsync(partnerRequest, cancellationToken).ConfigureAwait(false);
+            await partnerRequestManager.AddAsync(partnerRequest, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddPartnerRequest));
 
             return Ok();
@@ -33,7 +33,7 @@
         [Authorize(Policy = "UserIsAdmin")]
         public async Task<IActionResult> ApprovePartnerRequest(Guid partnerRequestId, CancellationToken cancellationToken)
         {
-            var partnerRequest = await partnerRequestManager.ApproveBecomeAPartnerAsync(partnerRequestId, cancellationToken).ConfigureAwait(false);
+            var partnerRequest = await partnerRequestManager.ApproveBecomeAPartnerAsync(partnerRequestId, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(ApprovePartnerRequest));
 
             return Ok();
@@ -43,7 +43,7 @@
         [Authorize(Policy = "UserIsAdmin")]
         public async Task<IActionResult> DenyPartnerRequest(Guid partnerRequestId, CancellationToken cancellationToken)
         {
-            var partnerRequest = await partnerRequestManager.DenyBecomeAPartnerAsync(partnerRequestId, cancellationToken).ConfigureAwait(false);
+            var partnerRequest = await partnerRequestManager.DenyBecomeAPartnerAsync(partnerRequestId, UserId, cancellationToken).ConfigureAwait(false);
             
             TelemetryClient.TrackEvent(nameof(DenyPartnerRequest));
 

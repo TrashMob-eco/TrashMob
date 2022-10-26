@@ -4,9 +4,9 @@ class PartnerLocationServiceData {
     partnerLocationId: string = Guid.createEmpty().toString();
     serviceTypeId: number = 0;
     notes: string = "";
-    createdByUserId: string = "";
+    createdByUserId: string = Guid.EMPTY;
     createdDate: Date = new Date();
-    lastUpdatedByUserId: string = "";
+    lastUpdatedByUserId: string = Guid.EMPTY;
     lastUpdatedDate: Date = new Date();
 }
 

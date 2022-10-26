@@ -119,7 +119,6 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
         partnerData.partnerTypeId = partnerTypeId;
         partnerData.createdByUserId = createdByUserId ?? props.currentUser.id;
         partnerData.createdDate = createdDate;
-        partnerData.lastUpdatedByUserId = props.currentUser.id;
 
         var data = JSON.stringify(partnerData);
 

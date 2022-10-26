@@ -143,7 +143,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddEvent(Event mobEvent, CancellationToken cancellationToken)
         {
-            var newEvent = await eventManager.AddAsync(mobEvent, cancellationToken).ConfigureAwait(false);
+            var newEvent = await eventManager.AddAsync(mobEvent, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddEvent));
 
             return Ok(newEvent);
@@ -163,7 +163,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            await eventManager.DeleteAsync(eventCancellationRequest.EventId, eventCancellationRequest.CancellationReason, cancellationToken).ConfigureAwait(false);
+            await eventManager.DeleteAsync(eventCancellationRequest.EventId, eventCancellationRequest.CancellationReason, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeleteEvent));
 
             return Ok(eventCancellationRequest.EventId);

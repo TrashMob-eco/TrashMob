@@ -8,9 +8,9 @@ class PartnerData {
     privateNotes: string = "";
     partnerStatusId: number = 0;
     partnerTypeId: number = 0;
-    createdByUserId: string = "";
+    createdByUserId: string = Guid.EMPTY;
     createdDate: Date = new Date();
-    lastUpdatedByUserId: string = "";
+    lastUpdatedByUserId: string = Guid.EMPTY;
     lastUpdatedDate: Date = new Date();
 }
 

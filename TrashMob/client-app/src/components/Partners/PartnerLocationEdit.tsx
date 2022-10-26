@@ -14,6 +14,8 @@ import MapControllerSinglePointNoEvent from '../MapControllerSinglePointNoEvent'
 export interface PartnerLocationEditDataProps {
     partnerId: string;
     partnerLocationId: string;
+    onCancel: any;
+    onSave: any;
     isUserLoaded: boolean;
     currentUser: UserData;
 };
@@ -128,6 +130,11 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         validateForm();
     }
 
+    function handleIsPartnerLocationActiveChanged(val: boolean) {
+        setIsPartnerLocationActive(val);
+        validateForm();
+    }
+
     function handlePrivateNotesChanged(notes: string) {
         setPrivateNotes(notes);
         validateForm();
@@ -214,7 +221,6 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         partnerLocationData.privateNotes = privateNotes ?? "";
         partnerLocationData.createdByUserId = createdByUserId ?? props.currentUser.id;
         partnerLocationData.createdDate = createdDate;
-        partnerLocationData.lastUpdatedByUserId = props.currentUser.id;
 
         var data = JSON.stringify(partnerLocationData);
 
@@ -241,22 +247,8 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                 headers: headers,
             })
                 .then(response => response.json() as Promise<PartnerLocationData>)
-                .then(data => {
-                    setPartnerLocationId(data.id);
-                    setLocationName(data.name);
-                    setStreetAddress(data.streetAddress);
-                    setCity(data.city);
-                    setCountry(data.country);
-                    setRegion(data.region);
-                    setPostalCode(data.postalCode);
-                    setLatitude(data.latitude);
-                    setLongitude(data.longitude);
-                    setIsPartnerLocationActive(data.isActive);
-                    setCreatedByUserId(data.createdByUserId);
-                    setCreatedDate(new Date(data.createdDate));
-                    setLastUpdatedDate(new Date(data.lastUpdatedDate));
-                    setPublicNotes(data.publicNotes);
-                    setIsPartnerLocationDataLoaded(true);
+                .then(() => {
+                    props.onSave();
                 });
         });
     }
@@ -286,6 +278,25 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
             })
     }
 
+    // This will handle Cancel button click event.
+    function handleCancel(event: any) {
+        event.preventDefault();
+        setLocationName("");
+        setStreetAddress("");
+        setCity("");
+        setRegion("");
+        setCountry("");
+        setPostalCode("");
+        setLatitude(0);
+        setLongitude(0);
+        setPrivateNotes("");
+        setPublicNotes("");
+        setCreatedByUserId(Guid.EMPTY);
+        setCreatedDate(new Date());
+        setLastUpdatedDate(new Date());
+        props.onCancel();
+    }
+
     function renderEditLocation() {
         return (
             <div>
@@ -294,6 +305,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         <input type="hidden" name="Id" value={partnerLocationId} />
                     </Form.Row>
                     <Button disabled={!isSaveEnabled} type="submit" className="btn btn-default">Save</Button>
+                    <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
                     <Form.Row>
                         <Col>
                             <Form.Group className="required">
@@ -314,7 +326,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                                     variant="outline-dark"
                                     checked={isPartnerLocationActive}
                                     value="1"
-                                    onChange={(e) => setIsPartnerLocationActive(e.currentTarget.checked)}
+                                    onChange={(e) => handleIsPartnerLocationActiveChanged(e.currentTarget.checked)}
                                 >
                                     Is Active
                                 </ToggleButton>

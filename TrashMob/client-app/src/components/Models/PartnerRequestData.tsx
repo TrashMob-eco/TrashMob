@@ -17,9 +17,9 @@ class PartnerRequestData {
     partnerRequestStatusId: number = 0;
     partnerTypeId: number = 0;
     notes: string = "";
-    createdByUserId: string = "";
+    createdByUserId: string = Guid.EMPTY;
     createdDate: Date = new Date();
-    lastUpdatedByUserId: string = "";
+    lastUpdatedByUserId: string = Guid.EMPTY;
     lastUpdatedDate: Date = new Date();
 }
 

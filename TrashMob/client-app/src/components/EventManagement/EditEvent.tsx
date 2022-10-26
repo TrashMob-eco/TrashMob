@@ -458,7 +458,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         eventData.maxNumberOfParticipants = maxNumberOfParticipants ?? 0;
         eventData.isEventPublic = isEventPublic;
         eventData.createdByUserId = createdByUserId ?? props.currentUser.id;
-        eventData.lastUpdatedByUserId = props.currentUser.id;
         eventData.eventStatusId = eventStatusId;
 
         var evtdata = JSON.stringify(eventData);

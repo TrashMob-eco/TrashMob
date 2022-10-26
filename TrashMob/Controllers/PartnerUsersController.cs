@@ -138,7 +138,7 @@
                 LastUpdatedByUserId = UserId
             };
 
-            var result = await partnerUserManager.AddAsync(partnerUser, cancellationToken).ConfigureAwait(false);
+            var result = await partnerUserManager.AddAsync(partnerUser, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddPartnerUser));
 
             return CreatedAtAction(nameof(GetPartnerUser), new { partnerId, userId }, result);

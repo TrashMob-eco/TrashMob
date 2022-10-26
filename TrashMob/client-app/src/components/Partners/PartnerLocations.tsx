@@ -23,6 +23,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     const [partnerLocationId, setPartnerLocationId] = React.useState<string>("");
     const [isEdit, setIsEdit] = React.useState<boolean>(false);
     const [isAdd, setIsAdd] = React.useState<boolean>(false);
+    const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
 
     const radios = [
         { name: 'Manage Partner Location', value: '1' },
@@ -97,11 +98,51 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     function addLocation() {
         setPartnerLocationId(Guid.EMPTY);
         setIsAdd(true);
+        setIsAddEnabled(false);
+    }
+
+    // This will handle Cancel button click event.
+    function handleCancel() {
+        setPartnerLocationId(Guid.EMPTY);
+        setIsAdd(false);
+        setIsEdit(false);
+        setIsAddEnabled(true);
+    }
+
+    // This will handle Save button click event.
+    function handleSave() {
+        setPartnerLocationId(Guid.EMPTY);
+
+        const account = msalClient.getAllAccounts()[0];
+
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = getDefaultHeaders('GET');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+            fetch('/api/partnerlocations/getbypartner/' + props.partnerId, {
+                method: 'GET',
+                headers: headers
+            })
+                .then(response => response.json() as Promise<PartnerLocationData[]>)
+                .then(data => {
+                    setPartnerLocations(data);
+                    setIsPartnerLocationDataLoaded(true);
+                    setIsAdd(false);
+                    setIsEdit(false);
+                    setIsAddEnabled(true);
+                });
+        });
     }
 
     function editLocation(partnerLocationId: string) {
         setPartnerLocationId(partnerLocationId);
         setIsEdit(true);
+        setIsAddEnabled(false);
     }
 
     function renderPartnerLocationsTable(locations: PartnerLocationData[]) {
@@ -131,7 +172,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                         )}
                     </tbody>
                 </table>
-                <Button className="action" onClick={() => addLocation()}>Add Location</Button>
+                <Button disabled={!isAddEnabled} className="action" onClick={() => addLocation()}>Add Location</Button>
             </div>
         );
     }
@@ -139,7 +180,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     function renderEditPartnerLocation() {
         return (
             <div>
-                <PartnerLocationEdit partnerId={props.partnerId} partnerLocationId={partnerLocationId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                <PartnerLocationEdit partnerId={props.partnerId} partnerLocationId={partnerLocationId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onCancel={handleCancel} onSave={handleSave} />
             </div >
         )
     }

@@ -29,6 +29,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
     const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
     const [lastUpdatedDate, setLastUpdatedDate] = React.useState<Date>(new Date());
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
+    const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
 
     React.useEffect(() => {
 
@@ -68,7 +69,22 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
     }, [props.partnerId, props.isUserLoaded])
 
     function addSocialMediaAccount() {
+        setAccountName("");
+        setSocialMediaAccountTypeId(0);
         setIsEditOrAdd(true);
+        setIsAddEnabled(false);
+    }
+
+    // This will handle Cancel button click event.
+    function handleCancel(event: any) {
+        event.preventDefault();
+        setAccountName("");
+        setSocialMediaAccountTypeId(0);
+        setCreatedByUserId(Guid.EMPTY);
+        setCreatedDate(new Date());
+        setLastUpdatedDate(new Date());
+        setIsEditOrAdd(false);
+        setIsAddEnabled(true);
     }
 
     function editAccount(partnerAccountId: string) {
@@ -97,6 +113,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                     setCreatedDate(new Date(data.createdDate));
                     setLastUpdatedDate(new Date(data.lastUpdatedDate));
                     setIsEditOrAdd(true);
+                    setIsAddEnabled(false);
                 });
         });
     }
@@ -161,7 +178,6 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
         socialMediaAccountData.isActive = isActive;
         socialMediaAccountData.socialMediaAccountTypeId = socialMediaAccountTypeId ?? 0;
         socialMediaAccountData.createdByUserId = createdByUserId;
-        socialMediaAccountData.lastUpdatedByUserId = props.currentUser.id
 
         var data = JSON.stringify(socialMediaAccountData);
 
@@ -194,6 +210,8 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                         .then(data => {
                             setSocialMediaAccounts(data);
                             setIsSocialMediaAccountDataLoaded(true);
+                            setIsEditOrAdd(false);
+                            setIsAddEnabled(true);
                         });
                 });
         });
@@ -276,7 +294,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                         )}
                     </tbody>
                 </table>
-                <Button className="action" onClick={() => addSocialMediaAccount()}>Add SocialMediaAccount</Button>
+                <Button disabled={!isAddEnabled} className="action" onClick={() => addSocialMediaAccount()}>Add SocialMediaAccount</Button>
             </div>
         );
     }
@@ -327,6 +345,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                     </Form.Row>
                     <Form.Group className="form-group">
                         <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Save</Button>
+                        <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
                     </Form.Group >
                     <Form.Group className="form-group">
                         <Col>
