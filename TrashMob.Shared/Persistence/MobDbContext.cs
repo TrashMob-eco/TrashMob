@@ -122,7 +122,7 @@
                 entity.HasOne(d => d.Partner)
                     .WithMany(d => d.PartnerDocuments)
                     .HasForeignKey(d => d.PartnerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_PartnerDocuments_Partner");
 
                 entity.HasOne(d => d.CreatedByUser)
@@ -162,7 +162,7 @@
                 entity.HasOne(d => d.Partner)
                     .WithMany(d => d.PartnerContacts)
                     .HasForeignKey(d => d.PartnerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_PartnerContacts_Partner");
 
                 entity.HasOne(d => d.CreatedByUser)
@@ -187,7 +187,7 @@
                 entity.HasOne(d => d.Partner)
                     .WithMany(d => d.PartnerSocialMediaAccounts)
                     .HasForeignKey(d => d.PartnerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_PartnerSocialMediaAccount_Partner");
 
                 entity.HasOne(d => d.SocialMediaAccountType)
@@ -551,7 +551,7 @@
                 entity.HasOne(d => d.Partner)
                     .WithMany(d => d.PartnerLocations)
                     .HasForeignKey(d => d.PartnerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_PartnerLocations_Partners");
 
                 entity.HasOne(d => d.CreatedByUser)
@@ -591,7 +591,7 @@
                 entity.HasOne(d => d.PartnerLocation)
                     .WithMany(d => d.PartnerLocationContacts)
                     .HasForeignKey(d => d.PartnerLocationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_PartnerLocationContacts_PartnerLocation");
 
                 entity.HasOne(d => d.CreatedByUser)
@@ -626,7 +626,7 @@
                 entity.HasOne(d => d.PartnerLocation)
                     .WithMany()
                     .HasForeignKey(d => d.PartnerLocationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_PartnersLocationService_PartnerLocations");
 
                 entity.HasOne(d => d.CreatedByUser)
@@ -747,7 +747,7 @@
                 entity.HasOne(d => d.Partner)
                     .WithMany(d => d.PartnerUsers)
                     .HasForeignKey(d => d.PartnerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_PartnerUser_Partners");
 
                 entity.HasOne(d => d.User)
