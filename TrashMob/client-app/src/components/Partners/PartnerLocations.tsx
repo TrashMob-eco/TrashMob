@@ -74,7 +74,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerlocations/' + props.partnerId + '/' + locationId, {
+                fetch('/api/partnerlocations/' + locationId, {
                     method: 'DELETE',
                     headers: headers,
                 })
