@@ -65,7 +65,7 @@
         NotAvailable = 100
     }
 
-    public enum EventPartnerLocationStatusEnum
+    public enum EventPartnerLocationServiceStatusEnum
     {
         None = 0,
         Requested = 1,

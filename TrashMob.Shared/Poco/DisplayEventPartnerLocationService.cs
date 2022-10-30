@@ -3,22 +3,20 @@ namespace TrashMob.Shared.Poco
 {
     using System;
 
-    public class DisplayEventPartnerLocation
+    public class DisplayEventPartnerLocationService
     {
         public Guid EventId { get; set; }
 
-        public Guid PartnerId { get; set; }
-
         public Guid PartnerLocationId { get; set; }
 
-        public string PartnerLocationNotes { get; set; }
+        public int ServiceTypeId { get; set; }
+
+        public string PartnerLocationServicePublicNotes { get; set; }
 
         public string PartnerName { get; set; }
 
         public string PartnerLocationName { get; set; }
 
-        public int EventPartnerStatusId { get; set; }
-
-        public string PartnerServicesEngaged { get; set; }
+        public int EventPartnerLocationServiceStatusId { get; set; }
     }
 }

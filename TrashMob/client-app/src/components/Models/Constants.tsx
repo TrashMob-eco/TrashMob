@@ -5,10 +5,10 @@ export const RegexWebsite = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?
 
 export const PartnerRequestStatusSent = 1;
 
-export const EventPartnerStatusNone = 0;
-export const EventPartnerStatusRequested = 1;
-export const EventPartnerLocationStatusAccepted = 2;
-export const EventPartnerLocationStatusDeclined = 3;
+export const EventPartnerLocationServiceStatusNone = 0;
+export const EventPartnerLocationServiceStatusRequested = 1;
+export const EventPartnerLocationServiceStatusAccepted = 2;
+export const EventPartnerLocationServiceStatusDeclined = 3;
 
 export const PartnerStatusActive = 1;
 export const PartnerStatusInactive = 2;

@@ -17,8 +17,8 @@
             services.AddScoped<IKeyedManager<ContactRequest>, ContactRequestManager>();
             services.AddScoped<IBaseManager<EventAttendee>, EventAttendeeManager>();
             services.AddScoped<IKeyedManager<Event>, EventManager>();
-            services.AddScoped<ILookupManager<EventPartnerLocationStatus>, LookupManager<EventPartnerLocationStatus>>();
-            services.AddScoped<IBaseManager<EventPartnerLocation>, EventPartnerLocationManager>();
+            services.AddScoped<ILookupManager<EventPartnerLocationServiceStatus>, LookupManager<EventPartnerLocationServiceStatus>>();
+            services.AddScoped<IBaseManager<EventPartnerLocationService>, EventPartnerLocationServiceManager>();
             services.AddScoped<ILookupManager<EventStatus>, LookupManager<EventStatus>>();
             services.AddScoped<IBaseManager<EventSummary>, EventSummaryManager>();
             services.AddScoped<ILookupManager<EventType>, LookupManager<EventType>>();
@@ -45,7 +45,7 @@
             services.AddScoped<IEventAttendeeManager, EventAttendeeManager>();
             services.AddScoped<IEventSummaryManager, EventSummaryManager>();
             services.AddScoped<IEventManager, EventManager>();
-            services.AddScoped<IEventPartnerLocationManager, EventPartnerLocationManager>();
+            services.AddScoped<IEventPartnerLocationServiceManager, EventPartnerLocationServiceManager>();
             services.AddScoped<IPartnerContactManager, PartnerContactManager>();
             services.AddScoped<IPartnerDocumentManager, PartnerDocumentManager>();
             services.AddScoped<IPartnerRequestManager, PartnerRequestManager>();
@@ -69,8 +69,8 @@
             services.AddScoped<IKeyedRepository<ContactRequest>, KeyedRepository<ContactRequest>>();
             services.AddScoped<IKeyedRepository<Event>, KeyedRepository<Event>>();
             services.AddScoped<IBaseRepository<EventAttendee>, BaseRepository<EventAttendee>>();
-            services.AddScoped<IBaseRepository<EventPartnerLocation>, BaseRepository<EventPartnerLocation>>();
-            services.AddScoped<ILookupRepository<EventPartnerLocationStatus>, LookupRepository<EventPartnerLocationStatus>>();
+            services.AddScoped<IBaseRepository<EventPartnerLocationService>, BaseRepository<EventPartnerLocationService>>();
+            services.AddScoped<ILookupRepository<EventPartnerLocationServiceStatus>, LookupRepository<EventPartnerLocationServiceStatus>>();
             services.AddScoped<ILookupRepository<EventStatus>, LookupRepository<EventStatus>>();
             services.AddScoped<IBaseRepository<EventSummary>, BaseRepository<EventSummary>>();
             services.AddScoped<ILookupRepository<EventType>, LookupRepository<EventType>>();
