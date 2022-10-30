@@ -11,10 +11,10 @@ namespace TrashMob.Controllers
     [Route("api/partnerlocationevents")]
     public class PartnerLocationEventsController : SecureController
     {
-        private readonly IEventPartnerLocationManager eventPartnerLocationManager;
+        private readonly IEventPartnerLocationServiceManager eventPartnerLocationManager;
         private readonly IPartnerLocationManager partnerLocationManager;
 
-        public PartnerLocationEventsController(IEventPartnerLocationManager eventPartnerLocationManager,
+        public PartnerLocationEventsController(IEventPartnerLocationServiceManager eventPartnerLocationManager,
                                                IPartnerLocationManager partnerLocationManager)
             : base()
         {
@@ -33,7 +33,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var events = await eventPartnerLocationManager.GetByPartnerLocationIdAsync(partnerLocationId, cancellationToken).ConfigureAwait(false);
+            var events = await eventPartnerLocationManager.GetByPartnerLocationAsync(partnerLocationId, cancellationToken).ConfigureAwait(false);
 
             return Ok(events);
         }

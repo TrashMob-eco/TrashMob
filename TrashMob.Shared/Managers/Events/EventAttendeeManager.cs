@@ -22,6 +22,14 @@
             this.emailManager = emailManager;
         }
 
+        public override async Task<IEnumerable<EventAttendee>> GetByParentIdAsync(Guid parentId, CancellationToken cancellationToken)
+        {
+            return (await Repository.Get().Where(p => p.EventId == parentId)
+                                          .Include(p => p.User)
+                                          .ToListAsync(cancellationToken))
+                                          .AsEnumerable();
+        }
+
         public async Task<IEnumerable<Event>> GetEventsUserIsAttendingAsync(Guid attendeeId, bool futureEventsOnly = false, CancellationToken cancellationToken = default)
         {
             var eventAttendees = Repository.Get(ea => ea.UserId == attendeeId);

@@ -18,13 +18,13 @@
 
         public virtual DbSet<ContactRequest> ContactRequests { get; set; }
 
-        public virtual DbSet<EventPartnerLocation> EventPartnerLocations { get; set; }
+        public virtual DbSet<EventPartnerLocationService> EventPartnerLocationServices { get; set; }
 
         public virtual DbSet<EventAttendee> EventAttendees { get; set; }
 
         public virtual DbSet<Event> Events { get; set; }
 
-        public virtual DbSet<EventPartnerLocationStatus> EventPartnerLocationStatuses { get; set; }
+        public virtual DbSet<EventPartnerLocationServiceStatus> EventPartnerLocationServiceStatuses { get; set; }
 
         public virtual DbSet<EventSummary> EventSummaries { get; set; }
 
@@ -301,7 +301,7 @@
                     .HasConstraintName("FK_EventAttendees_User_LastUpdatedBy");
             });
 
-            modelBuilder.Entity<EventPartnerLocation>(entity =>
+            modelBuilder.Entity<EventPartnerLocationService>(entity =>
             {
                 entity.HasKey(e => new { e.EventId, e.PartnerLocationId });
 
@@ -311,37 +311,46 @@
                 entity.Property(e => e.PartnerLocationId)
                     .IsRequired();
 
+                entity.Property(e => e.ServiceTypeId)
+                    .IsRequired();
+
                 entity.HasOne(d => d.Event)
                     .WithMany()
                     .HasForeignKey(d => d.EventId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_EventPartnerLocations_Events");
+                    .HasConstraintName("FK_EventPartnerLocationServices_Events");
 
                 entity.HasOne(d => d.PartnerLocation)
                     .WithMany()
                     .HasForeignKey(d => d.PartnerLocationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_EventPartnerLocations_PartnerLocations");
+                    .HasConstraintName("FK_EventPartnerLocationServices_PartnerLocations");
 
-                entity.HasOne(d => d.EventPartnerLocationStatus)
-                    .WithMany(p => p.EventPartnerLocations)
-                    .HasForeignKey(d => d.EventPartnerLocationStatusId)
-                    .HasConstraintName("FK_EventPartnerLocations_EventPartnerLocationStatuses");
+                entity.HasOne(d => d.ServiceType)
+                    .WithMany()
+                    .HasForeignKey(d => d.ServiceTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventPartnerLocationServices_ServiceTypes");
+
+                entity.HasOne(d => d.EventPartnerLocationServiceStatus)
+                    .WithMany(p => p.EventPartnerLocationServices)
+                    .HasForeignKey(d => d.EventPartnerLocationServiceStatusId)
+                    .HasConstraintName("FK_EventPartnerLocationServices_EventPartnerLocationStatuses");
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.EventPartnerLocationsCreated)
                     .HasForeignKey(d => d.CreatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_EventPartnerLocations_User_CreatedBy");
+                    .HasConstraintName("FK_EventPartnerLocationServices_User_CreatedBy");
 
                 entity.HasOne(d => d.LastUpdatedByUser)
                     .WithMany(p => p.EventPartnerLocationsUpdated)
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_EventPartnerLocations_User_LastUpdatedBy");
+                    .HasConstraintName("FK_EventPartnerLocationServices_User_LastUpdatedBy");
             });
 
-            modelBuilder.Entity<EventPartnerLocationStatus>(entity =>
+            modelBuilder.Entity<EventPartnerLocationServiceStatus>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
@@ -352,10 +361,10 @@
                     .HasMaxLength(50);
 
                 entity.HasData(
-                    new EventPartnerLocationStatus { Id = (int)EventPartnerLocationStatusEnum.None, Name = "None", Description = "Partner has not been contacted", DisplayOrder = 1, IsActive = true },
-                    new EventPartnerLocationStatus { Id = (int)EventPartnerLocationStatusEnum.Requested, Name = "Requested", Description = "Request is awaiting processing by partner", DisplayOrder = 2, IsActive = true },
-                    new EventPartnerLocationStatus { Id = (int)EventPartnerLocationStatusEnum.Accepted, Name = "Accepted", Description = "Request has been approved by partner", DisplayOrder = 3, IsActive = true },
-                    new EventPartnerLocationStatus { Id = (int)EventPartnerLocationStatusEnum.Declined, Name = "Declined", Description = "Request has been declined by partner", DisplayOrder = 4, IsActive = true });
+                    new EventPartnerLocationServiceStatus { Id = (int)EventPartnerLocationServiceStatusEnum.None, Name = "None", Description = "Partner has not been contacted", DisplayOrder = 1, IsActive = true },
+                    new EventPartnerLocationServiceStatus { Id = (int)EventPartnerLocationServiceStatusEnum.Requested, Name = "Requested", Description = "Request is awaiting processing by partner", DisplayOrder = 2, IsActive = true },
+                    new EventPartnerLocationServiceStatus { Id = (int)EventPartnerLocationServiceStatusEnum.Accepted, Name = "Accepted", Description = "Request has been approved by partner", DisplayOrder = 3, IsActive = true },
+                    new EventPartnerLocationServiceStatus { Id = (int)EventPartnerLocationServiceStatusEnum.Declined, Name = "Declined", Description = "Request has been declined by partner", DisplayOrder = 4, IsActive = true });
             });
 
             modelBuilder.Entity<EventStatus>(entity =>

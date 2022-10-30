@@ -3,11 +3,12 @@ import UserData from '../Models/UserData';
 import { Button } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as Constants from '../Models/Constants';
-import EventPartnerLocationStatusData from '../Models/EventPartnerLocationStatusData';
-import EventPartnerLocationData from '../Models/EventPartnerLocationData';
-import { getEventPartnerStatus } from '../../store/eventPartnerStatusHelper';
-import DisplayPartnerLocationEventData from '../Models/DisplayPartnerLocationEventData';
+import EventPartnerLocationServiceStatusData from '../Models/EventPartnerLocationServiceStatusData';
+import EventPartnerLocationServiceData from '../Models/EventPartnerLocationServiceData';
+import { getEventPartnerLocationServiceStatus } from '../../store/eventPartnerLocationServiceStatusHelper';
+import DisplayPartnerLocationEventData from '../Models/DisplayPartnerLocationEventServiceData';
 import { Guid } from 'guid-typescript';
+import DisplayPartnerLocationEventServiceData from '../Models/DisplayPartnerLocationEventServiceData';
 
 export interface PartnerLocationEventRequestsDataProps {
     partnerLocationId: string;
@@ -18,7 +19,7 @@ export interface PartnerLocationEventRequestsDataProps {
 export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequestsDataProps> = (props) => {
 
     const [isPartnerLocationEventDataLoaded, setIsPartnerLocationEventDataLoaded] = React.useState<boolean>(false);
-    const [eventPartnerStatusList, setEventPartnerStatusList] = React.useState<EventPartnerLocationStatusData[]>([]);
+    const [eventPartnerStatusList, setEventPartnerStatusList] = React.useState<EventPartnerLocationServiceStatusData[]>([]);
     const [partnerLocationEvents, setPartnerLocationEvents] = React.useState<DisplayPartnerLocationEventData[]>([]);
 
     React.useEffect(() => {
@@ -34,17 +35,17 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/eventpartnerlocationstatuses', {
+                fetch('/api/eventpartnerlocationservicestatuses', {
                     method: 'GET',
                     headers: headers
                 })
-                    .then(response => response.json() as Promise<EventPartnerLocationStatusData[]>)
+                    .then(response => response.json() as Promise<EventPartnerLocationServiceStatusData[]>)
                     .then(data => {
                         setEventPartnerStatusList(data)
                     })
                     .then(() => {
 
-                        fetch('/api/partnerlocationevents/' + props.partnerLocationId, {
+                        fetch('/api/partnerlocationeventservices/' + props.partnerLocationId, {
                             method: 'GET',
                             headers: headers
                         })
@@ -71,7 +72,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/partnerlocationevents/' + props.partnerLocationId, {
+                fetch('/api/partnerlocationeventservices/' + props.partnerLocationId, {
                     method: 'GET',
                     headers: headers
                 })
@@ -85,12 +86,13 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
     }
 
     // This will handle the submit form event.  
-    function handleRequestPartnerAssistance(eventId: string, partnerLocationId: string, eventPartnerLocationStatusId: number) {
+    function handleRequestPartnerAssistance(eventId: string, partnerLocationId: string, serviceTypeId: number, eventPartnerLocationServiceStatusId: number) {
 
-        var eventData = new EventPartnerLocationData();
+        var eventData = new EventPartnerLocationServiceData();
         eventData.eventId = eventId;
         eventData.partnerLocationId = partnerLocationId;
-        eventData.eventPartnerLocationStatusId = eventPartnerLocationStatusId;
+        eventData.serviceTypeId = serviceTypeId;
+        eventData.eventPartnerLocationServiceStatusId = eventPartnerLocationServiceStatusId;
 
         var method = "PUT";
 
@@ -108,7 +110,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/eventpartnerlocations', {
+            fetch('/api/eventpartnerlocationservices', {
                 method: method,
                 headers: headers,
                 body: evtdata,
@@ -118,7 +120,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
         })
     }
 
-    function renderPartnerLocationEventsTable(partnerEvents: DisplayPartnerLocationEventData[]) {
+    function renderPartnerLocationEventServicesTable(partnerLocationEventServices: DisplayPartnerLocationEventServiceData[]) {
         return (
             <div>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
@@ -129,21 +131,23 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
                             <th>Event Date</th>
                             <th>Event Address</th>
                             <th>Event Description</th>
+                            <th>Service Type</th>
                             <th>Partner Status for this Event</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {partnerEvents.map(partnerEvent =>
+                        {partnerLocationEventServices.map(partnerEvent =>
                             <tr key={partnerEvent.eventId.toString()}>
                                 <td>{partnerEvent.partnerLocationName}</td>
                                 <td>{partnerEvent.eventName}</td>
                                 <td>{new Date(partnerEvent.eventDate).toLocaleString()}</td>
                                 <td>{partnerEvent.eventStreetAddress}, {partnerEvent.eventCity}</td>
                                 <td>{partnerEvent.eventDescription}</td>
-                                <td>{getEventPartnerStatus(eventPartnerStatusList, partnerEvent.eventPartnerLocationStatusId)}</td>
+                                <td>{partnerEvent.serviceTypeId}</td>
+                                <td>{getEventPartnerLocationServiceStatus(eventPartnerStatusList, partnerEvent.eventPartnerLocationStatusId)}</td>
                                 <td>
-                                    <Button hidden={partnerEvent.eventPartnerLocationStatusId === Constants.EventPartnerLocationStatusAccepted} className="action" onClick={() => handleRequestPartnerAssistance(partnerEvent.eventId, partnerEvent.partnerLocationId, Constants.EventPartnerLocationStatusAccepted)}>Accept Partner Assistance Request</Button>
-                                    <Button hidden={partnerEvent.eventPartnerLocationStatusId === Constants.EventPartnerLocationStatusDeclined} className="action" onClick={() => handleRequestPartnerAssistance(partnerEvent.eventId, partnerEvent.partnerLocationId, Constants.EventPartnerLocationStatusDeclined)}>Decline Partner Assistance Request</Button>
+                                    <Button hidden={partnerEvent.eventPartnerLocationStatusId === Constants.EventPartnerLocationServiceStatusAccepted} className="action" onClick={() => handleRequestPartnerAssistance(partnerEvent.eventId, partnerEvent.partnerLocationId, partnerEvent.serviceTypeId, Constants.EventPartnerLocationServiceStatusAccepted)}>Accept Partner Assistance Request</Button>
+                                    <Button hidden={partnerEvent.eventPartnerLocationStatusId === Constants.EventPartnerLocationServiceStatusDeclined} className="action" onClick={() => handleRequestPartnerAssistance(partnerEvent.eventId, partnerEvent.partnerLocationId, partnerEvent.serviceTypeId, Constants.EventPartnerLocationServiceStatusDeclined)}>Decline Partner Assistance Request</Button>
                                 </td>
                             </tr>
                         )}
@@ -159,7 +163,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
                 {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner location must be created first.</em></p>}
                 {!isPartnerLocationEventDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
                 {isPartnerLocationEventDataLoaded && partnerLocationEvents.length === 0 && <p> <em>There are no event requests for this location.</em></p>}
-                {isPartnerLocationEventDataLoaded && partnerLocationEvents.length !== 0 && renderPartnerLocationEventsTable(partnerLocationEvents)}
+                {isPartnerLocationEventDataLoaded && partnerLocationEvents.length !== 0 && renderPartnerLocationEventServicesTable(partnerLocationEvents)}
             </div>
         </>
     );

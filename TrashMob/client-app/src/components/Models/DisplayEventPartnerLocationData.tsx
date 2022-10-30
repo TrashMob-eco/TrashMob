@@ -8,6 +8,7 @@ class DisplayEventPartnerLocationData {
     partnerName: string = "";
     partnerLocationName: string = "";
     partnerLocationNotes: string = "";
+    partnerServicesEngaged: string = "";
 }
 
 export default DisplayEventPartnerLocationData;
