@@ -74,8 +74,8 @@
 	  <Compile Include="..\TrashMob.Models\ContactRequest.cs" Link="Models\ContactRequest.cs" />
 	  <Compile Include="..\TrashMob.Models\Event.cs" Link="Models\Event.cs" />
 	  <Compile Include="..\TrashMob.Models\EventAttendee.cs" Link="Models\EventAttendee.cs" />
-	  <Compile Include="..\TrashMob.Models\EventPartnerLocation.cs" Link="Models\EventPartnerLocation.cs" />
-	  <Compile Include="..\TrashMob.Models\EventPartnerLocationStatus.cs" Link="Models\EventPartnerLocationStatus.cs" />
+	  <Compile Include="..\TrashMob.Models\EventPartnerLocationService.cs" Link="Models\EventPartnerLocationService.cs" />
+	  <Compile Include="..\TrashMob.Models\EventPartnerLocationServiceStatus.cs" Link="Models\EventPartnerLocationServiceStatus.cs" />
 	  <Compile Include="..\TrashMob.Models\EventStatus.cs" Link="Models\EventStatus.cs" />
 	  <Compile Include="..\TrashMob.Models\EventSummary.cs" Link="Models\EventSummary.cs" />
 	  <Compile Include="..\TrashMob.Models\EventType.cs" Link="Models\EventType.cs" />
