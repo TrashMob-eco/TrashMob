@@ -9,6 +9,8 @@ import { getEventPartnerLocationServiceStatus } from '../../store/eventPartnerLo
 import DisplayPartnerLocationEventData from '../Models/DisplayPartnerLocationEventServiceData';
 import { Guid } from 'guid-typescript';
 import DisplayPartnerLocationEventServiceData from '../Models/DisplayPartnerLocationEventServiceData';
+import ServiceTypeData from '../Models/ServiceTypeData';
+import { getServiceType } from '../../store/serviceTypeHelper';
 
 export interface PartnerLocationEventRequestsDataProps {
     partnerLocationId: string;
@@ -20,6 +22,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
 
     const [isPartnerLocationEventDataLoaded, setIsPartnerLocationEventDataLoaded] = React.useState<boolean>(false);
     const [eventPartnerStatusList, setEventPartnerStatusList] = React.useState<EventPartnerLocationServiceStatusData[]>([]);
+    const [serviceTypeList, setServiceTypeList] = React.useState<ServiceTypeData[]>([]);
     const [partnerLocationEvents, setPartnerLocationEvents] = React.useState<DisplayPartnerLocationEventData[]>([]);
 
     React.useEffect(() => {
@@ -44,7 +47,6 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
                         setEventPartnerStatusList(data)
                     })
                     .then(() => {
-
                         fetch('/api/partnerlocationeventservices/' + props.partnerLocationId, {
                             method: 'GET',
                             headers: headers
@@ -52,6 +54,16 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
                             .then(response => response.json() as Promise<DisplayPartnerLocationEventData[]>)
                             .then(data => {
                                 setPartnerLocationEvents(data);
+                            })
+                    })
+                    .then(() => {
+                        fetch('/api/servicetypes/', {
+                            method: 'GET',
+                            headers: headers
+                        })
+                            .then(response => response.json() as Promise<ServiceTypeData[]>)
+                            .then(data => {
+                                setServiceTypeList(data);
                                 setIsPartnerLocationEventDataLoaded(true)
                             })
                     });
@@ -143,7 +155,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
                                 <td>{new Date(partnerEvent.eventDate).toLocaleString()}</td>
                                 <td>{partnerEvent.eventStreetAddress}, {partnerEvent.eventCity}</td>
                                 <td>{partnerEvent.eventDescription}</td>
-                                <td>{partnerEvent.serviceTypeId}</td>
+                                <td>{getServiceType(serviceTypeList, partnerEvent.serviceTypeId)}</td>
                                 <td>{getEventPartnerLocationServiceStatus(eventPartnerStatusList, partnerEvent.eventPartnerLocationStatusId)}</td>
                                 <td>
                                     <Button hidden={partnerEvent.eventPartnerLocationStatusId === Constants.EventPartnerLocationServiceStatusAccepted} className="action" onClick={() => handleRequestPartnerAssistance(partnerEvent.eventId, partnerEvent.partnerLocationId, partnerEvent.serviceTypeId, Constants.EventPartnerLocationServiceStatusAccepted)}>Accept Partner Assistance Request</Button>

@@ -3,11 +3,13 @@ namespace TrashMob.Poco
 {
     using System;
 
-    public class DisplayPartnerLocationEvent
+    public class DisplayPartnerLocationServiceEvent
     {
         public Guid EventId { get; set; }
 
         public Guid PartnerLocationId { get; set; }
+
+        public int ServiceTypeId { get; set; }
 
         public DateTimeOffset EventDate { get; set; }
 
