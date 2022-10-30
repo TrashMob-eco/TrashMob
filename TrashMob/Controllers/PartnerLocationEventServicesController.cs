@@ -5,25 +5,24 @@ namespace TrashMob.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
-    [Route("api/partnerlocationevents")]
-    public class PartnerLocationEventsController : SecureController
+    [Route("api/partnerlocationeventservices")]
+    public class PartnerLocationEventServicesController : SecureController
     {
-        private readonly IEventPartnerLocationServiceManager eventPartnerLocationManager;
+        private readonly IEventPartnerLocationServiceManager eventPartnerLocationServicesManager;
         private readonly IPartnerLocationManager partnerLocationManager;
 
-        public PartnerLocationEventsController(IEventPartnerLocationServiceManager eventPartnerLocationManager,
-                                               IPartnerLocationManager partnerLocationManager)
+        public PartnerLocationEventServicesController(IEventPartnerLocationServiceManager eventPartnerLocationServicesManager,
+                                                      IPartnerLocationManager partnerLocationManager)
             : base()
         {
-            this.eventPartnerLocationManager = eventPartnerLocationManager;
+            this.eventPartnerLocationServicesManager = eventPartnerLocationServicesManager;
             this.partnerLocationManager = partnerLocationManager;
         }
 
         [HttpGet("{partnerLocationId}")]
-        public async Task<IActionResult> GetPartnerLocationEvents(Guid partnerLocationId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetPartnerLocationEventServices(Guid partnerLocationId, CancellationToken cancellationToken)
         {
             var partner = await partnerLocationManager.GetPartnerForLocation(partnerLocationId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
@@ -33,7 +32,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var events = await eventPartnerLocationManager.GetByPartnerLocationAsync(partnerLocationId, cancellationToken).ConfigureAwait(false);
+            var events = await eventPartnerLocationServicesManager.GetByPartnerLocationAsync(partnerLocationId, cancellationToken).ConfigureAwait(false);
 
             return Ok(events);
         }

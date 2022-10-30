@@ -152,18 +152,22 @@
             return existingService;
         }
 
-        public async Task<IEnumerable<DisplayPartnerLocationEvent>> GetByPartnerLocationAsync(Guid partnerLocationId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<DisplayPartnerLocationServiceEvent>> GetByPartnerLocationAsync(Guid partnerLocationId, CancellationToken cancellationToken = default)
         {
-            var displayEventPartners = new List<DisplayPartnerLocationEvent>();
+            var displayEventPartners = new List<DisplayPartnerLocationServiceEvent>();
 
-            var currentPartnerLocations = await Repository.Get(p => p.PartnerLocation.Id == partnerLocationId, withNoTracking: false).ToListAsync(cancellationToken: cancellationToken);
+            var currentPartnerLocations = await Repository.Get(p => p.PartnerLocation.Id == partnerLocationId)
+                                                          .Include(p => p.PartnerLocation)
+                                                          .Include(p => p.PartnerLocation.Partner)
+                                                          .Include(p => p.Event)
+                                                          .ToListAsync(cancellationToken: cancellationToken);
 
             if (currentPartnerLocations.Any())
             {
                 // Convert the current list of partner events for the event to a display partner (reduces round trips)
                 foreach (var cpl in currentPartnerLocations)
                 {
-                    var displayPartnerLocationEvent = new DisplayPartnerLocationEvent
+                    var displayPartnerLocationEvent = new DisplayPartnerLocationServiceEvent
                     {
                         EventId = cpl.EventId,
                         PartnerLocationId = partnerLocationId,
@@ -177,7 +181,8 @@
                         EventCountry = cpl.Event.Country,
                         EventPostalCode = cpl.Event.PostalCode,
                         EventDescription = cpl.Event.Description,
-                        EventDate = cpl.Event.EventDate
+                        EventDate = cpl.Event.EventDate,
+                        ServiceTypeId = cpl.ServiceTypeId,
                     };
 
                     displayEventPartners.Add(displayPartnerLocationEvent);
