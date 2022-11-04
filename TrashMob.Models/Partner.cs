@@ -12,7 +12,7 @@ namespace TrashMob.Models
             PartnerDocuments = new HashSet<PartnerDocument>();
             PartnerSocialMediaAccounts = new HashSet<PartnerSocialMediaAccount>();
             PartnerLocations = new HashSet<PartnerLocation>();
-            PartnerUsers = new HashSet<PartnerUser>();
+            PartnerAdmins = new HashSet<PartnerAdmin>();
         }
 
         public string Name { get; set; }
@@ -35,7 +35,7 @@ namespace TrashMob.Models
 
         public virtual ICollection<PartnerSocialMediaAccount> PartnerSocialMediaAccounts { get; set; }
 
-        public virtual ICollection<PartnerUser> PartnerUsers { get; set; }
+        public virtual ICollection<PartnerAdmin> PartnerAdmins { get; set; }
 
         public virtual PartnerStatus PartnerStatus { get; set; }
 

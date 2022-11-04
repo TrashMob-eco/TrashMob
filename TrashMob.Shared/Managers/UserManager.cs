@@ -22,7 +22,7 @@ namespace TrashMob.Shared.Managers
         private readonly IBaseRepository<EventPartnerLocationService> eventPartnerRepository;
         private readonly IKeyedRepository<Event> eventRepository;
         private readonly IKeyedRepository<Partner> partnerRepository;
-        private readonly IBaseRepository<PartnerUser> partnerUserRepository;
+        private readonly IBaseRepository<PartnerAdmin> partnerUserRepository;
         private readonly IKeyedRepository<PartnerLocation> partnerLocationRepository;
         private readonly IEmailManager emailManager;
 
@@ -34,7 +34,7 @@ namespace TrashMob.Shared.Managers
                            IBaseRepository<EventPartnerLocationService> eventPartnerRepository,
                            IKeyedRepository<Event> eventRepository,
                            IKeyedRepository<Partner> partnerRepository,
-                           IBaseRepository<PartnerUser> partnerUserRepository,
+                           IBaseRepository<PartnerAdmin> partnerUserRepository,
                            IKeyedRepository<PartnerLocation> partnerLocationRepository,
                            IEmailManager emailManager) : base(repository)
         {

@@ -1,14 +1,12 @@
 ﻿#nullable disable
 
-using TrashMob;
-
 namespace TrashMob.Models
 {
     using System;
 
-    public partial class PartnerUser : BaseModel
+    public partial class PartnerAdmin : BaseModel
     {
-        public PartnerUser()
+        public PartnerAdmin()
         {
         }
 
@@ -16,8 +14,14 @@ namespace TrashMob.Models
 
         public Guid UserId { get; set; }
 
+        public int InvitationStatusId { get; set; }
+
+        public DateTimeOffset DateInvited { get; set; }
+
         public virtual Partner Partner { get; set; }
 
         public virtual User User { get; set; }
+
+        public virtual InvitationStatus InvitationStatus { get; set; }
     }
 }

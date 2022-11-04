@@ -13,21 +13,21 @@
     using TrashMob.Shared.Managers.Interfaces;
 
     [Authorize]
-    [Route("api/partnerusers")]
-    public class PartnerUsersController : SecureController
+    [Route("api/partneradmins")]
+    public class PartnerAdminsController : SecureController
     {
-        private readonly IBaseManager<PartnerUser> partnerUserManager;
+        private readonly IBaseManager<PartnerAdmin> partnerAdminManager;
         private readonly IKeyedManager<Partner> partnerManager;
         private readonly IKeyedManager<User> userManager;
 
-        public PartnerUsersController(IKeyedManager<User> userManager,
-                                      IBaseManager<PartnerUser> partnerUserManager, 
-                                      IKeyedManager<Partner> partnerManager)
+        public PartnerAdminsController(IKeyedManager<User> userManager,
+                                       IBaseManager<PartnerAdmin> partnerAdminManager, 
+                                       IKeyedManager<Partner> partnerManager)
             : base()
         {
             this.partnerManager = partnerManager;
             this.userManager = userManager;
-            this.partnerUserManager = partnerUserManager;
+            this.partnerAdminManager = partnerAdminManager;
         }
 
         [HttpGet("{partnerId}")]
@@ -41,7 +41,7 @@
                 return Forbid();
             }
 
-            return Ok(await partnerUserManager.GetByParentIdAsync(partnerId, cancellationToken));
+            return Ok(await partnerAdminManager.GetByParentIdAsync(partnerId, cancellationToken));
         }
 
         [HttpGet("getpartnersforuser/{userId}")]
@@ -49,7 +49,7 @@
         public async Task<IActionResult> GetPartnersForUser(Guid userId, CancellationToken cancellationToken)
         {
             // Todo fix this
-            var partnerUsers = (await partnerUserManager.GetAsync(cancellationToken)).Where(pu => pu.UserId == userId).ToList();
+            var partnerUsers = (await partnerAdminManager.GetAsync(cancellationToken)).Where(pu => pu.UserId == userId).ToList();
 
             if (!partnerUsers.Any())
             { 
@@ -78,7 +78,7 @@
                 return Forbid();
             }
 
-            var partnerUser = (await partnerUserManager.GetByParentIdAsync(partnerId, cancellationToken)).FirstOrDefault(pu => pu.UserId == userId);
+            var partnerUser = (await partnerAdminManager.GetByParentIdAsync(partnerId, cancellationToken)).FirstOrDefault(pu => pu.UserId == userId);
 
             if (partnerUser == null)
             {
@@ -99,7 +99,7 @@
                 return Forbid();
             }
 
-            var partnerUsers = await partnerUserManager.GetByParentIdAsync(partnerId, cancellationToken);
+            var partnerUsers = await partnerAdminManager.GetByParentIdAsync(partnerId, cancellationToken);
 
             if (partnerUsers == null || !partnerUsers.Any())
             {
@@ -130,7 +130,7 @@
                 return Forbid();
             }
 
-            var partnerUser = new PartnerUser()
+            var partnerUser = new PartnerAdmin()
             {
                 PartnerId = partnerId,
                 UserId = userId,
@@ -138,7 +138,7 @@
                 LastUpdatedByUserId = UserId
             };
 
-            var result = await partnerUserManager.AddAsync(partnerUser, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await partnerAdminManager.AddAsync(partnerUser, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddPartnerUser));
 
             return CreatedAtAction(nameof(GetPartnerUser), new { partnerId, userId }, result);

@@ -14,9 +14,9 @@
     {
         private readonly IHttpContextAccessor httpContext;
         private readonly IUserManager userManager;
-        private readonly IBaseManager<PartnerUser> partnerUserManager;
+        private readonly IBaseManager<PartnerAdmin> partnerUserManager;
 
-        public UserIsPartnerUserOrIsAdminAuthHandler(IHttpContextAccessor httpContext, IUserManager userManager, IBaseManager<PartnerUser> partnerUserManager)
+        public UserIsPartnerUserOrIsAdminAuthHandler(IHttpContextAccessor httpContext, IUserManager userManager, IBaseManager<PartnerAdmin> partnerUserManager)
         {
             this.httpContext = httpContext;
             this.userManager = userManager;

@@ -81,6 +81,14 @@
         Complete = 4,
     }
 
+    public enum InvitationStatusEnum
+    {
+        New = 1,
+        Sent = 2,
+        Accepted = 3,
+        Canceled = 4
+    }
+
     public enum PartnerRequestStatusEnum
     {
         Sent = 1,

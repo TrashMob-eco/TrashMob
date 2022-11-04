@@ -77,9 +77,9 @@ namespace TrashMob.Models
 
         public virtual ICollection<Partner> PartnersUpdated { get; set; }
 
-        public virtual ICollection<PartnerUser> PartnerUsersCreated { get; set; }
+        public virtual ICollection<PartnerAdmin> PartnerAdminsCreated { get; set; }
 
-        public virtual ICollection<PartnerUser> PartnerUsersUpdated { get; set; }
+        public virtual ICollection<PartnerAdmin> PartnerAdminsUpdated { get; set; }
 
         public virtual ICollection<PartnerLocation> PartnerLocationsCreated { get; set; }
 

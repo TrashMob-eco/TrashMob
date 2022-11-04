@@ -4,17 +4,17 @@ import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 
-export interface PartnerUsersDataProps {
+export interface PartnerAdminsDataProps {
     partnerId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
 };
 
-export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
+export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
 
-    const [userName, setUserName] = React.useState<string>("");
-    const [users, setUsers] = React.useState<UserData[]>([]);
-    const [isPartnerUserDataLoaded, setIsPartnerUserDataLoaded] = React.useState<boolean>(false);
+    const [userEmail, setUserEmail] = React.useState<string>("");
+    const [administrators, setAdministrators] = React.useState<UserData[]>([]);
+    const [isPartnerAdminDataLoaded, setIsPartnerAdminDataLoaded] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         if (props.isUserLoaded) {
@@ -30,14 +30,14 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
 
-                fetch('/api/partnerusers/users/' + props.partnerId, {
+                fetch('/api/partneradmins/' + props.partnerId, {
                     method: 'GET',
                     headers: headers
                 })
                     .then(response => response.json() as Promise<UserData[]>)
                     .then(data => {
-                        setUsers(data);
-                        setIsPartnerUserDataLoaded(true);
+                        setAdministrators(data);
+                        setIsPartnerAdminDataLoaded(true);
                     });
             });
         }
@@ -68,7 +68,7 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
 
     function handleAddUser() {
 
-        if (userName === "")
+        if (userEmail === "")
             return;
 
         const account = msalClient.getAllAccounts()[0];
@@ -82,13 +82,13 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/users/getUserByUserName/' + userName, {
+            fetch('/api/users/getUserByUserName/' + userEmail, {
                 method: 'GET',
                 headers: headers,
             })
                 .then(response => response.json() as Promise<UserData>)
                 .then(data => {
-                    if (!window.confirm("Please confirm you want to add user with userName: '" + userName + "' and email address: '" + data.email + "' as a user for this Partner."))
+                    if (!window.confirm("Please confirm you want to add user with userName: '" + userEmail + "' and email address: '" + data.email + "' as a user for this Partner."))
                         return;
                     else {
                         const headers = getDefaultHeaders('POST');
@@ -103,7 +103,7 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
     }
 
     function handleUserNameChanged(userName: string) {
-        setUserName(userName);
+        setUserEmail(userName);
     }
 
     function renderPartnerUserNameToolTip(props: any) {
@@ -146,7 +146,7 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
                                 <OverlayTrigger placement="top" overlay={renderPartnerUserNameToolTip}>
                                     <Form.Label className="control-label" htmlFor="UserName">Enter the User Name to Add:</Form.Label>
                                 </OverlayTrigger>
-                                <Form.Control type="text" name="username" defaultValue={userName} onChange={val => handleUserNameChanged(val.target.value)} maxLength={parseInt('64')} required />
+                                <Form.Control type="text" name="username" defaultValue={userEmail} onChange={val => handleUserNameChanged(val.target.value)} maxLength={parseInt('64')} required />
                             </Form.Group>
                         </Col>
                         <Button className="action" onClick={() => handleAddUser()}>Add User</Button>
@@ -156,8 +156,8 @@ export const PartnerUsers: React.FC<PartnerUsersDataProps> = (props) => {
         );
     }
 
-    var contents = isPartnerUserDataLoaded && props.partnerId
-        ? renderUsersTable(users)
+    var contents = isPartnerAdminDataLoaded && props.partnerId
+        ? renderUsersTable(administrators)
         : <p><em>Loading...</em></p>;
 
     return <div>

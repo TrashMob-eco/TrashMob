@@ -9,10 +9,10 @@
 
     public class PartnerManager : KeyedManager<Partner>, IKeyedManager<Partner>
     {
-        private readonly IBaseManager<PartnerUser> partnerUserManager;
+        private readonly IBaseManager<PartnerAdmin> partnerUserManager;
 
         public PartnerManager(IKeyedRepository<Partner> partnerRepository,
-                              IBaseManager<PartnerUser> partnerUserManager) : base(partnerRepository)
+                              IBaseManager<PartnerAdmin> partnerUserManager) : base(partnerRepository)
         {
             this.partnerUserManager = partnerUserManager;
         }
@@ -26,7 +26,7 @@
             var newPartner = await base.AddAsync(partner, partnerRequest.CreatedByUserId, cancellationToken).ConfigureAwait(false);
 
             // Make the creator of the partner request a registered user for the partner
-            var partnerUser = new PartnerUser
+            var partnerUser = new PartnerAdmin
             {
                 PartnerId = newPartner.Id,
                 UserId = partnerRequest.CreatedByUserId,
