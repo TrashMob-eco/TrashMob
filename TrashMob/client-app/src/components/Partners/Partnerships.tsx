@@ -8,7 +8,7 @@ import Supplies from '../assets/partnerships/Supplies.svg';
 import TrashDisposal from '../assets/partnerships/TrashDisposal.svg';
 import Garbage from '../assets/partnerships/garbage.svg';
 
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import PartnerRequestData from '../Models/PartnerRequestData';
 import * as Constants from '../Models/Constants';
 import * as ToolTips from "../../store/ToolTips";
@@ -20,7 +20,7 @@ import { getKey } from '../../store/MapStore';
 
 export const Partnerships: FC<any> = (props) => {
     const [name, setName] = React.useState<string>();
-    const [partnerTypeList, setPartnerTypeList] = React.useState<[]>([]);
+    // const [partnerTypeList, setPartnerTypeList] = React.useState<[]>([]);
     const [partnerTypeId, setPartnerTypeId] = React.useState<number>(0);
     const [email, setEmail] = React.useState<string>();
     const [website, setWebsite] = React.useState<string>();
@@ -44,8 +44,8 @@ export const Partnerships: FC<any> = (props) => {
     const [mapOptions, setMapOptions] = React.useState<any>();
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
-    const [isPartnerTypeDataLoaded, setIsPartnerTypeDataLoaded] = React.useState<boolean>(false);
-    const [title, setTitle] = React.useState<string>("Apply to become a partner");
+    // const [isPartnerTypeDataLoaded, setIsPartnerTypeDataLoaded] = React.useState<boolean>(false);
+    // const [title, setTitle] = React.useState<string>("Apply to become a partner");
     function validateForm() {
         if (nameErrors !== "" ||
             notesErrors !== "" ||
@@ -110,10 +110,10 @@ export const Partnerships: FC<any> = (props) => {
     }
 
     // This will handle Cancel button click event.  
-    function handleCancel(event: any) {
-        event.preventDefault();
-        // props.history.push("/");
-    }
+    // function handleCancel(event: any) {
+    //     event.preventDefault();
+    //     // props.history.push("/");
+    // }
 
     function handleNameChanged(val: string) {
         if (name === "") {
@@ -181,9 +181,9 @@ export const Partnerships: FC<any> = (props) => {
         setPostalCode(val);
     }
 
-    function handleCountryChanged(val: string) {
-        setCountry(val);
-    }
+    // function handleCountryChanged(val: string) {
+    //     setCountry(val);
+    // }
 
     function handleNotesChanged(val: string) {
         if (val.length < 0 || val.length > 1000) {
@@ -197,9 +197,9 @@ export const Partnerships: FC<any> = (props) => {
         validateForm();
     }
 
-    function selectPartnerType(val: string) {
-        setPartnerTypeId(parseInt(val));
-    }
+    // function selectPartnerType(val: string) {
+    //     setPartnerTypeId(parseInt(val));
+    // }
 
     function renderNameToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerRequestName}</Tooltip>
@@ -233,13 +233,13 @@ export const Partnerships: FC<any> = (props) => {
         return <Tooltip {...props}>{ToolTips.PartnerRequestCity}</Tooltip>
     }
 
-    function renderCountryToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestCountry}</Tooltip>
-    }
+    // function renderCountryToolTip(props: any) {
+    //     return <Tooltip {...props}>{ToolTips.PartnerRequestCountry}</Tooltip>
+    // }
 
-    function renderRegionToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestRegion}</Tooltip>
-    }
+    // function renderRegionToolTip(props: any) {
+    //     return <Tooltip {...props}>{ToolTips.PartnerRequestRegion}</Tooltip>
+    // }
 
     function renderPostalCodeToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerRequestPostalCode}</Tooltip>

@@ -5,7 +5,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
+// import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import { Button, Col, Container, Form, Image, ModalBody, Row } from 'react-bootstrap';
 import { Modal } from 'reactstrap';
 import * as MapStore from '../../store/MapStore';
@@ -114,6 +114,8 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                         setPrefersMetric(data.prefersMetric);
                         setTravelLimitForLocalEvents(data.travelLimitForLocalEvents);
 
+                        setMaxEventsRadiusErrors("");
+                        setStateErrors("");
                         setUserNameErrors("");
                         setGivenNameErrors("");
                         setSurNameErrors("");
@@ -317,119 +319,119 @@ const UserProfile: FC<UserProfileProps> = (props) => {
         })
     }
 
-    const handleGivenNameChanged = (val: string) => {
-        setGivenName(val);
-        validateForm();
-    }
+    // const handleGivenNameChanged = (val: string) => {
+    //     setGivenName(val);
+    //     validateForm();
+    // }
 
-    const handleSurNameChanged = (val: string) => {
-        setSurName(val);
-        validateForm();
-    }
+    // const handleSurNameChanged = (val: string) => {
+    //     setSurName(val);
+    //     validateForm();
+    // }
 
     const handleCityChanged = (val: string) => {
         setCity(val);
         validateForm();
     }
 
-    const selectCountry = (val: string) => {
-        setCountry(val);
-        validateForm();
-    }
+    // const selectCountry = (val: string) => {
+    //     setCountry(val);
+    //     validateForm();
+    // }
 
-    const selectRegion = (val: string) => {
-        setRegion(val);
-        validateForm();
-    }
+    // const selectRegion = (val: string) => {
+    //     setRegion(val);
+    //     validateForm();
+    // }
 
     const handlePostalCodeChanged = (val: string) => {
         setPostalCode(val);
         validateForm();
     }
 
-    const handleLatitudeChanged = (val: string) => {
-        try {
-            if (val) {
-                const floatVal = parseFloat(val);
+    // const handleLatitudeChanged = (val: string) => {
+    //     try {
+    //         if (val) {
+    //             const floatVal = parseFloat(val);
 
-                if (floatVal < -90 || floatVal > 90) {
-                    setLatitudeErrors("Latitude must be => -90 and <= 90");
-                }
-                else {
-                    setLatitude(floatVal);
-                    setLatitudeErrors("");
-                }
-            }
-            else {
-                setLatitudeErrors("Latitude must be => -90 and <= 90");
-            }
-        }
-        catch {
-            setLatitudeErrors("Latitude must be a valid number.");
-        }
+    //             if (floatVal < -90 || floatVal > 90) {
+    //                 setLatitudeErrors("Latitude must be => -90 and <= 90");
+    //             }
+    //             else {
+    //                 setLatitude(floatVal);
+    //                 setLatitudeErrors("");
+    //             }
+    //         }
+    //         else {
+    //             setLatitudeErrors("Latitude must be => -90 and <= 90");
+    //         }
+    //     }
+    //     catch {
+    //         setLatitudeErrors("Latitude must be a valid number.");
+    //     }
 
-        validateForm();
-    }
+    //     validateForm();
+    // }
 
-    const handleLongitudeChanged = (val: string) => {
-        try {
-            if (val) {
-                const floatVal = parseFloat(val);
+    // const handleLongitudeChanged = (val: string) => {
+    //     try {
+    //         if (val) {
+    //             const floatVal = parseFloat(val);
 
-                if (floatVal < -180 || floatVal > 180) {
-                    setLongitudeErrors("Longitude must be >= -180 and <= 180");
-                }
-                else {
-                    setLongitude(floatVal);
-                    setLongitudeErrors("");
-                }
-            }
-            else {
-                setLongitudeErrors("Longitude must be >= -180 and <= 180");
-            }
-        }
-        catch {
-            setLongitudeErrors("Longitude must be a valid number.");
-        }
+    //             if (floatVal < -180 || floatVal > 180) {
+    //                 setLongitudeErrors("Longitude must be >= -180 and <= 180");
+    //             }
+    //             else {
+    //                 setLongitude(floatVal);
+    //                 setLongitudeErrors("");
+    //             }
+    //         }
+    //         else {
+    //             setLongitudeErrors("Longitude must be >= -180 and <= 180");
+    //         }
+    //     }
+    //     catch {
+    //         setLongitudeErrors("Longitude must be a valid number.");
+    //     }
 
-        validateForm();
-    }
+    //     validateForm();
+    // }
 
-    const handleTravelLimitForLocalEventsChanged = (val: string) => {
-        try {
-            if (val) {
-                const intVal = parseInt(val);
+    // const handleTravelLimitForLocalEventsChanged = (val: string) => {
+    //     try {
+    //         if (val) {
+    //             const intVal = parseInt(val);
 
-                if (intVal <= 0 || intVal > 1000) {
-                    setTravelLimitForLocalEventsErrors("Travel limit must be greater than or equal to 0 and less than 1000.")
-                }
-                else {
-                    setTravelLimitForLocalEvents(intVal);
-                    setTravelLimitForLocalEventsErrors("");
-                }
-            }
-            else {
-                setTravelLimitForLocalEvents(1);
-            }
-        }
-        catch {
-            setTravelLimitForLocalEventsErrors("Travel limit must be a valid number.");
-        }
+    //             if (intVal <= 0 || intVal > 1000) {
+    //                 setTravelLimitForLocalEventsErrors("Travel limit must be greater than or equal to 0 and less than 1000.")
+    //             }
+    //             else {
+    //                 setTravelLimitForLocalEvents(intVal);
+    //                 setTravelLimitForLocalEventsErrors("");
+    //             }
+    //         }
+    //         else {
+    //             setTravelLimitForLocalEvents(1);
+    //         }
+    //     }
+    //     catch {
+    //         setTravelLimitForLocalEventsErrors("Travel limit must be a valid number.");
+    //     }
 
-        validateForm();
-    }
+    //     validateForm();
+    // }
 
     const renderUserNameToolTip = (props: any) => {
         return <Tooltip {...props}>{ToolTips.UserProfileUserName}</Tooltip>
     }
 
-    const renderGivenNameToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileGivenName}</Tooltip>
-    }
+    // const renderGivenNameToolTip = (props: any) => {
+    //     return <Tooltip {...props}>{ToolTips.UserProfileGivenName}</Tooltip>
+    // }
 
-    const renderSurNameToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileSurName}</Tooltip>
-    }
+    // const renderSurNameToolTip = (props: any) => {
+    //     return <Tooltip {...props}>{ToolTips.UserProfileSurName}</Tooltip>
+    // }
 
     const renderFirstNameToolTip = (props: any) => {
         return <Tooltip {...props}>{ToolTips.UserProfileFirstName}</Tooltip>
@@ -455,65 +457,65 @@ const UserProfile: FC<UserProfileProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.UserProfileCity}</Tooltip>
     }
 
-    const renderCountryToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileCountry}</Tooltip>
-    }
+    // const renderCountryToolTip = (props: any) => {
+    //     return <Tooltip {...props}>{ToolTips.UserProfileCountry}</Tooltip>
+    // }
 
-    const renderRegionToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileRegion}</Tooltip>
-    }
+    // const renderRegionToolTip = (props: any) => {
+    //     return <Tooltip {...props}>{ToolTips.UserProfileRegion}</Tooltip>
+    // }
 
     const renderPostalCodeToolTip = (props: any) => {
         return <Tooltip {...props}>{ToolTips.UserProfilePostalCode}</Tooltip>
     }
 
-    const renderDateAgreedToPrivacyPolicyToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileDateAgreedToPrivacyPolicy}</Tooltip>
-    }
+    // const renderDateAgreedToPrivacyPolicyToolTip = (props: any) => {
+    //     return <Tooltip {...props}>{ToolTips.UserProfileDateAgreedToPrivacyPolicy}</Tooltip>
+    // }
 
-    const renderPrivacyPolicyVersionToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfilePrivacyPolicyVersion}</Tooltip>
-    }
+    // const renderPrivacyPolicyVersionToolTip = (props: any) => {
+    //     return <Tooltip {...props}>{ToolTips.UserProfilePrivacyPolicyVersion}</Tooltip>
+    // }
 
-    const renderDateAgreedToTermsOfServiceToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileDateAgreedToTermsOfService}</Tooltip>
-    }
+    // const renderDateAgreedToTermsOfServiceToolTip = (props: any) => {
+    //     return <Tooltip {...props}>{ToolTips.UserProfileDateAgreedToTermsOfService}</Tooltip>
+    // }
 
-    const renderTermsOfServiceVersionToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileTermsOfServiceVersion}</Tooltip>
-    }
+    // const renderTermsOfServiceVersionToolTip = (props: any) => {
+    //     return <Tooltip {...props}>{ToolTips.UserProfileTermsOfServiceVersion}</Tooltip>
+    // }
 
-    const renderDateAgreedToTrashMobWaiverToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileDateAgreedToTrashMobWaiver}</Tooltip>
-    }
+    // const renderDateAgreedToTrashMobWaiverToolTip = (props: any) => {
+    //     return <Tooltip {...props}>{ToolTips.UserProfileDateAgreedToTrashMobWaiver}</Tooltip>
+    // }
 
-    const renderTrashMobWaiverVersionToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileTrashMobWaiverVersion}</Tooltip>
-    }
+    // const renderTrashMobWaiverVersionToolTip = (props: any) => {
+    //     return <Tooltip {...props}>{ToolTips.UserProfileTrashMobWaiverVersion}</Tooltip>
+    // }
 
-    const renderMemberSinceToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileMemberSince}</Tooltip>
-    }
+    // const renderMemberSinceToolTip = (props: any) => {
+    //     return <Tooltip {...props}>{ToolTips.UserProfileMemberSince}</Tooltip>
+    // }
 
-    const renderSourceSystemUserNameToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileSourceSystemUserName}</Tooltip>
-    }
+    // const renderSourceSystemUserNameToolTip = (props: any) => {
+    //     return <Tooltip {...props}>{ToolTips.UserProfileSourceSystemUserName}</Tooltip>
+    // }
 
-    const renderTravelLimitForLocalEventsToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileTravelLimitForLocalEvents}</Tooltip>
-    }
+    // const renderTravelLimitForLocalEventsToolTip = (props: any) => {
+    //     return <Tooltip {...props}>{ToolTips.UserProfileTravelLimitForLocalEvents}</Tooltip>
+    // }
 
-    const renderUserLatitudeToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileLatitude}</Tooltip>
-    }
+    // const renderUserLatitudeToolTip = (props: any) => {
+    //     return <Tooltip {...props}>{ToolTips.UserProfileLatitude}</Tooltip>
+    // }
 
-    const renderUserLongitudeToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileLongitude}</Tooltip>
-    }
+    // const renderUserLongitudeToolTip = (props: any) => {
+    //     return <Tooltip {...props}>{ToolTips.UserProfileLongitude}</Tooltip>
+    // }
 
-    const renderPreferMetricToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfilePreferMetric}</Tooltip>
-    }
+    // const renderPreferMetricToolTip = (props: any) => {
+    //     return <Tooltip {...props}>{ToolTips.UserProfilePreferMetric}</Tooltip>
+    // }
 
     const handleLocationChange = (point: data.Position) => {
         // In an Azure Map point, the longitude is the first position, and latitude is second
