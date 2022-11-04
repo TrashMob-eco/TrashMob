@@ -6,7 +6,7 @@ import * as ToolTips from "../../store/ToolTips";
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import { Button, Col, Container, Form, Image, Row, ToggleButton } from 'react-bootstrap';
+import { Button, Col, Container, Form, Image, ModalBody, Row } from 'react-bootstrap';
 import { Modal } from 'reactstrap';
 import * as MapStore from '../../store/MapStore';
 import { getKey } from '../../store/MapStore';
@@ -16,6 +16,7 @@ import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import * as Constants from '../Models/Constants';
 import MapControllerSinglePoint from '../MapControllerSinglePoint';
 import globes from '../assets/gettingStarted/globes.png';
+import infoCycle from '../assets/info-circle.svg';
 
 interface UserProfileProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -31,8 +32,11 @@ const UserProfile: FC<UserProfileProps> = (props) => {
     const [sourceSystemUserName, setSourceSystemUserName] = useState<string>("");
     const [givenName, setGivenName] = useState<string>("");
     const [surName, setSurName] = useState<string>("");
+    const [maxEventsRadius, setMaxEventsRadius] = useState<number>();
+    const [state, setState] = useState<string>("");
     const [email, setEmail] = useState<string>();
     const [city, setCity] = useState<string>();
+    const [radiousType, setRadiousType] = useState<string>("");
     const [country, setCountry] = useState<string>();
     const [region, setRegion] = useState<string>();
     const [postalCode, setPostalCode] = useState<string>();
@@ -43,6 +47,8 @@ const UserProfile: FC<UserProfileProps> = (props) => {
     const [termsOfServiceVersion, setTermsOfServiceVersion] = useState<string>("");
     const [trashMobWaiverVersion, setTrashMobWaiverVersion] = useState<string>("");
     const [memberSince, setMemberSince] = useState<Date>(new Date());
+    const [maxEventsRadiusErrors, setMaxEventsRadiusErrors] = useState<string>("");
+    const [stateErrors, setStateErrors] = useState<string>("");
     const [userNameErrors, setUserNameErrors] = useState<string>("");
     const [givenNameErrors, setGivenNameErrors] = useState<string>("");
     const [surNameErrors, setSurNameErrors] = useState<string>("");
@@ -425,6 +431,22 @@ const UserProfile: FC<UserProfileProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.UserProfileSurName}</Tooltip>
     }
 
+    const renderFirstNameToolTip = (props: any) => {
+        return <Tooltip {...props}>{ToolTips.UserProfileFirstName}</Tooltip>
+    }
+
+    const renderLastNameToolTip = (props: any) => {
+        return <Tooltip {...props}>{ToolTips.UserProfileLastName}</Tooltip>
+    }
+
+    const renderMaxEventsRadiousToolTip = (props: any) => {
+        return <Tooltip {...props}>{ToolTips.UserProfileMaxEventsRadius}</Tooltip>
+    }
+
+    const renderStateToolTip = (props: any) => {
+        return <Tooltip {...props}>{ToolTips.UserProfileState}</Tooltip>
+    }
+
     const renderEmailToolTip = (props: any) => {
         return <Tooltip {...props}>{ToolTips.UserProfileEmail}</Tooltip>
     }
@@ -532,29 +554,175 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                         </Col>
                     </Row>
                 </Container>
-                <Modal isOpen={isOpen} onrequestclose={togglemodal} contentlabel="Delete Account?" fade={true} style={{ width: "300px", display: "block" }}>
-                    <Form>
-                        <Form.Row>
-                            <h3>Are you sure you want to delete your account and all your events? Deleted accounts cannot be recovered!</h3>
-                        </Form.Row>
-                        <Form.Row>
-                            <Button variant="danger" onClick={() => {
-                                togglemodal();
-                                deleteAccount();
-                            }
-                            }>
-                                Yes, Delete My Account
-                            </Button>
-                            <Button className="action" onClick={() => {
+                <Modal isOpen={isOpen} centered onrequestclose={togglemodal} contentlabel="Delete Account?" fade={true} size={"lg"}>
+                    <ModalBody>
+                        <h2 className='fw-500'>Delete your account?</h2>
+                        <p className='p-18'>
+                            Are you sure you want to delete your account? This action cannot be undone and you will not be able to reactivate your account, view your past events, or continue building your stats.
+                        </p>
+                        <div className='d-flex justify-content-end'>
+                            <Button className="action h-49 p-18" onClick={() => {
                                 togglemodal();
                             }
                             }>
                                 Cancel
                             </Button>
+                            <Button variant="outline" className='ml-2 border-danger text-danger h-49' onClick={() => {
+                                togglemodal();
+                                deleteAccount();
+                            }
+                            }>
+                                Delete
+                            </Button>
+                        </div>
+                    </ModalBody>
+                </Modal>
+
+                <Container className='bg-white p-4 rounded mt-5'>
+                    <h4 className='fw-600 color-primary my-3 main-header'>Account</h4>
+                    <Form>
+                        <Form.Row>
+                            <Col lg={6}>
+                                <Form.Group className="required">
+                                    <OverlayTrigger placement="top" overlay={renderUserNameToolTip}>
+                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="UserName">User Name:</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" className='border-0 bg-light p-18 h-60' name="userName" defaultValue={userName} onChange={(val) => handleUserNameChanged(val.target.value)} maxLength={parseInt('32')} required />
+                                    <span style={{ color: "red" }}>{userNameErrors}</span>
+                                </Form.Group>
+                            </Col>
+                            <Col lg={6}>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
+                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="email">Email <img className='m-0 ml-2' src={infoCycle} alt="info" /></Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" className='border-0 bg-light p-18 h-60' disabled defaultValue={email} />
+                                </Form.Group>
+                            </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col lg={6}>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderFirstNameToolTip}>
+                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="FirstName">First Name</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" className='border-0 bg-light p-18 h-60' name="firstName" defaultValue={givenName} onChange={(val) => setGivenName(val.target.value)} maxLength={parseInt('32')} />
+                                    <span style={{ color: "red" }}>{givenNameErrors}</span>
+                                </Form.Group>
+                            </Col>
+                            <Col lg={6}>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderLastNameToolTip}>
+                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="lastName">Last Name</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" className='border-0 bg-light p-18 h-60' name="lastName" defaultValue={surName} onChange={(val) => setSurName(val.target.value)} maxLength={parseInt('32')} />
+                                    <span style={{ color: "red" }}>{surNameErrors}</span>
+                                </Form.Group>
+                            </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col>
+                                <Form.Label className="control-label font-weight-bold h5" htmlFor="Password">Password</Form.Label>
+                                <Form.Group>
+                                </Form.Group>
+                                <Button variant="outline" className='text-center p-18 h-49'>
+                                    Reset password
+                                </Button>
+                            </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col>
+                                <Form.Group className='text-right'>
+                                    <Button className="action h-49 p-18" onClick={(e) => handleCancel(e)}>Discard</Button>
+                                    <Button disabled={!isSaveEnabled} type="submit" className="action btn-outline ml-2 h-49" variant="outline-primary">Save</Button>
+                                </Form.Group>
+                                <span>{formSubmitted ? 'Saved!' : ''}</span>
+                                <span>{formSubmitErrors ? formSubmitErrors : ''}</span>
+                            </Col>
                         </Form.Row>
                     </Form>
-                </Modal>
-                <div className="container-fluid p-5" >
+                </Container>
+
+                <Container className='p-4 bg-white mt-5 rounded'>
+                    <h4 className='fw-600 color-primary my-3 main-header'>Location preferences</h4>
+                    <Form onSubmit={handleSave}>
+                        <Form.Row>
+                            <AzureMapsProvider>
+                                <>
+                                    <MapControllerSinglePoint center={center} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isDraggable={true} eventDate={new Date()} />
+                                </>
+                            </AzureMapsProvider>
+                        </Form.Row>
+                        <Form.Row className='mt-4'>
+                            <Col lg={6}>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderMaxEventsRadiousToolTip}>
+                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="maxEventsRadius">Maximum event radius <img className='m-0 ml-2' src={infoCycle} alt="info" /></Form.Label>
+                                    </OverlayTrigger>
+                                    <Row>
+                                        <Col xs={10}>
+                                            <Form.Control type="number" className='border-0 bg-light p-18 h-60' name="maxEventsRadius" defaultValue={maxEventsRadius} onChange={(val) => setMaxEventsRadius(Number(val.target.value))} maxLength={parseInt('32')} />
+                                        </Col>
+                                        <Col xs={2}>
+                                            <select data-val="true" className='bg-light border-0 p-18 h-60 w-100 rounded' name="radiousType" defaultValue={radiousType} onChange={(val) => setRadiousType(val.target.value)} required>
+                                                <option value="mi" selected>mi</option>
+                                                <option value="km">km</option>
+                                            </select>
+                                        </Col>
+                                    </Row>
+                                    <span style={{ color: "red" }}>{maxEventsRadiusErrors}</span>
+                                </Form.Group>
+                            </Col>
+                            <Col lg={6}>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderCityToolTip}>
+                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="City">City</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" className='border-0 bg-light p-18 h-60' disabled name="city" defaultValue={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('64')} />
+                                    <span style={{ color: "red" }}>{cityErrors}</span>
+                                </Form.Group>
+                            </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col lg={6}>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderStateToolTip}>
+                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="FirstName">State</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="number" className='border-0 bg-light p-18 h-60' disabled name="state" defaultValue={state} onChange={(val) => setState(val.target.value)} maxLength={parseInt('32')} />
+                                    <span style={{ color: "red" }}>{stateErrors}</span>
+                                </Form.Group>
+                            </Col>
+                            <Col lg={6}>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
+                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="PostalCode">Postal Code:</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" className='border-0 bg-light p-18 h-60' disabled name="postalCode" defaultValue={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
+                                    <span style={{ color: "red" }}>{postalCodeErrors}</span>
+                                </Form.Group>
+                            </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col>
+                                <Form.Group className='text-right'>
+                                    <Button className="action h-49 p-18" onClick={(e) => handleCancel(e)}>Discard</Button>
+                                    <Button disabled={!isSaveEnabled} type="submit" className="action btn-outline ml-2 h-49" variant="outline-primary">Save</Button>
+                                </Form.Group>
+                                <span>{formSubmitted ? 'Saved!' : ''}</span>
+                                <span>{formSubmitErrors ? formSubmitErrors : ''}</span>
+                            </Col>
+                        </Form.Row>
+                    </Form>
+                </Container>
+                <Container className='p-0'>
+                    <div className='d-flex justify-content-end'>
+                        <Button className='mx-0 my-5 border border-danger text-danger h-49 p-18' variant="outline" onClick={(e) => handleDelete(e)}>Delete Account</Button>
+
+                    </div>
+                </Container>
+
+                {/* <div className="container-fluid p-5" >
                     <Form onSubmit={handleSave} >
                         <Row className="p-5">
                             <Col lg={8}>
@@ -800,7 +968,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
 
                         </Row>
                     </Form >
-                </div>
+                </div> */}
             </div >
     );
 }
