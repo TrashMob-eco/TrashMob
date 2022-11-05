@@ -238,6 +238,8 @@ const UserProfile: FC<UserProfileProps> = (props) => {
         userData.longitude = longitude;
         userData.prefersMetric = prefersMetric;
         userData.travelLimitForLocalEvents = travelLimitForLocalEvents;
+        userData.sourceSystemUserName = sourceSystemUserName;
+        userData.trashMobWaiverVersion = trashMobWaiverVersion;
 
         const usrdata = JSON.stringify(userData);
 

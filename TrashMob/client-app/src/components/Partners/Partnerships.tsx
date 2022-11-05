@@ -9,6 +9,7 @@ import TrashDisposal from '../assets/partnerships/TrashDisposal.svg';
 import Garbage from '../assets/partnerships/garbage.svg';
 
 // import { Link } from 'react-router-dom';
+import * as MapStore from '../../store/MapStore';
 import PartnerRequestData from '../Models/PartnerRequestData';
 import * as Constants from '../Models/Constants';
 import * as ToolTips from "../../store/ToolTips";
@@ -17,6 +18,7 @@ import MapControllerSinglePointNoEvents from '../MapControllerSinglePointNoEvent
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import AddressData from '../Models/AddressData';
 import { getKey } from '../../store/MapStore';
+import { data } from 'azure-maps-control';
 
 export const Partnerships: FC<any> = (props) => {
     const [name, setName] = React.useState<string>();
@@ -26,7 +28,6 @@ export const Partnerships: FC<any> = (props) => {
     const [website, setWebsite] = React.useState<string>();
     const [phone, setPhone] = React.useState<string>();
     const [address, setAddress] = React.useState<string>();
-    const [type, setType] = React.useState<string>();
     const [notes, setNotes] = React.useState<string>("");
     const [nameErrors, setNameErrors] = React.useState<string>("");
     const [emailErrors, setEmailErrors] = React.useState<string>("");
@@ -44,6 +45,24 @@ export const Partnerships: FC<any> = (props) => {
     const [mapOptions, setMapOptions] = React.useState<any>();
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
+    
+    React.useEffect(() => {
+
+        MapStore.getOption().then(opts => {
+            setMapOptions(opts);
+            setIsMapKeyLoaded(true);
+        })
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(position => {
+                var point = new data.Position(position.coords.longitude, position.coords.latitude);
+                setCenter(point)
+            });
+        } else {
+            console.log("Not Available");
+        }
+    }, []);
+
     // const [isPartnerTypeDataLoaded, setIsPartnerTypeDataLoaded] = React.useState<boolean>(false);
     // const [title, setTitle] = React.useState<string>("Apply to become a partner");
     function validateForm() {
@@ -197,9 +216,9 @@ export const Partnerships: FC<any> = (props) => {
         validateForm();
     }
 
-    // function selectPartnerType(val: string) {
-    //     setPartnerTypeId(parseInt(val));
-    // }
+     function setPartnerType(val: string) {
+         setPartnerTypeId(parseInt(val));
+     }
 
     function renderNameToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerRequestName}</Tooltip>
@@ -368,11 +387,11 @@ export const Partnerships: FC<any> = (props) => {
                                     </OverlayTrigger>
                                     <div className='d-flex h-60'>
                                         <div className='d-flex w-100 align-items-center'>
-                                            <input type="radio" className='m-0' defaultValue={type} name="type" onChange={(val) => setType(val.target.value)} required />
+                                            <input type="radio" className='m-0' defaultValue={partnerTypeId} name="type" onChange={(val) => setPartnerType(val.target.value)} required />
                                             <label className="control-label m-0 ml-2">City or government entity</label>
                                         </div>
                                         <div className='d-flex w-100 align-items-center'>
-                                            <input type="radio" className='m-0' defaultValue={type} name="type" onChange={(val) => setType(val.target.value)} required />
+                                            <input type="radio" className='m-0' defaultValue={partnerTypeId} name="type" onChange={(val) => setPartnerType(val.target.value)} required />
                                             <label className="control-label m-0 ml-2">Business</label>
                                         </div>
 
