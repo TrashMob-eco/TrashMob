@@ -2,10 +2,12 @@
 {
     public class ActiveDirectoryResponse
     {
-        public string Version { get; set; }
+        public string version { get; set; }
 
-        public string Action { get; set; }
+        public string action { get; set; }
 
-        public string UserId { get; set; }
+        public string userId { get; set; }
+
+        public string userMessage { get; set; }
     }
 }

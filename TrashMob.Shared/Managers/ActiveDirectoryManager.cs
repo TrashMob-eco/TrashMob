@@ -1,7 +1,6 @@
 ﻿
 namespace TrashMob.Shared.Managers
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Poco;
@@ -28,16 +27,48 @@ namespace TrashMob.Shared.Managers
                 originalUser.Email = activeDirectoryNewUserRequest.email;
                 originalUser.SourceSystemUserName = activeDirectoryNewUserRequest.identities[0].issuerAssignedId;
 
+                // User does exist, see if they are trying to change their userName to something already in use
+                if (activeDirectoryNewUserRequest.displayName != originalUser.UserName)
+                {
+                    var checkUserName = userManager.GetUserByUserNameAsync(activeDirectoryNewUserRequest.displayName, CancellationToken.None);
+
+                    if (checkUserName != null)
+                    {
+                        var duplicateDisplayNameResponse = new ActiveDirectoryResponse
+                        {
+                            action = "Failed",
+                            version = "1.0.0",
+                            userMessage =  "Please choose a different Display Name. This name already in use." 
+                        };
+
+                        return duplicateDisplayNameResponse;
+                    }
+                }
+
                 await userManager.UpdateAsync(originalUser, cancellationToken).ConfigureAwait(false);
 
                 var userExistsResponse = new ActiveDirectoryResponse
                 {
-                    Action = "Continue",
-                    Version = "1.0.0",
-                    UserId = originalUser.Id.ToString()
+                    action = "Continue",
+                    version = "1.0.0",
+                    userId = originalUser.Id.ToString()
                 };
 
                 return userExistsResponse;
+            }
+
+            var checkUser = userManager.GetUserByUserNameAsync(activeDirectoryNewUserRequest.displayName, CancellationToken.None);
+
+            if (checkUser != null)
+            {
+                var duplicateDisplayNameResponse = new ActiveDirectoryResponse
+                {
+                    action = "Failed",
+                    version = "1.0.0",
+                    userMessage = "Please choose a different Display Name. This name already in use."
+                };
+
+                return duplicateDisplayNameResponse;
             }
 
             var user = new User
@@ -48,23 +79,13 @@ namespace TrashMob.Shared.Managers
                 UserName = activeDirectoryNewUserRequest.displayName
             };
 
-            if (string.IsNullOrEmpty(activeDirectoryNewUserRequest.displayName))
-            {
-                // On insert we need a random user name to avoid duplicates, but we don't want to show the full email address ever, so take a subset
-                // of their email and then add a random number to the end.
-                Random rnd = new();
-                var userNum = rnd.Next(100, 999).ToString();
-                var first = activeDirectoryNewUserRequest.email.Split("@")[0];
-                user.UserName = first.Substring(0, Math.Min(first.Length - 1, 8)) + userNum;
-            }
-
             var newUser = await userManager.AddAsync(user, cancellationToken).ConfigureAwait(false);
 
             var newUserResponse = new ActiveDirectoryResponse
             {
-                Action = "Continue",
-                Version = "1.0.0",
-                UserId = newUser.Id.ToString()
+                action = "Continue",
+                version = "1.0.0",
+                userId = newUser.Id.ToString()
             };
 
             return newUserResponse;
