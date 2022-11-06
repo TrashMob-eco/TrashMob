@@ -4,26 +4,30 @@
 
     public class ActiveDirectoryNewUserRequest
     {
-        public string Email { get; set; }
+        public string step { get; set; }
 
-        public List<Identity> Identities { get; set; } = new List<Identity>();
+        public string client_id { get; set; }
 
-        public string DisplayName { get; set; }
+        public string ui_locales { get; set; }
 
-        public string ObjectId { get; set; }
+        public string email { get; set; }
 
-        public string GivenName { get; set; }
+        public List<Identity> identities { get; set; } = new List<Identity>();
 
-        public string Surname { get; set; }
+        public string displayName { get; set; }
 
-        public string Client_Id { get; set; }
+        public string givenName { get; set; }
+
+        public string surname { get; set; }
+
     }
 
     public class Identity
     {
         public string signInType { get; set; }
+        
         public string issuer { get; set; }
+        
         public string issuerAssignedId { get; set; }
-
     }
 }
