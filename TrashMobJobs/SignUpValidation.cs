@@ -38,6 +38,9 @@ namespace TrashMobJobs
             }
 
             var json = await req.ReadAsStringAsync();
+
+            logger.LogInformation(json);
+
             var activeDirectoryNewUserRequest = JsonSerializer.Deserialize<ActiveDirectoryNewUserRequest>(json);
             var createResponse = await activeDirectoryManager.CreateUserAsync(activeDirectoryNewUserRequest);
 
