@@ -36,7 +36,7 @@ namespace TrashMob.Shared.Managers
                     {
                         var duplicateDisplayNameResponse = new ActiveDirectoryResponse
                         {
-                            action = "Failed",
+                            action = "ValidationError",
                             version = "1.0.0",
                             userMessage =  "Please choose a different Display Name. This name already in use." 
                         };
@@ -63,7 +63,7 @@ namespace TrashMob.Shared.Managers
             {
                 var duplicateDisplayNameResponse = new ActiveDirectoryResponse
                 {
-                    action = "Failed",
+                    action = "ValidationError",
                     version = "1.0.0",
                     userMessage = "Please choose a different Display Name. This name already in use."
                 };
