@@ -51,7 +51,7 @@ namespace TrashMob.Shared.Managers
                 {
                     action = "Continue",
                     version = "1.0.0",
-                    userId = originalUser.Id.ToString()
+                    objectId = originalUser.Id.ToString()
                 };
 
                 return userExistsResponse;
@@ -85,7 +85,7 @@ namespace TrashMob.Shared.Managers
             {
                 action = "Continue",
                 version = "1.0.0",
-                userId = newUser.Id.ToString()
+                objectId = newUser.Id.ToString()
             };
 
             return newUserResponse;
