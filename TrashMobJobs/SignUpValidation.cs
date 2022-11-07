@@ -12,6 +12,7 @@ namespace TrashMobJobs
     using Microsoft.Extensions.Logging;
     using TrashMob.Poco;
     using TrashMob.Shared.Managers.Interfaces;
+    using System.Runtime.InteropServices;
 
     public class SignUpValidation
     {
@@ -44,7 +45,23 @@ namespace TrashMobJobs
             var activeDirectoryNewUserRequest = JsonSerializer.Deserialize<ActiveDirectoryNewUserRequest>(json);
             var createResponse = await activeDirectoryManager.CreateUserAsync(activeDirectoryNewUserRequest);
 
-            var response = req.CreateResponse(HttpStatusCode.OK);
+            var responseCode = HttpStatusCode.OK;
+            switch (createResponse.action)
+            {
+                case "ValidationError":
+                    responseCode = HttpStatusCode.BadRequest;
+                    createResponse.status = ((int)HttpStatusCode.BadRequest).ToString();
+                    break;
+                case "Failed":
+                    // Yes, really. It needs an Ok when failed...
+                    responseCode = HttpStatusCode.OK;
+                    break;
+                case "Continue":
+                    responseCode = HttpStatusCode.OK;
+                    break;
+            }
+
+            var response = req.CreateResponse(responseCode);
             response.WriteString(JsonSerializer.Serialize(createResponse));
             return response;
         }

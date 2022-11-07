@@ -6,8 +6,10 @@
 
         public string action { get; set; }
 
-        public string userId { get; set; }
+        public string objectId { get; set; }
 
         public string userMessage { get; set; }
+
+        public string status { get; set; }
     }
 }
