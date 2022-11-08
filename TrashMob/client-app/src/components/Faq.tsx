@@ -1,8 +1,5 @@
 import * as React from 'react'
 import { Button, Col, Container, Image, Row } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import helpwanted from './assets/tim-mossholder-vdhNO4mGQ14-unsplash.jpg';
-import frustrated from './assets/jeshoots-com--2vD8lIhdnw-unsplash.jpg';
 import globes from './assets/gettingStarted/globes.png';
 import events from './assets/faq/Event.svg';
 import attendees from './assets/faq/Attendees.svg';
