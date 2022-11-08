@@ -1,70 +1,153 @@
 import * as React from 'react'
+import { Button, Col, Container, Image, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import helpwanted from './assets/tim-mossholder-vdhNO4mGQ14-unsplash.jpg';
 import frustrated from './assets/jeshoots-com--2vD8lIhdnw-unsplash.jpg';
+import globes from './assets/gettingStarted/globes.png';
+import events from './assets/faq/Event.svg';
+import attendees from './assets/faq/Attendees.svg';
+import volunteer from './assets/faq/volunteer.svg';
 
-export const Faq: React.FC = () => {
+const tabs = [
+    {
+        title: "Events",
+        desc: "Registration, creation, and location",
+        icon: events,
+        value: 1
+    },
+    {
+        title: "User profile",
+        desc: "Account and privacy",
+        icon: attendees,
+        value: 2
+    },
+    {
+        title: "TrashMob",
+        desc: "About and volunteering",
+        icon: volunteer,
+        value: 3
+    },
+]
+
+const Events: React.FC = () => {
     return (
-        <div className="expandCollapse card">
-            <h1>Frequently Asked Questions</h1>
+        <div className='active-border rounded mt-4 bg-white'>
+            <h3 className='pl-4 font-weight-500 color'>Events</h3>
+            <Row className='p-4'>
+                <Col md={6}>
+                    <h5 className='font-weight-500'>How do I register for an event?</h5>
+                    <p className='para'>Browse the available events and click register. If you have not created an account, you will be asked to create one to ensure the safety and integrity of TrashMob events. View your registered events in your user dashboard.</p>
+                    <h5 className='font-weight-500 mt-5'>Can I go to an event if I’m not signed up in advance? </h5>
+                    <p className='para'>It depends. Some events are capacity constrained due to safety gear, special training, and roadway space and require registration in advance. We suggest contacting the event organizer to get an appropriate answer for your situation. If you are unable to attend the event, we recommend taking that same time and picking up litter in a local park or nearby area. Every piece matters!</p>
+                    <h5 className='font-weight-500 mt-5'>How do I create an event?</h5>
+                    <p className='para'>Create an event here by naming your event, setting a location, and filling in relevant details like date, time, and a description. Share your created event across your network by viewing the event details and clicking “share”. View your created events in your user dashboard. </p>
+                </Col>
+                <Col md={6}>
+                    <h5 className='font-weight-500'>Why do I have to be a registered user to create an event?</h5>
+                    <p className='para'>We want to ensure that all events are legitimate and properly led, and anonymously user led events have the potential to create security and safety problems.</p>
+                    <h5 className='font-weight-500 mt-5'>Why does TrashMob ask for latitude and longitude values when creating an event? </h5>
+                    <p className='para'>Certain locations like parking lots in state parks do not have street addresses. Using a latitude and longitude value for every event ensures we have an accurate location so all registered attendees show up in the right spot.  </p>
+                    <h5 className='font-weight-500 mt-5'>How do I set the location for an event?</h5>
+                    <p className='m-0'>There are 2 ways to set the location for your event:</p>
+                    <ol>
+                        <li>Find the map pin that notes your starting location. Click and drag that to the location you want to start your pickup at. </li>
+                        <li>If you don’t see a pin on the map, type in the name of the city closest to your desired event location in the search box and select the city. Then drag the pin to the exact meetup location for your event. </li>
+                    </ol>
 
-            <h2>Questions About the Site</h2>
-            <div>
-                <h3>Does this site cost anything to use?</h3>
-                <p>No. Setting up TrashMobs or joining a TrashMob is free.</p>
-            </div>
-            
-            <div>
-                <h3>Are you still looking for developers/designers to help with the site?</h3>
-                <p>As you can probably tell, this site is not finished. Besides some fit and finish, we have a lot more ideas than time to implement them. We would love more help! If you know ReactJS or web design
-                        or are good with web content, ASP.NET Core, security, or have any non-technical skills that would be useful to a site / organization like ours, please <Link to="./contactus">Contact Us</Link>!
-                    <img src={helpwanted} alt="Help wanted" />
-                </p>
-            </div>
-
-
-            <div>
-                <h3>Can I donate to this site?</h3> 
-                <p>Not yet. But we hope to add that feature soon.</p>
-            </div>
-
-            <div>
-                <h3>What would donations be used for?</h3>
-                <p>The site has hosting costs that currently come out of the pocket of the developers. While these costs aren't huge, things do add up over time. With more usage, costs will climb.</p>
-            </div>
-
-            <div>
-                <h3>Is there a Non-Profit Charity behind this site?</h3>
-                <p>Not yet. But it is in the plans. Setting up an international not-for-profit takes a lot of time and resources away from working on the site and working on the litter problem itself. We'll need more volunteers involved in order to make this happen. If
-                    you happen to have expertise in setting up non-profits and want to help in that area, please let us know.
-                   </p>
-            </div>
-
-            <div>
-                <h3>I found a bug!</h3>
-                <p>Not possible.</p>
-                <p>Ok. Fine. It's possible. Please report it to us via our <Link to="./contactus">contact us</Link> page.
-                    <img src={frustrated} alt="Frustrated" />
-                </p>
-            </div>
-
-            <div>
-                <h3>Why do I have to be a registered user to Create an Event?</h3>
-                <p>We want to make sure all events are legitimate and properly led. Leaving the site open to anonymous users to create events is a recipe for trouble.</p>
-            </div>
-
-            <div>
-                <h3>What do you do with my email address?</h3>
-                <p>We will only use your email address to contact you regarding events on this site. We will never give your email address to outside agencies (except as required by law) or to other users. Period. See our <Link to="./PrivacyPolicy">Privacy Policy</Link></p>
-            </div>
-
-            <h2>Questions about TrashMob Events</h2>
-            <div>
-                <h3>Can I go to an event if I am not signed up in advance?</h3>
-                <p>Sometimes yes, sometimes no. If the event has a maximum number of people set, and the maximum number has been reached, then just showing up could be an issue, especially when it comes to safety. Some events are size limited because
-                they are along busy roads or in areas which require special gear or special training. We suggest that if you are unable to sign up for the event you want in advance, and still want to do something, that you go to a local park or a nearby area and do some picking of your own. Every little bit matters!</p>
-            </div>
+                </Col>
+            </Row>
         </div>
-    );
+    )
+}
+const UserProfile: React.FC = () => {
+    return (
+        <div className='active-border rounded mt-4 bg-white'>
+            <h3 className='pl-4 font-weight-500 color'>User profile</h3>
+            <Row className='p-4'>
+                <Col md={6}>
+                    <h5 className='font-weight-500'>Why does TrashMob ask for my email address?</h5>
+                    <p className='para'>We ask for your email address so we can contact you regarding events on this website. We’ll never give your email address to outside agencies (unless required by law) or to other users. See our Privacy policy for more.</p>
+                    <h5 className='font-weight-500 mt-5'>What does TrashMob do with my profile and event data?</h5>
+                    <p className='para'>Profile data is used to help event owners have an accurate list of registered attendees and their contact information. Event data is used to add to TrashMob’s total stats. Please read our Privacy policy and Terms of service.</p>
+                </Col>
+                <Col md={6}>
+                    <h5 className='font-weight-500'>Can I change my username? </h5>
+                    <p className='para'>Yes! Go to your user profile and change it in the “username” field. Don't forget to save your changes! </p>
+                    <h5 className='font-weight-500 mt-5'>Can I change my base location?</h5>
+                    <p className='para'>Yes. Simply go to your User Profile page and drag the pin for your current location to wherever you want your base location to be. If you set the notification distance from this point, then you will be notified for any events that are created within that radius of your base location.</p>
+                </Col>
+            </Row>
+        </div>
+    )
+}
+const Volunteer: React.FC = () => {
+    return (
+        <div className='active-border rounded mt-4 bg-white'>
+            <h3 className='pl-4 font-weight-500 color'>TrashMob</h3>
+            <Row className='p-4'>
+                <Col md={6}>
+                    <h5 className='font-weight-500'>Is TrashMob a nonprofit organization?</h5>
+                    <p className='para'>Yes! We received our 501(3)(c) status in April of 2022. </p>
+                    <h5 className='font-weight-500 mt-5'>Can I donate to TrashMob? </h5>
+                    <p className='para'>Not yet, but we are working on implementing that feature soon. Thanks for your consideration!</p>
+                    <h5 className='font-weight-500 mt-5'>Does signing up for TrashMob cost anything?</h5>
+                    <p className='para'>No! The TrashMob website is free to use and there’s no cost associated with setting up or joining TrashMobs.</p>
+                    <h5 className='font-weight-500 mt-5'>Can I report a website bug?</h5>
+                    <p className='para'>Yes, you can! Please Contact us and let us know what you found. Thank you!</p>
+                </Col>
+                <Col md={6}>
+                    <h5 className='font-weight-500'>Is the TrashMob team looking for support? </h5>
+                    <p className='para'>Yes! We are always looking for new team members to help us improve TrashMob and implement new features. If you or someone you know has any skills in design, back or front-end development, program management, or applicable non-technical skills, please Contact us!</p>
+                    <h5 className='font-weight-500 mt-5'>Does TrashMob have a mobile app? </h5>
+                    <p className='para'>Not yet, but we are hard at work making one! Stay tuned!</p>
+                </Col>
+            </Row>
+        </div>
+    )
 }
 
+
+export const Faq: React.FC = () => {
+    const [selectedTab, setSelectedTab] = React.useState(0)
+
+    return (
+        <>
+            <Container fluid className='bg-grass'>
+                <Row className="text-center pt-0">
+                    <Col md={7} className="d-flex flex-column justify-content-center pr-5">
+                        <h1 className='font-weight-500'>FAQ</h1>
+                        <p className="font-weight-bold">
+                            We’ve got you covered.
+                        </p>
+                    </Col>
+                    <Col md={5}>
+                        <Image src={globes} alt="globes" className="h-100 mt-0" />
+                    </Col>
+                </Row>
+            </Container>
+            <Container className='my-5'>
+                <div className='faq-tabs-wrapper'>
+                    {
+                        tabs?.map((tab, ind) => <div key={ind} className={`faq-tab ${selectedTab !== 0 && "tab-select"} px-4 pt-4 pb-0 bg-white rounded ${selectedTab === tab?.value ? "active-border" : "border border-white"}`} onClick={() => setSelectedTab(tab?.value)}>
+                            <h1 className='m-0'>{tab?.title}</h1>
+                            <h5 className='color'>{tab?.desc}</h5>
+                            <Image src={tab?.icon} alt="icon" className="mt-0 float-right" />
+                        </div>)
+                    }
+                </div>
+
+                {selectedTab === 1 && <Events />}
+                {selectedTab === 2 && <UserProfile />}
+                {selectedTab === 3 && <Volunteer />}
+
+            </Container>
+            <Container fluid className='bg-white py-5 text-center'>
+                <h1 className='font-weight-500 text-center'>Are we missing something?</h1>
+                <h4 className='text-center'>Let us know by reaching out.</h4>
+                <Button variant="primary" className='text-center mt-4 para'>
+                    Sign Waiver
+                </Button>
+            </Container>
+        </>
+    );
+}
