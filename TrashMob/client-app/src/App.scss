@@ -486,6 +486,10 @@ textarea {
         max-width: 447px;
       }
 
+      @include media-breakpoint-up(xl) {
+        max-width: 346px;
+      }
+
       h1 {
         font-weight: 500;
         font-size: 26.402px;

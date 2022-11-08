@@ -115,8 +115,8 @@ export const Faq: React.FC = () => {
             <Container fluid className='bg-grass'>
                 <Row className="text-center pt-0">
                     <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                        <h1 className='font-weight-500'>FAQ</h1>
-                        <p className="font-weight-bold">
+                        <h1 className='font-weight-bold'>FAQ</h1>
+                        <p className="fw-600">
                             We’ve got you covered.
                         </p>
                     </Col>
@@ -125,7 +125,7 @@ export const Faq: React.FC = () => {
                     </Col>
                 </Row>
             </Container>
-            <Container className='my-5'>
+            <Container className='my-5 pt-5'>
                 <div className='faq-tabs-wrapper'>
                     {
                         tabs?.map((tab, ind) => <div key={ind} className={`faq-tab ${selectedTab !== 0 && "tab-select"} px-4 pt-4 pb-0 bg-white rounded ${selectedTab === tab?.value ? "active-border" : "border border-white"}`} onClick={() => setSelectedTab(tab?.value)}>
