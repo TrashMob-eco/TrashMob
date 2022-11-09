@@ -108,12 +108,12 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
         if (eventId === Guid.EMPTY) {
 
-            // Have user sign waiver if needed
-            const isTrashMobWaiverOutOfDate = props.currentUser.dateAgreedToTrashMobWaiver < CurrentTrashMobWaiverVersion.versionDate;
-            if (isTrashMobWaiverOutOfDate || (props.currentUser.trashMobWaiverVersion === "")) {
-                sessionStorage.setItem('targetUrl', window.location.pathname);
-                props.history.push("/waivers");
-            }
+            //// Have user sign waiver if needed
+            //const isTrashMobWaiverOutOfDate = props.currentUser.dateAgreedToTrashMobWaiver < CurrentTrashMobWaiverVersion.versionDate;
+            //if (isTrashMobWaiverOutOfDate || (props.currentUser.trashMobWaiverVersion === "")) {
+            //    sessionStorage.setItem('targetUrl', window.location.pathname);
+            //    props.history.push("/waivers");
+            //}
 
             setIsDataLoaded(true);
         }
