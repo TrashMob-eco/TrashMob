@@ -240,6 +240,7 @@ hr.rounded {
 }
 
 .event-list-event-type:hover {
+  color: #FFF !important;
   background-color: #FFBA00 !important;
 }
 
