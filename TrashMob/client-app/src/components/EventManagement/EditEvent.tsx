@@ -17,7 +17,7 @@ import { Button, Col, Form, ToggleButton } from 'react-bootstrap';
 import { Guid } from 'guid-typescript';
 import MapControllerSinglePoint from '../MapControllerSinglePoint';
 import { RouteComponentProps } from 'react-router-dom';
-import { CurrentTrashMobWaiverVersion } from '../Waivers/Waivers';
+// import { CurrentTrashMobWaiverVersion } from '../Waivers/Waivers';
 
 export interface EditEventProps extends RouteComponentProps
 {
