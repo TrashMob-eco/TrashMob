@@ -480,3 +480,7 @@ input:disabled {
 .active-line {
   border-bottom: 3px solid #96BA00;
 }
+
+.remove-drop-icon::after {
+  display: none !important;
+}
