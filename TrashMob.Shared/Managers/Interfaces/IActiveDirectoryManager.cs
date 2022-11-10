@@ -6,6 +6,6 @@
 
     public interface IActiveDirectoryManager
     {
-        Task<ActiveDirectoryResponse> CreateUserAsync(ActiveDirectoryNewUserRequest activeDirectoryNewUserRequest, CancellationToken cancellationToken = default);
+        Task<ActiveDirectoryResponseBase> CreateUserAsync(ActiveDirectoryNewUserRequest activeDirectoryNewUserRequest, CancellationToken cancellationToken = default);
     }
 }

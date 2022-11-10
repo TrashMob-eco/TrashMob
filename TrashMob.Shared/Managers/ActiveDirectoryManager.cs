@@ -10,15 +10,13 @@ namespace TrashMob.Shared.Managers
     public class ActiveDirectoryManager : IActiveDirectoryManager
     {
         private readonly IUserManager userManager;
-        private readonly IEmailManager emailManager;
 
-        public ActiveDirectoryManager(IUserManager userManager, IEmailManager emailManager)
+        public ActiveDirectoryManager(IUserManager userManager)
         {
             this.userManager = userManager;
-            this.emailManager = emailManager;
         }
 
-        public async Task<ActiveDirectoryResponse> CreateUserAsync(ActiveDirectoryNewUserRequest activeDirectoryNewUserRequest, CancellationToken cancellationToken = default)
+        public async Task<ActiveDirectoryResponseBase> CreateUserAsync(ActiveDirectoryNewUserRequest activeDirectoryNewUserRequest, CancellationToken cancellationToken = default)
         {
             User originalUser;
 
@@ -34,7 +32,7 @@ namespace TrashMob.Shared.Managers
 
                     if (checkUserName != null)
                     {
-                        var duplicateDisplayNameResponse = new ActiveDirectoryResponse
+                        var duplicateDisplayNameResponse = new ActiveDirectoryValidationFailedResponse
                         {
                             action = "ValidationError",
                             version = "1.0.0",
@@ -47,11 +45,10 @@ namespace TrashMob.Shared.Managers
 
                 await userManager.UpdateAsync(originalUser, cancellationToken).ConfigureAwait(false);
 
-                var userExistsResponse = new ActiveDirectoryResponse
+                var userExistsResponse = new ActiveDirectoryContinuationResponse
                 {
                     action = "Continue",
                     version = "1.0.0",
-                    objectId = originalUser.Id.ToString()
                 };
 
                 return userExistsResponse;
@@ -61,7 +58,7 @@ namespace TrashMob.Shared.Managers
 
             if (checkUser != null)
             {
-                var duplicateDisplayNameResponse = new ActiveDirectoryResponse
+                var duplicateDisplayNameResponse = new ActiveDirectoryValidationFailedResponse
                 {
                     action = "ValidationError",
                     version = "1.0.0",
@@ -79,13 +76,12 @@ namespace TrashMob.Shared.Managers
                 UserName = activeDirectoryNewUserRequest.displayName
             };
 
-            var newUser = await userManager.AddAsync(user, cancellationToken).ConfigureAwait(false);
+            await userManager.AddAsync(user, cancellationToken).ConfigureAwait(false);
 
-            var newUserResponse = new ActiveDirectoryResponse
+            var newUserResponse = new ActiveDirectoryContinuationResponse
             {
                 action = "Continue",
                 version = "1.0.0",
-                objectId = newUser.Id.ToString()
             };
 
             return newUserResponse;
