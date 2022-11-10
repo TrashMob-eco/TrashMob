@@ -22,11 +22,11 @@ export interface ManageEventPartnersProps {
 export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) => {
     const [isEventPartnerLocationDataLoaded, setIsEventPartnerLocationDataLoaded] = React.useState<boolean>(false);
     const [eventPartnerLocations, setEventPartnerLocations] = React.useState<DisplayEventPartnerLocationData[]>([]);
-    const [eventPartnerLocationServices, setEventPartnerLocationServices] = React.useState<DisplayEventPartnerLocationServiceData[]>([]);
-    const [isPartnerLocationServicesDataLoaded, setIsPartnerLocationServicesDataLoaded] = React.useState<boolean>(false);
-    const [serviceTypeList, setServiceTypeList] = React.useState<ServiceTypeData[]>([]);
-    const [serviceStatusList, setServiceStatusList] = React.useState<EventPartnerLocationServiceStatusData[]>([]);
-    const [partnerLocationId, setPartnerLocationId] = React.useState<string>(Guid.EMPTY);
+    // const [eventPartnerLocationServices, setEventPartnerLocationServices] = React.useState<DisplayEventPartnerLocationServiceData[]>([]);
+    // const [isPartnerLocationServicesDataLoaded, setIsPartnerLocationServicesDataLoaded] = React.useState<boolean>(false);
+    // const [serviceTypeList, setServiceTypeList] = React.useState<ServiceTypeData[]>([]);
+    // const [serviceStatusList, setServiceStatusList] = React.useState<EventPartnerLocationServiceStatusData[]>([]);
+    // const [partnerLocationId, setPartnerLocationId] = React.useState<string>(Guid.EMPTY);
 
     React.useEffect(() => {
 
@@ -38,7 +38,7 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
         })
             .then(response => response.json() as Promise<Array<any>>)
             .then(data => {
-                setServiceTypeList(data);
+                // setServiceTypeList(data);
             })
             .then(() => {
 
@@ -48,7 +48,7 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
                 })
                     .then(response => response.json() as Promise<Array<any>>)
                     .then(data => {
-                        setServiceStatusList(data);
+                        // setServiceStatusList(data);
                     });
             });
 
@@ -78,29 +78,29 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
         }
     }, [props.eventId, props.isUserLoaded])
 
-    function OnEventPartnerLocationsUpdated() {
-        const account = msalClient.getAllAccounts()[0];
+    // function OnEventPartnerLocationsUpdated() {
+    //     const account = msalClient.getAllAccounts()[0];
 
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
+    //     var request = {
+    //         scopes: apiConfig.b2cScopes,
+    //         account: account
+    //     };
 
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+    //     msalClient.acquireTokenSilent(request).then(tokenResponse => {
+    //         const headers = getDefaultHeaders('GET');
+    //         headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/eventpartnerlocationservices/' + props.eventId, {
-                method: 'GET',
-                headers: headers
-            })
-                .then(response => response.json() as Promise<DisplayEventPartnerLocationData[]>)
-                .then(data => {
-                    setEventPartnerLocations(data);
-                    setIsEventPartnerLocationDataLoaded(true)
-                })
-        });
-    }
+    //         fetch('/api/eventpartnerlocationservices/' + props.eventId, {
+    //             method: 'GET',
+    //             headers: headers
+    //         })
+    //             .then(response => response.json() as Promise<DisplayEventPartnerLocationData[]>)
+    //             .then(data => {
+    //                 setEventPartnerLocations(data);
+    //                 setIsEventPartnerLocationDataLoaded(true)
+    //             })
+    //     });
+    // }
 
     // function handleViewPartnerServices(locationId: string) {
     //     const account = msalClient.getAllAccounts()[0];
@@ -128,71 +128,71 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
     // }
 
     // This will handle Cancel button click event.
-    function handleCancel(event: any) {
-        event.preventDefault();
-        setPartnerLocationId(Guid.EMPTY);
-        setIsPartnerLocationServicesDataLoaded(false);
-    }
+    // function handleCancel(event: any) {
+    //     event.preventDefault();
+    //     setPartnerLocationId(Guid.EMPTY);
+    //     setIsPartnerLocationServicesDataLoaded(false);
+    // }
 
     // This will handle the submit form event.
-    function requestService(serviceTypeId: number) {
+    // function requestService(serviceTypeId: number) {
 
-        var eventData = new EventPartnerLocationServiceData();
-        eventData.eventId = props.eventId;
-        eventData.partnerLocationId = partnerLocationId;
-        eventData.serviceTypeId = serviceTypeId;
-        eventData.eventPartnerLocationServiceStatusId = Constants.EventPartnerLocationServiceStatusRequested;
+    //     var eventData = new EventPartnerLocationServiceData();
+    //     eventData.eventId = props.eventId;
+    //     eventData.partnerLocationId = partnerLocationId;
+    //     eventData.serviceTypeId = serviceTypeId;
+    //     eventData.eventPartnerLocationServiceStatusId = Constants.EventPartnerLocationServiceStatusRequested;
 
-        var method = "POST";
+    //     var method = "POST";
 
-        var evtdata = JSON.stringify(eventData);
+    //     var evtdata = JSON.stringify(eventData);
 
-        // PUT request for Edit Event.  
-        const account = msalClient.getAllAccounts()[0];
+    //     // PUT request for Edit Event.  
+    //     const account = msalClient.getAllAccounts()[0];
 
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
+    //     var request = {
+    //         scopes: apiConfig.b2cScopes,
+    //         account: account
+    //     };
 
-        return msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders(method);
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+    //     return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+    //         const headers = getDefaultHeaders(method);
+    //         headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/eventpartnerlocationservices', {
-                method: method,
-                headers: headers,
-                body: evtdata,
-            }).then(() => {
-                OnEventPartnerLocationsUpdated();
-            });
-        })
-    }
+    //         fetch('/api/eventpartnerlocationservices', {
+    //             method: method,
+    //             headers: headers,
+    //             body: evtdata,
+    //         }).then(() => {
+    //             OnEventPartnerLocationsUpdated();
+    //         });
+    //     })
+    // }
 
-    function removeServiceRequest(serviceTypeId: number) {
+    // function removeServiceRequest(serviceTypeId: number) {
 
-        var method = "DELETE";
+    //     var method = "DELETE";
 
-        // PUT request for Edit Event.  
-        const account = msalClient.getAllAccounts()[0];
+    //     // PUT request for Edit Event.  
+    //     const account = msalClient.getAllAccounts()[0];
 
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
+    //     var request = {
+    //         scopes: apiConfig.b2cScopes,
+    //         account: account
+    //     };
 
-        return msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders(method);
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+    //     return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+    //         const headers = getDefaultHeaders(method);
+    //         headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/eventpartnerlocationservices/' + props.eventId + "/" + partnerLocationId + "/" + serviceTypeId, {
-                method: method,
-                headers: headers
-            }).then(() => {
-                OnEventPartnerLocationsUpdated();
-            });
-        })
-    }
+    //         fetch('/api/eventpartnerlocationservices/' + props.eventId + "/" + partnerLocationId + "/" + serviceTypeId, {
+    //             method: method,
+    //             headers: headers
+    //         }).then(() => {
+    //             OnEventPartnerLocationsUpdated();
+    //         });
+    //     })
+    // }
 
     function renderEventPartnerLocationsTable(eventPartnerLocations: DisplayEventPartnerLocationData[]) {
         return (
@@ -237,35 +237,35 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
         );
     }
 
-    function renderEventPartnerLocationServicesTable(services: DisplayEventPartnerLocationServiceData[]) {
-        return (
-            <div>
-                <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
-                    <thead>
-                        <tr>
-                            <th>Service Type</th>
-                            <th>Notes</th>
-                            <th>Request Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {services.map(service =>
-                            <tr key={service.serviceTypeId}>
-                                <td>{getServiceType(serviceTypeList, service.serviceTypeId)}</td>
-                                <td>{service.partnerLocationServicePublicNotes}</td>
-                                <td>{getEventPartnerLocationServiceStatus(serviceStatusList, service.eventPartnerLocationServiceStatusId)}</td>
-                                <td>
-                                    <Button hidden={service.eventPartnerLocationServiceStatusId !== 0} className="action" onClick={() => requestService(service.serviceTypeId)}>Request Service</Button>
-                                    <Button hidden={service.eventPartnerLocationServiceStatusId === 0} className="action" onClick={() => removeServiceRequest(service.serviceTypeId)}>Remove Service Request</Button>
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-                <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
-            </div>
-        );
-    }
+    // function renderEventPartnerLocationServicesTable(services: DisplayEventPartnerLocationServiceData[]) {
+    //     return (
+    //         <div>
+    //             <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
+    //                 <thead>
+    //                     <tr>
+    //                         <th>Service Type</th>
+    //                         <th>Notes</th>
+    //                         <th>Request Status</th>
+    //                     </tr>
+    //                 </thead>
+    //                 <tbody>
+    //                     {services.map(service =>
+    //                         <tr key={service.serviceTypeId}>
+    //                             <td>{getServiceType(serviceTypeList, service.serviceTypeId)}</td>
+    //                             <td>{service.partnerLocationServicePublicNotes}</td>
+    //                             <td>{getEventPartnerLocationServiceStatus(serviceStatusList, service.eventPartnerLocationServiceStatusId)}</td>
+    //                             <td>
+    //                                 <Button hidden={service.eventPartnerLocationServiceStatusId !== 0} className="action" onClick={() => requestService(service.serviceTypeId)}>Request Service</Button>
+    //                                 <Button hidden={service.eventPartnerLocationServiceStatusId === 0} className="action" onClick={() => removeServiceRequest(service.serviceTypeId)}>Remove Service Request</Button>
+    //                             </td>
+    //                         </tr>
+    //                     )}
+    //                 </tbody>
+    //             </table>
+    //             <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
+    //         </div>
+    //     );
+    // }
 
     return (
         <Container className='p-4 bg-white rounded my-5'>
@@ -280,7 +280,7 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
             {!isEventPartnerLocationDataLoaded && props.eventId !== Guid.EMPTY && <p><em>Loading...</em></p>}
             {isEventPartnerLocationDataLoaded && eventPartnerLocations.length === 0 && <p> <em>Sorry, there are no registered partners in your area.</em></p>}
             {isEventPartnerLocationDataLoaded && eventPartnerLocations.length !== 0 && renderEventPartnerLocationsTable(eventPartnerLocations)}
-            {isPartnerLocationServicesDataLoaded && eventPartnerLocationServices && renderEventPartnerLocationServicesTable(eventPartnerLocationServices)}
+            {/* {isPartnerLocationServicesDataLoaded && eventPartnerLocationServices && renderEventPartnerLocationServicesTable(eventPartnerLocationServices)} */}
         </Container>
     );
 }

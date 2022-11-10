@@ -1,7 +1,7 @@
 import * as React from 'react'
 import EventData from '../Models/EventData';
 import EventTypeData from '../Models/EventTypeData';
-import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
+import { CountryDropdown } from 'react-country-region-selector';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
 import { getKey } from '../../store/MapStore';
@@ -12,7 +12,7 @@ import UserData from '../Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
-import { Button, Col, Container, Form, ToggleButton } from 'react-bootstrap';
+import { Button, Col, Container, Form } from 'react-bootstrap';
 import { Guid } from 'guid-typescript';
 import MapControllerSinglePoint from '../MapControllerSinglePoint';
 import { RouteComponentProps } from 'react-router-dom';
@@ -49,7 +49,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [eventDateErrors, setEventDateErrors] = React.useState<string>("");
     const [maxNumberOfParticipantsErrors, setMaxNumberOfParticipantsErrors] = React.useState<string>("");
     const [durationHoursErrors, setDurationHoursErrors] = React.useState<string>("");
-    const [durationMinutesErrors, setDurationMinutesErrors] = React.useState<string>("");
+    // const [durationMinutesErrors, setDurationMinutesErrors] = React.useState<string>("");
     const [latitudeErrors, setLatitudeErrors] = React.useState<string>("");
     const [longitudeErrors, setLongitudeErrors] = React.useState<string>("");
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
@@ -410,7 +410,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     }
 
     function validateForm() {
-        if (eventName === "" || eventDateErrors !== "" || description === "" || durationHoursErrors !== "" || durationMinutesErrors !== "" || latitudeErrors !== "" || longitudeErrors !== "" || city === "") {
+        if (eventName === "" || eventDateErrors !== "" || description === "" || durationHoursErrors !== "" || latitudeErrors !== "" || longitudeErrors !== "" || city === "") {
             setIsSaveEnabled(false);
         }
         else {
