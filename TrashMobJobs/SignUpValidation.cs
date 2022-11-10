@@ -12,7 +12,6 @@ namespace TrashMobJobs
     using Microsoft.Extensions.Logging;
     using TrashMob.Poco;
     using TrashMob.Shared.Managers.Interfaces;
-    using System.Runtime.InteropServices;
 
     public class SignUpValidation
     {
@@ -45,24 +44,27 @@ namespace TrashMobJobs
             var activeDirectoryNewUserRequest = JsonSerializer.Deserialize<ActiveDirectoryNewUserRequest>(json);
             var createResponse = await activeDirectoryManager.CreateUserAsync(activeDirectoryNewUserRequest);
 
-            var responseCode = HttpStatusCode.OK;
+            HttpResponseData response;
             switch (createResponse.action)
             {
                 case "ValidationError":
-                    responseCode = HttpStatusCode.BadRequest;
-                    createResponse.status = ((int)HttpStatusCode.BadRequest).ToString();
+                    response = req.CreateResponse(HttpStatusCode.BadRequest);
+                    var validationResponse = createResponse as ActiveDirectoryValidationFailedResponse;
+                    validationResponse.status = ((int)HttpStatusCode.BadRequest).ToString();
+                    response.WriteString(JsonSerializer.Serialize(validationResponse));
                     break;
                 case "Failed":
                     // Yes, really. It needs an Ok when failed...
-                    responseCode = HttpStatusCode.OK;
+                    response = req.CreateResponse(HttpStatusCode.OK);
+                    var blockingResponse = createResponse as ActiveDirectoryBlockingResponse;
+                    response.WriteString(JsonSerializer.Serialize(blockingResponse));
                     break;
-                case "Continue":
-                    responseCode = HttpStatusCode.OK;
+                default:
+                    response = req.CreateResponse(HttpStatusCode.OK);
+                    response.WriteString(JsonSerializer.Serialize(createResponse));
                     break;
             }
 
-            var response = req.CreateResponse(responseCode);
-            response.WriteString(JsonSerializer.Serialize(createResponse));
             return response;
         }
 

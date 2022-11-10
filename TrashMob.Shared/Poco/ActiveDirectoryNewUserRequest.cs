@@ -19,7 +19,6 @@
         public string givenName { get; set; }
 
         public string surname { get; set; }
-
     }
 
     public class Identity
