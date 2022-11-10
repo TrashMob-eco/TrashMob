@@ -1,16 +1,16 @@
 import * as React from 'react'
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
-import { Button, Container, Dropdown } from 'react-bootstrap';
-import * as Constants from '../Models/Constants';
+import { Container, Dropdown } from 'react-bootstrap';
+// import * as Constants from '../Models/Constants';
 import DisplayEventPartnerLocationData from '../Models/DisplayEventPartnerLocationData';
-import EventPartnerLocationServiceStatusData from '../Models/EventPartnerLocationServiceStatusData';
-import { getEventPartnerLocationServiceStatus } from '../../store/eventPartnerLocationServiceStatusHelper';
+// import EventPartnerLocationServiceStatusData from '../Models/EventPartnerLocationServiceStatusData';
+// import { getEventPartnerLocationServiceStatus } from '../../store/eventPartnerLocationServiceStatusHelper';
 import { Guid } from 'guid-typescript';
-import { getServiceType } from '../../store/serviceTypeHelper';
-import ServiceTypeData from '../Models/ServiceTypeData';
-import EventPartnerLocationServiceData from '../Models/EventPartnerLocationServiceData';
-import DisplayEventPartnerLocationServiceData from '../Models/DisplayEventPartnerLocationServiceData';
+// import { getServiceType } from '../../store/serviceTypeHelper';
+// import ServiceTypeData from '../Models/ServiceTypeData';
+// import EventPartnerLocationServiceData from '../Models/EventPartnerLocationServiceData';
+// import DisplayEventPartnerLocationServiceData from '../Models/DisplayEventPartnerLocationServiceData';
 import { Building, Envelope, Eye, ThreeDots } from 'react-bootstrap-icons';
 
 export interface ManageEventPartnersProps {
