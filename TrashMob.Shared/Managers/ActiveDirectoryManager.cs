@@ -28,7 +28,7 @@ namespace TrashMob.Shared.Managers
                 // User does exist, see if they are trying to change their userName to something already in use
                 if (activeDirectoryNewUserRequest.displayName != originalUser.UserName)
                 {
-                    var checkUserName = userManager.GetUserByUserNameAsync(activeDirectoryNewUserRequest.displayName, CancellationToken.None);
+                    var checkUserName = await userManager.GetUserByUserNameAsync(activeDirectoryNewUserRequest.displayName, CancellationToken.None);
 
                     if (checkUserName != null)
                     {
@@ -54,7 +54,7 @@ namespace TrashMob.Shared.Managers
                 return userExistsResponse;
             }
 
-            var checkUser = userManager.GetUserByUserNameAsync(activeDirectoryNewUserRequest.displayName, CancellationToken.None);
+            var checkUser = await userManager.GetUserByUserNameAsync(activeDirectoryNewUserRequest.displayName, CancellationToken.None);
 
             if (checkUser != null)
             {
