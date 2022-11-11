@@ -26,9 +26,9 @@ namespace TrashMob.Shared.Managers
                 originalUser.SourceSystemUserName = activeDirectoryNewUserRequest.identities[0].issuerAssignedId;
 
                 // User does exist, see if they are trying to change their userName to something already in use
-                if (activeDirectoryNewUserRequest.displayName != originalUser.UserName)
+                if (activeDirectoryNewUserRequest.userName != originalUser.UserName)
                 {
-                    var checkUserName = await userManager.GetUserByUserNameAsync(activeDirectoryNewUserRequest.displayName, CancellationToken.None);
+                    var checkUserName = await userManager.GetUserByUserNameAsync(activeDirectoryNewUserRequest.userName, CancellationToken.None);
 
                     if (checkUserName != null)
                     {
@@ -54,7 +54,7 @@ namespace TrashMob.Shared.Managers
                 return userExistsResponse;
             }
 
-            var checkUser = await userManager.GetUserByUserNameAsync(activeDirectoryNewUserRequest.displayName, CancellationToken.None);
+            var checkUser = await userManager.GetUserByUserNameAsync(activeDirectoryNewUserRequest.userName, CancellationToken.None);
 
             if (checkUser != null)
             {
@@ -73,7 +73,7 @@ namespace TrashMob.Shared.Managers
                 Email = activeDirectoryNewUserRequest.email,
                 GivenName = activeDirectoryNewUserRequest.givenName,
                 SurName = activeDirectoryNewUserRequest.surname,
-                UserName = activeDirectoryNewUserRequest.displayName
+                UserName = activeDirectoryNewUserRequest.userName
             };
 
             await userManager.AddAsync(user, cancellationToken).ConfigureAwait(false);
@@ -87,19 +87,16 @@ namespace TrashMob.Shared.Managers
             return newUserResponse;
         }
 
-        public async Task<ActiveDirectoryResponseBase> ValidateUserAsync(ActiveDirectoryNewUserRequest activeDirectoryNewUserRequest, CancellationToken cancellationToken = default)
+        public async Task<ActiveDirectoryResponseBase> ValidateUserAsync(ActiveDirectoryValidateNewUserRequest activeDirectoryValidateNewUserRequest, CancellationToken cancellationToken = default)
         {
             User originalUser;
 
-            if ((originalUser = await userManager.UserExistsAsync(activeDirectoryNewUserRequest.identities[0].issuerAssignedId, cancellationToken).ConfigureAwait(false)) != null)
+            if ((originalUser = await userManager.UserExistsAsync(activeDirectoryValidateNewUserRequest.email, cancellationToken).ConfigureAwait(false)) != null)
             {
-                originalUser.Email = activeDirectoryNewUserRequest.email;
-                originalUser.SourceSystemUserName = activeDirectoryNewUserRequest.identities[0].issuerAssignedId;
-
                 // User does exist, see if they are trying to change their userName to something already in use
-                if (activeDirectoryNewUserRequest.displayName != originalUser.UserName)
+                if (activeDirectoryValidateNewUserRequest.userName != originalUser.UserName)
                 {
-                    var checkUserName = await userManager.GetUserByUserNameAsync(activeDirectoryNewUserRequest.displayName, CancellationToken.None);
+                    var checkUserName = await userManager.GetUserByUserNameAsync(activeDirectoryValidateNewUserRequest.userName, CancellationToken.None);
 
                     if (checkUserName != null)
                     {
@@ -123,7 +120,7 @@ namespace TrashMob.Shared.Managers
                 return userExistsResponse;
             }
 
-            var checkUser = await userManager.GetUserByUserNameAsync(activeDirectoryNewUserRequest.displayName, CancellationToken.None);
+            var checkUser = await userManager.GetUserByUserNameAsync(activeDirectoryValidateNewUserRequest.userName, CancellationToken.None);
 
             if (checkUser != null)
             {
