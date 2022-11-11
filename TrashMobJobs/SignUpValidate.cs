@@ -1,9 +1,9 @@
 
 namespace TrashMobJobs
 {
-    using System;
-    using System.Linq;
-    using System.Text;
+    //using System;
+    //using System.Linq;
+    //using System.Text;
     using System.Text.Json;
     using System.Threading.Tasks;
     using System.Net;
@@ -29,19 +29,19 @@ namespace TrashMobJobs
         {
             logger.LogInformation("C# HTTP trigger function processed a request.");
 
-            // Check HTTP basic authorization
-            if (!Authorize(req, logger))
-            {
-                logger.LogWarning("HTTP basic authentication validation failed.");
-                var unauthorizedResponse = req.CreateResponse(HttpStatusCode.Unauthorized);
-                return unauthorizedResponse;
-            }
+            //// Check HTTP basic authorization
+            //if (!Authorize(req, logger))
+            //{
+            //    logger.LogWarning("HTTP basic authentication validation failed.");
+            //    var unauthorizedResponse = req.CreateResponse(HttpStatusCode.Unauthorized);
+            //    return unauthorizedResponse;
+            //}
 
             var json = await req.ReadAsStringAsync();
 
             logger.LogInformation(json);
 
-            var activeDirectoryNewUserRequest = JsonSerializer.Deserialize<ActiveDirectoryNewUserRequest>(json);
+            var activeDirectoryNewUserRequest = JsonSerializer.Deserialize<ActiveDirectoryValidateNewUserRequest>(json);
             var createResponse = await activeDirectoryManager.ValidateUserAsync(activeDirectoryNewUserRequest);
 
             HttpResponseData response;
@@ -68,43 +68,43 @@ namespace TrashMobJobs
             return response;
         }
 
-        private static bool Authorize(HttpRequestData req, ILogger log)
-        {
-            // Get the environment's credentials 
-            string username = Environment.GetEnvironmentVariable("BASIC_AUTH_USERNAME", EnvironmentVariableTarget.Process);
-            string password = Environment.GetEnvironmentVariable("BASIC_AUTH_PASSWORD", EnvironmentVariableTarget.Process);
+        //private static bool Authorize(HttpRequestData req, ILogger log)
+        //{
+        //    // Get the environment's credentials 
+        //    string username = Environment.GetEnvironmentVariable("BASIC_AUTH_USERNAME", EnvironmentVariableTarget.Process);
+        //    string password = Environment.GetEnvironmentVariable("BASIC_AUTH_PASSWORD", EnvironmentVariableTarget.Process);
 
-            // Returns authorized if the username is empty or not exists.
-            if (string.IsNullOrEmpty(username))
-            {
-                log.LogInformation("HTTP basic authentication is not set.");
-                return true;
-            }
+        //    // Returns authorized if the username is empty or not exists.
+        //    if (string.IsNullOrEmpty(username))
+        //    {
+        //        log.LogInformation("HTTP basic authentication is not set.");
+        //        return true;
+        //    }
 
-            // Check if the HTTP Authorization header exist
-            if (!req.Headers.TryGetValues("Authorization", out var authHeaderValues))
-            {
-                log.LogWarning("Missing HTTP basic authentication header.");
-                return false;
-            }
+        //    // Check if the HTTP Authorization header exist
+        //    if (!req.Headers.TryGetValues("Authorization", out var authHeaderValues))
+        //    {
+        //        log.LogWarning("Missing HTTP basic authentication header.");
+        //        return false;
+        //    }
 
-            // Read the authorization header
-            // Ensure the type of the authorization header id `Basic`
+        //    // Read the authorization header
+        //    // Ensure the type of the authorization header id `Basic`
 
-            var basicHeader = authHeaderValues.FirstOrDefault(v => v.StartsWith("Basic "));
+        //    var basicHeader = authHeaderValues.FirstOrDefault(v => v.StartsWith("Basic "));
 
-            if (basicHeader == null)
-            {
-                log.LogWarning("HTTP basic authentication header must start with 'Basic '.");
-                return false;
-            }
+        //    if (basicHeader == null)
+        //    {
+        //        log.LogWarning("HTTP basic authentication header must start with 'Basic '.");
+        //        return false;
+        //    }
 
-            // Get the the HTTP basic authorization credentials
+        //    // Get the the HTTP basic authorization credentials
 
-            var cred = UTF8Encoding.UTF8.GetString(Convert.FromBase64String(basicHeader.Substring(6))).Split(':');
+        //    var cred = UTF8Encoding.UTF8.GetString(Convert.FromBase64String(basicHeader.Substring(6))).Split(':');
 
-            // Evaluate the credentials and return the result
-            return cred[0] == username && cred[1] == password;
-        }
+        //    // Evaluate the credentials and return the result
+        //    return cred[0] == username && cred[1] == password;
+        //}
     }
 }
