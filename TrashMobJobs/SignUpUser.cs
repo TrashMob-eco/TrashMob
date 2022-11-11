@@ -13,18 +13,18 @@ namespace TrashMobJobs
     using TrashMob.Poco;
     using TrashMob.Shared.Managers.Interfaces;
 
-    public class SignUpValidation
+    public class SignUpUser
     {
         private readonly ILogger logger;
         private readonly IActiveDirectoryManager activeDirectoryManager;
 
-        public SignUpValidation(ILoggerFactory loggerFactory, IActiveDirectoryManager activeDirectoryManager)
+        public SignUpUser(ILoggerFactory loggerFactory, IActiveDirectoryManager activeDirectoryManager)
         {
-            logger = loggerFactory.CreateLogger<SignUpValidation>();
+            logger = loggerFactory.CreateLogger<SignUpValidate>();
             this.activeDirectoryManager = activeDirectoryManager;
         }
 
-        [Function("SignUpValidation")]
+        [Function("SignUpUser")]
         public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
         {
             logger.LogInformation("C# HTTP trigger function processed a request.");
