@@ -75,7 +75,11 @@ export const TermsOfService: FC = () => {
                 <p>Any claim related to TrashMob's Website shall be governed by the laws of us without regards to its conflict of law provisions.</p>
 
                 <p className="mt-5">The team at TrashMob.eco</p>
-                <img src={logo} className="logo mb-5" alt="TrashMob Logo" />
+                <Row className='mb-5'>
+                    <Col className="p-0">
+                        <img src={logo} className="logo p-0 m-0 pl-2 mb-5" alt="TrashMob Logo" />
+                    </Col>
+                </Row>
             </Container>
         </>
     );
