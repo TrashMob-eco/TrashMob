@@ -463,7 +463,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     </Col>
                 </Row>
             </Container>
-            <Container>
+            <Container className='mb-5 pb-5'>
                 <div className="d-flex my-5 mb-4 justify-content-between">
                     <h4 className="font-weight-bold mr-2 mt-0 text-decoration-underline">My Events ({myEventList.length})</h4>
                     <Link className="btn btn-primary banner-button" to="/manageeventdashboard">Create Event</Link>
