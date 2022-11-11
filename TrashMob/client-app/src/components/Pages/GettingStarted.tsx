@@ -26,8 +26,8 @@ export const GettingStarted: React.FC = () => {
                     </Col>
                 </Row>
             </Container>
-            <Container fluid className="bg-white">
-                <Row className="text-center pt-5 ">
+            <Container fluid className="bg-white mt-5">
+                <Row className="text-center py-5 ">
                     <Col md>
                         <h2 className='font-weight-bold'>The Basics</h2>
                     </Col>
@@ -109,37 +109,36 @@ export const GettingStarted: React.FC = () => {
                         </div>
                     </Col>
                 </Row>
-                <Row className='mt-4'>
-                    <Col md={2}></Col>
-                    <Col md={4}>
-                        <div className="px-5 mb-5">
-                            <h2>What do I wear?</h2>
-                            <p className="font-weight-bold">
-                                Wear clothes you won’t mind getting dirty or possibly torn. We strongly encourage a reflective vest for clean ups along roadsides.
-                            </p>
-                            <p className="font-weight-light">
-                                Long sleeves and jeans that keep branches and thorns off are best. Most importantly, wear good footwear that are preferably water resistant and thick.
-                                Hiking boots work well, as do old tennis shoes. Shorts and t-shirts are sometimes enough for some urban pickups, but remember to dress for safety and for the weather.
-                            </p>
-                        </div>
-                    </Col>
-                    <Col md={4}>
-                        <div className="px-5 pt-5">
-                            <Image src={wear} alt="wear" className="h-75" />
-                        </div>
-                    </Col>
-                    <Col md={2}></Col>
-                </Row>
             </Container>
-            <Container fluid>
-                <Row className='mt-4'>
-                    <Col md={2}></Col>
-                    <Col md={4}>
+            <div className='bg-white'>
+                <Container className='py-5'>
+                    <Row className='py-5'>
+                        <Col md={6}>
+                            <div className="">
+                                <h1 className='fw-600'>What do I wear?</h1>
+                                <h4>
+                                    Wear clothes you won’t mind getting dirty or possibly torn. We strongly encourage a reflective vest for clean ups along roadsides.
+                                </h4>
+                                <p className="font-weight-light">
+                                    Long sleeves and jeans that keep branches and thorns off are best. Most importantly, wear good footwear that are preferably water resistant and thick.
+                                    Hiking boots work well, as do old tennis shoes. Shorts and t-shirts are sometimes enough for some urban pickups, but remember to dress for safety and for the weather.
+                                </p>
+                            </div>
+                        </Col>
+                        <Col md={6}>
+                            <Image src={wear} alt="wear" className="m-0" />
+                        </Col>
+                    </Row>
+                </Container>
+            </div>
+            <Container className='py-5'>
+                <Row className='py-5'>
+                    <Col md={6}>
                         <div className="px-5">
-                            <h2>But what about the highways?</h2>
-                            <p className="font-weight-bold">
+                            <h1 className='fw-600'>But what about the highways?</h1>
+                            <h4>
                                 Please check with your Department of Transportation before creating a highway cleanup event, and follow all of their guidance. Safety is the number one priority!
-                            </p>
+                            </h4>
                             <p className="font-weight-light">
                                 In America, the highways are notorious for litter. People tend to throw trash out of their windows in areas they don’t live near, and unsecured loads will fly
                                 off trucks at highway speeds. With vehicles racing by at 75mph, they are also the most dangerous places to pick up trash. Because of this danger,
@@ -150,12 +149,9 @@ export const GettingStarted: React.FC = () => {
                             </p>
                         </div>
                     </Col>
-                    <Col md={4}>
-                        <div className="px-5 pt-5">
-                            <Image src={highways} alt="highways" className="h-75" />
-                        </div>
+                    <Col md={6}>
+                        <Image src={highways} alt="highways" />
                     </Col>
-                    <Col md={2}></Col>
                 </Row>
             </Container>
             <Container fluid className="bg-white">
@@ -171,7 +167,7 @@ export const GettingStarted: React.FC = () => {
                     </Col>
                 </Row>
             </Container>
-        </>        
+        </>
     );
 }
 
