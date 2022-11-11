@@ -31,7 +31,7 @@ export const Footer: React.FC = () => {
                             <Link to="/eventsummaries">Event summaries</Link>
                         </div>
                     </div>
-                    <hr className="horizontalLine" />
+                    <hr className="horizontalLine mt-5" />
                     <div className="row" id="copyright">
                         <div className="col-md-8">
                             <p>Copyright &copy; 2022 TRASHMOB.ECO - All rights reserved.</p>
