@@ -51,7 +51,7 @@ export const Footer: React.FC = () => {
                                     </div>
                                     <div className="iconWrapper">
                                         <a href={"https://profiles.eco/trashmob?ref=tm"} target="_blank" rel="noreferrer noopener">
-                                            <img className="eco-trustmark" alt=".eco profile for trashmob.eco" src="https://trust.profiles.eco/trashmob/eco-button.svg?color=%2396BA00" />
+                                            <img className="eco-trustmark" alt=".eco profile for trashmob.eco" src="https://trust.profiles.eco/trashmob/eco-button.svg?color=%23000000" />
                                         </a>
                                     </div>
                                     <div className="iconWrapper">
