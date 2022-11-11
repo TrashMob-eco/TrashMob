@@ -26,7 +26,7 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
 
     const mainNavItems = [
         { name: "Home", url: '/' },
-        { name: "Get Started", url: "/gettingstarted" },
+        { name: "Getting Started", url: "/gettingstarted" },
         { name: "My Dashboard", url: "/mydashboard" },
         { name: "Events", url: "/#events" },
         { name: "Shop", url: "/shop" }
@@ -50,7 +50,7 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
     return (
         <header className="tm-header">
             <div className="container bg-light tm-mainNav">
-                <div className="navbar navbar-expand-lg navbar-light navbar-static-top" id="navbar">
+                <div className="navbar navbar-expand-lg navbar-light navbar-static-top px-0" id="navbar">
                     <a className="navbar-brand" href="/" id="navbarBrand"><img src={logo} alt="TrashMob Logo" className="logo" /></a>
                     <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
@@ -76,8 +76,8 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 <Dropdown.Divider />
                                 <Dropdown.Item eventKey="3" href="/userprofile"><Person aria-hidden="true" />My profile</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="4" href="/siteadmin" disabled={!props.currentUser.isSiteAdmin}><PersonBadge aria-hidden="true" />Site administration</Dropdown.Item>
-                                <Dropdown.Divider />
+                                {props.currentUser.isSiteAdmin ? <> <Dropdown.Item eventKey="4" href="/siteadmin" disabled={!props.currentUser.isSiteAdmin}><PersonBadge aria-hidden="true" />Site administration</Dropdown.Item>
+                                    <Dropdown.Divider /></> : ""}
                                 <Dropdown.Item eventKey="5" onClick={(e) => signOut(e)}><BoxArrowLeft aria-hidden="true" />Sign out</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
