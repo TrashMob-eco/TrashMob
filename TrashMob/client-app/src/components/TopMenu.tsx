@@ -76,8 +76,8 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 <Dropdown.Divider />
                                 <Dropdown.Item eventKey="3" href="/userprofile"><Person aria-hidden="true" />My profile</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="4" href="/siteadmin" disabled={!props.currentUser.isSiteAdmin}><PersonBadge aria-hidden="true" />Site administration</Dropdown.Item>
-                                <Dropdown.Divider />
+                                {props.currentUser.isSiteAdmin ? <> <Dropdown.Item eventKey="4" href="/siteadmin" disabled={!props.currentUser.isSiteAdmin}><PersonBadge aria-hidden="true" />Site administration</Dropdown.Item>
+                                    <Dropdown.Divider /></> : ""}
                                 <Dropdown.Item eventKey="5" onClick={(e) => signOut(e)}><BoxArrowLeft aria-hidden="true" />Sign out</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
