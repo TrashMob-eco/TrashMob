@@ -187,7 +187,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
                             </Form.Group >
                             <Form.Group className="form-group d-flex justify-content-end">
                                 <ButtonGroup className="justify-content-between">
-                                    <Button id="contactFormCancelBtn" className="action mr-2" onClick={(e) => handleCancel(e)}>Cancel</Button>
+                                    <Button className="action mr-2 event-list-event-type" onClick={(e) => handleCancel(e)}>Cancel</Button>
                                     <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Submit</Button>
                                 </ButtonGroup>
                             </Form.Group >
