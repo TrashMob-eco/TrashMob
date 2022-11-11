@@ -259,7 +259,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
                     </div>
                     {eventView === 'map' ? (
                         <>
-                            <Link to="/manageeventdashboard">Create a New Event</Link>
+                            <Button color='primary' className='mb-2' onClick={() => history.push("/manageeventdashboard")}>Create a New Event</Button>
                             <div className="w-100 m-0">
                                 <AzureMapsProvider>
                                     <>
@@ -270,9 +270,9 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
                         </>
                     ) : (
                         <>
-                            <Link to="/manageeventdashboard">Create a New Event</Link>
+                            <Button color='primary' className='mb-2' onClick={() => history.push("/manageeventdashboard")}>Create a New Event</Button>
                             <div className="container-lg">
-                                    <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} history={history} location={location} match={match} />
+                                <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} history={history} location={location} match={match} />
                             </div>
                         </>
                     )}
