@@ -116,7 +116,7 @@ export const GettingStarted: React.FC = () => {
                         <Col md={6}>
                             <div className="">
                                 <h1 className='fw-600'>What do I wear?</h1>
-                                <h4>
+                                <h4 className='mt-5'>
                                     Wear clothes you won’t mind getting dirty or possibly torn. We strongly encourage a reflective vest for clean ups along roadsides.
                                 </h4>
                                 <p className="font-weight-light">
@@ -126,7 +126,7 @@ export const GettingStarted: React.FC = () => {
                             </div>
                         </Col>
                         <Col md={6}>
-                            <Image src={wear} alt="wear" className="m-0" />
+                            <Image src={wear} alt="wear" className="m-0 h-100" />
                         </Col>
                     </Row>
                 </Container>
@@ -136,7 +136,7 @@ export const GettingStarted: React.FC = () => {
                     <Col md={6}>
                         <div className="px-5">
                             <h1 className='fw-600'>But what about the highways?</h1>
-                            <h4>
+                            <h4 className='mt-5'>
                                 Please check with your Department of Transportation before creating a highway cleanup event, and follow all of their guidance. Safety is the number one priority!
                             </h4>
                             <p className="font-weight-light">
@@ -150,10 +150,10 @@ export const GettingStarted: React.FC = () => {
                         </div>
                     </Col>
                     <Col md={6}>
-                        <Image src={highways} alt="highways" />
-                    </Col>
-                </Row>
-            </Container>
+                        <Image src={highways} alt="highways" className="m-0 h-100" />
+                    </Col >
+                </Row >
+            </Container >
             <Container fluid className="bg-white">
                 <Row className="text-center py-5">
                     <Col md>
