@@ -151,7 +151,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
                         </p>
                     </div>
                 </Col>
-                <Col lg={{ span: 7, offset: 1 }}>
+                <Col lg={8}>
                     <div className="bg-white p-5 shadow-sm rounded">
                         <Form onSubmit={handleSave} >
 
