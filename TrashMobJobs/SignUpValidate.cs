@@ -42,20 +42,19 @@ namespace TrashMobJobs
             logger.LogInformation(json);
 
             var activeDirectoryNewUserRequest = JsonSerializer.Deserialize<ActiveDirectoryValidateNewUserRequest>(json);
-            var createResponse = await activeDirectoryManager.ValidateUserAsync(activeDirectoryNewUserRequest);
+            var createResponse = await activeDirectoryManager.ValidateNewUserAsync(activeDirectoryNewUserRequest);
 
             HttpResponseData response;
             switch (createResponse.action)
             {
                 case "ValidationError":
-                    response = req.CreateResponse(HttpStatusCode.BadRequest);
+                    response = req.CreateResponse(HttpStatusCode.Conflict);
                     var validationResponse = createResponse as ActiveDirectoryValidationFailedResponse;
-                    validationResponse.status = ((int)HttpStatusCode.BadRequest).ToString();
+                    validationResponse.status = ((int)HttpStatusCode.Conflict).ToString();
                     response.WriteString(JsonSerializer.Serialize(validationResponse));
                     break;
                 case "Failed":
-                    // Yes, really. It needs an Ok when failed...
-                    response = req.CreateResponse(HttpStatusCode.OK);
+                    response = req.CreateResponse(HttpStatusCode.InternalServerError);
                     var blockingResponse = createResponse as ActiveDirectoryBlockingResponse;
                     response.WriteString(JsonSerializer.Serialize(blockingResponse));
                     break;
