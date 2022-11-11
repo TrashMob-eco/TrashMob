@@ -26,7 +26,7 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
 
     const mainNavItems = [
         { name: "Home", url: '/' },
-        { name: "Get Started", url: "/gettingstarted" },
+        { name: "Getting Started", url: "/gettingstarted" },
         { name: "My Dashboard", url: "/mydashboard" },
         { name: "Events", url: "/#events" },
         { name: "Shop", url: "/shop" }
