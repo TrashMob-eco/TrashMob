@@ -86,5 +86,64 @@ namespace TrashMob.Shared.Managers
 
             return newUserResponse;
         }
+
+        public async Task<ActiveDirectoryResponseBase> ValidateUserAsync(ActiveDirectoryNewUserRequest activeDirectoryNewUserRequest, CancellationToken cancellationToken = default)
+        {
+            User originalUser;
+
+            if ((originalUser = await userManager.UserExistsAsync(activeDirectoryNewUserRequest.identities[0].issuerAssignedId, cancellationToken).ConfigureAwait(false)) != null)
+            {
+                originalUser.Email = activeDirectoryNewUserRequest.email;
+                originalUser.SourceSystemUserName = activeDirectoryNewUserRequest.identities[0].issuerAssignedId;
+
+                // User does exist, see if they are trying to change their userName to something already in use
+                if (activeDirectoryNewUserRequest.displayName != originalUser.UserName)
+                {
+                    var checkUserName = await userManager.GetUserByUserNameAsync(activeDirectoryNewUserRequest.displayName, CancellationToken.None);
+
+                    if (checkUserName != null)
+                    {
+                        var duplicateDisplayNameResponse = new ActiveDirectoryValidationFailedResponse
+                        {
+                            action = "ValidationError",
+                            version = "1.0.0",
+                            userMessage = "Please choose a different Display Name. This name already in use."
+                        };
+
+                        return duplicateDisplayNameResponse;
+                    }
+                }
+
+                var userExistsResponse = new ActiveDirectoryContinuationResponse
+                {
+                    action = "Continue",
+                    version = "1.0.0",
+                };
+
+                return userExistsResponse;
+            }
+
+            var checkUser = await userManager.GetUserByUserNameAsync(activeDirectoryNewUserRequest.displayName, CancellationToken.None);
+
+            if (checkUser != null)
+            {
+                var duplicateDisplayNameResponse = new ActiveDirectoryValidationFailedResponse
+                {
+                    action = "ValidationError",
+                    version = "1.0.0",
+                    userMessage = "Please choose a different Display Name. This name already in use."
+                };
+
+                return duplicateDisplayNameResponse;
+            }
+
+            var newUserResponse = new ActiveDirectoryContinuationResponse
+            {
+                action = "Continue",
+                version = "1.0.0",
+            };
+
+            return newUserResponse;
+        }
     }
 }
