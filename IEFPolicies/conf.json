@@ -1,0 +1,10 @@
+{
+  "Prefix": "TM_",
+  "Google": {
+    "ClientId": "...apps.googleusercontent.com"
+  },
+  "REST": {
+    "Validate": "https://fa-tm-dev-westus2.azurewebsites.net/api/SignUpValidate?code=NtQcQ6WVSRvU0tasMo4MrIHerO47RTHin7DVM5UTSP6QAzFuffRhrQ==",
+    "SignUp": "https://fa-tm-dev-westus2.azurewebsites.net/api/SignUpUser?code=7Ko8PG71eryS_dqSBfAr5-_lpV_U3ik7SZnP_O2MMXDzAzFuOkz3yw=="
+  }
+}
