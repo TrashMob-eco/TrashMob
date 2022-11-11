@@ -159,7 +159,7 @@ export const GettingStarted: React.FC = () => {
                 </Row>
             </Container>
             <Container fluid className="bg-white">
-                <Row className="text-center pt-5">
+                <Row className="text-center py-5">
                     <Col md>
                         <div className="d-flex flex-column">
                             <h2 className='font-weight-bold'>Ready to go?</h2>
