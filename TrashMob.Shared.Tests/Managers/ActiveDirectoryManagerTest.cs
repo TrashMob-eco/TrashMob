@@ -44,7 +44,7 @@
         {
             var mockUserManager = new Mock<IUserManager>();
             var user = new User { Email = "joe@test.com", UserName = "joe" };
-            mockUserManager.Setup(m => m.UserExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult<User>(user));
+            mockUserManager.Setup(m => m.GetUserByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult<User>(user));
             mockUserManager.Setup(m => m.GetUserByUserNameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult<User>(null));
 
             var activeDirectoryManager = new ActiveDirectoryManager(mockUserManager.Object);
@@ -88,7 +88,7 @@
         {
             var mockUserManager = new Mock<IUserManager>();
             var user = new User { Email = "joe@test.com", UserName = "joe" };
-            mockUserManager.Setup(m => m.UserExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult<User>(user));
+            mockUserManager.Setup(m => m.GetUserByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult<User>(user));
             mockUserManager.Setup(m => m.GetUserByUserNameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult<User>(null));
 
             var activeDirectoryManager = new ActiveDirectoryManager(mockUserManager.Object);
