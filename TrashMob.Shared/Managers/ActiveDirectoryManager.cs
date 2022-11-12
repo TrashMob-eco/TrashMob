@@ -78,7 +78,7 @@ namespace TrashMob.Shared.Managers
                 return response;
             }
 
-            var checkUser = await userManager.GetUserByUserNameAsync(userName, CancellationToken.None);
+            var checkUser = await userManager.GetUserByUserNameAsync(userName, CancellationToken.None).ConfigureAwait(false);
 
             if (checkUser != null)
             {
