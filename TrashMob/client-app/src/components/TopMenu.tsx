@@ -51,7 +51,7 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
         <header className="tm-header">
             <div className="container bg-light tm-mainNav">
                 <div className="navbar navbar-expand-lg navbar-light navbar-static-top px-0" id="navbar">
-                    <a className="navbar-brand" href="/" id="navbarBrand"><img src={logo} alt="TrashMob Logo" className="logo" /></a>
+                    <a className="navbar-brand" href="/" id="navbarBrand"><img src={logo} alt="TrashMob Logo" className="logo m-0" /></a>
                     <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
