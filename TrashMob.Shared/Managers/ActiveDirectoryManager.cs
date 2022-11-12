@@ -18,31 +18,11 @@ namespace TrashMob.Shared.Managers
 
         public async Task<ActiveDirectoryResponseBase> CreateUserAsync(ActiveDirectoryNewUserRequest activeDirectoryNewUserRequest, CancellationToken cancellationToken = default)
         {
-            // Preventative check
-            if ((await userManager.UserExistsAsync(activeDirectoryNewUserRequest.email, cancellationToken).ConfigureAwait(false)) != null)
+            var response = await DoesUserExist(activeDirectoryNewUserRequest.userName, activeDirectoryNewUserRequest.email, cancellationToken).ConfigureAwait(false);
+            
+            if (response != null)
             {
-                var duplicateEmailResponse = new ActiveDirectoryValidationFailedResponse
-                {
-                    action = "ValidationError",
-                    version = "1.0.0",
-                    userMessage = "This Email account is already in use."
-                };
-
-                return duplicateEmailResponse;
-            }
-
-            var checkUser = await userManager.GetUserByUserNameAsync(activeDirectoryNewUserRequest.userName, CancellationToken.None);
-
-            if (checkUser != null)
-            {
-                var duplicateUserNameResponse = new ActiveDirectoryValidationFailedResponse
-                {
-                    action = "ValidationError",
-                    version = "1.0.0",
-                    userMessage = "Please choose a different User Name. This name already in use."
-                };
-
-                return duplicateUserNameResponse;
+                return response;
             }
 
             var user = new User
@@ -66,30 +46,11 @@ namespace TrashMob.Shared.Managers
 
         public async Task<ActiveDirectoryResponseBase> ValidateNewUserAsync(ActiveDirectoryValidateNewUserRequest activeDirectoryValidateNewUserRequest, CancellationToken cancellationToken = default)
         {
-            if ((await userManager.UserExistsAsync(activeDirectoryValidateNewUserRequest.email, cancellationToken).ConfigureAwait(false)) != null)
+            var response = await DoesUserExist(activeDirectoryValidateNewUserRequest.userName, activeDirectoryValidateNewUserRequest.email, cancellationToken).ConfigureAwait(false);
+            
+            if (response != null)
             {
-                var duplicateEmailResponse = new ActiveDirectoryValidationFailedResponse
-                {
-                    action = "ValidationError",
-                    version = "1.0.0",
-                    userMessage = "This email is already in use."
-                };
-
-                return duplicateEmailResponse;
-            }
-
-            var checkUser = await userManager.GetUserByUserNameAsync(activeDirectoryValidateNewUserRequest.userName, CancellationToken.None);
-
-            if (checkUser != null)
-            {
-                var duplicateUserNameResponse = new ActiveDirectoryValidationFailedResponse
-                {
-                    action = "ValidationError",
-                    version = "1.0.0",
-                    userMessage = "Please choose a different User Name. This name already in use."
-                };
-
-                return duplicateUserNameResponse;
+                return response;
             }
 
             var newUserResponse = new ActiveDirectoryContinuationResponse
@@ -99,6 +60,39 @@ namespace TrashMob.Shared.Managers
             };
 
             return newUserResponse;
+        }
+
+        private async Task<ActiveDirectoryResponseBase> DoesUserExist(string userName, string email, CancellationToken cancellationToken = default)
+        {
+            var originalUser = await userManager.GetUserByEmailAsync(email, cancellationToken).ConfigureAwait(false);
+
+            if (originalUser != null)
+            {
+                var response = new ActiveDirectoryValidationFailedResponse
+                {
+                    action = "ValidationError",
+                    version = "1.0.0",
+                    userMessage = "This email is already in use."
+                };
+
+                return response;
+            }
+
+            var checkUser = await userManager.GetUserByUserNameAsync(userName, CancellationToken.None);
+
+            if (checkUser != null)
+            {
+                var response = new ActiveDirectoryValidationFailedResponse
+                {
+                    action = "ValidationError",
+                    version = "1.0.0",
+                    userMessage = "Please choose a different User Name. This name already in use."
+                };
+
+                return response;
+            }
+
+            return null;
         }
     }
 }
