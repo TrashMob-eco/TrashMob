@@ -9,6 +9,8 @@
     {
         Task<User> GetUserByUserNameAsync(string userName, CancellationToken cancellationToken);
 
+        Task<User> GetUserByEmailAsync(string email, CancellationToken cancellationToken);
+
         Task<User> GetUserByInternalIdAsync(Guid id, CancellationToken cancellationToken);
 
         Task<bool> UserExistsAsync(Guid id, CancellationToken cancellationToken);
