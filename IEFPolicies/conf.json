@@ -1,7 +1,7 @@
 {
-  "Prefix": "TM_",
+  "Prefix": "MT_",
   "Google": {
-    "ClientId": "...apps.googleusercontent.com"
+    "ClientId": "696994352313-cbsromrmj6oa01hmhnntp4l709328goq.apps.googleusercontent.com"
   },
   "REST": {
     "Validate": "https://fa-tm-dev-westus2.azurewebsites.net/api/SignUpValidate?code=NtQcQ6WVSRvU0tasMo4MrIHerO47RTHin7DVM5UTSP6QAzFuffRhrQ==",

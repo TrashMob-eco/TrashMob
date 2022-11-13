@@ -12,15 +12,34 @@
         <UserHelpText>Add help text here</UserHelpText>
         <UserInputType>TextBox</UserInputType>
       </ClaimType>
+      <ClaimType Id="extension_PrivacyAccepted">
+        <DisplayName>Privacy policy accepted</DisplayName>
+        <DataType>string</DataType>
+        <UserHelpText>Add help text here</UserHelpText>
+        <UserInputType>RadioSingleSelect</UserInputType>
+        <Restriction>
+          <Enumeration Text="Accepted" Value="Y" SelectByDefault="false" />
+        </Restriction>
+      </ClaimType>
+      <ClaimType Id="extension_TOSAccepted">
+        <DisplayName>Terms of service policy accepted</DisplayName>
+        <DataType>string</DataType>
+        <UserHelpText>Add help text here</UserHelpText>
+        <UserInputType>RadioSingleSelect</UserInputType>
+        <Restriction>
+          <Enumeration Text="Accepted" Value="Y" SelectByDefault="false" />
+        </Restriction>
+      </ClaimType>
       <ClaimType Id="signInNames.userId">
         <DisplayName>User id</DisplayName>
         <DataType>string</DataType>
         <UserHelpText>User id to use for signing in.</UserHelpText>
         <UserInputType>TextBox</UserInputType>
-      </ClaimType>      
+      </ClaimType>  
     </ClaimsSchema>
   </BuildingBlocks>
 
+  
   <ClaimsProviders>
     <ClaimsProvider>
       <DisplayName>Facebook</DisplayName>
@@ -96,6 +115,72 @@
             <InputClaim ClaimTypeReferenceId="resource_id" PartnerClaimType="resource" DefaultValue="IdentityExperienceFrameworkAppId" />
           </InputClaims>
         </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    <ClaimsProvider>
+      <DisplayName>Self asserted</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="LocalAccountSignUpWithEmailAndUserid">
+          <DisplayName>Signup</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.SelfAssertedAttributeProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"/>
+          <Metadata>
+            <Item Key="IpAddressClaimReferenceId">IpAddress</Item>
+            <Item Key="ContentDefinitionReferenceId">api.localaccountsignup</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="issuer_secret" StorageReferenceId="B2C_1A_TokenSigningKeyContainer"/>
+          </CryptographicKeys>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="email"/>
+          </InputClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="objectId"/>
+            <OutputClaim ClaimTypeReferenceId="email" PartnerClaimType="Verified.Email" Required="true"/>
+            <OutputClaim ClaimTypeReferenceId="userId" Required="true"/>            
+            <OutputClaim ClaimTypeReferenceId="newPassword" Required="true"/>
+            <OutputClaim ClaimTypeReferenceId="reenterPassword" Required="true"/>
+            <OutputClaim ClaimTypeReferenceId="executed-SelfAsserted-Input" DefaultValue="true"/>
+            <OutputClaim ClaimTypeReferenceId="authenticationSource"/>
+            <OutputClaim ClaimTypeReferenceId="newUser"/>
+
+            <!-- Optional claims, to be collected from the user -->
+            <OutputClaim ClaimTypeReferenceId="displayName"/>
+            <OutputClaim ClaimTypeReferenceId="givenName"/>
+            <OutputClaim ClaimTypeReferenceId="surName"/>
+            <OutputClaim ClaimTypeReferenceId="extension_PrivacyAccepted" Required="true" />      
+            <OutputClaim ClaimTypeReferenceId="extension_TOSAccepted" Required="true" />                   
+          </OutputClaims>
+          <ValidationTechnicalProfiles>
+            <ValidationTechnicalProfile ReferenceId="REST-Validate"/>            
+            <ValidationTechnicalProfile ReferenceId="AAD-UserWriteUsingEmailAndUserId"/>
+            <ValidationTechnicalProfile ReferenceId="REST-SignUp"/>                
+          </ValidationTechnicalProfiles>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-AAD"/>
+        </TechnicalProfile>
+        <TechnicalProfile Id="SelfAsserted-LocalAccountSignin-EmailOrUserId">
+          <DisplayName>Local Account Signin</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.SelfAssertedAttributeProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"/>
+          <Metadata>
+            <Item Key="SignUpTarget">SignUpWithLogonEmailExchange</Item>
+            <!--Item Key="setting.operatingMode">Email</Item-->
+            <Item Key="ContentDefinitionReferenceId">api.localaccountsignin</Item>
+            <Item Key="IncludeClaimResolvingInClaimsHandling">true</Item>
+          </Metadata>
+          <IncludeInSso>false</IncludeInSso>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="signInName" DefaultValue="{OIDC:LoginHint}" AlwaysUseDefaultValue="true"/>
+          </InputClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="signInName" Required="true"/>
+            <OutputClaim ClaimTypeReferenceId="password" Required="true"/>
+            <OutputClaim ClaimTypeReferenceId="objectId"/>
+            <OutputClaim ClaimTypeReferenceId="authenticationSource"/>
+          </OutputClaims>
+          <ValidationTechnicalProfiles>
+            <ValidationTechnicalProfile ReferenceId="login-NonInteractive"/>
+          </ValidationTechnicalProfiles>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-AAD"/>
+        </TechnicalProfile>        
         <TechnicalProfile Id="SelfAsserted-Social2">
           <DisplayName>User ID signup</DisplayName>
           <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.SelfAssertedAttributeProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
@@ -130,6 +215,8 @@
             <OutputClaim ClaimTypeReferenceId="displayName" />
             <OutputClaim ClaimTypeReferenceId="givenName" />
             <OutputClaim ClaimTypeReferenceId="surname" />
+            <OutputClaim ClaimTypeReferenceId="extension_PrivacyAccepted" Required="true" />      
+            <OutputClaim ClaimTypeReferenceId="extension_TOSAccepted" Required="true" />                
           </OutputClaims>
           <ValidationTechnicalProfiles>
             <ValidationTechnicalProfile ReferenceId="REST-Validate" />            
@@ -137,7 +224,25 @@
             <ValidationTechnicalProfile ReferenceId="REST-SignUp" />                  
           </ValidationTechnicalProfiles>
           <UseTechnicalProfileForSessionManagement ReferenceId="SM-SocialSignup" />
-        </TechnicalProfile>        
+        </TechnicalProfile>   
+             
+        <TechnicalProfile Id="SelfAsserted-TermsAndConditions">
+          <DisplayName>User ID signup</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.SelfAssertedAttributeProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="ContentDefinitionReferenceId">api.socialccountsignup</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="issuer_secret" StorageReferenceId="B2C_1A_TokenSigningKeyContainer" />
+          </CryptographicKeys>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="extension_PrivacyAccepted" Required="true" />      
+            <OutputClaim ClaimTypeReferenceId="extension_TOSAccepted" Required="true" />                         
+          </OutputClaims>
+          <ValidationTechnicalProfiles>
+            <ValidationTechnicalProfile ReferenceId="AAD-UserWritePrivacyObjectId" />
+          </ValidationTechnicalProfiles>
+        </TechnicalProfile>             
       </TechnicalProfiles>    
     </ClaimsProvider>
 
@@ -191,11 +296,77 @@
             <Item Key="ClientId">{ExtAppId}</Item>
           </Metadata>
         </TechnicalProfile>
+        <TechnicalProfile Id="AAD-UserWriteUsingEmailAndUserId">
+          <Metadata>
+            <Item Key="Operation">Write</Item>
+            <Item Key="RaiseErrorIfClaimsPrincipalAlreadyExists">true</Item>
+          </Metadata>
+          <IncludeInSso>false</IncludeInSso>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="email" PartnerClaimType="signInNames.emailAddress" Required="true"/>
+          </InputClaims>
+          <PersistedClaims>
+            <!-- Required claims -->
+            <PersistedClaim ClaimTypeReferenceId="email" PartnerClaimType="signInNames.emailAddress"/>
+            <PersistedClaim ClaimTypeReferenceId="userId" PartnerClaimType="signInNames.userId"/>            
+            <PersistedClaim ClaimTypeReferenceId="newPassword" PartnerClaimType="password"/>
+            <PersistedClaim ClaimTypeReferenceId="displayName" DefaultValue="unknown"/>
+            <PersistedClaim ClaimTypeReferenceId="passwordPolicies" DefaultValue="DisablePasswordExpiration"/>
+
+            <!-- Optional claims. -->
+            <PersistedClaim ClaimTypeReferenceId="givenName"/>
+            <PersistedClaim ClaimTypeReferenceId="surname"/>
+            <PersistedClaim ClaimTypeReferenceId="extension_PrivacyAccepted" />      
+            <PersistedClaim ClaimTypeReferenceId="extension_TOSAccepted" />                   
+          </PersistedClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="objectId"/>
+            <OutputClaim ClaimTypeReferenceId="newUser" PartnerClaimType="newClaimsPrincipalCreated"/>
+            <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="localAccountAuthentication"/>
+            <OutputClaim ClaimTypeReferenceId="userPrincipalName"/>
+            <OutputClaim ClaimTypeReferenceId="signInNames.emailAddress"/>
+            <OutputClaim ClaimTypeReferenceId="signInNames.userId"/>            
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="AAD-Common"/>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-AAD"/>
+        </TechnicalProfile>
+        <TechnicalProfile Id="AAD-UserReadUsingAlternativeSecurityId-NoError">
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="extension_PrivacyAccepted" />
+            <OutputClaim ClaimTypeReferenceId="extension_TOSAccepted" />            
+          </OutputClaims>
+        </TechnicalProfile>  
+        <TechnicalProfile Id="AAD-UserReadUsingObjectId">
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="extension_PrivacyAccepted" />
+            <OutputClaim ClaimTypeReferenceId="extension_TOSAccepted" />            
+          </OutputClaims>          
+        </TechnicalProfile>           
         <TechnicalProfile Id="AAD-UserWriteUsingAlternativeSecurityId">
           <PersistedClaims>
             <PersistedClaim ClaimTypeReferenceId="userId" PartnerClaimType="signInNames.userId" />
+            <PersistedClaim ClaimTypeReferenceId="extension_PrivacyAccepted" />      
+            <PersistedClaim ClaimTypeReferenceId="extension_TOSAccepted" />                   
           </PersistedClaims>          
         </TechnicalProfile>
+        <TechnicalProfile Id="AAD-UserWritePrivacyObjectId">
+          <Metadata>
+            <Item Key="Operation">Write</Item>
+            <Item Key="RaiseErrorIfClaimsPrincipalAlreadyExists">false</Item>
+            <Item Key="RaiseErrorIfClaimsPrincipalDoesNotExist">true</Item>
+          </Metadata>
+          <IncludeInSso>false</IncludeInSso>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="objectId" Required="true" />
+          </InputClaims>
+          <PersistedClaims>
+            <!-- Required claims -->
+            <PersistedClaim ClaimTypeReferenceId="objectId" />
+            <PersistedClaim ClaimTypeReferenceId="extension_PrivacyAccepted" />
+            <PersistedClaim ClaimTypeReferenceId="extension_TOSAccepted" />
+          </PersistedClaims>
+          <IncludeTechnicalProfile ReferenceId="AAD-Common" />
+        </TechnicalProfile>        
       </TechnicalProfiles>
     </ClaimsProvider>
 

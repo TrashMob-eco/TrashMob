@@ -13,111 +13,6 @@
     <PolicyId>B2C_1A_TrustFrameworkExtensions</PolicyId>
   </BasePolicy>
 
-  <ClaimsProviders>
-  <ClaimsProvider>
-    <DisplayName>Local Account</DisplayName>
-    <TechnicalProfiles>
-      <TechnicalProfile Id="LocalAccountSignUpWithEmailAndUserid">
-          <DisplayName>Signup</DisplayName>
-          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.SelfAssertedAttributeProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"/>
-          <Metadata>
-            <Item Key="IpAddressClaimReferenceId">IpAddress</Item>
-            <Item Key="ContentDefinitionReferenceId">api.localaccountsignup</Item>
-          </Metadata>
-          <CryptographicKeys>
-            <Key Id="issuer_secret" StorageReferenceId="B2C_1A_TokenSigningKeyContainer"/>
-          </CryptographicKeys>
-          <InputClaims>
-            <InputClaim ClaimTypeReferenceId="email"/>
-          </InputClaims>
-          <OutputClaims>
-            <OutputClaim ClaimTypeReferenceId="objectId"/>
-            <OutputClaim ClaimTypeReferenceId="email" PartnerClaimType="Verified.Email" Required="true"/>
-            <OutputClaim ClaimTypeReferenceId="userId" Required="true"/>            
-            <OutputClaim ClaimTypeReferenceId="newPassword" Required="true"/>
-            <OutputClaim ClaimTypeReferenceId="reenterPassword" Required="true"/>
-            <OutputClaim ClaimTypeReferenceId="executed-SelfAsserted-Input" DefaultValue="true"/>
-            <OutputClaim ClaimTypeReferenceId="authenticationSource"/>
-            <OutputClaim ClaimTypeReferenceId="newUser"/>
-
-            <!-- Optional claims, to be collected from the user -->
-            <OutputClaim ClaimTypeReferenceId="displayName"/>
-            <OutputClaim ClaimTypeReferenceId="givenName"/>
-            <OutputClaim ClaimTypeReferenceId="surName"/>
-          </OutputClaims>
-          <ValidationTechnicalProfiles>
-            <ValidationTechnicalProfile ReferenceId="REST-Validate"/>            
-            <ValidationTechnicalProfile ReferenceId="AAD-UserWriteUsingEmailAndUserId"/>
-            <ValidationTechnicalProfile ReferenceId="REST-SignUp"/>                
-          </ValidationTechnicalProfiles>
-          <UseTechnicalProfileForSessionManagement ReferenceId="SM-AAD"/>
-        </TechnicalProfile>
-        <TechnicalProfile Id="SelfAsserted-LocalAccountSignin-EmailOrUserId">
-          <DisplayName>Local Account Signin</DisplayName>
-          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.SelfAssertedAttributeProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"/>
-          <Metadata>
-            <Item Key="SignUpTarget">SignUpWithLogonEmailExchange</Item>
-            <!--Item Key="setting.operatingMode">Email</Item-->
-            <Item Key="ContentDefinitionReferenceId">api.localaccountsignin</Item>
-            <Item Key="IncludeClaimResolvingInClaimsHandling">true</Item>
-          </Metadata>
-          <IncludeInSso>false</IncludeInSso>
-          <InputClaims>
-            <InputClaim ClaimTypeReferenceId="signInName" DefaultValue="{OIDC:LoginHint}" AlwaysUseDefaultValue="true"/>
-          </InputClaims>
-          <OutputClaims>
-            <OutputClaim ClaimTypeReferenceId="signInName" Required="true"/>
-            <OutputClaim ClaimTypeReferenceId="password" Required="true"/>
-            <OutputClaim ClaimTypeReferenceId="objectId"/>
-            <OutputClaim ClaimTypeReferenceId="authenticationSource"/>
-          </OutputClaims>
-          <ValidationTechnicalProfiles>
-            <ValidationTechnicalProfile ReferenceId="login-NonInteractive"/>
-          </ValidationTechnicalProfiles>
-          <UseTechnicalProfileForSessionManagement ReferenceId="SM-AAD"/>
-        </TechnicalProfile>
-      </TechnicalProfiles>
-    </ClaimsProvider>
-
-
-  <ClaimsProvider>
-    <DisplayName>Azure Active Directory</DisplayName>
-    <TechnicalProfiles>
-      <TechnicalProfile Id="AAD-UserWriteUsingEmailAndUserId">
-          <Metadata>
-            <Item Key="Operation">Write</Item>
-            <Item Key="RaiseErrorIfClaimsPrincipalAlreadyExists">true</Item>
-          </Metadata>
-          <IncludeInSso>false</IncludeInSso>
-          <InputClaims>
-            <InputClaim ClaimTypeReferenceId="email" PartnerClaimType="signInNames.emailAddress" Required="true"/>
-          </InputClaims>
-          <PersistedClaims>
-            <!-- Required claims -->
-            <PersistedClaim ClaimTypeReferenceId="email" PartnerClaimType="signInNames.emailAddress"/>
-            <PersistedClaim ClaimTypeReferenceId="userId" PartnerClaimType="signInNames.userId"/>            
-            <PersistedClaim ClaimTypeReferenceId="newPassword" PartnerClaimType="password"/>
-            <PersistedClaim ClaimTypeReferenceId="displayName" DefaultValue="unknown"/>
-            <PersistedClaim ClaimTypeReferenceId="passwordPolicies" DefaultValue="DisablePasswordExpiration"/>
-
-            <!-- Optional claims. -->
-            <PersistedClaim ClaimTypeReferenceId="givenName"/>
-            <PersistedClaim ClaimTypeReferenceId="surname"/>
-          </PersistedClaims>
-          <OutputClaims>
-            <OutputClaim ClaimTypeReferenceId="objectId"/>
-            <OutputClaim ClaimTypeReferenceId="newUser" PartnerClaimType="newClaimsPrincipalCreated"/>
-            <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="localAccountAuthentication"/>
-            <OutputClaim ClaimTypeReferenceId="userPrincipalName"/>
-            <OutputClaim ClaimTypeReferenceId="signInNames.emailAddress"/>
-            <OutputClaim ClaimTypeReferenceId="signInNames.userId"/>            
-          </OutputClaims>
-          <IncludeTechnicalProfile ReferenceId="AAD-Common"/>
-          <UseTechnicalProfileForSessionManagement ReferenceId="SM-AAD"/>
-        </TechnicalProfile>
-      </TechnicalProfiles>
-    </ClaimsProvider>      
-  </ClaimsProviders>
 
 <UserJourneys>
   <UserJourney Id="SignUpOrSignIn2">
@@ -192,6 +87,7 @@
             <ClaimsExchange Id="AADUserReadWithObjectId" TechnicalProfileReferenceId="AAD-UserReadUsingObjectId"/>
           </ClaimsExchanges>
         </OrchestrationStep>
+
         <!-- The previous step (SelfAsserted-Social) could have been skipped if there were no attributes to collect 
             from the user. So, in that case, create the user in the directory if one does not already exist 
             (verified using objectId which would be set from the last step if account was created in the directory. -->
@@ -207,7 +103,19 @@
           </ClaimsExchanges>
         </OrchestrationStep>
 
-        <OrchestrationStep Order="7" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="JwtIssuer"/>
+        <OrchestrationStep Order="7" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
+              <Value>extension_PrivacyAccepted</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="SelfAsserted-Policies" TechnicalProfileReferenceId="SelfAsserted-TermsAndConditions"/>
+          </ClaimsExchanges>
+        </OrchestrationStep>        
+
+        <OrchestrationStep Order="8" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="JwtIssuer"/>
 
       </OrchestrationSteps>
       <ClientDefinition ReferenceId="DefaultWeb"/>
