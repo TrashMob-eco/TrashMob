@@ -52,7 +52,12 @@ namespace TrashMob.Shared.Managers
 
         public async Task<User> GetUserByUserNameAsync(string userName, CancellationToken cancellationToken = default)
         {
-            return await Repo.Get(u => u.NameIdentifier == userName).FirstOrDefaultAsync(cancellationToken);
+            return await Repo.Get(u => u.UserName == userName).FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public async Task<User> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
+        {
+            return await Repo.Get(u => u.Email == email).FirstOrDefaultAsync(cancellationToken);
         }
 
         public async Task<User> GetUserByInternalIdAsync(Guid id, CancellationToken cancellationToken = default)

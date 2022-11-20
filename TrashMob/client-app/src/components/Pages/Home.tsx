@@ -208,18 +208,20 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
                 </Row>
             </Container>
             <div className="bg-white pb-4"><Image src={Drawings} alt="Drawings of trash" className="w-100" /></div>
-            <Container fluid className="bg-white">
-                <Row className="py-5 d-flex justify-content-around">
-                    <div className="mx-auto d-flex flex-column flex-lg-row container-lg px-0">
-                        <div className="d-flex flex-column w-50 mx-auto pr-lg-4">
-                            <h4 className="mt-0 font-weight-bold">What is a TrashMob?</h4>
-                            <p>A TrashMob is a group of citizens who are willing to take a hour or two out of their lives to get together and clean up their communities. Start your impact today.</p>
-                            <Link className="mt-2 btn btn-primary btn-128" to="/aboutus" role="button">Learn more</Link>
-                        </div>
-                        <div className="w-50 d-flex align-items-center mx-auto mt-4 mt-md-0"><Image src={Trash} alt="Hands putting trash in trash bag" /></div>
-                    </div>
-                </Row>
-            </Container>
+            <div className='bg-white'>
+                <Container className='py-5'>
+                    <Row className='py-5'>
+                        <Col md={6}>
+                            <h1 className="mt-0 font-weight-bold">What is a TrashMob?</h1>
+                            <h4 className='my-5'>A TrashMob is a group of citizens who are willing to take a hour or two out of their lives to get together and clean up their communities. Start your impact today.</h4>
+                            <Link className="mt-5 btn btn-primary btn-128" to="/aboutus" role="button">Learn more</Link>
+                        </Col>
+                        <Col md={6}>
+                            <Image src={Trash} alt="Hands putting trash in trash bag" className='h-100 m-0' />
+                        </Col>
+                    </Row>
+                </Container>
+            </div>
             <Container className="d-flex justify-content-around my-5 py-5 flex-column flex-md-row">
                 <div className="d-flex flex-column justify-content-center text-center">
                     <img src={Calendar} alt="Calendar icon" className="w-auto mx-auto mb-3" />
@@ -259,7 +261,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
                     </div>
                     {eventView === 'map' ? (
                         <>
-                            <Link to="/manageeventdashboard">Create a New Event</Link>
+                            <Button color='primary' className='mb-2' onClick={() => history.push("/manageeventdashboard")}>Create a New Event</Button>
                             <div className="w-100 m-0">
                                 <AzureMapsProvider>
                                     <>
@@ -270,9 +272,9 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
                         </>
                     ) : (
                         <>
-                            <Link to="/manageeventdashboard">Create a New Event</Link>
+                            <Button color='primary' className='mb-2' onClick={() => history.push("/manageeventdashboard")}>Create a New Event</Button>
                             <div className="container-lg">
-                                    <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} history={history} location={location} match={match} />
+                                <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} history={history} location={location} match={match} />
                             </div>
                         </>
                     )}
