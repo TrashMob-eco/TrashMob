@@ -9,21 +9,19 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
-    using TrashMob.Poco;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Managers.Partners;
 
     [Authorize]
     [Route("api/partneradmininvitations")]
     public class PartnerAdminInvitationsController : SecureController
     {
-        private readonly IKeyedManager<PartnerAdminInvitation> partnerAdminInvitationManager;
+        private readonly IPartnerAdminInvitationManager partnerAdminInvitationManager;
         private readonly IKeyedManager<Partner> partnerManager;
         private readonly IKeyedManager<User> userManager;
 
         public PartnerAdminInvitationsController(IKeyedManager<User> userManager,
-                                       IKeyedManager<PartnerAdminInvitation> partnerAdminInvitationManager,
-                                       IKeyedManager<Partner> partnerManager)
+                                                 IPartnerAdminInvitationManager partnerAdminInvitationManager,
+                                                 IKeyedManager<Partner> partnerManager)
             : base()
         {
             this.partnerManager = partnerManager;
@@ -105,6 +103,25 @@
             TelemetryClient.TrackEvent(nameof(AddPartnerAdminInvitation));
 
             return CreatedAtAction(nameof(GetPartnerAdminInvite), new { partnerAdminInvitation.PartnerId, partnerAdminInvitation.Email }, result);
+        }
+
+        [HttpPost("resend/{partnerAdminInvitationId}")]
+
+        public async Task<IActionResult> ResendPartnerAdminInvitation(Guid partnerAdminInvitationId, CancellationToken cancellationToken)
+        {
+            // Make sure the person adding the user is either an admin or already a user for the partner
+            var partner = await partnerAdminInvitationManager.GetPartnerForInvitation(partnerAdminInvitationId, cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var result = await partnerAdminInvitationManager.ResendPartnerAdminInvitation(partnerAdminInvitationId, UserId, cancellationToken).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(ResendPartnerAdminInvitation));
+
+            return Ok(result);
         }
 
         [HttpPut]

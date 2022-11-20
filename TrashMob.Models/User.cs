@@ -81,6 +81,10 @@ namespace TrashMob.Models
 
         public virtual ICollection<PartnerAdmin> PartnerAdminsUpdated { get; set; }
 
+        public virtual ICollection<PartnerAdminInvitation> PartnerAdminInvitationsCreated { get; set; }
+
+        public virtual ICollection<PartnerAdminInvitation> PartnerAdminInvitationsUpdated { get; set; }
+
         public virtual ICollection<PartnerLocation> PartnerLocationsCreated { get; set; }
 
         public virtual ICollection<PartnerLocation> PartnerLocationsUpdated { get; set; }

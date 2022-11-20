@@ -10,7 +10,7 @@
     using TrashMob.Shared.Persistence.Interfaces;
     using Microsoft.EntityFrameworkCore;
 
-    public class PartnerAdminManager : BaseManager<PartnerAdmin>, IBaseManager<PartnerAdmin>
+    public class PartnerAdminManager : BaseManager<PartnerAdmin>, IPartnerAdminManager
     {
         public PartnerAdminManager(IBaseRepository<PartnerAdmin> partnerAdminRepository) : base(partnerAdminRepository)
         {
@@ -19,6 +19,17 @@
         public override async Task<IEnumerable<PartnerAdmin>> GetByParentIdAsync(Guid parentId, CancellationToken cancellationToken)
         {
             return (await Repository.Get().Where(p => p.PartnerId == parentId).ToListAsync(cancellationToken)).AsEnumerable();
+        }
+
+        public async Task<IEnumerable<Partner>> GetPartnersByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            var results = await Repository.Get()
+                .Where(t => t.UserId == userId)
+                .Include(t => t.Partner)
+                .Select(t => t.Partner)
+                .ToListAsync(cancellationToken);
+
+            return results;
         }
     }
 }

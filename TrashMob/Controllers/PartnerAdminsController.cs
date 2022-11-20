@@ -16,12 +16,12 @@
     [Route("api/partneradmins")]
     public class PartnerAdminsController : SecureController
     {
-        private readonly IBaseManager<PartnerAdmin> partnerAdminManager;
+        private readonly IPartnerAdminManager partnerAdminManager;
         private readonly IKeyedManager<Partner> partnerManager;
         private readonly IKeyedManager<User> userManager;
 
         public PartnerAdminsController(IKeyedManager<User> userManager,
-                                       IBaseManager<PartnerAdmin> partnerAdminManager, 
+                                       IPartnerAdminManager partnerAdminManager, 
                                        IKeyedManager<Partner> partnerManager)
             : base()
         {
@@ -31,7 +31,7 @@
         }
 
         [HttpGet("{partnerId}")]
-        public async Task<IActionResult> GetPartnerUsers(Guid partnerId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetPartnerAdmins(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
@@ -48,22 +48,7 @@
         [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetPartnersForUser(Guid userId, CancellationToken cancellationToken)
         {
-            // Todo fix this
-            var partnerUsers = (await partnerAdminManager.GetAsync(cancellationToken)).Where(pu => pu.UserId == userId).ToList();
-
-            if (!partnerUsers.Any())
-            { 
-                return NotFound();
-            }
-
-            var partners = new List<Partner>();
-
-            foreach (var pu in partnerUsers)
-            {
-                var partner = await partnerManager.GetAsync(pu.PartnerId, cancellationToken).ConfigureAwait(false);
-                partners.Add(partner);
-            }
-
+            var partners = await partnerAdminManager.GetPartnersByUserIdAsync(userId, cancellationToken);
             return Ok(partners);
         }
 
@@ -99,16 +84,16 @@
                 return Forbid();
             }
 
-            var partnerUsers = await partnerAdminManager.GetByParentIdAsync(partnerId, cancellationToken);
+            var partnerAdmins = await partnerAdminManager.GetByParentIdAsync(partnerId, cancellationToken);
 
-            if (partnerUsers == null || !partnerUsers.Any())
+            if (partnerAdmins == null || !partnerAdmins.Any())
             {
                 return NotFound();
             }
 
             var users = new List<DisplayUser>();
 
-            foreach (var pu in partnerUsers)
+            foreach (var pu in partnerAdmins)
             {
                 var user = await userManager.GetAsync(pu.UserId, cancellationToken).ConfigureAwait(false);
                 users.Add(user.ToDisplayUser());

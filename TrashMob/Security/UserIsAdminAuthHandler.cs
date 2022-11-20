@@ -20,9 +20,9 @@
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsAdminRequirement requirement)
         {
-            var userName = context.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var nameIdentifier = context.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            var user = await userManager.GetUserByUserNameAsync(userName, CancellationToken.None);
+            var user = await userManager.GetUserByNameIdentifierAsync(nameIdentifier, CancellationToken.None);
 
             if (user == null)
             {

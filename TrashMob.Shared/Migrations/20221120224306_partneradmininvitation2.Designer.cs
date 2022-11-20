@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrashMob.Shared.Persistence;
 
@@ -11,9 +12,10 @@ using TrashMob.Shared.Persistence;
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    partial class MobDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221120224306_partneradmininvitation2")]
+    partial class partneradmininvitation2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -730,6 +732,12 @@ namespace TrashMob.Migrations
                     b.Property<DateTimeOffset?>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<DateTimeOffset>("DateInvited")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("InvitationStatusId")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("LastUpdatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -739,6 +747,8 @@ namespace TrashMob.Migrations
                     b.HasKey("PartnerId", "UserId");
 
                     b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("InvitationStatusId");
 
                     b.HasIndex("LastUpdatedByUserId");
 
@@ -1984,6 +1994,12 @@ namespace TrashMob.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_PartnerAdmin_CreatedByUser_Id");
 
+                    b.HasOne("TrashMob.Models.InvitationStatus", "InvitationStatus")
+                        .WithMany()
+                        .HasForeignKey("InvitationStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("PartnerAdminsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
@@ -2004,6 +2020,8 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_PartnerAdmin_User");
 
                     b.Navigation("CreatedByUser");
+
+                    b.Navigation("InvitationStatus");
 
                     b.Navigation("LastUpdatedByUser");
 
