@@ -7,7 +7,8 @@
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
     using Microsoft.EntityFrameworkCore;
-    using DocuSign.eSign.Model;
+    using System.Collections.Generic;
+    using System.Linq;
 
     public class PartnerAdminInvitationManager : KeyedManager<PartnerAdminInvitation>, IPartnerAdminInvitationManager
     {
@@ -21,6 +22,11 @@
         {
             this.partnerAdminManager = partnerAdminManager;
             this.userManager = userManager;
+        }
+
+        public override async Task<IEnumerable<PartnerAdminInvitation>> GetByParentIdAsync(Guid parentId, CancellationToken cancellationToken)
+        {
+            return (await Repository.Get().Where(p => p.PartnerId == parentId).ToListAsync(cancellationToken)).AsEnumerable();
         }
 
         public async Task<Partner> GetPartnerForInvitation(Guid partnerAdminInvitationId, CancellationToken cancellationToken)

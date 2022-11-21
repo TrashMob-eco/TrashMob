@@ -29,7 +29,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         { name: 'Manage Partner', value: '1' },
         { name: 'Manage Partner Locations', value: '2' },
         { name: 'Manage Partner Contacts', value: '3' },
-        { name: 'Manage Partner Users', value: '4' },
+        { name: 'Manage Partner Admins', value: '4' },
         { name: 'Manage Partner Documents', value: '5' },
         { name: 'Manage Partner Social Media Accounts', value: '6' },
     ];

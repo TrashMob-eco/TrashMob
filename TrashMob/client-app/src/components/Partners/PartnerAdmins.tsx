@@ -5,6 +5,9 @@ import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore'
 import * as ToolTips from "../../store/ToolTips";
 import PartnerAdminInvitationData from '../Models/PartnerAdminInvitationData';
 import * as Constants from '../Models/Constants';
+import { Guid } from 'guid-typescript';
+import { getInvitationStatus } from '../../store/invitationStatusHelper';
+import InvitationStatusData from '../Models/InvitationStatusData';
 
 export interface PartnerAdminsDataProps {
     partnerId: string;
@@ -20,11 +23,24 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
     const [userEmailErrors, setUserEmailErrors] = React.useState<string>("");
     const [partnerAdminInvitations, setPartnerAdminInvitations] = React.useState<PartnerAdminInvitationData[]>([]);
     const [isPartnerAdminInvitationsDataLoaded, setIsPartnerAdminInvitationsDataLoaded] = React.useState<boolean>(false);
+    const [invitationStatusList, setInvitationStatusList] = React.useState<InvitationStatusData[]>([]);
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
     const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
     const [isEditOrAdd, setIsEditOrAdd] = React.useState<boolean>(false);
 
     React.useEffect(() => {
+
+        const headers = getDefaultHeaders('GET');
+
+        fetch('/api/invitationstatuses', {
+            method: 'GET',
+            headers: headers,
+        })
+            .then(response => response.json() as Promise<Array<any>>)
+            .then(data => {
+                setInvitationStatusList(data);
+            });
+
         if (props.isUserLoaded) {
             const account = msalClient.getAllAccounts()[0];
 
@@ -51,7 +67,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
                         var getHeaders = getDefaultHeaders("GET");
                         getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                        fetch('/api/partneradmininvitations/getbypartner/' + props.partnerId, {
+                        fetch('/api/partneradmininvitations/' + props.partnerId, {
                             method: 'GET',
                             headers: getHeaders,
                         })
@@ -193,7 +209,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
 
         setIsSaveEnabled(false);
 
-        if (!window.confirm("Please confirm you want to add user with userName: '" + userEmail + "'' as a user for this Partner.")) {
+        if (!window.confirm("Please confirm you want to send an invitation to be an Administator for this Partner to: " + userEmail)) {
             return;
         }
         else {
@@ -214,7 +230,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
                 const headers = getDefaultHeaders('POST');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-                fetch('/api/partneradmins', {
+                fetch('/api/partneradmininvitations', {
                     method: 'POST',
                     body: data,
                     headers: headers,
@@ -224,7 +240,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
                         var getHeaders = getDefaultHeaders("GET");
                         getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                        fetch('/api/partneradmininvitations/getbypartner/' + props.partnerId, {
+                        fetch('/api/partneradmininvitations/' + props.partnerId, {
                             method: 'GET',
                             headers: getHeaders,
                         })
@@ -243,6 +259,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
     function addAdmin() {
         setUserEmail("");
         setIsAddEnabled(false);
+        setIsEditOrAdd(true);
     }
 
     // This will handle Cancel button click event.
@@ -284,6 +301,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
     function renderUsersTable(users: UserData[]) {
         return (
             <div>
+                <h1>Current Admins</h1>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
@@ -297,13 +315,13 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
                                 <td>{user.userName}</td>
                                 <td>{user.email}</td>
                                 <td>
-                                    <Button className="action" onClick={() => removeUser(user.id, user.userName)}>Remove User</Button>
+                                    <Button className="action" onClick={() => removeUser(user.id, user.userName)}>Remove Admin</Button>
                                 </td>
                             </tr>
                         )}
                     </tbody>
                 </table>
-                <Button disabled={!isAddEnabled} className="action" onClick={() => addAdmin()}>Add Admin</Button>
+                <Button disabled={!isAddEnabled} className="action" onClick={() => addAdmin()}>Send Invite to New Admin</Button>
             </div>
         );
     }
@@ -311,6 +329,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
     function renderInvitationsTable(invitations: PartnerAdminInvitationData[]) {
         return (
             <div>
+                <h1>Pending Invitations</h1>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
@@ -325,7 +344,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
                             <tr key={invitation.id}>
                                 <td>{invitation.email}</td>
                                 <td>{invitation.createdDate}</td>
-                                <td>{invitation.invitationStatusId}</td>
+                                <td>{getInvitationStatus(invitationStatusList, invitation.invitationStatusId)}</td>
                                 <td>
                                     <Button className="action" onClick={() => handleResendInvite(invitation.id, invitation.email)}>Resend Invite</Button>
                                     <Button className="action" onClick={() => handleCancelInvite(invitation.id, invitation.email)}>Cancel Invite</Button>
@@ -361,13 +380,19 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
         );
     }
 
-    var contents = isPartnerAdminDataLoaded && props.partnerId
+    var partnerAdminContents = isPartnerAdminDataLoaded && props.partnerId !== Guid.EMPTY
         ? renderUsersTable(administrators)
+        : <p><em>Loading...</em></p>;
+
+    var partnerAdminInvitationsContents = isPartnerAdminInvitationsDataLoaded && props.partnerId !== Guid.EMPTY
+        ? renderInvitationsTable(partnerAdminInvitations)
         : <p><em>Loading...</em></p>;
 
     return <div>
         <hr />
-        {contents}
-        {renderSendInvite()}
+        {props.partnerId === Guid.EMPTY && <p> <em>Partner must be created first.</em></p>}
+        {partnerAdminContents}
+        {partnerAdminInvitationsContents}
+        {isEditOrAdd && renderSendInvite()}
     </div>;
 }

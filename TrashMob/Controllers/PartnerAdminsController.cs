@@ -41,7 +41,7 @@
                 return Forbid();
             }
 
-            return Ok(await partnerAdminManager.GetByParentIdAsync(partnerId, cancellationToken));
+            return Ok(await partnerAdminManager.GetAdminsForPartnerAsync(partnerId, cancellationToken));
         }
 
         [HttpGet("getpartnersforuser/{userId}")]

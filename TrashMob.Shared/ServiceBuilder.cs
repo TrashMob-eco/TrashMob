@@ -48,6 +48,7 @@
             services.AddScoped<IEventManager, EventManager>();
             services.AddScoped<IEventPartnerLocationServiceManager, EventPartnerLocationServiceManager>();
             services.AddScoped<IPartnerAdminManager, PartnerAdminManager>();
+            services.AddScoped<IPartnerAdminInvitationManager, PartnerAdminInvitationManager>();
             services.AddScoped<IPartnerContactManager, PartnerContactManager>();
             services.AddScoped<IPartnerDocumentManager, PartnerDocumentManager>();
             services.AddScoped<IPartnerRequestManager, PartnerRequestManager>();
@@ -81,6 +82,8 @@
             services.AddScoped<IKeyedRepository<MessageRequest>, KeyedRepository<MessageRequest>>();
             services.AddScoped<IKeyedRepository<NonEventUserNotification>, KeyedRepository<NonEventUserNotification>>();
             services.AddScoped<IKeyedRepository<Partner>, KeyedRepository<Partner>>();
+            services.AddScoped<IBaseRepository<PartnerAdmin>, BaseRepository<PartnerAdmin>>();
+            services.AddScoped<IKeyedRepository<PartnerAdminInvitation>, KeyedRepository<PartnerAdminInvitation>>();
             services.AddScoped<IKeyedRepository<PartnerContact>, KeyedRepository<PartnerContact>>();
             services.AddScoped<IKeyedRepository<PartnerDocument>, KeyedRepository<PartnerDocument>>();
             services.AddScoped<IKeyedRepository<PartnerLocation>, KeyedRepository<PartnerLocation>>();
@@ -91,7 +94,6 @@
             services.AddScoped<IKeyedRepository<PartnerSocialMediaAccount>, KeyedRepository<PartnerSocialMediaAccount>>();
             services.AddScoped<ILookupRepository<PartnerStatus>, LookupRepository<PartnerStatus>>();
             services.AddScoped<ILookupRepository<PartnerType>, LookupRepository<PartnerType>>();
-            services.AddScoped<IBaseRepository<PartnerAdmin>, BaseRepository<PartnerAdmin>>();
             services.AddScoped<ILookupRepository<ServiceType>, LookupRepository<ServiceType>>();
             services.AddScoped<ILookupRepository<SocialMediaAccountType>, LookupRepository<SocialMediaAccountType>>();
             services.AddScoped<IKeyedRepository<User>, KeyedRepository<User>>();

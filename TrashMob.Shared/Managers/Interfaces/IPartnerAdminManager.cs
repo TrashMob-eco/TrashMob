@@ -8,6 +8,8 @@
 
     public interface IPartnerAdminManager : IBaseManager<PartnerAdmin>
     {
+        Task<IEnumerable<User>> GetAdminsForPartnerAsync(Guid partnerId, CancellationToken cancellationToken= default);
+
         Task<IEnumerable<Partner>> GetPartnersByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
     }
 }

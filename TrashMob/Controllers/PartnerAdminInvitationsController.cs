@@ -30,7 +30,7 @@
         }
 
         [HttpGet("{partnerId}")]
-        public async Task<IActionResult> GetPartnerInvitations(Guid partnerId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetPartnerAdminInvitations(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");

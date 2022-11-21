@@ -16,6 +16,15 @@
         {
         }
 
+        public async Task<IEnumerable<User>> GetAdminsForPartnerAsync(Guid partnerId, CancellationToken cancellationToken)
+        {
+            return await Repository.Get()
+                                   .Where(p => p.PartnerId == partnerId)
+                                   .Include(p => p.User)
+                                   .Select(p => p.User)
+                                   .ToListAsync(cancellationToken);
+        }
+
         public override async Task<IEnumerable<PartnerAdmin>> GetByParentIdAsync(Guid parentId, CancellationToken cancellationToken)
         {
             return (await Repository.Get().Where(p => p.PartnerId == parentId).ToListAsync(cancellationToken)).AsEnumerable();
