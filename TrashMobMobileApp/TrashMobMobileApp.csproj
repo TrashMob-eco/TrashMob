@@ -85,6 +85,7 @@
 	  <Compile Include="..\TrashMob.Models\NonEventUserNotification.cs" Link="Models\NonEventUserNotification.cs" />
 	  <Compile Include="..\TrashMob.Models\Partner.cs" Link="Models\Partner.cs" />
 	  <Compile Include="..\TrashMob.Models\PartnerAdmin.cs" Link="Models\PartnerAdmin.cs" />
+	  <Compile Include="..\TrashMob.Models\PartnerAdminInvitation.cs" Link="Models\PartnerAdminInvitation.cs" />
 	  <Compile Include="..\TrashMob.Models\PartnerContact.cs" Link="Models\PartnerContact.cs" />
 	  <Compile Include="..\TrashMob.Models\PartnerDocument.cs" Link="Models\PartnerDocument.cs" />
 	  <Compile Include="..\TrashMob.Models\PartnerLocation.cs" Link="Models\PartnerLocation.cs" />
