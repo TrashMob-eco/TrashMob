@@ -32,6 +32,8 @@
 
         public virtual DbSet<EventType> EventTypes { get; set; }
 
+        public virtual DbSet<InvitationStatus> InvitationStatuses { get; set; }
+
         public virtual DbSet<MessageRequest> MessageRequests { get; set; }
 
         public virtual DbSet<NonEventUserNotification> NonEventUserNotifications { get; set; }
@@ -56,7 +58,7 @@
 
         public virtual DbSet<PartnerStatus> PartnerStatus { get; set; }
 
-        public virtual DbSet<PartnerUser> PartnerUsers { get; set; }
+        public virtual DbSet<PartnerAdmin> PartnerAdmins { get; set; }
 
         public virtual DbSet<PartnerType> PartnerTypes { get; set; }
 
@@ -382,6 +384,23 @@
                     new EventStatus { Id = (int)EventStatusEnum.Full, Name = "Full", Description = "Event is full", DisplayOrder = 2, IsActive = true },
                     new EventStatus { Id = (int)EventStatusEnum.Canceled, Name = "Canceled", Description = "Event has been canceled", DisplayOrder = 3, IsActive = true },
                     new EventStatus { Id = (int)EventStatusEnum.Complete, Name = "Completed", Description = "Event has completed", DisplayOrder = 4, IsActive = true });
+            });
+
+            modelBuilder.Entity<InvitationStatus>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Description);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasData(
+                    new InvitationStatus { Id = (int)InvitationStatusEnum.New, Name = "New", Description = "Invitation has not yet been sent", DisplayOrder = 1, IsActive = true },
+                    new InvitationStatus { Id = (int)InvitationStatusEnum.Sent, Name = "Sent", Description = "Invitation has been sent", DisplayOrder = 2, IsActive = true },
+                    new InvitationStatus { Id = (int)InvitationStatusEnum.Accepted, Name = "Accepted", Description = "Invitation has been accepted", DisplayOrder = 3, IsActive = true },
+                    new InvitationStatus { Id = (int)InvitationStatusEnum.Canceled, Name = "Canceled", Description = "Invitation has been canceled", DisplayOrder = 4, IsActive = true });
             });
 
             modelBuilder.Entity<EventSummary>(entity =>
@@ -746,36 +765,68 @@
                     new PartnerType { Id = (int)PartnerTypeEnum.Business, Name = "Business", Description = "Partner is Business", DisplayOrder = 2, IsActive = true });
             });
 
-            modelBuilder.Entity<PartnerUser>(entity =>
+            modelBuilder.Entity<PartnerAdmin>(entity =>
             {
                 entity.HasKey(e => new { e.PartnerId, e.UserId });
+
+                entity.Property(e => e.PartnerId)
+                    .IsRequired();
 
                 entity.Property(e => e.UserId)
                     .IsRequired();
 
                 entity.HasOne(d => d.Partner)
-                    .WithMany(d => d.PartnerUsers)
+                    .WithMany(d => d.PartnerAdmins)
                     .HasForeignKey(d => d.PartnerId)
                     .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("FK_PartnerUser_Partners");
+                    .HasConstraintName("FK_PartnerAdmin_Partners");
 
                 entity.HasOne(d => d.User)
                     .WithMany()
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PartnerUser_User");
+                    .HasConstraintName("FK_PartnerAdmin_User");
 
                 entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.PartnerUsersCreated)
+                    .WithMany(p => p.PartnerAdminsCreated)
                     .HasForeignKey(d => d.CreatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PartnerUsers_CreatedByUser_Id");
+                    .HasConstraintName("FK_PartnerAdmin_CreatedByUser_Id");
 
                 entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.PartnerUsersUpdated)
+                    .WithMany(p => p.PartnerAdminsUpdated)
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PartnerUsers_LastUpdatedByUser_Id");
+                    .HasConstraintName("FK_PartnerAdmin_LastUpdatedByUser_Id");
+            });
+
+            modelBuilder.Entity<PartnerAdminInvitation>(entity =>
+            {
+                entity.HasKey(e => new { e.PartnerId, e.Email });
+
+                entity.Property(e => e.PartnerId)
+                    .IsRequired();
+
+                entity.Property(e => e.Email)
+                    .IsRequired();
+
+                entity.HasOne(d => d.Partner)
+                    .WithMany(d => d.PartnerAdminInvitations)
+                    .HasForeignKey(d => d.PartnerId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_PartnerAdminInvitation_Partners");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.PartnerAdminInvitationsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerAdminInvitation_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.PartnerAdminInvitationsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerAdminInvitation_LastUpdatedByUser_Id");
             });
 
             modelBuilder.Entity<ServiceType>(entity =>

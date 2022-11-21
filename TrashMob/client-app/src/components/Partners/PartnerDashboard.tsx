@@ -2,7 +2,7 @@ import * as React from 'react'
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import UserData from '../Models/UserData';
 import { PartnerEdit } from './PartnerEdit';
-import { PartnerUsers } from './PartnerUsers';
+import { PartnerAdmins } from './PartnerAdmins';
 import { PartnerLocations } from './PartnerLocations';
 import { ButtonGroup, ToggleButton } from 'react-bootstrap';
 import { Guid } from 'guid-typescript';
@@ -29,7 +29,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         { name: 'Manage Partner', value: '1' },
         { name: 'Manage Partner Locations', value: '2' },
         { name: 'Manage Partner Contacts', value: '3' },
-        { name: 'Manage Partner Users', value: '4' },
+        { name: 'Manage Partner Admins', value: '4' },
         { name: 'Manage Partner Documents', value: '5' },
         { name: 'Manage Partner Social Media Accounts', value: '6' },
     ];
@@ -57,10 +57,10 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         )
     }
 
-    function renderPartnerUsers() {
+    function renderPartnerAdmins() {
         return (
             <div>
-                <PartnerUsers partnerId={partnerId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                <PartnerAdmins partnerId={partnerId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
             </div>
         )
     }
@@ -120,7 +120,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
                 { radioValue === '1' && renderEditPartner()}
                 { radioValue === '2' && renderPartnerLocations()}
                 { radioValue === '3' && renderPartnerContacts()}
-                { radioValue === '4' && renderPartnerUsers()}
+                { radioValue === '4' && renderPartnerAdmins()}
                 { radioValue === '5' && renderPartnerDocuments()}
                 { radioValue === '6' && renderPartnerSocialMediaAccounts()}
             </div>);

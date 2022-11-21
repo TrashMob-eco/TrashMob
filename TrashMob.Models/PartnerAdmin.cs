@@ -1,14 +1,12 @@
 ﻿#nullable disable
 
-using TrashMob;
-
 namespace TrashMob.Models
 {
     using System;
 
-    public partial class PartnerUser : BaseModel
+    public partial class PartnerAdmin : BaseModel
     {
-        public PartnerUser()
+        public PartnerAdmin()
         {
         }
 

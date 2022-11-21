@@ -9,7 +9,6 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
-    using TrashMob.Common;
     using TrashMob.Shared;
     using System.Collections.Generic;
     using TrashMob.Poco;

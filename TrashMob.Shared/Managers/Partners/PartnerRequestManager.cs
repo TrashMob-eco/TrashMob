@@ -15,11 +15,11 @@
     {
         private readonly IEmailManager emailManager;
         private readonly IKeyedManager<Partner> partnerManager;
-        private readonly IBaseManager<PartnerUser> partnerUserManager;
+        private readonly IBaseManager<PartnerAdmin> partnerUserManager;
 
         public PartnerRequestManager(IKeyedRepository<PartnerRequest> partnerRequestRepository,
                                      IKeyedManager<Partner> partnerManager,
-                                     IBaseManager<PartnerUser> partnerUserManager,
+                                     IBaseManager<PartnerAdmin> partnerUserManager,
                                      IEmailManager emailManager) : base(partnerRequestRepository)
         {
             this.partnerManager = partnerManager;
@@ -170,7 +170,7 @@
             var newPartner = await partnerManager.AddAsync(partner, partnerRequest.CreatedByUserId, cancellationToken).ConfigureAwait(false);
 
             // Make the creator of the partner request a registered user for the partner
-            var partnerUser = new PartnerUser
+            var partnerUser = new PartnerAdmin
             {
                 PartnerId = newPartner.Id,
                 UserId = partnerRequest.CreatedByUserId,
