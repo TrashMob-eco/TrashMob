@@ -48,6 +48,8 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const [isPartnerTypeDataLoaded, setIsPartnerTypeDataLoaded] = React.useState<boolean>(false);
     const [title, setTitle] = React.useState<string>("Apply to become a partner");
 
+    const [address, setAddress] = React.useState<string>();
+
 
     React.useEffect(() => {
 
@@ -229,10 +231,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         validateForm();
     }
 
-    function selectPartnerType(val: string) {
-        setPartnerTypeId(parseInt(val));
-    }
-
     function renderNameToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerRequestName}</Tooltip>
     }
@@ -265,12 +263,8 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.PartnerRequestCity}</Tooltip>
     }
 
-    function renderCountryToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestCountry}</Tooltip>
-    }
-
-    function renderRegionToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestRegion}</Tooltip>
+    function setPartnerType(val: string) {
+        setPartnerTypeId(parseInt(val));
     }
 
     function renderPostalCodeToolTip(props: any) {
@@ -303,52 +297,56 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     }
 
     // Returns the HTML Form to the render() method.  
-    function renderCreateForm(typeList: Array<PartnerTypeData>) {
+    function renderCreateForm() {
 
         return (
             <div className="container-fluid card">
                 <h1>{title}</h1>
-                <Form onSubmit={handleSave} >
+                <Form onSubmit={handleSave} className="mt-5 p-4 directorCard" >
                     <Form.Row>
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderNameToolTip}>
-                                    <Form.Label className="control-label">Partner Name:</Form.Label>
+                                    <Form.Label className="control-label h5">Partner Name:</Form.Label>
                                 </OverlayTrigger>
-                                <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
+                                <Form.Control type="text" className='border-0 bg-light h-60 para' defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{nameErrors}</span>
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderPartnerTypeToolTip}>
-                                    <Form.Label className="control-label" htmlFor="PartnerType">Partner Type:</Form.Label>
+                                    <Form.Label className="control-label h5" htmlFor="PartnerType">Type:</Form.Label>
                                 </OverlayTrigger>
-                                <div>
-                                    <select data-val="true" name="partnerTypeId" defaultValue={partnerTypeId} onChange={(val) => selectPartnerType(val.target.value)} required>
-                                        <option value="">-- Select Partner Type --</option>
-                                        {typeList.map(partnerType =>
-                                            <option key={partnerType.id} value={partnerType.id}>{partnerType.name}</option>
-                                        )}
-                                    </select>
+                                <div className='d-flex h-60'>
+                                    <div className='d-flex w-100 align-items-center'>
+                                        <input type="radio" className='m-0' defaultValue={partnerTypeId} name="type" onChange={(val) => setPartnerType(val.target.value)} required />
+                                        <label className="control-label m-0 ml-2">City or government entity</label>
+                                    </div>
+                                    <div className='d-flex w-100 align-items-center'>
+                                        <input type="radio" className='m-0' defaultValue={partnerTypeId} name="type" onChange={(val) => setPartnerType(val.target.value)} required />
+                                        <label className="control-label m-0 ml-2">Business</label>
+                                    </div>
                                 </div>
                             </Form.Group>
                         </Col>
+                    </Form.Row>
+                    <Form.Row>
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
-                                    <Form.Label className="control-label">Email:</Form.Label>
+                                    <Form.Label className="control-label h5">Email:</Form.Label>
                                 </OverlayTrigger>
-                                <Form.Control type="text" defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required />
+                                <Form.Control type="text" className='border-0 bg-light h-60 para' defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{emailErrors}</span>
                             </Form.Group >
                         </Col>
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderWebsiteToolTip}>
-                                    <Form.Label className="control-label">Website:</Form.Label>
+                                    <Form.Label className="control-label h5">Website:</Form.Label>
                                 </OverlayTrigger>
-                                <Form.Control type="text" defaultValue={website} maxLength={parseInt('1024')} onChange={(val) => handleWebsiteChanged(val.target.value)} />
+                                <Form.Control type="text" className='border-0 bg-light h-60 para' defaultValue={website} maxLength={parseInt('1024')} onChange={(val) => handleWebsiteChanged(val.target.value)} />
                                 <span style={{ color: "red" }}>{websiteErrors}</span>
                             </Form.Group >
                         </Col>
@@ -357,33 +355,35 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderPhoneToolTip}>
-                                    <Form.Label className="control-label">Phone:</Form.Label>
+                                    <Form.Label className="control-label h5">Phone:</Form.Label>
                                 </OverlayTrigger>
-                                <Form.Control type="text" defaultValue={phone} maxLength={parseInt('64')} onChange={(val) => handlePhoneChanged(val.target.value)} />
+                                <Form.Control type="text" className='border-0 bg-light h-60 para' defaultValue={phone} maxLength={parseInt('64')} onChange={(val) => handlePhoneChanged(val.target.value)} />
                                 <span style={{ color: "red" }}>{phoneErrors}</span>
                             </Form.Group >
                         </Col>
                     </Form.Row>
-                    <Form.Group className="required">
-                        <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                            <Form.Label className="control-label">Notes:</Form.Label>
-                        </OverlayTrigger>
-                        <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} required />
-                        <span style={{ color: "red" }}>{notesErrors}</span>
-                    </Form.Group >
+
+                    <Form.Row>
+                        <AzureMapsProvider>
+                            <>
+                                <MapControllerSinglePointNoEvents center={center} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props?.currentUser} isUserLoaded={props?.isUserLoaded} isDraggable={true} />
+                            </>
+                        </AzureMapsProvider>
+                    </Form.Row>
+
                     <Form.Row>
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
-                                    <Form.Label className="control-label" htmlFor="StreetAddress">Street Address:</Form.Label>
+                                    <Form.Label className="control-label h5" htmlFor="StreetAddress">Street Address:</Form.Label>
                                 </OverlayTrigger >
                                 <span>{streetAddress}</span>
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group className="required">
+                            <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderCityToolTip}>
-                                    <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
+                                    <Form.Label className="control-label h5" htmlFor="City">City:</Form.Label>
                                 </OverlayTrigger >
                                 <span>{city}</span>
                             </Form.Group>
@@ -391,44 +391,21 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                    <Form.Label className="control-label" htmlFor="PostalCode">Postal Code</Form.Label>
+                                    <Form.Label className="control-label h5" htmlFor="PostalCode">Postal Code</Form.Label>
                                 </OverlayTrigger >
                                 <span>{postalCode}</span>
                             </Form.Group>
                         </Col>
                     </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group className="required">
-                                <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
-                                    <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
-                                </OverlayTrigger >
-                                <div>
-                                    <span>{country}</span>
-                                </div>
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group className="required">
-                                <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
-                                    <Form.Label className="control-label" htmlFor="Region">Region:</Form.Label>
-                                </OverlayTrigger >
-                                <span>{region}</span>                                
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                    <Form.Row>
-                        <Form.Label>Click on the map to set the location for your Partner. The location fields above will be automatically populated.</Form.Label>
-                    </Form.Row>
-                    <Form.Row>
-                        <AzureMapsProvider>
-                            <>
-                                <MapControllerSinglePointNoEvents center={center} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isDraggable={true} />
-                            </>
-                        </AzureMapsProvider>
-                    </Form.Row>
-                    <Form.Group className="form-group">
-                        <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Save</Button>
+                    <Form.Group className="required">
+                        <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
+                            <Form.Label className="control-label h5">Notes:</Form.Label>
+                        </OverlayTrigger>
+                        <Form.Control as="textarea" className='border-0 bg-light h-60 para' defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} required />
+                        <span style={{ color: "red" }}>{notesErrors}</span>
+                    </Form.Group >
+                    <Form.Group className="form-group d-flex justify-content-end">
+                        <Button disabled={!isSaveEnabled} type="submit" className="action btn-default px-3 h-49">Submit</Button>
                         <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
                     </Form.Group >
                 </Form >
@@ -437,7 +414,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     }
 
     var contents = isPartnerTypeDataLoaded
-        ? renderCreateForm(partnerTypeList)
+        ? renderCreateForm()
         : <p><em>Loading...</em></p>;
 
     return <div>
