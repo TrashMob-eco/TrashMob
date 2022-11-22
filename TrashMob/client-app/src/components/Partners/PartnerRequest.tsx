@@ -13,7 +13,6 @@ import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import AddressData from '../Models/AddressData';
 import MapControllerSinglePointNoEvents from '../MapControllerSinglePointNoEvent';
-import PartnerTypeData from '../Models/PartnerTypeData';
 
 interface PartnerRequestProps extends RouteComponentProps<any> {
     mode: string;

@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Button, Col, Container, Image, Row } from 'react-bootstrap';
+import { Col, Container, Image, Row } from 'react-bootstrap';
 import globes from '../assets/gettingStarted/globes.png';
 import heroImg from '../assets/partnerships/whatIsPartnerships.svg';
 import Safetykits from '../assets/partnerships/Safetykits.svg';
