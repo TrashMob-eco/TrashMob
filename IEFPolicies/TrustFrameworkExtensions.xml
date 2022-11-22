@@ -144,7 +144,7 @@
             <OutputClaim ClaimTypeReferenceId="newUser"/>
 
             <!-- Optional claims, to be collected from the user -->
-            <OutputClaim ClaimTypeReferenceId="displayName"/>
+            <!--OutputClaim ClaimTypeReferenceId="displayName"/-->
             <OutputClaim ClaimTypeReferenceId="givenName"/>
             <OutputClaim ClaimTypeReferenceId="surName"/>
             <OutputClaim ClaimTypeReferenceId="extension_PrivacyAccepted" Required="true" />      
