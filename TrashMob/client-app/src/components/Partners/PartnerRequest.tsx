@@ -23,7 +23,6 @@ interface PartnerRequestProps extends RouteComponentProps<any> {
 
 export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const [name, setName] = React.useState<string>();
-    const [partnerTypeList, setPartnerTypeList] = React.useState<PartnerTypeData[]>([]);
     const [partnerTypeId, setPartnerTypeId] = React.useState<number>(0);
     const [email, setEmail] = React.useState<string>();
     const [website, setWebsite] = React.useState<string>();
@@ -45,40 +44,12 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
-    const [isPartnerTypeDataLoaded, setIsPartnerTypeDataLoaded] = React.useState<boolean>(false);
     const [title, setTitle] = React.useState<string>("Apply to become a partner");
-
-    const [address, setAddress] = React.useState<string>();
-
 
     React.useEffect(() => {
 
         if (props.mode && props.mode === "send") {
             setTitle("Send invite to join TrashMob as a partner");
-        }
-
-        if (props.isUserLoaded) {
-            const account = msalClient.getAllAccounts()[0];
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/partnertypes', {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<PartnerTypeData[]>)
-                    .then(data => {
-                        setPartnerTypeList(data)
-                        setIsPartnerTypeDataLoaded(true);
-                    })
-            })
         }
 
         MapStore.getOption().then(opts => {
@@ -413,9 +384,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         )
     }
 
-    var contents = isPartnerTypeDataLoaded
-        ? renderCreateForm()
-        : <p><em>Loading...</em></p>;
+    var contents = renderCreateForm();
 
     return <div>
         <hr />
