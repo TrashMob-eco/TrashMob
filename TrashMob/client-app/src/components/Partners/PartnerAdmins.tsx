@@ -24,7 +24,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
     const [partnerAdminInvitations, setPartnerAdminInvitations] = React.useState<PartnerAdminInvitationData[]>([]);
     const [isPartnerAdminInvitationsDataLoaded, setIsPartnerAdminInvitationsDataLoaded] = React.useState<boolean>(false);
     const [invitationStatusList, setInvitationStatusList] = React.useState<InvitationStatusData[]>([]);
-    const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
+    const [isSendEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
     const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
     const [isEditOrAdd, setIsEditOrAdd] = React.useState<boolean>(false);
 
@@ -203,7 +203,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
 
         event.preventDefault();
 
-        if (!isSaveEnabled) {
+        if (!isSendEnabled) {
             return;
         }
 
@@ -371,7 +371,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
                             </Form.Group>
                         </Col>
                         <Form.Group className="form-group">
-                            <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Save</Button>
+                            <Button disabled={!isSendEnabled} type="submit" className="action btn-default">Send</Button>
                             <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
                         </Form.Group >
                     </Form.Row>

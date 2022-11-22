@@ -43,26 +43,12 @@
             return Ok(await partnerAdminInvitationManager.GetByParentIdAsync(partnerId, cancellationToken));
         }
 
-        [HttpGet("getpartnerinvitationsforemail/{email}")]
+        [HttpGet("getbyuser/{userId}")]
         [Authorize(Policy = "ValidUser")]
-        public async Task<IActionResult> GetPartnerInvitationsForEmail(string email, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetPartnerInvitationsForUser(Guid userId, CancellationToken cancellationToken)
         {
-            var partnerAdminInvitations = (await partnerAdminInvitationManager.GetAsync(cancellationToken)).Where(pu => pu.Email == email).ToList();
-
-            if (!partnerAdminInvitations.Any())
-            {
-                return NotFound();
-            }
-
-            var partners = new List<Partner>();
-
-            foreach (var pu in partnerAdminInvitations)
-            {
-                var partner = await partnerManager.GetAsync(pu.PartnerId, cancellationToken).ConfigureAwait(false);
-                partners.Add(partner);
-            }
-
-            return Ok(partners);
+            var results = await partnerAdminInvitationManager.GetInvitationsForUser(userId, cancellationToken);
+            return Ok(results);
         }
 
         [HttpGet("{partnerId}/{email}")]
@@ -106,7 +92,6 @@
         }
 
         [HttpPost("resend/{partnerAdminInvitationId}")]
-
         public async Task<IActionResult> ResendPartnerAdminInvitation(Guid partnerAdminInvitationId, CancellationToken cancellationToken)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
@@ -124,22 +109,24 @@
             return Ok(result);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdatePartnerAdminInvitation(PartnerAdminInvitation partnerAdminInvitation, CancellationToken cancellationToken)
+        [HttpPost("accept/{partnerAdminInvitationId}")]
+        [Authorize(Policy = "ValidUser")]
+        public async Task<IActionResult> AcceptPartnerAdminInvitation(Guid partnerAdminInvitationId, CancellationToken cancellationToken)
         {
-            // Make sure the person adding the user is either an admin or already a user for the partner
-            var partner = await partnerManager.GetAsync(partnerAdminInvitation.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+            await partnerAdminInvitationManager.AcceptInvitation(partnerAdminInvitationId, UserId, cancellationToken).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(AcceptPartnerAdminInvitation));
 
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
-            {
-                return Forbid();
-            }
+            return Ok();
+        }
 
-            var result = await partnerAdminInvitationManager.UpdateAsync(partnerAdminInvitation, UserId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddPartnerAdminInvitation));
+        [HttpPost("decline/{partnerAdminInvitationId}")]
+        [Authorize(Policy = "ValidUser")]
+        public async Task<IActionResult> DeclinePartnerAdminInvitation(Guid partnerAdminInvitationId, CancellationToken cancellationToken)
+        {
+            await partnerAdminInvitationManager.DeclineInvitation(partnerAdminInvitationId, UserId, cancellationToken).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(AcceptPartnerAdminInvitation));
 
-            return Ok(result);
+            return Ok();
         }
 
         [HttpDelete("{partnerAdminInvitationId}")]

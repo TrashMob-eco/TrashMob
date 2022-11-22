@@ -9,6 +9,7 @@
     using Microsoft.EntityFrameworkCore;
     using System.Collections.Generic;
     using System.Linq;
+    using TrashMob.Shared.Poco;
 
     public class PartnerAdminInvitationManager : KeyedManager<PartnerAdminInvitation>, IPartnerAdminInvitationManager
     {
@@ -17,7 +18,7 @@
 
         public PartnerAdminInvitationManager(IKeyedRepository<PartnerAdminInvitation> partnerAdminInvitationRepository,
                                              IBaseManager<PartnerAdmin> partnerAdminManager,
-                                             IUserManager userManager) 
+                                             IUserManager userManager)
             : base(partnerAdminInvitationRepository)
         {
             this.partnerAdminManager = partnerAdminManager;
@@ -55,13 +56,13 @@
             return newInvitation;
         }
 
-        public async Task<bool> AcceptInvitation(Guid partnerAdminInviationId, Guid userId, CancellationToken cancellationToken)
+        public async Task AcceptInvitation(Guid partnerAdminInviationId, Guid userId, CancellationToken cancellationToken)
         {
             var partnerAdminInvitation = await Repository.Get(pa => pa.Id == partnerAdminInviationId).FirstOrDefaultAsync(cancellationToken);
 
             if (partnerAdminInvitation == null)
             {
-                return false;
+                return;
             }
 
             var partnerAdmin = new PartnerAdmin
@@ -71,8 +72,21 @@
             };
 
             await partnerAdminManager.AddAsync(partnerAdmin, cancellationToken);
+            partnerAdminInvitation.InvitationStatusId = (int)InvitationStatusEnum.Accepted;
+            await base.UpdateAsync(partnerAdminInvitation, userId, cancellationToken);
+        }
 
-            return true;
+        public async Task DeclineInvitation(Guid partnerAdminInviationId, Guid userId, CancellationToken cancellationToken)
+        {
+            var partnerAdminInvitation = await Repository.Get(pa => pa.Id == partnerAdminInviationId).FirstOrDefaultAsync(cancellationToken);
+
+            if (partnerAdminInvitation == null)
+            {
+                return;
+            }
+
+            partnerAdminInvitation.InvitationStatusId = (int)InvitationStatusEnum.Declined;
+            await base.UpdateAsync(partnerAdminInvitation, userId, cancellationToken);
         }
 
         public async Task<PartnerAdminInvitation> ResendPartnerAdminInvitation(Guid partnerAdminInvitationId, Guid UserId, CancellationToken cancellationToken)
@@ -93,6 +107,29 @@
             instance.InvitationStatusId = (int)InvitationStatusEnum.Sent;
             var newInvitation = await base.UpdateAsync(instance, UserId, cancellationToken);
             return newInvitation;
+        }
+
+        public async Task<IEnumerable<DisplayPartnerAdminInvitation>> GetInvitationsForUser(Guid userId, CancellationToken cancellationToken)
+        {
+            var user = await userManager.GetAsync(userId, cancellationToken);
+
+            var partnerInvitations = await Repository.Get(p => p.Email == user.Email)
+                                                     .Include(p => p.Partner)
+                                                     .ToListAsync(cancellationToken);
+
+            var displayInvitations = new List<DisplayPartnerAdminInvitation>();
+            foreach (var invitation in partnerInvitations)
+            {
+                var displayInvitation = new DisplayPartnerAdminInvitation
+                {
+                    Id = invitation.Id,
+                    PartnerName = invitation.Partner.Name
+                };
+
+                displayInvitations.Add(displayInvitation);
+            }
+
+            return displayInvitations;
         }
     }
 }
