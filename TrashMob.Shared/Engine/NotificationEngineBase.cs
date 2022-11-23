@@ -174,7 +174,7 @@
         protected async Task<bool> UserHasAlreadyReceivedNotification(User user, CancellationToken cancellationToken = default)
         {
             // Get list of notification events user has already received for the event
-            var notifications = await NonEventUserNotificationManager.GetByUserIdAsync(user.Id, cancellationToken).ConfigureAwait(false);
+            var notifications = await NonEventUserNotificationManager.GetByCreatedUserIdAsync(user.Id, cancellationToken).ConfigureAwait(false);
 
             // Verify that the user has not already received this type of notification for this event
             return notifications.Any(un => un.UserNotificationTypeId == (int)NotificationType);

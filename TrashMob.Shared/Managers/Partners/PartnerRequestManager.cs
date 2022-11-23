@@ -48,7 +48,7 @@
 
                 var recipients = new List<EmailAddress>
                 {
-                new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
+                   new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
                 };
 
                 var dynamicTemplateData = new
