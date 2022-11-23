@@ -68,7 +68,7 @@
         [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetPartnerRequestsByUser(Guid userId, CancellationToken cancellationToken)
         {
-            return Ok(await partnerRequestManager.GetByUserIdAsync(userId, cancellationToken).ConfigureAwait(false));
+            return Ok(await partnerRequestManager.GetByCreatedUserIdAsync(userId, cancellationToken).ConfigureAwait(false));
         }
     }
 }

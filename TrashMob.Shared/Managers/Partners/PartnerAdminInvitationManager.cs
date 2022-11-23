@@ -13,11 +13,11 @@
 
     public class PartnerAdminInvitationManager : KeyedManager<PartnerAdminInvitation>, IPartnerAdminInvitationManager
     {
-        private readonly IBaseManager<PartnerAdmin> partnerAdminManager;
+        private readonly IPartnerAdminManager partnerAdminManager;
         private readonly IUserManager userManager;
 
         public PartnerAdminInvitationManager(IKeyedRepository<PartnerAdminInvitation> partnerAdminInvitationRepository,
-                                             IBaseManager<PartnerAdmin> partnerAdminManager,
+                                             IPartnerAdminManager partnerAdminManager,
                                              IUserManager userManager)
             : base(partnerAdminInvitationRepository)
         {
@@ -40,19 +40,56 @@
 
         public override async Task<PartnerAdminInvitation> AddAsync(PartnerAdminInvitation instance, Guid userId, CancellationToken cancellationToken = default)
         {
-            // Check to see if this user already exists in the system.
+            // Check to see if this user already has an invite
+            var existingInvitation = await Repository.Get(i => i.Email == instance.Email && i.PartnerId == instance.PartnerId).FirstOrDefaultAsync(cancellationToken);
             var existingUser = await userManager.GetUserByEmailAsync(instance.Email, cancellationToken);
-            var newInvitation = await base.AddAsync(instance, userId, cancellationToken);
+
+            if (existingInvitation != null)
+            {
+                if (existingInvitation.InvitationStatusId == (int)InvitationStatusEnum.Accepted)
+                {
+                    return existingInvitation;
+                }
+                else
+                {
+                    existingInvitation.InvitationStatusId = (int)InvitationStatusEnum.New;
+                    await base.UpdateAsync(existingInvitation, userId, cancellationToken);
+                }
+            }
+            else
+            {
+                instance.InvitationStatusId = (int)InvitationStatusEnum.New;
+
+                if (existingUser != null)
+                {
+                    // Check to see if this Admin already exists in the system (without an invite since they were created prior to invites).
+                    var partners = await partnerAdminManager.GetPartnersByUserIdAsync(existingUser.Id, cancellationToken);
+
+                    if (partners.Any(p => p.Id == instance.PartnerId))
+                    {
+                        // Backfill the invitation to remove future confusion
+                        instance.InvitationStatusId = (int)InvitationStatusEnum.Accepted;
+                    }
+                }
+
+                await base.AddAsync(instance, userId, cancellationToken);
+            }
 
             if (existingUser == null)
             {
                 // Todo - Send Email to invite to join trashmob and join partner
+                instance.InvitationStatusId = (int)InvitationStatusEnum.Sent;
             }
             else
             {
-                // Todo - Send Email to invite user to join partner
+                if (instance.InvitationStatusId != (int)InvitationStatusEnum.Accepted)
+                {
+                    // Todo - Send Email to invite user to join partner
+                    instance.InvitationStatusId = (int)InvitationStatusEnum.Sent;
+                }
             }
 
+            var newInvitation = await base.UpdateAsync(instance, userId, cancellationToken).ConfigureAwait(false);
             return newInvitation;
         }
 

@@ -21,7 +21,7 @@
 
         Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> expression, CancellationToken cancellationToken);
 
-        Task<IEnumerable<T>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken);
+        Task<IEnumerable<T>> GetByCreatedUserIdAsync(Guid userId, CancellationToken cancellationToken);
 
         Task<IEnumerable<T>> GetByParentIdAsync(Guid parentId, CancellationToken cancellationToken);
 
