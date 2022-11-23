@@ -10,15 +10,55 @@ import { getPartnerRequestStatus } from '../../store/partnerRequestStatusHelper'
 import * as Constants from '../Models/Constants'
 
 interface AdminPartnerRequestsPropsType extends RouteComponentProps {
-    partnerRequestList: PartnerRequestData[];
-    partnerRequestStatusList: PartnerRequestStatusData[];
-    isPartnerRequestDataLoaded: boolean;
-    onPartnerRequestListChanged: any;
     isUserLoaded: boolean;
     currentUser: UserData;
 };
 
 export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (props) => {
+    const [partnerRequestList, setPartnerRequestList] = React.useState<PartnerRequestData[]>([]);
+    const [isPartnerRequestDataLoaded, setIsPartnerRequestDataLoaded] = React.useState<boolean>(false);
+    const [partnerRequestStatusList, setPartnerRequestStatusList] = React.useState<PartnerRequestStatusData[]>([]);
+
+    React.useEffect(() => {
+
+        if (props.isUserLoaded) {
+            const account = msalClient.getAllAccounts()[0];
+
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                // Load the PartnerRequestStatusList
+                fetch('/api/partnerrequeststatuses', {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<Array<any>>)
+                    .then(data => {
+                        setPartnerRequestStatusList(data);
+                    })
+                    .then(() => {
+                        // Load the Partner Request List
+                        fetch('/api/partnerrequests', {
+                            method: 'GET',
+                            headers: headers,
+                        })
+                            .then(response => response.json() as Promise<Array<PartnerRequestData>>)
+                            .then(data => {
+                                setPartnerRequestList(data);
+                                setIsPartnerRequestDataLoaded(true);
+                            });
+                    });
+            })
+        }
+    }, [props.isUserLoaded])
+
 
     // Handle approve request for a partner  
     function handleApprove(id: string, name: string) {
@@ -39,7 +79,20 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
                 fetch('api/partnerrequests/approve/' + id, {
                     method: 'put',
                     headers: headers
-                }).then(() => { props.onPartnerRequestListChanged(); });
+                }).then(() => {
+                    const getHeaders = getDefaultHeaders('GET');
+                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                    // Load the Partner Request List
+                    fetch('/api/partnerrequests', {
+                        method: 'GET',
+                        headers: getHeaders,
+                    })
+                        .then(response => response.json() as Promise<Array<PartnerRequestData>>)
+                        .then(data => {
+                            setPartnerRequestList(data);
+                            setIsPartnerRequestDataLoaded(true);
+                        }); });
             });
         }
     }
@@ -63,7 +116,21 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
                 fetch('api/partnerrequests/deny/' + id, {
                     method: 'put',
                     headers: headers
-                }).then(() => { props.onPartnerRequestListChanged(); });
+                }).then(() => {
+                    const getHeaders = getDefaultHeaders('GET');
+                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                    // Load the Partner Request List
+                    fetch('/api/partnerrequests', {
+                        method: 'GET',
+                        headers: getHeaders,
+                    })
+                        .then(response => response.json() as Promise<Array<PartnerRequestData>>)
+                        .then(data => {
+                            setPartnerRequestList(data);
+                            setIsPartnerRequestDataLoaded(true);
+                        });
+                });
             });
         }
     }
@@ -98,7 +165,7 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
                                     <td>{partnerRequest.city}</td>
                                     <td>{partnerRequest.region}</td>
                                     <td>{partnerRequest.country}</td>
-                                    <td>{getPartnerRequestStatus(props.partnerRequestStatusList, partnerRequest.partnerRequestStatusId)}</td>
+                                    <td>{getPartnerRequestStatus(partnerRequestStatusList, partnerRequest.partnerRequestStatusId)}</td>
                                     <td>{partnerRequest.isBecomeAPartnerRequest}</td>
                                     <td>{partnerRequest.notes}</td>
                                     <td>
@@ -114,8 +181,8 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
         );
     }
 
-    let contents = props.isPartnerRequestDataLoaded
-        ? renderPartnerRequestsTable(props.partnerRequestList)
+    let contents = isPartnerRequestDataLoaded
+        ? renderPartnerRequestsTable(partnerRequestList)
         : <p><em>Loading...</em></p>;
 
     return (

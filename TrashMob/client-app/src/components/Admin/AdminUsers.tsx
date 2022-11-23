@@ -6,18 +6,48 @@ import UserData from '../Models/UserData';
 import { Button } from 'react-bootstrap';
 
 interface AdminUsersPropsType extends RouteComponentProps {
-    userList: UserData[];
-    isUserDataLoaded: boolean;
-    onUserListChanged: any;
     isUserLoaded: boolean;
     currentUser: UserData;
 };
 
 export const AdminUsers: React.FC<AdminUsersPropsType> = (props) => {
 
+    const [userList, setUserList] = React.useState<UserData[]>([]);
+    const [isUserDataLoaded, setIsUserDataLoaded] = React.useState<boolean>(false);
+
+    React.useEffect(() => {
+
+        if (props.isUserLoaded) {
+
+            const account = msalClient.getAllAccounts()[0];
+
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                // Load the User List
+                fetch('/api/users', {
+                    method: 'GET',
+                    headers: headers,
+                })
+                    .then(response => response.json() as Promise<Array<UserData>>)
+                    .then(data => {
+                        setUserList(data);
+                        setIsUserDataLoaded(true);
+                    });
+            })
+        }
+    }, [props.isUserLoaded])
+
     // Handle Delete request for a user  
     function handleDelete(id: string, name: string) {
-        if (!window.confirm("Do you want to delete user with name: " + name))
+        if (!window.confirm("Are you sure you want to delete user with name: " + name))
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
@@ -34,7 +64,21 @@ export const AdminUsers: React.FC<AdminUsersPropsType> = (props) => {
                 fetch('api/users/' + id, {
                     method: 'delete',
                     headers: headers
-                }).then(() => { props.onUserListChanged(); });
+                }).then(() => {
+                    const getHeaders = getDefaultHeaders('GET');
+                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                    // Load the User List
+                    fetch('/api/users', {
+                        method: 'GET',
+                        headers: getHeaders,
+                    })
+                        .then(response => response.json() as Promise<Array<UserData>>)
+                        .then(data => {
+                            setUserList(data);
+                            setIsUserDataLoaded(true);
+                        });
+                });
             });
         }
     }
@@ -75,8 +119,8 @@ export const AdminUsers: React.FC<AdminUsersPropsType> = (props) => {
         );
     }
 
-    let contents = props.isUserDataLoaded
-        ? renderUsersTable(props.userList)
+    let contents = isUserDataLoaded
+        ? renderUsersTable(userList)
         : <p><em>Loading...</em></p>;
 
     return (

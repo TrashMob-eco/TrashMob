@@ -4,16 +4,46 @@ import { RouteComponentProps } from 'react-router-dom';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
 import { Button } from 'react-bootstrap';
+import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 
 interface AdminEventsPropsType extends RouteComponentProps {
-    eventList: EventData[];
-    isEventDataLoaded: boolean;
-    onEventListChanged: any;
     isUserLoaded: boolean;
     currentUser: UserData;
 };
 
 export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
+
+    const [eventList, setEventList] = React.useState<EventData[]>([]);
+    const [isEventDataLoaded, setIsEventDataLoaded] = React.useState<boolean>(false);
+
+    React.useEffect(() => {
+
+        if (props.isUserLoaded) {
+            const account = msalClient.getAllAccounts()[0];
+
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                // Load the Partner List
+                fetch('/api/events', {
+                    method: 'GET',
+                    headers: headers,
+                })
+                    .then(response => response.json() as Promise<Array<EventData>>)
+                    .then(data => {
+                        setEventList(data);
+                        setIsEventDataLoaded(true);
+                    });
+            })
+        }
+    }, [props.isUserLoaded])
 
     function renderEventsTable(events: EventData[]) {
         return (
@@ -53,8 +83,8 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
         );
     }
 
-    let contents = props.isEventDataLoaded
-        ? renderEventsTable(props.eventList)
+    let contents = isEventDataLoaded
+        ? renderEventsTable(eventList)
         : <p><em>Loading...</em></p>;
 
     return (
