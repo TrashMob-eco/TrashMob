@@ -7,18 +7,46 @@ import { Button } from 'react-bootstrap';
 import PartnerData from '../Models/PartnerData';
 
 interface AdminPartnersPropsType extends RouteComponentProps {
-    partnerList: PartnerData[];
-    isPartnerDataLoaded: boolean;
-    onPartnerListChanged: any;
     isUserLoaded: boolean;
     currentUser: UserData;
 };
 
 export const AdminPartners: React.FC<AdminPartnersPropsType> = (props) => {
+    const [partnerList, setPartnerList] = React.useState<PartnerData[]>([]);
+    const [isPartnerDataLoaded, setIsPartnerDataLoaded] = React.useState<boolean>(false);
+
+    React.useEffect(() => {
+
+        if (props.isUserLoaded) {
+            const account = msalClient.getAllAccounts()[0];
+
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                // Load the Partner List
+                fetch('/api/partners', {
+                    method: 'GET',
+                    headers: headers,
+                })
+                    .then(response => response.json() as Promise<Array<PartnerData>>)
+                    .then(data => {
+                        setPartnerList(data);
+                        setIsPartnerDataLoaded(true);
+                    });
+            })
+        }
+    }, [props.isUserLoaded])
 
     // Handle Delete request for an partner
     function handleDelete(id: string, name: string) {
-        if (!window.confirm("Do you want to delete partner with name: " + name))
+        if (!window.confirm("Are you sure you want to delete partner with name: " + name))
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
@@ -35,7 +63,21 @@ export const AdminPartners: React.FC<AdminPartnersPropsType> = (props) => {
                 fetch('api/partners/' + id, {
                     method: 'delete',
                     headers: headers
-                }).then(() => { props.onPartnerListChanged(); });
+                }).then(() => {
+                    const getHeaders = getDefaultHeaders('GET');
+                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                    // Load the Partner List
+                    fetch('/api/partners', {
+                        method: 'GET',
+                        headers: getHeaders,
+                    })
+                        .then(response => response.json() as Promise<Array<PartnerData>>)
+                        .then(data => {
+                            setPartnerList(data);
+                            setIsPartnerDataLoaded(true);
+                        });
+                });
             });
         }
     }
@@ -66,8 +108,8 @@ export const AdminPartners: React.FC<AdminPartnersPropsType> = (props) => {
         );
     }
 
-    let contents = props.isPartnerDataLoaded
-        ? renderPartnersTable(props.partnerList)
+    let contents = isPartnerDataLoaded
+        ? renderPartnersTable(partnerList)
         : <p><em>Loading...</em></p>;
 
     return (
@@ -77,4 +119,3 @@ export const AdminPartners: React.FC<AdminPartnersPropsType> = (props) => {
         </div>
     );
 }
-

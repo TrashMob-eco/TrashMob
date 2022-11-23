@@ -119,7 +119,7 @@
 
             var result = await base.UpdateAsync(partnerRequest, userId, cancellationToken).ConfigureAwait(false);
 
-            await CreatePartner(partnerRequest, cancellationToken).ConfigureAwait(false);
+            await CreatePartnerAsync(partnerRequest, cancellationToken).ConfigureAwait(false);
 
             var partnerMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.PartnerRequestAccepted.ToString());
             partnerMessage = partnerMessage.Replace("{PartnerName}", partnerRequest.Name);
@@ -170,7 +170,7 @@
             return result;
         }
 
-        private async Task CreatePartner(PartnerRequest partnerRequest, CancellationToken cancellationToken = default)
+        private async Task CreatePartnerAsync(PartnerRequest partnerRequest, CancellationToken cancellationToken = default)
         {
             // Convert the partner request to a new partner
             var partner = partnerRequest.ToPartner();
