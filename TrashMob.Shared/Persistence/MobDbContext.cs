@@ -732,7 +732,8 @@
                 entity.HasData(
                     new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Sent, Name = "Invitation Sent", Description = "Invitiation has been sent", DisplayOrder = 1, IsActive = true },
                     new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Approved, Name = "Approved", Description = "Request has been approved by the Site Administrator", DisplayOrder = 2, IsActive = true },
-                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Denied, Name = "Denied", Description = "Request has been approved by the Site Administrator", DisplayOrder = 3, IsActive = true });
+                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Denied, Name = "Denied", Description = "Request has been approved by the Site Administrator", DisplayOrder = 3, IsActive = true },
+                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Pending, Name = "Pending Approval", Description = "Invitiation is pending approval by TrshMob.eco admin", DisplayOrder = 4, IsActive = true });
             });
 
             modelBuilder.Entity<PartnerStatus>(entity =>

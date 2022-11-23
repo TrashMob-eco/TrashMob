@@ -113,7 +113,7 @@
         {
             var user = await userManager.GetAsync(userId, cancellationToken);
 
-            var partnerInvitations = await Repository.Get(p => p.Email == user.Email)
+            var partnerInvitations = await Repository.Get(p => p.Email == user.Email && p.InvitationStatusId == (int)InvitationStatusEnum.Sent)
                                                      .Include(p => p.Partner)
                                                      .ToListAsync(cancellationToken);
 

@@ -29,6 +29,15 @@
 
         public override async Task<PartnerRequest> AddAsync(PartnerRequest instance, Guid userId, CancellationToken cancellationToken = default)
         {
+            if (instance.isBecomeAPartnerRequest)
+            {
+                instance.PartnerRequestStatusId = (int)PartnerRequestStatusEnum.Pending;
+            }
+            else
+            {
+                instance.PartnerRequestStatusId = (int)PartnerRequestStatusEnum.Sent;
+            }
+
             var result = await base.AddAsync(instance, userId, cancellationToken);
 
             // If this is a become a partner request, the mail gets routed to the TrashMobAdmin for approval

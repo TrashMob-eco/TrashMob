@@ -95,6 +95,7 @@
         Sent = 1,
         Approved = 2,
         Denied = 3,
+        Pending = 4,
     }
 
     public enum PartnerStatusEnum
