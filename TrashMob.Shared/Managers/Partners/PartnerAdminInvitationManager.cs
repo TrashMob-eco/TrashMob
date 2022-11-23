@@ -10,19 +10,26 @@
     using System.Collections.Generic;
     using System.Linq;
     using TrashMob.Shared.Poco;
+    using TrashMob.Shared.Engine;
 
     public class PartnerAdminInvitationManager : KeyedManager<PartnerAdminInvitation>, IPartnerAdminInvitationManager
     {
         private readonly IPartnerAdminManager partnerAdminManager;
         private readonly IUserManager userManager;
+        private readonly IPartnerManager partnerManager;
+        private readonly IEmailManager emailManager;
 
         public PartnerAdminInvitationManager(IKeyedRepository<PartnerAdminInvitation> partnerAdminInvitationRepository,
                                              IPartnerAdminManager partnerAdminManager,
-                                             IUserManager userManager)
+                                             IUserManager userManager,
+                                             IPartnerManager partnerManager,
+                                             IEmailManager emailManager)
             : base(partnerAdminInvitationRepository)
         {
             this.partnerAdminManager = partnerAdminManager;
             this.userManager = userManager;
+            this.partnerManager = partnerManager;
+            this.emailManager = emailManager;
         }
 
         public override async Task<IEnumerable<PartnerAdminInvitation>> GetByParentIdAsync(Guid parentId, CancellationToken cancellationToken)
@@ -43,6 +50,7 @@
             // Check to see if this user already has an invite
             var existingInvitation = await Repository.Get(i => i.Email == instance.Email && i.PartnerId == instance.PartnerId).FirstOrDefaultAsync(cancellationToken);
             var existingUser = await userManager.GetUserByEmailAsync(instance.Email, cancellationToken);
+            var partner = await partnerManager.GetAsync(instance.PartnerId, cancellationToken);
 
             if (existingInvitation != null)
             {
@@ -77,14 +85,46 @@
 
             if (existingUser == null)
             {
-                // Todo - Send Email to invite to join trashmob and join partner
+                var welcomeMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.InviteNewUserToBePartnerAdmin.ToString());
+                var welcomeSubject = "You have been invited to be an Administrator for a TrashMob.eco Partner";
+
+                var userDynamicTemplateData = new
+                {
+                    partnerName = partner.Name,
+                    emailCopy = welcomeMessage,
+                    subject = welcomeSubject,
+                };
+
+                var welcomeRecipients = new List<EmailAddress>
+                    {
+                        new EmailAddress { Name = instance.Email, Email = instance.Email }
+                    };
+
+                await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients, CancellationToken.None).ConfigureAwait(false);
+
                 instance.InvitationStatusId = (int)InvitationStatusEnum.Sent;
             }
             else
             {
                 if (instance.InvitationStatusId != (int)InvitationStatusEnum.Accepted)
                 {
-                    // Todo - Send Email to invite user to join partner
+                    var welcomeMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.InviteExistingUserToBePartnerAdmin.ToString());
+                    var welcomeSubject = "You have been invited to be an Administrator for a TrashMob.eco Partner";
+
+                    var userDynamicTemplateData = new
+                    {
+                        partnerName = partner.Name,
+                        emailCopy = welcomeMessage,
+                        subject = welcomeSubject,
+                    };
+
+                    var welcomeRecipients = new List<EmailAddress>
+                    {
+                        new EmailAddress { Name = existingUser.UserName, Email = instance.Email }
+                    };
+
+                    await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients, CancellationToken.None).ConfigureAwait(false);
+
                     instance.InvitationStatusId = (int)InvitationStatusEnum.Sent;
                 }
             }
@@ -131,19 +171,51 @@
             // Check to see if this user already exists in the system.
             var instance = await Repo.GetAsync(partnerAdminInvitationId, cancellationToken);
             var existingUser = await userManager.GetUserByEmailAsync(instance.Email, cancellationToken);
+            var partner = await partnerManager.GetAsync(instance.PartnerId, cancellationToken);
 
             if (existingUser == null)
             {
-                // Todo - Send Email to invite to join trashmob and join partner
+                var welcomeMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.InviteNewUserToBePartnerAdmin.ToString());
+                var welcomeSubject = "You have been invited to be an Administrator for a TrashMob.eco Partner";
+
+                var userDynamicTemplateData = new
+                {
+                    partnerName = partner.Name,
+                    emailCopy = welcomeMessage,
+                    subject = welcomeSubject,
+                };
+
+                var welcomeRecipients = new List<EmailAddress>
+                    {
+                        new EmailAddress { Name = instance.Email, Email = instance.Email }
+                    };
+
+                await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients, CancellationToken.None).ConfigureAwait(false);
             }
             else
             {
-                // Todo - Send Email to invite user to join partner
+                var welcomeMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.InviteExistingUserToBePartnerAdmin.ToString());
+                var welcomeSubject = "You have been invited to be an Administrator for a TrashMob.eco Partner";
+
+                var userDynamicTemplateData = new
+                {
+                    partnerName = partner.Name,
+                    emailCopy = welcomeMessage,
+                    subject = welcomeSubject,
+                };
+
+                var welcomeRecipients = new List<EmailAddress>
+                    {
+                        new EmailAddress { Name = existingUser.UserName, Email = instance.Email }
+                    };
+
+                await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients, CancellationToken.None).ConfigureAwait(false);
             }
 
             instance.InvitationStatusId = (int)InvitationStatusEnum.Sent;
-            var newInvitation = await base.UpdateAsync(instance, UserId, cancellationToken);
-            return newInvitation;
+            var updatedInvitation = await base.UpdateAsync(instance, UserId, cancellationToken);
+
+            return updatedInvitation;
         }
 
         public async Task<IEnumerable<DisplayPartnerAdminInvitation>> GetInvitationsForUser(Guid userId, CancellationToken cancellationToken)

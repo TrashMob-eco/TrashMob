@@ -196,7 +196,7 @@ namespace TrashMob.Shared.Tests
             var userNotifications = new List<UserNotification>();
 
             // Todo: fix this
-            // UserNotificationManager.Setup(ea => ea.Get(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(userNotifications);
+            // UserNotificationManager.Setup(ea => ea.GetAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(userNotifications);
 
             // Act
             await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
