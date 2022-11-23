@@ -15,7 +15,9 @@
     <None Remove="Engine\EmailCopy\EventUpdatedNotice.html" />
     <None Remove="Engine\EmailCopy\Generic.html" />
     <None Remove="Engine\EmailCopy\InviteBusinessPartner.html" />
+    <None Remove="Engine\EmailCopy\InviteExistingUserToBePartnerAdmin.html" />
     <None Remove="Engine\EmailCopy\InviteGovernmentPartner.html" />
+    <None Remove="Engine\EmailCopy\InviteNewUserToBePartnerAdmin.html" />
     <None Remove="Engine\EmailCopy\PartnerRequestAccepted.html" />
     <None Remove="Engine\EmailCopy\PartnerRequestDeclined.html" />
     <None Remove="Engine\EmailCopy\UpcomingEventAttendingSoon.html" />
@@ -38,6 +40,8 @@
     <EmbeddedResource Include="Engine\EmailCopy\EventSummaryHostReminder.html" />
     <EmbeddedResource Include="Engine\EmailCopy\EventUpdatedNotice.html" />
     <EmbeddedResource Include="Engine\EmailCopy\Generic.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\InviteNewUserToBePartnerAdmin.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\InviteExistingUserToBePartnerAdmin.html" />
     <EmbeddedResource Include="Engine\EmailCopy\InviteGovernmentPartner.html" />
     <EmbeddedResource Include="Engine\EmailCopy\PartnerRequestAccepted.html" />
     <EmbeddedResource Include="Engine\EmailCopy\PartnerRequestDeclined.html" />
