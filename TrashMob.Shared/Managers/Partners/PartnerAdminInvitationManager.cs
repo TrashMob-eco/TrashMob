@@ -16,13 +16,13 @@
     {
         private readonly IPartnerAdminManager partnerAdminManager;
         private readonly IUserManager userManager;
-        private readonly IPartnerManager partnerManager;
+        private readonly IKeyedManager<Partner> partnerManager;
         private readonly IEmailManager emailManager;
 
         public PartnerAdminInvitationManager(IKeyedRepository<PartnerAdminInvitation> partnerAdminInvitationRepository,
                                              IPartnerAdminManager partnerAdminManager,
                                              IUserManager userManager,
-                                             IPartnerManager partnerManager,
+                                             IKeyedManager<Partner> partnerManager,
                                              IEmailManager emailManager)
             : base(partnerAdminInvitationRepository)
         {

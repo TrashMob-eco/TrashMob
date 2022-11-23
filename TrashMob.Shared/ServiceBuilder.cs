@@ -24,7 +24,7 @@
             services.AddScoped<ILookupManager<EventType>, LookupManager<EventType>>();
             services.AddScoped<ILookupManager<InvitationStatus>, LookupManager<InvitationStatus>>();
             services.AddScoped<IKeyedManager<MessageRequest>, MessageRequestManager>();
-            services.AddScoped<IKeyedManager<Partner>, PartnerManager>();
+            services.AddScoped<IKeyedManager<Partner>, KeyedManager<Partner>>();
             services.AddScoped<IKeyedManager<PartnerDocument>, PartnerDocumentManager>();
             services.AddScoped<IKeyedManager<PartnerContact>, KeyedManager<PartnerContact>>();
             services.AddScoped<IKeyedManager<PartnerLocation>, KeyedManager<PartnerLocation>>();
