@@ -12,11 +12,12 @@ import UserData from '../Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
-import { Button, Col, Container, Form } from 'react-bootstrap';
+import { Button, Col, Container, Form, ToggleButton } from 'react-bootstrap';
 import { Guid } from 'guid-typescript';
 import MapControllerSinglePoint from '../MapControllerSinglePoint';
 import { RouteComponentProps } from 'react-router-dom';
 import { CurrentTrashMobWaiverVersion } from '../Waivers/Waivers';
+import WaiverData from '../Models/WaiverData';
 
 export interface EditEventProps extends RouteComponentProps {
     eventId: string;
@@ -50,7 +51,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [eventDateErrors, setEventDateErrors] = React.useState<string>("");
     const [maxNumberOfParticipantsErrors, setMaxNumberOfParticipantsErrors] = React.useState<string>("");
     const [durationHoursErrors, setDurationHoursErrors] = React.useState<string>("");
-    // const [durationMinutesErrors, setDurationMinutesErrors] = React.useState<string>("");
+    const [durationMinutesErrors, setDurationMinutesErrors] = React.useState<string>("");
     const [latitudeErrors, setLatitudeErrors] = React.useState<string>("");
     const [longitudeErrors, setLongitudeErrors] = React.useState<string>("");
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
@@ -106,14 +107,22 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
         if (eventId === Guid.EMPTY) {
 
-            // Have user sign waiver if needed
-            const isTrashMobWaiverOutOfDate = props.currentUser.dateAgreedToTrashMobWaiver < CurrentTrashMobWaiverVersion.versionDate;
-            if (isTrashMobWaiverOutOfDate || (props.currentUser.trashMobWaiverVersion === "")) {
-                sessionStorage.setItem('targetUrl', window.location.pathname);
-                props.history.push("/waivers");
-            }
+            fetch('/api/waivers/trashmob', {
+                method: 'GET',
+                headers: headers
+            })
+                .then(response => response.json() as Promise<WaiverData>)
+                .then(data => {
 
-            setIsDataLoaded(true);
+                    // Have user sign waiver if needed
+                    const isTrashMobWaiverOutOfDate = props.currentUser.dateAgreedToTrashMobWaiver < CurrentTrashMobWaiverVersion.versionDate;
+                    if (data.isWaiverEnabled && (isTrashMobWaiverOutOfDate || (props.currentUser.trashMobWaiverVersion === ""))) {
+                        sessionStorage.setItem('targetUrl', window.location.pathname);
+                        props.history.push("/waivers");
+                    }
+
+                    setIsDataLoaded(true);
+                })
         }
 
         MapStore.getOption().then(opts => {
@@ -160,27 +169,27 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         validateForm();
     }
 
-    // function handleDurationMinutesChanged(val: string) {
-    //     try {
-    //         if (val) {
-    //             var minutes = parseInt(val);
+     function handleDurationMinutesChanged(val: string) {
+         try {
+             if (val) {
+                 var minutes = parseInt(val);
 
-    //             if (minutes < 0 || minutes > 59) {
-    //                 setDurationMinutesErrors("Duration Minutes must be greater than 0 and less than 60");
-    //             }
-    //             else {
-    //                 setDurationMinutesErrors("");
-    //                 setDurationMinutes(minutes);
-    //             }
-    //         }
-    //         else {
-    //             setDurationMinutes(0);
-    //         }
-    //     }
-    //     catch { }
+                 if (minutes < 0 || minutes > 59) {
+                     setDurationMinutesErrors("Duration Minutes must be greater than 0 and less than 60");
+                 }
+                 else {
+                     setDurationMinutesErrors("");
+                     setDurationMinutes(minutes);
+                 }
+             }
+             else {
+                 setDurationMinutes(0);
+             }
+         }
+         catch { }
 
-    //     validateForm();
-    // }
+         validateForm();
+     }
 
     function handleDescriptionChanged(val: string) {
         setDescription(val);
@@ -205,11 +214,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
         validateForm();
     }
-
-    // function selectRegion(val: string) {
-    //     setRegion(val);
-    //     validateForm();
-    // }
 
     function handlePostalCodeChanged(val: string) {
         setPostalCode(val);
@@ -303,9 +307,9 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.EventDurationHours}</Tooltip>
     }
 
-    // function renderDurationMinutesToolTip(props: any) {
-    //     return <Tooltip {...props}>{ToolTips.EventDurationMinutes}</Tooltip>
-    // }
+     function renderDurationMinutesToolTip(props: any) {
+         return <Tooltip {...props}>{ToolTips.EventDurationMinutes}</Tooltip>
+     }
 
     function renderStreetAddressToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.EventStreetAddress}</Tooltip>
@@ -347,9 +351,9 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.EventDate}</Tooltip>
     }
 
-    // function renderIsEventPublicToolTip(props: any) {
-    //     return <Tooltip {...props}>{ToolTips.EventIsEventPublic}</Tooltip>
-    // }
+    function renderIsEventPublicToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.EventIsEventPublic}</Tooltip>
+    }
 
     function handleLocationChange(point: data.Position) {
         // In an Azure Map point, the longitude is the first position, and latitude is second
@@ -391,18 +395,18 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         validateForm();
     }
 
-    // function handleIsEventPublicChanged(value: boolean) {
-    //     setIsEventPublic(value);
+    function handleIsEventPublicChanged(value: boolean) {
+        setIsEventPublic(value);
 
-    //     if (value && eventDate < new Date()) {
-    //         setEventDateErrors("Public event cannot be in the past");
-    //     }
-    //     else {
-    //         setEventDateErrors("");
-    //     }
+        if (value && eventDate < new Date()) {
+            setEventDateErrors("Public event cannot be in the past");
+        }
+        else {
+            setEventDateErrors("");
+        }
 
-    //     validateForm();
-    // }
+        validateForm();
+    }
 
     // This will handle Cancel button click event.
     function handleCancel(event: any) {
@@ -508,7 +512,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
                                     <select data-val="true" className='bg-light border-0 p-18 h-60 w-100 rounded p-2' name="eventTypeId" defaultValue={eventTypeId} onChange={(val) => selectEventType(val.target.value)} required>
                                         <option value="">-- Select Event Type --</option>
-                                        {typeList.map(type =>
+                                        {typeList.sort((a, b) => (a.displayOrder < b.displayOrder) ? 1 : -1).map(type =>
                                             <option key={type.id} value={type.id}>{type.name}</option>
                                         )}
                                     </select>
@@ -525,21 +529,21 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                 </Form.Group>
                             </Col>
 
-                            {/* <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderIsEventPublicToolTip}>
-                                    <ToggleButton
-                                        type="checkbox"
-                                        variant="outline-dark"
-                                        checked={isEventPublic}
-                                        value="1"
-                                        onChange={(e) => handleIsEventPublicChanged(e.currentTarget.checked)}
-                                    >
-                                        Event is Public
-                                    </ToggleButton>
-                                </OverlayTrigger >
-                            </Form.Group>
-                        </Col> */}
+                            <Col>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderIsEventPublicToolTip}>
+                                        <ToggleButton
+                                            type="checkbox"
+                                            variant="outline-dark"
+                                            checked={isEventPublic}
+                                            value="1"
+                                            onChange={(e) => handleIsEventPublicChanged(e.currentTarget.checked)}
+                                        >
+                                            Event is Public
+                                        </ToggleButton>
+                                    </OverlayTrigger >
+                                </Form.Group>
+                            </Col>
                         </Form.Row>
                         <Form.Row>
                             <Col lg={4}>
@@ -548,10 +552,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                         <Form.Label className="control-label font-weight-bold h5" htmlFor="EventDate">Date</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="date" className='border-0 bg-light h-60 p-18' name="maxNumberOfParticipants" defaultValue={maxNumberOfParticipants} onChange={(e: any) => handleEventDateChange(e)} />
-                                    {/* <div>
-                                    <DateTimePicker name="eventDate" onChange={handleEventDateChange} value={eventDate} />
-                                    <span style={{ color: "red" }}>{eventDateErrors}</span>
-                                </div> */}
                                 </Form.Group>
                             </Col>
                             <Col lg={4}>
@@ -565,17 +565,17 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     </div>
                                 </Form.Group>
                             </Col>
-                            {/* <Col>
+                             <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderDurationMinutesToolTip}>
-                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="DurationMinutes">Additional Minutes</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="DurationMinutes">Expected Duration in Minutes</Form.Label>
                                 </OverlayTrigger>
                                 <div>
                                     <Form.Control type="text" className='border-0 bg-light h-60 p-18' size="sm" name="durationMinutes" defaultValue={durationMinutes} onChange={(val) => handleDurationMinutesChanged(val.target.value)} />
                                     <span style={{ color: "red" }}>{durationMinutesErrors}</span>
                                 </div>
                             </Form.Group>
-                        </Col> */}
+                        </Col> 
                         </Form.Row>
                         <Form.Row>
                             <Col>

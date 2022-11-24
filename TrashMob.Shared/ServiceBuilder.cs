@@ -56,6 +56,7 @@
             services.AddScoped<IPartnerLocationContactManager, PartnerLocationContactManager>();
             services.AddScoped<IPartnerSocialMediaAccountManager, PartnerSocialMediaAccountManager>();
             services.AddScoped<IUserManager, UserManager>();
+            services.AddScoped<IWaiverManager, WaiverManager>();
 
             // Non-patterned
             services.AddScoped<IActiveDirectoryManager, ActiveDirectoryManager>();
@@ -98,6 +99,7 @@
             services.AddScoped<ILookupRepository<SocialMediaAccountType>, LookupRepository<SocialMediaAccountType>>();
             services.AddScoped<IKeyedRepository<User>, KeyedRepository<User>>();
             services.AddScoped<IKeyedRepository<UserNotification>, KeyedRepository<UserNotification>>();
+            services.AddScoped<IKeyedRepository<Waiver>, KeyedRepository<Waiver>>();
         }
     }
 }

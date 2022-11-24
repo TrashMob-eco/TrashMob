@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrashMob.Shared.Persistence;
 
@@ -11,9 +12,10 @@ using TrashMob.Shared.Persistence;
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    partial class MobDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221124002850_eventtypes")]
+    partial class eventtypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1742,49 +1744,6 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Models.Waiver", b =>
-                {
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsWaiverEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("LastUpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.HasKey("Name");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastUpdatedByUserId");
-
-                    b.ToTable("WaiverStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            Name = "trashmob",
-                            CreatedByUserId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            CreatedDate = new DateTimeOffset(new DateTime(2022, 11, 24, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Id = new Guid("4d222d04-ac1f-4a87-886d-fdb686f9f55c"),
-                            IsWaiverEnabled = false,
-                            LastUpdatedByUserId = new Guid("00000000-0000-0000-0000-000000000000")
-                        });
-                });
-
             modelBuilder.Entity("TrashMob.Models.ContactRequest", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
@@ -2415,25 +2374,6 @@ namespace TrashMob.Migrations
                     b.Navigation("UserNotificationType");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.Waiver", b =>
-                {
-                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
-                        .WithMany("WaiverStatusesCreated")
-                        .HasForeignKey("CreatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_WaiverStatuses_User_CreatedBy");
-
-                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
-                        .WithMany("WaiverStatusesUpdated")
-                        .HasForeignKey("LastUpdatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_WaiverStatuses_User_LastUpdatedBy");
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastUpdatedByUser");
-                });
-
             modelBuilder.Entity("TrashMob.Models.Event", b =>
                 {
                     b.Navigation("UserNotifications");
@@ -2586,10 +2526,6 @@ namespace TrashMob.Migrations
                     b.Navigation("UsersCreated");
 
                     b.Navigation("UsersUpdated");
-
-                    b.Navigation("WaiverStatusesCreated");
-
-                    b.Navigation("WaiverStatusesUpdated");
                 });
 
             modelBuilder.Entity("TrashMob.Models.UserNotificationType", b =>
