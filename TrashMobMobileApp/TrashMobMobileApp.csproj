@@ -103,6 +103,7 @@
 	  <Compile Include="..\TrashMob.Models\User.cs" Link="Models\User.cs" />
 	  <Compile Include="..\TrashMob.Models\UserNotification.cs" Link="Models\UserNotification.cs" />
 	  <Compile Include="..\TrashMob.Models\UserNotificationType.cs" Link="Models\UserNotificationType.cs" />
+	  <Compile Include="..\TrashMob.Models\Waiver.cs" Link="Models\Waiver.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
