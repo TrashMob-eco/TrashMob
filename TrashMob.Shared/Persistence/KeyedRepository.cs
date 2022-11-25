@@ -36,6 +36,11 @@
             return await dbSet.FindAsync(new object[] { id }, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
+        public async Task<T> GetWithNoTrackingAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            return await dbSet.AsNoTracking().FirstOrDefaultAsync(e => e.Id == id, cancellationToken).ConfigureAwait(false);
+        }
+
         public async Task<int> DeleteAsync(Guid id)
         {
             var instance = await dbSet.FindAsync(new object[] { id }).ConfigureAwait(false);

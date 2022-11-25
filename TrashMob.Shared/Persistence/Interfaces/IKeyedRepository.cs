@@ -14,5 +14,7 @@
         Task<int> DeleteAsync(Guid id);
 
         Task<T> GetAsync(Guid id, CancellationToken cancellationToken);
+
+        Task<T> GetWithNoTrackingAsync(Guid id, CancellationToken cancellationToken);
     }
 }
