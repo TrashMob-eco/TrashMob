@@ -1,7 +1,5 @@
 ﻿#nullable disable
 
-using TrashMob;
-
 namespace TrashMob.Models
 {
     using System.Collections.Generic;

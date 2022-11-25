@@ -144,5 +144,9 @@ namespace TrashMob.Models
         public virtual ICollection<EventAttendee> EventAttendeesCreated { get; set; }
 
         public virtual ICollection<EventAttendee> EventAttendeesUpdated { get; set; }
+
+        public virtual ICollection<Waiver> WaiverStatusesCreated { get; set; }
+
+        public virtual ICollection<Waiver> WaiverStatusesUpdated { get; set; }
     }
 }

@@ -74,6 +74,8 @@
 
         public virtual DbSet<UserNotificationType> UserNotificationTypes { get; set; }
 
+        public virtual DbSet<Waiver> WaiverStatuses { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"]);
@@ -443,11 +445,11 @@
 
                 entity.HasData(
                     new EventType { Id = 1, Name = "Park Cleanup", Description = "Park Cleanup", DisplayOrder = 1, IsActive = true },
-                    new EventType { Id = 2, Name = "School Cleanup", Description = "School Cleanup", DisplayOrder = 2, IsActive = true },
-                    new EventType { Id = 3, Name = "Neighborhood Cleanup", Description = "Neighborhood Cleanup", DisplayOrder = 3, IsActive = true },
-                    new EventType { Id = 4, Name = "Beach Cleanup", Description = "Beach Cleanup", DisplayOrder = 4, IsActive = true },
-                    new EventType { Id = 5, Name = "Highway Cleanup", Description = "Highway Cleanup", DisplayOrder = 5, IsActive = true },
-                    new EventType { Id = 6, Name = "Natural Disaster Cleanup", Description = "Natural Disaster Cleanup", DisplayOrder = 6, IsActive = true },
+                    new EventType { Id = 2, Name = "School Cleanup", Description = "School Cleanup", DisplayOrder = 3, IsActive = true },
+                    new EventType { Id = 3, Name = "Neighborhood Cleanup", Description = "Neighborhood Cleanup", DisplayOrder = 4, IsActive = true },
+                    new EventType { Id = 4, Name = "Beach Cleanup", Description = "Beach Cleanup", DisplayOrder = 5, IsActive = true },
+                    new EventType { Id = 5, Name = "Highway Cleanup", Description = "Highway Cleanup", DisplayOrder = 6, IsActive = true },
+                    new EventType { Id = 6, Name = "Natural Disaster Cleanup", Description = "Natural Disaster Cleanup", DisplayOrder = 14, IsActive = true },
                     new EventType { Id = 7, Name = "Trail Cleanup", Description = "Trail Cleanup", DisplayOrder = 7, IsActive = true },
                     new EventType { Id = 8, Name = "Reef Cleanup", Description = "Reef Cleanup", DisplayOrder = 8, IsActive = true },
                     new EventType { Id = 9, Name = "Private Land Cleanup", Description = "Private Land Cleanup", DisplayOrder = 9, IsActive = true },
@@ -455,7 +457,9 @@
                     new EventType { Id = 11, Name = "Waterway Cleanup", Description = "Waterway Cleanup", DisplayOrder = 11, IsActive = true },
                     new EventType { Id = 12, Name = "Vandalism Cleanup", Description = "Vandalism Cleanup", DisplayOrder = 12, IsActive = true },
                     new EventType { Id = 13, Name = "Social Event", Description = "Social Event", DisplayOrder = 13, IsActive = true },
-                    new EventType { Id = 14, Name = "Other", Description = "Other", DisplayOrder = 14, IsActive = true });
+                    new EventType { Id = 14, Name = "Other", Description = "Other", DisplayOrder = 16, IsActive = true },
+                    new EventType { Id = 15, Name = "Snow Removal", Description = "Snow Removal", DisplayOrder = 15, IsActive = true },
+                    new EventType { Id = 16, Name = "Streetside Cleanup", Description = "Streetside Cleanup", DisplayOrder = 2, IsActive = true });
             });
 
             modelBuilder.Entity<MessageRequest>(entity =>
@@ -991,6 +995,33 @@
                     new UserNotificationType { Id = (int)NotificationTypeEnum.EventSummaryHostWeekReminder, Name = "EventSummaryHostWeekReminder", Description = "Opt out of Event Summary Week Reminder for events you have lead", DisplayOrder = 9 },
                     new UserNotificationType { Id = (int)NotificationTypeEnum.UserProfileUpdateLocation, Name = "UserProfileUpdateLocation", Description = "Opt out of notifications for User Profile Location", DisplayOrder = 10 });
             });
+
+            modelBuilder.Entity<Waiver>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasKey(e => new { e.Name });
+
+                entity.Property(e => e.IsWaiverEnabled)
+                    .IsRequired();
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.WaiverStatusesCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WaiverStatuses_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.WaiverStatusesUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WaiverStatuses_User_LastUpdatedBy");
+
+                // Stick in a default value for the Waiver
+                entity.HasData(
+                    new Waiver { Id = new Guid("4D222D04-AC1F-4A87-886D-FDB686F9F55C"), Name = "trashmob", IsWaiverEnabled = false, CreatedByUserId = Guid.Empty, LastUpdatedByUserId = Guid.Empty, CreatedDate = new DateTimeOffset(2022, 11, 24, 0, 0, 0, TimeSpan.Zero) });
+            });
+
         }
     }
 }
