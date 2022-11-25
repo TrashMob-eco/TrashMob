@@ -320,9 +320,14 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.PartnerContactLastUpdatedDate}</Tooltip>
     }
 
-    function renderPartnerServicesTable(contacts: PartnerContactData[]) {
+    function renderPartnerContactsTable(contacts: PartnerContactData[]) {
         return (
             <div>
+                <p>
+                    This page allows you to add more contacts to this partner so you can share the load of responding to questions for this partner. This information may be displayed in
+                    the partnerships page on TrashMob.eco, but is also used by the TrashMob site administrators to contact your organization during setup and during times where issues have arisen.
+                </p>
+
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
@@ -428,7 +433,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
             <div>
                 {props.partnerId === Guid.EMPTY && <p> <em>Partner must be created first.</em></p>}
                 {!isPartnerContactsDataLoaded && props.partnerId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-                {isPartnerContactsDataLoaded && renderPartnerServicesTable(partnerContacts)}
+                {isPartnerContactsDataLoaded && renderPartnerContactsTable(partnerContacts)}
                 {isEditOrAdd && renderAddPartnerContact()}
             </div>
         </>

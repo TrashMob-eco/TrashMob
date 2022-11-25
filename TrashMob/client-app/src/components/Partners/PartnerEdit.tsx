@@ -226,6 +226,9 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
     function renderCreateForm(statusList: Array<PartnerStatusData>, typeList: Array<PartnerTypeData>) {
         return (
             <div className="container-fluid card">
+                <p>
+                    This page allows you to add basic details about your organization. Public notes may be shown to TrashMob.eco users on the partnership page. Think of this as a blurb or a tag line you may want to add to let users know more about your organization in general.
+                </p>
                 <h1>Edit Partner</h1>
                 <Form onSubmit={handleSave} >
                     <Form.Row>

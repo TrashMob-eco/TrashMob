@@ -44,12 +44,18 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
     const [title, setTitle] = React.useState<string>("Apply to become a partner");
+    const [blurb, setBlurb] = React.useState<string>("");
 
     React.useEffect(() => {
 
         if (props.mode && props.mode === "send") {
             setTitle("Send invite to join TrashMob as a partner");
+            setBlurb("Use this form to send an informational note to a potential partner for TrashMob.eco in your community. Fill out as much detail as you can, and TrashMob.eco will reach out to the email address provided with an information packet to see if they would like to become a TrashMob.eco Partner!")
         }
+        else {
+            setBlurb("Use this form to make a request to become a TrashMob.eco partner. TrashMob.eco site adminsitrators will review your request, and either approve it, or reach out to you for more information. If approved, you wil be sent a Welcome email with instructions on how to complete setup of your partnership.");
+        }
+
 
         MapStore.getOption().then(opts => {
             setMapOptions(opts);
@@ -132,7 +138,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     // This will handle Cancel button click event.  
     function handleCancel(event: any) {
         event.preventDefault();
-        props.history.push("/");
+        props.history.push("/partnerships");
     }
 
     function handleNameChanged(val: string) {
@@ -272,6 +278,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         return (
             <div className="container-fluid card">
                 <h1>{title}</h1>
+                <p>{blurb}</p>
                 <Form onSubmit={handleSave} className="mt-5 p-4 directorCard" >
                     <Form.Row>
                         <Col>

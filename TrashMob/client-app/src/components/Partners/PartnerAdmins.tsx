@@ -301,6 +301,14 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
     function renderUsersTable(users: UserData[]) {
         return (
             <div>
+                <p>
+                    This page allows you to add more administrators to this partner so you can share the load of maintaining the configuration of the partner. You can invite new
+                    administrators by clicking the Invite Administrator button, and entering their email address into the text box and clicking "Send Invitation."
+                </p>
+                <p>
+                    The email address you set will be sent an invite to join TrashMob.eco if they are not already a user. Once they have joined TrashMob.eco and are logged in,
+                    they will see an invitation in their Dashboard. They can Accept or Decline the invitation from there.
+                </p>
                 <h1>Current Admins</h1>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>

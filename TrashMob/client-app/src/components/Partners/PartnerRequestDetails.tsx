@@ -149,7 +149,7 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
     // This will handle Cancel button click event.  
     function handleCancel(event: any) {
         event.preventDefault();
-        props.history.push("/");
+        props.history.push("/mydashboard");
     }
 
     function renderNameToolTip(props: any) {

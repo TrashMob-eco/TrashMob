@@ -148,6 +148,11 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     function renderPartnerLocationsTable(locations: PartnerLocationData[]) {
         return (
             <div>
+                <p>
+                    A partner location can be thought of as an instance of a business franchise, or the location of a municipal office or yard. You can have as many locations within a community as you want to
+                    set up. Each location can offer different services, and have different contact information associated with it. For instance, City Hall may provide starter kits and supplies, but only the 
+                    public utilities yard offers hauling and disposal.
+                </p>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>

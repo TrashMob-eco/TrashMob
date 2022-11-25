@@ -320,6 +320,10 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
     function renderPartnerLocationServicesTable(contacts: PartnerLocationContactData[]) {
         return (
             <div>
+                <p>
+                    This page allows you set the contacts for a particular location of your organization. These addresses will be sent emails when a TrashMob.eco user chooses to
+                    use the services offered by this location. This will allow you to accept or decline the request so that the user knows the status of their requests.
+                </p>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>

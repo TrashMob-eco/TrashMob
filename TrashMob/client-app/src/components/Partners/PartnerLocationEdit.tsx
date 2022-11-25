@@ -300,6 +300,9 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
     function renderEditLocation() {
         return (
             <div>
+                <p>
+                    This page allows you set up a new partner location, or edit an existing one. 
+                </p>
                 <Form onSubmit={handleSave}>
                     <Form.Row>
                         <input type="hidden" name="Id" value={partnerLocationId} />

@@ -272,6 +272,10 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
     function renderPartnerSocialMediaAccountsTable(accounts: PartnerSocialMediaAccountData[]) {
         return (
             <div>
+                <p>This page allows you to add a list of social media accounts you would like to have tagged when you approve a partnership request to both help spread the word about what TrashMob.eco users are
+                    doing within your community, and how your organization is helping your community. This feature is still in development, but adding the information when you set things up now will help
+                    when this feature fully launches.
+                </p>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
