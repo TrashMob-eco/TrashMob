@@ -263,6 +263,10 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
     function renderPartnerLocationServicesTable(services: PartnerLocationServiceData[]) {
         return (
             <div>
+                <p>
+                    This page allows you set up the services offered by a partner location. That is, what capabilities are you willing to provide to TrashMob.eco users to help them
+                    clean up the local community? This support is crucial to the success of TrashMob.eco volunteers, and we appreciate your help!
+                </p>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>

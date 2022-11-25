@@ -256,6 +256,10 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
     function renderPartnerDocumentsTable(documents: PartnerDocumentData[]) {
         return (
             <div>
+                <p>
+                    This page allows you and the TrashMob administrators to track documents relevant to the partnership. i.e. Volunteer Organizational Agreements or special waivers if needed.
+                    Note that this page will have more functionality added in the future to allow uploading filled out documents or to allow usage of docusign.
+                </p>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>

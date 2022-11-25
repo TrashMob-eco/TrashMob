@@ -135,6 +135,10 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
     function renderPartnerLocationEventServicesTable(partnerLocationEventServices: DisplayPartnerLocationEventServiceData[]) {
         return (
             <div>
+                <p>
+                    This page allows you to respond to requests from TrashMob.eco users to help them clean up the local community. When a new event is set up, and a user selects one of your services
+                    the location contacts will be notified to accept or decline the request here.
+                </p>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
