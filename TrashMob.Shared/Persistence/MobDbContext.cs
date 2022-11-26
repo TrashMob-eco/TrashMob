@@ -307,7 +307,7 @@
 
             modelBuilder.Entity<EventPartnerLocationService>(entity =>
             {
-                entity.HasKey(e => new { e.EventId, e.PartnerLocationId });
+                entity.HasKey(e => new { e.EventId, e.PartnerLocationId, e.ServiceTypeId });
 
                 entity.Property(e => e.EventId)
                     .IsRequired();
