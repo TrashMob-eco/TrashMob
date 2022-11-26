@@ -9,6 +9,7 @@ namespace TrashMob.Shared.Managers
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
     using TrashMob.Shared.Persistence.Interfaces;
+    using System;
 
     public class ContactRequestManager : KeyedManager<ContactRequest>, IKeyedManager<ContactRequest>
     {
@@ -21,6 +22,13 @@ namespace TrashMob.Shared.Managers
 
         public override async Task<ContactRequest> AddAsync(ContactRequest contactRequest, CancellationToken cancellationToken = default)
         {
+            // Since this add can be done by users not logged in, we fake this information for now
+            contactRequest.Id = Guid.NewGuid();
+            contactRequest.LastUpdatedDate= DateTime.UtcNow;
+            contactRequest.LastUpdatedByUserId = Guid.Empty;
+            contactRequest.CreatedDate= DateTime.UtcNow;
+            contactRequest.CreatedByUserId= Guid.Empty;
+
             var outputContactRequest = await Repository.AddAsync(contactRequest);
 
             var message = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.ContactRequestReceived.ToString());
