@@ -308,17 +308,17 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group className="required">
+                            <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderPartnerTypeToolTip}>
                                     <Form.Label className="control-label h5" htmlFor="PartnerType">Type:</Form.Label>
                                 </OverlayTrigger>
                                 <div className='d-flex h-60'>
                                     <div className='d-flex w-100 align-items-center'>
-                                        <input type="radio" className='m-0' checked={isGovernmentPartner} name="type" onChange={(val) => setPartnerType(true)} />
+                                        <input type="radio" className='m-0' checked={isGovernmentPartner} name="type" onChange={() => setPartnerType(true)} />
                                         <label className="control-label m-0 ml-2">Government</label>
                                     </div>
                                     <div className='d-flex w-100 align-items-center'>
-                                        <input type="radio" className='m-0' checked={!isGovernmentPartner} name="type" onChange={(val) => setPartnerType(false)} />
+                                        <input type="radio" className='m-0' name="type" onChange={() => setPartnerType(false)} />
                                         <label className="control-label m-0 ml-2">Business</label>
                                     </div>
                                 </div>

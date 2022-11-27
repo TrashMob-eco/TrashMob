@@ -16,5 +16,8 @@ export const EventPartnerLocationServiceStatusDeclined = 3;
 export const PartnerStatusActive = 1;
 export const PartnerStatusInactive = 2;
 
+export const EventStatusActive = 1;
+export const EventStatusInactive = 2;
+
 export const PartnerTypeGovernment = 1;
 export const PartnerTypeBusiness = 2;
