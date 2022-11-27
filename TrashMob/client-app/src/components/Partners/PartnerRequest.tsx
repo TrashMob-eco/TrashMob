@@ -22,7 +22,8 @@ interface PartnerRequestProps extends RouteComponentProps<any> {
 
 export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const [name, setName] = React.useState<string>();
-    const [partnerTypeId, setPartnerTypeId] = React.useState<number>(0);
+    const [partnerTypeId, setPartnerTypeId] = React.useState<number>(Constants.PartnerTypeGovernment);
+    const [isGovernmentPartner, setIsGovernmentPartner] = React.useState<boolean>(true);
     const [email, setEmail] = React.useState<string>();
     const [website, setWebsite] = React.useState<string>();
     const [phone, setPhone] = React.useState<string>();
@@ -31,7 +32,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const [emailErrors, setEmailErrors] = React.useState<string>("");
     const [websiteErrors, setWebsiteErrors] = React.useState<string>("");
     const [phoneErrors, setPhoneErrors] = React.useState<string>("");
-    const [notesErrors, setNotesErrors] = React.useState<string>("");
     const [latitude, setLatitude] = React.useState<number>(0);
     const [longitude, setLongitude] = React.useState<number>(0);
     const [streetAddress, setStreetAddress] = React.useState<string>();
@@ -45,17 +45,21 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
     const [title, setTitle] = React.useState<string>("Apply to become a partner");
     const [blurb, setBlurb] = React.useState<string>("");
+    const [mode, setMode] = React.useState<string>("");
 
     React.useEffect(() => {
 
+        setIsGovernmentPartner(true);
+
         if (props.mode && props.mode === "send") {
+            setMode("send");
             setTitle("Send invite to join TrashMob as a partner");
             setBlurb("Use this form to send an informational note to a potential partner for TrashMob.eco in your community. Fill out as much detail as you can, and TrashMob.eco will reach out to the email address provided with an information packet to see if they would like to become a TrashMob.eco Partner!")
         }
         else {
+            setMode("request");
             setBlurb("Use this form to make a request to become a TrashMob.eco partner. TrashMob.eco site adminsitrators will review your request, and either approve it, or reach out to you for more information. If approved, you wil be sent a Welcome email with instructions on how to complete setup of your partnership.");
         }
-
 
         MapStore.getOption().then(opts => {
             setMapOptions(opts);
@@ -74,10 +78,10 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
 
     function validateForm() {
         if (nameErrors !== "" ||
-            notesErrors !== "" ||
             emailErrors !== "" ||
             websiteErrors !== "" ||
-            phoneErrors !== "") {
+            phoneErrors !== "" ||
+            region === "") {
             setIsSaveEnabled(false);
         }
         else {
@@ -110,7 +114,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         partnerRequestData.longitude = longitude ?? 0;
         partnerRequestData.createdByUserId = props.currentUser.id;
         partnerRequestData.partnerTypeId = partnerTypeId;
-        partnerRequestData.isBecomeAPartnerRequest = (props.mode !== 'send')
+        partnerRequestData.isBecomeAPartnerRequest = (mode !== 'send')
 
         var data = JSON.stringify(partnerRequestData);
 
@@ -196,14 +200,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     }
 
     function handleNotesChanged(val: string) {
-        if (val.length < 0 || val.length > 1000) {
-            setNotesErrors("Notes cannot be empty and cannot be more than 1000 characters long.");
-        }
-        else {
-            setNotesErrors("");
-            setNotes(val);
-        }
-
+        setNotes(val);
         validateForm();
     }
 
@@ -216,7 +213,12 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     }
 
     function renderEmailToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestEmail}</Tooltip>
+        if (mode === "send") {
+            return <Tooltip {...props}>{ToolTips.PartnerRequestInviteEmail}</Tooltip>
+        }
+        else {
+            return <Tooltip {...props}>{ToolTips.PartnerRequestEmail}</Tooltip>
+        }
     }
 
     function renderWebsiteToolTip(props: any) {
@@ -224,11 +226,21 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     }
 
     function renderPhoneToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestPhone}</Tooltip>
+        if (mode === "send") {
+            return <Tooltip {...props}>{ToolTips.PartnerRequestInvitePhone}</Tooltip>
+        }
+        else {
+            return <Tooltip {...props}>{ToolTips.PartnerRequestPhone}</Tooltip>
+        }
     }
 
     function renderNotesToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestNotes}</Tooltip>
+        if (mode === "send") {
+            return <Tooltip {...props}>{ToolTips.PartnerRequestInviteNotes}</Tooltip>
+        }
+        else {
+            return <Tooltip {...props}>{ToolTips.PartnerRequestNotes}</Tooltip>
+        }
     }
 
     function renderStreetAddressToolTip(props: any) {
@@ -239,8 +251,13 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.PartnerRequestCity}</Tooltip>
     }
 
-    function setPartnerType(val: string) {
-        setPartnerTypeId(parseInt(val));
+    function setPartnerType(val: boolean) {
+        if (val) {
+            setPartnerTypeId(Constants.PartnerTypeGovernment)
+        }
+        else {
+            setPartnerTypeId(Constants.PartnerTypeBusiness);
+        }
     }
 
     function renderPostalCodeToolTip(props: any) {
@@ -297,11 +314,11 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                 </OverlayTrigger>
                                 <div className='d-flex h-60'>
                                     <div className='d-flex w-100 align-items-center'>
-                                        <input type="radio" className='m-0' defaultValue={partnerTypeId} name="type" onChange={(val) => setPartnerType(val.target.value)} required />
-                                        <label className="control-label m-0 ml-2">City or government entity</label>
+                                        <input type="radio" className='m-0' checked={isGovernmentPartner} name="type" onChange={(val) => setPartnerType(true)} />
+                                        <label className="control-label m-0 ml-2">Government</label>
                                     </div>
                                     <div className='d-flex w-100 align-items-center'>
-                                        <input type="radio" className='m-0' defaultValue={partnerTypeId} name="type" onChange={(val) => setPartnerType(val.target.value)} required />
+                                        <input type="radio" className='m-0' checked={!isGovernmentPartner} name="type" onChange={(val) => setPartnerType(false)} />
                                         <label className="control-label m-0 ml-2">Business</label>
                                     </div>
                                 </div>
@@ -339,6 +356,12 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                             </Form.Group >
                         </Col>
                     </Form.Row>
+                    <Form.Group>
+                        <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
+                            <Form.Label className="control-label h5">Notes:</Form.Label>
+                        </OverlayTrigger>
+                        <Form.Control as="textarea" className='border-0 bg-light h-60 para' defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} />
+                    </Form.Group >
 
                     <Form.Row>
                         <AzureMapsProvider>
@@ -374,13 +397,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                             </Form.Group>
                         </Col>
                     </Form.Row>
-                    <Form.Group className="required">
-                        <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                            <Form.Label className="control-label h5">Notes:</Form.Label>
-                        </OverlayTrigger>
-                        <Form.Control as="textarea" className='border-0 bg-light h-60 para' defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} required />
-                        <span style={{ color: "red" }}>{notesErrors}</span>
-                    </Form.Group >
                     <Form.Group className="form-group d-flex justify-content-end">
                         <Button disabled={!isSaveEnabled} type="submit" className="action btn-default px-3 h-49">Submit</Button>
                         <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
