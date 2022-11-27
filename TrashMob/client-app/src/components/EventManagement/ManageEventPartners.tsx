@@ -11,7 +11,7 @@ import { getServiceType } from '../../store/serviceTypeHelper';
 import ServiceTypeData from '../Models/ServiceTypeData';
 import EventPartnerLocationServiceData from '../Models/EventPartnerLocationServiceData';
 import DisplayEventPartnerLocationServiceData from '../Models/DisplayEventPartnerLocationServiceData';
-import { Building, Envelope, Eye, ThreeDots } from 'react-bootstrap-icons';
+import { Eye } from 'react-bootstrap-icons';
 
 export interface ManageEventPartnersProps {
     eventId: string;
