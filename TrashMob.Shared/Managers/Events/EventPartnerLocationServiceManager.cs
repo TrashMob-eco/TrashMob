@@ -13,8 +13,6 @@
     using System.Linq;
     using EmailAddress = Poco.EmailAddress;
     using TrashMob.Poco;
-    using TrashMob.Migrations;
-    using Microsoft.Extensions.Logging;
 
     public class EventPartnerLocationServiceManager : BaseManager<EventPartnerLocationService>, IEventPartnerLocationServiceManager
     {
@@ -248,7 +246,7 @@
         public async Task<IEnumerable<DisplayEventPartnerLocation>> GetByEventAsync(Guid eventId, CancellationToken cancellationToken = default)
         {
             var displayEventPartners = new List<DisplayEventPartnerLocation>();
-            var currentPartners = await GetCurrentPartnersAsync(eventId, cancellationToken).ConfigureAwait(false);
+            var currentPartners = (await GetCurrentPartnersAsync(eventId, cancellationToken).ConfigureAwait(false)).DistinctBy(p => new { p.EventId, p.PartnerLocationId });
             var possiblePartners = await GetPotentialPartnerLocationsAsync(eventId, cancellationToken).ConfigureAwait(false);
 
             // Convert the current list of partners for the event to a display partner (reduces round trips)
@@ -256,6 +254,7 @@
             {
                 var existingServices = await Repository.Get(epls => epls.EventId == eventId && epls.PartnerLocationId == cp.PartnerLocationId)
                                                    .Include(p => p.ServiceType)
+                                                   .Include(p => p.EventPartnerLocationServiceStatus)
                                                    .ToListAsync(cancellationToken);
 
                 var partnerServicesEngaged = "None";
@@ -264,12 +263,12 @@
                 {
                     if (isFirst)
                     {
-                        partnerServicesEngaged = service.ServiceType.Name;
+                        partnerServicesEngaged = service.ServiceType.Name + " (" + service.EventPartnerLocationServiceStatus.Name + ")";
                         isFirst = false;
                     }
                     else
                     {
-                        partnerServicesEngaged += ", " + service.ServiceType.Name;
+                        partnerServicesEngaged += ", " + service.ServiceType.Name + " (" + service.EventPartnerLocationServiceStatus.Name + ")";
                     }
                 }
 
