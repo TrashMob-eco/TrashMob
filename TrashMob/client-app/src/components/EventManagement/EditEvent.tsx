@@ -1,7 +1,6 @@
 import * as React from 'react'
 import EventData from '../Models/EventData';
 import EventTypeData from '../Models/EventTypeData';
-import { CountryDropdown } from 'react-country-region-selector';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
 import { getKey } from '../../store/MapStore';
@@ -19,6 +18,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { CurrentTrashMobWaiverVersion } from '../Waivers/Waivers';
 import WaiverData from '../Models/WaiverData';
 import moment from 'moment';
+import { EventStatusActive } from '../Models/Constants';
 
 export interface EditEventProps extends RouteComponentProps {
     eventId: string;
@@ -32,7 +32,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [isDataLoaded, setIsDataLoaded] = React.useState<boolean>(false);
     const [eventId, setEventId] = React.useState<string>(props.eventId);
     const [eventName, setEventName] = React.useState<string>("New Event");
-    const [description, setDescription] = React.useState<string>();
+    const [description, setDescription] = React.useState<string>("");
     const [eventDate, setEventDate] = React.useState<Date>(new Date());
     const [eventTime, setEventTime] = React.useState<string>("");
     const [absTime, setAbsTime] = React.useState<Date>(new Date());
@@ -40,24 +40,22 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [durationMinutes, setDurationMinutes] = React.useState<number>(0);
     const [eventTypeId, setEventTypeId] = React.useState<number>(0);
     const [streetAddress, setStreetAddress] = React.useState<string>();
-    const [city, setCity] = React.useState<string>();
-    const [country, setCountry] = React.useState<string>();
-    const [region, setRegion] = React.useState<string>();
-    const [postalCode, setPostalCode] = React.useState<string>();
+    const [city, setCity] = React.useState<string>("");
+    const [country, setCountry] = React.useState<string>("");
+    const [region, setRegion] = React.useState<string>("");
+    const [postalCode, setPostalCode] = React.useState<string>("");
     const [latitude, setLatitude] = React.useState<number>(0);
     const [longitude, setLongitude] = React.useState<number>(0);
     const [maxNumberOfParticipants, setMaxNumberOfParticipants] = React.useState<number>(0);
     const [isEventPublic, setIsEventPublic] = React.useState<boolean>(true);
     const [createdByUserId, setCreatedByUserId] = React.useState<string>();
-    const [eventStatusId, setEventStatusId] = React.useState<number>(0);
+    const [eventStatusId, setEventStatusId] = React.useState<number>(EventStatusActive);
     const [eventTypeList, setEventTypeList] = React.useState<EventTypeData[]>([]);
     const [eventDateErrors, setEventDateErrors] = React.useState<string>("");
     const [eventTimeErrors, setEventTimeErrors] = React.useState<string>("");
     const [maxNumberOfParticipantsErrors, setMaxNumberOfParticipantsErrors] = React.useState<string>("");
     const [durationHoursErrors, setDurationHoursErrors] = React.useState<string>("");
     const [durationMinutesErrors, setDurationMinutesErrors] = React.useState<string>("");
-    const [latitudeErrors, setLatitudeErrors] = React.useState<string>("");
-    const [longitudeErrors, setLongitudeErrors] = React.useState<string>("");
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
@@ -203,30 +201,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         validateForm();
     }
 
-    function handleStreetAddressChanged(val: string) {
-        setStreetAddress(val);
-
-        validateForm();
-    }
-
-    function handleCityChanged(val: string) {
-        setCity(val);
-
-        validateForm();
-    }
-
-    function selectCountry(val: string) {
-        setCountry(val);
-
-        validateForm();
-    }
-
-    function handlePostalCodeChanged(val: string) {
-        setPostalCode(val);
-
-        validateForm();
-    }
-
     function handleMaxNumberOfParticipantsChanged(val: string) {
 
         try {
@@ -244,54 +218,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         }
         catch {
             setMaxNumberOfParticipantsErrors("Invalid value specified for Max Number of Participants.");
-        }
-
-        validateForm();
-    }
-
-    function handleLatitudeChanged(val: string) {
-        try {
-            if (val) {
-                var floatVal = parseFloat(val);
-
-                if (floatVal < -90 || floatVal > 90) {
-                    setLatitudeErrors("Latitude must be => -90 and <= 90");
-                }
-                else {
-                    setLatitude(floatVal);
-                    setLatitudeErrors("");
-                }
-            }
-            else {
-                setLatitudeErrors("Latitude must be => -90 and <= 90");
-            }
-        }
-        catch {
-            setLatitudeErrors("Invalid value specified for Latitude.");
-        }
-
-        validateForm();
-    }
-
-    function handleLongitudeChanged(val: string) {
-        try {
-            if (val) {
-                var floatVal = parseFloat(val);
-
-                if (floatVal < -180 || floatVal > 180) {
-                    setLongitudeErrors("Longitude must be >= -180 and <= 180");
-                }
-                else {
-                    setLongitude(floatVal);
-                    setLongitudeErrors("");
-                }
-            }
-            else {
-                setLongitudeErrors("Longitude must be >= -180 and <= 180");
-            }
-        }
-        catch {
-            setLongitudeErrors("Invalid value specified for Longitude.")
         }
 
         validateForm();
@@ -317,6 +243,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         setCountry(data.addresses[0].address.country);
                         setRegion(data.addresses[0].address.countrySubdivisionName);
                         setPostalCode(data.addresses[0].address.postalCode);
+                        validateForm();
                     })
             }
             )
@@ -399,10 +326,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.EventCountry}</Tooltip>
     }
 
-    // function renderRegionToolTip(props: any) {
-    //     return <Tooltip {...props}>{ToolTips.EventRegion}</Tooltip>
-    // }
-
     function renderPostalCodeToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.EventPostalCode}</Tooltip>
     }
@@ -442,7 +365,11 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     }
 
     function validateForm() {
-        if (eventName === "" || eventDateErrors !== "" || description === "" || durationHoursErrors !== "" || latitudeErrors !== "" || longitudeErrors !== "" || city === "") {
+        if (eventName === "" ||
+            eventDateErrors !== "" ||
+            description === "" ||
+            durationHoursErrors !== "" ||
+            region === "") {
             setIsSaveEnabled(false);
         }
         else {
@@ -658,7 +585,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
                                         <Form.Label className="control-label font-weight-bold h5" htmlFor="StreetAddress">Street Address</Form.Label>
                                     </OverlayTrigger>
-                                    <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="streetAddress" value={streetAddress} onChange={(val) => handleStreetAddressChanged(val.target.value)} maxLength={parseInt('256')} />
+                                    <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="streetAddress" value={streetAddress} />
                                 </Form.Group>
                             </Col>
                             <Col lg={4}>
@@ -666,7 +593,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     <OverlayTrigger placement="top" overlay={renderCityToolTip}>
                                         <Form.Label className="control-label font-weight-bold h5" htmlFor="City">City</Form.Label>
                                     </OverlayTrigger >
-                                    <Form.Control className='border-0 bg-light h-60 p-18' disabled type="text" name="city" value={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
+                                    <Form.Control className='border-0 bg-light h-60 p-18' disabled type="text" name="city" value={city} />
                                 </Form.Group>
                             </Col>
                             <Col lg={4}>
@@ -674,7 +601,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
                                         <Form.Label className="control-label font-weight-bold h5" htmlFor="PostalCode">Postal Code</Form.Label>
                                     </OverlayTrigger >
-                                    <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="postalCode" value={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
+                                    <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="postalCode" value={postalCode} />
                                 </Form.Group>
                             </Col>
                         </Form.Row>
@@ -684,7 +611,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
                                         <Form.Label className="control-label font-weight-bold h5" htmlFor="Country">Country</Form.Label>
                                     </OverlayTrigger >
-                                    <CountryDropdown disabled classes='bg-light border-0 p-18 h-60 w-100 rounded p-2' name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
+                                    <Form.Control type="text" className='border-0 bg-light h-60 p-18' name="country" value={country ?? ""} />
                                 </Form.Group>
                             </Col>
                             <Col lg={4}>
@@ -692,8 +619,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     <OverlayTrigger placement="top" overlay={renderLatitudeToolTip}>
                                         <Form.Label className="control-label font-weight-bold h5" htmlFor="Latitude">Latitude</Form.Label>
                                     </OverlayTrigger>
-                                    <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="latitude" value={latitude} onChange={(val) => handleLatitudeChanged(val.target.value)} />
-                                    <span style={{ color: "red" }}>{latitudeErrors}</span>
+                                    <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="latitude" value={latitude} />
                                 </Form.Group>
                             </Col>
                             <Col lg={4}>
@@ -701,11 +627,9 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     <OverlayTrigger placement="top" overlay={renderLongitudeToolTip}>
                                         <Form.Label className="control-label font-weight-bold h5" htmlFor="Longitude">Longitude</Form.Label>
                                     </OverlayTrigger >
-                                    <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="longitude" value={longitude} onChange={(val) => handleLongitudeChanged(val.target.value)} />
-                                    <span style={{ color: "red" }}>{longitudeErrors}</span>
+                                    <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="longitude" value={longitude} />
                                 </Form.Group>
                             </Col>
-
                         </Form.Row>
                         <Form.Row>
                             <Col>
@@ -717,29 +641,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         </Form.Row>
 
                     </Container>
-
-                    {/* <Form.Row>
-                        <Col>
-                            <Form.Group className="required">
-                                <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
-                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Region">Region</Form.Label>
-                                </OverlayTrigger >
-                                <div>
-                                    <RegionDropdown disabled
-                                        country={country ?? ""}
-                                        value={region ?? ""}
-                                        onChange={(val) => selectRegion(val)} />
-                                </div>
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-
-                    <Form.Row>
-                        <Form.Group>
-                            <Button disabled={!isSaveEnabled} type="submit" className="btn btn-default">Save</Button>
-                            <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
-                        </Form.Group>
-                    </Form.Row> */}
                 </Form >
             </div>
         )
