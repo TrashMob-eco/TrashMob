@@ -56,8 +56,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [maxNumberOfParticipantsErrors, setMaxNumberOfParticipantsErrors] = React.useState<string>("");
     const [durationHoursErrors, setDurationHoursErrors] = React.useState<string>("");
     const [durationMinutesErrors, setDurationMinutesErrors] = React.useState<string>("");
-    const [latitudeErrors, setLatitudeErrors] = React.useState<string>("");
-    const [longitudeErrors, setLongitudeErrors] = React.useState<string>("");
     const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
@@ -371,8 +369,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             eventDateErrors !== "" ||
             description === "" ||
             durationHoursErrors !== "" ||
-            latitudeErrors !== "" ||
-            longitudeErrors !== "" ||
             region === "") {
             setIsSaveEnabled(false);
         }
