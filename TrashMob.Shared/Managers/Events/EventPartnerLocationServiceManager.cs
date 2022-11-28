@@ -21,6 +21,7 @@
         private readonly IKeyedRepository<PartnerLocation> partnerLocationRepository;
         private readonly IBaseRepository<PartnerLocationService> partnerLocationServiceRepository;
         private readonly IKeyedRepository<User> userRepository;
+        private readonly IBaseRepository<PartnerAdmin> partnerAdminRepository;
         private readonly IEmailManager emailManager;
 
         public EventPartnerLocationServiceManager(IBaseRepository<EventPartnerLocationService> repository,
@@ -29,6 +30,7 @@
                                            IKeyedRepository<PartnerLocation> partnerLocationRepository,
                                            IBaseRepository<PartnerLocationService> partnerLocationServiceRepository,
                                            IKeyedRepository<User> userRepository,
+                                           IBaseRepository<PartnerAdmin> partnerAdminRepository,
                                            IEmailManager emailManager)
             : base(repository)
         {
@@ -37,6 +39,7 @@
             this.partnerLocationRepository = partnerLocationRepository;
             this.partnerLocationServiceRepository = partnerLocationServiceRepository;
             this.userRepository = userRepository;
+            this.partnerAdminRepository = partnerAdminRepository;
             this.emailManager = emailManager;
         }
 
@@ -184,6 +187,54 @@
                     };
 
                     displayEventPartners.Add(displayPartnerLocationEvent);
+                }
+            }
+
+            return displayEventPartners;
+        }
+
+        public async Task<IEnumerable<DisplayPartnerLocationServiceEvent>> GetByUserAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            var displayEventPartners = new List<DisplayPartnerLocationServiceEvent>();
+
+            // Get list of partners for a user
+            var partners = await partnerAdminRepository.Get(p => p.UserId == userId)
+                                                       .Include(p => p.Partner)
+                                                       .Select(p => p.Partner)
+                                                       .ToListAsync(cancellationToken);
+
+            foreach (var partner in partners)
+            {
+                var currentPartnerLocations = await Repository.Get(p => p.PartnerLocation.Partner.Id == partner.Id )
+                                                              .Include(p => p.PartnerLocation)
+                                                              .Include(p => p.Event)
+                                                              .ToListAsync(cancellationToken: cancellationToken);
+
+                if (currentPartnerLocations.Any())
+                {
+                    // Convert the current list of partner events for the event to a display partner (reduces round trips)
+                    foreach (var cpl in currentPartnerLocations)
+                    {
+                        var displayPartnerLocationEvent = new DisplayPartnerLocationServiceEvent
+                        {
+                            EventId = cpl.EventId,
+                            PartnerLocationId = cpl.PartnerLocationId,
+                            EventPartnerLocationStatusId = cpl.EventPartnerLocationServiceStatusId,
+                            PartnerName = partner.Name,
+                            PartnerLocationName = cpl.PartnerLocation.Name,
+                            EventName = cpl.Event.Name,
+                            EventStreetAddress = cpl.Event.StreetAddress,
+                            EventCity = cpl.Event.City,
+                            EventRegion = cpl.Event.Region,
+                            EventCountry = cpl.Event.Country,
+                            EventPostalCode = cpl.Event.PostalCode,
+                            EventDescription = cpl.Event.Description,
+                            EventDate = cpl.Event.EventDate,
+                            ServiceTypeId = cpl.ServiceTypeId,
+                        };
+
+                        displayEventPartners.Add(displayPartnerLocationEvent);
+                    }
                 }
             }
 

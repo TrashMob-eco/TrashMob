@@ -13,7 +13,7 @@ import { Table } from '../Table';
 import twofigure from '../assets/card/twofigure.svg';
 import calendarclock from '../assets/card/calendarclock.svg';
 import bucketplus from '../assets/card/bucketplus.svg';
-import { Eye, PersonX, Link as LinkIcon, Pencil } from 'react-bootstrap-icons';
+import { Eye, PersonX, Link as LinkIcon, Pencil, FileEarmarkCheck, CheckSquare, XSquare, ArrowRightSquare } from 'react-bootstrap-icons';
 import StatsData from '../Models/StatsData';
 import { PartnerStatusActive } from '../Models/Constants';
 import DisplayPartnershipData from '../Models/DisplayPartnershipData';
@@ -21,6 +21,8 @@ import { getDisplayPartnershipStatus } from '../../store/displayPartnershipStatu
 import PartnerRequestStatusData from '../Models/PartnerRequestStatusData';
 import PartnerStatusData from '../Models/PartnerStatusData';
 import DisplayPartnerAdminInvitationData from '../Models/DisplayPartnerAdminInvitationData';
+import { PartnerLocationEventRequests } from '../Partners/PartnerLocationEventRequests';
+import { Guid } from 'guid-typescript';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -350,7 +352,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const eventCompletedOwnerActionDropdownList = (eventId: string) => {
         return (
             <>
-                <Dropdown.Item href={'/eventsummary/' + eventId}><Pencil />Event Summary</Dropdown.Item>
+                <Dropdown.Item href={'/eventsummary/' + eventId}><FileEarmarkCheck />Event Summary</Dropdown.Item>
                 <Dropdown.Item href={'/manageeventdashboard/' + eventId}><Pencil />Manage event</Dropdown.Item>
                 <Dropdown.Item href={'/eventdetails/' + eventId}><Eye />View event</Dropdown.Item>
                 <Dropdown.Item onClick={() => handleCopyLink(eventId)}><LinkIcon />{copied ? 'Copied!' : 'Copy event link'}</Dropdown.Item>
@@ -361,15 +363,12 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const partnerAdminInvitationsActionDropdownList = (partnerAdminInvitationId: string) => {
         return (
             <>
-                <Dropdown.Item onClick={() => handleAcceptInvitation(partnerAdminInvitationId)}><LinkIcon />Accept Invitation</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleDeclineInvitation(partnerAdminInvitationId)}><LinkIcon />Decline Invitation</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleAcceptInvitation(partnerAdminInvitationId)}><CheckSquare />Accept Invitation</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleDeclineInvitation(partnerAdminInvitationId)}><XSquare />Decline Invitation</Dropdown.Item>
             </>
         )
     }
 
-    // TODO: update icons
-    //    <Dropdown.Item href={'/partnerRequestStatus/' + partnerRequestId}><Eye />View status</Dropdown.Item>
-    //    <Dropdown.Item href={'/contactus/' + partnerRequestId}><Pencil />Contact TrashMob</Dropdown.Item>
     const partnerRequestActionDropdownList = (partnerRequestId: string) => {
         return (
             <>
@@ -378,9 +377,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         )
     }
 
-    // TODO: update icons
-    //    <Dropdown.Item href={'/partnerviewupcomingevents/' + partnerId}><Eye />View upcoming events</Dropdown.Item>
-    //    <Dropdown.Item href={'/partnervieweventsummaries/' + partnerId}><Eye />View event summaries</Dropdown.Item>
     const activePartnerActionDropdownList = (partnerId: string) => {
         return (
             <>
@@ -389,11 +385,10 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         )
     }
 
-    // TODO: update icons
     const inactivePartnerActionDropdownList = (partnerId: string) => {
         return (
             <>
-                <Dropdown.Item href={'/partnerDashboard/' + partnerId}><Pencil />Reactivate partnership</Dropdown.Item>
+                <Dropdown.Item href={'/partnerDashboard/' + partnerId}><ArrowRightSquare />Reactivate partnership</Dropdown.Item>
             </>
         )
     }
@@ -703,6 +698,10 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                 <div className="mb-4 bg-white">
                     <p className="color-primary font-weight-bold pt-3">{'Partner Requests and Invitations Sent'} ({myPartnerRequests.length})</p>
                     <MyPartnerRequestsTable />
+                </div>
+                <div className="mb-4 bg-white">
+                    <p className="color-primary font-weight-bold pt-3">{'Partner Event Requests'}</p>
+                    <PartnerLocationEventRequests partnerLocationId={Guid.EMPTY} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
                 </div>
                 <div className="mb-4 bg-white">
                     <p className="color-primary font-weight-bold pt-3">{'Partner Admin Invitations Pending'} ({myPartnerAdminInvitations.length})</p>
