@@ -83,7 +83,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
                     });
             });
         }
-    }, [props.partnerLocationId, props.isUserLoaded])
+    }, [props.partnerLocationId, props.isUserLoaded, props.currentUser.id])
 
     function OnEventPartnerLocationsUpdated() {
         if (props.partnerLocationId && props.partnerLocationId !== Guid.EMPTY) {
