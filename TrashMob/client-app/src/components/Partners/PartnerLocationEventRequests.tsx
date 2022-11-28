@@ -1,6 +1,6 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
-import { Button } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as Constants from '../Models/Constants';
 import EventPartnerLocationServiceStatusData from '../Models/EventPartnerLocationServiceStatusData';
@@ -11,6 +11,7 @@ import { Guid } from 'guid-typescript';
 import DisplayPartnerLocationEventServiceData from '../Models/DisplayPartnerLocationEventServiceData';
 import ServiceTypeData from '../Models/ServiceTypeData';
 import { getServiceType } from '../../store/serviceTypeHelper';
+import { CheckSquare, XSquare } from 'react-bootstrap-icons';
 
 export interface PartnerLocationEventRequestsDataProps {
     partnerLocationId: string;
@@ -26,7 +27,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
     const [partnerLocationEvents, setPartnerLocationEvents] = React.useState<DisplayPartnerLocationEventData[]>([]);
 
     React.useEffect(() => {
-        if (props.isUserLoaded && props.partnerLocationId && props.partnerLocationId !== Guid.EMPTY) {
+        if (props.isUserLoaded && props.partnerLocationId) {
             const account = msalClient.getAllAccounts()[0];
 
             var request = {
@@ -47,14 +48,27 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
                         setEventPartnerStatusList(data)
                     })
                     .then(() => {
-                        fetch('/api/partnerlocationeventservices/' + props.partnerLocationId, {
-                            method: 'GET',
-                            headers: headers
-                        })
-                            .then(response => response.json() as Promise<DisplayPartnerLocationEventData[]>)
-                            .then(data => {
-                                setPartnerLocationEvents(data);
+                        if (props.partnerLocationId !== Guid.EMPTY) {
+                            fetch('/api/partnerlocationeventservices/' + props.partnerLocationId, {
+                                method: 'GET',
+                                headers: headers
                             })
+                                .then(response => response.json() as Promise<DisplayPartnerLocationEventData[]>)
+                                .then(data => {
+                                    setPartnerLocationEvents(data);
+                                })
+                        }
+                        else {
+                            fetch('/api/partnerlocationeventservices/getbyuser/' + props.currentUser.id, {
+                                method: 'GET',
+                                headers: headers
+                            })
+                                .then(response => response.json() as Promise<DisplayPartnerLocationEventData[]>)
+                                .then(data => {
+                                    setPartnerLocationEvents(data);
+                                })
+                        }
+
                     })
                     .then(() => {
                         fetch('/api/servicetypes/', {
@@ -69,7 +83,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
                     });
             });
         }
-    }, [props.partnerLocationId, props.isUserLoaded])
+    }, [props.partnerLocationId, props.isUserLoaded, props.currentUser.id])
 
     function OnEventPartnerLocationsUpdated() {
         if (props.partnerLocationId && props.partnerLocationId !== Guid.EMPTY) {
@@ -132,6 +146,15 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
         })
     }
 
+    const eventPartnerServiceRequestActionDropdownList = (partnerEvent: DisplayPartnerLocationEventServiceData) => {
+        return (
+            <>
+                <Dropdown.Item onClick={() => handleRequestPartnerAssistance(partnerEvent.eventId, partnerEvent.partnerLocationId, partnerEvent.serviceTypeId, Constants.EventPartnerLocationServiceStatusAccepted)}><CheckSquare />Accept Partner Assistance Request</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleRequestPartnerAssistance(partnerEvent.eventId, partnerEvent.partnerLocationId, partnerEvent.serviceTypeId, Constants.EventPartnerLocationServiceStatusDeclined)}><XSquare />Decline Partner Assistance Request</Dropdown.Item>
+            </>
+        )
+    }
+
     function renderPartnerLocationEventServicesTable(partnerLocationEventServices: DisplayPartnerLocationEventServiceData[]) {
         return (
             <div>
@@ -161,9 +184,13 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
                                 <td>{partnerEvent.eventDescription}</td>
                                 <td>{getServiceType(serviceTypeList, partnerEvent.serviceTypeId)}</td>
                                 <td>{getEventPartnerLocationServiceStatus(eventPartnerStatusList, partnerEvent.eventPartnerLocationStatusId)}</td>
-                                <td>
-                                    <Button hidden={partnerEvent.eventPartnerLocationStatusId === Constants.EventPartnerLocationServiceStatusAccepted} className="action" onClick={() => handleRequestPartnerAssistance(partnerEvent.eventId, partnerEvent.partnerLocationId, partnerEvent.serviceTypeId, Constants.EventPartnerLocationServiceStatusAccepted)}>Accept Partner Assistance Request</Button>
-                                    <Button hidden={partnerEvent.eventPartnerLocationStatusId === Constants.EventPartnerLocationServiceStatusDeclined} className="action" onClick={() => handleRequestPartnerAssistance(partnerEvent.eventId, partnerEvent.partnerLocationId, partnerEvent.serviceTypeId, Constants.EventPartnerLocationServiceStatusDeclined)}>Decline Partner Assistance Request</Button>
+                                <td className="btn py-0">
+                                    <Dropdown role="menuitem">
+                                        <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                        <Dropdown.Menu id="share-menu">
+                                            {eventPartnerServiceRequestActionDropdownList(partnerEvent)}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                 </td>
                             </tr>
                         )}
@@ -176,7 +203,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
     return (
         <>
             <div>
-                {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner location must be created first.</em></p>}
+                {/*{props.partnerLocationId === Guid.EMPTY && <p> <em>Partner location must be created first.</em></p>}*/}
                 {!isPartnerLocationEventDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
                 {isPartnerLocationEventDataLoaded && partnerLocationEvents.length === 0 && <p> <em>There are no event requests for this location.</em></p>}
                 {isPartnerLocationEventDataLoaded && partnerLocationEvents.length !== 0 && renderPartnerLocationEventServicesTable(partnerLocationEvents)}
