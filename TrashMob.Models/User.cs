@@ -148,5 +148,9 @@ namespace TrashMob.Models
         public virtual ICollection<Waiver> WaiverStatusesCreated { get; set; }
 
         public virtual ICollection<Waiver> WaiverStatusesUpdated { get; set; }
+
+        public virtual ICollection<PickupLocation> PickupLocationsCreated { get; set; }
+
+        public virtual ICollection<PickupLocation> PickupLocationsUpdated { get; set; }
     }
 }

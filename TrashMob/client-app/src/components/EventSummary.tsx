@@ -6,6 +6,7 @@ import * as ToolTips from "./../store/ToolTips";
 import EventSummaryData from './Models/EventSummaryData';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import EventData from './Models/EventData';
+import { PickupLocations } from './PickupLocations';
 
 export interface EventSummaryMatchParams {
     eventId: string;
@@ -77,7 +78,7 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
                     .catch((error) => {
                     });
             })
-            .catch((error) => {                
+            .catch((error) => {
             });
     }, [loadedEventId, props.currentUser.id]);
 
@@ -270,64 +271,84 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.PartnerRequestNotes}</Tooltip>
     }
 
-    return (
-        <div className="container-fluid card">
-            <h1>Event Summary</h1>
-            <h2>Name: {eventName}</h2>
-            <h3>Date: {eventDate.toLocaleDateString()}</h3>
+    function renderSummary() {
+        return (
+            <div className="container-fluid card">
+                <h1>Event Summary</h1>
+                <h2>Name: {eventName}</h2>
+                <h3>Date: {eventDate.toLocaleDateString()}</h3>
 
-            <Form onSubmit={handleSave} >
-                <Form.Row>
-                    <Col>
-                        <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderActualNumberOfAttendeesToolTip}>
-                                <Form.Label className="control-label">Actual Number of Attendees:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" disabled={!isOwner} value={actualNumberOfAttendees} maxLength={parseInt('3')} onChange={(val) => handleActualNumberOfAttendeesChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{actualNumberOfAttendeesErrors}</span>
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderNumberOfBagsToolTip}>
-                                <Form.Label className="control-label">Number of Bags:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" disabled={!isOwner} value={numberOfBags} maxLength={parseInt('3')} onChange={(val) => handleNumberOfBagsChanged(val.target.value)} />
-                            <span style={{ color: "red" }}>{numberOfBagsErrors}</span>
-                        </Form.Group >
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderNumberOfBucketsToolTip}>
-                                <Form.Label className="control-label">Number of Buckets:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" disabled={!isOwner} value={numberOfBuckets} maxLength={parseInt('3')} onChange={(val) => handleNumberOfBucketsChanged(val.target.value)} />
-                            <span style={{ color: "red" }}>{numberOfBucketsErrors}</span>
-                        </Form.Group >
-                    </Col>
-                    <Col>
-                        <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderDurationInMinutesToolTip}>
-                                <Form.Label className="control-label">Actual Duration in Minutes:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" disabled={!isOwner} value={durationInMinutes} maxLength={parseInt('3')} onChange={(val) => handleDurationInMinutesChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{durationInMinutesErrors}</span>
-                        </Form.Group >
-                    </Col>
-                </Form.Row>
-                <Form.Group>
-                    <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                        <Form.Label className="control-label">Notes:</Form.Label>
-                    </OverlayTrigger>
-                    <Form.Control as="textarea" disabled={!isOwner} defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} />
-                    <span style={{ color: "red" }}>{notesErrors}</span>
-                </Form.Group >
-                <Form.Group className="form-group">
-                    <Button disabled={!isSaveEnabled || !isOwner} type="submit" className="action btn-default">Save</Button>
-                </Form.Group >
-            </Form >
-        </div>
-    )
+                <Form onSubmit={handleSave} >
+                    <Form.Row>
+                        <Col>
+                            <Form.Group className="required">
+                                <OverlayTrigger placement="top" overlay={renderActualNumberOfAttendeesToolTip}>
+                                    <Form.Label className="control-label">Actual Number of Attendees:</Form.Label>
+                                </OverlayTrigger>
+                                <Form.Control type="text" disabled={!isOwner} value={actualNumberOfAttendees} maxLength={parseInt('3')} onChange={(val) => handleActualNumberOfAttendeesChanged(val.target.value)} required />
+                                <span style={{ color: "red" }}>{actualNumberOfAttendeesErrors}</span>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderNumberOfBagsToolTip}>
+                                    <Form.Label className="control-label">Number of Bags:</Form.Label>
+                                </OverlayTrigger>
+                                <Form.Control type="text" disabled={!isOwner} value={numberOfBags} maxLength={parseInt('3')} onChange={(val) => handleNumberOfBagsChanged(val.target.value)} />
+                                <span style={{ color: "red" }}>{numberOfBagsErrors}</span>
+                            </Form.Group >
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderNumberOfBucketsToolTip}>
+                                    <Form.Label className="control-label">Number of Buckets:</Form.Label>
+                                </OverlayTrigger>
+                                <Form.Control type="text" disabled={!isOwner} value={numberOfBuckets} maxLength={parseInt('3')} onChange={(val) => handleNumberOfBucketsChanged(val.target.value)} />
+                                <span style={{ color: "red" }}>{numberOfBucketsErrors}</span>
+                            </Form.Group >
+                        </Col>
+                        <Col>
+                            <Form.Group className="required">
+                                <OverlayTrigger placement="top" overlay={renderDurationInMinutesToolTip}>
+                                    <Form.Label className="control-label">Actual Duration in Minutes:</Form.Label>
+                                </OverlayTrigger>
+                                <Form.Control type="text" disabled={!isOwner} value={durationInMinutes} maxLength={parseInt('3')} onChange={(val) => handleDurationInMinutesChanged(val.target.value)} required />
+                                <span style={{ color: "red" }}>{durationInMinutesErrors}</span>
+                            </Form.Group >
+                        </Col>
+                    </Form.Row>
+                    <Form.Group>
+                        <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
+                            <Form.Label className="control-label">Notes:</Form.Label>
+                        </OverlayTrigger>
+                        <Form.Control as="textarea" disabled={!isOwner} defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} />
+                        <span style={{ color: "red" }}>{notesErrors}</span>
+                    </Form.Group >
+                    <Form.Group className="form-group">
+                        <Button disabled={!isSaveEnabled || !isOwner} type="submit" className="action btn-default">Save</Button>
+                    </Form.Group >
+                </Form >
+            </div>
+        );
+    }
+
+    function renderPickupLocations() {
+        return (
+            <div>
+                <PickupLocations eventId={loadedEventId} isUserLoaded={props.isUserLoaded} currentUser={props.currentUser} />
+            </div>
+        );
+    }
+
+    return (
+        <>
+            <div>
+                {renderSummary()}
+                {renderPickupLocations()}
+            </div>
+        </>
+    );
+
 }
 
 export default withRouter(EventSummary);

@@ -38,6 +38,8 @@
 
         public virtual DbSet<NonEventUserNotification> NonEventUserNotifications { get; set; }
 
+        public virtual DbSet<PartnerAdmin> PartnerAdmins { get; set; }
+
         public virtual DbSet<PartnerContact> PartnerContacts { get; set; }
 
         public virtual DbSet<PartnerDocument> PartnerDocuments { get; set; }
@@ -58,9 +60,9 @@
 
         public virtual DbSet<PartnerStatus> PartnerStatus { get; set; }
 
-        public virtual DbSet<PartnerAdmin> PartnerAdmins { get; set; }
-
         public virtual DbSet<PartnerType> PartnerTypes { get; set; }
+
+        public virtual DbSet<PickupLocation> PickupLocations { get; set; }
 
         public virtual DbSet<ServiceType> ServiceTypes { get; set; }
 
@@ -832,6 +834,54 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PartnerAdminInvitation_LastUpdatedByUser_Id");
+            });
+
+            modelBuilder.Entity<PickupLocation>(entity =>
+            {
+                entity.HasKey(e => new { e.Id });
+
+                entity.Property(e => e.EventId)
+                    .IsRequired();
+
+                entity.Property(e => e.Notes).HasMaxLength(2048);
+
+                entity.Property(e => e.Region)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.StreetAddress)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.PostalCode)
+                    .IsRequired()
+                    .HasMaxLength(25);
+
+                entity.Property(e => e.City)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.Country)
+                    .IsRequired()
+                    .HasMaxLength(64);
+
+                entity.HasOne(d => d.Event)
+                    .WithMany(d => d.PickupLocations)
+                    .HasForeignKey(d => d.EventId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_PickupLocations_Events");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.PickupLocationsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PickupLocations_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.PickupLocationsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PickupLocations_LastUpdatedByUser_Id");
             });
 
             modelBuilder.Entity<ServiceType>(entity =>
