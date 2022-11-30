@@ -36,7 +36,7 @@
             services.AddScoped<ILookupManager<PartnerStatus>, LookupManager<PartnerStatus>>();
             services.AddScoped<ILookupManager<PartnerType>, LookupManager<PartnerType>>();
             services.AddScoped<IBaseManager<PartnerAdmin>, PartnerAdminManager>();
-            services.AddScoped<IKeyedManager<PickupLocation>, KeyedManager<PickupLocation>>();
+            services.AddScoped<IKeyedManager<PickupLocation>, PickupLocationManager>();
             services.AddScoped<ILookupManager<ServiceType>, LookupManager<ServiceType>>();
             services.AddScoped<ILookupManager<SocialMediaAccountType>, LookupManager<SocialMediaAccountType>>();
             services.AddScoped<IKeyedManager<NonEventUserNotification>, KeyedManager<NonEventUserNotification>>();
