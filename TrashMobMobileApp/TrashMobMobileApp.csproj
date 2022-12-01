@@ -97,6 +97,7 @@
 	  <Compile Include="..\TrashMob.Models\PartnerSocialMediaAccount.cs" Link="Models\PartnerSocialMediaAccount.cs" />
 	  <Compile Include="..\TrashMob.Models\PartnerStatus.cs" Link="Models\PartnerStatus.cs" />
 	  <Compile Include="..\TrashMob.Models\PartnerType.cs" Link="Models\PartnerType.cs" />
+	  <Compile Include="..\TrashMob.Models\PickupLocation.cs" Link="Models\PickupLocation.cs" />
 	  <Compile Include="..\TrashMob.Models\ServiceType.cs" Link="Models\ServiceType.cs" />
 	  <Compile Include="..\TrashMob.Models\SiteMetric.cs" Link="Models\SiteMetric.cs" />
 	  <Compile Include="..\TrashMob.Models\SocialMediaAccountType.cs" Link="Models\SocialMediaAccountType.cs" />
