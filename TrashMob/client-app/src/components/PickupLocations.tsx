@@ -115,10 +115,6 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.PickupLocationPostalCode}</Tooltip>
     }
 
-    function renderHasBeenPickedUpToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PickupLocationHasBeenPickedUp}</Tooltip>
-    }
-
     function renderNotesToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PickupLocationNotes}</Tooltip>
     }
@@ -232,6 +228,16 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
             })
                 .then(response => response.json() as Promise<PartnerLocationData>)
                 .then(() => {
+                    fetch('/api/pickuplocations/' + props.eventId, {
+                        method: 'GET',
+                        headers: headers
+                    })
+                        .then(response => response.json() as Promise<PickupLocationData[]>)
+                        .then(data => {
+                            resetForm();
+                            setPickupLocationsData(data);
+                            setIsPickupLocationsDataLoaded(true);
+                        })
                 });
         });
     }
@@ -256,7 +262,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                         setCountry(data.addresses[0].address.country);
                         setRegion(data.addresses[0].address.countrySubdivisionName);
                         setPostalCode(data.addresses[0].address.postalCode);
-                        validateForm();
+                        setIsSaveEnabled(true);
                     })
             })
     }
@@ -305,6 +311,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         resetForm();
         setIsEditOrAdd(false);
         setIsAddEnabled(true);
+        setIsSaveEnabled(false);
     }
 
     function resetForm() {
@@ -333,6 +340,8 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                             <th>Street Address</th>
                             <th>City</th>
                             <th>Has Been Picked Up</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -340,6 +349,8 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                             <tr key={location.id}>
                                 <td>{location.streetAddress}</td>
                                 <td>{location.city}</td>
+                                <td>{location.hasBeenPickedUp ? 'Yes' : 'No'}</td>
+                                <td>{location.notes}</td>
                                 <td>
                                     <Button className="action" onClick={() => editPickupLocation(location.id)}>Edit Location</Button>
                                     <Button className="action" onClick={() => removePickupLocation(location.id)}>Remove Location</Button>
@@ -356,21 +367,13 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
     function renderEditLocation() {
         return (
             <div>
-                <p>
-                    This page allows you set up a new partner location, or edit an existing one. 
-                </p>
                 <Form onSubmit={handleSave}>
                     <Form.Row>
                         <input type="hidden" name="Id" value={pickupLocationId} />
                     </Form.Row>
-                    <Button disabled={!isSaveEnabled} type="submit" className="btn btn-default">Save</Button>
-                    <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
                     <Form.Row>
                         <Col>
                             <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderHasBeenPickedUpToolTip}>
-                                    <Form.Label className="control-label" htmlFor="HasBeenPickedUp">Has Been Picked Up:</Form.Label>
-                                </OverlayTrigger >
                                 <ToggleButton
                                     type="checkbox"
                                     variant="outline-dark"
@@ -378,7 +381,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                                     value="1"
                                     onChange={(e) => handleHasBeenPickedUpChanged(e.currentTarget.checked)}
                                 >
-                                    Is Active
+                                    Has Been Picked Up
                                 </ToggleButton>
                             </Form.Group>
                         </Col>
@@ -393,7 +396,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group className="required">
+                            <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderCityToolTip}>
                                     <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
                                 </OverlayTrigger >
@@ -411,7 +414,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                     </Form.Row>
                     <Form.Row>
                         <Col>
-                            <Form.Group className="required">
+                            <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
                                     <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
                                 </OverlayTrigger >
@@ -419,7 +422,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group className="required">
+                            <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
                                     <Form.Label className="control-label" htmlFor="Region">Region:</Form.Label>
                                 </OverlayTrigger >
@@ -427,12 +430,14 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                             </Form.Group>
                         </Col>
                     </Form.Row>
-                    <Form.Group className="required">
+                    <Form.Group>
                         <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
                             <Form.Label className="control-label">Notes:</Form.Label>
                         </OverlayTrigger>
                         <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} />
                     </Form.Group >
+                    <Button disabled={!isSaveEnabled} type="submit" className="btn btn-default">Save</Button>
+                    <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
                     <Form.Row>
                         <Form.Label>Click on the map to set the location for pickup. The location fields above will be automatically populated.</Form.Label>
                     </Form.Row>

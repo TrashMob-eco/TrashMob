@@ -29,7 +29,10 @@
                 return;
             }
 
-            httpContext.HttpContext.Items.Add("UserId", user.Id);
+            if (!httpContext.HttpContext.Items.ContainsKey("UserId"))
+            {
+                httpContext.HttpContext.Items.Add("UserId", user.Id);
+            }
 
             if (user.IsSiteAdmin)
             {

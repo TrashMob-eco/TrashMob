@@ -334,7 +334,7 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
 
     function renderPickupLocations() {
         return (
-            <div>
+            <div className="container-fluid card">
                 <PickupLocations eventId={loadedEventId} isUserLoaded={props.isUserLoaded} currentUser={props.currentUser} />
             </div>
         );

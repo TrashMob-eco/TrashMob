@@ -51,7 +51,7 @@
         [HttpPost]
         public override async Task<IActionResult> Add(PickupLocation instance, CancellationToken cancellationToken)
         {
-            var mobEvent = eventManager.GetAsync(instance.EventId, cancellationToken);
+            var mobEvent = await eventManager.GetAsync(instance.EventId, cancellationToken);
 
             var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, "UserOwnsEntity");
 
@@ -60,11 +60,11 @@
                 return Forbid();
             }
 
-            await Manager.AddAsync(instance, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await Manager.AddAsync(instance, UserId, cancellationToken).ConfigureAwait(false);
 
             TelemetryClient.TrackEvent("AddPickupLocation");
 
-            return Ok();
+            return Ok(result);
         }
     }
 }
