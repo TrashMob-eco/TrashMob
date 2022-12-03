@@ -56,6 +56,7 @@
             services.AddScoped<IPartnerLocationManager, PartnerLocationManager>();
             services.AddScoped<IPartnerLocationContactManager, PartnerLocationContactManager>();
             services.AddScoped<IPartnerSocialMediaAccountManager, PartnerSocialMediaAccountManager>();
+            services.AddScoped<IPickupLocationManager, PickupLocationManager>();
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IWaiverManager, WaiverManager>();
 
