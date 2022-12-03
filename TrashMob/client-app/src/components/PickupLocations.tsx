@@ -1,6 +1,6 @@
 import * as React from 'react'
 import UserData from './Models/UserData';
-import { Button, Col, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
+import { Button, Col, Dropdown, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from './../store/AuthStore';
 import * as ToolTips from ".././store/ToolTips";
 import PartnerLocationData from './Models/PartnerLocationData';
@@ -11,6 +11,7 @@ import { Guid } from 'guid-typescript';
 import AddressData from './Models/AddressData';
 import MapControllerSinglePointNoEvent from './MapControllerSinglePointNoEvent';
 import PickupLocationData from './Models/PickupLocationData';
+import { Pencil, XSquare } from 'react-bootstrap-icons';
 
 export interface PickupLocationsDataProps {
     eventId: string;
@@ -23,6 +24,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
     const [pickupLocationId, setPickupLocationId] = React.useState<string>(Guid.EMPTY) 
     const [notes, setNotes] = React.useState<string>("");
     const [hasBeenPickedUp, setHasBeenPickedUp] = React.useState<boolean>(true);
+    const [hasBeenSubmitted, setHasBeenSubmitted] = React.useState<boolean>(false);
     const [streetAddress, setStreetAddress] = React.useState<string>("");
     const [city, setCity] = React.useState<string>("");
     const [country, setCountry] = React.useState<string>("");
@@ -40,6 +42,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
     const [pickupLocationsData, setPickupLocationsData] = React.useState<PickupLocationData[]>([]);
     const [isPickupLocationsDataLoaded, setIsPickupLocationsDataLoaded] = React.useState<boolean>(false);
     const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
+    const [isSubmitEnabled, setIsSubmitEnabled] = React.useState<boolean>(false);
     const [isEditOrAdd, setIsEditOrAdd] = React.useState<boolean>(false);
 
 
@@ -66,6 +69,10 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                     .then(data => {
                         setPickupLocationsData(data);
                         setIsPickupLocationsDataLoaded(true);
+
+                        if (data.some(pl => pl.hasBeenSubmitted === false)) {
+                            setIsSubmitEnabled(true);
+                        }
                     });
             });
         }
@@ -171,6 +178,46 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                                 resetForm();
                                 setPickupLocationsData(data);
                                 setIsPickupLocationsDataLoaded(true);
+
+                                if (data.some(pl => !pl.hasBeenSubmitted)) {
+                                    setIsSubmitEnabled(true);
+                                }
+                            })
+                    });
+            });
+        }
+    }
+
+    function submitPickupLocations() {
+        if (!window.confirm("Please confirm that you want to submit these pickup locations? Once submitted, they cannot be updated."))
+            return;
+        else {
+            const account = msalClient.getAllAccounts()[0];
+
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = getDefaultHeaders('POST');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                fetch('/api/pickuplocations/submit' + props.eventId, {
+                    method: 'POST',
+                    headers: headers,
+                })
+                    .then(() => {
+                        fetch('/api/pickuplocations/' + props.eventId, {
+                            method: 'GET',
+                            headers: headers
+                        })
+                            .then(response => response.json() as Promise<PickupLocationData[]>)
+                            .then(data => {
+                                resetForm();
+                                setPickupLocationsData(data);
+                                setIsPickupLocationsDataLoaded(true);
+                                setIsSubmitEnabled(false);
                             })
                     });
             });
@@ -197,6 +244,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         partnerLocationData.postalCode = postalCode ?? "";
         partnerLocationData.latitude = latitude ?? 0;
         partnerLocationData.longitude = longitude ?? 0;
+        partnerLocationData.hasBeenSubmitted = hasBeenSubmitted;
         partnerLocationData.hasBeenPickedUp = hasBeenPickedUp;
         partnerLocationData.notes = notes ?? "";
         partnerLocationData.createdByUserId = createdByUserId ?? props.currentUser.id;
@@ -237,6 +285,10 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                             resetForm();
                             setPickupLocationsData(data);
                             setIsPickupLocationsDataLoaded(true);
+
+                            if (data.some(pl => pl.hasBeenSubmitted === false)) {
+                                setIsSubmitEnabled(true);
+                            }
                         })
                 });
         });
@@ -294,6 +346,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                     setLatitude(data.latitude);
                     setLongitude(data.longitude);
                     setHasBeenPickedUp(data.hasBeenPickedUp);
+                    setHasBeenSubmitted(data.hasBeenSubmitted);
                     setNotes(data.notes);
                     setCreatedByUserId(data.createdByUserId);
                     setCreatedDate(new Date(data.createdDate));
@@ -303,7 +356,6 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                 });
         });
     }
-
 
     // This will handle Cancel button click event.
     function handleCancel(event: any) {
@@ -330,16 +382,26 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         setLastUpdatedDate(new Date());
     }
 
+    const pickupLocationActionDropdownList = (locationId: string) => {
+        return (
+            <>
+                <Dropdown.Item onClick={() => editPickupLocation(locationId)}><Pencil />Edit Location</Dropdown.Item>
+                <Dropdown.Item onClick={() => removePickupLocation(locationId)}><XSquare />Remove Location</Dropdown.Item>
+            </>
+        )
+    }
+
     function renderLocationsTable(locations: PickupLocationData[]) {
         return (
             <div>
-                <h1>Pickup Locations</h1>
+                <h2 className="color-primary mt-4 mb-5">Pickup Locations</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
                             <th>Street Address</th>
                             <th>City</th>
-                            <th>Has Been Picked Up</th>
+                            <th>Submitted?</th>
+                            <th>Picked Up?</th>
                             <th>Notes</th>
                             <th>Actions</th>
                         </tr>
@@ -349,24 +411,29 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                             <tr key={location.id}>
                                 <td>{location.streetAddress}</td>
                                 <td>{location.city}</td>
+                                <td>{location.hasBeenSubmitted ? 'Yes' : 'No'}</td>
                                 <td>{location.hasBeenPickedUp ? 'Yes' : 'No'}</td>
                                 <td>{location.notes}</td>
-                                <td>
-                                    <Button className="action" onClick={() => editPickupLocation(location.id)}>Edit Location</Button>
-                                    <Button className="action" onClick={() => removePickupLocation(location.id)}>Remove Location</Button>
+                                <td className="btn py-0">
+                                    <Dropdown role="menuitem">
+                                        <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                        <Dropdown.Menu id="share-menu">
+                                            {pickupLocationActionDropdownList(location.id)}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                 </td>
                             </tr>
                         )}
                     </tbody>
                 </table>
                 <Button disabled={!isAddEnabled} className="action" onClick={() => addPickupLocation()}>Add a pickup location</Button>
+                <Button disabled={!isSubmitEnabled} className="action" onClick={() => submitPickupLocations()}>Submit locations</Button>
             </div>
         );
     }
 
     function renderEditLocation() {
         return (
-            <div>
                 <Form onSubmit={handleSave}>
                     <Form.Row>
                         <input type="hidden" name="Id" value={pickupLocationId} />
@@ -381,10 +448,22 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                                     value="1"
                                     onChange={(e) => handleHasBeenPickedUpChanged(e.currentTarget.checked)}
                                 >
-                                    Has Been Picked Up
+                                    Picked Up?
                                 </ToggleButton>
                             </Form.Group>
                         </Col>
+                    <Col>
+                        <Form.Group>
+                            <ToggleButton
+                                type="checkbox"
+                                variant="outline-dark"
+                                checked={hasBeenSubmitted}
+                                value="1"
+                            >
+                                Submitted?
+                            </ToggleButton>
+                        </Form.Group>
+                    </Col>
                     </Form.Row>
                     <Form.Row>
                         <Col>
@@ -392,7 +471,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                                 <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
                                     <Form.Label className="control-label font-weight-bold h5" htmlFor="StreetAddress">Street Address</Form.Label>
                                 </OverlayTrigger>
-                                <span>{streetAddress}</span>
+                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="streetAddress" value={streetAddress} />
                             </Form.Group>
                         </Col>
                         <Col>
@@ -400,7 +479,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                                 <OverlayTrigger placement="top" overlay={renderCityToolTip}>
                                     <Form.Label className="control-label font-weight-bold h5" htmlFor="City">City</Form.Label>
                                 </OverlayTrigger >
-                                <span>{city}</span>
+                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="city" value={city} />
                             </Form.Group>
                         </Col>
                         <Col>
@@ -408,25 +487,25 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                                 <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
                                     <Form.Label className="control-label font-weight-bold h5" htmlFor="PostalCode">Postal Code</Form.Label>
                                 </OverlayTrigger >
-                                <span>{postalCode}</span>
+                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="postalCode" value={postalCode} />
                             </Form.Group>
                         </Col>
                     </Form.Row>
                     <Form.Row>
                         <Col>
                             <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
-                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Country">Country</Form.Label>
+                                <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Region">Region</Form.Label>
                                 </OverlayTrigger >
-                                <span>{country}</span>
+                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="region" value={region} />
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
-                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Region">Region</Form.Label>
+                                <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Country">Country</Form.Label>
                                 </OverlayTrigger >
-                                <span>{region}</span>
+                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="country" value={country} />
                             </Form.Group>
                         </Col>
                     </Form.Row>
@@ -434,7 +513,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                         <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
                             <Form.Label className="control-label font-weight-bold h5">Notes:</Form.Label>
                         </OverlayTrigger>
-                        <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} />
+                        <Form.Control as="textarea" className='border-0 bg-light h-60 p-18' defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} />
                     </Form.Group >
                     <Button disabled={!isSaveEnabled} type="submit" className="btn btn-default">Save</Button>
                     <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
@@ -454,7 +533,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                                 <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
                                     <Form.Label className="control-label font-weight-bold h5" htmlFor="createdDate">Created Date</Form.Label>
                                 </OverlayTrigger>
-                                <span>{createdDate ? createdDate.toLocaleString() : ""}</span>
+                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="createdDate" value={createdDate ? createdDate.toLocaleString() : ""} />
                             </Form.Group>
                         </Col>
                         <Col>
@@ -462,13 +541,11 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                                 <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
                                     <Form.Label className="control-label font-weight-bold h5" htmlFor="lastUpdatedDate">Last Updated Date</Form.Label>
                                 </OverlayTrigger>
-                                <span>{lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""}</span>
+                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="lastUpdatedDate" value={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
                             </Form.Group>
                         </Col>
                     </Form.Row>
-
                 </Form>
-            </div>
         );
     }
 

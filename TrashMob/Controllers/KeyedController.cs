@@ -3,12 +3,10 @@
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
-    using TrashMob.Shared.Managers.Events;
     using TrashMob.Shared.Managers.Interfaces;
 
     public abstract class KeyedController<T> : SecureController where T : KeyedModel

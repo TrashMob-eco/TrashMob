@@ -22,6 +22,8 @@ namespace TrashMob.Models
 
         public double? Longitude { get; set; }
 
+        public bool HasBeenSubmitted { get; set; }
+
         public bool HasBeenPickedUp { get; set; }
 
         public string Notes { get; set; } = "";

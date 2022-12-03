@@ -11,11 +11,13 @@
     [Route("api/pickuplocations")]
     public class PickupLocationsController : KeyedController<PickupLocation>
     {
+        private readonly IPickupLocationManager pickupLocationManager;
         private readonly IEventManager eventManager;
 
-        public PickupLocationsController(IKeyedManager<PickupLocation> pickupLocationManager, IEventManager eventManager) 
+        public PickupLocationsController(IPickupLocationManager pickupLocationManager, IEventManager eventManager) 
             : base(pickupLocationManager)
         {
+            this.pickupLocationManager = pickupLocationManager;
             this.eventManager = eventManager;
         }
 
@@ -65,6 +67,25 @@
             TelemetryClient.TrackEvent("AddPickupLocation");
 
             return Ok(result);
+        }
+
+        [HttpPost("submit/{eventId}")]
+        public async Task<IActionResult> SubmitPickupLocations(Guid eventId, CancellationToken cancellationToken)
+        {
+            var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
+
+            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, "UserOwnsEntity");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            await pickupLocationManager.SubmitPickupLocations(eventId, UserId, cancellationToken).ConfigureAwait(false);
+
+            TelemetryClient.TrackEvent("SubmitPickupLocations");
+
+            return Ok();
         }
     }
 }
