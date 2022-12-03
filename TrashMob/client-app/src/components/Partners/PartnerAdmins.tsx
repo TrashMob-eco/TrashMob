@@ -373,7 +373,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderPartnerUserNameToolTip}>
-                                    <Form.Label className="control-label" htmlFor="UserName">Enter the Email to Send Invitation to:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="UserName">Enter the Email to Send Invitation to</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="userEmail" defaultValue={userEmail} onChange={val => handleUserEmailChanged(val.target.value)} maxLength={parseInt('64')} required />
                             </Form.Group>

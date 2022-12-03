@@ -157,7 +157,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
 
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderNameToolTip}>
-                                    <Form.Label className="control-label">Name</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5">Name</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required placeholder="Enter Name" />
                                 <span style={{ color: "red" }}>{nameErrors}</span>
@@ -165,7 +165,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
 
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
-                                    <Form.Label className="control-label">Email</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5">Email</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required placeholder="Enter Email" />
                                 <span style={{ color: "red" }}>{emailErrors}</span>
@@ -173,7 +173,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
 
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderMessageToolTip}>
-                                    <Form.Label className="control-label">Message</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5">Message</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control as="textarea" defaultValue={message} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleMessageChanged(val.target.value)} required placeholder="Enter Message" />
                                 <span style={{ color: "red" }}>{messageErrors}</span>
@@ -182,7 +182,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
                                 <LoadCanvasTemplateNoReload className="border" />
                             </Form.Group>
                             <Form.Group className="required">
-                                <Form.Label className="control-label">CAPTCHA Value</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5">CAPTCHA Value</Form.Label>
                                 <Form.Control type="text" required name="user_captcha_input" placeholder="Enter Captcha" />
                             </Form.Group >
                             <Form.Group className="form-group d-flex justify-content-end">

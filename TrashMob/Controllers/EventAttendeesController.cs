@@ -26,7 +26,6 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("{eventId}")]
-        [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetEventAttendees(Guid eventId)
         {            
             var result = (await eventAttendeeManager.GetByParentIdAsync(eventId, CancellationToken.None).ConfigureAwait(false)).Select(u => u.User.ToDisplayUser());

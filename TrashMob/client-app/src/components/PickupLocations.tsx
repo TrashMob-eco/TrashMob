@@ -390,7 +390,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
-                                    <Form.Label className="control-label" htmlFor="StreetAddress">Street Address:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="StreetAddress">Street Address</Form.Label>
                                 </OverlayTrigger>
                                 <span>{streetAddress}</span>
                             </Form.Group>
@@ -398,7 +398,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderCityToolTip}>
-                                    <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="City">City</Form.Label>
                                 </OverlayTrigger >
                                 <span>{city}</span>
                             </Form.Group>
@@ -406,7 +406,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                    <Form.Label className="control-label" htmlFor="PostalCode">Postal Code:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="PostalCode">Postal Code</Form.Label>
                                 </OverlayTrigger >
                                 <span>{postalCode}</span>
                             </Form.Group>
@@ -416,7 +416,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
-                                    <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Country">Country</Form.Label>
                                 </OverlayTrigger >
                                 <span>{country}</span>
                             </Form.Group>
@@ -424,7 +424,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
-                                    <Form.Label className="control-label" htmlFor="Region">Region:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Region">Region</Form.Label>
                                 </OverlayTrigger >
                                 <span>{region}</span>
                             </Form.Group>
@@ -432,7 +432,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                     </Form.Row>
                     <Form.Group>
                         <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                            <Form.Label className="control-label">Notes:</Form.Label>
+                            <Form.Label className="control-label font-weight-bold h5">Notes:</Form.Label>
                         </OverlayTrigger>
                         <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} />
                     </Form.Group >
@@ -452,7 +452,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
-                                    <Form.Label className="control-label" htmlFor="createdDate">Created Date:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="createdDate">Created Date</Form.Label>
                                 </OverlayTrigger>
                                 <span>{createdDate ? createdDate.toLocaleString() : ""}</span>
                             </Form.Group>
@@ -460,7 +460,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
-                                    <Form.Label className="control-label" htmlFor="lastUpdatedDate">Last Updated Date:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="lastUpdatedDate">Last Updated Date</Form.Label>
                                 </OverlayTrigger>
                                 <span>{lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""}</span>
                             </Form.Group>

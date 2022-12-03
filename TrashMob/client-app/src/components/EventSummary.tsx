@@ -283,7 +283,7 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderActualNumberOfAttendeesToolTip}>
-                                    <Form.Label className="control-label">Actual Number of Attendees:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5">Actual Number of Attendees</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" disabled={!isOwner} value={actualNumberOfAttendees} maxLength={parseInt('3')} onChange={(val) => handleActualNumberOfAttendeesChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{actualNumberOfAttendeesErrors}</span>
@@ -292,7 +292,7 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderNumberOfBagsToolTip}>
-                                    <Form.Label className="control-label">Number of Bags:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5">Number of Bags</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" disabled={!isOwner} value={numberOfBags} maxLength={parseInt('3')} onChange={(val) => handleNumberOfBagsChanged(val.target.value)} />
                                 <span style={{ color: "red" }}>{numberOfBagsErrors}</span>
@@ -301,7 +301,7 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderNumberOfBucketsToolTip}>
-                                    <Form.Label className="control-label">Number of Buckets:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5">Number of Buckets</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" disabled={!isOwner} value={numberOfBuckets} maxLength={parseInt('3')} onChange={(val) => handleNumberOfBucketsChanged(val.target.value)} />
                                 <span style={{ color: "red" }}>{numberOfBucketsErrors}</span>
@@ -310,7 +310,7 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderDurationInMinutesToolTip}>
-                                    <Form.Label className="control-label">Actual Duration in Minutes:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5">Actual Duration in Minutes</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" disabled={!isOwner} value={durationInMinutes} maxLength={parseInt('3')} onChange={(val) => handleDurationInMinutesChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{durationInMinutesErrors}</span>
@@ -319,7 +319,7 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
                     </Form.Row>
                     <Form.Group>
                         <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                            <Form.Label className="control-label">Notes:</Form.Label>
+                            <Form.Label className="control-label font-weight-bold h5">Notes</Form.Label>
                         </OverlayTrigger>
                         <Form.Control as="textarea" disabled={!isOwner} defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} />
                         <span style={{ color: "red" }}>{notesErrors}</span>

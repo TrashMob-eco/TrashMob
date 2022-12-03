@@ -369,7 +369,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderNameToolTip}>
-                                    <Form.Label className="control-label">Contact Name:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5">Contact Name</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{nameErrors}</span>
@@ -378,7 +378,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
-                                    <Form.Label className="control-label">Email:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5">Email</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{emailErrors}</span>
@@ -387,7 +387,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderPhoneToolTip}>
-                                    <Form.Label className="control-label">Phone:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5">Phone</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={phone} maxLength={parseInt('64')} onChange={(val) => handlePhoneChanged(val.target.value)} />
                                 <span style={{ color: "red" }}>{phoneErrors}</span>
@@ -396,7 +396,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                     </Form.Row>
                     <Form.Group className="required">
                         <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                            <Form.Label className="control-label">Notes:</Form.Label>
+                            <Form.Label className="control-label font-weight-bold h5">Notes</Form.Label>
                         </OverlayTrigger>
                         <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} required />
                         <span style={{ color: "red" }}>{notesErrors}</span>
@@ -408,7 +408,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                     <Form.Group className="form-group">
                         <Col>
                             <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
-                                <Form.Label className="control-label">Created Date:</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5">Created Date</Form.Label>
                             </OverlayTrigger>
                            <Form.Group>
                                 <Form.Control type="text" disabled defaultValue={createdDate ? createdDate.toLocaleString() : ""} />
@@ -416,7 +416,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                         </Col>
                         <Col>
                             <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
-                                <Form.Label className="control-label">Last Updated Date:</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5">Last Updated Date</Form.Label>
                             </OverlayTrigger>
                             <Form.Group>
                                 <Form.Control type="text" disabled defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />

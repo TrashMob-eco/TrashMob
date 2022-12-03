@@ -222,14 +222,14 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                     <p><Stopwatch size={24} className="mr-2" /><span className='color-grey'> {moment(startDateTime).local().format('LT')}</span></p>
                     <p><GeoAlt size={24} className="mr-2" /><a href={`https://google.com/maps/place/${streetAddress}+${city}+${region}+${postalCode}+${country}`} target="_blank" rel="noopener noreferrer">{streetAddress}, {city}, {region} - {postalCode} {country}</a></p>
                     <div className="d-flex align-items-center">
-                        <h5 className="font-weight-bold m-0 mr-2">Latitude:</h5>
+                        <h5 className="font-weight-bold m-0 mr-2">Latitude</h5>
                         <span className="mr-5 color-grey p-18">{latitude}</span>
-                        <h5 className="font-weight-bold m-0 mr-2">Longitude:</h5>
+                        <h5 className="font-weight-bold m-0 mr-2">Longitude</h5>
                         <span className='color-grey p-18'>{longitude}</span>
                     </div>
 
                     <div hidden={maxNumberOfParticipants === 0} className="my-4">
-                        <h5 className="font-weight-bold m-0 mr-2">Max Number of Participants:</h5>
+                        <h5 className="font-weight-bold m-0 mr-2">Max Number of Participants</h5>
                         <span className="mr-5 color-grey p-18">{maxNumberOfParticipants}</span>
                     </div>
                 </Container>

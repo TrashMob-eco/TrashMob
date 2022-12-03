@@ -297,7 +297,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderDocumentNameToolTip}>
-                                    <Form.Label className="control-label" htmlFor="DocumentName">Document Name</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="DocumentName">Document Name</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="DocumentName" defaultValue={documentName} onChange={val => handleDocumentNameChanged(val.target.value)} maxLength={parseInt('64')} required />
                             </Form.Group>
@@ -305,7 +305,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderDocumentUrlToolTip}>
-                                    <Form.Label className="control-label" htmlFor="DocumentUrl">DocumentUrl</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="DocumentUrl">DocumentUrl</Form.Label>
                                 </OverlayTrigger>
                                 <div>
                                     <Form.Control type="text" name="DocumentUrl" defaultValue={documentUrl} onChange={val => handleDocumentUrlChanged(val.target.value)} maxLength={parseInt('64')} required />
@@ -320,7 +320,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
                     <Form.Group className="form-group">
                         <Col>
                             <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
-                                <Form.Label className="control-label">Created Date:</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5">Created Date</Form.Label>
                             </OverlayTrigger>
                             <Form.Group>
                                 <Form.Control type="text" disabled defaultValue={createdDate ? createdDate.toLocaleString() : ""} />
@@ -328,7 +328,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
                         </Col>
                         <Col>
                             <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
-                                <Form.Label className="control-label">Last Updated Date:</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5">Last Updated Date</Form.Label>
                             </OverlayTrigger>
                             <Form.Group>
                                 <Form.Control type="text" disabled defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />

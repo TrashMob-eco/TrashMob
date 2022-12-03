@@ -455,7 +455,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                             <Col lg={6}>
                                 <Form.Group className="required">
                                     <OverlayTrigger placement="top" overlay={renderUserNameToolTip}>
-                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="UserName">User Name:</Form.Label>
+                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="UserName">User Name</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" className='border-0 bg-light p-18 h-60' name="userName" defaultValue={userName} onChange={(val) => handleUserNameChanged(val.target.value)} maxLength={parseInt('32')} required />
                                     <span style={{ color: "red" }}>{userNameErrors}</span>
@@ -567,7 +567,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                             <Col lg={6}>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="PostalCode">Postal Code:</Form.Label>
+                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="PostalCode">Postal Code</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" className='border-0 bg-light p-18 h-60' disabled name="postalCode" defaultValue={postalCode} />
                                 </Form.Group>
