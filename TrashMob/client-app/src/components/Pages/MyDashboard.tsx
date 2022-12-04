@@ -567,7 +567,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 
     const MyPickupRequestsTable = () => {
         const headerTitles = ['Street Address', 'City', 'Notes', 'Actions']
-        if (myPickupRequests) {
+        if (isPickupRequestsDataLoaded && myPickupRequests) {
             return (
                 <div className="bg-white p-3 px-4">
                     <Table columnHeaders={headerTitles} >
