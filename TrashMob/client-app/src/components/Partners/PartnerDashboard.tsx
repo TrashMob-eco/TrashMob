@@ -4,7 +4,7 @@ import UserData from '../Models/UserData';
 import { PartnerEdit } from './PartnerEdit';
 import { PartnerAdmins } from './PartnerAdmins';
 import { PartnerLocations } from './PartnerLocations';
-import { ButtonGroup, ToggleButton } from 'react-bootstrap';
+import { ButtonGroup, Col, Container, Row, ToggleButton } from 'react-bootstrap';
 import { Guid } from 'guid-typescript';
 import { PartnerDocuments } from './PartnerDocuments';
 import { PartnerSocialMediaAccounts } from './PartnerSocialMediaAccounts';
@@ -99,31 +99,38 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
 
     function renderPartnerDashboard() {
         return (
-            <div className="card pop">
-                <ButtonGroup>
-                    {radios.map((radio, idx) => (
-                        <ToggleButton
-                            key={idx}
-                            id={`radio-${idx}`}
-                            type="radio"
-                            variant={idx % 2 ? 'outline-success' : 'outline-danger'}
-                            name="radio"
-                            value={radio.value}
-                            checked={radioValue === radio.value}
-                            onChange={(e) => setRadioValue(e.currentTarget.value)}
-                        >
-                            {radio.name}
-                        </ToggleButton>
-                    ))}
-                </ButtonGroup>
+            <Container>
+                <Col>
+                <Row className="gx-2 py-5">
+                    <div className="bg-white p-5 shadow-sm rounded">
+                        <ButtonGroup>
+                            {radios.map((radio, idx) => (
+                                <ToggleButton
+                                    key={idx}
+                                    id={`radio-${idx}`}
+                                    type="radio"
+                                    variant={idx % 2 ? 'outline-success' : 'outline-danger'}
+                                    name="radio"
+                                    value={radio.value}
+                                    checked={radioValue === radio.value}
+                                    onChange={(e) => setRadioValue(e.currentTarget.value)}
+                                >
+                                    {radio.name}
+                                </ToggleButton>
+                            ))}
+                        </ButtonGroup>
 
-                { radioValue === '1' && renderEditPartner()}
-                { radioValue === '2' && renderPartnerLocations()}
-                { radioValue === '3' && renderPartnerContacts()}
-                { radioValue === '4' && renderPartnerAdmins()}
-                { radioValue === '5' && renderPartnerDocuments()}
-                { radioValue === '6' && renderPartnerSocialMediaAccounts()}
-            </div>);
+                        {radioValue === '1' && renderEditPartner()}
+                        {radioValue === '2' && renderPartnerLocations()}
+                        {radioValue === '3' && renderPartnerContacts()}
+                        {radioValue === '4' && renderPartnerAdmins()}
+                        {radioValue === '5' && renderPartnerDocuments()}
+                        {radioValue === '6' && renderPartnerSocialMediaAccounts()}
+                    </div>
+                    </Row>
+                </Col>
+            </Container>
+        );
     }
 
     let contents = isPartnerIdReady

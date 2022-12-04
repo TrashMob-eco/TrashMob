@@ -1,6 +1,6 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
-import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Button, Col, Container, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import PartnerAdminInvitationData from '../Models/PartnerAdminInvitationData';
@@ -8,6 +8,7 @@ import * as Constants from '../Models/Constants';
 import { Guid } from 'guid-typescript';
 import { getInvitationStatus } from '../../store/invitationStatusHelper';
 import InvitationStatusData from '../Models/InvitationStatusData';
+import { Envelope, Mailbox, XSquare } from 'react-bootstrap-icons';
 
 export interface PartnerAdminsDataProps {
     partnerId: string;
@@ -298,18 +299,27 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.PartnerUserNameSearch}</Tooltip>
     }
 
+    const adminActionDropdownList = (userId: string, userName: string) => {
+        return (
+            <>
+                <Dropdown.Item onClick={() => removeUser(userId, userName)}><XSquare />Remove Admin</Dropdown.Item>
+            </>
+        )
+    }
+
+    const inviteActionDropdownList = (invitationId: string, invitationEmail: string) => {
+        return (
+            <>
+                <Dropdown.Item onClick={() => handleResendInvite(invitationId, invitationEmail)}><Envelope />Resend Invite</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleCancelInvite(invitationId, invitationEmail)}><XSquare />Cancel Invite</Dropdown.Item>
+            </>
+        )
+    }
+
     function renderUsersTable(users: UserData[]) {
         return (
             <div>
-                <p>
-                    This page allows you to add more administrators to this partner so you can share the load of maintaining the configuration of the partner. You can invite new
-                    administrators by clicking the Invite Administrator button, and entering their email address into the text box and clicking "Send Invitation."
-                </p>
-                <p>
-                    The email address you set will be sent an invite to join TrashMob.eco if they are not already a user. Once they have joined TrashMob.eco and are logged in,
-                    they will see an invitation in their Dashboard. They can Accept or Decline the invitation from there.
-                </p>
-                <h1>Current Admins</h1>
+                <h2 className="color-primary mt-4 mb-5">Current Admins</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
@@ -322,8 +332,13 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
                             <tr key={user.id}>
                                 <td>{user.userName}</td>
                                 <td>{user.email}</td>
-                                <td>
-                                    <Button className="action" onClick={() => removeUser(user.id, user.userName)}>Remove Admin</Button>
+                                <td className="btn py-0">
+                                    <Dropdown role="menuitem">
+                                        <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                        <Dropdown.Menu id="share-menu">
+                                            {adminActionDropdownList(user.id, user.userName)}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                 </td>
                             </tr>
                         )}
@@ -337,12 +352,11 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
     function renderInvitationsTable(invitations: PartnerAdminInvitationData[]) {
         return (
             <div>
-                <h1>Pending Invitations</h1>
+                <h2 className="color-primary mt-4 mb-5">Pending Invitations</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
                             <th>Email</th>
-                            <th>Sent Date</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -351,11 +365,14 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
                         {invitations.map(invitation =>
                             <tr key={invitation.id}>
                                 <td>{invitation.email}</td>
-                                <td>{invitation.createdDate}</td>
                                 <td>{getInvitationStatus(invitationStatusList, invitation.invitationStatusId)}</td>
-                                <td>
-                                    <Button className="action" onClick={() => handleResendInvite(invitation.id, invitation.email)}>Resend Invite</Button>
-                                    <Button className="action" onClick={() => handleCancelInvite(invitation.id, invitation.email)}>Cancel Invite</Button>
+                                <td className="btn py-0">
+                                    <Dropdown role="menuitem">
+                                        <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                        <Dropdown.Menu id="share-menu">
+                                            {inviteActionDropdownList(invitation.id, invitation.email)}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                 </td>
                             </tr>
                         )}
@@ -397,10 +414,30 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
         : <p><em>Loading...</em></p>;
 
     return <div>
-        <hr />
-        {props.partnerId === Guid.EMPTY && <p> <em>Partner must be created first.</em></p>}
-        {partnerAdminContents}
-        {partnerAdminInvitationsContents}
-        {isEditOrAdd && renderSendInvite()}
+        <Container>
+            <Row className="gx-2 py-5" lg={2}>
+                <Col lg={4} className="d-flex">
+                    <div className="bg-white py-2 px-5 shadow-sm rounded">
+                        <h2 className="color-primary mt-4 mb-5">Edit Partner Admins</h2>
+                        <p>
+                            This page allows you to add more administrators to this partner so you can share the load of maintaining the configuration of the partner. You can invite new
+                            administrators by clicking the Invite Administrator button, and entering their email address into the text box and clicking "Send Invitation."
+                        </p>
+                        <p>
+                            The email address you set will be sent an invite to join TrashMob.eco if they are not already a user. Once they have joined TrashMob.eco and are logged in,
+                            they will see an invitation in their Dashboard. They can Accept or Decline the invitation from there.
+                        </p>
+                    </div>
+                </Col>
+                <Col lg={8}>
+                    <div className="bg-white p-5 shadow-sm rounded">
+                        {props.partnerId === Guid.EMPTY && <p> <em>Partner must be created first.</em></p>}
+                        {partnerAdminContents}
+                        {partnerAdminInvitationsContents}
+                        {isEditOrAdd && renderSendInvite()}
+                    </div>
+                </Col>
+            </Row>
+        </Container>
     </div>;
 }
