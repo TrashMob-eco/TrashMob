@@ -12,7 +12,6 @@ import AddressData from './Models/AddressData';
 import MapControllerSinglePointNoEvent from './MapControllerSinglePointNoEvent';
 import PickupLocationData from './Models/PickupLocationData';
 import { Pencil, XSquare } from 'react-bootstrap-icons';
-import EventPartnerLocationServiceData from './Models/EventPartnerLocationServiceData';
 
 export interface PickupLocationsDataProps {
     eventId: string;
@@ -22,7 +21,8 @@ export interface PickupLocationsDataProps {
 
 export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
 
-    const [pickupLocationId, setPickupLocationId] = React.useState<string>(Guid.EMPTY) 
+    const [pickupLocationId, setPickupLocationId] = React.useState<string>(Guid.EMPTY)
+    const [haulingPartnerLocation, setHaulingPartnerLocation] = React.useState<PartnerLocationData>();
     const [notes, setNotes] = React.useState<string>("");
     const [hasBeenPickedUp, setHasBeenPickedUp] = React.useState<boolean>(true);
     const [hasBeenSubmitted, setHasBeenSubmitted] = React.useState<boolean>(false);
@@ -42,6 +42,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
     const [pickupLocationsData, setPickupLocationsData] = React.useState<PickupLocationData[]>([]);
     const [isPickupLocationsDataLoaded, setIsPickupLocationsDataLoaded] = React.useState<boolean>(false);
+    const [isPartnerLocationsDataLoaded, setIsPartnerLocationsDataLoaded] = React.useState<boolean>(false);
     const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
     const [isSubmitEnabled, setIsSubmitEnabled] = React.useState<boolean>(false);
     const [isEditOrAdd, setIsEditOrAdd] = React.useState<boolean>(false);
@@ -67,9 +68,11 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                     method: 'GET',
                     headers: headers,
                 })
-                    .then(response => response.json() as Promise<EventPartnerLocationServiceData[]>)
+                    .then(response => response.json() as Promise<PartnerLocationData>)
                     .then(data => {
                         if (data) {
+                            setHaulingPartnerLocation(data);
+                            setIsPartnerLocationsDataLoaded(true);
                             fetch('/api/pickuplocations/getbyevent/' + props.eventId, {
                                 method: 'GET',
                                 headers: headers,
@@ -290,7 +293,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                 body: data,
                 headers: headers,
             })
-                .then(response => response.json() as Promise<PartnerLocationData>)
+                .then(response => response.json() as Promise<PickupLocationData>)
                 .then(() => {
                     fetch('/api/pickuplocations/getbyevent/' + props.eventId, {
                         method: 'GET',
@@ -409,7 +412,33 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         )
     }
 
-    function renderLocationsTable(locations: PickupLocationData[]) {
+    function renderPartnerLocationContacts() {
+        return (
+            <div>
+                <h2 className="color-primary mt-4 mb-5">Hauling Partner Contacts</h2>
+                <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {haulingPartnerLocation?.partnerLocationContacts.map(contact =>
+                            <tr key={contact.id}>
+                                <td>{contact.name}</td>
+                                <td>{contact.email}</td>
+                                <td>{contact.phone}</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+        );
+    }
+
+    function renderPickupLocationsTable(locations: PickupLocationData[]) {
         return (
             <div>
                 <h2 className="color-primary mt-4 mb-5">Pickup Locations</h2>
@@ -452,24 +481,24 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
 
     function renderEditLocation() {
         return (
-                <Form onSubmit={handleSave}>
-                    <Form.Row>
-                        <input type="hidden" name="Id" value={pickupLocationId} />
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group>
-                                <ToggleButton
-                                    type="checkbox"
-                                    variant="outline-dark"
-                                    checked={hasBeenPickedUp}
-                                    value="1"
-                                    onChange={(e) => handleHasBeenPickedUpChanged(e.currentTarget.checked)}
-                                >
-                                    Picked Up?
-                                </ToggleButton>
-                            </Form.Group>
-                        </Col>
+            <Form onSubmit={handleSave}>
+                <Form.Row>
+                    <input type="hidden" name="Id" value={pickupLocationId} />
+                </Form.Row>
+                <Form.Row>
+                    <Col>
+                        <Form.Group>
+                            <ToggleButton
+                                type="checkbox"
+                                variant="outline-dark"
+                                checked={hasBeenPickedUp}
+                                value="1"
+                                onChange={(e) => handleHasBeenPickedUpChanged(e.currentTarget.checked)}
+                            >
+                                Picked Up?
+                            </ToggleButton>
+                        </Form.Group>
+                    </Col>
                     <Col>
                         <Form.Group>
                             <ToggleButton
@@ -482,99 +511,104 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                             </ToggleButton>
                         </Form.Group>
                     </Col>
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
-                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="StreetAddress">Street Address</Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="streetAddress" value={streetAddress} />
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderCityToolTip}>
-                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="City">City</Form.Label>
-                                </OverlayTrigger >
-                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="city" value={city} />
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="PostalCode">Postal Code</Form.Label>
-                                </OverlayTrigger >
-                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="postalCode" value={postalCode} />
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
-                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Region">Region</Form.Label>
-                                </OverlayTrigger >
-                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="region" value={region} />
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
-                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Country">Country</Form.Label>
-                                </OverlayTrigger >
-                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="country" value={country} />
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                    <Form.Group>
-                        <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                            <Form.Label className="control-label font-weight-bold h5">Notes:</Form.Label>
-                        </OverlayTrigger>
-                        <Form.Control as="textarea" className='border-0 bg-light h-60 p-18' defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} />
-                    </Form.Group >
-                    <Button disabled={!isSaveEnabled} type="submit" className="btn btn-default">Save</Button>
-                    <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
-                    <Form.Row>
-                        <Form.Label>Click on the map to set the location for pickup. The location fields above will be automatically populated.</Form.Label>
-                    </Form.Row>
-                    <Form.Row>
-                        <AzureMapsProvider>
-                            <>
-                                <MapControllerSinglePointNoEvent center={center} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isDraggable={true} />
-                            </>
-                        </AzureMapsProvider>
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
-                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="createdDate">Created Date</Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="createdDate" value={createdDate ? createdDate.toLocaleString() : ""} />
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
-                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="lastUpdatedDate">Last Updated Date</Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="lastUpdatedDate" value={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                </Form>
+                </Form.Row>
+                <Form.Row>
+                    <Col>
+                        <Form.Group>
+                            <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
+                                <Form.Label className="control-label font-weight-bold h5" htmlFor="StreetAddress">Street Address</Form.Label>
+                            </OverlayTrigger>
+                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="streetAddress" value={streetAddress} />
+                        </Form.Group>
+                    </Col>
+                    <Col>
+                        <Form.Group>
+                            <OverlayTrigger placement="top" overlay={renderCityToolTip}>
+                                <Form.Label className="control-label font-weight-bold h5" htmlFor="City">City</Form.Label>
+                            </OverlayTrigger >
+                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="city" value={city} />
+                        </Form.Group>
+                    </Col>
+                    <Col>
+                        <Form.Group>
+                            <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
+                                <Form.Label className="control-label font-weight-bold h5" htmlFor="PostalCode">Postal Code</Form.Label>
+                            </OverlayTrigger >
+                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="postalCode" value={postalCode} />
+                        </Form.Group>
+                    </Col>
+                </Form.Row>
+                <Form.Row>
+                    <Col>
+                        <Form.Group>
+                            <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
+                                <Form.Label className="control-label font-weight-bold h5" htmlFor="Region">Region</Form.Label>
+                            </OverlayTrigger >
+                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="region" value={region} />
+                        </Form.Group>
+                    </Col>
+                    <Col>
+                        <Form.Group>
+                            <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
+                                <Form.Label className="control-label font-weight-bold h5" htmlFor="Country">Country</Form.Label>
+                            </OverlayTrigger >
+                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="country" value={country} />
+                        </Form.Group>
+                    </Col>
+                </Form.Row>
+                <Form.Group>
+                    <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
+                        <Form.Label className="control-label font-weight-bold h5">Notes:</Form.Label>
+                    </OverlayTrigger>
+                    <Form.Control as="textarea" className='border-0 bg-light h-60 p-18' defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} />
+                </Form.Group >
+                <Button disabled={!isSaveEnabled} type="submit" className="btn btn-default">Save</Button>
+                <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
+                <Form.Row>
+                    <Form.Label>Click on the map to set the location for pickup. The location fields above will be automatically populated.</Form.Label>
+                </Form.Row>
+                <Form.Row>
+                    <AzureMapsProvider>
+                        <>
+                            <MapControllerSinglePointNoEvent center={center} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isDraggable={true} />
+                        </>
+                    </AzureMapsProvider>
+                </Form.Row>
+                <Form.Row>
+                    <Col>
+                        <Form.Group>
+                            <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
+                                <Form.Label className="control-label font-weight-bold h5" htmlFor="createdDate">Created Date</Form.Label>
+                            </OverlayTrigger>
+                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="createdDate" value={createdDate ? createdDate.toLocaleString() : ""} />
+                        </Form.Group>
+                    </Col>
+                    <Col>
+                        <Form.Group>
+                            <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
+                                <Form.Label className="control-label font-weight-bold h5" htmlFor="lastUpdatedDate">Last Updated Date</Form.Label>
+                            </OverlayTrigger>
+                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="lastUpdatedDate" value={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
+                        </Form.Group>
+                    </Col>
+                </Form.Row>
+            </Form>
         );
     }
 
     var pickupLocationsContents = isPickupLocationsDataLoaded && props.eventId !== Guid.EMPTY
-        ? renderLocationsTable(pickupLocationsData)
+        ? renderPickupLocationsTable(pickupLocationsData)
+        : <p><em>{statusMessage}</em></p>;
+
+    var partnerLocationsContents = isPartnerLocationsDataLoaded && props.eventId !== Guid.EMPTY
+        ? renderPartnerLocationContacts()
         : <p><em>{statusMessage}</em></p>;
 
     return (
         <>
             <div>
                 {pickupLocationsContents}
+                {partnerLocationsContents}
                 {isEditOrAdd && renderEditLocation()}
             </div>
         </>
