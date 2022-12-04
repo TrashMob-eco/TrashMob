@@ -40,5 +40,16 @@
 
             return results;
         }
+
+        public async Task<IEnumerable<PartnerLocation>> GetHaulingPartnerLocationsByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            var results = await Repository.Get()
+                .Where(t => t.UserId == userId && t.Partner.PartnerLocations.Any(pl => pl.PartnerLocationServices.Any(pls => pls.ServiceTypeId == (int)ServiceTypeEnum.Hauling)))
+                .Include(t => t.Partner.PartnerLocations)
+                .SelectMany(t => t.Partner.PartnerLocations)
+                .ToListAsync(cancellationToken);
+
+            return results;
+        }
     }
 }

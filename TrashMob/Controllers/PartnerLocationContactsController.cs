@@ -46,7 +46,7 @@
         [HttpPost]
         public async Task<IActionResult> AddPartnerLocationContact(PartnerLocationContact partnerLocationContact, CancellationToken cancellationToken = default)
         {
-            var partner = await partnerLocationManager.GetPartnerForLocation(partnerLocationContact.PartnerLocationId, cancellationToken);
+            var partner = await partnerLocationManager.GetPartnerForLocationAsync(partnerLocationContact.PartnerLocationId, cancellationToken);
 
             if (partner == null)
             {
@@ -70,7 +70,7 @@
         public async Task<IActionResult> UpdatePartnerLocationContact(PartnerLocationContact partnerLocationContact, CancellationToken cancellationToken)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var partner = await partnerLocationManager.GetPartnerForLocation(partnerLocationContact.PartnerLocationId, cancellationToken);
+            var partner = await partnerLocationManager.GetPartnerForLocationAsync(partnerLocationContact.PartnerLocationId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)

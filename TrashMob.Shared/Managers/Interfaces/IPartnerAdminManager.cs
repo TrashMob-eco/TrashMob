@@ -11,5 +11,7 @@
         Task<IEnumerable<User>> GetAdminsForPartnerAsync(Guid partnerId, CancellationToken cancellationToken= default);
 
         Task<IEnumerable<Partner>> GetPartnersByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<PartnerLocation>> GetHaulingPartnerLocationsByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
     }
 }

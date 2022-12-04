@@ -12,6 +12,7 @@ export interface PartnerLocationContactsDataProps {
     partnerLocationId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
+    onSave: any;
 };
 
 export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps> = (props) => {
@@ -215,6 +216,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                             setIsPartnerLocationContactsDataLoaded(true);
                             setIsEditOrAdd(false);
                             setIsAddEnabled(true);
+                            props.onSave();
                         });
                 });
         });

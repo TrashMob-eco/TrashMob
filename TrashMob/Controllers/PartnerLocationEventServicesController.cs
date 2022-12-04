@@ -25,7 +25,7 @@ namespace TrashMob.Controllers
         [HttpGet("{partnerLocationId}")]
         public async Task<IActionResult> GetPartnerLocationEventServices(Guid partnerLocationId, CancellationToken cancellationToken)
         {
-            var partner = await partnerLocationManager.GetPartnerForLocation(partnerLocationId, cancellationToken);
+            var partner = await partnerLocationManager.GetPartnerForLocationAsync(partnerLocationId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)

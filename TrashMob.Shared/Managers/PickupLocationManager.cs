@@ -18,18 +18,21 @@
         private readonly IEventManager eventManager;
         private readonly IEventPartnerLocationServiceManager eventPartnerLocationServiceManager;
         private readonly IPartnerLocationContactManager partnerLocationContactManager;
+        private readonly IPartnerAdminManager partnerAdminManager;
         private readonly IEmailManager emailManager;
 
         public PickupLocationManager(IKeyedRepository<PickupLocation> pickupLocationRepository,
                                      IEventManager eventManager,
                                      IEventPartnerLocationServiceManager eventPartnerLocationServiceManager,
                                      IPartnerLocationContactManager partnerLocationContactManager,
+                                     IPartnerAdminManager partnerAdminManager,
                                      IEmailManager emailManager)
             : base(pickupLocationRepository)
         {
             this.eventManager = eventManager;
             this.eventPartnerLocationServiceManager = eventPartnerLocationServiceManager;
             this.partnerLocationContactManager = partnerLocationContactManager;
+            this.partnerAdminManager = partnerAdminManager;
             this.emailManager = emailManager;
         }
 
@@ -38,6 +41,39 @@
             return (await Repository.Get().Where(p => p.EventId == parentId)
                                           .ToListAsync(cancellationToken))
                                           .AsEnumerable();
+        }
+
+        public async Task<IEnumerable<PickupLocation>> GetByUserAsync(Guid userId, CancellationToken cancellationToken)
+        {
+            // Get list of Partner Locations for this user that have Hauling set up
+            var partnerLocations = await partnerAdminManager.GetHaulingPartnerLocationsByUserIdAsync(userId, cancellationToken);
+
+            var pickupLocations = new List<PickupLocation>();
+
+            // For each partner location
+            foreach (var partnerLocation in partnerLocations)
+            {
+                // Get the services offered
+                var services = await eventPartnerLocationServiceManager.GetByPartnerLocationAsync(partnerLocation.Id, cancellationToken);
+
+                foreach (var service in services.Where(s => s.ServiceTypeId == (int)ServiceTypeEnum.Hauling))                    
+                {
+                    // Get the pickup locations for this event which have not been picked up and have been submitted
+                    var eventPickupLocations = await Repository.Get(pl => pl.EventId == service.EventId && !pl.HasBeenPickedUp && pl.HasBeenSubmitted).ToListAsync(cancellationToken);
+                    pickupLocations.AddRange(eventPickupLocations);
+                }
+            }
+
+            return pickupLocations;
+        }
+
+        public async Task MarkAsPickedUpAsync(Guid pickupLocationId, Guid userId, CancellationToken cancellationToken)
+        {
+            var pickupLocation = await base.GetAsync(pickupLocationId, cancellationToken);
+
+            pickupLocation.HasBeenPickedUp= true;
+
+            await base.UpdateAsync(pickupLocation, userId, cancellationToken);
         }
 
         public async Task SubmitPickupLocations(Guid eventId, Guid userId, CancellationToken cancellationToken)

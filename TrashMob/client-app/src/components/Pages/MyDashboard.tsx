@@ -23,6 +23,7 @@ import PartnerStatusData from '../Models/PartnerStatusData';
 import DisplayPartnerAdminInvitationData from '../Models/DisplayPartnerAdminInvitationData';
 import { PartnerLocationEventRequests } from '../Partners/PartnerLocationEventRequests';
 import { Guid } from 'guid-typescript';
+import PickupLocationData from '../Models/PickupLocationData';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -36,8 +37,10 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [myPartnerRequests, setMyPartnerRequests] = useState<DisplayPartnershipData[]>([]);
     const [myPartners, setMyPartners] = useState<DisplayPartnershipData[]>([]);
     const [myPartnerAdminInvitations, setMyPartnerAdminInvitations] = useState<DisplayPartnerAdminInvitationData[]>([]);
+    const [myPickupRequests, setMyPickupRequests] = useState<PickupLocationData[]>([]);
     const [isEventDataLoaded, setIsEventDataLoaded] = useState<boolean>(false);
     const [isPartnerAdminInvitationsDataLoaded, setIsPartnerAdminInvitationsDataLoaded] = useState<boolean>(false);
+    const [isPickupRequestsDataLoaded, setIsPickupRequestsDataLoaded] = useState<boolean>(false);
     const [center, setCenter] = useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isMapKeyLoaded, setIsMapKeyLoaded] = useState<boolean>(false);
     const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
@@ -103,6 +106,16 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     .then(data => {
                         setMyPartnerAdminInvitations(data);
                         setIsPartnerAdminInvitationsDataLoaded(true);
+                    });
+
+                fetch('/api/pickupLocations/getbyuser/' + props.currentUser.id, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<PickupLocationData[]>)
+                    .then(data => {
+                        setMyPickupRequests(data);
+                        setIsPickupRequestsDataLoaded(true);
                     });
 
                 fetch('/api/partnerRequestStatuses', {
@@ -329,6 +342,37 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         }
     }
 
+    const handleMarkAsPickedUp = (id: string) => {
+        const account = msalClient.getAllAccounts()[0];
+
+        const request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = getDefaultHeaders('POST');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+            fetch('/api/pickuplocations/markpickedup/' + id, {
+                method: 'post',
+                headers: headers
+            }).then(() => {
+                const getHeaders = getDefaultHeaders('POST');
+                getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+                fetch('/api/pickupLocations/getbyuser/' + props.currentUser.id, {
+                    method: 'GET',
+                    headers: getHeaders
+                })
+                    .then(response => response.json() as Promise<PickupLocationData[]>)
+                    .then(data => {
+                        setMyPickupRequests(data);
+                        setIsPickupRequestsDataLoaded(true);
+                    });
+            })
+        });
+    }
+
     const attendeeActionDropdownList = (eventId: string) => {
         return (
             <>
@@ -373,6 +417,14 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         return (
             <>
                 <Dropdown.Item href={'/partnerRequestDetails/' + partnerRequestId}><Eye />View request form</Dropdown.Item>
+            </>
+        )
+    }
+
+    const pickupRequestActionDropdownList = (pickupRequestId: string) => {
+        return (
+            <>
+                <Dropdown.Item onClick={() => handleMarkAsPickedUp(pickupRequestId)}><CheckSquare />Marked picked up</Dropdown.Item>
             </>
         )
     }
@@ -492,6 +544,44 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                                 {displayPartner.partnerStatusId === PartnerStatusActive ?
                                                     activePartnerActionDropdownList(displayPartner.id) :
                                                     inactivePartnerActionDropdownList(displayPartner.id)}
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                    </td>
+                                </tr>
+                            )
+                        }
+                        )}
+                    </Table>
+                </div >
+            );
+        }
+        else {
+            return (
+                <div className="bg-white p-3 px-4">
+                    <Table columnHeaders={headerTitles} >
+                    </Table>
+                </div >
+            )
+        }
+    }
+
+    const MyPickupRequestsTable = () => {
+        const headerTitles = ['Street Address', 'City', 'Notes', 'Actions']
+        if (myPickupRequests) {
+            return (
+                <div className="bg-white p-3 px-4">
+                    <Table columnHeaders={headerTitles} >
+                        {myPickupRequests.map(displayPickup => {
+                            return (
+                                <tr key={displayPickup.id.toString()}>
+                                    <td>{displayPickup.streetAddress}</td>
+                                    <td>{displayPickup.city}</td>
+                                    <td>{displayPickup.notes}</td>
+                                    <td className="btn py-0">
+                                        <Dropdown role="menuitem">
+                                            <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                            <Dropdown.Menu id="share-menu">
+                                                {pickupRequestActionDropdownList(displayPickup.id)}
                                             </Dropdown.Menu>
                                         </Dropdown>
                                     </td>
@@ -686,7 +776,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         </AzureMapsProvider>
                         : <PastEventsTable />}
                 </div>
-                <div className="d-flex my-5 mb-4 justify-content-between"> 
+                <div className="d-flex my-5 mb-4 justify-content-between">
                     <h4 className="font-weight-bold mr-2 mt-0 active-line pb-2">My Partnerships ({myPartnerRequests.length + myPartners.length})</h4>
                     <Link className="btn btn-primary banner-button" to="/requestapartner">Send invitation to join TrashMob.eco as a partner</Link>
                     <Link className="btn btn-primary banner-button" to="/becomeapartner">Apply to become a partner</Link>
@@ -702,6 +792,10 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                 <div className="mb-4 bg-white">
                     <p className="color-primary font-weight-bold pt-3">{'Partner Event Requests'}</p>
                     <PartnerLocationEventRequests partnerLocationId={Guid.EMPTY} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                </div>
+                <div className="mb-4 bg-white">
+                    <p className="color-primary font-weight-bold pt-3">{'Pickup Requests Pending'} ({myPickupRequests.length})</p>
+                    <MyPickupRequestsTable />
                 </div>
                 <div className="mb-4 bg-white">
                     <p className="color-primary font-weight-bold pt-3">{'Partner Admin Invitations Pending'} ({myPartnerAdminInvitations.length})</p>
