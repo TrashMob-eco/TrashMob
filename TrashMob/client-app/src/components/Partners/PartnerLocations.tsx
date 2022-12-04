@@ -1,6 +1,6 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
-import { Button, ButtonGroup, ToggleButton } from 'react-bootstrap';
+import { Button, ButtonGroup, Col, Container, Dropdown, Row, ToggleButton } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import PartnerLocationData from '../Models/PartnerLocationData';
 import { PartnerLocationEdit } from './PartnerLocationEdit';
@@ -8,6 +8,7 @@ import { PartnerLocationServices } from './PartnerLocationServices';
 import { PartnerLocationContacts } from './PartnerLocationContacts';
 import { PartnerLocationEventRequests } from './PartnerLocationEventRequests';
 import { Guid } from 'guid-typescript';
+import { Pencil, XSquare } from 'react-bootstrap-icons';
 
 export interface PartnerLocationsDataProps {
     partnerId: string;
@@ -145,14 +146,19 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
         setIsAddEnabled(false);
     }
 
+    const locationActionDropdownList = (locationId: string, locationName: string) => {
+        return (
+            <>
+                <Dropdown.Item onClick={() => editLocation(locationId)}><Pencil />Edit Location</Dropdown.Item>
+                <Dropdown.Item onClick={() => removeLocation(locationId, locationName)}><XSquare />Remove Location</Dropdown.Item>
+            </>
+        )
+    }
+
     function renderPartnerLocationsTable(locations: PartnerLocationData[]) {
         return (
             <div>
-                <p>
-                    A partner location can be thought of as an instance of a business franchise, or the location of a municipal office or yard. You can have as many locations within a community as you want to
-                    set up. Each location can offer different services, and have different contact information associated with it. For instance, City Hall may provide starter kits and supplies, but only the 
-                    public utilities yard offers hauling and disposal.
-                </p>
+                <h2 className="color-primary mt-4 mb-5">Partner Locations</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
@@ -169,9 +175,13 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                                 <td>{location.city}</td>
                                 <td>{location.region}</td>
                                 <td>{location.country}</td>
-                                <td>
-                                    <Button className="action" onClick={() => editLocation(location.id)}>Edit Location</Button>
-                                    <Button className="action" onClick={() => removeLocation(location.id, location.name)}>Remove Location</Button>
+                                <td className="btn py-0">
+                                    <Dropdown role="menuitem">
+                                        <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                        <Dropdown.Menu id="share-menu">
+                                            {locationActionDropdownList(location.id, location.name)}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                 </td>
                             </tr>
                         )}
@@ -242,12 +252,26 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     }
 
     return (
-        <>
-            <div>
-                {!isPartnerLocationDataLoaded && <p><em>Loading...</em></p>}
-                {isPartnerLocationDataLoaded && partnerLocations && renderPartnerLocationsTable(partnerLocations)}
-                {(isEdit || isAdd) && renderPartnerLocationDashboard() }
-            </div>
-        </>
+        <Container>
+            <Row className="gx-2 py-5" lg={2}>
+                <Col lg={4} className="d-flex">
+                    <div className="bg-white py-2 px-5 shadow-sm rounded">
+                        <h2 className="color-primary mt-4 mb-5">Edit Partner Locations</h2>
+                        <p>
+                            A partner location can be thought of as an instance of a business franchise, or the location of a municipal office or yard. You can have as many locations within a community as you want to
+                            set up. Each location can offer different services, and have different contact information associated with it. For instance, City Hall may provide starter kits and supplies, but only the
+                            public utilities yard offers hauling and disposal.
+                        </p>
+                    </div>
+                </Col>
+                <Col lg={8}>
+                    <div className="bg-white p-5 shadow-sm rounded">
+                        {!isPartnerLocationDataLoaded && <p><em>Loading...</em></p>}
+                        {isPartnerLocationDataLoaded && partnerLocations && renderPartnerLocationsTable(partnerLocations)}
+                        {(isEdit || isAdd) && renderPartnerLocationDashboard()}
+                    </div>
+                </Col>
+            </Row>
+        </Container >
     );
 }
