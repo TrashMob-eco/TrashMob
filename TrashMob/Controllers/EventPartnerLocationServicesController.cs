@@ -40,6 +40,14 @@ namespace TrashMob.Controllers
             return Ok(displayEventPartners);
         }
 
+        [HttpGet("gethaulingpartnerlocation/{eventId}")]
+        public async Task<IActionResult> GetHaulingPartnerLocation(Guid eventId, CancellationToken cancellationToken)
+        {
+            var partnerLocation = await eventPartnerLocationServiceManager.GetHaulingPartnerLocationForEvent(eventId, cancellationToken);
+            TelemetryClient.TrackEvent(nameof(GetHaulingPartnerLocation));
+            return Ok(partnerLocation);
+        }
+
         [HttpGet("{eventId}/{partnerLocationId}")]
         public async Task<IActionResult> GetEventPartnerLocationServices(Guid eventId, Guid partnerLocationId, CancellationToken cancellationToken)
         {

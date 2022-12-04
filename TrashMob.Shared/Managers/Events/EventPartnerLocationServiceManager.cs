@@ -296,7 +296,7 @@
 
         public async Task<PartnerLocation> GetHaulingPartnerLocationForEvent(Guid eventId, CancellationToken cancellationToken = default)
         {
-            var partnerLocation = await Repository.Get(ea => ea.EventId == eventId && ea.ServiceTypeId == (int)ServiceTypeEnum.Hauling)
+            var partnerLocation = await Repository.Get(ea => ea.EventId == eventId && ea.ServiceTypeId == (int)ServiceTypeEnum.Hauling && ea.EventPartnerLocationServiceStatusId == (int)EventPartnerLocationServiceStatusEnum.Accepted)
                                                   .Include(p => p.PartnerLocation)
                                                   .Select(p => p.PartnerLocation)
                                                   .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);

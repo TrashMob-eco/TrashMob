@@ -12,6 +12,7 @@ import AddressData from './Models/AddressData';
 import MapControllerSinglePointNoEvent from './MapControllerSinglePointNoEvent';
 import PickupLocationData from './Models/PickupLocationData';
 import { Pencil, XSquare } from 'react-bootstrap-icons';
+import EventPartnerLocationServiceData from './Models/EventPartnerLocationServiceData';
 
 export interface PickupLocationsDataProps {
     eventId: string;
@@ -44,6 +45,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
     const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
     const [isSubmitEnabled, setIsSubmitEnabled] = React.useState<boolean>(false);
     const [isEditOrAdd, setIsEditOrAdd] = React.useState<boolean>(false);
+    const [statusMessage, setStatusMessage] = React.useState<string>("Loading...");
 
 
     React.useEffect(() => {
@@ -61,19 +63,31 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/pickuplocations/getbyevent/' + props.eventId, {
+                fetch('/api/eventpartnerlocationservices/gethaulingpartnerlocation/' + props.eventId, {
                     method: 'GET',
                     headers: headers,
                 })
-                    .then(response => response.json() as Promise<PickupLocationData[]>)
+                    .then(response => response.json() as Promise<EventPartnerLocationServiceData[]>)
                     .then(data => {
-                        setPickupLocationsData(data);
-                        setIsPickupLocationsDataLoaded(true);
+                        if (data) {
+                            fetch('/api/pickuplocations/getbyevent/' + props.eventId, {
+                                method: 'GET',
+                                headers: headers,
+                            })
+                                .then(response => response.json() as Promise<PickupLocationData[]>)
+                                .then(data => {
+                                    setPickupLocationsData(data);
+                                    setIsPickupLocationsDataLoaded(true);
 
-                        if (data.some(pl => pl.hasBeenSubmitted === false)) {
-                            setIsSubmitEnabled(true);
+                                    if (data.some(pl => pl.hasBeenSubmitted === false)) {
+                                        setIsSubmitEnabled(true);
+                                    }
+                                });
                         }
-                    });
+                        else {
+                            setStatusMessage("You must add a hauling partner and have it accepted before you can add pickup locations.")
+                        }
+                    })
             });
         }
 
@@ -169,7 +183,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                     headers: headers,
                 })
                     .then(() => {
-                        fetch('/api/pickuplocations/' + props.eventId, {
+                        fetch('/api/pickuplocations/getbyevent/' + props.eventId, {
                             method: 'GET',
                             headers: headers
                         })
@@ -203,14 +217,15 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                 const headers = getDefaultHeaders('POST');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/pickuplocations/submit' + props.eventId, {
+                fetch('/api/pickuplocations/submit/' + props.eventId, {
                     method: 'POST',
                     headers: headers,
                 })
                     .then(() => {
-                        fetch('/api/pickuplocations/' + props.eventId, {
+                        const getHeaders = getDefaultHeaders('GET');
+                        fetch('/api/pickuplocations/getbyevent/' + props.eventId, {
                             method: 'GET',
-                            headers: headers
+                            headers: getHeaders
                         })
                             .then(response => response.json() as Promise<PickupLocationData[]>)
                             .then(data => {
@@ -218,6 +233,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                                 setPickupLocationsData(data);
                                 setIsPickupLocationsDataLoaded(true);
                                 setIsSubmitEnabled(false);
+                                setIsEditOrAdd(false);
                             })
                     });
             });
@@ -276,7 +292,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
             })
                 .then(response => response.json() as Promise<PartnerLocationData>)
                 .then(() => {
-                    fetch('/api/pickuplocations/' + props.eventId, {
+                    fetch('/api/pickuplocations/getbyevent/' + props.eventId, {
                         method: 'GET',
                         headers: headers
                     })
@@ -289,6 +305,8 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                             if (data.some(pl => pl.hasBeenSubmitted === false)) {
                                 setIsSubmitEnabled(true);
                             }
+
+                            setIsEditOrAdd(false);
                         })
                 });
         });
@@ -551,7 +569,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
 
     var pickupLocationsContents = isPickupLocationsDataLoaded && props.eventId !== Guid.EMPTY
         ? renderLocationsTable(pickupLocationsData)
-        : <p><em>Loading...</em></p>;
+        : <p><em>{statusMessage}</em></p>;
 
     return (
         <>

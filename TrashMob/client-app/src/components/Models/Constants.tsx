@@ -13,6 +13,8 @@ export const EventPartnerLocationServiceStatusRequested = 1;
 export const EventPartnerLocationServiceStatusAccepted = 2;
 export const EventPartnerLocationServiceStatusDeclined = 3;
 
+export const ServiceTypeHauling = 1;
+
 export const PartnerStatusActive = 1;
 export const PartnerStatusInactive = 2;
 

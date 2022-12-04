@@ -47,6 +47,12 @@
 
             var partnerLocation = await eventPartnerLocationServiceManager.GetHaulingPartnerLocationForEvent(eventId, cancellationToken);
 
+            if (partnerLocation == null) 
+            { 
+                // Todo add error handling for this
+                return;
+            }
+
             var contacts = await partnerLocationContactManager.GetByParentIdAsync(partnerLocation.Id, cancellationToken);
 
             // Get all pickup locations for the event that haven't been submitted or picked up
