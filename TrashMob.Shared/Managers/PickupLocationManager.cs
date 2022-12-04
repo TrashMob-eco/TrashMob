@@ -78,12 +78,18 @@
                 subject = emailSubject,
                 eventDetailsUrl = mobEvent.EventDetailsUrl(),
                 eventSummaryUrl = mobEvent.EventSummaryUrl(),
-                pickupSpots = new List<(string, string, string)>()
+                pickupSpots = new List<PickupSpot>()
             };
 
             foreach (var pickupLocation in pickupLocations)
             {
-                var pickSpot = (StreetAddress: pickupLocation.StreetAddress, GoogleMapsUrl: pickupLocation.GoogleMapsUrl(), Notes: pickupLocation.Notes );
+                var pickSpot = new PickupSpot
+                {
+                    StreetAddress = pickupLocation.StreetAddress,
+                    GoogleMapsUrl = pickupLocation.GoogleMapsUrl(),
+                    Notes = pickupLocation.Notes
+                };
+
                 dynamicTemplateData.pickupSpots.Add(pickSpot);
             }
 
