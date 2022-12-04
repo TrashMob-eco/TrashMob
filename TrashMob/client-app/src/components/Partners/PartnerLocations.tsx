@@ -157,7 +157,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                             <th>Name</th>
                             <th>City</th>
                             <th>Region</th>
-                            <th>Country</th>
+                            <th>Status</th>
+                            <th>Ready?</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -167,7 +168,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                                 <td>{location.name}</td>
                                 <td>{location.city}</td>
                                 <td>{location.region}</td>
-                                <td>{location.country}</td>
+                                <td>{location.isActive ? 'Active' : 'Inactive' }</td>
+                                <td>{location.partnerLocationContacts && location.partnerLocationContacts.length > 0 ? 'Yes' : 'No'}</td>
                                 <td className="btn py-0">
                                     <Dropdown role="menuitem">
                                         <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
@@ -197,7 +199,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     function renderPartnerLocationContacts() {
         return (
             <div>
-                <PartnerLocationContacts partnerLocationId={partnerLocationId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                <PartnerLocationContacts partnerLocationId={partnerLocationId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onSave={handleSave} />
                 <hr />
             </div >
         )
@@ -267,6 +269,9 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
                             A partner location can be thought of as an instance of a business franchise, or the location of a municipal office or yard. You can have as many locations within a community as you want to
                             set up. Each location can offer different services, and have different contact information associated with it. For instance, City Hall may provide starter kits and supplies, but only the
                             public utilities yard offers hauling and disposal.
+                        </p>
+                        <p>
+                            A partner location must have at least one contact set up in order to be ready for events to use them. It must also be Active.
                         </p>
                     </div>
                 </Col>

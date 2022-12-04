@@ -1,6 +1,7 @@
 ﻿namespace TrashMob.Controllers
 {
     using Microsoft.ApplicationInsights;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Threading;
@@ -33,6 +34,12 @@
             return Ok(await Manager.GetByParentIdAsync(eventId, cancellationToken).ConfigureAwait(false));
         }
 
+        [HttpGet("getbyuser/{userId}")]
+        public async Task<IActionResult> GetByUser(Guid userId, CancellationToken cancellationToken)
+        {
+            return Ok(await pickupLocationManager.GetByUserAsync(userId, cancellationToken).ConfigureAwait(false));
+        }
+
         [HttpPut]
         public async Task<IActionResult> Update(PickupLocation pickupLocation, CancellationToken cancellationToken)
         {
@@ -48,6 +55,24 @@
             TelemetryClient.TrackEvent(nameof(Update) + typeof(PickupLocation));
 
             return Ok(result);
+        }
+
+        [HttpPost("markpickedup/{pickupLocationId}")]
+        [Authorize("ValidUser")]
+        public async Task<IActionResult> MarkAsPickedUp(Guid pickupLocationId, CancellationToken cancellationToken)
+        {            
+            // Todo: Add security
+            //var authResult = await AuthorizationService.AuthorizeAsync(User, pickupLocation, "UserOwnsEntity");
+
+            //if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            //{
+            //    return Forbid();
+            //}
+
+            await pickupLocationManager.MarkAsPickedUpAsync(pickupLocationId, UserId, cancellationToken).ConfigureAwait(false);
+            TelemetryClient.TrackEvent("MarkAsPickedUp");
+
+            return Ok();
         }
 
         [HttpPost]

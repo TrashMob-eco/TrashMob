@@ -7,6 +7,6 @@
 
     public interface IPartnerLocationManager : IKeyedManager<PartnerLocation>
     {
-        Task<Partner> GetPartnerForLocation(Guid partnerLocationId, CancellationToken cancellationToken);
+        Task<Partner> GetPartnerForLocationAsync(Guid partnerLocationId, CancellationToken cancellationToken);
     }
 }

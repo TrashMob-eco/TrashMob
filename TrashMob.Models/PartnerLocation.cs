@@ -9,6 +9,7 @@ namespace TrashMob.Models
         public PartnerLocation()
         {
             PartnerLocationContacts = new HashSet<PartnerLocationContact>();
+            PartnerLocationServices = new HashSet<PartnerLocationService>();
         }
 
         public Guid PartnerId { get; set; }
@@ -38,5 +39,7 @@ namespace TrashMob.Models
         public virtual Partner Partner { get; set; }
 
         public virtual ICollection<PartnerLocationContact> PartnerLocationContacts { get; set; }
+
+        public virtual ICollection<PartnerLocationService> PartnerLocationServices { get; set; }
     }
 }

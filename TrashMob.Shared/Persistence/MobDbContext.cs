@@ -658,7 +658,7 @@
                     .HasConstraintName("FK_PartnerLocationService_ServiceTypes");
 
                 entity.HasOne(d => d.PartnerLocation)
-                    .WithMany()
+                    .WithMany(d => d.PartnerLocationServices)
                     .HasForeignKey(d => d.PartnerLocationId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_PartnersLocationService_PartnerLocations");
