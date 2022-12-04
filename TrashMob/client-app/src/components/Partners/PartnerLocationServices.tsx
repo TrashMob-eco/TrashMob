@@ -1,6 +1,6 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
-import { Button, Col, Container, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import { Button, Col, Dropdown, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
@@ -354,26 +354,11 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
     }
 
     return (
-        <Container>
-            <Row className="gx-2 py-5" lg={2}>
-                <Col lg={4} className="d-flex">
-                    <div className="bg-white py-2 px-5 shadow-sm rounded">
-                        <h2 className="color-primary mt-4 mb-5">Edit Partner Location Services</h2>
-                        <p>
-                            This page allows you set up the services offered by a partner location. That is, what capabilities are you willing to provide to TrashMob.eco users to help them
-                            clean up the local community? This support is crucial to the success of TrashMob.eco volunteers, and we appreciate your help!
-                        </p>
-                    </div>
-                </Col>
-                <Col lg={8}>
-                    <div className="bg-white p-5 shadow-sm rounded">
-                        {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner location must be created first.</em></p>}
-                        {!isPartnerLocationServicesDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-                        {isPartnerLocationServicesDataLoaded && partnerLocationServices && renderPartnerLocationServicesTable(partnerLocationServices)}
-                        {(isEdit || isAdd) && renderAddPartnerService()}
-                    </div>
-                </Col>
-            </Row>
-        </Container >
+        <div className="bg-white p-5 shadow-sm rounded">
+            {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner location must be created first.</em></p>}
+            {!isPartnerLocationServicesDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
+            {isPartnerLocationServicesDataLoaded && partnerLocationServices && renderPartnerLocationServicesTable(partnerLocationServices)}
+            {(isEdit || isAdd) && renderAddPartnerService()}
+        </div>
     );
 }

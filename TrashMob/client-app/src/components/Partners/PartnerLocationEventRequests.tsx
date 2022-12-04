@@ -1,6 +1,6 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
-import { Col, Container, Dropdown, Row } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as Constants from '../Models/Constants';
 import EventPartnerLocationServiceStatusData from '../Models/EventPartnerLocationServiceStatusData';
@@ -139,6 +139,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
     function renderPartnerLocationEventServicesTable(partnerLocationEventServices: DisplayPartnerLocationEventServiceData[]) {
         return (
             <div>
+                <h2 className="color-primary mt-4 mb-5">Partner Location Event Requests</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
@@ -176,25 +177,10 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
     }
 
     return (
-        <Container>
-            <Row className="gx-2 py-5" lg={2}>
-                <Col lg={4} className="d-flex">
-                    <div className="bg-white py-2 px-5 shadow-sm rounded">
-                        <h2 className="color-primary mt-4 mb-5">Edit Partner Location Services</h2>
-                        <p>
-                            This page allows you to respond to requests from TrashMob.eco users to help them clean up the local community. When a new event is set up, and a user selects one of your services
-                            the location contacts will be notified to accept or decline the request here.
-                        </p>
-                    </div>
-                </Col>
-                <Col lg={8}>
-                    <div className="bg-white p-5 shadow-sm rounded">
-                        {!isPartnerLocationEventDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-                        {isPartnerLocationEventDataLoaded && partnerLocationEvents.length === 0 && <p> <em>There are no event requests for this location.</em></p>}
-                        {isPartnerLocationEventDataLoaded && partnerLocationEvents.length !== 0 && renderPartnerLocationEventServicesTable(partnerLocationEvents)}
-                    </div>
-                </Col>
-            </Row>
-        </Container >
+        <div className="bg-white p-5 shadow-sm rounded">
+            {!isPartnerLocationEventDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
+            {isPartnerLocationEventDataLoaded && partnerLocationEvents.length === 0 && <p> <em>There are no event requests for this location.</em></p>}
+            {isPartnerLocationEventDataLoaded && partnerLocationEvents.length !== 0 && renderPartnerLocationEventServicesTable(partnerLocationEvents)}
+        </div>
     );
 }
