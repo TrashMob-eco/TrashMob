@@ -304,7 +304,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderServiceTypeToolTip}>
-                                    <Form.Label className="control-label" htmlFor="ServiceType">Service Type:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="ServiceType">Service Type</Form.Label>
                                 </OverlayTrigger>
                                 <div>
                                     <select disabled={isEdit} data-val="true" name="serviceTypeId" defaultValue={serviceTypeId} onChange={(val) => selectServiceType(val.target.value)} required>
@@ -319,7 +319,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                                    <Form.Label className="control-label" htmlFor="serviceType">Notes</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="serviceType">Notes</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="notes" defaultValue={notes} onChange={val => handleNotesChanged(val.target.value)} maxLength={parseInt('64')} required />
                                 <span style={{ color: "red" }}>{notesErrors}</span>
@@ -327,13 +327,13 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                         </Col>
                         <Col>
                             <Form.Group>
-                                <Form.Label className="control-label" htmlFor="createdDate">Created Date</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5" htmlFor="createdDate">Created Date</Form.Label>
                                 <Form.Control type="text" disabled defaultValue={createdDate ? createdDate.toLocaleString() : ""} />
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group>
-                                <Form.Label className="control-label" htmlFor="lastUpdatedDate">Last Updated Date</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5" htmlFor="lastUpdatedDate">Last Updated Date</Form.Label>
                                 <Form.Control type="text" disabled defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
                             </Form.Group>
                         </Col>

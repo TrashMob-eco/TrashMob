@@ -313,7 +313,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderPartnerLocationNameToolTip}>
-                                    <Form.Label className="control-label" htmlFor="LocationName">Location Name:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="LocationName">Location Name</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="locationName" defaultValue={locationName} onChange={val => handleLocationNameChanged(val.target.value)} maxLength={parseInt('64')} required />
                                 <span style={{ color: "red" }}>{locationNameErrors}</span>
@@ -322,7 +322,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderIsPartnerLocationActiveToolTip}>
-                                    <Form.Label className="control-label" htmlFor="IsPartnerLocationActive">Is Partner Location Active:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="IsPartnerLocationActive">Is Partner Location Active</Form.Label>
                                 </OverlayTrigger >
                                 <ToggleButton
                                     type="checkbox"
@@ -340,7 +340,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
-                                    <Form.Label className="control-label" htmlFor="StreetAddress">Street Address:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="StreetAddress">Street Address</Form.Label>
                                 </OverlayTrigger>
                                 <span>{streetAddress}</span>
                             </Form.Group>
@@ -348,7 +348,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderCityToolTip}>
-                                    <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="City">City</Form.Label>
                                 </OverlayTrigger >
                                 <span>{city}</span>
                             </Form.Group>
@@ -356,7 +356,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                    <Form.Label className="control-label" htmlFor="PostalCode">Postal Code:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="PostalCode">Postal Code</Form.Label>
                                 </OverlayTrigger >
                                 <span>{postalCode}</span>
                             </Form.Group>
@@ -366,7 +366,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
-                                    <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Country">Country</Form.Label>
                                 </OverlayTrigger >
                                 <span>{country}</span>
                             </Form.Group>
@@ -374,7 +374,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
-                                    <Form.Label className="control-label" htmlFor="Region">Region:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Region">Region</Form.Label>
                                 </OverlayTrigger >
                                 <span>{region}</span>
                             </Form.Group>
@@ -382,14 +382,14 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                     </Form.Row>
                     <Form.Group className="required">
                         <OverlayTrigger placement="top" overlay={renderPublicNotesToolTip}>
-                            <Form.Label className="control-label">Public Notes:</Form.Label>
+                            <Form.Label className="control-label font-weight-bold h5">Public Notes</Form.Label>
                         </OverlayTrigger>
                         <Form.Control as="textarea" defaultValue={publicNotes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handlePublicNotesChanged(val.target.value)} required />
                         <span style={{ color: "red" }}>{publicNotesErrors}</span>
                     </Form.Group >
                     <Form.Group>
                         <OverlayTrigger placement="top" overlay={renderPrivateNotesToolTip}>
-                            <Form.Label className="control-label">Private Notes:</Form.Label>
+                            <Form.Label className="control-label font-weight-bold h5">Private Notes</Form.Label>
                         </OverlayTrigger>
                         <Form.Control as="textarea" defaultValue={privateNotes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handlePrivateNotesChanged(val.target.value)} />
                     </Form.Group >
@@ -407,7 +407,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
-                                    <Form.Label className="control-label" htmlFor="createdDate">Created Date:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="createdDate">Created Date</Form.Label>
                                 </OverlayTrigger>
                                 <span>{createdDate ? createdDate.toLocaleString() : ""}</span>
                             </Form.Group>
@@ -415,7 +415,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
-                                    <Form.Label className="control-label" htmlFor="lastUpdatedDate">Last Updated Date:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="lastUpdatedDate">Last Updated Date</Form.Label>
                                 </OverlayTrigger>
                                 <span>{lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""}</span>
                             </Form.Group>

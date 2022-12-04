@@ -235,7 +235,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderNameToolTip}>
-                                    <Form.Label className="control-label">Partner Name:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5">Partner Name</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{nameErrors}</span>
@@ -244,7 +244,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderWebsiteToolTip}>
-                                    <Form.Label className="control-label">Website:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5">Website</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={website} maxLength={parseInt('1024')} onChange={(val) => handleWebsiteChanged(val.target.value)} />
                             </Form.Group>
@@ -252,7 +252,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderPartnerStatusToolTip}>
-                                    <Form.Label className="control-label" htmlFor="Partner Status">Partner Status:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Partner Status">Partner Status</Form.Label>
                                 </OverlayTrigger>
                                 <div>
                                     <select data-val="true" name="partnerStatusId" defaultValue={partnerStatusId} onChange={(val) => selectPartnerStatus(val.target.value)} required>
@@ -267,7 +267,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderPartnerTypeToolTip}>
-                                    <Form.Label className="control-label" htmlFor="PartnerType">Partner Type:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="PartnerType">Partner Type</Form.Label>
                                 </OverlayTrigger>
                                 <div>
                                     <select data-val="true" name="partnerTypeId" defaultValue={partnerTypeId} onChange={(val) => selectPartnerType(val.target.value)} required>
@@ -282,14 +282,14 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                     </Form.Row>
                     <Form.Group className="required">
                         <OverlayTrigger placement="top" overlay={renderPublicNotesToolTip}>
-                            <Form.Label className="control-label">Public Notes:</Form.Label>
+                            <Form.Label className="control-label font-weight-bold h5">Public Notes</Form.Label>
                         </OverlayTrigger>
                         <Form.Control as="textarea" defaultValue={publicNotes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handlePublicNotesChanged(val.target.value)} required />
                         <span style={{ color: "red" }}>{publicNotesErrors}</span>
                     </Form.Group >
                     <Form.Group>
                         <OverlayTrigger placement="top" overlay={renderPrivateNotesToolTip}>
-                            <Form.Label className="control-label">Private Notes:</Form.Label>
+                            <Form.Label className="control-label font-weight-bold h5">Private Notes</Form.Label>
                         </OverlayTrigger>
                         <Form.Control as="textarea" defaultValue={privateNotes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handlePrivateNotesChanged(val.target.value)} />
                     </Form.Group >
@@ -301,7 +301,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
-                                    <Form.Label className="control-label" htmlFor="createdDate">Created Date:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="createdDate">Created Date</Form.Label>
                                 </OverlayTrigger>
                                 <span>{createdDate.toString()}</span>
                             </Form.Group>
@@ -309,7 +309,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
-                                    <Form.Label className="control-label" htmlFor="lastUpdatedDate">Last Updated Date:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="lastUpdatedDate">Last Updated Date</Form.Label>
                                 </OverlayTrigger>
                                 <span>{lastUpdatedDate.toString()}</span>
                             </Form.Group>

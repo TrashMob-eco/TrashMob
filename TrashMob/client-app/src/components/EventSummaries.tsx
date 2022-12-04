@@ -65,7 +65,7 @@ export const EventSummaries: React.FC = () => {
                     <Form.Row>
                         <Col>
                             <Form.Group>
-                                <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5" htmlFor="Country">Country</Form.Label>
                                 <div>
                                     <CountryDropdown name="country" value={country ?? ""} onChange={(val) => selectCountry(val)} />
                                 </div>
@@ -73,7 +73,7 @@ export const EventSummaries: React.FC = () => {
                         </Col>
                         <Col>
                             <Form.Group>
-                                <Form.Label className="control-label" htmlFor="Region">Region:</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5" htmlFor="Region">Region</Form.Label>
                                 <div>
                                     <RegionDropdown
                                         country={country ?? ""}
@@ -84,13 +84,13 @@ export const EventSummaries: React.FC = () => {
                         </Col>
                         <Col>
                             <Form.Group>
-                                <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5" htmlFor="City">City</Form.Label>
                                 <Form.Control type="text" name="city" value={city} onChange={(val) => handleCityChanged(val.target.value)} maxLength={parseInt('256')} required />
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group>
-                                <Form.Label className="control-label" htmlFor="PostalCode">Postal Code:</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5" htmlFor="PostalCode">Postal Code</Form.Label>
                                 <Form.Control type="text" name="postalCode" value={postalCode} onChange={(val) => handlePostalCodeChanged(val.target.value)} maxLength={parseInt('25')} />
                             </Form.Group>
                         </Col>

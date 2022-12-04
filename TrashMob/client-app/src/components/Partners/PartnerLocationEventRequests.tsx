@@ -85,32 +85,6 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
         }
     }, [props.partnerLocationId, props.isUserLoaded, props.currentUser.id])
 
-    function OnEventPartnerLocationsUpdated() {
-        if (props.partnerLocationId && props.partnerLocationId !== Guid.EMPTY) {
-            const account = msalClient.getAllAccounts()[0];
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/partnerlocationeventservices/' + props.partnerLocationId, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<DisplayPartnerLocationEventData[]>)
-                    .then(data => {
-                        setPartnerLocationEvents(data);
-                        setIsPartnerLocationEventDataLoaded(true)
-                    })
-            });
-        }
-    }
-
     // This will handle the submit form event.  
     function handleRequestPartnerAssistance(eventId: string, partnerLocationId: string, serviceTypeId: number, eventPartnerLocationServiceStatusId: number) {
 
@@ -124,7 +98,6 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
 
         var evtdata = JSON.stringify(eventData);
 
-        // PUT request for Edit Event.  
         const account = msalClient.getAllAccounts()[0];
 
         var request = {
@@ -141,7 +114,15 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
                 headers: headers,
                 body: evtdata,
             }).then(() => {
-                OnEventPartnerLocationsUpdated();
+                fetch('/api/partnerlocationeventservices/' + partnerLocationId, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<DisplayPartnerLocationEventData[]>)
+                    .then(data => {
+                        setPartnerLocationEvents(data);
+                        setIsPartnerLocationEventDataLoaded(true)
+                    })
             });
         })
     }

@@ -25,5 +25,6 @@
         InviteBusinessPartner = 21,
         InviteNewUserToBePartnerAdmin = 22,
         InviteExistingUserToBePartnerAdmin = 23,
+        EventPartnerPickupRequest = 24,
     }
 }

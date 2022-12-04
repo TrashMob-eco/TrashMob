@@ -311,7 +311,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderSocialMediaAccountNameToolTip}>
-                                    <Form.Label className="control-label" htmlFor="AccountName">AccountName</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="AccountName">AccountName</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="username" defaultValue={accountName} onChange={val => handleAccountNameChanged(val.target.value)} maxLength={parseInt('64')} required />
                             </Form.Group>
@@ -319,7 +319,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderSocialMediaAccountTypeToolTip}>
-                                    <Form.Label className="control-label" htmlFor="SocialMediaAccountType">Social Media Account Type:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="SocialMediaAccountType">Social Media Account Type</Form.Label>
                                 </OverlayTrigger>
                                 <div>
                                     <select data-val="true" name="socialMediaAccountTypeId" defaultValue={socialMediaAccountTypeId} onChange={(val) => selectSocialMediaAccountType(val.target.value)} required>
@@ -354,7 +354,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                     <Form.Group className="form-group">
                         <Col>
                             <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
-                                <Form.Label className="control-label">Created Date:</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5">Created Date</Form.Label>
                             </OverlayTrigger>
                             <Form.Group>
                                 <Form.Control type="text" disabled defaultValue={createdDate ? createdDate.toLocaleString() : ""} />
@@ -362,7 +362,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                         </Col>
                         <Col>
                             <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
-                                <Form.Label className="control-label">Last Updated Date:</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5">Last Updated Date</Form.Label>
                             </OverlayTrigger>
                             <Form.Group>
                                 <Form.Control type="text" disabled defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
