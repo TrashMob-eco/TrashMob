@@ -3,8 +3,9 @@ import * as React from 'react'
 import { RouteComponentProps } from 'react-router-dom';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
-import { Button } from 'react-bootstrap';
+import { Col, Container, Dropdown, Row } from 'react-bootstrap';
 import PartnerData from '../Models/PartnerData';
+import { XSquare } from 'react-bootstrap-icons';
 
 interface AdminPartnersPropsType extends RouteComponentProps {
     isUserLoaded: boolean;
@@ -82,13 +83,24 @@ export const AdminPartners: React.FC<AdminPartnersPropsType> = (props) => {
         }
     }
 
+
+    const partnerActionDropdownList = (partnerId: string, partnerName: string) => {
+        return (
+            <>
+                <Dropdown.Item onClick={() => handleDelete(partnerId, partnerName)}><XSquare />Delete Partner</Dropdown.Item>
+            </>
+        )
+    }
+
     function renderPartnersTable(partners: PartnerData[]) {
         return (
             <div>
+                <h2 className="color-primary mt-4 mb-5">Partners</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel">
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -96,8 +108,13 @@ export const AdminPartners: React.FC<AdminPartnersPropsType> = (props) => {
                             return (
                                 <tr key={partner.id.toString()}>
                                     <td>{partner.name}</td>
-                                    <td>
-                                        <Button className="action" onClick={() => handleDelete(partner.id, partner.name)}>Delete Partner</Button>
+                                    <td className="btn py-0">
+                                        <Dropdown role="menuitem">
+                                            <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                            <Dropdown.Menu id="share-menu">
+                                                {partnerActionDropdownList(partner.id, partner.name)}
+                                            </Dropdown.Menu>
+                                        </Dropdown>
                                     </td>
                                 </tr>)
                         }
@@ -113,9 +130,14 @@ export const AdminPartners: React.FC<AdminPartnersPropsType> = (props) => {
         : <p><em>Loading...</em></p>;
 
     return (
-        <div>
-            <h1 id="tableLabel">Partners</h1>
-            {contents}
-        </div>
+        <Container>
+            <Row className="gx-2 py-5" lg={2}>
+                <Col lg={12}>
+                    <div className="bg-white p-5 shadow-sm rounded">
+                        {contents}
+                    </div>
+                </Col>
+            </Row>
+        </Container >
     );
 }

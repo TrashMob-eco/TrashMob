@@ -1,11 +1,12 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
-import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Button, Col, Dropdown, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
 import PartnerLocationContactData from '../Models/PartnerLocationContactData';
 import * as Constants from '../Models/Constants';
+import { Pencil, XSquare } from 'react-bootstrap-icons';
 
 export interface PartnerLocationContactsDataProps {
     partnerLocationId: string;
@@ -317,13 +318,19 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
         return <Tooltip {...props}>{ToolTips.PartnerLocationContactLastUpdatedDate}</Tooltip>
     }
 
+    const locationContactActionDropdownList = (contactId: string, contactName: string) => {
+        return (
+            <>
+                <Dropdown.Item onClick={() => editContact(contactId)}><Pencil />Edit Service</Dropdown.Item>
+                <Dropdown.Item onClick={() => removeContact(contactId, contactName)}><XSquare />Remove Service</Dropdown.Item>
+            </>
+        )
+    }
+
     function renderPartnerLocationServicesTable(contacts: PartnerLocationContactData[]) {
         return (
             <div>
-                <p>
-                    This page allows you set the contacts for a particular location of your organization. These addresses will be sent emails when a TrashMob.eco user chooses to
-                    use the services offered by this location. This will allow you to accept or decline the request so that the user knows the status of their requests.
-                </p>
+                <h2 className="color-primary mt-4 mb-5">Partner Location Contacts</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
@@ -331,8 +338,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                             <th>Email</th>
                             <th>Phone</th>
                             <th>Notes</th>
-                            <th>Created Date</th>
-                            <th>Last Updated Date</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -342,13 +348,14 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                                 <td>{contact.email}</td>
                                 <td>{contact.phone}</td>
                                 <td>{contact.notes}</td>
-                                <td>{createdDate ? createdDate.toLocaleString() : ""}</td>
-                                <td>{lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""}</td>
-                                <td>
-                                    <Button className="action" onClick={() => editContact(contact.id)}>Edit Contact</Button>
-                                    <Button className="action" onClick={() => removeContact(contact.id, contact.name)}>Remove Contact</Button>
-                                </td>
-                            </tr>
+                                <td className="btn py-0">
+                                    <Dropdown role="menuitem">
+                                        <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                        <Dropdown.Menu id="share-menu">
+                                            {locationContactActionDropdownList(contact.id, contact.name)}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </td>                            </tr>
                         )}
                     </tbody>
                 </table>
@@ -425,13 +432,11 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
     }
 
     return (
-        <>
-            <div>
-                {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner location must be created first.</em></p>}
-                {!isPartnerLocationContactsDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-                {isPartnerLocationContactsDataLoaded && renderPartnerLocationServicesTable(partnerLocationContacts)}
-                {isEditOrAdd && renderAddPartnerLocationContact()}
-            </div>
-        </>
+        <div className="bg-white p-5 shadow-sm rounded">
+            {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner location must be created first.</em></p>}
+            {!isPartnerLocationContactsDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
+            {isPartnerLocationContactsDataLoaded && renderPartnerLocationServicesTable(partnerLocationContacts)}
+            {isEditOrAdd && renderAddPartnerLocationContact()}
+        </div>
     );
 }

@@ -3,7 +3,8 @@ import * as React from 'react'
 import { RouteComponentProps } from 'react-router-dom';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
-import { Button } from 'react-bootstrap';
+import { Col, Container, Dropdown, Row } from 'react-bootstrap';
+import { XSquare } from 'react-bootstrap-icons';
 
 interface AdminUsersPropsType extends RouteComponentProps {
     isUserLoaded: boolean;
@@ -83,9 +84,17 @@ export const AdminUsers: React.FC<AdminUsersPropsType> = (props) => {
         }
     }
 
+    const userActionDropdownList = (userId: string, userName: string) => {
+        return (
+            <>
+                <Dropdown.Item onClick={() => handleDelete(userId, userName)}><XSquare />Delete User</Dropdown.Item>
+            </>
+        )
+    }
     function renderUsersTable(users: UserData[]) {
         return (
             <div>
+                <h2 className="color-primary mt-4 mb-5">Users</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel">
                     <thead>
                         <tr>
@@ -95,6 +104,7 @@ export const AdminUsers: React.FC<AdminUsersPropsType> = (props) => {
                             <th>Region</th>
                             <th>Country</th>
                             <th>Postal Code</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -107,8 +117,13 @@ export const AdminUsers: React.FC<AdminUsersPropsType> = (props) => {
                                     <td>{user.region}</td>
                                     <td>{user.country}</td>
                                     <td>{user.postalCode}</td>
-                                    <td>
-                                        <Button className="action" onClick={() => handleDelete(user.id, user.userName)}>Delete User</Button>
+                                    <td className="btn py-0">
+                                        <Dropdown role="menuitem">
+                                            <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                            <Dropdown.Menu id="share-menu">
+                                                {userActionDropdownList(user.id, user.userName)}
+                                            </Dropdown.Menu>
+                                        </Dropdown>
                                     </td>
                                 </tr>)
                         }
@@ -124,10 +139,15 @@ export const AdminUsers: React.FC<AdminUsersPropsType> = (props) => {
         : <p><em>Loading...</em></p>;
 
     return (
-        <div>
-            <h1 id="tableLabel" >Users</h1>
-            {contents}
-        </div>
+        <Container>
+            <Row className="gx-2 py-5" lg={2}>
+                <Col lg={12}>
+                    <div className="bg-white p-5 shadow-sm rounded">
+                        {contents}
+                    </div>
+                </Col>
+            </Row>
+        </Container >
     );
 }
 

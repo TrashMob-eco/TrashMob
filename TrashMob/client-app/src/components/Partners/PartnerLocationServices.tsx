@@ -1,12 +1,13 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
-import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Button, Col, Dropdown, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
 import ServiceTypeData from '../Models/ServiceTypeData';
 import { getServiceType } from '../../store/serviceTypeHelper';
 import PartnerLocationServiceData from '../Models/PartnerLocationServiceData';
+import { Pencil, XSquare } from 'react-bootstrap-icons';
 
 export interface PartnerLocationServicesDataProps {
     partnerLocationId: string;
@@ -260,20 +261,25 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
         return <Tooltip {...props}>{ToolTips.PartnerServiceType}</Tooltip>
     }
 
+    const locationServiceActionDropdownList = (serviceTypeId: number) => {
+        return (
+            <>
+                <Dropdown.Item onClick={() => editService(serviceTypeId)}><Pencil />Edit Service</Dropdown.Item>
+                <Dropdown.Item onClick={() => removeService(serviceTypeId)}><XSquare />Remove Service</Dropdown.Item>
+            </>
+        )
+    }
+
     function renderPartnerLocationServicesTable(services: PartnerLocationServiceData[]) {
         return (
             <div>
-                <p>
-                    This page allows you set up the services offered by a partner location. That is, what capabilities are you willing to provide to TrashMob.eco users to help them
-                    clean up the local community? This support is crucial to the success of TrashMob.eco volunteers, and we appreciate your help!
-                </p>
+                <h2 className="color-primary mt-4 mb-5">Partner Location Services</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
                             <th>Service Type</th>
                             <th>Notes</th>
-                            <th>Created Date</th>
-                            <th>Last Updated Date</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -281,11 +287,13 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                             <tr key={service.serviceTypeId}>
                                 <td>{getServiceType(serviceTypeList, service.serviceTypeId)}</td>
                                 <td>{service.notes}</td>
-                                <td>{createdDate ? createdDate.toLocaleString() : ""}</td>
-                                <td>{lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""}</td>
-                                <td>
-                                    <Button className="action" onClick={() => editService(service.serviceTypeId)}>Edit Service</Button>
-                                    <Button className="action" onClick={() => removeService(service.serviceTypeId)}>Remove Service</Button>
+                                <td className="btn py-0">
+                                    <Dropdown role="menuitem">
+                                        <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                        <Dropdown.Menu id="share-menu">
+                                            {locationServiceActionDropdownList(service.serviceTypeId)}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                 </td>
                             </tr>
                         )}
@@ -346,13 +354,11 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
     }
 
     return (
-        <>
-            <div>
-                {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner location must be created first.</em></p>}
-                {!isPartnerLocationServicesDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-                {isPartnerLocationServicesDataLoaded && partnerLocationServices && renderPartnerLocationServicesTable(partnerLocationServices)}
-                {(isEdit || isAdd) && renderAddPartnerService()}
-            </div>
-        </>
+        <div className="bg-white p-5 shadow-sm rounded">
+            {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner location must be created first.</em></p>}
+            {!isPartnerLocationServicesDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
+            {isPartnerLocationServicesDataLoaded && partnerLocationServices && renderPartnerLocationServicesTable(partnerLocationServices)}
+            {(isEdit || isAdd) && renderAddPartnerService()}
+        </div>
     );
 }

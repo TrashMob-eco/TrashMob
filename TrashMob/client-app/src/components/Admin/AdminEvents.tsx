@@ -3,8 +3,9 @@ import * as React from 'react'
 import { RouteComponentProps } from 'react-router-dom';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
-import { Button } from 'react-bootstrap';
+import { Col, Container, Dropdown, Row } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { Eye, Pencil, XSquare } from 'react-bootstrap-icons';
 
 interface AdminEventsPropsType extends RouteComponentProps {
     isUserLoaded: boolean;
@@ -45,9 +46,20 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
         }
     }, [props.isUserLoaded])
 
+    const eventActionDropdownList = (eventId: string) => {
+        return (
+            <>
+                <Dropdown.Item onClick={() => props.history.push('/manageeventdashboard/' + eventId)}><Pencil />Manage Event</Dropdown.Item>
+                <Dropdown.Item onClick={() => props.history.push('/cancelevent/' + eventId)}><XSquare />Delete Event</Dropdown.Item>
+                <Dropdown.Item onClick={() => props.history.push('/eventdetails/' + eventId)}><Eye />View Event</Dropdown.Item>
+            </>
+        )
+    }
+
     function renderEventsTable(events: EventData[]) {
         return (
             <div>
+                <h2 className="color-primary mt-4 mb-5">Events</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel">
                     <thead>
                         <tr>
@@ -57,6 +69,7 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
                             <th>Region</th>
                             <th>Country</th>
                             <th>Postal Code</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -69,10 +82,13 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
                                     <td>{mobEvent.region}</td>
                                     <td>{mobEvent.country}</td>
                                     <td>{mobEvent.postalCode}</td>
-                                    <td>
-                                        <Button className="action" onClick={() => props.history.push('/manageeventdashboard/' + mobEvent.id)}>Edit Event</Button>
-                                        <Button className="action" onClick={() => props.history.push('/cancelevent/' + mobEvent.id)}>Delete Event</Button>
-                                        <Button className="action" onClick={() => props.history.push('/eventdetails/' + mobEvent.id)}>View Details</Button>
+                                    <td className="btn py-0">
+                                        <Dropdown role="menuitem">
+                                            <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                            <Dropdown.Menu id="share-menu">
+                                                {eventActionDropdownList(mobEvent.id)}
+                                            </Dropdown.Menu>
+                                        </Dropdown>
                                     </td>
                                 </tr>)
                         }
@@ -88,10 +104,15 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
         : <p><em>Loading...</em></p>;
 
     return (
-        <div>
-            <h1 id="tableLabel" >All Events</h1>
-            {contents}
-        </div>
+        <Container>
+            <Row className="gx-2 py-5" lg={2}>
+                <Col lg={12}>
+                    <div className="bg-white p-5 shadow-sm rounded">
+                        {contents}
+                    </div>
+                </Col>
+            </Row>
+        </Container >
     );
 }
 

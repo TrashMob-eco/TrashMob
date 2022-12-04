@@ -139,10 +139,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
     function renderPartnerLocationEventServicesTable(partnerLocationEventServices: DisplayPartnerLocationEventServiceData[]) {
         return (
             <div>
-                <p>
-                    This page allows you to respond to requests from TrashMob.eco users to help them clean up the local community. When a new event is set up, and a user selects one of your services
-                    the location contacts will be notified to accept or decline the request here.
-                </p>
+                <h2 className="color-primary mt-4 mb-5">Partner Location Event Requests</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
@@ -150,9 +147,8 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
                             <th>Event Name</th>
                             <th>Event Date</th>
                             <th>Event Address</th>
-                            <th>Event Description</th>
                             <th>Service Type</th>
-                            <th>Partner Status for this Event</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -160,9 +156,8 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
                             <tr key={partnerEvent.eventId.toString()}>
                                 <td>{partnerEvent.partnerLocationName}</td>
                                 <td>{partnerEvent.eventName}</td>
-                                <td>{new Date(partnerEvent.eventDate).toLocaleString()}</td>
+                                <td>{new Date(partnerEvent.eventDate).toDateString()}</td>
                                 <td>{partnerEvent.eventStreetAddress}, {partnerEvent.eventCity}</td>
-                                <td>{partnerEvent.eventDescription}</td>
                                 <td>{getServiceType(serviceTypeList, partnerEvent.serviceTypeId)}</td>
                                 <td>{getEventPartnerLocationServiceStatus(eventPartnerStatusList, partnerEvent.eventPartnerLocationStatusId)}</td>
                                 <td className="btn py-0">
@@ -182,13 +177,10 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
     }
 
     return (
-        <>
-            <div>
-                {/*{props.partnerLocationId === Guid.EMPTY && <p> <em>Partner location must be created first.</em></p>}*/}
-                {!isPartnerLocationEventDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-                {isPartnerLocationEventDataLoaded && partnerLocationEvents.length === 0 && <p> <em>There are no event requests for this location.</em></p>}
-                {isPartnerLocationEventDataLoaded && partnerLocationEvents.length !== 0 && renderPartnerLocationEventServicesTable(partnerLocationEvents)}
-            </div>
-        </>
+        <div className="bg-white p-5 shadow-sm rounded">
+            {!isPartnerLocationEventDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
+            {isPartnerLocationEventDataLoaded && partnerLocationEvents.length === 0 && <p> <em>There are no event requests for this location.</em></p>}
+            {isPartnerLocationEventDataLoaded && partnerLocationEvents.length !== 0 && renderPartnerLocationEventServicesTable(partnerLocationEvents)}
+        </div>
     );
 }
