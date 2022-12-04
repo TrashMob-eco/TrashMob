@@ -3,11 +3,12 @@ import * as React from 'react'
 import { RouteComponentProps } from 'react-router-dom';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
-import { Button } from 'react-bootstrap';
+import { Col, Container, Dropdown, Row } from 'react-bootstrap';
 import PartnerRequestData from '../Models/PartnerRequestData';
 import PartnerRequestStatusData from '../Models/PartnerRequestStatusData';
 import { getPartnerRequestStatus } from '../../store/partnerRequestStatusHelper';
 import * as Constants from '../Models/Constants'
+import { CheckSquare, XSquare } from 'react-bootstrap-icons';
 
 interface AdminPartnerRequestsPropsType extends RouteComponentProps {
     isUserLoaded: boolean;
@@ -92,7 +93,8 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
                         .then(data => {
                             setPartnerRequestList(data);
                             setIsPartnerRequestDataLoaded(true);
-                        }); });
+                        });
+                });
             });
         }
     }
@@ -135,9 +137,19 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
         }
     }
 
+    const partnerRequestsActionDropdownList = (partnerRequestId: string, partnerRequestName: string, isBecomeAPartnerRequest: boolean, partnerRequestStatusId: number) => {
+        return (
+            <>
+                <Dropdown.Item disabled={!isBecomeAPartnerRequest || partnerRequestStatusId !== Constants.PartnerRequestStatusPending} onClick={() => handleApprove(partnerRequestId, partnerRequestName)}><CheckSquare />Approve Partner</Dropdown.Item>
+                <Dropdown.Item disabled={!isBecomeAPartnerRequest || partnerRequestStatusId !== Constants.PartnerRequestStatusPending } onClick={() => handleDeny(partnerRequestId, partnerRequestName)}><XSquare />Deny Partner</Dropdown.Item>
+            </>
+        )
+    }
+
     function renderPartnerRequestsTable(partnerRequests: PartnerRequestData[]) {
         return (
             <div>
+                <h2 className="color-primary mt-4 mb-5">Partner Requests</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel">
                     <thead>
                         <tr>
@@ -168,9 +180,13 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
                                     <td>{getPartnerRequestStatus(partnerRequestStatusList, partnerRequest.partnerRequestStatusId)}</td>
                                     <td>{partnerRequest.isBecomeAPartnerRequest}</td>
                                     <td>{partnerRequest.notes}</td>
-                                    <td>
-                                        <Button hidden={!partnerRequest.isBecomeAPartnerRequest || partnerRequest.partnerRequestStatusId !== Constants.PartnerRequestStatusPending } className="action" onClick={() => handleApprove(partnerRequest.id, partnerRequest.name)}>Approve Partner</Button>
-                                        <Button hidden={!partnerRequest.isBecomeAPartnerRequest || partnerRequest.partnerRequestStatusId !== Constants.PartnerRequestStatusPending} className="action" onClick={() => handleDeny(partnerRequest.id, partnerRequest.name)}>Deny Partner</Button>
+                                    <td className="btn py-0">
+                                        <Dropdown role="menuitem">
+                                            <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                            <Dropdown.Menu id="share-menu">
+                                                {partnerRequestsActionDropdownList(partnerRequest.id, partnerRequest.name, partnerRequest.isBecomeAPartnerRequest, partnerRequest.partnerRequestStatusId)}
+                                            </Dropdown.Menu>
+                                        </Dropdown>
                                     </td>
                                 </tr>)
                         }
@@ -186,10 +202,15 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
         : <p><em>Loading...</em></p>;
 
     return (
-        <div>
-            <h1 id="tableLabel">Partner Requests</h1>
-            {contents}
-        </div>
+        <Container>
+            <Row className="gx-2 py-5" lg={2}>
+                <Col lg={12}>
+                    <div className="bg-white p-5 shadow-sm rounded">
+                        {contents}
+                    </div>
+                </Col>
+            </Row>
+        </Container >
     );
 }
 

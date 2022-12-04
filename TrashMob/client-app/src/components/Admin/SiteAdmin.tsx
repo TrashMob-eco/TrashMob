@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ButtonGroup, ToggleButton } from 'react-bootstrap';
+import { ButtonGroup, Col, Container, Row, ToggleButton } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import UserData from '../Models/UserData';
 import { AdminEvents } from './AdminEvents';
@@ -115,14 +115,17 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     }
 
     return (
-        <>
-            <h1>Site Administration</h1>
-            <div>
-                {!isSiteAdmin && <p><em>Access Denied</em></p>}
-                {isSiteAdmin && renderAdminTable()}
-
-            </div>
-        </>
+        <Container>
+            <h1 className='font-weight-bold'>Site Administration</h1>
+            <Row className="gx-2 py-5" lg={2}>
+                <Col lg={12}>
+                    <div>
+                        {!isSiteAdmin && <p><em>Access Denied</em></p>}
+                        {isSiteAdmin && renderAdminTable()}
+                    </div>
+                </Col>
+            </Row>
+        </Container >
     )
 }
 

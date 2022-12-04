@@ -8,7 +8,7 @@ import * as Constants from '../Models/Constants';
 import { Guid } from 'guid-typescript';
 import { getInvitationStatus } from '../../store/invitationStatusHelper';
 import InvitationStatusData from '../Models/InvitationStatusData';
-import { Envelope, Mailbox, XSquare } from 'react-bootstrap-icons';
+import { Envelope, XSquare } from 'react-bootstrap-icons';
 
 export interface PartnerAdminsDataProps {
     partnerId: string;
