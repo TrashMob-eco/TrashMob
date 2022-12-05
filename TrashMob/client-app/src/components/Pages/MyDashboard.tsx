@@ -421,9 +421,10 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         )
     }
 
-    const pickupRequestActionDropdownList = (pickupRequestId: string) => {
+    const pickupRequestActionDropdownList = (pickupRequestId: string, eventId: string) => {
         return (
             <>
+                <Dropdown.Item href={'/eventsummary/' + eventId}><FileEarmarkCheck />Event Summary</Dropdown.Item>
                 <Dropdown.Item onClick={() => handleMarkAsPickedUp(pickupRequestId)}><CheckSquare />Marked picked up</Dropdown.Item>
             </>
         )
@@ -581,7 +582,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                         <Dropdown role="menuitem">
                                             <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
                                             <Dropdown.Menu id="share-menu">
-                                                {pickupRequestActionDropdownList(displayPickup.id)}
+                                                {pickupRequestActionDropdownList(displayPickup.id, displayPickup.eventId)}
                                             </Dropdown.Menu>
                                         </Dropdown>
                                     </td>
