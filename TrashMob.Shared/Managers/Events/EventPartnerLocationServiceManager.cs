@@ -387,8 +387,11 @@
             var mobEvent = await eventRepository.GetAsync(eventId, cancellationToken);
 
             // Simple match on postal code or city first. Radius later
-            var partnerLocations = partnerLocationRepository.Get(pl => pl.IsActive && pl.Partner.PartnerStatusId == (int)PartnerStatusEnum.Active &&
-                        (pl.PostalCode == mobEvent.PostalCode || pl.City == mobEvent.City))
+            var partnerLocations = partnerLocationRepository.Get(pl => pl.IsActive && 
+                                                                 pl.Partner.PartnerStatusId == (int)PartnerStatusEnum.Active &&
+                                                                 (pl.PostalCode == mobEvent.PostalCode || pl.City == mobEvent.City) 
+                                                                 && pl.PartnerLocationContacts.Count > 0
+                                                                 && pl.PartnerLocationServices.Count > 0)
                                 .Include(p => p.Partner);
 
             return partnerLocations;
