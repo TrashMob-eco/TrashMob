@@ -25,7 +25,7 @@ export const AboutUs: React.FC = () => {
                         </div>
                     </Col>
                     <Col className="mt-3 d-flex justify-content-center">
-                        <Image src={trashcans} alt="trashcans" className="h-75" />
+                        <Image src={trashcans} alt="trash cans" className="h-75" />
                     </Col>
                 </Row>
             </Container>

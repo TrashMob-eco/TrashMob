@@ -126,7 +126,7 @@ export const GettingStarted: React.FC = () => {
                             </div>
                         </Col>
                         <Col md={6}>
-                            <Image src={wear} alt="wear" className="m-0 h-100" />
+                            <Image src={wear} alt="people gathering litter" className="m-0 h-100" />
                         </Col>
                     </Row>
                 </Container>
@@ -150,7 +150,7 @@ export const GettingStarted: React.FC = () => {
                         </div>
                     </Col>
                     <Col md={6}>
-                        <Image src={highways} alt="highways" className="m-0 h-100" />
+                        <Image src={highways} alt="highway overpasses" className="m-0 h-100" />
                     </Col >
                 </Row >
             </Container >
