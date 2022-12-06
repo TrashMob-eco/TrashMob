@@ -5,7 +5,7 @@ import heroImg from '../assets/partnerships/whatIsPartnerships.svg';
 import Safetykits from '../assets/partnerships/Safetykits.svg';
 import Supplies from '../assets/partnerships/Supplies.svg';
 import TrashDisposal from '../assets/partnerships/TrashDisposal.svg';
-import Dollarsign from '../assets/partnerships/TrashDisposal.svg';
+import Dollarsign from '../assets/partnerships/dollarsign.svg';
 import Garbage from '../assets/partnerships/garbage.svg';
 import { Link } from 'react-router-dom';
 
