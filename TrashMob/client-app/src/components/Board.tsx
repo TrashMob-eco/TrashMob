@@ -4,6 +4,7 @@ import globes from './assets/gettingStarted/globes.png';
 import linkedIn from './assets/card/linkedin.svg';
 import JoeBeernink from './assets/boardOfDirectors/JoeBeernink.svg';
 import DarrylWalter from './assets/boardOfDirectors/DarrylWalter.svg';
+import DarylBarber from './assets/boardOfDirectors/DarylBarber.jpg';
 import JakeDiliberto from './assets/boardOfDirectors/JakeDiliberto.svg';
 import JeremiahSteen from './assets/boardOfDirectors/JeremiahSteen.svg';
 import KevinGleason from './assets/boardOfDirectors/KevinGleason.svg';
@@ -47,7 +48,7 @@ export const Board: React.FC = () => {
                 <div className='p-4 directorCard'>
                     <Row>
                         <Col md={5}>
-                            {/*<Image src={DarylBarber} alt="Daryl Barber" className="h-100 mt-0 object-fit-cover rounded" />*/}
+                            <Image src={DarylBarber} alt="Daryl Barber" className="h-100 mt-0 object-fit-cover rounded" />
                         </Col>
                         <Col md={7}>
                             <div className='d-flex justify-content-between align-items-center'>
