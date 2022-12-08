@@ -236,6 +236,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                                 setPickupLocationsData(data);
                                 setIsPickupLocationsDataLoaded(true);
                                 setIsSubmitEnabled(false);
+                                setIsAddEnabled(true);
                                 setIsEditOrAdd(false);
                             })
                     });
@@ -308,7 +309,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                             if (data.some(pl => pl.hasBeenSubmitted === false)) {
                                 setIsSubmitEnabled(true);
                             }
-
+                            setIsAddEnabled(true);
                             setIsEditOrAdd(false);
                         })
                 });
