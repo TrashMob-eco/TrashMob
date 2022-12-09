@@ -45,7 +45,7 @@ export const Partnerships: FC<any> = () => {
                                 <h4>No partner for your event? Invite local government or business to join TrashMob.eco as a partner!</h4>
                             </div>
                             <div className='align-items-center'>
-                                <Link className="btn btn-primary banner-button" to="/requestapartner">Invite a partner</Link>
+                                <Link className="btn btn-primary banner-button" to="/inviteapartner">Invite a partner</Link>
                             </div>
                         </Col>
                         <Col sm={6}>
