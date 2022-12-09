@@ -779,7 +779,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                 </div>
                 <div className="d-flex my-5 mb-4 justify-content-between">
                     <h4 className="font-weight-bold mr-2 mt-0 active-line pb-2">My Partnerships ({myPartnerRequests.length + myPartners.length})</h4>
-                    <Link className="btn btn-primary banner-button" to="/requestapartner">Send invitation to join TrashMob.eco as a partner</Link>
+                    <Link className="btn btn-primary banner-button" to="/inviteapartner">Send invitation to join TrashMob.eco as a partner</Link>
                     <Link className="btn btn-primary banner-button" to="/becomeapartner">Apply to become a partner</Link>
                 </div>
                 <div className="mb-4 bg-white">
