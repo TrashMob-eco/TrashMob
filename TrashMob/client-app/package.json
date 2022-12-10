@@ -29,7 +29,7 @@
     "node-sass": "^6.0.0",
     "oidc-client": "^1.11.5",
     "react": "^17.0.2",
-    "react-azure-maps": "^0.4.2",
+    "react-azure-maps": "^0.4.4",
     "react-bootstrap": "^1.6.0",
     "react-bootstrap-icons": "^1.7.2",
     "react-bootstrap-typeahead": "^6.0.0-alpha.9",
