@@ -49,6 +49,9 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
     const [totalParticipants, setTotalParticipants] = useState<number>(0);
 
     useEffect(() => {
+
+        window.scrollTo(0, 0);
+
         const headers = getDefaultHeaders('GET');
         fetch('/api/eventtypes', {
             method: 'GET',

@@ -5,7 +5,6 @@ import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-// import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import { Button, Col, Container, Form, Image, ModalBody, Row } from 'react-bootstrap';
 import { Modal } from 'reactstrap';
 import * as MapStore from '../../store/MapStore';
@@ -65,6 +64,9 @@ const UserProfile: FC<UserProfileProps> = (props) => {
     const [units, setUnits] = useState<string[]>([]);
 
     useEffect(() => {
+
+        window.scrollTo(0, 0);
+
         setUnits(["mi", "km"]);
         if (props.isUserLoaded && !isDataLoaded) {
             const account = msalClient.getAllAccounts()[0];

@@ -71,7 +71,23 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
                 </Col>
             </Row>
         </Container>
-        {contents}
+        <Container>
+            <Row className="gx-2 py-5" lg={2}>
+                <Col lg={4} className="d-flex">
+                    <div className="bg-white py-2 px-5 shadow-sm rounded">
+                        <h2 className="color-primary mt-4 mb-5">Manage Event</h2>
+                        <p>
+                            This page allows you to create a new event or edit an existing event. You can set the name, time, and location for the event, and then request services from TrashMob.eco Partners.
+                        </p>
+                    </div>
+                </Col>
+                <Col lg={8}>
+                    <div className="bg-white p-5 shadow-sm rounded">
+                        {contents}
+                    </div>
+                </Col>
+            </Row>
+        </Container>
     </div>;
 }
 

@@ -55,6 +55,8 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [totalEvents, setTotalEvents] = useState<number>(0);
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+
         MapStore.getOption().then(opts => {
             setMapOptions(opts);
             setIsMapKeyLoaded(true);

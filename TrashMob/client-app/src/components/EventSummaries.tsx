@@ -16,6 +16,8 @@ export const EventSummaries: React.FC = () => {
     const [postalCode, setPostalCode] = React.useState<string>("");
 
     React.useEffect(() => {
+        window.scrollTo(0, 0);
+
         const headers = getDefaultHeaders('GET');
 
         fetch('/api/eventtypes', {

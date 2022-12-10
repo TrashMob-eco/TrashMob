@@ -11,6 +11,11 @@ import KevinGleason from './assets/boardOfDirectors/KevinGleason.svg';
 import ValerieWilden from './assets/boardOfDirectors/ValerieWilden.svg';
 
 export const Board: React.FC = () => {
+
+    React.useEffect(() => {
+        window.scrollTo(0, 0);
+    })
+
     return (
         <>
             <Container fluid className='bg-grass'>

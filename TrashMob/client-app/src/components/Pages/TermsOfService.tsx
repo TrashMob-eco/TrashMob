@@ -1,3 +1,4 @@
+import React from 'react';
 import { FC } from 'react'
 import { Col, Container, Image, Row } from 'react-bootstrap';
 import globes from '../assets/gettingStarted/globes.png';
@@ -14,6 +15,11 @@ export class TermsOfServiceVersion {
 }
 
 export const TermsOfService: FC = () => {
+
+    React.useEffect(() => {
+        window.scrollTo(0, 0);
+    })
+
     return (
         <>
             <Container fluid className='bg-grass mb-5'>

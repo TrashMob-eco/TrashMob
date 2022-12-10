@@ -139,7 +139,6 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
     function renderPartnerLocationEventServicesTable(partnerLocationEventServices: DisplayPartnerLocationEventServiceData[]) {
         return (
             <div>
-                <h2 className="color-primary mt-4 mb-5">Partner Location Event Requests</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
