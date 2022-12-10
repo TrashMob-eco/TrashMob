@@ -11,7 +11,7 @@ import UserData from '../Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
-import { Button, Col, Container, Form, Row, ToggleButton } from 'react-bootstrap';
+import { Button, Col, Container, Form, ToggleButton } from 'react-bootstrap';
 import { Guid } from 'guid-typescript';
 import MapControllerSinglePoint from '../MapControllerSinglePoint';
 import { RouteComponentProps } from 'react-router-dom';
