@@ -7,12 +7,13 @@ namespace TrashMob.Shared.Engine
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Models;
+    using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     public class EventSummaryHostWeekReminderNotifier : NotificationEngineBase, INotificationEngine
     {
-        private readonly IEventSummaryRepository eventSummaryRepository;
+        private readonly IBaseManager<EventSummary> eventSummaryManager;
 
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.EventSummaryHostWeekReminder;
 
@@ -20,19 +21,19 @@ namespace TrashMob.Shared.Engine
 
         protected override string EmailSubject => "Thanks for leading a TrashMob.eco event! We'd love to know how it went!";
 
-        public EventSummaryHostWeekReminderNotifier(IEventRepository eventRepository, 
-                                                IUserRepository userRepository, 
-                                                IEventAttendeeRepository eventAttendeeRepository,
-                                                IUserNotificationRepository userNotificationRepository,
-                                                INonEventUserNotificationRepository nonEventUserNotificationRepository,
+        public EventSummaryHostWeekReminderNotifier(IEventManager eventManager, 
+                                                IKeyedManager<User> userManager, 
+                                                IEventAttendeeManager eventAttendeeManager,
+                                                IKeyedManager<UserNotification> userNotificationManager,
+                                                IKeyedManager<NonEventUserNotification> nonEventUserNotificationManager,
                                                 IEmailSender emailSender,
                                                 IEmailManager emailManager,
-                                                IMapRepository mapRepository,
-                                                IEventSummaryRepository eventSummaryRepository,
+                                                IMapManager mapRepository,
+                                                IBaseManager<EventSummary> eventSummaryManager,
                                                 ILogger logger) :
-            base(eventRepository, userRepository, eventAttendeeRepository, userNotificationRepository, nonEventUserNotificationRepository, emailSender, emailManager, mapRepository, logger)
+            base(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
         {
-            this.eventSummaryRepository = eventSummaryRepository;
+            this.eventSummaryManager = eventSummaryManager;
         }
 
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
@@ -40,7 +41,7 @@ namespace TrashMob.Shared.Engine
             Logger.LogInformation("Generating Notifications for {0}", NotificationType);
 
             // Get list of users who have notifications turned on for locations
-            var users = await UserRepository.GetAllUsers(cancellationToken).ConfigureAwait(false);
+            var users = await UserManager.GetAsync(cancellationToken).ConfigureAwait(false);
             int notificationCounter = 0;
 
             Logger.LogInformation("Generating {0} Notifications for {1} total users", NotificationType, users.Count());
@@ -51,11 +52,11 @@ namespace TrashMob.Shared.Engine
                 var eventsToNotifyUserFor = new List<Event>();
 
                 // Get list of completed events
-                var events = await EventRepository.GetCompletedEvents(cancellationToken).ConfigureAwait(false);
+                var events = await EventManager.GetCompletedEventsAsync(cancellationToken).ConfigureAwait(false);
 
                 foreach (var mobEvent in events.Where(e => e.CreatedByUserId == user.Id))
                 {
-                    if (await UserHasAlreadyReceivedNotification(user, mobEvent).ConfigureAwait(false))
+                    if (await UserHasAlreadyReceivedNotification(user, mobEvent, cancellationToken).ConfigureAwait(false))
                     {
                         continue;
                     }
@@ -66,7 +67,7 @@ namespace TrashMob.Shared.Engine
                         continue;
                     }
 
-                    var eventSummary = await eventSummaryRepository.GetEventSummary(mobEvent.Id, cancellationToken).ConfigureAwait(false);
+                    var eventSummary = await eventSummaryManager.GetAsync(es => es.EventId == mobEvent.Id, cancellationToken).ConfigureAwait(false);
 
                     // Only send an email if the summary has not been completed.
                     if (eventSummary == null)

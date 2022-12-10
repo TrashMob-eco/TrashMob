@@ -1,52 +1,96 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
-import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Button, Col, Container, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import PartnerData from '../Models/PartnerData';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
-import * as Constants from '../Models/Constants';
 import * as ToolTips from "../../store/ToolTips";
 import PartnerStatusData from '../Models/PartnerStatusData';
+import PartnerTypeData from '../Models/PartnerTypeData';
 
 export interface PartnerEditDataProps {
-    partner: PartnerData;
-    partnerStatusList: PartnerStatusData[];
-    isPartnerDataLoaded: boolean;
+    partnerId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
-    onPartnerUpdated: any;
-    onEditCanceled: any;
 };
 
 export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
 
-    const [name, setName] = React.useState<string>(props.partner.name);
-    const [primaryEmail, setPrimaryEmail] = React.useState<string>(props.partner.primaryEmail);
-    const [secondaryEmail, setSecondaryEmail] = React.useState<string>(props.partner.secondaryEmail);
-    const [primaryPhone, setPrimaryPhone] = React.useState<string>(props.partner.primaryPhone);
-    const [secondaryPhone, setSecondaryPhone] = React.useState<string>(props.partner.secondaryPhone);
-    const [partnerStatusId, setPartnerStatusId] = React.useState<number>(props.partner.partnerStatusId);
-    const [notes, setNotes] = React.useState<string>(props.partner.notes);
+    const [isPartnerDataLoaded, setIsPartnerDataLoaded] = React.useState<boolean>(false);
+    const [partnerStatusList, setPartnerStatusList] = React.useState<PartnerStatusData[]>([]);
+    const [partnerTypeList, setPartnerTypeList] = React.useState<PartnerTypeData[]>([]);
+    const [name, setName] = React.useState<string>("");
+    const [website, setWebsite] = React.useState<string>("");
+    const [partnerStatusId, setPartnerStatusId] = React.useState<number>(0);
+    const [partnerTypeId, setPartnerTypeId] = React.useState<number>(0);
     const [nameErrors, setNameErrors] = React.useState<string>("");
-    const [primaryEmailErrors, setPrimaryEmailErrors] = React.useState<string>("");
-    const [secondaryEmailErrors, setSecondaryEmailErrors] = React.useState<string>("");
-    const [primaryPhoneErrors, setPrimaryPhoneErrors] = React.useState<string>("");
-    const [secondaryPhoneErrors, setSecondaryPhoneErrors] = React.useState<string>("");
-    const [notesErrors, setNotesErrors] = React.useState<string>("");
+    const [publicNotes, setPublicNotes] = React.useState<string>("");
+    const [publicNotesErrors, setPublicNotesErrors] = React.useState<string>();
+    const [privateNotes, setPrivateNotes] = React.useState<string>("");
+
+    const [createdByUserId, setCreatedByUserId] = React.useState<string>("");
+    const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
+    const [lastUpdatedDate, setLastUpdatedDate] = React.useState<Date>(new Date());
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
+
+    React.useEffect(() => {
+        if (props.isUserLoaded) {
+            const account = msalClient.getAllAccounts()[0];
+
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                fetch('/api/partnerstatuses', {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<PartnerStatusData[]>)
+                    .then(data => {
+                        setPartnerStatusList(data)
+                    })
+                    .then(() => {
+                        fetch('/api/partnertypes', {
+                            method: 'GET',
+                            headers: headers
+                        })
+                            .then(response => response.json() as Promise<PartnerTypeData[]>)
+                            .then(data => {
+                                setPartnerTypeList(data)
+                            })
+                            .then(_ => {
+                                setIsPartnerDataLoaded(false);
+
+                                fetch('/api/partners/' + props.partnerId, {
+                                    method: 'GET',
+                                    headers: headers
+                                })
+                                    .then(response => response.json() as Promise<PartnerData>)
+                                    .then(data => {
+                                        setPartnerStatusId(data.partnerStatusId);
+                                        setPartnerTypeId(data.partnerTypeId);
+                                        setName(data.name);
+                                        setPublicNotes(data.publicNotes);
+                                        setPrivateNotes(data.privateNotes);
+                                        setWebsite(data.website);
+                                        setCreatedByUserId(data.createdByUserId);
+                                        setCreatedDate(new Date(data.createdDate));
+                                        setLastUpdatedDate(new Date(data.lastUpdatedDate));
+                                        setIsPartnerDataLoaded(true);
+                                    })
+                            })
+                    })
+            });
+        }
+    }, [props.currentUser, props.isUserLoaded, props.partnerId]);
 
     function validateForm() {
         if (name === "" ||
-            nameErrors !== "" ||
-            notes === "" ||
-            notesErrors !== "" ||
-            primaryEmail === "" ||
-            primaryEmailErrors !== "" ||
-            secondaryEmail === "" ||
-            secondaryEmailErrors !== "" ||
-            primaryPhone === "" ||
-            primaryPhoneErrors !== "" ||
-            secondaryPhone === "" ||
-            secondaryPhoneErrors !== "") {
+            nameErrors !== "") {
             setIsSaveEnabled(false);
         }
         else {
@@ -56,6 +100,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
+
         event.preventDefault();
 
         if (!isSaveEnabled) {
@@ -65,17 +110,15 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
         setIsSaveEnabled(false);
 
         var partnerData = new PartnerData();
-        partnerData.id = props.partner.id;
+        partnerData.id = props.partnerId;
         partnerData.name = name ?? "";
-        partnerData.primaryEmail = primaryEmail ?? "";
-        partnerData.secondaryEmail = secondaryEmail ?? "";
-        partnerData.primaryPhone = primaryPhone ?? "";
-        partnerData.secondaryPhone = secondaryPhone ?? "";
-        partnerData.notes = notes ?? "";
+        partnerData.website = website ?? "";
         partnerData.partnerStatusId = partnerStatusId ?? 2;
-        partnerData.createdByUserId = props.partner.createdByUserId ?? props.currentUser.id;
-        partnerData.createdDate = props.partner.createdDate;
-        partnerData.lastUpdatedByUserId = props.currentUser.id;
+        partnerData.publicNotes = publicNotes;
+        partnerData.privateNotes = privateNotes;
+        partnerData.partnerTypeId = partnerTypeId;
+        partnerData.createdByUserId = createdByUserId ?? props.currentUser.id;
+        partnerData.createdDate = createdDate;
 
         var data = JSON.stringify(partnerData);
 
@@ -95,20 +138,16 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
                 body: data,
                 headers: headers,
             })
-                .then(() => {
-                    props.onPartnerUpdated()
-                });
         });
     }
 
     // This will handle Cancel button click event.  
     function handleCancel(event: any) {
         event.preventDefault();
-        props.onEditCanceled();
     }
 
     function handleNameChanged(val: string) {
-        if (name === "") {
+        if (val === "") {
             setNameErrors("Name cannot be blank.");
         }
         else {
@@ -119,100 +158,60 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
         validateForm();
     }
 
-    function handlePrimaryEmailChanged(val: string) {
-        var pattern = new RegExp(Constants.RegexEmail);
-
-        if (!pattern.test(val)) {
-            setPrimaryEmailErrors("Please enter valid email address.");
+    function handlePublicNotesChanged(notes: string) {
+        if (notes === "") {
+            setPublicNotesErrors("Notes cannot be empty.");
         }
         else {
-            setPrimaryEmailErrors("");
-            setPrimaryEmail(val);
+            setPublicNotes(notes);
+            setPublicNotesErrors("");
         }
 
         validateForm();
     }
 
-    function handleSecondaryEmailChanged(val: string) {
-        var pattern = new RegExp(Constants.RegexEmail);
-
-        if (!pattern.test(val)) {
-            setSecondaryEmailErrors("Please enter valid email address.");
-        }
-        else {
-            setSecondaryEmailErrors("");
-            setSecondaryEmail(val);
-        }
-
+    function handlePrivateNotesChanged(notes: string) {
+        setPrivateNotes(notes);
         validateForm();
     }
 
-    function handlePrimaryPhoneChanged(val: string) {
-        var pattern = new RegExp(Constants.RegexPhoneNumber);
-
-        if (!pattern.test(val)) {
-            setPrimaryPhoneErrors("Please enter a valid phone number.");
-        }
-        else {
-            setPrimaryPhoneErrors("");
-            setPrimaryPhone(val);
-        }
-
+    function handleWebsiteChanged(val: string) {
+        setWebsite(val);
         validateForm();
     }
 
-    function handleSecondaryPhoneChanged(val: string) {
-        var pattern = new RegExp(Constants.RegexPhoneNumber);
-
-        if (!pattern.test(val)) {
-            setSecondaryPhoneErrors("Please enter a valid phone number.");
-        }
-        else {
-            setSecondaryPhoneErrors("");
-            setSecondaryPhone(val);
-        }
-
+    function selectPartnerStatus(val: string) {
+        setPartnerStatusId(parseInt(val));
         validateForm();
     }
 
-    function handleNotesChanged(val: string) {
-        if (val.length < 0 || val.length > 1000) {
-            setNotesErrors("Notes cannot be empty and cannot be more than 1000 characters long.");
-        }
-        else {
-            setNotesErrors("");
-            setNotes(val);
-        }
-
+    function selectPartnerType(val: string) {
+        setPartnerTypeId(parseInt(val));
         validateForm();
     }
 
     function renderNameToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestName}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.PartnerName}</Tooltip>
+    }
+
+    function renderWebsiteToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerWebsite}</Tooltip>
+    }
+
+    function renderPublicNotesToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerPublicNotes}</Tooltip>
+    }
+
+    function renderPrivateNotesToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerPrivateNotes}</Tooltip>
     }
 
     function renderPartnerStatusToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerStatus}</Tooltip>
     }
 
-    function renderPrimaryEmailToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestPrimaryEmail}</Tooltip>
-    }
-
-    function renderSecondaryEmailToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestSecondaryEmail}</Tooltip>
-    }
-
-    function renderPrimaryPhoneToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestPrimaryPhone}</Tooltip>
-    }
-
-    function renderSecondaryPhoneToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestSecondaryPhone}</Tooltip>
-    }
-
-    function renderNotesToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestNotes}</Tooltip>
+    function renderPartnerTypeToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerType}</Tooltip>
     }
 
     function renderCreatedDateToolTip(props: any) {
@@ -223,108 +222,123 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.PartnerLastUpdatedDate}</Tooltip>
     }
 
-    function selectPartnerStatus(val: string) {
-        setPartnerStatusId(parseInt(val));
+    // Returns the HTML Form to the render() method.  
+    function renderCreateForm(statusList: Array<PartnerStatusData>, typeList: Array<PartnerTypeData>) {
+        return (
+            <Container>
+                <Row className="gx-2 py-5" lg={2}>
+                    <Col lg={4} className="d-flex">
+                        <div className="bg-white py-2 px-5 shadow-sm rounded">
+                            <h2 className="color-primary mt-4 mb-5">Edit Partner Information</h2>
+                            <p>
+                                This page allows you to add basic details about your organization. Public notes may be shown to TrashMob.eco users on the partnership page. Think of this as a blurb or a tag line you may want to add to let users know more about your organization in general.
+                            </p>
+                        </div>
+                    </Col>
+                    <Col lg={8}>
+                        <div className="bg-white p-5 shadow-sm rounded">
+                            <h2 className="color-primary mt-4 mb-5">Edit Partner</h2>
+                            <Form onSubmit={handleSave} >
+                                <Form.Row>
+                                    <Col>
+                                        <Form.Group className="required">
+                                            <OverlayTrigger placement="top" overlay={renderNameToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5">Partner Name</Form.Label>
+                                            </OverlayTrigger>
+                                            <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
+                                            <span style={{ color: "red" }}>{nameErrors}</span>
+                                        </Form.Group>
+                                    </Col>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderWebsiteToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5">Website</Form.Label>
+                                            </OverlayTrigger>
+                                            <Form.Control type="text" defaultValue={website} maxLength={parseInt('1024')} onChange={(val) => handleWebsiteChanged(val.target.value)} />
+                                        </Form.Group>
+                                    </Col>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Col>
+                                        <Form.Group className="required">
+                                            <OverlayTrigger placement="top" overlay={renderPartnerStatusToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5" htmlFor="Partner Status">Partner Status</Form.Label>
+                                            </OverlayTrigger>
+                                            <div>
+                                                <select data-val="true" name="partnerStatusId" defaultValue={partnerStatusId} onChange={(val) => selectPartnerStatus(val.target.value)} required>
+                                                    <option value="">-- Select Partner Status --</option>
+                                                    {statusList.map(status =>
+                                                        <option key={status.id} value={status.id}>{status.name}</option>
+                                                    )}
+                                                </select>
+                                            </div>
+                                        </Form.Group>
+                                    </Col>
+                                    <Col>
+                                        <Form.Group className="required">
+                                            <OverlayTrigger placement="top" overlay={renderPartnerTypeToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5" htmlFor="PartnerType">Partner Type</Form.Label>
+                                            </OverlayTrigger>
+                                            <div>
+                                                <select data-val="true" name="partnerTypeId" defaultValue={partnerTypeId} onChange={(val) => selectPartnerType(val.target.value)} required>
+                                                    <option value="">-- Select Partner Type --</option>
+                                                    {typeList.map(partnerType =>
+                                                        <option key={partnerType.id} value={partnerType.id}>{partnerType.name}</option>
+                                                    )}
+                                                </select>
+                                            </div>
+                                        </Form.Group>
+                                    </Col>
+                                </Form.Row>
+                                <Form.Group className="required">
+                                    <OverlayTrigger placement="top" overlay={renderPublicNotesToolTip}>
+                                        <Form.Label className="control-label font-weight-bold h5">Public Notes</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control as="textarea" defaultValue={publicNotes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handlePublicNotesChanged(val.target.value)} required />
+                                    <span style={{ color: "red" }}>{publicNotesErrors}</span>
+                                </Form.Group >
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderPrivateNotesToolTip}>
+                                        <Form.Label className="control-label font-weight-bold h5">Private Notes</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control as="textarea" defaultValue={privateNotes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handlePrivateNotesChanged(val.target.value)} />
+                                </Form.Group >
+                                <Form.Group className="form-group">
+                                    <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Save</Button>
+                                    <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
+                                </Form.Group >
+                                <Form.Row>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5" htmlFor="createdDate">Created Date</Form.Label>
+                                            </OverlayTrigger>
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="createdDate" value={createdDate ? createdDate.toLocaleString() : ""} />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5" htmlFor="lastUpdatedDate">Last Updated Date</Form.Label>
+                                            </OverlayTrigger>
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="lastUpdatedDate" value={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
+                                        </Form.Group>
+                                    </Col>
+                                </Form.Row>
+                            </Form >
+                        </div>
+                    </Col>
+                </Row>
+            </Container>
+        )
     }
 
-    return (
-        <div className="container-fluid card">
-            <h1>Edit Partner</h1>
-            <Form onSubmit={handleSave} >
-                <Form.Row>
-                    <Col>
-                        <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderNameToolTip}>
-                                <Form.Label className="control-label">Partner Name:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{nameErrors}</span>
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderPartnerStatusToolTip}>
-                                <Form.Label className="control-label" htmlFor="Partner Status">Partner Status:</Form.Label>
-                            </OverlayTrigger>
-                            <div>
-                                <select data-val="true" name="partnerStatusId" defaultValue={partnerStatusId} onChange={(val) => selectPartnerStatus(val.target.value)} required>
-                                    <option value="">-- Select Partner Status --</option>
-                                    {props.partnerStatusList.map(status =>
-                                        <option key={status.id} value={status.id}>{status.name}</option>
-                                    )}
-                                </select>
-                            </div>
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderPrimaryEmailToolTip}>
-                                <Form.Label className="control-label">Primary Email:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" defaultValue={primaryEmail} maxLength={parseInt('64')} onChange={(val) => handlePrimaryEmailChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{primaryEmailErrors}</span>
-                        </Form.Group >
-                    </Col>
-                    <Col>
-                        <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderSecondaryEmailToolTip}>
-                                <Form.Label className="control-label">Secondary Email:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" defaultValue={secondaryEmail} maxLength={parseInt('64')} onChange={(val) => handleSecondaryEmailChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{secondaryEmailErrors}</span>
-                        </Form.Group >
-                    </Col>
-                </Form.Row>
-                <Form.Row>
-                    <Col>
-                        <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderPrimaryPhoneToolTip}>
-                                <Form.Label className="control-label">Primary Phone:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" defaultValue={primaryPhone} maxLength={parseInt('64')} onChange={(val) => handlePrimaryPhoneChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{primaryPhoneErrors}</span>
-                        </Form.Group >
-                    </Col>
-                    <Col>
-                        <Form.Group className="required">
-                            <OverlayTrigger placement="top" overlay={renderSecondaryPhoneToolTip}>
-                                <Form.Label className="control-label">Secondary Phone:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" defaultValue={secondaryPhone} maxLength={parseInt('64')} onChange={(val) => handleSecondaryPhoneChanged(val.target.value)} required />
-                            <span style={{ color: "red" }}>{secondaryPhoneErrors}</span>
-                        </Form.Group >
-                    </Col>
-                </Form.Row>
-                <Form.Group className="required">
-                    <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                        <Form.Label className="control-label">Notes:</Form.Label>
-                    </OverlayTrigger>
-                    <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} required />
-                    <span style={{ color: "red" }}>{notesErrors}</span>
-                </Form.Group >
-                <Form.Group className="form-group">
-                    <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Save</Button>
-                    <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
-                </Form.Group >
-                <Form.Row>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
-                                <Form.Label className="control-label" htmlFor="createdDate">Created Date:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" disabled defaultValue={props.partner.createdDate.toString()} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
-                                <Form.Label className="control-label" htmlFor="lastUpdatedDate">Last Updated Date:</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control type="text" disabled defaultValue={props.partner.lastUpdatedDate.toString()} />
-                        </Form.Group>
-                    </Col>
-                </Form.Row>
-            </Form >
-        </div>
-    )
+    var contents = isPartnerDataLoaded && props.partnerId
+        ? renderCreateForm(partnerStatusList, partnerTypeList)
+        : <p><em>Loading...</em></p>;
+
+    return <div>
+        <hr />
+        {contents}
+    </div>;
 }

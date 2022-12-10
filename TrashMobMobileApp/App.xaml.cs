@@ -1,4 +1,4 @@
-﻿using TrashMobMobileApp.Models;
+﻿using TrashMob.Models;
 
 namespace TrashMobMobileApp;
 

@@ -14,11 +14,11 @@ export const Footer: React.FC = () => {
                         <div className="col-md-4">
                             <Link to="/aboutus">About us</Link>
                             <Link to="/board">Board</Link>
-                            <Link to="/partners">Partners</Link>
+                            <Link to="/partnerships">Partnerships</Link>
+                            <Link to="/faq">FAQ</Link>
                         </div>
 
                         <div className="col-md-4">
-                            <Link to="/faq">FAQ</Link>
                             <Link to="/volunteeropportunities">Volunteer opportunities</Link>
                             <Link to="/contactus">Contact us</Link>
                             <a href={"https://donate.stripe.com/14k9DN2EnfAog9O3cc"}>Donate</a>
@@ -31,7 +31,7 @@ export const Footer: React.FC = () => {
                             <Link to="/eventsummaries">Event summaries</Link>
                         </div>
                     </div>
-                    <hr className="horizontalLine" />
+                    <hr className="horizontalLine mt-5" />
                     <div className="row" id="copyright">
                         <div className="col-md-8">
                             <p>Copyright &copy; 2022 TRASHMOB.ECO - All rights reserved.</p>
@@ -51,7 +51,7 @@ export const Footer: React.FC = () => {
                                     </div>
                                     <div className="iconWrapper">
                                         <a href={"https://profiles.eco/trashmob?ref=tm"} target="_blank" rel="noreferrer noopener">
-                                            <img className="eco-trustmark" alt=".eco profile for trashmob.eco" src="https://trust.profiles.eco/trashmob/eco-button.svg?color=%2396BA00" />
+                                            <img className="eco-trustmark" alt=".eco profile for trashmob.eco" src="https://trust.profiles.eco/trashmob/eco-button.svg?color=%23000000" />
                                         </a>
                                     </div>
                                     <div className="iconWrapper">

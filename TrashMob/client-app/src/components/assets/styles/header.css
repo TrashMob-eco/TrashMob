@@ -12,14 +12,13 @@
 
 #navbar a {
     font-weight: 500;
-    font-size: 17px;
-    line-height: 25px;
+    font-size: 18px;
+    line-height: 27px;
     font-style: normal;
-    margin-right: 41px;
+    margin-right: 27px;
 }
 
 .logo {
-    margin-top: 8px;
     width: 200px;
     height: 30px;
 }
@@ -120,4 +119,26 @@
 #userBtn + .dropdown-menu > .dropdown-item {
     font-weight: 400;
     color: #6B6F74;
+}
+
+@media (min-width: 992px) {
+    #navbar a {
+        font-size: medium;
+        margin-right: 13px;
+    }
+
+    .navbar-expand-lg .navbar-collapse {
+        width: 100%;
+    }
+}
+
+@media (min-width: 1200px) {
+    #navbar a {
+        font-size: 18px;
+        margin-right: 27px;
+    }
+
+    .navbar-expand-lg .navbar-collapse {
+        width: auto;
+    }
 }

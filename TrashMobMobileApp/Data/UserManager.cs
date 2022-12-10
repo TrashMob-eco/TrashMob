@@ -1,7 +1,7 @@
 ﻿namespace TrashMobMobileApp.Data
 {
     using System.Threading.Tasks;
-    using TrashMobMobileApp.Models;
+    using TrashMob.Models;
 
     public class UserManager : IUserManager
     {

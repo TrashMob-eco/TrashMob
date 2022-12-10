@@ -7,6 +7,11 @@ on:
   push:
     branches:
       - Release
+    paths: 
+      - '.github/**'
+      - 'TrashMob.Models/**'
+      - 'TrashMobMobileApp/**'
+
   workflow_dispatch:
 
 env:
@@ -40,13 +45,11 @@ jobs:
 
     - name: Restore
       run: | 
-        cd TrashMobMobileApp
         dotnet restore TrashMobMobileApp.sln
 
     - name: Publish Mobile App
       run: |
-        cd TrashMobMobileApp
-        dotnet publish TrashMobMobileApp.csproj -c:${{ env.CONFIGURATION }} -f:net6.0-android33.0 --no-restore 
+        dotnet publish TrashMobMobileApp.sln -c:${{ env.CONFIGURATION }} -f:net6.0-android33.0 --no-restore 
       
     # Store Android Signing Keystore and password in Secrets using base64 encoding
     # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil
@@ -55,19 +58,9 @@ jobs:
       shell: bash
       run: |
         cd TrashMobMobileApp
-        echo "****"
-        ls
-        echo "****"
         mkdir android
-        echo "****"
-        ls
-        echo "****"
         echo "${{ secrets.ANDROID_KEYSTORE }}" > android/trashmobmobileapp.jks.base64
-        echo "****"
-        ls android
-        echo "****"
         base64 -d android/trashmobmobileapp.jks.base64 > android/trashmobmobileapp.decrypted.jks
-        echo "****"
     # check android SDK paths etc in installed VM : https://github.com/actions/virtual-environments#available-environments
     - name: Sign dev build
       shell: bash

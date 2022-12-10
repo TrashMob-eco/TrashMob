@@ -112,7 +112,7 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
                         <Col>
                             <Form.Group className="required" >
                                 <OverlayTrigger placement="top" overlay={renderCancellationReasonToolTip}>
-                                    <Form.Label className="control-label" htmlFor="Name">Reason for Cancelling the Event?</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Name">Reason for Cancelling the Event?</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="cancellationReason" defaultValue={cancellationReason} onChange={(val) => handleCancellationReasonChanged(val.target.value)} maxLength={parseInt('200')} required />
                             </Form.Group>

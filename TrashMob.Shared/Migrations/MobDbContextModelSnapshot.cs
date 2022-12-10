@@ -18,281 +18,17 @@ namespace TrashMob.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .UseCollation("SQL_Latin1_General_CP1_CI_AS")
-                .HasAnnotation("ProductVersion", "6.0.4")
+                .HasAnnotation("ProductVersion", "6.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("TrashMob.Shared.Models.Community", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("City")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<int>("CommunityStatusId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("LastUpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<double?>("Latitude")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("Longitude")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PostalCode")
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
-
-                    b.Property<string>("Region")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("StreetAddress")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommunityStatusId");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastUpdatedByUserId");
-
-                    b.ToTable("Community");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityAttachment", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("AttachmentUrl")
-                        .IsRequired()
-                        .HasMaxLength(2048)
-                        .HasColumnType("nvarchar(2048)");
-
-                    b.Property<Guid>("CommunityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("LastUpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommunityId");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastUpdatedByUserId");
-
-                    b.ToTable("CommunityAttachments");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityContact", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CommunityContactTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("CommunityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("LastUpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommunityContactTypeId");
-
-                    b.HasIndex("CommunityId");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastUpdatedByUserId");
-
-                    b.ToTable("CommunityContacts");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityContactType", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CommunityContactTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Description = "Contact is not available",
-                            DisplayOrder = 1,
-                            Name = "None"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Description = "Contact is an official within the Community",
-                            DisplayOrder = 2,
-                            Name = "Official"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Contact is TrashMobHeadquarters",
-                            DisplayOrder = 3,
-                            Name = "TrashMobHQ"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Contact is a TrashMob Volunteer in the community",
-                            DisplayOrder = 4,
-                            Name = "TrashMob Volunteer"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "Contact is a TrashMob Partner in the community",
-                            DisplayOrder = 5,
-                            Name = "TrashMob Partner"
-                        });
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityNote", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("CommunityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("LastUpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommunityId");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastUpdatedByUserId");
-
-                    b.ToTable("CommunityNotes");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityRequest", b =>
+            modelBuilder.Entity("TrashMob.Models.ContactRequest", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ContactName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Country")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -302,123 +38,12 @@ namespace TrashMob.Migrations
                     b.Property<string>("Email")
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
-
-                    b.Property<Guid>("LastUpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<double?>("Latitude")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("Longitude")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
-                    b.Property<string>("Phone")
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
-
-                    b.Property<string>("PostalCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Region")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StreetAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.ToTable("CommunityRequest");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CommunityStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Community is an active TrashMob community",
-                            DisplayOrder = 1,
-                            Name = "Active"
-                        },
-                        new
-                        {
-                            Id = 0,
-                            Description = "Community is not currently an active TrashMob community",
-                            DisplayOrder = 2,
-                            Name = "Inactive"
-                        });
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityUser", b =>
-                {
-                    b.Property<Guid>("CommunityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("LastUpdatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset?>("LastUpdatedDate")
                         .HasColumnType("datetimeoffset");
-
-                    b.HasKey("CommunityId", "UserId");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastUpdatedByUserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CommunityUsers");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.ContactRequest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("Message")
                         .HasMaxLength(2048)
@@ -430,10 +55,14 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
                     b.ToTable("ContactRequests");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.Event", b =>
+            modelBuilder.Entity("TrashMob.Models.Event", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -473,6 +102,9 @@ namespace TrashMob.Migrations
 
                     b.Property<int>("EventStatusId")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("EventSummaryEventId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("EventTypeId")
                         .HasColumnType("int");
@@ -521,6 +153,8 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("EventStatusId");
 
+                    b.HasIndex("EventSummaryEventId");
+
                     b.HasIndex("EventTypeId");
 
                     b.HasIndex("LastUpdatedByUserId");
@@ -528,7 +162,7 @@ namespace TrashMob.Migrations
                     b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventAttendee", b =>
+            modelBuilder.Entity("TrashMob.Models.EventAttendee", b =>
                 {
                     b.Property<Guid>("EventId")
                         .HasColumnType("uniqueidentifier");
@@ -539,164 +173,50 @@ namespace TrashMob.Migrations
                     b.Property<DateTimeOffset?>("CanceledDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<DateTimeOffset>("SignUpDate")
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("EventId", "UserId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("EventAttendees");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CancellationReason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(2048)
-                        .HasColumnType("nvarchar(2048)");
-
-                    b.Property<int>("DurationHours")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DurationMinutes")
-                        .HasColumnType("int");
-
-                    b.Property<DateTimeOffset>("EventDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("EventStatusId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EventTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsEventPublic")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("LastUpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<double?>("Latitude")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("Longitude")
-                        .HasColumnType("float");
-
-                    b.Property<int?>("MaxNumberOfParticipants")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
-
-                    b.Property<string>("Region")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("StreetAddress")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EventHistory", (string)null);
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.EventMedia", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("MediaTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MediaUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MediaUsageTypeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("MediaTypeId");
-
-                    b.HasIndex("MediaUsageTypeId");
-
-                    b.ToTable("EventMedias");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.EventPartner", b =>
+            modelBuilder.Entity("TrashMob.Models.EventPartnerLocationService", b =>
                 {
                     b.Property<Guid>("EventId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PartnerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("PartnerLocationId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("ServiceTypeId")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset?>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<int>("EventPartnerStatusId")
+                    b.Property<int>("EventPartnerLocationServiceStatusId")
                         .HasColumnType("int");
 
                     b.Property<Guid>("LastUpdatedByUserId")
@@ -705,22 +225,22 @@ namespace TrashMob.Migrations
                     b.Property<DateTimeOffset?>("LastUpdatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.HasKey("EventId", "PartnerId", "PartnerLocationId");
+                    b.HasKey("EventId", "PartnerLocationId", "ServiceTypeId");
 
                     b.HasIndex("CreatedByUserId");
 
-                    b.HasIndex("EventPartnerStatusId");
+                    b.HasIndex("EventPartnerLocationServiceStatusId");
 
                     b.HasIndex("LastUpdatedByUserId");
 
-                    b.HasIndex("PartnerId");
-
                     b.HasIndex("PartnerLocationId");
 
-                    b.ToTable("EventPartners");
+                    b.HasIndex("ServiceTypeId");
+
+                    b.ToTable("EventPartnerLocationServices");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventPartnerStatus", b =>
+            modelBuilder.Entity("TrashMob.Models.EventPartnerLocationServiceStatus", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -730,6 +250,9 @@ namespace TrashMob.Migrations
 
                     b.Property<int?>("DisplayOrder")
                         .HasColumnType("int");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -738,7 +261,7 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EventPartnerStatuses");
+                    b.ToTable("EventPartnerLocationServiceStatuses");
 
                     b.HasData(
                         new
@@ -746,6 +269,7 @@ namespace TrashMob.Migrations
                             Id = 0,
                             Description = "Partner has not been contacted",
                             DisplayOrder = 1,
+                            IsActive = true,
                             Name = "None"
                         },
                         new
@@ -753,6 +277,7 @@ namespace TrashMob.Migrations
                             Id = 1,
                             Description = "Request is awaiting processing by partner",
                             DisplayOrder = 2,
+                            IsActive = true,
                             Name = "Requested"
                         },
                         new
@@ -760,6 +285,7 @@ namespace TrashMob.Migrations
                             Id = 2,
                             Description = "Request has been approved by partner",
                             DisplayOrder = 3,
+                            IsActive = true,
                             Name = "Accepted"
                         },
                         new
@@ -767,11 +293,12 @@ namespace TrashMob.Migrations
                             Id = 3,
                             Description = "Request has been declined by partner",
                             DisplayOrder = 4,
+                            IsActive = true,
                             Name = "Declined"
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventStatus", b =>
+            modelBuilder.Entity("TrashMob.Models.EventStatus", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -781,6 +308,9 @@ namespace TrashMob.Migrations
 
                     b.Property<int?>("DisplayOrder")
                         .HasColumnType("int");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -797,6 +327,7 @@ namespace TrashMob.Migrations
                             Id = 1,
                             Description = "Event is actively recruiting new members",
                             DisplayOrder = 1,
+                            IsActive = true,
                             Name = "Active"
                         },
                         new
@@ -804,6 +335,7 @@ namespace TrashMob.Migrations
                             Id = 2,
                             Description = "Event is full",
                             DisplayOrder = 2,
+                            IsActive = true,
                             Name = "Full"
                         },
                         new
@@ -811,6 +343,7 @@ namespace TrashMob.Migrations
                             Id = 3,
                             Description = "Event has been canceled",
                             DisplayOrder = 3,
+                            IsActive = true,
                             Name = "Canceled"
                         },
                         new
@@ -818,11 +351,12 @@ namespace TrashMob.Migrations
                             Id = 4,
                             Description = "Event has completed",
                             DisplayOrder = 4,
+                            IsActive = true,
                             Name = "Completed"
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventSummary", b =>
+            modelBuilder.Entity("TrashMob.Models.EventSummary", b =>
                 {
                     b.Property<Guid>("EventId")
                         .HasColumnType("uniqueidentifier");
@@ -864,7 +398,7 @@ namespace TrashMob.Migrations
                     b.ToTable("EventSummaries");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventType", b =>
+            modelBuilder.Entity("TrashMob.Models.EventType", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -900,7 +434,7 @@ namespace TrashMob.Migrations
                         {
                             Id = 2,
                             Description = "School Cleanup",
-                            DisplayOrder = 2,
+                            DisplayOrder = 3,
                             IsActive = true,
                             Name = "School Cleanup"
                         },
@@ -908,7 +442,7 @@ namespace TrashMob.Migrations
                         {
                             Id = 3,
                             Description = "Neighborhood Cleanup",
-                            DisplayOrder = 3,
+                            DisplayOrder = 4,
                             IsActive = true,
                             Name = "Neighborhood Cleanup"
                         },
@@ -916,7 +450,7 @@ namespace TrashMob.Migrations
                         {
                             Id = 4,
                             Description = "Beach Cleanup",
-                            DisplayOrder = 4,
+                            DisplayOrder = 5,
                             IsActive = true,
                             Name = "Beach Cleanup"
                         },
@@ -924,7 +458,7 @@ namespace TrashMob.Migrations
                         {
                             Id = 5,
                             Description = "Highway Cleanup",
-                            DisplayOrder = 5,
+                            DisplayOrder = 6,
                             IsActive = true,
                             Name = "Highway Cleanup"
                         },
@@ -932,7 +466,7 @@ namespace TrashMob.Migrations
                         {
                             Id = 6,
                             Description = "Natural Disaster Cleanup",
-                            DisplayOrder = 6,
+                            DisplayOrder = 14,
                             IsActive = true,
                             Name = "Natural Disaster Cleanup"
                         },
@@ -996,13 +530,29 @@ namespace TrashMob.Migrations
                         {
                             Id = 14,
                             Description = "Other",
-                            DisplayOrder = 14,
+                            DisplayOrder = 16,
                             IsActive = true,
                             Name = "Other"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Description = "Snow Removal",
+                            DisplayOrder = 15,
+                            IsActive = true,
+                            Name = "Snow Removal"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Description = "Streetside Cleanup",
+                            DisplayOrder = 2,
+                            IsActive = true,
+                            Name = "Streetside Cleanup"
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.MediaType", b =>
+            modelBuilder.Entity("TrashMob.Models.InvitationStatus", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -1023,76 +573,59 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MediaType");
+                    b.ToTable("InvitationStatuses");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            Description = "Instagram Image or Video",
+                            Description = "Invitation has not yet been sent",
                             DisplayOrder = 1,
                             IsActive = true,
-                            Name = "Instagram"
+                            Name = "New"
                         },
                         new
                         {
                             Id = 2,
-                            Description = "YouTube Video",
+                            Description = "Invitation has been sent",
                             DisplayOrder = 2,
                             IsActive = true,
-                            Name = "YouTube"
-                        });
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.MediaUsageType", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MediaUsageType");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Before a cleanup event",
-                            DisplayOrder = 1,
-                            IsActive = true,
-                            Name = "BeforeEvent"
+                            Name = "Sent"
                         },
                         new
                         {
-                            Id = 2,
-                            Description = "After a cleanup event",
-                            DisplayOrder = 2,
+                            Id = 3,
+                            Description = "Invitation has been accepted",
+                            DisplayOrder = 3,
                             IsActive = true,
-                            Name = "AfterEvent"
+                            Name = "Accepted"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Invitation has been canceled",
+                            DisplayOrder = 4,
+                            IsActive = true,
+                            Name = "Canceled"
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.MessageRequest", b =>
+            modelBuilder.Entity("TrashMob.Models.MessageRequest", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Message")
@@ -1105,13 +638,29 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
                     b.ToTable("MessageRequests");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.NonEventUserNotification", b =>
+            modelBuilder.Entity("TrashMob.Models.NonEventUserNotification", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("SentDate")
                         .HasColumnType("datetimeoffset");
@@ -1124,6 +673,10 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
                     b.HasIndex("UserId");
 
                     b.HasIndex("UserNotificationTypeId");
@@ -1131,10 +684,9 @@ namespace TrashMob.Migrations
                     b.ToTable("NonEventUserNotifications");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.Partner", b =>
+            modelBuilder.Entity("TrashMob.Models.Partner", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CreatedByUserId")
@@ -1153,28 +705,24 @@ namespace TrashMob.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
 
-                    b.Property<string>("Notes")
-                        .HasMaxLength(2048)
-                        .HasColumnType("nvarchar(2048)");
-
                     b.Property<int>("PartnerStatusId")
                         .HasColumnType("int");
 
-                    b.Property<string>("PrimaryEmail")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                    b.Property<int>("PartnerTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(2);
 
-                    b.Property<string>("PrimaryPhone")
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                    b.Property<string>("PrivateNotes")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
 
-                    b.Property<string>("SecondaryEmail")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                    b.Property<string>("PublicNotes")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
 
-                    b.Property<string>("SecondaryPhone")
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                    b.Property<string>("Website")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -1184,10 +732,175 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("PartnerStatusId");
 
+                    b.HasIndex("PartnerTypeId");
+
                     b.ToTable("Partners");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerLocation", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerAdmin", b =>
+                {
+                    b.Property<Guid>("PartnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("PartnerId", "UserId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PartnerAdmins");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PartnerAdminInvitation", b =>
+                {
+                    b.Property<Guid>("PartnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("DateInvited")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("InvitationStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("PartnerId", "Email");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("InvitationStatusId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.ToTable("PartnerAdminInvitation");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PartnerContact", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<Guid>("PartnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("PartnerId");
+
+                    b.ToTable("PartnerContacts");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PartnerDocument", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<Guid>("PartnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("PartnerId");
+
+                    b.ToTable("PartnerDocuments");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PartnerLocation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1228,10 +941,6 @@ namespace TrashMob.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
 
-                    b.Property<string>("Notes")
-                        .HasMaxLength(2048)
-                        .HasColumnType("nvarchar(2048)");
-
                     b.Property<Guid>("PartnerId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1240,26 +949,18 @@ namespace TrashMob.Migrations
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
 
-                    b.Property<string>("PrimaryEmail")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                    b.Property<string>("PrivateNotes")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
 
-                    b.Property<string>("PrimaryPhone")
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                    b.Property<string>("PublicNotes")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
 
                     b.Property<string>("Region")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("SecondaryEmail")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<string>("SecondaryPhone")
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
 
                     b.Property<string>("StreetAddress")
                         .IsRequired()
@@ -1277,11 +978,64 @@ namespace TrashMob.Migrations
                     b.ToTable("PartnerLocations");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerRequest", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerLocationContact", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<Guid>("PartnerLocationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("PartnerLocationId");
+
+                    b.ToTable("PartnerLocationContacts");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PartnerLocationService", b =>
+                {
+                    b.Property<Guid>("PartnerLocationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ServiceTypeId")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uniqueidentifier");
@@ -1295,6 +1049,56 @@ namespace TrashMob.Migrations
                     b.Property<DateTimeOffset?>("LastUpdatedDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PartnerLocationId", "ServiceTypeId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("ServiceTypeId");
+
+                    b.ToTable("PartnerLocationServices");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PartnerRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Country")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("float");
+
                     b.Property<string>("Name")
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
@@ -1306,21 +1110,28 @@ namespace TrashMob.Migrations
                     b.Property<int>("PartnerRequestStatusId")
                         .HasColumnType("int");
 
-                    b.Property<string>("PrimaryEmail")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                    b.Property<int>("PartnerTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(2);
 
-                    b.Property<string>("PrimaryPhone")
+                    b.Property<string>("Phone")
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
 
-                    b.Property<string>("SecondaryEmail")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                    b.Property<string>("PostalCode")
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
 
-                    b.Property<string>("SecondaryPhone")
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                    b.Property<string>("Region")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Website")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("isBecomeAPartnerRequest")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -1330,10 +1141,12 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("PartnerRequestStatusId");
 
+                    b.HasIndex("PartnerTypeId");
+
                     b.ToTable("PartnerRequests");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerRequestStatus", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerRequestStatus", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -1343,6 +1156,9 @@ namespace TrashMob.Migrations
 
                     b.Property<int?>("DisplayOrder")
                         .HasColumnType("int");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1357,15 +1173,17 @@ namespace TrashMob.Migrations
                         new
                         {
                             Id = 1,
-                            Description = "Request is Pending Approval by Site Administrator",
+                            Description = "Invitiation has been sent",
                             DisplayOrder = 1,
-                            Name = "Pending"
+                            IsActive = true,
+                            Name = "Invitation Sent"
                         },
                         new
                         {
                             Id = 2,
                             Description = "Request has been approved by the Site Administrator",
                             DisplayOrder = 2,
+                            IsActive = true,
                             Name = "Approved"
                         },
                         new
@@ -1373,11 +1191,63 @@ namespace TrashMob.Migrations
                             Id = 3,
                             Description = "Request has been approved by the Site Administrator",
                             DisplayOrder = 3,
+                            IsActive = true,
                             Name = "Denied"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Invitiation is pending approval by TrshMob.eco admin",
+                            DisplayOrder = 4,
+                            IsActive = true,
+                            Name = "Pending Approval"
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerStatus", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerSocialMediaAccount", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AccountIdentifier")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("PartnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SocialMediaAccountTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("PartnerId");
+
+                    b.HasIndex("SocialMediaAccountTypeId");
+
+                    b.ToTable("PartnerSocialMediaAccounts");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PartnerStatus", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -1387,6 +1257,9 @@ namespace TrashMob.Migrations
 
                     b.Property<int?>("DisplayOrder")
                         .HasColumnType("int");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1403,6 +1276,7 @@ namespace TrashMob.Migrations
                             Id = 1,
                             Description = "Partner is Active",
                             DisplayOrder = 1,
+                            IsActive = true,
                             Name = "Active"
                         },
                         new
@@ -1410,16 +1284,190 @@ namespace TrashMob.Migrations
                             Id = 2,
                             Description = "Partner is Inactive",
                             DisplayOrder = 2,
+                            IsActive = true,
                             Name = "Inactive"
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerUser", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerType", b =>
                 {
-                    b.Property<Guid>("PartnerId")
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PartnerTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Partner is a Government or Government Agency",
+                            DisplayOrder = 1,
+                            IsActive = true,
+                            Name = "Government"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Partner is Business",
+                            DisplayOrder = 2,
+                            IsActive = true,
+                            Name = "Business"
+                        });
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PickupLocation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("County")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("HasBeenPickedUp")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasBeenSubmitted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
+
+                    b.Property<string>("Region")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("StreetAddress")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.ToTable("PickupLocations");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.ServiceType", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ServiceTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Partner will haul litter away",
+                            DisplayOrder = 1,
+                            IsActive = true,
+                            Name = "Hauling"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Partner will dispose of litter",
+                            DisplayOrder = 2,
+                            IsActive = true,
+                            Name = "Disposal Location"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Partner distributes starter kits",
+                            DisplayOrder = 3,
+                            IsActive = true,
+                            Name = "Startup Kits"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Partner distributes supplies",
+                            DisplayOrder = 4,
+                            IsActive = true,
+                            Name = "Supplies"
+                        });
+                });
+
+            modelBuilder.Entity("TrashMob.Models.SiteMetric", b =>
+                {
+                    b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CreatedByUserId")
@@ -1434,22 +1482,6 @@ namespace TrashMob.Migrations
                     b.Property<DateTimeOffset?>("LastUpdatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.HasKey("PartnerId", "UserId");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastUpdatedByUserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("PartnerUsers");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.SiteMetric", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("MetricType")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -1463,10 +1495,68 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
                     b.ToTable("SiteMetrics");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.User", b =>
+            modelBuilder.Entity("TrashMob.Models.SocialMediaAccountType", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SocialMediaAccountTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Facebook",
+                            DisplayOrder = 1,
+                            Name = "Facebook"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Twitter",
+                            DisplayOrder = 2,
+                            Name = "Twitter"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Instagram",
+                            DisplayOrder = 3,
+                            Name = "Instagram"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "TikTok",
+                            DisplayOrder = 4,
+                            Name = "TikTok"
+                        });
+                });
+
+            modelBuilder.Entity("TrashMob.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -1477,6 +1567,12 @@ namespace TrashMob.Migrations
 
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("DateAgreedToPrivacyPolicy")
                         .HasColumnType("datetimeoffset");
@@ -1497,6 +1593,12 @@ namespace TrashMob.Migrations
 
                     b.Property<bool>("IsSiteAdmin")
                         .HasColumnType("bit");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<double?>("Latitude")
                         .HasColumnType("float");
@@ -1549,6 +1651,10 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
                     b.HasIndex("UserName")
                         .IsUnique()
                         .HasFilter("[UserName] IS NOT NULL");
@@ -1561,9 +1667,11 @@ namespace TrashMob.Migrations
                             Id = new Guid("00000000-0000-0000-0000-000000000000"),
                             City = "Anytown",
                             Country = "AnyCountry",
+                            CreatedByUserId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Email = "info@trashmob.eco",
                             GivenName = "TrashMob",
                             IsSiteAdmin = false,
+                            LastUpdatedByUserId = new Guid("00000000-0000-0000-0000-000000000000"),
                             PrefersMetric = false,
                             Region = "AnyState",
                             SurName = "Eco",
@@ -1572,13 +1680,25 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.UserNotification", b =>
+            modelBuilder.Entity("TrashMob.Models.UserNotification", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<Guid>("EventId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("SentDate")
                         .HasColumnType("datetimeoffset");
@@ -1591,7 +1711,11 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedByUserId");
+
                     b.HasIndex("EventId");
+
+                    b.HasIndex("LastUpdatedByUserId");
 
                     b.HasIndex("UserId");
 
@@ -1600,7 +1724,7 @@ namespace TrashMob.Migrations
                     b.ToTable("UserNotifications");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.UserNotificationType", b =>
+            modelBuilder.Entity("TrashMob.Models.UserNotificationType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1699,191 +1823,94 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.Community", b =>
+            modelBuilder.Entity("TrashMob.Models.Waiver", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.CommunityStatus", "CommunityStatus")
-                        .WithMany("Communities")
-                        .HasForeignKey("CommunityStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_Communities_CommunityStatuses");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
-                        .WithMany("CommunitiesCreated")
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsWaiverEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Name");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.ToTable("WaiverStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            Name = "trashmob",
+                            CreatedByUserId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 11, 24, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = new Guid("4d222d04-ac1f-4a87-886d-fdb686f9f55c"),
+                            IsWaiverEnabled = false,
+                            LastUpdatedByUserId = new Guid("00000000-0000-0000-0000-000000000000")
+                        });
+                });
+
+            modelBuilder.Entity("TrashMob.Models.ContactRequest", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("ContactRequestsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
-                        .HasConstraintName("FK_Communities_ApplicationUser_CreatedBy");
+                        .HasConstraintName("FK_ContactRequests_User_CreatedBy");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
-                        .WithMany("CommunitiesUpdated")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("ContactRequestsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
-                        .HasConstraintName("FK_Communities_ApplicationUser_LastUpdatedBy");
-
-                    b.Navigation("CommunityStatus");
+                        .HasConstraintName("FK_ContactRequests_User_LastUpdatedBy");
 
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityAttachment", b =>
+            modelBuilder.Entity("TrashMob.Models.Event", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.Community", "Community")
-                        .WithMany()
-                        .HasForeignKey("CommunityId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityAttachments_Community");
-
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
-                        .WithMany("CommunityAttachmentsCreated")
-                        .HasForeignKey("CreatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityAttachments_ApplicationUser_CreatedBy");
-
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
-                        .WithMany("CommunityAttachmentsUpdated")
-                        .HasForeignKey("LastUpdatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityAttachments_ApplicationUser_LastUpdatedBy");
-
-                    b.Navigation("Community");
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastUpdatedByUser");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityContact", b =>
-                {
-                    b.HasOne("TrashMob.Shared.Models.CommunityContactType", "CommunityContactType")
-                        .WithMany("CommunityContacts")
-                        .HasForeignKey("CommunityContactTypeId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityContacts_CommunityContactTypes");
-
-                    b.HasOne("TrashMob.Shared.Models.Community", "Community")
-                        .WithMany()
-                        .HasForeignKey("CommunityId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityContacts_Community");
-
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
-                        .WithMany("CommunityContactsCreated")
-                        .HasForeignKey("CreatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityContacts_ApplicationUser_CreatedBy");
-
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
-                        .WithMany("CommunityContactsUpdated")
-                        .HasForeignKey("LastUpdatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityContacts_ApplicationUser_LastUpdatedBy");
-
-                    b.Navigation("Community");
-
-                    b.Navigation("CommunityContactType");
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastUpdatedByUser");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityNote", b =>
-                {
-                    b.HasOne("TrashMob.Shared.Models.Community", "Community")
-                        .WithMany()
-                        .HasForeignKey("CommunityId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityNotes_Community");
-
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
-                        .WithMany("CommunityNotesCreated")
-                        .HasForeignKey("CreatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityNotes_ApplicationUser_CreatedBy");
-
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
-                        .WithMany("CommunityNotesUpdated")
-                        .HasForeignKey("LastUpdatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityNotes_ApplicationUser_LastUpdatedBy");
-
-                    b.Navigation("Community");
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastUpdatedByUser");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityRequest", b =>
-                {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
-                        .WithMany("CommunityRequestsCreated")
-                        .HasForeignKey("CreatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityRequests_CreatedByUser_Id");
-
-                    b.Navigation("CreatedByUser");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityUser", b =>
-                {
-                    b.HasOne("TrashMob.Shared.Models.Community", "Community")
-                        .WithMany()
-                        .HasForeignKey("CommunityId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityUser_Communities");
-
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
-                        .WithMany("CommunityUsersCreated")
-                        .HasForeignKey("CreatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityUsers_CreatedByUser_Id");
-
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
-                        .WithMany("CommunityUsersUpdated")
-                        .HasForeignKey("LastUpdatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityUsers_LastUpdatedByUser_Id");
-
-                    b.HasOne("TrashMob.Shared.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityUser_User");
-
-                    b.Navigation("Community");
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastUpdatedByUser");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.Event", b =>
-                {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("EventsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_Events_ApplicationUser_CreatedBy");
 
-                    b.HasOne("TrashMob.Shared.Models.EventStatus", "EventStatus")
+                    b.HasOne("TrashMob.Models.EventStatus", "EventStatus")
                         .WithMany("Events")
                         .HasForeignKey("EventStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_Events_EventStatuses");
 
-                    b.HasOne("TrashMob.Shared.Models.EventType", "EventType")
+                    b.HasOne("TrashMob.Models.EventSummary", "EventSummary")
+                        .WithMany()
+                        .HasForeignKey("EventSummaryEventId");
+
+                    b.HasOne("TrashMob.Models.EventType", "EventType")
                         .WithMany("Events")
                         .HasForeignKey("EventTypeId")
                         .IsRequired()
                         .HasConstraintName("FK_Events_EventTypes");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("EventsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
@@ -1893,132 +1920,115 @@ namespace TrashMob.Migrations
 
                     b.Navigation("EventStatus");
 
+                    b.Navigation("EventSummary");
+
                     b.Navigation("EventType");
 
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventAttendee", b =>
+            modelBuilder.Entity("TrashMob.Models.EventAttendee", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.Event", "Event")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("EventAttendeesCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_EventAttendees_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventId")
                         .IsRequired()
                         .HasConstraintName("FK_EventAttendees_Events");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "User")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("EventAttendeesUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_EventAttendees_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .IsRequired()
                         .HasConstraintName("FK_EventAttendees_ApplicationUser");
 
+                    b.Navigation("CreatedByUser");
+
                     b.Navigation("Event");
+
+                    b.Navigation("LastUpdatedByUser");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventMedia", b =>
+            modelBuilder.Entity("TrashMob.Models.EventPartnerLocationService", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
-                        .WithMany("EventMedias")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("EventPartnerLocationsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
-                        .HasConstraintName("FK_EventMedias_User_Id");
+                        .HasConstraintName("FK_EventPartnerLocationServices_User_CreatedBy");
 
-                    b.HasOne("TrashMob.Shared.Models.Event", "Event")
-                        .WithMany("EventMedias")
-                        .HasForeignKey("EventId")
-                        .IsRequired()
-                        .HasConstraintName("FK_EventMedia_Event_Id");
-
-                    b.HasOne("TrashMob.Shared.Models.MediaType", "MediaType")
-                        .WithMany("EventMedias")
-                        .HasForeignKey("MediaTypeId")
-                        .IsRequired()
-                        .HasConstraintName("FK_EventMedias_MediaTypes");
-
-                    b.HasOne("TrashMob.Shared.Models.MediaUsageType", "MediaUsageType")
-                        .WithMany("EventMedias")
-                        .HasForeignKey("MediaUsageTypeId")
-                        .IsRequired()
-                        .HasConstraintName("FK_EventMedias_MediaUsageTypes");
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("Event");
-
-                    b.Navigation("MediaType");
-
-                    b.Navigation("MediaUsageType");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.EventPartner", b =>
-                {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
-                        .WithMany("EventPartnersCreated")
-                        .HasForeignKey("CreatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_EventPartners_User_CreatedBy");
-
-                    b.HasOne("TrashMob.Shared.Models.Event", "Event")
+                    b.HasOne("TrashMob.Models.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventId")
                         .IsRequired()
-                        .HasConstraintName("FK_EventPartners_Events");
+                        .HasConstraintName("FK_EventPartnerLocationServices_Events");
 
-                    b.HasOne("TrashMob.Shared.Models.EventPartnerStatus", "EventPartnerStatus")
-                        .WithMany("EventPartners")
-                        .HasForeignKey("EventPartnerStatusId")
+                    b.HasOne("TrashMob.Models.EventPartnerLocationServiceStatus", "EventPartnerLocationServiceStatus")
+                        .WithMany("EventPartnerLocationServices")
+                        .HasForeignKey("EventPartnerLocationServiceStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_EventPartners_EventPartnerStatuses");
+                        .HasConstraintName("FK_EventPartnerLocationServices_EventPartnerLocationStatuses");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
-                        .WithMany("EventPartnersUpdated")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("EventPartnerLocationsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
-                        .HasConstraintName("FK_EventPartners_User_LastUpdatedBy");
+                        .HasConstraintName("FK_EventPartnerLocationServices_User_LastUpdatedBy");
 
-                    b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
-                        .WithMany()
-                        .HasForeignKey("PartnerId")
-                        .IsRequired()
-                        .HasConstraintName("FK_EventPartners_Partners");
-
-                    b.HasOne("TrashMob.Shared.Models.PartnerLocation", "PartnerLocation")
+                    b.HasOne("TrashMob.Models.PartnerLocation", "PartnerLocation")
                         .WithMany()
                         .HasForeignKey("PartnerLocationId")
                         .IsRequired()
-                        .HasConstraintName("FK_EventPartners_PartnerLocations");
+                        .HasConstraintName("FK_EventPartnerLocationServices_PartnerLocations");
+
+                    b.HasOne("TrashMob.Models.ServiceType", "ServiceType")
+                        .WithMany()
+                        .HasForeignKey("ServiceTypeId")
+                        .IsRequired()
+                        .HasConstraintName("FK_EventPartnerLocationServices_ServiceTypes");
 
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("Event");
 
-                    b.Navigation("EventPartnerStatus");
+                    b.Navigation("EventPartnerLocationServiceStatus");
 
                     b.Navigation("LastUpdatedByUser");
 
-                    b.Navigation("Partner");
-
                     b.Navigation("PartnerLocation");
+
+                    b.Navigation("ServiceType");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventSummary", b =>
+            modelBuilder.Entity("TrashMob.Models.EventSummary", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("EventSummariesCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_EventSummaries_User_CreatedBy");
 
-                    b.HasOne("TrashMob.Shared.Models.Event", "Event")
+                    b.HasOne("TrashMob.Models.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventId")
                         .IsRequired()
                         .HasConstraintName("FK_EventSummary_Events");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("EventSummariesUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
@@ -2031,69 +2041,241 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.NonEventUserNotification", b =>
+            modelBuilder.Entity("TrashMob.Models.MessageRequest", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "User")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("MessageRequestsCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_MessageRequests_CreatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("MessageRequestsUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_MessageRequests_LastUpdatedByUser_Id");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.NonEventUserNotification", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("NonEventUserNotificationsCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_NonEventUserNotification_CreatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("NonEventUserNotificationsUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_NonEventUserNotification_LastUpdatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.User", "User")
                         .WithMany("NonEventUserNotifications")
                         .HasForeignKey("UserId")
                         .IsRequired()
                         .HasConstraintName("FK_NonEventUserNotifications_User_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.UserNotificationType", "UserNotificationType")
+                    b.HasOne("TrashMob.Models.UserNotificationType", "UserNotificationType")
                         .WithMany("NonEventUserNotifications")
                         .HasForeignKey("UserNotificationTypeId")
                         .IsRequired()
                         .HasConstraintName("FK_NonEventUserNotifications_UserNotificationTypes");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
 
                     b.Navigation("User");
 
                     b.Navigation("UserNotificationType");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.Partner", b =>
+            modelBuilder.Entity("TrashMob.Models.Partner", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("PartnersCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_Partners_CreatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("PartnersUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_Partners_LastUpdatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.PartnerStatus", "PartnerStatus")
+                    b.HasOne("TrashMob.Models.PartnerStatus", "PartnerStatus")
                         .WithMany("Partners")
                         .HasForeignKey("PartnerStatusId")
                         .IsRequired()
-                        .HasConstraintName("FK_Partners_PartnerRequestStatus");
+                        .HasConstraintName("FK_Partners_PartnerStatus");
+
+                    b.HasOne("TrashMob.Models.PartnerType", "PartnerType")
+                        .WithMany("Partners")
+                        .HasForeignKey("PartnerTypeId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Partners_PartnerType");
 
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastUpdatedByUser");
 
                     b.Navigation("PartnerStatus");
+
+                    b.Navigation("PartnerType");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerLocation", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerAdmin", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("PartnerAdminsCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerAdmin_CreatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("PartnerAdminsUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerAdmin_LastUpdatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
+                        .WithMany("PartnerAdmins")
+                        .HasForeignKey("PartnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerAdmin_Partners");
+
+                    b.HasOne("TrashMob.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerAdmin_User");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("Partner");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PartnerAdminInvitation", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("PartnerAdminInvitationsCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerAdminInvitation_CreatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.InvitationStatus", "InvitationStatus")
+                        .WithMany("PartnerAdminInvitations")
+                        .HasForeignKey("InvitationStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("PartnerAdminInvitationsUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerAdminInvitation_LastUpdatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
+                        .WithMany("PartnerAdminInvitations")
+                        .HasForeignKey("PartnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerAdminInvitation_Partners");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("InvitationStatus");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("Partner");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PartnerContact", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("PartnerContactsCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerContacts_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("PartnerContactsUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerContacts_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
+                        .WithMany("PartnerContacts")
+                        .HasForeignKey("PartnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerContacts_Partner");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("Partner");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PartnerDocument", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("PartnerDocumentsCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerDocuments_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("PartnerDocumentsUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerDocuments_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
+                        .WithMany("PartnerDocuments")
+                        .HasForeignKey("PartnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerDocuments_Partner");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("Partner");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PartnerLocation", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("PartnerLocationsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerLocations_CreatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("PartnerLocationsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerLocations_LastUpdatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
-                        .WithMany()
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
+                        .WithMany("PartnerLocations")
                         .HasForeignKey("PartnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_PartnerLocations_Partners");
 
@@ -2104,58 +2286,131 @@ namespace TrashMob.Migrations
                     b.Navigation("Partner");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerRequest", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerLocationContact", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("PartnerLocationContactsCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerLocationContacts_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("PartnerLocationContactsUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerLocationContacts_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.PartnerLocation", "PartnerLocation")
+                        .WithMany("PartnerLocationContacts")
+                        .HasForeignKey("PartnerLocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerLocationContacts_PartnerLocation");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("PartnerLocation");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PartnerLocationService", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("PartnerLocationServicesCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnersLocationServices_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("PartnerLocationServicesUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerLocationServices_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.PartnerLocation", "PartnerLocation")
+                        .WithMany("PartnerLocationServices")
+                        .HasForeignKey("PartnerLocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnersLocationService_PartnerLocations");
+
+                    b.HasOne("TrashMob.Models.ServiceType", "ServiceType")
+                        .WithMany()
+                        .HasForeignKey("ServiceTypeId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerLocationService_ServiceTypes");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("PartnerLocation");
+
+                    b.Navigation("ServiceType");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PartnerRequest", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
                         .WithMany("PartnerRequestsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerRequests_CreatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
                         .WithMany("PartnerRequestsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerRequests_LastUpdatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.PartnerRequestStatus", "PartnerRequestStatus")
+                    b.HasOne("TrashMob.Models.PartnerRequestStatus", "PartnerRequestStatus")
                         .WithMany("PartnerRequests")
                         .HasForeignKey("PartnerRequestStatusId")
                         .IsRequired()
                         .HasConstraintName("FK_PartnerRequests_PartnerRequestStatus");
+
+                    b.HasOne("TrashMob.Models.PartnerType", "PartnerType")
+                        .WithMany("PartnerRequests")
+                        .HasForeignKey("PartnerTypeId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerRequests_PartnerType");
 
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastUpdatedByUser");
 
                     b.Navigation("PartnerRequestStatus");
+
+                    b.Navigation("PartnerType");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerUser", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerSocialMediaAccount", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.User", "CreatedByUser")
-                        .WithMany("PartnerUsersCreated")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("PartnerSocialMediaAccountsCreated")
                         .HasForeignKey("CreatedByUserId")
                         .IsRequired()
-                        .HasConstraintName("FK_PartnerUsers_CreatedByUser_Id");
+                        .HasConstraintName("FK_PartnerSocialMediaAccount_CreatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "LastUpdatedByUser")
-                        .WithMany("PartnerUsersUpdated")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("PartnerSocialMediaAccountsUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
-                        .HasConstraintName("FK_PartnerUsers_LastUpdatedByUser_Id");
+                        .HasConstraintName("FK_PartnerSocialMediaAccount_LastUpdatedByUser_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.Partner", "Partner")
-                        .WithMany()
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
+                        .WithMany("PartnerSocialMediaAccounts")
                         .HasForeignKey("PartnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_PartnerUser_Partners");
+                        .HasConstraintName("FK_PartnerSocialMediaAccount_Partner");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                    b.HasOne("TrashMob.Models.SocialMediaAccountType", "SocialMediaAccountType")
+                        .WithMany("PartnerSocialMediaAccounts")
+                        .HasForeignKey("SocialMediaAccountTypeId")
                         .IsRequired()
-                        .HasConstraintName("FK_PartnerUser_User");
+                        .HasConstraintName("FK_PartnerSocialMediaAccounts_SocialMediaAccountType");
 
                     b.Navigation("CreatedByUser");
 
@@ -2163,117 +2418,221 @@ namespace TrashMob.Migrations
 
                     b.Navigation("Partner");
 
-                    b.Navigation("User");
+                    b.Navigation("SocialMediaAccountType");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.UserNotification", b =>
+            modelBuilder.Entity("TrashMob.Models.PickupLocation", b =>
                 {
-                    b.HasOne("TrashMob.Shared.Models.Event", "Event")
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("PickupLocationsCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PickupLocations_CreatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.Event", "Event")
+                        .WithMany("PickupLocations")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_PickupLocations_Events");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("PickupLocationsUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PickupLocations_LastUpdatedByUser_Id");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("Event");
+
+                    b.Navigation("LastUpdatedByUser");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.SiteMetric", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("SiteMetricsCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_SiteMetrics_CreatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("SiteMetricsUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_SiteMetrics_LastUpdatedByUser_Id");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.User", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("UsersCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_User_CreatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("UsersUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_User_LastUpdatedByUser_Id");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.UserNotification", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("UserNotificationsCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_UserNotification_CreatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.Event", "Event")
                         .WithMany("UserNotifications")
                         .HasForeignKey("EventId")
                         .IsRequired()
                         .HasConstraintName("FK_UserNotifications_Event_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.User", "User")
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("UserNotificationsUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_UserNotification_LastUpdatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.User", "User")
                         .WithMany("UserNotifications")
                         .HasForeignKey("UserId")
                         .IsRequired()
                         .HasConstraintName("FK_UserNotifications_User_Id");
 
-                    b.HasOne("TrashMob.Shared.Models.UserNotificationType", "UserNotificationType")
+                    b.HasOne("TrashMob.Models.UserNotificationType", "UserNotificationType")
                         .WithMany("UserNotifications")
                         .HasForeignKey("UserNotificationTypeId")
                         .IsRequired()
                         .HasConstraintName("FK_UserNotifications_UserNotificationTypes");
 
+                    b.Navigation("CreatedByUser");
+
                     b.Navigation("Event");
+
+                    b.Navigation("LastUpdatedByUser");
 
                     b.Navigation("User");
 
                     b.Navigation("UserNotificationType");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityContactType", b =>
+            modelBuilder.Entity("TrashMob.Models.Waiver", b =>
                 {
-                    b.Navigation("CommunityContacts");
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("WaiverStatusesCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_WaiverStatuses_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("WaiverStatusesUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_WaiverStatuses_User_LastUpdatedBy");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.CommunityStatus", b =>
+            modelBuilder.Entity("TrashMob.Models.Event", b =>
                 {
-                    b.Navigation("Communities");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.Event", b =>
-                {
-                    b.Navigation("EventMedias");
+                    b.Navigation("PickupLocations");
 
                     b.Navigation("UserNotifications");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventPartnerStatus", b =>
+            modelBuilder.Entity("TrashMob.Models.EventPartnerLocationServiceStatus", b =>
                 {
-                    b.Navigation("EventPartners");
+                    b.Navigation("EventPartnerLocationServices");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.EventStatus", b =>
-                {
-                    b.Navigation("Events");
-                });
-
-            modelBuilder.Entity("TrashMob.Shared.Models.EventType", b =>
+            modelBuilder.Entity("TrashMob.Models.EventStatus", b =>
                 {
                     b.Navigation("Events");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.MediaType", b =>
+            modelBuilder.Entity("TrashMob.Models.EventType", b =>
                 {
-                    b.Navigation("EventMedias");
+                    b.Navigation("Events");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.MediaUsageType", b =>
+            modelBuilder.Entity("TrashMob.Models.InvitationStatus", b =>
                 {
-                    b.Navigation("EventMedias");
+                    b.Navigation("PartnerAdminInvitations");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerRequestStatus", b =>
+            modelBuilder.Entity("TrashMob.Models.Partner", b =>
+                {
+                    b.Navigation("PartnerAdminInvitations");
+
+                    b.Navigation("PartnerAdmins");
+
+                    b.Navigation("PartnerContacts");
+
+                    b.Navigation("PartnerDocuments");
+
+                    b.Navigation("PartnerLocations");
+
+                    b.Navigation("PartnerSocialMediaAccounts");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PartnerLocation", b =>
+                {
+                    b.Navigation("PartnerLocationContacts");
+
+                    b.Navigation("PartnerLocationServices");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.PartnerRequestStatus", b =>
                 {
                     b.Navigation("PartnerRequests");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.PartnerStatus", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerStatus", b =>
                 {
                     b.Navigation("Partners");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.User", b =>
+            modelBuilder.Entity("TrashMob.Models.PartnerType", b =>
                 {
-                    b.Navigation("CommunitiesCreated");
+                    b.Navigation("PartnerRequests");
 
-                    b.Navigation("CommunitiesUpdated");
+                    b.Navigation("Partners");
+                });
 
-                    b.Navigation("CommunityAttachmentsCreated");
+            modelBuilder.Entity("TrashMob.Models.SocialMediaAccountType", b =>
+                {
+                    b.Navigation("PartnerSocialMediaAccounts");
+                });
 
-                    b.Navigation("CommunityAttachmentsUpdated");
+            modelBuilder.Entity("TrashMob.Models.User", b =>
+                {
+                    b.Navigation("ContactRequestsCreated");
 
-                    b.Navigation("CommunityContactsCreated");
+                    b.Navigation("ContactRequestsUpdated");
 
-                    b.Navigation("CommunityContactsUpdated");
+                    b.Navigation("EventAttendeesCreated");
 
-                    b.Navigation("CommunityNotesCreated");
+                    b.Navigation("EventAttendeesUpdated");
 
-                    b.Navigation("CommunityNotesUpdated");
+                    b.Navigation("EventPartnerLocationsCreated");
 
-                    b.Navigation("CommunityRequestsCreated");
-
-                    b.Navigation("CommunityUsersCreated");
-
-                    b.Navigation("CommunityUsersUpdated");
-
-                    b.Navigation("EventMedias");
-
-                    b.Navigation("EventPartnersCreated");
-
-                    b.Navigation("EventPartnersUpdated");
+                    b.Navigation("EventPartnerLocationsUpdated");
 
                     b.Navigation("EventSummariesCreated");
 
@@ -2283,7 +2642,39 @@ namespace TrashMob.Migrations
 
                     b.Navigation("EventsUpdated");
 
+                    b.Navigation("MessageRequestsCreated");
+
+                    b.Navigation("MessageRequestsUpdated");
+
                     b.Navigation("NonEventUserNotifications");
+
+                    b.Navigation("NonEventUserNotificationsCreated");
+
+                    b.Navigation("NonEventUserNotificationsUpdated");
+
+                    b.Navigation("PartnerAdminInvitationsCreated");
+
+                    b.Navigation("PartnerAdminInvitationsUpdated");
+
+                    b.Navigation("PartnerAdminsCreated");
+
+                    b.Navigation("PartnerAdminsUpdated");
+
+                    b.Navigation("PartnerContactsCreated");
+
+                    b.Navigation("PartnerContactsUpdated");
+
+                    b.Navigation("PartnerDocumentsCreated");
+
+                    b.Navigation("PartnerDocumentsUpdated");
+
+                    b.Navigation("PartnerLocationContactsCreated");
+
+                    b.Navigation("PartnerLocationContactsUpdated");
+
+                    b.Navigation("PartnerLocationServicesCreated");
+
+                    b.Navigation("PartnerLocationServicesUpdated");
 
                     b.Navigation("PartnerLocationsCreated");
 
@@ -2293,18 +2684,38 @@ namespace TrashMob.Migrations
 
                     b.Navigation("PartnerRequestsUpdated");
 
-                    b.Navigation("PartnerUsersCreated");
+                    b.Navigation("PartnerSocialMediaAccountsCreated");
 
-                    b.Navigation("PartnerUsersUpdated");
+                    b.Navigation("PartnerSocialMediaAccountsUpdated");
 
                     b.Navigation("PartnersCreated");
 
                     b.Navigation("PartnersUpdated");
 
+                    b.Navigation("PickupLocationsCreated");
+
+                    b.Navigation("PickupLocationsUpdated");
+
+                    b.Navigation("SiteMetricsCreated");
+
+                    b.Navigation("SiteMetricsUpdated");
+
                     b.Navigation("UserNotifications");
+
+                    b.Navigation("UserNotificationsCreated");
+
+                    b.Navigation("UserNotificationsUpdated");
+
+                    b.Navigation("UsersCreated");
+
+                    b.Navigation("UsersUpdated");
+
+                    b.Navigation("WaiverStatusesCreated");
+
+                    b.Navigation("WaiverStatusesUpdated");
                 });
 
-            modelBuilder.Entity("TrashMob.Shared.Models.UserNotificationType", b =>
+            modelBuilder.Entity("TrashMob.Models.UserNotificationType", b =>
                 {
                     b.Navigation("NonEventUserNotifications");
 

@@ -49,6 +49,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{634523
 		Images\TrashMobEco_StackedLogo2.png = Images\TrashMobEco_StackedLogo2.png
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrashMob.Models", "TrashMob.Models\TrashMob.Models.csproj", "{F3261F21-3FFC-41BF-AF57-394FEC6E0638}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,18 @@ Global
 		{094027EE-D053-4C3F-B272-896472349E7E}.Release|iPhone.Build.0 = Release|Any CPU
 		{094027EE-D053-4C3F-B272-896472349E7E}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{094027EE-D053-4C3F-B272-896472349E7E}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{F3261F21-3FFC-41BF-AF57-394FEC6E0638}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3261F21-3FFC-41BF-AF57-394FEC6E0638}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3261F21-3FFC-41BF-AF57-394FEC6E0638}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{F3261F21-3FFC-41BF-AF57-394FEC6E0638}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{F3261F21-3FFC-41BF-AF57-394FEC6E0638}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{F3261F21-3FFC-41BF-AF57-394FEC6E0638}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{F3261F21-3FFC-41BF-AF57-394FEC6E0638}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3261F21-3FFC-41BF-AF57-394FEC6E0638}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3261F21-3FFC-41BF-AF57-394FEC6E0638}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{F3261F21-3FFC-41BF-AF57-394FEC6E0638}.Release|iPhone.Build.0 = Release|Any CPU
+		{F3261F21-3FFC-41BF-AF57-394FEC6E0638}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{F3261F21-3FFC-41BF-AF57-394FEC6E0638}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,62 @@
+﻿@page "/profile"
+@using System.ComponentModel.DataAnnotations
+
+@*TODO: move to styles sheet*@
+<style>
+    .tm-user-profile-container {
+        height: 100%;
+        padding: 20px;
+    }
+
+        .tm-user-profile-container .tm-loader {
+            top: 50%;
+            position: fixed;
+        }
+
+        .tm-user-profile-container .tm-back-btn-container {
+            margin-bottom: 10px;
+        }
+</style>
+
+<ErrorBoundary>
+    <ChildContent>
+        <MudContainer Class="tm-user-profile-container">
+            <MudOverlay @bind-Visible="_isLoading" Absolute>
+                <MudProgressCircular Color="Color.Default" Indeterminate Class="tm-loader" />
+            </MudOverlay>
+            <MudStack Class="tm-back-btn-container" Row AlignItems="AlignItems.Start">
+                <MudFab StartIcon="@Icons.Material.Filled.ArrowLeft" Color="Color.Primary" IconSize="Size.Small" Size="Size.Small" Label="Home" OnClick="() => Navigator.NavigateTo(Routes.Home)" />
+            </MudStack>
+            @if (_user != null)
+            {
+                <MudForm @ref="@_userForm" @bind-IsValid="@_success" @bind-Errors="@_errors">
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.UserName" Label="User name" Required RequiredError="User name is required" />
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.Email" Label="Email" Required RequiredError="Email is required"
+                              Validation="@(new EmailAddressAttribute() { ErrorMessage = "The email address is invalid"} )" />
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.GivenName" Label="Given name" />
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.NameIdentifier" Label="Name identifier" />
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.SourceSystemUserName" Label="Source system name" />
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.City" Label="City" />
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.Region" Label="Region" />
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.Country" Label="Country" />
+                    <MudTextField FullWidth T="string" @bind-Text="@_user.PostalCode" Label="Postal code" />
+                    <MudTextField FullWidth T="string" Text="@(GetDateString(_user.DateAgreedToPrivacyPolicy))" Label="Date agreed to privacy policy" Disabled />
+                    <MudTextField FullWidth T="string" Text="@_user.PrivacyPolicyVersion" Label="Privacy policy version" Disabled />
+                    <MudTextField FullWidth T="string" Text="@(GetDateString(_user.DateAgreedToTermsOfService))" Label="Date agreed to terms of service" Disabled />
+                    <MudTextField FullWidth T="string" Text="@_user.TermsOfServiceVersion" Label="Terms of service version" Disabled />
+                    <MudNumericField FullWidth T="int" @bind-Value="@_user.TravelLimitForLocalEvents" Label="Travel limit for local events" />
+                    <MudTextField FullWidth T="string" Text="@(GetDateString(_user.MemberSince))" Label="Member since" Disabled />
+                    <MudCheckBox T="bool" @bind-Checked="@_user.PrefersMetric" Label="Prefers Metrics" />
+                    <MudCheckBox T="bool" @bind-Checked="@_user.IsSiteAdmin" Label="Is site admin" />
+                    <MudStack Row Style="margin-top: 10px">
+                        <MudButton Style="width: 50%; margin-right: 10px" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => Navigator.NavigateTo(Routes.Home)">Cancel</MudButton>
+                        <MudButton Style="width: 50%; margin-left: 10px" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnSaveUserAsync">Save</MudButton>
+                    </MudStack>
+                </MudForm>
+            }
+        </MudContainer>
+    </ChildContent>
+    <ErrorContent>
+        @context.Message
+    </ErrorContent>
+</ErrorBoundary>

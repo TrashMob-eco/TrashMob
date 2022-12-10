@@ -6,6 +6,11 @@ import { GettingStartedSection } from '../GettingStartedSection';
 import { Col, Container, Image, Row } from 'react-bootstrap';
 
 export const AboutUs: React.FC = () => {
+
+    React.useEffect(() => {
+        window.scrollTo(0, 0);
+    })
+
     return (
         <>
             <Container fluid className="mt-1 bg-white p-5">
@@ -25,7 +30,7 @@ export const AboutUs: React.FC = () => {
                         </div>
                     </Col>
                     <Col className="mt-3 d-flex justify-content-center">
-                        <Image src={trashcans} alt="trashcans" className="h-75" />
+                        <Image src={trashcans} alt="trash cans" className="h-75" />
                     </Col>
                 </Row>
             </Container>
@@ -34,8 +39,8 @@ export const AboutUs: React.FC = () => {
                     <Col xs={8} lg={8} className="px-0 mx-auto">
                         <div className="text-white bg-black border-rounded-lg my-5 mx-auto" style={{ opacity: 0.95 }}>
                             <div className="p-5">
-                                <h4>Benefits of joining TrashMob</h4>
-                                <ol className="list-unstyled mt-5">
+                                <h1 className='font-weight-bold pl-5'>Benefits of joining TrashMob</h1>
+                                <ol className="list-unstyled mt-5 p-5">
                                     <li className="mb-4">
                                         <div className="d-flex align-top">
                                             <span className="mr-3 font-weight-bold font-size-lg">1</span>

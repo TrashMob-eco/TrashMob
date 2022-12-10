@@ -8,15 +8,6 @@
         public const string TrashMobEmailName = "TrashMob Information";
     }
 
-    public enum CommunityContactTypeEnum
-    {
-        None = 0,
-        Official = 1,
-        TrashMobHeadquarters = 2,
-        TrashMobVolunteer = 3,
-        Partner = 4,
-    }
-
     public enum CommunityStatusEnum
     {
         Inactive = 0,
@@ -74,7 +65,7 @@
         NotAvailable = 100
     }
 
-    public enum EventPartnerStatusEnum
+    public enum EventPartnerLocationServiceStatusEnum
     {
         None = 0,
         Requested = 1,
@@ -90,16 +81,48 @@
         Complete = 4,
     }
 
+    public enum InvitationStatusEnum
+    {
+        New = 1,
+        Sent = 2,
+        Accepted = 3,
+        Canceled = 4,
+        Declined = 5
+    }
+
     public enum PartnerRequestStatusEnum
     {
-        Pending = 1,
+        Sent = 1,
         Approved = 2,
         Denied = 3,
+        Pending = 4,
     }
 
     public enum PartnerStatusEnum
     {
         Active = 1,
         Inactive = 2,
+    }
+
+    public enum PartnerTypeEnum
+    {
+        Government = 1,
+        Business = 2,
+    }
+
+    public enum ServiceTypeEnum
+    {
+        Hauling = 1,
+        DisposalLocation = 2,
+        StartupKits = 3,
+        Supplies = 4,
+    }
+
+    public enum SocialMediaAccountTypeEnum
+    {
+        Facebook = 1,
+        Twitter = 2,
+        Instagram = 3,
+        TikTok = 4,
     }
 }

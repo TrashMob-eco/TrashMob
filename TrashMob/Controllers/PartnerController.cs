@@ -1,71 +1,41 @@
 ﻿namespace TrashMob.Controllers
 {
     using Microsoft.ApplicationInsights;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System;
-    using System.Linq;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Models;
+    using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/partners")]
-    public class PartnersController : BaseController
+    public class PartnersController : KeyedController<Partner>
     {
-        private readonly IPartnerRepository partnerRepository;
-        private readonly IUserRepository userRepository;
-        private readonly IPartnerUserRepository partnerUserRepository;
-
-        public PartnersController(IPartnerRepository partnerRepository, 
-                                  IUserRepository userRepository, 
-                                  IPartnerUserRepository partnerUserRepository, 
-                                  TelemetryClient telemetryClient) 
-            : base(telemetryClient)
+        public PartnersController(IKeyedManager<Partner> partnerManager) 
+            : base(partnerManager)
         {
-            this.partnerRepository = partnerRepository;
-            this.userRepository = userRepository;
-            this.partnerUserRepository = partnerUserRepository;
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetPartners(CancellationToken cancellationToken)
-        {
-            return Ok(await partnerRepository.GetPartners(cancellationToken).ConfigureAwait(false));
         }
 
         [HttpGet("{partnerId}")]
-        public async Task<IActionResult> GetPartner(Guid partnerId, CancellationToken cancellationToken)
+        public async Task<IActionResult> Get(Guid partnerId, CancellationToken cancellationToken)
         {
-            return Ok(await partnerRepository.GetPartner(partnerId, cancellationToken).ConfigureAwait(false));
+            return Ok(await Manager.GetAsync(partnerId, cancellationToken).ConfigureAwait(false));
         }
 
         [HttpPut]
-        [Authorize]
-        public async Task<IActionResult> UpdatePartner(Partner partner)
+        public async Task<IActionResult> Update(Partner partner, CancellationToken cancellationToken)
         {
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
-            if (currentUser == null)
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
 
-            // Ensure user is allowed to update this Partner
-            if (!currentUser.IsSiteAdmin)
-            {
-                var partnerUser = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.UserId == currentUser.Id && pu.PartnerId == partner.Id);
+            var result = await Manager.UpdateAsync(partner, UserId, cancellationToken).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(Update) + typeof(Partner));
 
-                if (partnerUser == null)
-                {
-                    return Forbid();
-                }
-            }
-
-            TelemetryClient.TrackEvent(nameof(UpdatePartner));
-
-            return Ok(await partnerRepository.UpdatePartner(partner).ConfigureAwait(false));
+            return Ok(result);
         }
     }
 }

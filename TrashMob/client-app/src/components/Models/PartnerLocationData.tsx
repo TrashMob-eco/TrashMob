@@ -1,4 +1,5 @@
 import { Guid } from "guid-typescript";
+import PartnerLocationContactData from "./PartnerLocationContactData";
 
 class PartnerLocationData {
     id: string = Guid.createEmpty().toString();
@@ -11,16 +12,14 @@ class PartnerLocationData {
     latitude: number = 0;
     longitude: number = 0;
     postalCode: string = "";
-    primaryPhone: string = "";
-    secondaryPhone: string = "";
-    primaryEmail: string = "";
-    secondaryEmail: string = "";
-    notes: string = "";
+    publicNotes: string = "";
+    privateNotes: string = "";
     isActive: boolean = true;
-    createdByUserId: string = "";
+    createdByUserId: string = Guid.EMPTY;
     createdDate: Date = new Date();
-    lastUpdatedByUserId: string = "";
+    lastUpdatedByUserId: string = Guid.EMPTY;
     lastUpdatedDate: Date = new Date();
+    partnerLocationContacts: PartnerLocationContactData[] = [];
 }
 
 export default PartnerLocationData;

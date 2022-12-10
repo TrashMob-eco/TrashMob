@@ -7,6 +7,8 @@ namespace TrashMobJobs
     using Microsoft.Azure.Functions.Worker;
     using Microsoft.Extensions.Logging;
     using TrashMob.Shared;
+    using TrashMob.Shared.Managers;
+    using TrashMob.Shared.Poco;
 
     public class StatGenerator
     {

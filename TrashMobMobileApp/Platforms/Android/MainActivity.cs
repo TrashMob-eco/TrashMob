@@ -10,7 +10,7 @@ using Microsoft.Identity.Client;
 using Plugin.CurrentActivity;
 using TrashMobMobileApp.Authentication;
 
-[Activity(Label = "TrashMobMobile", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
+[Activity(Label = "Trash Mob", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
 public class MainActivity : MauiAppCompatActivity
 {
     const int RequestLocationId = 0;

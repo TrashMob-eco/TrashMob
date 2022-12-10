@@ -4,9 +4,9 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Net.Http;
     using System.Net.Http.Json;
     using System.Threading.Tasks;
+    using TrashMob.Models;
     using TrashMobMobileApp.Authentication;
     using TrashMobMobileApp.Models;
 
@@ -19,9 +19,9 @@
         {
         }
 
-        public async Task<IEnumerable<MobEvent>> GetActiveEventsAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Event>> GetActiveEventsAsync(CancellationToken cancellationToken = default)
         {
-            var mobEvents = new List<MobEvent>();
+            var mobEvents = new List<Event>();
 
             try
             {
@@ -33,7 +33,7 @@
                 {
                     response.EnsureSuccessStatusCode();
                     string content = await response.Content.ReadAsStringAsync(cancellationToken);
-                    mobEvents = JsonConvert.DeserializeObject<List<MobEvent>>(content);
+                    mobEvents = JsonConvert.DeserializeObject<List<Event>>(content);
                 }
             }
             catch (Exception ex)
@@ -45,9 +45,9 @@
             return mobEvents;
         }
 
-        public async Task<IEnumerable<MobEvent>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly, CancellationToken cancellationToken = default)
         {
-            var mobEvents = new List<MobEvent>();
+            var mobEvents = new List<Event>();
 
             try
             {
@@ -58,7 +58,7 @@
                 {
                     response.EnsureSuccessStatusCode();
                     string content = await response.Content.ReadAsStringAsync(cancellationToken);
-                    mobEvents = JsonConvert.DeserializeObject<List<MobEvent>>(content);
+                    mobEvents = JsonConvert.DeserializeObject<List<Event>>(content);
                 }
             }
             catch (Exception ex)
@@ -69,7 +69,7 @@
             return mobEvents;
         }
 
-        public async Task<MobEvent> GetEventAsync(Guid eventId, CancellationToken cancellationToken = default)
+        public async Task<Event> GetEventAsync(Guid eventId, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -81,7 +81,7 @@
                 {
                     response.EnsureSuccessStatusCode();
                     string content = await response.Content.ReadAsStringAsync(cancellationToken);
-                    return JsonConvert.DeserializeObject<MobEvent>(content);
+                    return JsonConvert.DeserializeObject<Event>(content);
                 }
             }
             catch (Exception ex)
@@ -91,21 +91,19 @@
             }
         }
 
-        public async Task<MobEvent> UpdateEventAsync(MobEvent mobEvent, CancellationToken cancellationToken = default)
+        public async Task<Event> UpdateEventAsync(Event mobEvent, CancellationToken cancellationToken = default)
         {
             try
             {
-                var requestUri = EventsApi + "/" + mobEvent.Id;
-
-                var content = JsonContent.Create(mobEvent, typeof(MobEvent), null, SerializerOptions);
+                var content = JsonContent.Create(mobEvent, typeof(Event), null, SerializerOptions);
 
                 var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
 
-                using (var response = await authorizedHttpClient.PutAsync(requestUri, content, cancellationToken))
+                using (var response = await authorizedHttpClient.PutAsync(EventsApi, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
-                    return JsonConvert.DeserializeObject<MobEvent>(returnContent);
+                    return JsonConvert.DeserializeObject<Event>(returnContent);
                 }
             }
             catch (Exception ex)
@@ -115,11 +113,11 @@
             }
         }
 
-        public async Task<MobEvent> AddEventAsync(MobEvent mobEvent, CancellationToken cancellationToken = default)
+        public async Task<Event> AddEventAsync(Event mobEvent, CancellationToken cancellationToken = default)
         {
             try
             {
-                var content = JsonContent.Create(mobEvent, typeof(MobEvent), null, SerializerOptions);
+                var content = JsonContent.Create(mobEvent, typeof(Event), null, SerializerOptions);
 
                 var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
 
@@ -127,7 +125,7 @@
                 {
                     response.EnsureSuccessStatusCode();
                     string returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
-                    return JsonConvert.DeserializeObject<MobEvent>(returnContent);
+                    return JsonConvert.DeserializeObject<Event>(returnContent);
                 }
             }
             catch (Exception ex)
@@ -158,9 +156,9 @@
             }
         }
 
-        public async Task<IEnumerable<MobEvent>> GetEventsUserIsAttending(Guid userId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid userId, CancellationToken cancellationToken = default)
         {
-            var mobEvents = new List<MobEvent>();
+            var mobEvents = new List<Event>();
 
             try
             {
@@ -172,7 +170,7 @@
                 {
                     response.EnsureSuccessStatusCode();
                     string content = await response.Content.ReadAsStringAsync(cancellationToken);
-                    mobEvents = JsonConvert.DeserializeObject<List<MobEvent>>(content);
+                    mobEvents = JsonConvert.DeserializeObject<List<Event>>(content);
                 }
             }
             catch (Exception ex)

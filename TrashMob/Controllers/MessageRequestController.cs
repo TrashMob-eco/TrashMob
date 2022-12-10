@@ -5,29 +5,26 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using System.Threading.Tasks;
+    using TrashMob.Models;
     using TrashMob.Shared;
-    using TrashMob.Shared.Managers;
-    using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/messagerequest")]
-    public class MessageRequestController : BaseController
+    public class MessageRequestController : SecureController
     {
         private readonly IMessageRequestManager messageRequestManager;
 
-        public MessageRequestController(IMessageRequestManager messageRequestManager, 
-                                        TelemetryClient telemetryClient)
-            : base(telemetryClient)
+        public MessageRequestController(IMessageRequestManager messageRequestManager) : base()
         {
             this.messageRequestManager = messageRequestManager;
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Policy = "UserIsAdmin")]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> SendMessageRequest(MessageRequest messageRequest)
         {
-            await messageRequestManager.SendMessageRequest(messageRequest).ConfigureAwait(false);
+            await messageRequestManager.SendMessageRequestAsync(messageRequest).ConfigureAwait(false);
 
             TelemetryClient.TrackEvent(nameof(SendMessageRequest));
 

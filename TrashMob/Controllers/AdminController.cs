@@ -5,40 +5,31 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
+    using TrashMob.Models;
     using TrashMob.Shared;
-    using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/admin")]
-    public class AdminController : BaseController
+    public class AdminController : SecureController
     {
-        private readonly IPartnerRequestRepository partnerRequestRepository;
-        private readonly IUserRepository userRepository;
+        private readonly IBaseManager<PartnerRequest> partnerRequestManager;
 
-        public AdminController(IPartnerRequestRepository partnerRequestRepository, 
-                               IUserRepository userRepository, 
-                               TelemetryClient telemetryClient) 
-            : base(telemetryClient)
+        public AdminController(IBaseManager<PartnerRequest> partnerRequestManager) : base()
         {
-            this.partnerRequestRepository = partnerRequestRepository;
-            this.userRepository = userRepository;
+            this.partnerRequestManager = partnerRequestManager;
         }
 
         [HttpPut("partnerrequestupdate/{userId}")]
-        [Authorize]
+        [Authorize(Policy = "UserIsAdmin")]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> UpdatePartnerRequest(Guid userId, PartnerRequest partnerRequest)
+        public async Task<IActionResult> UpdatePartnerRequest(Guid userId, PartnerRequest partnerRequest, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByInternalId(userId).ConfigureAwait(false);
-
-            if (user == null || !ValidateUser(user.NameIdentifier) || user.IsSiteAdmin)
-            {
-                return Forbid();
-            }
-
+            var result = await partnerRequestManager.UpdateAsync(partnerRequest, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdatePartnerRequest));
-            return Ok(await partnerRequestRepository.UpdatePartnerRequest(partnerRequest).ConfigureAwait(false));
+
+            return Ok(result);
         }
     }
 }

@@ -68,6 +68,8 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
     }
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+
         const headers = getDefaultHeaders('GET');
 
         fetch('/api/eventtypes', {
@@ -200,40 +202,41 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                 <AzureMapsProvider>
                     <MapControllerSinglePoint center={center} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} eventDate={eventDate} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} isDraggable={false} />
                 </AzureMapsProvider>
-                <Container className="mt-3">
+                <Container className="my-5">
                     <div className="d-flex justify-content-between align-items-end">
-                        <h4 className="font-weight-bold">{eventName}</h4>
+                        <h1 className="font-weight-bold m-0">{eventName}</h1>
                         <div className="d-flex">
-                            <div id="addToCalendarBtn"><AddToCalendar event={event} /></div>
+                            <div id="addToCalendarBtn" className='p-18' ><AddToCalendar event={event} /></div>
                             <Dropdown role="menuitem">
-                                <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100"><Share className="mr-2" aria-hidden="true" />Share</Dropdown.Toggle>
+                                <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 p-18"><Share className="mr-2" aria-hidden="true" />Share</Dropdown.Toggle>
                                 <Dropdown.Menu id="share-menu">
-                                    <Dropdown.Item className="share-link" onClick={handleCopyLink}><Link className="mr-2" aria-hidden="true" />{!copied ? "Copy link" : "Copied!"}</Dropdown.Item>
-                                    <Dropdown.Item className="share-link" href={facebookUrl}><Facebook className="mr-2" aria-hidden="true" />Share to Facebook</Dropdown.Item>
-                                    <Dropdown.Item className="share-link" href={twitterUrl}><Twitter className="mr-2" aria-hidden="true" />Share to Twitter</Dropdown.Item>
+                                    <Dropdown.Item className="share-link" onClick={handleCopyLink}><Link className="mr-2 p-18" aria-hidden="true" />{!copied ? "Copy link" : "Copied!"}</Dropdown.Item>
+                                    <Dropdown.Item className="share-link" href={facebookUrl}><Facebook className="mr-2 p-18" aria-hidden="true" />Share to Facebook</Dropdown.Item>
+                                    <Dropdown.Item className="share-link" href={twitterUrl}><Twitter className="mr-2 p-18" aria-hidden="true" />Share to Twitter</Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
                             <RegisterBtn eventId={eventId} isAttending={isAttending} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} isUserLoaded={isUserLoaded} history={history} location={location} match={match}></RegisterBtn>
                         </div>
                     </div>
-                    <span className="my-2 event-list-event-type p-2 rounded d-block">{getEventType(eventTypeList, eventTypeId)}</span>
-                    <p>{description}</p>
-                    <p><Calendar className="mr-2" />{moment(startDateTime).local().format('L')}</p>
-                    <p><Stopwatch className="mr-2" />{moment(startDateTime).local().format('LT')}</p>
-                    <p><GeoAlt className="mr-2" /><a href={`https://google.com/maps/place/${streetAddress}+${city}+${region}+${postalCode}+${country}`} target="_blank" rel="noopener noreferrer">{streetAddress}, {city}, {region} - {postalCode} {country}</a></p>
-                    <div className="d-flex">
-                        <span className="font-weight-bold mr-2">Latitude:</span>
-                        <span className="mr-5">{latitude}</span>
-                        <span className="font-weight-bold mr-2">Longitude:</span>
-                        <span>{longitude}</span>
+                    <span className="my-2 event-list-event-type p-2 rounded d-block p-15">{getEventType(eventTypeList, eventTypeId)}</span>
+                    <p className='mt-4 color-grey'>{description}</p>
+                    <p><Calendar size={24} className="mr-2" /><span className='color-grey'> {moment(startDateTime).local().format('L')}</span></p>
+                    <p><Stopwatch size={24} className="mr-2" /><span className='color-grey'> {moment(startDateTime).local().format('LT')}</span></p>
+                    <p><GeoAlt size={24} className="mr-2" /><a href={`https://google.com/maps/place/${streetAddress}+${city}+${region}+${postalCode}+${country}`} target="_blank" rel="noopener noreferrer">{streetAddress}, {city}, {region} - {postalCode} {country}</a></p>
+                    <div className="d-flex align-items-center">
+                        <h5 className="font-weight-bold m-0 mr-2">Latitude</h5>
+                        <span className="mr-5 color-grey p-18">{latitude}</span>
+                        <h5 className="font-weight-bold m-0 mr-2">Longitude</h5>
+                        <span className='color-grey p-18'>{longitude}</span>
                     </div>
-                    <div hidden={maxNumberOfParticipants === 0}>
-                        <span className="font-weight-bold mr-2">Max Number of Participants:</span>
-                        <span>{maxNumberOfParticipants}</span>
+
+                    <div hidden={maxNumberOfParticipants === 0} className="my-4">
+                        <h5 className="font-weight-bold m-0 mr-2">Max Number of Participants</h5>
+                        <span className="mr-5 color-grey p-18">{maxNumberOfParticipants}</span>
                     </div>
                 </Container>
                 <Container>
-                    <h5 className="font-weight-bold mr-2 mt-5 mb-4 text-decoration-underline">Attendees ({userList.length})</h5>
+                    <h5 className="font-weight-bold font-size-xl mr-2 mt-5 mb-4"><span className='active-line'>Attendees ({userList.length})</span></h5>
                     <UsersTable />
                 </Container>
             </>
@@ -248,7 +251,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
         <Container fluid className='bg-grass'>
             <Row className="text-center pt-0">
                 <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                    <h1 className='font-weight-bold'>Event Details</h1>
+                    <h1 className='font-weight-bold'>View Events</h1>
                     <p className="font-weight-bold">Learn, join, and inspire.</p>
                 </Col>
                 <Col md={5}>

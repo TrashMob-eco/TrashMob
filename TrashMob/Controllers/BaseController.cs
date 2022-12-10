@@ -2,23 +2,31 @@
 {
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Mvc;
-    using System.Security.Claims;
+    using Microsoft.Extensions.DependencyInjection;
 
     [ApiController]
     public abstract class BaseController : ControllerBase
     {
-        protected TelemetryClient TelemetryClient { get; }
+        private TelemetryClient telemetryClient;
+
+        protected TelemetryClient TelemetryClient
+        {
+            get
+            {
+                return telemetryClient ?? (telemetryClient = HttpContext.RequestServices.GetService<TelemetryClient>());
+            }
+            private set
+            {
+                telemetryClient = value;
+            }
+        }
+        public BaseController()
+        {
+        }
 
         public BaseController(TelemetryClient telemetryClient)
         {
             TelemetryClient = telemetryClient;
-        }
-
-        // Ensure the user calling in is the owner of the record
-        protected virtual bool ValidateUser(string userId)
-        {
-            var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            return userId == nameIdentifier;
         }
     }
 }

@@ -14,9 +14,7 @@ import EventSummary from './components/EventSummary';
 import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
 import { GettingStarted } from './components/Pages/GettingStarted';
-import { MediaGallery } from './components/MediaGallery';
 import MyDashboard from './components/Pages/MyDashboard';
-import { Partners } from './components/Partners/Partners';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { TermsOfService } from './components/Pages/TermsOfService';
 import { Board } from './components/Board';
@@ -31,8 +29,8 @@ import UserData from './components/Models/UserData';
 import * as msal from "@azure/msal-browser";
 import { Guid } from 'guid-typescript';
 import UserProfile from './components/Pages/UserProfile';
-import PartnerDashboard from './components/Partners/PartnerDashboard';
-import BecomeAPartner from './components/Partners/BecomeAPartner';
+import PartnerDashboard, { PartnerDashboardMatchParams } from './components/Partners/PartnerDashboard';
+import PartnerRequest from './components/Partners/PartnerRequest';
 import SiteAdmin from './components/Admin/SiteAdmin';
 import ManageEventDashboard, { ManageEventDashboardMatchParams } from './components/EventManagement/ManageEventDashboard';
 import { Shop } from './components/Shop';
@@ -43,14 +41,22 @@ import EventData from './components/Models/EventData';
 import './custom.css';
 import Waivers from './components/Waivers/Waivers';
 import WaiversReturn from './components/Waivers/WaiversReturn';
+import PartnerRequestDetails, { PartnerRequestDetailsMatchParams } from './components/Partners/PartnerRequestDetails';
+import { Partnerships } from './components/Partners/Partnerships';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
+}
+
+interface PartnerProps extends RouteComponentProps<PartnerDashboardMatchParams> {
 }
 
 interface CancelProps extends RouteComponentProps<CancelEventMatchParams> {
 }
 
 interface DetailsProps extends RouteComponentProps<DetailsMatchParams> {
+}
+
+interface PartnerRequestDetailsProps extends RouteComponentProps<PartnerRequestDetailsMatchParams> {
 }
 
 interface WaiversReturnProps extends RouteComponentProps {
@@ -110,9 +116,25 @@ export const App: FC = () => {
             </MsalAuthenticationTemplate >);
     }
 
+    function renderPartnerDashboard(inp: PartnerProps) {
+        return (
+            <MsalAuthenticationTemplate
+                interactionType={InteractionType.Redirect}
+                errorComponent={ErrorComponent}
+                loadingComponent={LoadingComponent}>
+                <PartnerDashboard {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+            </MsalAuthenticationTemplate >);
+    }
+
     function renderEventDetails(inp: DetailsProps) {
         return (
             <EventDetails {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={() => handleAttendanceChanged()} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} />
+        );
+    }
+
+    function renderPartnerRequestDetails(inp: PartnerRequestDetailsProps) {
+        return (
+            <PartnerRequestDetails {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
         );
     }
 
@@ -272,6 +294,8 @@ export const App: FC = () => {
                     <div className="container-fluid px-0">
                         <Switch>
                             <Route path="/manageeventdashboard/:eventId?" render={(props: AppProps) => renderEditEvent(props)} />
+                            <Route path="/partnerdashboard/:partnerId?" render={(props: PartnerProps) => renderPartnerDashboard(props)} />
+                            <Route path="/partnerrequestdetails/:partnerRequestId" render={(props: PartnerRequestDetailsProps) => renderPartnerRequestDetails(props)} />
                             <Route path="/eventsummary/:eventId?" render={(props: AppProps) => renderEventSummary(props)} />
                             <Route path="/eventdetails/:eventId" render={(props: DetailsProps) => renderEventDetails(props)} />
                             <Route path="/cancelevent/:eventId" render={(props: CancelProps) => renderCancelEvent(props)} />
@@ -289,15 +313,15 @@ export const App: FC = () => {
                                     interactionType={InteractionType.Redirect}
                                     errorComponent={ErrorComponent}
                                     loadingComponent={LoadingComponent}>
-                                    <BecomeAPartner currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                    <PartnerRequest currentUser={currentUser} isUserLoaded={isUserLoaded} mode="become" />
                                 </MsalAuthenticationTemplate >
                             </Route>
-                            <Route exact path="/partnerdashboard">
+                            <Route exact path="/inviteapartner">
                                 <MsalAuthenticationTemplate
                                     interactionType={InteractionType.Redirect}
                                     errorComponent={ErrorComponent}
                                     loadingComponent={LoadingComponent}>
-                                    <PartnerDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                    <PartnerRequest currentUser={currentUser} isUserLoaded={isUserLoaded} mode="send" />
                                 </MsalAuthenticationTemplate >
                             </Route>
                             <Route exact path="/siteadmin">
@@ -324,6 +348,9 @@ export const App: FC = () => {
                                     <Waivers currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
                             </Route>
+                            <Route exact path="/partnerships">
+                                <Partnerships />
+                            </Route>
                             <Route exact path="/shop">
                                 <Shop />
                             </Route>
@@ -344,12 +371,6 @@ export const App: FC = () => {
                             </Route>
                             <Route exact path="/gettingstarted">
                                 <GettingStarted />
-                            </Route>
-                            <Route exact path="/mediagallery">
-                                <MediaGallery />
-                            </Route>
-                            <Route exact path="/partners">
-                                <Partners />
                             </Route>
                             <Route exact path="/privacypolicy">
                                 <PrivacyPolicy />
