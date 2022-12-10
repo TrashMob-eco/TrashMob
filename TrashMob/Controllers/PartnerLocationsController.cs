@@ -5,41 +5,37 @@
     using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Models;
+    using TrashMob.Shared.Managers.Interfaces;
 
     [Authorize]
     [Route("api/partnerlocations")]
-    public class PartnerLocationsController : BaseController
+    public class PartnerLocationsController : SecureController
     {
-        private readonly IPartnerLocationRepository partnerLocationRepository;
-        private readonly IUserRepository userRepository;
-        private readonly IPartnerUserRepository partnerUserRepository;
+        private readonly IPartnerLocationManager partnerLocationManager;
+        private readonly IKeyedManager<Partner> partnerManager;
 
-        public PartnerLocationsController(IPartnerLocationRepository partnerLocationRepository,
-                                          IPartnerUserRepository partnerUserRepository,
-                                          IUserRepository userRepository,
-                                          TelemetryClient telemetryClient)
-            : base(telemetryClient)
+        public PartnerLocationsController(IPartnerLocationManager partnerLocationManager,
+                                          IKeyedManager<Partner> partnerManager)
+            : base()
         {
-            this.partnerLocationRepository = partnerLocationRepository;
-            this.partnerUserRepository = partnerUserRepository;
-            this.userRepository = userRepository;
+            this.partnerLocationManager = partnerLocationManager;
+            this.partnerManager = partnerManager;
         }
 
-        [HttpGet("{partnerId}")]
-        public IActionResult GetPartnerLocations(Guid partnerId, CancellationToken cancellationToken)
+        [HttpGet("getbypartner/{partnerId}")]
+        public async Task<IActionResult> GetPartnerLocations(Guid partnerId, CancellationToken cancellationToken)
         {
-            return Ok(partnerLocationRepository.GetPartnerLocations(cancellationToken).Where(pl => pl.PartnerId == partnerId).ToList());
+            var results = await partnerLocationManager.GetByParentIdAsync(partnerId, cancellationToken);
+            return Ok(results);
         }
 
-        [HttpGet("{partnerId}/{locationId}")]
-        public IActionResult GetPartnerLocation(Guid partnerId, Guid locationId, CancellationToken cancellationToken = default)
+        [HttpGet("{partnerLocationId}")]
+        public async Task<IActionResult> GetPartnerLocation(Guid partnerLocationId, CancellationToken cancellationToken = default)
         {
-            var partnerLocation = partnerLocationRepository.GetPartnerLocations(cancellationToken).FirstOrDefault(pl => pl.PartnerId == partnerId && pl.Id == locationId);
+            var partnerLocation = (await partnerLocationManager.GetAsync(pl => pl.Id == partnerLocationId, cancellationToken)).FirstOrDefault();
 
             if (partnerLocation == null)
             {
@@ -50,66 +46,52 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPartnerLocation(PartnerLocation partnerLocation)
+        public async Task<IActionResult> AddPartnerLocation(PartnerLocation partnerLocation, CancellationToken cancellationToken)
         {
-            // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var partner = await partnerManager.GetAsync(partnerLocation.PartnerId, cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
-            if (!currentUser.IsSiteAdmin)
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
-                var currentUserPartner = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == partnerLocation.PartnerId && pu.UserId == currentUser.Id);
-
-                if (currentUserPartner == null)
-                {
-                    return Forbid();
-                }
+                return Forbid();
             }
 
-            await partnerLocationRepository.AddPartnerLocation(partnerLocation).ConfigureAwait(false);
+            var result = await partnerLocationManager.AddAsync(partnerLocation, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddPartnerLocation));
 
-            return CreatedAtAction(nameof(GetPartnerLocation), new { partnerId = partnerLocation.PartnerId, locationId = partnerLocation.Id });
+            return CreatedAtAction(nameof(GetPartnerLocation), new { partnerLocationId = partnerLocation.Id }, result);
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdatePartnerLocation(PartnerLocation partnerLocation)
+        public async Task<IActionResult> UpdatePartnerLocation(PartnerLocation partnerLocation, CancellationToken cancellationToken)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var partner = await partnerLocationManager.GetPartnerForLocationAsync(partnerLocation.Id, cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
-            if (!currentUser.IsSiteAdmin)
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
-                var currentUserPartner = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == partnerLocation.PartnerId && pu.UserId == currentUser.Id);
-
-                if (currentUserPartner == null)
-                {
-                    return Forbid();
-                }
+                return Forbid();
             }
 
-            await partnerLocationRepository.UpdatePartnerLocation(partnerLocation).ConfigureAwait(false);
+            await partnerLocationManager.UpdateAsync(partnerLocation, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdatePartnerLocation));
 
             return Ok(partnerLocation);
         }
 
-        [HttpDelete("{partnerId}/{partnerLocationId}")]
-        public async Task<IActionResult> DeletePartnerLocation(Guid partnerId, Guid partnerLocationId)
+        [HttpDelete("{partnerLocationId}")]
+        public async Task<IActionResult> DeletePartnerLocation(Guid partnerLocationId, CancellationToken cancellationToken)
         {
-            // Make sure the person adding the user is either an admin or already a user for the partner
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
+            var partner = await partnerLocationManager.GetPartnerForLocationAsync(partnerLocationId, cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
 
-            if (!currentUser.IsSiteAdmin)
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
-                var currentUserPartner = partnerUserRepository.GetPartnerUsers().FirstOrDefault(pu => pu.PartnerId == partnerId && pu.UserId == currentUser.Id);
-
-                if (currentUserPartner == null)
-                {
-                    return Forbid();
-                }
+                return Forbid();
             }
 
-            await partnerLocationRepository.DeletePartnerLocation(partnerLocationId).ConfigureAwait(false);
+            await partnerLocationManager.DeleteAsync(partnerLocationId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeletePartnerLocation));
 
             return Ok(partnerLocationId);

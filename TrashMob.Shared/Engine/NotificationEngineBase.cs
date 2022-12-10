@@ -6,27 +6,29 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using TrashMob.Models;
+    using TrashMob.Models.Extensions;
     using TrashMob.Shared.Extensions;
-    using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
 
     public abstract class NotificationEngineBase
     {
-        protected IEventRepository EventRepository { get; }
+        protected IEventManager EventManager { get; }
 
-        protected IUserRepository UserRepository { get; }
+        protected IKeyedManager<User> UserManager { get; }
 
-        protected IEventAttendeeRepository EventAttendeeRepository { get; }
+        protected IEventAttendeeManager EventAttendeeManager { get; }
 
-        protected IUserNotificationRepository UserNotificationRepository { get; }
+        protected IKeyedManager<UserNotification> UserNotificationManager { get; }
 
-        protected INonEventUserNotificationRepository NonEventUserNotificationRepository { get; }
+        protected IKeyedManager<NonEventUserNotification> NonEventUserNotificationManager { get; }
 
         protected IEmailManager EmailManager { get; }
 
         protected IEmailSender EmailSender { get; }
 
-        protected IMapRepository MapRepository { get; }
+        protected IMapManager MapRepository { get; }
 
         public ILogger Logger { get; }
 
@@ -38,31 +40,31 @@
 
         protected string SendGridApiKey { get; }
 
-        public NotificationEngineBase(IEventRepository eventRepository,
-                                      IUserRepository userRepository,
-                                      IEventAttendeeRepository eventAttendeeRepository,
-                                      IUserNotificationRepository userNotificationRepository,
-                                      INonEventUserNotificationRepository nonEventUserNotificationRepository,
+        public NotificationEngineBase(IEventManager eventManager,
+                                      IKeyedManager<User> userManager,
+                                      IEventAttendeeManager eventAttendeeManager,
+                                      IKeyedManager<UserNotification> userNotificationManager,
+                                      IKeyedManager<NonEventUserNotification> nonEventUserNotificationManager,
                                       IEmailSender emailSender,
                                       IEmailManager emailManager,
-                                      IMapRepository mapRepository,
+                                      IMapManager mapRepository,
                                       ILogger logger)
         {
-            EventRepository = eventRepository;
-            UserRepository = userRepository;
-            EventAttendeeRepository = eventAttendeeRepository;
-            UserNotificationRepository = userNotificationRepository;
+            EventManager = eventManager;
+            UserManager = userManager;
+            EventAttendeeManager = eventAttendeeManager;
+            UserNotificationManager = userNotificationManager;
             EmailSender = emailSender;
             EmailManager = emailManager;
             MapRepository = mapRepository;
-            NonEventUserNotificationRepository = nonEventUserNotificationRepository;
+            NonEventUserNotificationManager = nonEventUserNotificationManager;
             Logger = logger;
 
             // Set the Api Key Here
             EmailSender.ApiKey = Environment.GetEnvironmentVariable("SendGridApiKey");
         }
 
-        protected async Task<int> SendNotifications(User user, IEnumerable<Event> eventsToNotifyUserFor, CancellationToken cancellationToken)
+        protected async Task<int> SendNotifications(User user, IEnumerable<Event> eventsToNotifyUserFor, CancellationToken cancellationToken = default)
         {
             // Populate email
             if (eventsToNotifyUserFor.Any())
@@ -79,7 +81,7 @@
                         UserNotificationTypeId = (int)NotificationType,
                     };
 
-                    await UserNotificationRepository.AddUserNotification(userNotification).ConfigureAwait(false);
+                    await UserNotificationManager.AddAsync(userNotification, cancellationToken).ConfigureAwait(false);
                 }
 
                 var emailCopy = EmailManager.GetHtmlEmailCopy(NotificationType.ToString());
@@ -117,7 +119,7 @@
 
                     Logger.LogInformation("Sending email to {0}, Subject {0}", user.Email, EmailSubject);
 
-                    await EmailManager.SendTemplatedEmail(EmailSubject, SendGridEmailTemplateId.EventEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+                    await EmailManager.SendTemplatedEmailAsync(EmailSubject, SendGridEmailTemplateId.EventEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
                 }
 
                 return 1;
@@ -126,7 +128,7 @@
             return 0;
         }
 
-        protected async Task<int> SendNotification(User user, CancellationToken cancellationToken)
+        protected async Task<int> SendNotification(User user, CancellationToken cancellationToken = default)
         {
             // Populate email
             var userNotification = new NonEventUserNotification
@@ -137,7 +139,7 @@
                 UserNotificationTypeId = (int)NotificationType,
             };
 
-            await NonEventUserNotificationRepository.AddNonEventUserNotification(userNotification).ConfigureAwait(false);
+            await NonEventUserNotificationManager.AddAsync(userNotification, cancellationToken).ConfigureAwait(false);
 
             var emailCopy = EmailManager.GetHtmlEmailCopy(NotificationType.ToString());
 
@@ -155,27 +157,27 @@
 
             Logger.LogInformation("Sending email to {0}, Subject {0}", user.Email, EmailSubject);
 
-            await EmailManager.SendTemplatedEmail(EmailSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+            await EmailManager.SendTemplatedEmailAsync(EmailSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
 
             return 1;
         }
 
-protected async Task<bool> UserHasAlreadyReceivedNotification(User user, Event mobEvent)
-{
-    // Get list of notification events user has already received for the event
-    var notifications = await UserNotificationRepository.GetUserNotifications(user.Id, mobEvent.Id).ConfigureAwait(false);
+        protected async Task<bool> UserHasAlreadyReceivedNotification(User user, Event mobEvent, CancellationToken cancellationToken = default)
+        {
+            // Get list of notification events user has already received for the event
+            var notifications = await UserNotificationManager.GetCollectionAsync(user.Id, mobEvent.Id, cancellationToken).ConfigureAwait(false);
 
-    // Verify that the user has not already received this type of notification for this event
-    return notifications.Any(un => un.UserNotificationTypeId == (int)NotificationType);
-}
+            // Verify that the user has not already received this type of notification for this event
+            return notifications.Any(un => un.UserNotificationTypeId == (int)NotificationType);
+        }
 
-protected async Task<bool> UserHasAlreadyReceivedNotification(User user)
-{
-    // Get list of notification events user has already received for the event
-    var notifications = await NonEventUserNotificationRepository.GetNonEventUserNotifications(user.Id).ConfigureAwait(false);
+        protected async Task<bool> UserHasAlreadyReceivedNotification(User user, CancellationToken cancellationToken = default)
+        {
+            // Get list of notification events user has already received for the event
+            var notifications = await NonEventUserNotificationManager.GetByCreatedUserIdAsync(user.Id, cancellationToken).ConfigureAwait(false);
 
-    // Verify that the user has not already received this type of notification for this event
-    return notifications.Any(un => un.UserNotificationTypeId == (int)NotificationType);
-}
+            // Verify that the user has not already received this type of notification for this event
+            return notifications.Any(un => un.UserNotificationTypeId == (int)NotificationType);
+        }
     }
 }

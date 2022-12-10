@@ -2,13 +2,12 @@ import * as React from 'react'
 
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import UserData from '../Models/UserData';
-import { ButtonGroup, ToggleButton } from 'react-bootstrap';
+import { Col, Container, Image, Row } from 'react-bootstrap';
 import { EditEvent } from './EditEvent';
 import { ManageEventPartners } from './ManageEventPartners';
-import { ManageEventMedia } from './ManageEventMedia';
 import { ManageEventAttendees } from './ManageEventAttendees';
 import { Guid } from 'guid-typescript';
-import { Button } from 'reactstrap';
+import globes from '../assets/gettingStarted/globes.png';
 
 export interface ManageEventDashboardMatchParams {
     eventId?: string;
@@ -20,17 +19,9 @@ export interface ManageEventDashboardProps extends RouteComponentProps<ManageEve
 }
 
 const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
-    const [radioValue, setRadioValue] = React.useState('1');
     const [eventId, setEventId] = React.useState<string>("");
     const [isEventIdReady, setIsEventIdReady] = React.useState<boolean>();
     const [loadedEventId, setLoadedEventId] = React.useState<string | undefined>(props.match?.params["eventId"]);
-
-    const radios = [
-        { name: 'Manage Event', value: '1' },
-        { name: 'Manage Event Partners', value: '2' },
-        { name: 'Manage Event Attendees', value: '3' },
-        { name: 'Manage Event Media', value: '4' },
-    ];
 
     React.useEffect(() => {
         var evId = loadedEventId;
@@ -53,76 +44,15 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
         props.history.push("/mydashboard");
     }
 
-    function handleBackToDashboard() {
-        props.history.push("/mydashboard");
-    }
-
-    function renderManageEvent() {
-
-        return (
-            <div className="card pop">
-                <div>
-                    <h2>Event Details</h2>
-                    <div>
-                        <EditEvent eventId={eventId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onEditCancel={handleEditCancel} onEditSave={handleEditSave} history={props.history} location={props.location} match={props.match} />
-                    </div>
-                </div>
-            </div>);
-    }
-
-    function renderManageEventAttendees() {
-        return (
-            <div>
-                <h2>Event Attendees</h2>
-                <ManageEventAttendees eventId={eventId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
-            </div >
-        )
-    }
-
-    function renderManageEventPartners() {
-        return (
-            <div>
-                <h2>Event Partners</h2>
-                <ManageEventPartners eventId={eventId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
-            </div >
-        )
-    }
-
-    function renderManageEventMedia() {
-        return (
-            <div>
-                <h2>Event Media</h2>
-                <ManageEventMedia eventId={eventId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
-            </div>
-        )
-    }
 
     function renderEventDashboard() {
         return (
-            <div className="card pop">
-                <ButtonGroup>
-                    {radios.map((radio, idx) => (
-                        <ToggleButton
-                            key={idx}
-                            id={`radio-${idx}`}
-                            type="radio"
-                            variant={idx % 2 ? 'outline-success' : 'outline-danger'}
-                            name="radio"
-                            value={radio.value}
-                            checked={radioValue === radio.value}
-                            onChange={(e) => setRadioValue(e.currentTarget.value)}
-                        >
-                            {radio.name}
-                        </ToggleButton>
-                    ))}
-                </ButtonGroup>
-                <Button className="action" onClick={() => handleBackToDashboard()}>Return to My Dashboard</Button>
-
-                { radioValue === '1' && renderManageEvent()}
-                { radioValue === '2' && renderManageEventPartners()}
-                { radioValue === '3' && renderManageEventAttendees()}
-                { radioValue === '4' && renderManageEventMedia()}
-            </div>);
+            <>
+                <EditEvent eventId={eventId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onEditCancel={handleEditCancel} onEditSave={handleEditSave} history={props.history} location={props.location} match={props.match} />
+                <ManageEventAttendees eventId={eventId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                <ManageEventPartners eventId={eventId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+            </>
+        );
     }
 
     let contents = isEventIdReady
@@ -130,9 +60,34 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
         : <p><em>Loading...</em></p>;
 
     return <div>
-        <h3>Manage Event</h3>
-        <hr />
-        {contents}
+        <Container fluid className='bg-grass'>
+            <Row className="text-center pt-0">
+                <Col md={7} className="d-flex flex-column justify-content-center pr-5">
+                    <h1 className='font-weight-bold'>Manage Event</h1>
+                    <p className="font-weight-bold">We can’t wait to see the results.</p>
+                </Col>
+                <Col md={5}>
+                    <Image src={globes} alt="globes" className="h-100 mt-0" />
+                </Col>
+            </Row>
+        </Container>
+        <Container>
+            <Row className="gx-2 py-5" lg={2}>
+                <Col lg={4} className="d-flex">
+                    <div className="bg-white py-2 px-5 shadow-sm rounded">
+                        <h2 className="color-primary mt-4 mb-5">Manage Event</h2>
+                        <p>
+                            This page allows you to create a new event or edit an existing event. You can set the name, time, and location for the event, and then request services from TrashMob.eco Partners.
+                        </p>
+                    </div>
+                </Col>
+                <Col lg={8}>
+                    <div className="bg-white p-5 shadow-sm rounded">
+                        {contents}
+                    </div>
+                </Col>
+            </Row>
+        </Container>
     </div>;
 }
 

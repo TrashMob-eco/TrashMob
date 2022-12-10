@@ -1,57 +1,27 @@
 ﻿namespace TrashMob.Controllers
 {
-    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Mvc;
-    using System.Collections.Generic;
-    using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Shared;
-    using TrashMob.Shared.Engine;
-    using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using System.Threading;
+    using TrashMob.Models;
+    using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/contactrequest")]
     public class ContactRequestController : BaseController
     {
-        private readonly IContactRequestRepository contactRequestRepository;
-        private readonly IEmailManager emailManager;
+        private readonly IKeyedManager<ContactRequest> manager;
 
-        public ContactRequestController(IContactRequestRepository contactRequestRepository, 
-                                        IEmailManager emailManager, 
-                                        TelemetryClient telemetryClient)
-            : base(telemetryClient)
+        public ContactRequestController(IKeyedManager<ContactRequest> manager)
         {
-            this.contactRequestRepository = contactRequestRepository;
-            this.emailManager = emailManager;
+            this.manager = manager;
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveContactRequest(ContactRequest contactRequest)
+        public virtual async Task<IActionResult> Add(ContactRequest instance, CancellationToken cancellationToken)
         {
-            await contactRequestRepository.AddContactRequest(contactRequest).ConfigureAwait(false);
+            await manager.AddAsync(instance, cancellationToken).ConfigureAwait(false);
 
-            var message = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.ContactRequestReceived.ToString());
-            var subject = "A Contact Request has been received on TrashMob.eco!";
-
-            message = message.Replace("{UserName}", contactRequest.Name);
-            message = message.Replace("{UserEmail}", contactRequest.Email);
-            message = message.Replace("{Message}", contactRequest.Message);
-
-            var recipients = new List<EmailAddress>
-            {
-                new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
-            };
-
-            var dynamicTemplateData = new
-            {
-                username = Constants.TrashMobEmailName,
-                emailCopy = message,
-                subject = subject,
-            };
-
-            await emailManager.SendTemplatedEmail(subject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
-
-            TelemetryClient.TrackEvent(nameof(SaveContactRequest));
+            TelemetryClient.TrackEvent("AddContactRequest");
 
             return Ok();
         }

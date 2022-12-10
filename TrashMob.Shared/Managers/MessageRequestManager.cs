@@ -1,25 +1,26 @@
 ﻿
 namespace TrashMob.Shared.Managers
 {
+    using System;
+    using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Models;
+    using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Persistence.Interfaces;
 
-    public class MessageRequestManager : IMessageRequestManager
+    public class MessageRequestManager : KeyedManager<MessageRequest>, IKeyedManager<MessageRequest>
     {
         private readonly INotificationManager notificationManager;
-        private readonly IMessageRequestRepository messageRequestRepository;
 
-        public MessageRequestManager(IMessageRequestRepository messageRequestRepository, INotificationManager notificationManager)
+        public MessageRequestManager(IKeyedRepository<MessageRequest> messageRequestRepository, INotificationManager notificationManager) : base(messageRequestRepository)
         {
-            this.messageRequestRepository = messageRequestRepository;
             this.notificationManager = notificationManager;
         }      
 
-        public async Task SendMessageRequest(MessageRequest messageRequest)
+        public async Task SendMessageRequest(MessageRequest messageRequest, Guid userId, CancellationToken cancellationToken = default)
         {
-            await messageRequestRepository.AddMessageRequest(messageRequest);
-            await notificationManager.SendMessageRequest(messageRequest);
+            await base.AddAsync(messageRequest, userId, cancellationToken);
+            await notificationManager.SendMessageRequestAsync(messageRequest, cancellationToken);
         }
     }
 }

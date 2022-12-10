@@ -1,15 +1,13 @@
 import React from 'react';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Jumbotron from 'react-bootstrap/Jumbotron';
-import UserData from '../Models/UserData';
 import { useEffect } from 'react';
+import Container from 'react-bootstrap/Container';
+import Button from 'react-bootstrap/Button';
+import UserData from '../Models/UserData';
+import { Col, Image, Row } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import EnvelopeResponse from '../Models/EnvelopeResponse';
-
+import logo from "../assets/logo.svg";
+import globes from '../assets/gettingStarted/globes.png';
 export interface WaiversProps {
     isUserLoaded: boolean;
     currentUser: UserData;
@@ -59,7 +57,7 @@ const Waivers: React.FC<WaiversProps> = (props) => {
             const envelopeRequest = {
                 signerEmail: email,
                 signerName: name,
-                signerClientId: props.currentUser.id,
+                createdByUserId: props.currentUser.id,
                 returnUrl: "https://" + hostname + "/waiversreturn",
             };
             fetch('/api/docusign', {
@@ -76,36 +74,45 @@ const Waivers: React.FC<WaiversProps> = (props) => {
     }
 
     return (
-        <Container className='bodyMargin'>
-            <Row>
-                <Col>
-                    <Jumbotron>
-                        <h1>TrashMob.eco Waiver</h1>
-                        <p>
-                            In order to participate in TrashMob.eco events, you must agree to a liability waiver. Please click the
-                            Sign Waiver button below. This will take you to a screen which will ask you to view and sign the waiver.
-                            Once that is done, you will be redirected back to TrashMob.eco.
-                        </p>
-                        <p>
-                            You will only need to sign this waiver once (unless we have to change the legalese).
-                        </p>
-                        <p>
-                            Thank you!
-                        </p>
-                    </Jumbotron>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <h2>Sign Waiver</h2>
-                    <Form>
-                        <Button variant="primary" onClick={signWaiver}>
-                            Sign Waiver
-                        </Button>
-                    </Form>
-                </Col>
-            </Row>
-        </Container>
+        <>
+            <Container fluid className='bg-grass'>
+                <Row className="text-center pt-0">
+                    <Col md={7} className="d-flex flex-column justify-content-center pr-5">
+                        <h1 className='font-weight-bold'>Waiver</h1>
+                        <h4 className="font-weight-bold">
+                            Safety first!
+                        </h4>
+                    </Col>
+                    <Col md={5}>
+                        <Image src={globes} alt="globes" className="h-100 mt-0" />
+                    </Col>
+                </Row>
+            </Container>
+
+            <Container className='bodyMargin'>
+                <h2 className='fw-500 font-size-xl'>TrashMob.eco Waiver</h2>
+                <p className="p-18">
+                    In order to participate in TrashMob.eco events, you must agree to a liability waiver. Please click the
+                    <span className='color-primary'> Sign Waiver</span> button below. This will take you to a screen which will ask you to view and sign the waiver.
+                    Once that is done, you will be redirected back to TrashMob.eco.
+                </p>
+                <p className="p-18">
+                    You will only need to sign this waiver once unless we have to change the legalese.
+                </p>
+                <Button variant="primary" onClick={signWaiver} className="h-49 fw-600">
+                    Sign Waiver
+                </Button>
+                <p className="p-18 mb-5">
+                    Thank you!
+                </p>
+                <p className="p-18">The team at TrashMob.eco.</p>
+                <Row className='mb-5'>
+                    <Col lg={3} sm={6} md={4} xs={6} className="p-0">
+                        <img src={logo} className="p-0 m-0 pl-2 mb-5" alt="TrashMob Logo" id="logo" />
+                    </Col>
+                </Row>
+            </Container>
+        </>
     )
 }
 

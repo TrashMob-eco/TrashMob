@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using TrashMob.Models;
     using TrashMobMobileApp.Models;
 
     public class MobEventManager : IMobEventManager
@@ -19,27 +20,32 @@
             this.eventSummaryRestService = eventSummaryRestService;
         }
 
-        public Task<IEnumerable<MobEvent>> GetActiveEventsAsync(CancellationToken cancellationToken = default)
+        public Task<IEnumerable<Event>> GetActiveEventsAsync(CancellationToken cancellationToken = default)
         {
             return mobEventRestService.GetActiveEventsAsync(cancellationToken);
         }
 
-        public Task<IEnumerable<MobEvent>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly, CancellationToken cancellationToken = default)
         {
             return mobEventRestService.GetUserEventsAsync(userId, showFutureEventsOnly, cancellationToken);
         }
 
-        public Task<MobEvent> GetEventAsync(Guid eventId, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid userId, CancellationToken token)
+        {
+            return mobEventRestService.GetEventsUserIsAttending(userId, token);
+        }
+
+        public Task<Event> GetEventAsync(Guid eventId, CancellationToken cancellationToken = default)
         {
             return mobEventRestService.GetEventAsync(eventId, cancellationToken);
         }
 
-        public Task<MobEvent> UpdateEventAsync(MobEvent mobEvent, CancellationToken cancellationToken = default)
+        public Task<Event> UpdateEventAsync(Event mobEvent, CancellationToken cancellationToken = default)
         {
             return mobEventRestService.UpdateEventAsync(mobEvent, cancellationToken);
         }
 
-        public Task<MobEvent> AddEventAsync(MobEvent mobEvent, CancellationToken cancellationToken = default)
+        public Task<Event> AddEventAsync(Event mobEvent, CancellationToken cancellationToken = default)
         {
             return mobEventRestService.AddEventAsync(mobEvent, cancellationToken);
         }

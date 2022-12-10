@@ -7,6 +7,12 @@ on:
   push:
     branches:
       - main
+    paths: 
+      - '.github/**'
+      - 'TrashMobJobs/**'
+      - 'TrashMob.Models/**'
+      - 'TrashMob.Shared/**'
+      - 'TrashMob.Shared.Tests/**'
   workflow_dispatch:
 
 env:

@@ -1,12 +1,12 @@
 namespace TrashMob
 {
     using Azure.Identity;
-    using Azure.Security.KeyVault.Secrets;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
-    using Microsoft.Azure.KeyVault;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Azure;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -14,10 +14,13 @@ namespace TrashMob
     using Microsoft.Identity.Web;
     using Microsoft.OpenApi.Models;
     using System;
+    using System.Text.Json.Serialization;
+    using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers;
+    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence;
-    
+
     public class Startup
     {
         public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
@@ -34,15 +37,24 @@ namespace TrashMob
         {
             // The following line enables Application Insights telemetry collection.
             services.AddApplicationInsightsTelemetry();
-            
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(options => {
-                Configuration.Bind("AzureAdB2C", options);
+                    Configuration.Bind("AzureAdB2C", options);
 
-                options.TokenValidationParameters.NameClaimType = "name";
-            },
+                    options.TokenValidationParameters.NameClaimType = "name";
+                },
 
             options => { Configuration.Bind("AzureAdB2C", options); });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ValidUser", policy => policy.AddRequirements(new UserIsValidUserRequirement()));
+                options.AddPolicy("UserOwnsEntity", policy => policy.AddRequirements(new UserOwnsEntityRequirement()));
+                options.AddPolicy("UserOwnsEntityOrIsAdmin", policy => policy.AddRequirements(new UserOwnsEntityOrIsAdminRequirement()));
+                options.AddPolicy("UserIsPartnerUserOrIsAdmin", policy => policy.AddRequirements(new UserIsPartnerUserOrIsAdminRequirement()));
+                options.AddPolicy("UserIsAdmin", policy => policy.AddRequirements(new UserIsAdminRequirement()));
+            });
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -50,35 +62,20 @@ namespace TrashMob
                 configuration.RootPath = "client-app/build";
             });
 
-            services.AddDbContext<MobDbContext>();
-            services.AddScoped<IContactRequestRepository, ContactRequestRepository>();
-            services.AddScoped<IDocusignManager, DocusignManager>();
-            services.AddScoped<IEmailManager, EmailManager>();
-            services.AddScoped<IEmailSender, EmailSender>();
-            services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
-            services.AddScoped<IEventMediaRepository, EventMediaRepository>();
-            services.AddScoped<IEventPartnerRepository, EventPartnerRepository>();
-            services.AddScoped<IEventRepository, EventRepository>();
-            services.AddScoped<IEventPartnerStatusRepository, EventPartnerStatusRepository>();
-            services.AddScoped<IEventStatusRepository, EventStatusRepository>();
-            services.AddScoped<IEventSummaryRepository, EventSummaryRepository>();
-            services.AddScoped<IEventTypeRepository, EventTypeRepository>();
-            services.AddScoped<IMapRepository, MapRepository>();
-            services.AddScoped<IMediaTypeRepository, MediaTypeRepository>();
-            services.AddScoped<IMessageRequestManager, MessageRequestManager>();
-            services.AddScoped<IMessageRequestRepository, MessageRequestRepository>();
-            services.AddScoped<INonEventUserNotificationRepository, NonEventUserNotificationRepository>();
-            services.AddScoped<INotificationManager, NotificationManager>();
-            services.AddScoped<IPartnerLocationRepository, PartnerLocationRepository>();
-            services.AddScoped<IPartnerManager, PartnerManager>();
-            services.AddScoped<IPartnerRepository, PartnerRepository>();
-            services.AddScoped<IPartnerStatusRepository, PartnerStatusRepository>();
-            services.AddScoped<IPartnerRequestRepository, PartnerRequestRepository>();
-            services.AddScoped<IPartnerRequestStatusRepository, PartnerRequestStatusRepository>();
-            services.AddScoped<IPartnerUserRepository, PartnerUserRepository>();
-            services.AddScoped<ISecretRepository, SecretRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
+            services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
+            services.AddDbContext<MobDbContext>(c => c.UseLazyLoadingProxies());
+
+            // Security 
+            services.AddScoped<IAuthorizationHandler, UserOwnsEntityAuthHandler>();
+            services.AddScoped<IAuthorizationHandler, UserIsValidUserAuthHandler>();
+            services.AddScoped<IAuthorizationHandler, UserIsAdminAuthHandler>();
+            services.AddScoped<IAuthorizationHandler, UserOwnsEntityOrIsAdminAuthHandler>();
+            services.AddScoped<IAuthorizationHandler, UserIsPartnerUserOrIsAdminAuthHandler>();
+
+            ServiceBuilder.AddManagers(services);
+            ServiceBuilder.AddRepositories(services);
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             
@@ -103,9 +100,7 @@ namespace TrashMob
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "trashmobapi", Version = "v1" });
-            });
-
-            
+            });            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -128,6 +123,7 @@ namespace TrashMob
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>

@@ -3,16 +3,14 @@ import { Guid } from "guid-typescript";
 class PartnerData {
     id: string = Guid.createEmpty().toString();
     name: string = "";
-    primaryPhone: string = "";
-    secondaryPhone: string = "";
-    primaryEmail: string = "";
-    secondaryEmail: string = "";
+    website: string = "";
+    publicNotes: string = "";
+    privateNotes: string = "";
     partnerStatusId: number = 0;
-    notes: string = "";
-    isActive: boolean = true;
-    createdByUserId: string = "";
+    partnerTypeId: number = 0;
+    createdByUserId: string = Guid.EMPTY;
     createdDate: Date = new Date();
-    lastUpdatedByUserId: string = "";
+    lastUpdatedByUserId: string = Guid.EMPTY;
     lastUpdatedDate: Date = new Date();
 }
 

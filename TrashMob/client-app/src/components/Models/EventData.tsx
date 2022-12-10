@@ -14,12 +14,12 @@ class EventData {
     region: string = "";
     country: string = "";
     postalCode: string = "";
-    createdByUserId: string = "";
+    createdByUserId: string = Guid.EMPTY;
     createdDate: Date = new Date();
     latitude: number = 0;
     longitude: number = 0;
     maxNumberOfParticipants: number = 0;
-    lastUpdatedByUserId: string = "";
+    lastUpdatedByUserId: string = Guid.EMPTY;
     lastUpdatedDate: Date = new Date();
     isEventPublic: boolean = true;
     createdByUserName: string = "";

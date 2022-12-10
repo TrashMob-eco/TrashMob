@@ -105,7 +105,6 @@ p {
 
   .navbar-nav {
     width: 100%;
-    margin-top: 8px;
 
     &::after {
       border-right: 2px solid $primary;
@@ -409,7 +408,7 @@ button:hover {
 .dropdown-menu {
   & .dropdown-item {
     & svg {
-      margin-right: 6px;
+      margin-right: 15px;
     }
   }
 }
@@ -465,4 +464,42 @@ button:hover {
 input,
 textarea {
   margin-bottom: 1.5em;
+}
+
+.faq-tabs-wrapper {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2.19rem;
+
+  .faq-tab {
+    width: 100%;
+    max-width: 537px;
+
+    &.tab-select {
+      @include media-breakpoint-up(md) {
+        max-width: 47%;
+      }
+
+      @include media-breakpoint-up(lg) {
+        max-width: 447px;
+      }
+
+      @include media-breakpoint-up(xl) {
+        max-width: 346px;
+      }
+
+      h1 {
+        font-weight: 500;
+        font-size: 26.402px;
+        line-height: 40px;
+      }
+
+      h5 {
+        font-weight: 500;
+        font-size: 13.682px;
+        line-height: 21px;
+      }
+    }
+  }
 }

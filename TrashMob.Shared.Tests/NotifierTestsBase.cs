@@ -5,9 +5,10 @@ namespace TrashMob.Shared.Tests
     using Moq;
     using System;
     using System.Collections.Generic;
+    using TrashMob.Models;
     using TrashMob.Shared.Engine;
-    using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     public abstract class NotifierTestsBase
     {
@@ -17,21 +18,21 @@ namespace TrashMob.Shared.Tests
 
         protected abstract NotificationTypeEnum NotificationType { get; }
 
-        protected Mock<IEventRepository> EventRepository { get; }
+        protected Mock<IEventManager> EventManager { get; }
         
-        protected Mock<IEventAttendeeRepository> EventAttendeeRepository { get; }
+        protected Mock<IEventAttendeeManager> EventAttendeeManager { get; }
         
-        protected Mock<IUserRepository> UserRepository { get; }
+        protected Mock<IKeyedManager<User>> UserManager { get; }
         
-        protected Mock<IUserNotificationRepository> UserNotificationRepository { get; }
+        protected Mock<IKeyedManager<UserNotification>> UserNotificationManager { get; }
 
-        protected Mock<INonEventUserNotificationRepository> NonEventUserNotificationRepository { get; }
+        protected Mock<IKeyedManager<NonEventUserNotification>> NonEventUserNotificationManager { get; }
 
         protected Mock<IEmailSender> EmailSender { get; }
 
         protected Mock<IEmailManager> EmailManager { get; }
 
-        protected Mock<IMapRepository> MapRepository { get; }
+        protected Mock<IMapManager> MapRepository { get; }
 
         protected Mock<ILogger> Logger { get; }
 
@@ -41,18 +42,18 @@ namespace TrashMob.Shared.Tests
             userId2 = Guid.NewGuid();
             createdById = Guid.NewGuid();
 
-            EventRepository = new Mock<IEventRepository>();
-            EventAttendeeRepository = new Mock<IEventAttendeeRepository>();
-            UserRepository = new Mock<IUserRepository>();
-            UserNotificationRepository = new Mock<IUserNotificationRepository>();
-            NonEventUserNotificationRepository = new Mock<INonEventUserNotificationRepository>();
+            EventManager = new Mock<IEventManager>();
+            EventAttendeeManager = new Mock<IEventAttendeeManager>();
+            UserManager = new Mock<IKeyedManager<User>>();
+            UserNotificationManager = new Mock<IKeyedManager<UserNotification>>();
+            NonEventUserNotificationManager = new Mock<IKeyedManager<NonEventUserNotification>>();
             EmailSender = new Mock<IEmailSender>();
             EmailManager = new Mock<IEmailManager>();
-            MapRepository = new Mock<IMapRepository>();
+            MapRepository = new Mock<IMapManager>();
             Logger = new Mock<ILogger>();
 
             // Setup a default return of distance between User and Event of 10 (in whatever units)
-            MapRepository.Setup(mr => mr.GetDistanceBetweenTwoPoints(It.IsAny<Tuple<double, double>>(), It.IsAny<Tuple<double, double>>(), It.IsAny<bool>())).ReturnsAsync(10);
+            MapRepository.Setup(mr => mr.GetDistanceBetweenTwoPointsAsync(It.IsAny<Tuple<double, double>>(), It.IsAny<Tuple<double, double>>(), It.IsAny<bool>())).ReturnsAsync(10);
             EmailManager.Setup(em => em.GetHtmlEmailCopy(It.IsAny<string>())).Returns("Test");
         }
 

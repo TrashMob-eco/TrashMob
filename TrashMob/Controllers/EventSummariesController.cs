@@ -2,42 +2,35 @@
 namespace TrashMob.Controllers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
+    using TrashMob.Models;
     using TrashMob.Poco;
     using TrashMob.Shared;
-    using TrashMob.Shared.Models;
-    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/eventsummaries")]
-    public class EventSummariesController : BaseController
+    public class EventSummariesController : SecureController
     {
-        private readonly IEventSummaryRepository eventSummaryRepository;
-        private readonly IUserRepository userRepository;
-        private readonly IEventRepository eventRepository;
+        private readonly IEventSummaryManager eventSummaryManager;
+        private readonly IKeyedManager<Event> eventManager;
 
-        public EventSummariesController(IEventSummaryRepository eventSummaryRepository,
-                                       IUserRepository userRepository,
-                                       IEventRepository eventRepository,
-                                       TelemetryClient telemetryClient) 
-            : base(telemetryClient)
+        public EventSummariesController(IEventSummaryManager eventSummaryManager,
+                                        IKeyedManager<Event> eventManager) 
+            : base()
         {
-            this.eventSummaryRepository = eventSummaryRepository;
-            this.userRepository = userRepository;
-            this.eventRepository = eventRepository;
+            this.eventSummaryManager = eventSummaryManager;
+            this.eventManager = eventManager;
         }
 
         [HttpGet("{eventId}")]
         public async Task<IActionResult> GetEventSummary(Guid eventId, CancellationToken cancellationToken = default)
         {
-            var eventSummary = await eventSummaryRepository.GetEventSummary(eventId, cancellationToken).ConfigureAwait(false);
+            var eventSummary = await eventSummaryManager.GetAsync(es => es.EventId == eventId, cancellationToken).ConfigureAwait(false);
 
             if (eventSummary != null)
             {
@@ -50,97 +43,68 @@ namespace TrashMob.Controllers
         [HttpGet]
         public async Task<IActionResult> GetEventSummaries([FromQuery] string country = "", [FromQuery] string region = "", [FromQuery] string city = "", [FromQuery] string postalCode = "", CancellationToken cancellationToken = default)
         {
-            // Todo make this more efficient
-            var eventSummaries = eventSummaryRepository.GetEventSummaries(cancellationToken).ToList();
-            var displaySummaries = new List<DisplayEventSummary>();
-            foreach (var eventSummary in eventSummaries)
+            var locationFilter = new LocationFilter()
             {
-                var mobEvent = await eventRepository.GetEvent(eventSummary.EventId, cancellationToken).ConfigureAwait(false);
+                City = city,
+                Region = region,
+                Country = country,
+                PostalCode = postalCode
+            };
 
-                if (mobEvent != null)
-                {
-                    if ((string.IsNullOrWhiteSpace(country) || string.Equals(mobEvent.Country, country, StringComparison.OrdinalIgnoreCase)) &&
-                        (string.IsNullOrWhiteSpace(region) || string.Equals(mobEvent.Region, region, StringComparison.OrdinalIgnoreCase)) &&
-                        (string.IsNullOrWhiteSpace(city) || mobEvent.City.Contains(city, StringComparison.OrdinalIgnoreCase)) &&
-                        (string.IsNullOrWhiteSpace(postalCode) || mobEvent.PostalCode.Contains(postalCode, StringComparison.OrdinalIgnoreCase)))
-                    {
-                        var displayEvent = new DisplayEventSummary()
-                        {
-                            ActualNumberOfAttendees = eventSummary.ActualNumberOfAttendees,
-                            City = mobEvent.City,
-                            Country = mobEvent.Country,
-                            DurationInMinutes = eventSummary.DurationInMinutes,
-                            EventDate = mobEvent.EventDate,
-                            EventId = mobEvent.Id,
-                            EventTypeId = mobEvent.EventTypeId,
-                            Name = mobEvent.Name,
-                            NumberOfBags = eventSummary.NumberOfBags + eventSummary.NumberOfBuckets / 3.0,
-                            PostalCode = mobEvent.PostalCode,
-                            Region = mobEvent.Region,
-                            StreetAddress = mobEvent.StreetAddress,
-                            TotalWorkHours = eventSummary.ActualNumberOfAttendees * eventSummary.DurationInMinutes / 60.0
-                        };
+            var eventSummaries = await eventSummaryManager.GetFilteredAsync(locationFilter, cancellationToken);
 
-                        displaySummaries.Add(displayEvent);
-                    }
-                }
-            }
-
-            return Ok(displaySummaries);
+            return Ok(eventSummaries);
         }
 
         [HttpPut]
-        [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> UpdateEventSummary(EventSummary eventSummary)
+        public async Task<IActionResult> UpdateEventSummary(EventSummary eventSummary, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByInternalId(eventSummary.CreatedByUserId).ConfigureAwait(false);
-            if (user == null || !ValidateUser(user.NameIdentifier))
+            var authResult = await AuthorizationService.AuthorizeAsync(User, eventSummary, "UserOwnsEntity");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
 
-            var updatedEvent = await eventSummaryRepository.UpdateEventSummary(eventSummary).ConfigureAwait(false);
+            var updatedEvent = await eventSummaryManager.UpdateAsync(eventSummary, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdateEventSummary));
 
             return Ok(updatedEvent);
         }
 
         [HttpPost]
-        [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> AddEventSummary(EventSummary eventSummary)
+        public async Task<IActionResult> AddEventSummary(EventSummary eventSummary, CancellationToken cancellationToken)
         {
-            var currentUser = await userRepository.GetUserByNameIdentifier(User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
-            if (currentUser == null || !ValidateUser(currentUser.NameIdentifier))
+            var authResult = await AuthorizationService.AuthorizeAsync(User, eventSummary, "UserOwnsEntity");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
 
-            eventSummary.CreatedByUserId = currentUser.Id;
-            eventSummary.LastUpdatedByUserId = currentUser.Id;
-            eventSummary.CreatedDate = DateTimeOffset.UtcNow;
-            eventSummary.LastUpdatedDate = DateTimeOffset.UtcNow;
-            await eventSummaryRepository.AddEventSummary(eventSummary).ConfigureAwait(false);
+            var result = await eventSummaryManager.AddAsync(eventSummary, UserId, cancellationToken).ConfigureAwait(false);
+
             TelemetryClient.TrackEvent(nameof(AddEventSummary));
 
-            return CreatedAtAction(nameof(GetEventSummary), new { eventId = eventSummary.EventId });
+            return CreatedAtAction(nameof(GetEventSummary), new { eventId = eventSummary.EventId }, result);
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> DeleteEventSummary(Guid eventId)
+        public async Task<IActionResult> DeleteEventSummary(Guid eventId, CancellationToken cancellationToken)
         {
-            var eventSummary = await eventSummaryRepository.GetEventSummary(eventId).ConfigureAwait(false);
-            var user = await userRepository.GetUserByInternalId(eventSummary.CreatedByUserId).ConfigureAwait(false);
+            var mobEvent = eventManager.GetAsync(eventId, cancellationToken);
 
-            if (user == null || !ValidateUser(user.NameIdentifier))
+            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, "UserOwnsEntity");
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
 
-            await eventSummaryRepository.DeleteEventSummary(eventId).ConfigureAwait(false);
+            await eventSummaryManager.DeleteAsync(eventId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeleteEventSummary));
 
             return Ok(eventId);

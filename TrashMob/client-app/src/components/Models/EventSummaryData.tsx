@@ -7,9 +7,9 @@ class EventSummaryData {
     numberOfBuckets: number = 0;
     durationInMinutes: number = 0;
     notes: string = "";
-    createdByUserId: string = "";
+    createdByUserId: string = Guid.EMPTY;
     createdDate: Date = new Date();
-    lastUpdatedByUserId: string = "";
+    lastUpdatedByUserId: string = Guid.EMPTY;
     lastUpdatedDate: Date = new Date();
 }
 

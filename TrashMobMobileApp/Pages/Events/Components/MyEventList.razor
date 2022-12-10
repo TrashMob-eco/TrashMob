@@ -1,0 +1,94 @@
+﻿@*TODO: move to css style sheets*@
+<style>
+    .tm-my-event-list {
+        height: 100%;
+        padding: 20px;
+    }
+        
+        .tm-my-event-list .tm-loader {
+            top: 50%;
+            position: fixed;
+        }
+
+        .tm-my-event-list .tm-event-card {
+            margin-top: 10px;
+        }
+
+        .tm-my-event-list .tm-create-event-btn-bottom {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .tm-my-event-list .tm-create-event-btn-center {
+            margin-top: 20px;
+        }
+
+        .tm-my-event-list .tm-no-event-container {
+            text-align: center;
+        }
+</style>
+
+
+<ErrorBoundary>
+    <ChildContent>
+        <EventDetails @bind-Open="@_isViewOpen" Event="@_selectedEvent" />
+
+        <MudContainer Class="tm-my-event-list">
+            <MudOverlay @bind-Visible="_isLoading" Absolute>
+                <MudProgressCircular Color="Color.Default" Indeterminate Class="tm-loader" />
+            </MudOverlay>
+            @if (_myEventsStatic.Any())
+            {
+                <MudStack Style="width: 100%" Row>
+                    <MudTextField T="string" FullWidth Adornment="@Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" Placeholder="Search event.." Text="@_eventSearchText" TextChanged="@OnSearchTextChanged" Immediate />
+                </MudStack>
+                <MudStack>
+                    <MudSwitch T="bool" Checked="StateInformation.ShowFutureEvents" CheckedChanged="OnShowFutureEventsChangedAsync" Color="Color.Primary" Label="Show future events" />
+                </MudStack>
+                <MudVirtualize Context="mob" Items="_myEvents">
+                    <MudCard Class="tm-event-card">
+                        <MudCardHeader>
+                            <CardHeaderAvatar>
+                                <MudAvatar Color="Color.Primary">@mob.Name.FirstOrDefault()</MudAvatar>
+                            </CardHeaderAvatar>
+                            <CardHeaderContent>
+                                <MudStack Row>
+                                    <MudText Typo="Typo.subtitle2">@mob.Name</MudText>
+                                    <MudChip Size="Size.Small" Color="Color.Default">@mob.GetEventStatusText()</MudChip>
+                                </MudStack>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                                    <MudMenuItem Icon="@Icons.Material.Filled.Cancel" IconSize="Size.Small" OnClick="@(() => OnCancelEvent(mob))">Cancel</MudMenuItem>
+                                    <MudMenuItem Icon="@Icons.Material.Filled.Edit" IconSize="Size.Small" OnClick="@(() => OnEdit(mob))">Edit</MudMenuItem>
+                                    <MudMenuItem Icon="@Icons.Material.Filled.Comment" IconSize="Size.Small" OnClick="@(() => OnCompleteEvent(mob))">Complete</MudMenuItem>
+                                </MudMenu>
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudText Typo="Typo.body2"><strong>Address: </strong>@mob.GetFormattedAddress()</MudText>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton Style="width: 30%; margin-right: 5px" Color="Color.Primary" Variant="Variant.Outlined" OnClick="@(() => OnViewEventDetails(mob))">View</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudVirtualize>
+                <MudFab Class="tm-create-event-btn-bottom" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Primary" Label="Create" OnClick="@OnCreateEvent" />
+            }
+            else
+            {
+                if (!_isLoading)
+                {
+                    <MudContainer Class="tm-no-event-container">
+                        <MudText>No events to show. Create an event to get started.</MudText>
+                        <MudFab Class="tm-create-event-btn-center" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Primary" Label="Create" OnClick="@OnCreateEvent" />
+                    </MudContainer>
+                }
+            }
+        </MudContainer>
+    </ChildContent>
+    <ErrorContent>
+        @context.Message
+    </ErrorContent>
+</ErrorBoundary>

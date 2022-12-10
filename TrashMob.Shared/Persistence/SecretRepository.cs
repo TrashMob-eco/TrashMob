@@ -1,6 +1,7 @@
 ﻿namespace TrashMob.Shared.Persistence
 {
     using Microsoft.Extensions.Configuration;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     public class SecretRepository : ISecretRepository
     {
@@ -11,7 +12,7 @@
             this.configuration = configuration;
         }
 
-        public string GetSecret(string name)
+        public string Get(string name)
         {
             return configuration[name];
         }
