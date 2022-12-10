@@ -144,8 +144,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
         props.isDraggable,
         // eslint-disable-next-line
         handleLocationChange,
-        isMapReady,
-        isPrevLoaded]);
+        isMapReady]);
 
     useEffect(() => {
         if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && isDataSourceLoaded && isMapReady && !isPrevLoaded) {
@@ -172,7 +171,8 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
         props.longitude,
         props.latitude,
         isDataSourceLoaded,
-        isMapReady]);
+        isMapReady,
+        isPrevLoaded]);
 
     // eslint-disable-next-line
     function handleLocationChange(e: any) {
