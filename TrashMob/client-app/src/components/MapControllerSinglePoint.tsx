@@ -35,6 +35,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
     const [options, setOptions] = React.useState([]);
     const [query, setQuery] = React.useState('');
     const mapKeyRef = React.useRef('');
+    const [isPrevLoaded, setIsPrevLoaded] = React.useState<boolean>(false);
 
     const handleInputChange = (q: string) => {
         setQuery(q);
@@ -106,10 +107,10 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
                         handleLocationChange(pos);
                     });
 
-                    mapRef.events.add('click', marker, (e: any) => {
-                        var pos = e.target.options.position;
-                        handleLocationChange(pos);
-                    });
+                    //mapRef.events.add('click', marker, (e: any) => {
+                    //    var pos = e.target.options.position;
+                    //    handleLocationChange(pos);
+                    //});
 
                     mapRef.events.add('mouseout', marker, () => popup.close());
 
@@ -143,10 +144,11 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
         props.isDraggable,
         // eslint-disable-next-line
         handleLocationChange,
-        isMapReady]);
+        isMapReady,
+        isPrevLoaded]);
 
     useEffect(() => {
-        if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && isDataSourceLoaded && isMapReady) {
+        if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && isDataSourceLoaded && isMapReady && !isPrevLoaded) {
             var dsr = mapRef.sources.getById("mainDataSource") as source.DataSource;
             var feature = dsr.getShapes()[0];
 
@@ -161,6 +163,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
 
             // Simple Camera options modification
             mapRef.setCamera({ center: position, zoom: MapStore.defaultUserLocationZoom });
+            setIsPrevLoaded(true);
         }
     }, [mapRef,
         props.center,
