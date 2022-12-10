@@ -2,9 +2,8 @@ import * as React from 'react'
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Guid } from 'guid-typescript';
-import { Button, Container, Dropdown } from 'react-bootstrap';
+import { Container, Dropdown } from 'react-bootstrap';
 import { ThreeDots } from 'react-bootstrap-icons';
-import { Modal, ModalBody } from 'reactstrap';
 
 export interface ManageEventAttendeesProps {
     eventId: string;
@@ -13,15 +12,15 @@ export interface ManageEventAttendeesProps {
 }
 
 export const ManageEventAttendees: React.FC<ManageEventAttendeesProps> = (props) => {
-    const [isOpen, setIsOpen] = React.useState(false);
+    //const [isOpen, setIsOpen] = React.useState(false);
     //const [modalTitle, setModalTitle] = React.useState("")
     //const [modalDescription, setModalDescription] = React.useState("")
     const [eventAttendees, setEventAttendees] = React.useState<UserData[]>([]);
     const [isEventAttendeeDataLoaded, setIsEventAttendeeDataLoaded] = React.useState<boolean>(false);
 
-    const togglemodal = () => {
-        setIsOpen(!isOpen);
-    }
+    //const togglemodal = () => {
+    //    setIsOpen(!isOpen);
+    //}
     //const messageToAttendee = () => {
     //    togglemodal()
     //    setModalTitle("Message to [username here]")
