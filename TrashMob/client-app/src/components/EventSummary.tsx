@@ -39,6 +39,8 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
 
     React.useEffect(() => {
 
+        window.scrollTo(0, 0);
+
         const headers = getDefaultHeaders('GET');
 
         fetch('/api/Events/' + loadedEventId, {

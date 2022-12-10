@@ -11,6 +11,11 @@ import { Link } from 'react-router-dom';
 import { Col, Container, Row, Image } from 'react-bootstrap';
 
 export const GettingStarted: React.FC = () => {
+
+    React.useEffect(() => {
+        window.scrollTo(0, 0);
+    })
+
     return (
         <>
             <Container fluid className='bg-grass'>
