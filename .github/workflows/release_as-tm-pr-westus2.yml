@@ -43,7 +43,7 @@ jobs:
       run: dotnet restore .\TrashMob.sln
 
     - name: dotnet publish
-      run: dotnet publish --configuration ${{ env.CONFIGURATION }} --no-restore -o ${{env.DOTNET_ROOT}}/myapp
+      run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/myapp --no-restore
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v2
