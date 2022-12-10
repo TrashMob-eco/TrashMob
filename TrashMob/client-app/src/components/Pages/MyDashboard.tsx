@@ -391,6 +391,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                 <Dropdown.Item href={'/manageeventdashboard/' + eventId}><Pencil />Manage event</Dropdown.Item>
                 <Dropdown.Item href={'/eventdetails/' + eventId}><Eye />View event</Dropdown.Item>
                 <Dropdown.Item onClick={() => handleCopyLink(eventId)}><LinkIcon />{copied ? 'Copied!' : 'Copy event link'}</Dropdown.Item>
+                <Dropdown.Item href={'/cancelevent/' + eventId}><XSquare />Cancel event</Dropdown.Item>
             </>
         )
     }
