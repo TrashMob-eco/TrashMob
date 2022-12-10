@@ -3,7 +3,7 @@ import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore'
 import UserData from '../Models/UserData';
 import { Guid } from 'guid-typescript';
 import { Button, Container, Dropdown } from 'react-bootstrap';
-import { Envelope, PersonX, ThreeDots } from 'react-bootstrap-icons';
+import { ThreeDots } from 'react-bootstrap-icons';
 import { Modal, ModalBody } from 'reactstrap';
 
 export interface ManageEventAttendeesProps {
@@ -14,8 +14,8 @@ export interface ManageEventAttendeesProps {
 
 export const ManageEventAttendees: React.FC<ManageEventAttendeesProps> = (props) => {
     const [isOpen, setIsOpen] = React.useState(false);
-    const [modalTitle, setModalTitle] = React.useState("")
-    const [modalDescription, setModalDescription] = React.useState("")
+    //const [modalTitle, setModalTitle] = React.useState("")
+    //const [modalDescription, setModalDescription] = React.useState("")
     const [eventAttendees, setEventAttendees] = React.useState<UserData[]>([]);
     const [isEventAttendeeDataLoaded, setIsEventAttendeeDataLoaded] = React.useState<boolean>(false);
 
@@ -107,27 +107,6 @@ export const ManageEventAttendees: React.FC<ManageEventAttendeesProps> = (props)
 
     return (
         <>
-            <Modal isOpen={isOpen} centered onrequestclose={togglemodal} contentlabel="Delete Account?" fade={true} size={"lg"}>
-                <ModalBody>
-                    <h2 className='fw-500'>{modalTitle}</h2>
-
-                    <p className='p-18'>{modalDescription}</p>
-                    <div className='d-flex justify-content-end'>
-                        <Button className="action h-49 p-18" onClick={() => {
-                            togglemodal();
-                        }
-                        }>
-                            Cancel
-                        </Button>
-                        <Button variant="outline" className='ml-2 border-danger text-danger h-49' onClick={() => {
-                            togglemodal();
-                        }
-                        }>
-                            Delete
-                        </Button>
-                    </div>
-                </ModalBody>
-            </Modal>
             <Container className='p-4 bg-white rounded my-5'>
                 <div className='d-flex align-items-center justify-content-between'>
                     <h4 className='fw-600 color-primary my-4'>Attendees ({eventAttendees?.length})</h4>
