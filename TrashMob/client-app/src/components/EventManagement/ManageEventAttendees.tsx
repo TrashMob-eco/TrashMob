@@ -80,7 +80,7 @@ export const ManageEventAttendees: React.FC<ManageEventAttendeesProps> = (props)
                     <tbody>
                         {users.map(user =>
                             <tr key={user.id.toString()}>
-                                <td className='color-grey p-18 py-3'>{user.userName ? user.userName : user.sourceSystemUserName}</td>
+                                <td className='color-grey p-18 py-3'>{user.userName}</td>
                                 <td className='color-grey p-18 py-3'>{user.city}</td>
                                 <td className='color-grey p-18 py-3'>{user.country}</td>
                                 <td className='color-grey p-18 py-3'>{new Date(user.memberSince).toLocaleDateString()}</td>

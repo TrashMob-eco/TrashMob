@@ -204,6 +204,7 @@ export const App: FC = () => {
 
     function verifyAccount(result: msal.AuthenticationResult) {
 
+        var email = result.idTokenClaims["signInName"]
         const account = msalClient.getAllAccounts()[0];
 
         const request = {
@@ -212,22 +213,14 @@ export const App: FC = () => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const method = 'POST';
+            const method = 'GET';
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
             const user = new UserData();
 
-            user.nameIdentifier = result.idTokenClaims["sub"];
-            user.sourceSystemUserName = result.account?.username ?? "";
-
-            if (result.account?.idTokenClaims) {
-                user.email = result.account?.idTokenClaims["emails"][0] ?? "";
-            }
-
-            fetch('/api/Users', {
+            fetch('/api/Users/getuserbyemail/' + encodeURIComponent(email), {
                 method: method,
-                headers: headers,
-                body: JSON.stringify(user)
+                headers: headers
             })
                 .then(response => response.json() as Promise<UserData> | null)
                 .then(data => {
@@ -236,12 +229,8 @@ export const App: FC = () => {
                         user.userName = data.userName;
                         user.givenName = data.givenName;
                         user.surName = data.surName;
-                        user.dateAgreedToPrivacyPolicy = data.dateAgreedToPrivacyPolicy;
-                        user.dateAgreedToTermsOfService = data.dateAgreedToTermsOfService;
                         user.dateAgreedToTrashMobWaiver = data.dateAgreedToTrashMobWaiver;
                         user.memberSince = data.memberSince;
-                        user.privacyPolicyVersion = data.privacyPolicyVersion;
-                        user.termsOfServiceVersion = data.termsOfServiceVersion;
                         user.trashMobWaiverVersion = data.trashMobWaiverVersion;
                         user.isSiteAdmin = data.isSiteAdmin;
                         setCurrentUser(user);

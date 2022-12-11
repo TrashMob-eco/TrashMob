@@ -3,15 +3,13 @@ import { MainEvents } from '../MainEvents';
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import EventData from '../Models/EventData';
 import EventTypeData from '../Models/EventTypeData';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getDefaultHeaders } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapControllerPointCollection from '../MapControllerPointCollection';
 import UserData from '../Models/UserData';
-import { Button, Modal } from 'reactstrap';
-import { CurrentTermsOfServiceVersion } from './TermsOfService';
-import { CurrentPrivacyPolicyVersion } from '../PrivacyPolicy';
+import { Button } from 'reactstrap';
 import { Col, Container, Form, Image, Row } from 'react-bootstrap';
 import Drawings from '../assets/home/Drawings.png';
 import Trash from '../assets/home/cleanup.jpg';
@@ -33,7 +31,7 @@ export interface HomeProps extends RouteComponentProps<any> {
     isUserEventDataLoaded: boolean;
 }
 
-const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated, myAttendanceList, isUserEventDataLoaded, onAttendanceChanged, location, match }) => {
+const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, myAttendanceList, isUserEventDataLoaded, onAttendanceChanged, location, match }) => {
     const [eventList, setEventList] = useState<EventData[]>([]);
     const [eventTypeList, setEventTypeList] = useState<EventTypeData[]>([]);
     const [isEventDataLoaded, setIsEventDataLoaded] = useState(false);
@@ -99,20 +97,6 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
         }
     }, [])
 
-    useEffect(() => {
-        if (!isUserLoaded || !currentUser) {
-            return;
-        }
-
-        const isPrivacyPolicyOutOfDate = currentUser.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate;
-        const isTermsOfServiceOutOfDate = currentUser.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate;
-
-        // Get agreement for the privacy policy and terms of service 
-        if (isPrivacyPolicyOutOfDate || isTermsOfServiceOutOfDate || (currentUser.termsOfServiceVersion === "") || (currentUser.privacyPolicyVersion === "")) {
-            setIsOpen(true);
-        }
-    }, [isUserLoaded, currentUser]);
-
     const handleLocationChange = (point: data.Position) => {
         // do nothing
     }
@@ -131,73 +115,12 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
         history.push("eventdetails/" + eventId);
     }
 
-    const updateAgreements = (tosVersion: string, privacyVersion: string) => {
-        const account = msalClient.getAllAccounts()[0];
-
-        const request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/Users/' + currentUser.id, {
-                method: 'GET',
-                headers: headers
-            })
-                .then(response => response.json() as Promise<UserData> | null)
-                .then(user => {
-                    if (user) {
-                        user.dateAgreedToPrivacyPolicy = new Date();
-                        user.dateAgreedToTermsOfService = new Date();
-                        user.termsOfServiceVersion = tosVersion;
-                        user.privacyPolicyVersion = privacyVersion;
-                        fetch('/api/Users/', {
-                            method: 'PUT',
-                            headers: headers,
-                            body: JSON.stringify(user)
-                        })
-                            .then(response => response.json() as Promise<UserData>)
-                            .then(data => {
-                                onUserUpdated();
-                                if (!currentUser.userName) {
-                                    history.push("/userprofile");
-                                }
-                            })
-                    }
-                })
-        })
-    }
-
     const handleEventView = (view: string) => {
         setEventView(view);
     }
 
     return (
         <>
-            <Modal isOpen={isOpen} onrequestclose={togglemodal} contentlabel="Accept Terms of Use" fade={true} style={{ width: "500px", display: "block" }}>
-                <div className="container p-4">
-                    <Form>
-                        <Form.Row>
-                            <Form.Group>
-                                <Form.Label className="control-label font-weight-bold h5">I have reviewed and I agree to the TrashMob.eco <Link to='./termsofservice'>Terms of Use</Link> and the TrashMob.eco <Link to='./privacypolicy'>Privacy Policy</Link>.</Form.Label>
-                                <Form.Check id="agree" onChange={checkboxhandler} label="Yes" />
-                            </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                            <Button disabled={!agree} className="action" onClick={() => {
-                                updateAgreements(CurrentTermsOfServiceVersion.versionId, CurrentPrivacyPolicyVersion.versionId);
-                                togglemodal();
-                            }
-                            }>
-                                I Agree
-                            </Button>
-                        </Form.Row>
-                    </Form>
-                </div>
-            </Modal>
             <Container fluid>
                 <Row className="shadow position-relative" >
                     <Col className="d-flex flex-column px-0 py-4 pl-lg-5" sm={6} style={{ zIndex: 1 }}>
