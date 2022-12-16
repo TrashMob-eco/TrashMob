@@ -14,7 +14,7 @@ export const Partnerships: FC<any> = () => {
     return (
         <>
             <Container fluid className='bg-grass mb-5'>
-                <Row className="text-center pt-0">
+                <Row className="text-center pt-0 max-width-container">
                     <Col md={7} className="d-flex flex-column justify-content-center pr-5">
                         <h1 className="font-weight-bold">Partnerships</h1>
                         <p className="font-weight-bold">Connecting you with volunteers.</p>
@@ -29,7 +29,7 @@ export const Partnerships: FC<any> = () => {
                     <Col sm={7}>
                         <h1 className='fw-600'>What are partnerships?</h1>
                         <h4>Partnering with local cities and businesses can connect TrashMob event volunteers with the supplies and services they need.</h4>
-                        <p className='para'>Partners can include cities, local businesses, and branches/locations of larger companies. Services can include trash hauling and disposal locations, and supplies can include buckets, grabber tools, and safety equipment.
+                        <p>Partners can include cities, local businesses, and branches/locations of larger companies. Services can include trash hauling and disposal locations, and supplies can include buckets, grabber tools, and safety equipment.
                             Looking for supplies and services for your next event? Invite a partnership from your city! Have supplies and services to offer? Become a partner!</p>
                     </Col>
                     <Col sm={5}>
@@ -38,32 +38,26 @@ export const Partnerships: FC<any> = () => {
                 </Row>
             </Container>
             <div className='w-100 bg-white'>
-                <Container className='py-5'>
-                    <Row>
+                <Container className='py-5 px-0'>
+                    <Row className="max-width-container mx-auto align-items-center">
                         <Col sm={6}>
-                            <div className='align-items-center'>
+                            <div className='d-flex flex-column align-items-start'>
                                 <p className="font-size-h4">No partner for your event? Invite local government or business to join TrashMob.eco as a partner!</p>
-                            </div>
-                            <div className='align-items-center'>
                                 <Link className="btn btn-primary banner-button" to="/requestapartner">Invite a partner</Link>
                             </div>
                         </Col>
                         <Col sm={6}>
-                            <div className='align-items-center'>
+                            <div className='d-flex flex-column align-items-start'>
                                 <p className="font-size-h4">
                                     Have supplies and services to offer? Submit an application to become a TrashMob.eco partner!
                                 </p>
-                            </div>
-                            <div className='align-items-center'>
-                                <p>
-                                    <Link className="btn btn-primary banner-button" to="/becomeapartner">Become a partner</Link>
-                                </p>
+                                <Link className="btn btn-primary banner-button" to="/becomeapartner">Become a partner</Link>
                             </div>
                         </Col>
                     </Row>
                 </Container>
             </div>
-            <Container fluid className='text-center py-5'>
+            <Container fluid className='text-center py-5 px-0'>
                 <h2 className='font-weight-bold mb-3'>Partnerships support the volunteers</h2>
                 <span>Services and supplies offered can include:</span>
                 <Row className="justify-content-center">
@@ -89,8 +83,8 @@ export const Partnerships: FC<any> = () => {
                 </Row>
             </Container>
 
-            <Container className='bg-white py-5'>
-                <Row>
+            <Container fluid className='bg-white py-5'>
+                <Row className="container mx-auto px-0">
                     <Col sm={7}>
                         <h1 className='fw-600'>Making the most out of partnerships</h1>
                         <p className='para'>A successful clean up event depends upon a team of volunteers and the support of partners: community businesses, organizations and governments.  Volunteer organizers set an event location, rally member support and utilize partnership provisions.</p>
