@@ -103,13 +103,13 @@ jobs:
       run: |
         sudo xcode-select -s "/Applications/Xcode_14.1.app"
         echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_14.1.app" >> $GITHUB_ENV
-        
+
     - name: Restore Dependencies
       run: | 
         dotnet restore TrashMobMobileApp.sln
 
     - name: Build MAUI iOS
-      run: dotnet build TrashMobMobileApp.sln -c Release -f net7.0-ios --no-restore /p:buildForSimulator=True /p:packageApp=True /p:ArchiveOnBuild=False
+      run: dotnet build TrashMobMobileApp.sln -c Release -f net7.0-ios --no-restore /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=False
 
     - name: Upload iOS Artifact
       uses: actions/upload-artifact@v3.1.0
