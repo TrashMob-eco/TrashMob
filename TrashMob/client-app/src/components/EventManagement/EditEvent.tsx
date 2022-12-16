@@ -458,7 +458,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     <Container className='p-4 bg-white rounded my-5'>
                         <h4 className='fw-600 color-primary my-4'>Event details</h4>
                         <Form.Row>
-                            <Col lg={3}>
+                            <Col lg={6}>
                                 <Form.Group className="required">
                                     <OverlayTrigger placement="top" overlay={renderEventNameToolTip}>
                                         <Form.Label className="control-label font-weight-bold h5" htmlFor="Name">Name</Form.Label>
@@ -466,7 +466,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     <Form.Control type="text" className='border-0 bg-light h-60 p-18' name="name" defaultValue={eventName} onChange={(val) => handleEventNameChanged(val.target.value)} maxLength={parseInt('64')} required />
                                 </Form.Group>
                             </Col>
-                            <Col lg={3}>
+                            <Col lg={6}>
                                 <Form.Group className="required">
                                     <OverlayTrigger placement="top" overlay={renderEventTypeToolTip}>
                                         <Form.Label className="control-label font-weight-bold h5" htmlFor="EventType">Type</Form.Label>
@@ -481,34 +481,9 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
                                 </Form.Group>
                             </Col>
-                            <Col lg={3}>
-                                <Form.Group>
-                                    <OverlayTrigger placement="top" overlay={renderMaxNumberOfParticipantsToolTip}>
-                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="MaxNumberOfParticipants">Max Number Of Participants</Form.Label>
-                                    </OverlayTrigger >
-                                    <Form.Control type="text" className='border-0 bg-light h-60 p-18' name="maxNumberOfParticipants" defaultValue={maxNumberOfParticipants} onChange={(val) => handleMaxNumberOfParticipantsChanged(val.target.value)} />
-                                    <span style={{ color: "red" }}>{maxNumberOfParticipantsErrors}</span>
-                                </Form.Group>
-                            </Col>
-
-                            <Col lg={3}>
-                                <Form.Group>
-                                    <OverlayTrigger placement="top" overlay={renderIsEventPublicToolTip}>
-                                        <ToggleButton
-                                            type="checkbox"
-                                            variant="outline-dark"
-                                            checked={isEventPublic}
-                                            value="1"
-                                            onChange={(e) => handleIsEventPublicChanged(e.currentTarget.checked)}
-                                        >
-                                            Event is Public
-                                        </ToggleButton>
-                                    </OverlayTrigger >
-                                </Form.Group>
-                            </Col>
                         </Form.Row>
                         <Form.Row>
-                            <Col lg={3}>
+                            <Col lg={6}>
                                 <Form.Group className="required">
                                     <OverlayTrigger placement="top" overlay={renderEventDateToolTip}>
                                         <Form.Label className="control-label font-weight-bold h5" htmlFor="EventDate">Date</Form.Label>
@@ -516,7 +491,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     <Form.Control type="date" className='border-0 bg-light h-60 p-18' name="eventDate" value={dateForPicker(absTime)} onChange={(val: any) => handleEventDateChanged(val.target.value)} />
                                 </Form.Group>
                             </Col>
-                            <Col lg={3}>
+                            <Col lg={6}>
                                 <Form.Group className="required">
                                     <OverlayTrigger placement="top" overlay={renderEventTimeToolTip}>
                                         <Form.Label className="control-label font-weight-bold h5" htmlFor="Event Time">Time</Form.Label>
@@ -527,7 +502,9 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     </div>
                                 </Form.Group>
                             </Col>
-                            <Col lg={3}>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col lg={6}>
                                 <Form.Group className="required">
                                     <OverlayTrigger placement="top" overlay={renderDurationHoursToolTip}>
                                         <Form.Label className="control-label font-weight-bold h5" htmlFor="DurationHours">Expected Duration in Hours</Form.Label>
@@ -538,7 +515,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     </div>
                                 </Form.Group>
                             </Col>
-                            <Col lg={3}>
+                            <Col lg={6}>
                                 <Form.Group>
                                     <OverlayTrigger placement="top" overlay={renderDurationMinutesToolTip}>
                                         <Form.Label className="control-label font-weight-bold h5" htmlFor="DurationMinutes">Additional Minutes</Form.Label>
@@ -546,6 +523,35 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     <div>
                                         <Form.Control type="text" className='border-0 bg-light h-60 p-18' size="sm" name="durationMinutes" defaultValue={durationMinutes} onChange={(val) => handleDurationMinutesChanged(val.target.value)} />
                                         <span style={{ color: "red" }}>{durationMinutesErrors}</span>
+                                    </div>
+                                </Form.Group>
+                            </Col>
+                        </Form.Row>
+                        <Form.Row>
+                            <Col lg={6}>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderMaxNumberOfParticipantsToolTip}>
+                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="MaxNumberOfParticipants">Max Number Of Participants</Form.Label>
+                                    </OverlayTrigger >
+                                    <Form.Control type="text" className='border-0 bg-light h-60 p-18' name="maxNumberOfParticipants" defaultValue={maxNumberOfParticipants} onChange={(val) => handleMaxNumberOfParticipantsChanged(val.target.value)} />
+                                    <span style={{ color: "red" }}>{maxNumberOfParticipantsErrors}</span>
+                                </Form.Group>
+                            </Col>
+                            <Col lg={6}>
+                                <Form.Group>
+                                    <div>
+                                        <OverlayTrigger placement="top" overlay={renderIsEventPublicToolTip}>
+                                            <Form.Label className="control-label font-weight-bold h5" htmlFor="isEventPublic">Public Event</Form.Label>
+                                        </OverlayTrigger >
+                                    </div>
+                                    <div>
+                                        <ToggleButton
+                                            type="checkbox"
+                                            variant="outline-dark"
+                                            checked={isEventPublic}
+                                            value="1"
+                                            onChange={(e) => handleIsEventPublicChanged(e.currentTarget.checked)}
+                                        />
                                     </div>
                                 </Form.Group>
                             </Col>

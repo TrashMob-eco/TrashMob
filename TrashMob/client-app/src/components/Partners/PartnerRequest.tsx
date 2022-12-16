@@ -56,11 +56,11 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
             setMode("send");
             setTitle("Send invite to join TrashMob as a partner");
             setSubTitle("Invite partner");
-            setBlurb("Use this form to send an informational note to a potential TrashMob.eco partner in your community. Fill out as much detail as you can and TrashMob.eco will reach out to the email address provided with an information packet to see if they would like to become a TrashMob.eco Partner!")
+            setBlurb("<p>Use this form to send an informational note to a potential TrashMob.eco partner in your community. Fill out as much detail as you can and TrashMob.eco will reach out to the email address provided with an information packet to see if they would like to become a TrashMob.eco Partner!</p><p>If connecting with a government partner, the department responsible for managing waste and maintaining cleanliness in a community is often a part of the public works department, environmental services division, or a similar agency. You can find contact information for these organizations by searching online or by calling the city's main government phone number and asking for the appropriate department.</p>")
         }
         else {
             setMode("request");
-            setBlurb("Use this form to request to become a TrashMob.eco partner. TrashMob.eco site adminsitrators will review your request, and either approve it, or reach out to you for more information. If approved, you wil be sent a Welcome email with instructions on how to complete setup of your partnership.");
+            setBlurb("<p>Use this form to request to become a TrashMob.eco partner. TrashMob.eco site adminsitrators will review your request, and either approve it, or reach out to you for more information. If approved, you wil be sent a Welcome email with instructions on how to complete setup of your partnership.</p>");
         }
 
         MapStore.getOption().then(opts => {
@@ -300,9 +300,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                     <Col lg={4} className="d-flex">
                         <div className="bg-white py-2 px-5 shadow-sm rounded">
                             <h2 className="color-primary mt-4 mb-5">{title}</h2>
-                            <p>
-                                {blurb}
-                            </p>
+                            <div className="content" dangerouslySetInnerHTML={{ __html: blurb }}></div>
                         </div>
                     </Col>
                     <Col lg={8}>
@@ -394,15 +392,18 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                             <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
                                                 <Form.Label className="control-label h5" htmlFor="StreetAddress">Street Address</Form.Label>
                                             </OverlayTrigger >
-                                            <span>{streetAddress}</span>
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="streetAddress" value={streetAddress} />
                                         </Form.Group>
                                     </Col>
+                                </Form.Row>
+
+                                <Form.Row>
                                     <Col>
                                         <Form.Group>
                                             <OverlayTrigger placement="top" overlay={renderCityToolTip}>
                                                 <Form.Label className="control-label h5" htmlFor="City">City</Form.Label>
                                             </OverlayTrigger >
-                                            <span>{city}</span>
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="city" value={city} />
                                         </Form.Group>
                                     </Col>
                                     <Col>
@@ -410,7 +411,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                             <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
                                                 <Form.Label className="control-label h5" htmlFor="PostalCode">Postal Code</Form.Label>
                                             </OverlayTrigger >
-                                            <span>{postalCode}</span>
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="postalCode" value={postalCode} />
                                         </Form.Group>
                                     </Col>
                                 </Form.Row>

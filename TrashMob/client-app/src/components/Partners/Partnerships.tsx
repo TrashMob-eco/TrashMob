@@ -1,15 +1,20 @@
 import { FC } from 'react'
 import { Col, Container, Image, Row } from 'react-bootstrap';
 import globes from '../assets/gettingStarted/globes.png';
-import heroImg from '../assets/partnerships/whatIsPartnerships.svg';
+import heroImg from '../assets/partnerships/whatIsPartnerships.png';
 import Safetykits from '../assets/partnerships/Safetykits.svg';
 import Supplies from '../assets/partnerships/Supplies.svg';
 import TrashDisposal from '../assets/partnerships/TrashDisposal.svg';
 import Dollarsign from '../assets/partnerships/dollarsign.svg';
-import Garbage from '../assets/partnerships/garbage.svg';
+import Garbage from '../assets/partnerships/garbage.png';
 import { Link } from 'react-router-dom';
+import React from 'react';
 
 export const Partnerships: FC<any> = () => {
+
+    React.useEffect(() => {
+        window.scrollTo(0, 0);
+    })
 
     return (
         <>
@@ -43,7 +48,7 @@ export const Partnerships: FC<any> = () => {
                         <Col sm={6}>
                             <div className='d-flex flex-column align-items-start'>
                                 <p className="font-size-h4">No partner for your event? Invite local government or business to join TrashMob.eco as a partner!</p>
-                                <Link className="btn btn-primary banner-button" to="/requestapartner">Invite a partner</Link>
+                                <Link className="btn btn-primary banner-button" to="/inviteapartner">Invite a partner</Link>
                             </div>
                         </Col>
                         <Col sm={6}>

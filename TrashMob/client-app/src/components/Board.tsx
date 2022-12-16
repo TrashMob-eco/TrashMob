@@ -4,12 +4,18 @@ import globes from './assets/gettingStarted/globes.png';
 import linkedIn from './assets/card/linkedin.svg';
 import JoeBeernink from './assets/boardOfDirectors/JoeBeernink.svg';
 import DarrylWalter from './assets/boardOfDirectors/DarrylWalter.svg';
+import DarylBarber from './assets/boardOfDirectors/darylbarber.jpg';
 import JakeDiliberto from './assets/boardOfDirectors/JakeDiliberto.svg';
 import JeremiahSteen from './assets/boardOfDirectors/JeremiahSteen.svg';
 import KevinGleason from './assets/boardOfDirectors/KevinGleason.svg';
 import ValerieWilden from './assets/boardOfDirectors/ValerieWilden.svg';
 
 export const Board: React.FC = () => {
+
+    React.useEffect(() => {
+        window.scrollTo(0, 0);
+    })
+
     return (
         <>
             <Container fluid className='bg-grass'>
@@ -33,7 +39,7 @@ export const Board: React.FC = () => {
                         </Col>
                         <Col md={7}>
                             <div className='d-flex justify-content-between align-items-center'>
-                                <h2 className='m-0 fw-500 font-size-xl color-primary '>Joe Beernik</h2>
+                                <h2 className='m-0 fw-500 font-size-xl color-primary '>Joe Beernink</h2>
                                 <a href="https://www.linkedin.com/in/joebeernink/"><Image src={linkedIn} alt="linkedin icon" className="h-100 mt-0 object-fit-cover" /></a>
                             </div>
                             <h5 className='my-3 fw-500 color-grey'>Board President</h5>
@@ -47,7 +53,7 @@ export const Board: React.FC = () => {
                 <div className='p-4 directorCard'>
                     <Row>
                         <Col md={5}>
-                            {/*<Image src={DarylBarber} alt="Daryl Barber" className="h-100 mt-0 object-fit-cover rounded" />*/}
+                            <Image src={DarylBarber} alt="Daryl Barber" className="h-100 mt-0 object-fit-cover rounded" />
                         </Col>
                         <Col md={7}>
                             <div className='d-flex justify-content-between align-items-center'>

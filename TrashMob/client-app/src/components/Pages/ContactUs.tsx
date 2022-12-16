@@ -24,6 +24,10 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    React.useEffect(() => {
+        window.scrollTo(0, 0);
+    })
+
     // This will handle the submit form event.  
     function handleSave(event: any) {
 

@@ -23,6 +23,11 @@ const ReadMore = ({ children }: any) => {
 
 
 export const VolunteerOpportunities: React.FC = () => {
+
+    React.useEffect(() => {
+        window.scrollTo(0, 0);
+    })
+
     return (
         <>
             <Container fluid className='bg-grass mb-5'>

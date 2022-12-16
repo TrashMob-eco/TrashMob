@@ -6,6 +6,11 @@ import { GettingStartedSection } from '../GettingStartedSection';
 import { Col, Container, Image, Row } from 'react-bootstrap';
 
 export const AboutUs: React.FC = () => {
+
+    React.useEffect(() => {
+        window.scrollTo(0, 0);
+    })
+
     return (
         <>
             <Container fluid className="mt-1 bg-white p-5">

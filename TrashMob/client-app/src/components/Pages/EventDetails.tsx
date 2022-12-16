@@ -68,6 +68,8 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
     }
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+
         const headers = getDefaultHeaders('GET');
 
         fetch('/api/eventtypes', {

@@ -55,6 +55,8 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [totalEvents, setTotalEvents] = useState<number>(0);
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+
         MapStore.getOption().then(opts => {
             setMapOptions(opts);
             setIsMapKeyLoaded(true);
@@ -389,6 +391,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                 <Dropdown.Item href={'/manageeventdashboard/' + eventId}><Pencil />Manage event</Dropdown.Item>
                 <Dropdown.Item href={'/eventdetails/' + eventId}><Eye />View event</Dropdown.Item>
                 <Dropdown.Item onClick={() => handleCopyLink(eventId)}><LinkIcon />{copied ? 'Copied!' : 'Copy event link'}</Dropdown.Item>
+                <Dropdown.Item href={'/cancelevent/' + eventId}><XSquare />Cancel event</Dropdown.Item>
             </>
         )
     }
@@ -779,7 +782,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                 </div>
                 <div className="d-flex my-5 mb-4 justify-content-between">
                     <h4 className="font-weight-bold mr-2 mt-0 active-line pb-2">My Partnerships ({myPartnerRequests.length + myPartners.length})</h4>
-                    <Link className="btn btn-primary banner-button" to="/requestapartner">Send invitation to join TrashMob.eco as a partner</Link>
+                    <Link className="btn btn-primary banner-button" to="/inviteapartner">Send invitation to join TrashMob.eco as a partner</Link>
                     <Link className="btn btn-primary banner-button" to="/becomeapartner">Apply to become a partner</Link>
                 </div>
                 <div className="mb-4 bg-white">
