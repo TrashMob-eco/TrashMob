@@ -70,19 +70,19 @@ export const Partnerships: FC<any> = () => {
                     <Row className='w-50 mt-5 mx-auto justify-content-around    '>
                         <Col className="d-flex flex-column align-items-center">
                             <Image src={Safetykits} alt="Safety kits" className="graphic-large mt-0" />
-                            <span className="font-weight-bold">Safety gear and roadside signs</span>
+                            <span className="font-weight-bold mt-2">Safety gear and roadside signs</span>
                         </Col>
                         <Col className="d-flex flex-column align-items-center">
                             <Image src={Supplies} alt="Supplies" className="graphic-large mt-0" />
-                            <span className="font-weight-bold">Pickup supplies such as garbage bags</span>
+                            <span className="font-weight-bold mt-2">Pickup supplies such as garbage bags</span>
                         </Col>
                         <Col className="d-flex flex-column align-items-center">
                             <Image src={TrashDisposal} alt="Trash Disposal & Hauling" className="graphic-large mt-0" />
-                            <span className="font-weight-bold">Use of existing dumpsters and hauling of trash to disposal site</span>
+                            <span className="font-weight-bold mt-2">Use of existing dumpsters and hauling of trash to disposal site</span>
                         </Col>
                         <Col className="d-flex flex-column align-items-center">
                             <Image src={Dollarsign} alt="Dollar sign" className="graphic-large mt-0" />
-                            <span className="font-weight-bold"><a href="https://www.trashmob.eco/donate">Donations</a> to TrashMob.eco fund development of our platform and programs</span>
+                            <span className="font-weight-bold mt-2"><a href="https://www.trashmob.eco/donate">Donations</a> to TrashMob.eco fund development of our platform and programs</span>
                         </Col>
                     </Row>
 
