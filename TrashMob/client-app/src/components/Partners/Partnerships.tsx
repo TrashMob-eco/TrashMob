@@ -42,7 +42,7 @@ export const Partnerships: FC<any> = () => {
                     <Row>
                         <Col sm={6}>
                             <div className='align-items-center'>
-                                <h4>No partner for your event? Invite local government or business to join TrashMob.eco as a partner!</h4>
+                                <p className="font-size-h4">No partner for your event? Invite local government or business to join TrashMob.eco as a partner!</p>
                             </div>
                             <div className='align-items-center'>
                                 <Link className="btn btn-primary banner-button" to="/requestapartner">Invite a partner</Link>
@@ -50,9 +50,9 @@ export const Partnerships: FC<any> = () => {
                         </Col>
                         <Col sm={6}>
                             <div className='align-items-center'>
-                                <h4>
+                                <p className="font-size-h4">
                                     Have supplies and services to offer? Submit an application to become a TrashMob.eco partner!
-                                </h4>
+                                </p>
                             </div>
                             <div className='align-items-center'>
                                 <p>
@@ -64,25 +64,28 @@ export const Partnerships: FC<any> = () => {
                 </Container>
             </div>
             <Container fluid className='text-center py-5'>
-                <h1 className='fw-600'>Partnerships support the volunteers</h1>
-                <h4>Services and supplies offered can include:</h4>
-                <Row className='w-50 mt-5 mx-auto'>
-                    <Col>
-                        <Image src={Safetykits} alt="Safety kits" className="mt-0" />
-                        <h4>Safety gear and roadside signs</h4>
-                    </Col>
-                    <Col>
-                        <Image src={Supplies} alt="Supplies" className="mt-0" />
-                        <h4>Pickup supplies such as garbage bags</h4>
-                    </Col>
-                    <Col>
-                        <Image src={TrashDisposal} alt="Trash Disposal & Hauling" className="mt-0" />
-                        <h4>Use of existing dumpsters and hauling of trash to disposal site</h4>
-                    </Col>
-                    <Col>
-                        <Image src={Dollarsign} alt="Dollar sign" className="mt-0" />
-                        <h4><a href="https://www.trashmob.eco/donate">Donations</a> to TrashMob.eco fund development of our platform and programs</h4>
-                    </Col>
+                <h2 className='font-weight-bold mb-3'>Partnerships support the volunteers</h2>
+                <span>Services and supplies offered can include:</span>
+                <Row className="justify-content-center">
+                    <Row className='w-50 mt-5 mx-auto justify-content-around    '>
+                        <Col className="d-flex flex-column align-items-center">
+                            <Image src={Safetykits} alt="Safety kits" className="graphic-large mt-0" />
+                            <span className="font-weight-bold">Safety gear and roadside signs</span>
+                        </Col>
+                        <Col className="d-flex flex-column align-items-center">
+                            <Image src={Supplies} alt="Supplies" className="graphic-large mt-0" />
+                            <span className="font-weight-bold">Pickup supplies such as garbage bags</span>
+                        </Col>
+                        <Col className="d-flex flex-column align-items-center">
+                            <Image src={TrashDisposal} alt="Trash Disposal & Hauling" className="graphic-large mt-0" />
+                            <span className="font-weight-bold">Use of existing dumpsters and hauling of trash to disposal site</span>
+                        </Col>
+                        <Col className="d-flex flex-column align-items-center">
+                            <Image src={Dollarsign} alt="Dollar sign" className="graphic-large mt-0" />
+                            <span className="font-weight-bold"><a href="https://www.trashmob.eco/donate">Donations</a> to TrashMob.eco fund development of our platform and programs</span>
+                        </Col>
+                    </Row>
+
                 </Row>
             </Container>
 
@@ -94,7 +97,7 @@ export const Partnerships: FC<any> = () => {
                         <p className='para'>TrashMob administrators confirm, approve and connect partners with event organizers. Partners and their form of support are indicated on event registration pages. Then local teamwork commences!  Event organizers and partners coordinate access of supplies, services and instructions. Partners are selected upon availability and proximity to the event. Note: Supplied services from a given partner may vary by location/branch. </p>
                     </Col>
                     <Col sm={5}>
-                        <Image src={Garbage} alt="garbage bags being picked up" className="h-100 mt-0" />
+                        <Image src={Garbage} alt="garbage bags being picked up" className="mh-100 mt-0" />
                     </Col>
                 </Row>
             </Container>
