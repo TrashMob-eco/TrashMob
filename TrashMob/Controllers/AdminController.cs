@@ -8,6 +8,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
 
@@ -22,7 +23,7 @@
         }
 
         [HttpPut("partnerrequestupdate/{userId}")]
-        [Authorize(Policy = "UserIsAdmin")]
+        [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdatePartnerRequest(Guid userId, PartnerRequest partnerRequest, CancellationToken cancellationToken)
         {

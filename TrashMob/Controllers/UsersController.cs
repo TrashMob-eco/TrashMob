@@ -11,6 +11,7 @@ namespace TrashMob.Controllers
     using TrashMob.Shared;
     using Microsoft.ApplicationInsights;
     using TrashMob.Models;
+    using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
     using System.Security.Claims;
 
@@ -26,7 +27,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "UserIsAdmin")]
+        [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
         {
             var result = await userManager.GetAsync(cancellationToken).ConfigureAwait(false);
@@ -34,7 +35,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("getUserByUserName/{userName}")]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> GetUser(string userName, CancellationToken cancellationToken)
         {
             var user = await userManager.GetUserByUserNameAsync(userName, cancellationToken).ConfigureAwait(false);
@@ -48,7 +49,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("verifyunique/{userId}/{userName}")]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> VerifyUnique(Guid userId, string userName, CancellationToken cancellationToken)
         {
             var user = await userManager.GetUserByUserNameAsync(userName, cancellationToken).ConfigureAwait(false);
@@ -67,7 +68,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> GetUserByInternalId(Guid id, CancellationToken cancellationToken = default)
         {
             var user = await userManager.GetUserByInternalIdAsync(id, cancellationToken).ConfigureAwait(false);
@@ -83,7 +84,7 @@ namespace TrashMob.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut()]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> PutUser(User user, CancellationToken cancellationToken)
         {
             try
@@ -147,7 +148,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteUser(Guid id, CancellationToken cancellationToken)
         {
