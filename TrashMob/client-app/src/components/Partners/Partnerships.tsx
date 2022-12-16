@@ -8,8 +8,13 @@ import TrashDisposal from '../assets/partnerships/TrashDisposal.svg';
 import Dollarsign from '../assets/partnerships/dollarsign.svg';
 import Garbage from '../assets/partnerships/garbage.png';
 import { Link } from 'react-router-dom';
+import React from 'react';
 
 export const Partnerships: FC<any> = () => {
+
+    React.useEffect(() => {
+        window.scrollTo(0, 0);
+    })
 
     return (
         <>
