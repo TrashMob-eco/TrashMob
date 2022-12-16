@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: TrashMob Pull Request Build
+name: TrashMob Mobile App Pull Request Build
 
 on:
   pull_request:
@@ -18,9 +18,10 @@ env:
   CONFIGURATION: Release
 
 jobs:
-  buildMobileApp:
+  buildAndroidApp:
     runs-on: windows-latest
     environment: test
+    name: Android Build
 
     steps:
     - uses: actions/checkout@v2
@@ -39,13 +40,13 @@ jobs:
       run: |
         dotnet nuget locals all --clear
         dotnet workload install maui --ignore-failed-sources
-        dotnet workload install android ios maccatalyst tvos macos maui wasm-tools --source https://api.nuget.org/v3/index.json
+        dotnet workload install android maui wasm-tools --source https://api.nuget.org/v3/index.json
 
-    - name: Restore
+    - name: Restore Dependencies
       run: | 
         dotnet restore TrashMobMobileApp.sln
 
-    - name: Publish Mobile App
+    - name: Publish Android Mobile App
       run: |
         dotnet publish TrashMobMobileApp.sln -c:${{ env.CONFIGURATION }} -f:net6.0-android33.0 --no-restore 
       
@@ -71,6 +72,34 @@ jobs:
         name: artifacts-android
         path: |
           TrashMobMobileApp\bin\Release\net6.0-android33.0\publish\*.apk
+
+  buildiOSApp:
+    runs-on: macos-12
+    environment: test
+    name: iOS Build
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION2 }}
+
+    - name: Install MAUI Workload
+      run: |
+        dotnet nuget locals all --clear
+        dotnet workload install maui --ignore-failed-sources
+        dotnet workload install ios maccatalyst tvos macos maui wasm-tools --source https://api.nuget.org/v3/index.json --ignore-failed-sources
+
+    - name: Restore Dependencies
+      run: | 
+        dotnet restore TrashMobMobileApp.sln
 
     - name: Build MAUI iOS
       run: dotnet build TrashMobMobileApp.sln -c Release -f net6.0-ios15.4 --no-restore /p:buildForSimulator=True /p:packageApp=True /p:ArchiveOnBuild=False
