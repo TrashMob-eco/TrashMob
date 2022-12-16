@@ -392,15 +392,18 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                             <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
                                                 <Form.Label className="control-label h5" htmlFor="StreetAddress">Street Address</Form.Label>
                                             </OverlayTrigger >
-                                            <span>{streetAddress}</span>
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="streetAddress" value={streetAddress} />
                                         </Form.Group>
                                     </Col>
+                                </Form.Row>
+
+                                <Form.Row>
                                     <Col>
                                         <Form.Group>
                                             <OverlayTrigger placement="top" overlay={renderCityToolTip}>
                                                 <Form.Label className="control-label h5" htmlFor="City">City</Form.Label>
                                             </OverlayTrigger >
-                                            <span>{city}</span>
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="city" value={city} />
                                         </Form.Group>
                                     </Col>
                                     <Col>
@@ -408,7 +411,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                             <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
                                                 <Form.Label className="control-label h5" htmlFor="PostalCode">Postal Code</Form.Label>
                                             </OverlayTrigger >
-                                            <span>{postalCode}</span>
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="postalCode" value={postalCode} />
                                         </Form.Group>
                                     </Col>
                                 </Form.Row>
