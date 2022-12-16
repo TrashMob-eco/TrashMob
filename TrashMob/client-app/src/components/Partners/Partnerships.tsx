@@ -19,7 +19,7 @@ export const Partnerships: FC<any> = () => {
     return (
         <>
             <Container fluid className='bg-grass mb-5'>
-                <Row className="text-center pt-0 max-width-container">
+                <Row className="text-center pt-0">
                     <Col md={7} className="d-flex flex-column justify-content-center pr-5">
                         <h1 className="font-weight-bold">Partnerships</h1>
                         <p className="font-weight-bold">Connecting you with volunteers.</p>
