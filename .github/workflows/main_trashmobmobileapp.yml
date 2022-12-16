@@ -14,14 +14,15 @@ on:
   workflow_dispatch:
 
 env:
-  DOTNET_VERSION: '6.0.x'  # set this to the dotnet version to use
-  DOTNET_VERSION2: '6.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION: '7.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION2: '7.0.x'  # set this to the dotnet version to use
   CONFIGURATION: Release
 
 jobs:
-  build:
+  buildAndroidApp:
     runs-on: windows-latest
     environment: test
+    name: Android Build
 
     steps:
     - uses: actions/checkout@v2
@@ -42,13 +43,13 @@ jobs:
         dotnet workload install maui --ignore-failed-sources
         dotnet workload install android ios maccatalyst tvos macos maui wasm-tools --source https://api.nuget.org/v3/index.json
 
-    - name: Restore
+    - name: Restore Dependencies
       run: | 
         dotnet restore TrashMobMobileApp.sln
 
     - name: Publish Mobile App
       run: |
-        dotnet publish TrashMobMobileApp.sln -c:${{ env.CONFIGURATION }} -f:net6.0-android33.0 --no-restore 
+        dotnet publish TrashMobMobileApp.sln -c:${{ env.CONFIGURATION }} -f:net6.0-android --no-restore 
       
     # Store Android Signing Keystore and password in Secrets using base64 encoding
     # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil
@@ -65,10 +66,47 @@ jobs:
       shell: bash
       run: |
         cd TrashMobMobileApp
-        jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -signedjar bin/Release/net6.0-android33.0/publish/eco.trashmob.trashmobmobileapp-Signed.aab bin/Release/net6.0-android33.0/publish/eco.trashmob.trashmobmobileapp.aab key
+        jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -signedjar bin/Release/net6.0-android/publish/eco.trashmob.trashmobmobileapp-Signed.aab bin/Release/net6.0-android/publish/eco.trashmob.trashmobmobileapp.aab key
 
     - uses: actions/upload-artifact@v2
       with:
         name: artifacts-android
         path: |
-          TrashMobMobileApp\bin\Release\net6.0-android33.0\publish\*.apk
+          TrashMobMobileApp\bin\Release\net6.0-android\publish\*.apk
+
+  buildiOSApp:
+    runs-on: macos-12
+    environment: test
+    name: iOS Build
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION2 }}
+
+    - name: Install MAUI Workload
+      run: |
+        dotnet nuget locals all --clear
+        dotnet workload install maui --ignore-failed-sources
+        dotnet workload install ios maccatalyst tvos macos maui wasm-tools --source https://api.nuget.org/v3/index.json --ignore-failed-sources
+
+    - name: Restore Dependencies
+      run: | 
+        dotnet restore TrashMobMobileApp.sln
+
+    - name: Build MAUI iOS
+      run: dotnet build TrashMobMobileApp.sln -c Release -f net7.0-ios --no-restore /p:buildForSimulator=True /p:packageApp=True /p:ArchiveOnBuild=False
+
+    - name: Upload iOS Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: trashmobmobileapp-ios-main-build
+        path: trashmobmobileapp/bin/Release/net7.0-ios/**/*.app
