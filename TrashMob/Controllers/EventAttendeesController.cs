@@ -13,6 +13,7 @@ namespace TrashMob.Controllers
     using System.Threading;
     using Microsoft.ApplicationInsights;
     using TrashMob.Models;
+    using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/eventattendees")]
@@ -37,7 +38,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdateEventAttendee(EventAttendee eventAttendee, CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, eventAttendee, "UserOwnsEntity");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, eventAttendee, AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -68,7 +69,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddEventAttendee(EventAttendee eventAttendee, CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, eventAttendee, "UserOwnsEntity");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, eventAttendee, AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -84,7 +85,7 @@ namespace TrashMob.Controllers
 
         [HttpDelete("{eventId}/{userId}")]
         // Todo: Tighten this down
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteEventAttendee(Guid eventId, Guid userId, CancellationToken cancellationToken)
         {

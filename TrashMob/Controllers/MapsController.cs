@@ -4,6 +4,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
+    using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/maps")]
@@ -24,7 +25,7 @@
         }
 
         [HttpGet("GetAddress")]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> GetAddressForPoint([FromQuery] double latitude, [FromQuery] double longitude)
         {
             var address = await mapRepository.GetAddressAsync(latitude, longitude);

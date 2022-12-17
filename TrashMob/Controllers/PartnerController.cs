@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/partners")]
@@ -25,7 +26,7 @@
         [HttpPut]
         public async Task<IActionResult> Update(Partner partner, CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {

@@ -4,6 +4,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
+    using TrashMob.Security;
     using TrashMob.Shared.Persistence.Interfaces;
 
     [Route("api/secrets")]
@@ -17,7 +18,7 @@
         }
 
         [HttpGet]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [Route("{name}")]
         public async Task<IActionResult> GetSecret(string name)
         {

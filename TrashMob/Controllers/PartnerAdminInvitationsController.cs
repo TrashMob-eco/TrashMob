@@ -9,6 +9,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
 
     [Authorize]
@@ -33,7 +34,7 @@
         public async Task<IActionResult> GetPartnerAdminInvitations(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -44,7 +45,7 @@
         }
 
         [HttpGet("getbyuser/{userId}")]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> GetPartnerInvitationsForUser(Guid userId, CancellationToken cancellationToken)
         {
             var results = await partnerAdminInvitationManager.GetInvitationsForUser(userId, cancellationToken);
@@ -55,7 +56,7 @@
         public async Task<IActionResult> GetPartnerAdminInvite(Guid partnerId, string email, CancellationToken cancellationToken = default)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -78,7 +79,7 @@
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
             var partner = await partnerManager.GetAsync(partnerAdminInvitation.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -96,7 +97,7 @@
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
             var partner = await partnerAdminInvitationManager.GetPartnerForInvitation(partnerAdminInvitationId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -110,7 +111,7 @@
         }
 
         [HttpPost("accept/{partnerAdminInvitationId}")]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> AcceptPartnerAdminInvitation(Guid partnerAdminInvitationId, CancellationToken cancellationToken)
         {
             await partnerAdminInvitationManager.AcceptInvitation(partnerAdminInvitationId, UserId, cancellationToken).ConfigureAwait(false);
@@ -120,7 +121,7 @@
         }
 
         [HttpPost("decline/{partnerAdminInvitationId}")]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> DeclinePartnerAdminInvitation(Guid partnerAdminInvitationId, CancellationToken cancellationToken)
         {
             await partnerAdminInvitationManager.DeclineInvitation(partnerAdminInvitationId, UserId, cancellationToken).ConfigureAwait(false);
@@ -135,7 +136,7 @@
             var partner = await partnerAdminInvitationManager.GetPartnerForInvitation(partnerAdminInvitationId, cancellationToken);
 
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
