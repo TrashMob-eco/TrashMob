@@ -6,9 +6,9 @@ namespace TrashMob.Controllers
     using TrashMob.Shared.Managers.Interfaces;
  
     [Route("api/eventstatuses")]
-    public class EventsStatusesController : LookupController<EventStatus>
+    public class EventStatusesController : LookupController<EventStatus>
     {
-        public EventsStatusesController(ILookupManager<EventStatus> manager)
+        public EventStatusesController(ILookupManager<EventStatus> manager)
             : base(manager)
         {
         }

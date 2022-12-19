@@ -49,6 +49,9 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
     const [totalParticipants, setTotalParticipants] = useState<number>(0);
 
     useEffect(() => {
+
+        window.scrollTo(0, 0);
+
         const headers = getDefaultHeaders('GET');
         fetch('/api/eventtypes', {
             method: 'GET',
@@ -179,7 +182,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
                     <Form>
                         <Form.Row>
                             <Form.Group>
-                                <Form.Label className="control-label">I have reviewed and I agree to the TrashMob.eco <Link to='./termsofservice'>Terms of Use</Link> and the TrashMob.eco <Link to='./privacypolicy'>Privacy Policy</Link>.</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5">I have reviewed and I agree to the TrashMob.eco <Link to='./termsofservice'>Terms of Use</Link> and the TrashMob.eco <Link to='./privacypolicy'>Privacy Policy</Link>.</Form.Label>
                                 <Form.Check id="agree" onChange={checkboxhandler} label="Yes" />
                             </Form.Group>
                         </Form.Row>

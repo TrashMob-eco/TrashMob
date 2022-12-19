@@ -1,11 +1,6 @@
 import * as React from 'react';
-import { ButtonGroup, ToggleButton } from 'react-bootstrap';
+import { ButtonGroup, Col, Container, Row, ToggleButton } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
-import EventData from '../Models/EventData';
-import PartnerData from '../Models/PartnerData';
-import PartnerRequestData from '../Models/PartnerRequestData';
-import PartnerRequestStatusData from '../Models/PartnerRequestStatusData';
 import UserData from '../Models/UserData';
 import { AdminEvents } from './AdminEvents';
 import { AdminPartnerRequests } from './AdminPartnerRequests';
@@ -24,15 +19,6 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
     const [isSiteAdmin, setIsSiteAdmin] = React.useState<boolean>(false);
     const [radioValue, setRadioValue] = React.useState('1');
-    const [userList, setUserList] = React.useState<UserData[]>([]);
-    const [eventList, setEventList] = React.useState<EventData[]>([]);
-    const [partnerList, setPartnerList] = React.useState<PartnerData[]>([]);
-    const [partnerRequestList, setPartnerRequestList] = React.useState<PartnerRequestData[]>([]);
-    const [isUserDataLoaded, setIsUserDataLoaded] = React.useState<boolean>(false);
-    const [isEventDataLoaded, setIsEventDataLoaded] = React.useState<boolean>(false);
-    const [isPartnerDataLoaded, setIsPartnerDataLoaded] = React.useState<boolean>(false);
-    const [isPartnerRequestDataLoaded, setIsPartnerRequestDataLoaded] = React.useState<boolean>(false);
-    const [partnerRequestStatusList, setPartnerRequestStatusList] = React.useState<PartnerRequestStatusData[]>([]);
 
     const radios = [
         { name: 'Manage Users', value: '1' },
@@ -47,185 +33,12 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
         setIsSiteAdmin(props.currentUser.isSiteAdmin);
         setCurrentUser(props.currentUser);
         setIsUserLoaded(props.isUserLoaded);
-
-        const account = msalClient.getAllAccounts()[0];
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            // Load the User List
-            fetch('/api/users', {
-                method: 'GET',
-                headers: headers,
-            })
-                .then(response => response.json() as Promise<Array<UserData>>)
-                .then(data => {
-                    setUserList(data);
-                    setIsUserDataLoaded(true);
-                });
-
-            // Load the Event List
-            fetch('/api/events', {
-                method: 'GET',
-                headers: headers,
-            })
-                .then(response => response.json() as Promise<Array<EventData>>)
-                .then(data => {
-                    setEventList(data);
-                    setIsEventDataLoaded(true);
-                });
-
-            // Load the Partner List
-            fetch('/api/partners', {
-                method: 'GET',
-                headers: headers,
-            })
-                .then(response => response.json() as Promise<Array<PartnerData>>)
-                .then(data => {
-                    setPartnerList(data);
-                    setIsPartnerDataLoaded(true);
-                });
-
-            // Load the PartnerRequestStatusList
-            fetch('/api/partnerrequeststatuses', {
-                method: 'GET',
-                headers: headers
-            })
-                .then(response => response.json() as Promise<Array<any>>)
-                .then(data => {
-                    setPartnerRequestStatusList(data);
-                })
-                .then(() => {
-                    // Load the Partner Request List
-                    fetch('/api/partnerrequests', {
-                        method: 'GET',
-                        headers: headers,
-                    })
-                        .then(response => response.json() as Promise<Array<PartnerRequestData>>)
-                        .then(data => {
-                            setPartnerRequestList(data);
-                            setIsPartnerRequestDataLoaded(true);
-                        });
-                });
-        });
-
     }, [props.currentUser, props.currentUser.isSiteAdmin, props.isUserLoaded])
-
-    function loadEvents() {
-        const account = msalClient.getAllAccounts()[0];
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            // Load the Event List
-            fetch('/api/events', {
-                method: 'GET',
-                headers: headers,
-            })
-                .then(response => response.json() as Promise<Array<EventData>>)
-                .then(data => {
-                    setEventList(data);
-                    setIsEventDataLoaded(true);
-                });
-        });
-    }
-
-    function loadUsers() {
-        const account = msalClient.getAllAccounts()[0];
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            // Load the User List
-            fetch('/api/users', {
-                method: 'GET',
-                headers: headers,
-            })
-                .then(response => response.json() as Promise<Array<UserData>>)
-                .then(data => {
-                    setUserList(data);
-                    setIsUserDataLoaded(true);
-                });
-        });
-    }
-
-    function loadPartners() {
-        const account = msalClient.getAllAccounts()[0];
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            // Load the Partner List
-            fetch('/api/partners', {
-                method: 'GET',
-                headers: headers,
-            })
-                .then(response => response.json() as Promise<Array<PartnerData>>)
-                .then(data => {
-                    setPartnerList(data);
-                    setIsPartnerDataLoaded(true);
-                });
-        });
-    }
-
-    function loadPartnerRequests() {
-        const account = msalClient.getAllAccounts()[0];
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            // Load the Partner Request List
-            fetch('/api/partnerrequests', {
-                method: 'GET',
-                headers: headers,
-            })
-                .then(response => response.json() as Promise<Array<PartnerRequestData>>)
-                .then(data => {
-                    setPartnerRequestList(data);
-                    setIsPartnerRequestDataLoaded(true);
-                });
-        });
-    }
 
     function renderManageEvents() {
         return (
             <div>
-                <AdminEvents history={props.history} location={props.location} match={props.match} eventList={eventList} isEventDataLoaded={isEventDataLoaded} onEventListChanged={loadEvents} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                <AdminEvents history={props.history} location={props.location} match={props.match} currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </div>
         )
     }
@@ -233,7 +46,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     function renderManageUsers() {
         return (
             <div>
-                <AdminUsers history={props.history} location={props.location} match={props.match} userList={userList} isUserDataLoaded={isUserDataLoaded} onUserListChanged={loadUsers} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                <AdminUsers history={props.history} location={props.location} match={props.match} currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </div>
         )
     }
@@ -241,7 +54,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     function renderManagePartners() {
         return (
             <div>
-                <AdminPartners history={props.history} location={props.location} match={props.match} partnerList={partnerList} isPartnerDataLoaded={isPartnerDataLoaded} onPartnerListChanged={loadPartners} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                <AdminPartners history={props.history} location={props.location} match={props.match} currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </div>
         )
     }
@@ -249,7 +62,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     function renderManagePartnerRequests() {
         return (
             <div>
-                <AdminPartnerRequests history={props.history} location={props.location} match={props.match} partnerRequestList={partnerRequestList} isPartnerRequestDataLoaded={isPartnerRequestDataLoaded} partnerRequestStatusList={partnerRequestStatusList} onPartnerRequestListChanged={loadPartnerRequests} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                <AdminPartnerRequests history={props.history} location={props.location} match={props.match} currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </div>
         )
     }
@@ -302,14 +115,17 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     }
 
     return (
-        <>
-            <h1>Site Administration</h1>
-            <div>
-                {!isSiteAdmin && <p><em>Access Denied</em></p>}
-                {isSiteAdmin && renderAdminTable()}
-
-            </div>
-        </>
+        <Container>
+            <h1 className='font-weight-bold'>Site Administration</h1>
+            <Row className="gx-2 py-5" lg={2}>
+                <Col lg={12}>
+                    <div>
+                        {!isSiteAdmin && <p><em>Access Denied</em></p>}
+                        {isSiteAdmin && renderAdminTable()}
+                    </div>
+                </Col>
+            </Row>
+        </Container >
     )
 }
 

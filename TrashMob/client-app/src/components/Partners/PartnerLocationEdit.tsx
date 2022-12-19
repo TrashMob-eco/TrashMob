@@ -300,6 +300,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
     function renderEditLocation() {
         return (
             <div>
+                <h2 className="color-primary mt-4 mb-5">Edit Partner Location</h2>
                 <Form onSubmit={handleSave}>
                     <Form.Row>
                         <input type="hidden" name="Id" value={partnerLocationId} />
@@ -310,7 +311,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderPartnerLocationNameToolTip}>
-                                    <Form.Label className="control-label" htmlFor="LocationName">Location Name:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="LocationName">Location Name</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="locationName" defaultValue={locationName} onChange={val => handleLocationNameChanged(val.target.value)} maxLength={parseInt('64')} required />
                                 <span style={{ color: "red" }}>{locationNameErrors}</span>
@@ -319,7 +320,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderIsPartnerLocationActiveToolTip}>
-                                    <Form.Label className="control-label" htmlFor="IsPartnerLocationActive">Is Partner Location Active:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="IsPartnerLocationActive">Is Active</Form.Label>
                                 </OverlayTrigger >
                                 <ToggleButton
                                     type="checkbox"
@@ -327,9 +328,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                                     checked={isPartnerLocationActive}
                                     value="1"
                                     onChange={(e) => handleIsPartnerLocationActiveChanged(e.currentTarget.checked)}
-                                >
-                                    Is Active
-                                </ToggleButton>
+                                />
                             </Form.Group>
                         </Col>
                     </Form.Row>
@@ -337,56 +336,58 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
-                                    <Form.Label className="control-label" htmlFor="StreetAddress">Street Address:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="StreetAddress">Street Address</Form.Label>
                                 </OverlayTrigger>
-                                <span>{streetAddress}</span>
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group className="required">
-                                <OverlayTrigger placement="top" overlay={renderCityToolTip}>
-                                    <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
-                                </OverlayTrigger >
-                                <span>{city}</span>
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                    <Form.Label className="control-label" htmlFor="PostalCode">Postal Code:</Form.Label>
-                                </OverlayTrigger >
-                                <span>{postalCode}</span>
+                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="streetAddress" value={streetAddress} />
                             </Form.Group>
                         </Col>
                     </Form.Row>
                     <Form.Row>
                         <Col>
                             <Form.Group className="required">
-                                <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
-                                    <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
+                                <OverlayTrigger placement="top" overlay={renderCityToolTip}>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="City">City</Form.Label>
                                 </OverlayTrigger >
-                                <span>{country}</span>
+                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="city" value={city} />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="PostalCode">Postal Code</Form.Label>
+                                </OverlayTrigger >
+                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="postalCode" value={postalCode} />
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group className="required">
+                                <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Region">Region</Form.Label>
+                                </OverlayTrigger >
+                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="region" value={region} />
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group className="required">
-                                <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
-                                    <Form.Label className="control-label" htmlFor="Region">Region:</Form.Label>
+                                <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Country">Country</Form.Label>
                                 </OverlayTrigger >
-                                <span>{region}</span>
+                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="country" value={country} />
                             </Form.Group>
                         </Col>
                     </Form.Row>
                     <Form.Group className="required">
                         <OverlayTrigger placement="top" overlay={renderPublicNotesToolTip}>
-                            <Form.Label className="control-label">Public Notes:</Form.Label>
+                            <Form.Label className="control-label font-weight-bold h5">Public Notes</Form.Label>
                         </OverlayTrigger>
                         <Form.Control as="textarea" defaultValue={publicNotes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handlePublicNotesChanged(val.target.value)} required />
                         <span style={{ color: "red" }}>{publicNotesErrors}</span>
                     </Form.Group >
                     <Form.Group>
                         <OverlayTrigger placement="top" overlay={renderPrivateNotesToolTip}>
-                            <Form.Label className="control-label">Private Notes:</Form.Label>
+                            <Form.Label className="control-label font-weight-bold h5">Private Notes</Form.Label>
                         </OverlayTrigger>
                         <Form.Control as="textarea" defaultValue={privateNotes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handlePrivateNotesChanged(val.target.value)} />
                     </Form.Group >
@@ -404,21 +405,20 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
-                                    <Form.Label className="control-label" htmlFor="createdDate">Created Date:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="createdDate">Created Date</Form.Label>
                                 </OverlayTrigger>
-                                <span>{createdDate ? createdDate.toLocaleString() : ""}</span>
+                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="createdDate" value={createdDate ? createdDate.toLocaleString() : ""} />
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
-                                    <Form.Label className="control-label" htmlFor="lastUpdatedDate">Last Updated Date:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="lastUpdatedDate">Last Updated Date</Form.Label>
                                 </OverlayTrigger>
-                                <span>{lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""}</span>
+                                <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="lastUpdatedDate" value={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
                             </Form.Group>
                         </Col>
                     </Form.Row>
-
                 </Form>
             </div>
         );

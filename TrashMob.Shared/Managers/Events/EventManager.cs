@@ -63,7 +63,7 @@
         }
         public override async Task<Event> UpdateAsync(Event instance, Guid userId, CancellationToken cancellationToken = default)
         {
-            var oldEvent = await Repo.GetAsync(instance.Id, cancellationToken).ConfigureAwait(false);
+            var oldEvent = await Repo.GetWithNoTrackingAsync(instance.Id, cancellationToken).ConfigureAwait(false);            
 
             var updatedEvent = await base.UpdateAsync(instance, userId, cancellationToken);
 
@@ -85,7 +85,7 @@
 
                 var subject = "A TrashMob.eco event you were scheduled to attend has been updated!";
 
-                var eventAttendees = eventAttendeeRepository.Get(m => m.EventId == instance.Id);
+                var eventAttendees = eventAttendeeRepository.Get(m => m.EventId == instance.Id).Include(a => a.User);
 
                 foreach (var attendee in eventAttendees)
                 {

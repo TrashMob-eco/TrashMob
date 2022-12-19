@@ -18,7 +18,11 @@
 
         Task<IEnumerable<DisplayEventPartnerLocation>> GetByEventAsync(Guid eventId, CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<DisplayPartnerLocationServiceEvent>> GetByPartnerLocationAsync(Guid partnerId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<DisplayPartnerLocationServiceEvent>> GetByPartnerLocationAsync(Guid partnerLocationId, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<DisplayPartnerLocationServiceEvent>> GetByUserAsync(Guid userId, CancellationToken cancellationToken = default);
+
+        Task<PartnerLocation> GetHaulingPartnerLocationForEvent(Guid eventId, CancellationToken cancellationToken = default);
 
         Task<int> DeleteAsync(Guid eventId, Guid partnerLocationId, int serviceTypeId, CancellationToken cancellationToken = default);
     }

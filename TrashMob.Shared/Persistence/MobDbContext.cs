@@ -32,9 +32,13 @@
 
         public virtual DbSet<EventType> EventTypes { get; set; }
 
+        public virtual DbSet<InvitationStatus> InvitationStatuses { get; set; }
+
         public virtual DbSet<MessageRequest> MessageRequests { get; set; }
 
         public virtual DbSet<NonEventUserNotification> NonEventUserNotifications { get; set; }
+
+        public virtual DbSet<PartnerAdmin> PartnerAdmins { get; set; }
 
         public virtual DbSet<PartnerContact> PartnerContacts { get; set; }
 
@@ -56,9 +60,9 @@
 
         public virtual DbSet<PartnerStatus> PartnerStatus { get; set; }
 
-        public virtual DbSet<PartnerUser> PartnerUsers { get; set; }
-
         public virtual DbSet<PartnerType> PartnerTypes { get; set; }
+
+        public virtual DbSet<PickupLocation> PickupLocations { get; set; }
 
         public virtual DbSet<ServiceType> ServiceTypes { get; set; }
 
@@ -71,6 +75,8 @@
         public virtual DbSet<UserNotification> UserNotifications { get; set; }
 
         public virtual DbSet<UserNotificationType> UserNotificationTypes { get; set; }
+
+        public virtual DbSet<Waiver> WaiverStatuses { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -303,7 +309,7 @@
 
             modelBuilder.Entity<EventPartnerLocationService>(entity =>
             {
-                entity.HasKey(e => new { e.EventId, e.PartnerLocationId });
+                entity.HasKey(e => new { e.EventId, e.PartnerLocationId, e.ServiceTypeId });
 
                 entity.Property(e => e.EventId)
                     .IsRequired();
@@ -384,6 +390,23 @@
                     new EventStatus { Id = (int)EventStatusEnum.Complete, Name = "Completed", Description = "Event has completed", DisplayOrder = 4, IsActive = true });
             });
 
+            modelBuilder.Entity<InvitationStatus>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Description);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasData(
+                    new InvitationStatus { Id = (int)InvitationStatusEnum.New, Name = "New", Description = "Invitation has not yet been sent", DisplayOrder = 1, IsActive = true },
+                    new InvitationStatus { Id = (int)InvitationStatusEnum.Sent, Name = "Sent", Description = "Invitation has been sent", DisplayOrder = 2, IsActive = true },
+                    new InvitationStatus { Id = (int)InvitationStatusEnum.Accepted, Name = "Accepted", Description = "Invitation has been accepted", DisplayOrder = 3, IsActive = true },
+                    new InvitationStatus { Id = (int)InvitationStatusEnum.Canceled, Name = "Canceled", Description = "Invitation has been canceled", DisplayOrder = 4, IsActive = true });
+            });
+
             modelBuilder.Entity<EventSummary>(entity =>
             {
                 entity.HasKey(e => new { e.EventId });
@@ -424,11 +447,11 @@
 
                 entity.HasData(
                     new EventType { Id = 1, Name = "Park Cleanup", Description = "Park Cleanup", DisplayOrder = 1, IsActive = true },
-                    new EventType { Id = 2, Name = "School Cleanup", Description = "School Cleanup", DisplayOrder = 2, IsActive = true },
-                    new EventType { Id = 3, Name = "Neighborhood Cleanup", Description = "Neighborhood Cleanup", DisplayOrder = 3, IsActive = true },
-                    new EventType { Id = 4, Name = "Beach Cleanup", Description = "Beach Cleanup", DisplayOrder = 4, IsActive = true },
-                    new EventType { Id = 5, Name = "Highway Cleanup", Description = "Highway Cleanup", DisplayOrder = 5, IsActive = true },
-                    new EventType { Id = 6, Name = "Natural Disaster Cleanup", Description = "Natural Disaster Cleanup", DisplayOrder = 6, IsActive = true },
+                    new EventType { Id = 2, Name = "School Cleanup", Description = "School Cleanup", DisplayOrder = 3, IsActive = true },
+                    new EventType { Id = 3, Name = "Neighborhood Cleanup", Description = "Neighborhood Cleanup", DisplayOrder = 4, IsActive = true },
+                    new EventType { Id = 4, Name = "Beach Cleanup", Description = "Beach Cleanup", DisplayOrder = 5, IsActive = true },
+                    new EventType { Id = 5, Name = "Highway Cleanup", Description = "Highway Cleanup", DisplayOrder = 6, IsActive = true },
+                    new EventType { Id = 6, Name = "Natural Disaster Cleanup", Description = "Natural Disaster Cleanup", DisplayOrder = 14, IsActive = true },
                     new EventType { Id = 7, Name = "Trail Cleanup", Description = "Trail Cleanup", DisplayOrder = 7, IsActive = true },
                     new EventType { Id = 8, Name = "Reef Cleanup", Description = "Reef Cleanup", DisplayOrder = 8, IsActive = true },
                     new EventType { Id = 9, Name = "Private Land Cleanup", Description = "Private Land Cleanup", DisplayOrder = 9, IsActive = true },
@@ -436,7 +459,9 @@
                     new EventType { Id = 11, Name = "Waterway Cleanup", Description = "Waterway Cleanup", DisplayOrder = 11, IsActive = true },
                     new EventType { Id = 12, Name = "Vandalism Cleanup", Description = "Vandalism Cleanup", DisplayOrder = 12, IsActive = true },
                     new EventType { Id = 13, Name = "Social Event", Description = "Social Event", DisplayOrder = 13, IsActive = true },
-                    new EventType { Id = 14, Name = "Other", Description = "Other", DisplayOrder = 14, IsActive = true });
+                    new EventType { Id = 14, Name = "Other", Description = "Other", DisplayOrder = 16, IsActive = true },
+                    new EventType { Id = 15, Name = "Snow Removal", Description = "Snow Removal", DisplayOrder = 15, IsActive = true },
+                    new EventType { Id = 16, Name = "Streetside Cleanup", Description = "Streetside Cleanup", DisplayOrder = 2, IsActive = true });
             });
 
             modelBuilder.Entity<MessageRequest>(entity =>
@@ -633,7 +658,7 @@
                     .HasConstraintName("FK_PartnerLocationService_ServiceTypes");
 
                 entity.HasOne(d => d.PartnerLocation)
-                    .WithMany()
+                    .WithMany(d => d.PartnerLocationServices)
                     .HasForeignKey(d => d.PartnerLocationId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_PartnersLocationService_PartnerLocations");
@@ -713,7 +738,8 @@
                 entity.HasData(
                     new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Sent, Name = "Invitation Sent", Description = "Invitiation has been sent", DisplayOrder = 1, IsActive = true },
                     new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Approved, Name = "Approved", Description = "Request has been approved by the Site Administrator", DisplayOrder = 2, IsActive = true },
-                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Denied, Name = "Denied", Description = "Request has been approved by the Site Administrator", DisplayOrder = 3, IsActive = true });
+                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Denied, Name = "Denied", Description = "Request has been approved by the Site Administrator", DisplayOrder = 3, IsActive = true },
+                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Pending, Name = "Pending Approval", Description = "Invitiation is pending approval by TrshMob.eco admin", DisplayOrder = 4, IsActive = true });
             });
 
             modelBuilder.Entity<PartnerStatus>(entity =>
@@ -746,36 +772,116 @@
                     new PartnerType { Id = (int)PartnerTypeEnum.Business, Name = "Business", Description = "Partner is Business", DisplayOrder = 2, IsActive = true });
             });
 
-            modelBuilder.Entity<PartnerUser>(entity =>
+            modelBuilder.Entity<PartnerAdmin>(entity =>
             {
                 entity.HasKey(e => new { e.PartnerId, e.UserId });
+
+                entity.Property(e => e.PartnerId)
+                    .IsRequired();
 
                 entity.Property(e => e.UserId)
                     .IsRequired();
 
                 entity.HasOne(d => d.Partner)
-                    .WithMany(d => d.PartnerUsers)
+                    .WithMany(d => d.PartnerAdmins)
                     .HasForeignKey(d => d.PartnerId)
                     .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("FK_PartnerUser_Partners");
+                    .HasConstraintName("FK_PartnerAdmin_Partners");
 
                 entity.HasOne(d => d.User)
                     .WithMany()
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PartnerUser_User");
+                    .HasConstraintName("FK_PartnerAdmin_User");
 
                 entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.PartnerUsersCreated)
+                    .WithMany(p => p.PartnerAdminsCreated)
                     .HasForeignKey(d => d.CreatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PartnerUsers_CreatedByUser_Id");
+                    .HasConstraintName("FK_PartnerAdmin_CreatedByUser_Id");
 
                 entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.PartnerUsersUpdated)
+                    .WithMany(p => p.PartnerAdminsUpdated)
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PartnerUsers_LastUpdatedByUser_Id");
+                    .HasConstraintName("FK_PartnerAdmin_LastUpdatedByUser_Id");
+            });
+
+            modelBuilder.Entity<PartnerAdminInvitation>(entity =>
+            {
+                entity.HasKey(e => new { e.PartnerId, e.Email });
+
+                entity.Property(e => e.PartnerId)
+                    .IsRequired();
+
+                entity.Property(e => e.Email)
+                    .IsRequired();
+
+                entity.HasOne(d => d.Partner)
+                    .WithMany(d => d.PartnerAdminInvitations)
+                    .HasForeignKey(d => d.PartnerId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_PartnerAdminInvitation_Partners");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.PartnerAdminInvitationsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerAdminInvitation_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.PartnerAdminInvitationsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerAdminInvitation_LastUpdatedByUser_Id");
+            });
+
+            modelBuilder.Entity<PickupLocation>(entity =>
+            {
+                entity.HasKey(e => new { e.Id });
+
+                entity.Property(e => e.EventId)
+                    .IsRequired();
+
+                entity.Property(e => e.Notes).HasMaxLength(2048);
+
+                entity.Property(e => e.Region)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.StreetAddress)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.PostalCode)
+                    .IsRequired()
+                    .HasMaxLength(25);
+
+                entity.Property(e => e.City)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.Country)
+                    .IsRequired()
+                    .HasMaxLength(64);
+
+                entity.HasOne(d => d.Event)
+                    .WithMany(d => d.PickupLocations)
+                    .HasForeignKey(d => d.EventId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_PickupLocations_Events");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.PickupLocationsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PickupLocations_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.PickupLocationsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PickupLocations_LastUpdatedByUser_Id");
             });
 
             modelBuilder.Entity<ServiceType>(entity =>
@@ -939,6 +1045,33 @@
                     new UserNotificationType { Id = (int)NotificationTypeEnum.EventSummaryHostWeekReminder, Name = "EventSummaryHostWeekReminder", Description = "Opt out of Event Summary Week Reminder for events you have lead", DisplayOrder = 9 },
                     new UserNotificationType { Id = (int)NotificationTypeEnum.UserProfileUpdateLocation, Name = "UserProfileUpdateLocation", Description = "Opt out of notifications for User Profile Location", DisplayOrder = 10 });
             });
+
+            modelBuilder.Entity<Waiver>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasKey(e => new { e.Name });
+
+                entity.Property(e => e.IsWaiverEnabled)
+                    .IsRequired();
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.WaiverStatusesCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WaiverStatuses_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.WaiverStatusesUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WaiverStatuses_User_LastUpdatedBy");
+
+                // Stick in a default value for the Waiver
+                entity.HasData(
+                    new Waiver { Id = new Guid("4D222D04-AC1F-4A87-886D-FDB686F9F55C"), Name = "trashmob", IsWaiverEnabled = false, CreatedByUserId = Guid.Empty, LastUpdatedByUserId = Guid.Empty, CreatedDate = new DateTimeOffset(2022, 11, 24, 0, 0, 0, TimeSpan.Zero) });
+            });
+
         }
     }
 }

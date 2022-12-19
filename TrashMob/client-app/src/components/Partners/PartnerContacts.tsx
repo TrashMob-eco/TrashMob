@@ -1,11 +1,12 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
-import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Button, Col, Container, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
 import PartnerContactData from '../Models/PartnerContactData';
 import * as Constants from '../Models/Constants';
+import { Pencil, XSquare } from 'react-bootstrap-icons';
 
 export interface PartnerContactsDataProps {
     partnerId: string;
@@ -280,7 +281,6 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
             setPhone(val);
         }
 
-
         validateForm();
     }
 
@@ -320,18 +320,26 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.PartnerContactLastUpdatedDate}</Tooltip>
     }
 
-    function renderPartnerServicesTable(contacts: PartnerContactData[]) {
+    const contactActionDropdownList = (contactId: string, contactName: string) => {
+        return (
+            <>
+                <Dropdown.Item onClick={() => editContact(contactId)}><Pencil />Edit Contact</Dropdown.Item>
+                <Dropdown.Item onClick={() => removeContact(contactId, contactName)}><XSquare />Remove Contact</Dropdown.Item>
+            </>
+        )
+    }
+
+    function renderPartnerContactsTable(contacts: PartnerContactData[]) {
         return (
             <div>
+                <h2 className="color-primary mt-4 mb-5">Partner Contacts</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Phone</th>
-                            <th>Notes</th>
-                            <th>Created Date</th>
-                            <th>Last Updated Date</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -340,19 +348,20 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                                 <td>{contact.name}</td>
                                 <td>{contact.email}</td>
                                 <td>{contact.phone}</td>
-                                <td>{contact.notes}</td>
-                                <td>{contact.createdDate ? contact.createdDate.toLocaleString() : ""}</td>
-                                <td>{contact.lastUpdatedDate ? contact.lastUpdatedDate.toLocaleString() : ""}</td>
-                                <td>
-                                    <Button className="action" onClick={() => editContact(contact.id)}>Edit Contact</Button>
-                                    <Button className="action" onClick={() => removeContact(contact.id, contact.name)}>Remove Contact</Button>
+                                <td className="btn py-0">
+                                    <Dropdown role="menuitem">
+                                        <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                        <Dropdown.Menu id="share-menu">
+                                            {contactActionDropdownList(contact.id, contact.name)}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                 </td>
                             </tr>
                         )}
                     </tbody>
                 </table>
                 <Button disabled={!isAddEnabled} className="action" onClick={() => addContact()}>Add Contact</Button>
-            </div>
+            </div >
         );
     }
 
@@ -364,7 +373,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderNameToolTip}>
-                                    <Form.Label className="control-label">Contact Name:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5">Contact Name</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{nameErrors}</span>
@@ -373,7 +382,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
-                                    <Form.Label className="control-label">Email:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5">Email</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{emailErrors}</span>
@@ -382,7 +391,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderPhoneToolTip}>
-                                    <Form.Label className="control-label">Phone:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5">Phone</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={phone} maxLength={parseInt('64')} onChange={(val) => handlePhoneChanged(val.target.value)} />
                                 <span style={{ color: "red" }}>{phoneErrors}</span>
@@ -391,7 +400,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                     </Form.Row>
                     <Form.Group className="required">
                         <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                            <Form.Label className="control-label">Notes:</Form.Label>
+                            <Form.Label className="control-label font-weight-bold h5">Notes</Form.Label>
                         </OverlayTrigger>
                         <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} required />
                         <span style={{ color: "red" }}>{notesErrors}</span>
@@ -403,15 +412,15 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                     <Form.Group className="form-group">
                         <Col>
                             <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
-                                <Form.Label className="control-label">Created Date:</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5">Created Date</Form.Label>
                             </OverlayTrigger>
-                           <Form.Group>
+                            <Form.Group>
                                 <Form.Control type="text" disabled defaultValue={createdDate ? createdDate.toLocaleString() : ""} />
                             </Form.Group>
                         </Col>
                         <Col>
                             <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
-                                <Form.Label className="control-label">Last Updated Date:</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5">Last Updated Date</Form.Label>
                             </OverlayTrigger>
                             <Form.Group>
                                 <Form.Control type="text" disabled defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
@@ -424,13 +433,26 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
     }
 
     return (
-        <>
-            <div>
-                {props.partnerId === Guid.EMPTY && <p> <em>Partner must be created first.</em></p>}
-                {!isPartnerContactsDataLoaded && props.partnerId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-                {isPartnerContactsDataLoaded && renderPartnerServicesTable(partnerContacts)}
-                {isEditOrAdd && renderAddPartnerContact()}
-            </div>
-        </>
+        <Container>
+            <Row className="gx-2 py-5" lg={2}>
+                <Col lg={4} className="d-flex">
+                    <div className="bg-white py-2 px-5 shadow-sm rounded">
+                        <h2 className="color-primary mt-4 mb-5">Edit Partner Contacts</h2>
+                        <p>
+                            This page allows you to add more contacts to this partner so you can share the load of responding to questions for this partner. This information may be displayed in
+                            the partnerships page on TrashMob.eco, but is also used by the TrashMob site administrators to contact your organization during setup and during times where issues have arisen.
+                        </p>
+                    </div>
+                </Col>
+                <Col lg={8}>
+                    <div className="bg-white p-5 shadow-sm rounded">
+                        {props.partnerId === Guid.EMPTY && <p> <em>Partner must be created first.</em></p>}
+                        {!isPartnerContactsDataLoaded && props.partnerId !== Guid.EMPTY && <p><em>Loading...</em></p>}
+                        {isPartnerContactsDataLoaded && renderPartnerContactsTable(partnerContacts)}
+                        {isEditOrAdd && renderAddPartnerContact()}
+                    </div>
+                </Col>
+            </Row>
+        </Container>
     );
 }

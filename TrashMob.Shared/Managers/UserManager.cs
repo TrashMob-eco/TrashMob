@@ -22,7 +22,7 @@ namespace TrashMob.Shared.Managers
         private readonly IBaseRepository<EventPartnerLocationService> eventPartnerRepository;
         private readonly IKeyedRepository<Event> eventRepository;
         private readonly IKeyedRepository<Partner> partnerRepository;
-        private readonly IBaseRepository<PartnerUser> partnerUserRepository;
+        private readonly IBaseRepository<PartnerAdmin> partnerAdminRepository;
         private readonly IKeyedRepository<PartnerLocation> partnerLocationRepository;
         private readonly IEmailManager emailManager;
 
@@ -34,7 +34,7 @@ namespace TrashMob.Shared.Managers
                            IBaseRepository<EventPartnerLocationService> eventPartnerRepository,
                            IKeyedRepository<Event> eventRepository,
                            IKeyedRepository<Partner> partnerRepository,
-                           IBaseRepository<PartnerUser> partnerUserRepository,
+                           IBaseRepository<PartnerAdmin> partnerUserRepository,
                            IKeyedRepository<PartnerLocation> partnerLocationRepository,
                            IEmailManager emailManager) : base(repository)
         {
@@ -45,10 +45,15 @@ namespace TrashMob.Shared.Managers
             this.eventPartnerRepository = eventPartnerRepository;
             this.eventRepository = eventRepository;
             this.partnerRepository = partnerRepository;
-            this.partnerUserRepository = partnerUserRepository;
+            this.partnerAdminRepository = partnerUserRepository;
             this.partnerLocationRepository = partnerLocationRepository;
             this.emailManager = emailManager;
-        }      
+        }
+
+        public async Task<User> GetUserByNameIdentifierAsync(string nameIdentifier, CancellationToken cancellationToken = default)
+        {
+            return await Repo.Get(u => u.NameIdentifier == nameIdentifier).FirstOrDefaultAsync(cancellationToken);
+        }
 
         public async Task<User> GetUserByUserNameAsync(string userName, CancellationToken cancellationToken = default)
         {
@@ -180,13 +185,13 @@ namespace TrashMob.Shared.Managers
                 await partnerRepository.UpdateAsync(partner);
             }
 
-            var partnerUsers = partnerUserRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id || e.UserId == id);
+            var partnerAdmins = partnerAdminRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id || e.UserId == id);
 
-            foreach (var partnerUser in partnerUsers)
+            foreach (var partnerUser in partnerAdmins)
             {
                 if (partnerUser.UserId == id)
                 {
-                    await partnerUserRepository.DeleteAsync(partnerUser);
+                    await partnerAdminRepository.DeleteAsync(partnerUser);
                 }
                 else
                 {
@@ -200,7 +205,7 @@ namespace TrashMob.Shared.Managers
                         partnerUser.LastUpdatedByUserId = TrashMobUserId;
                     }
 
-                    await partnerUserRepository.UpdateAsync(partnerUser);
+                    await partnerAdminRepository.UpdateAsync(partnerUser);
                 }
             }
 

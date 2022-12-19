@@ -15,11 +15,11 @@
     {
         private readonly IEmailManager emailManager;
         private readonly IKeyedManager<Partner> partnerManager;
-        private readonly IBaseManager<PartnerUser> partnerUserManager;
+        private readonly IBaseManager<PartnerAdmin> partnerUserManager;
 
         public PartnerRequestManager(IKeyedRepository<PartnerRequest> partnerRequestRepository,
                                      IKeyedManager<Partner> partnerManager,
-                                     IBaseManager<PartnerUser> partnerUserManager,
+                                     IBaseManager<PartnerAdmin> partnerUserManager,
                                      IEmailManager emailManager) : base(partnerRequestRepository)
         {
             this.partnerManager = partnerManager;
@@ -29,6 +29,15 @@
 
         public override async Task<PartnerRequest> AddAsync(PartnerRequest instance, Guid userId, CancellationToken cancellationToken = default)
         {
+            if (instance.isBecomeAPartnerRequest)
+            {
+                instance.PartnerRequestStatusId = (int)PartnerRequestStatusEnum.Pending;
+            }
+            else
+            {
+                instance.PartnerRequestStatusId = (int)PartnerRequestStatusEnum.Sent;
+            }
+
             var result = await base.AddAsync(instance, userId, cancellationToken);
 
             // If this is a become a partner request, the mail gets routed to the TrashMobAdmin for approval
@@ -39,7 +48,7 @@
 
                 var recipients = new List<EmailAddress>
                 {
-                new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
+                   new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
                 };
 
                 var dynamicTemplateData = new
@@ -110,7 +119,7 @@
 
             var result = await base.UpdateAsync(partnerRequest, userId, cancellationToken).ConfigureAwait(false);
 
-            await CreatePartner(partnerRequest, cancellationToken).ConfigureAwait(false);
+            await CreatePartnerAsync(partnerRequest, cancellationToken).ConfigureAwait(false);
 
             var partnerMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.PartnerRequestAccepted.ToString());
             partnerMessage = partnerMessage.Replace("{PartnerName}", partnerRequest.Name);
@@ -161,7 +170,7 @@
             return result;
         }
 
-        private async Task CreatePartner(PartnerRequest partnerRequest, CancellationToken cancellationToken = default)
+        private async Task CreatePartnerAsync(PartnerRequest partnerRequest, CancellationToken cancellationToken = default)
         {
             // Convert the partner request to a new partner
             var partner = partnerRequest.ToPartner();
@@ -170,7 +179,7 @@
             var newPartner = await partnerManager.AddAsync(partner, partnerRequest.CreatedByUserId, cancellationToken).ConfigureAwait(false);
 
             // Make the creator of the partner request a registered user for the partner
-            var partnerUser = new PartnerUser
+            var partnerUser = new PartnerAdmin
             {
                 PartnerId = newPartner.Id,
                 UserId = partnerRequest.CreatedByUserId,

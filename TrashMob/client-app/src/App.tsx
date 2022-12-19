@@ -316,7 +316,7 @@ export const App: FC = () => {
                                     <PartnerRequest currentUser={currentUser} isUserLoaded={isUserLoaded} mode="become" />
                                 </MsalAuthenticationTemplate >
                             </Route>
-                            <Route exact path="/requestapartner">
+                            <Route exact path="/inviteapartner">
                                 <MsalAuthenticationTemplate
                                     interactionType={InteractionType.Redirect}
                                     errorComponent={ErrorComponent}

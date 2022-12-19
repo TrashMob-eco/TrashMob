@@ -22,8 +22,9 @@
             services.AddScoped<ILookupManager<EventStatus>, LookupManager<EventStatus>>();
             services.AddScoped<IBaseManager<EventSummary>, EventSummaryManager>();
             services.AddScoped<ILookupManager<EventType>, LookupManager<EventType>>();
+            services.AddScoped<ILookupManager<InvitationStatus>, LookupManager<InvitationStatus>>();
             services.AddScoped<IKeyedManager<MessageRequest>, MessageRequestManager>();
-            services.AddScoped<IKeyedManager<Partner>, PartnerManager>();
+            services.AddScoped<IKeyedManager<Partner>, KeyedManager<Partner>>();
             services.AddScoped<IKeyedManager<PartnerDocument>, PartnerDocumentManager>();
             services.AddScoped<IKeyedManager<PartnerContact>, KeyedManager<PartnerContact>>();
             services.AddScoped<IKeyedManager<PartnerLocation>, KeyedManager<PartnerLocation>>();
@@ -34,7 +35,8 @@
             services.AddScoped<IKeyedManager<PartnerSocialMediaAccount>, PartnerSocialMediaAccountManager>();
             services.AddScoped<ILookupManager<PartnerStatus>, LookupManager<PartnerStatus>>();
             services.AddScoped<ILookupManager<PartnerType>, LookupManager<PartnerType>>();
-            services.AddScoped<IBaseManager<PartnerUser>, PartnerUserManager>();
+            services.AddScoped<IBaseManager<PartnerAdmin>, PartnerAdminManager>();
+            services.AddScoped<IKeyedManager<PickupLocation>, PickupLocationManager>();
             services.AddScoped<ILookupManager<ServiceType>, LookupManager<ServiceType>>();
             services.AddScoped<ILookupManager<SocialMediaAccountType>, LookupManager<SocialMediaAccountType>>();
             services.AddScoped<IKeyedManager<NonEventUserNotification>, KeyedManager<NonEventUserNotification>>();
@@ -46,13 +48,17 @@
             services.AddScoped<IEventSummaryManager, EventSummaryManager>();
             services.AddScoped<IEventManager, EventManager>();
             services.AddScoped<IEventPartnerLocationServiceManager, EventPartnerLocationServiceManager>();
+            services.AddScoped<IPartnerAdminManager, PartnerAdminManager>();
+            services.AddScoped<IPartnerAdminInvitationManager, PartnerAdminInvitationManager>();
             services.AddScoped<IPartnerContactManager, PartnerContactManager>();
             services.AddScoped<IPartnerDocumentManager, PartnerDocumentManager>();
             services.AddScoped<IPartnerRequestManager, PartnerRequestManager>();
             services.AddScoped<IPartnerLocationManager, PartnerLocationManager>();
             services.AddScoped<IPartnerLocationContactManager, PartnerLocationContactManager>();
             services.AddScoped<IPartnerSocialMediaAccountManager, PartnerSocialMediaAccountManager>();
+            services.AddScoped<IPickupLocationManager, PickupLocationManager>();
             services.AddScoped<IUserManager, UserManager>();
+            services.AddScoped<IWaiverManager, WaiverManager>();
 
             // Non-patterned
             services.AddScoped<IActiveDirectoryManager, ActiveDirectoryManager>();
@@ -75,9 +81,12 @@
             services.AddScoped<ILookupRepository<EventStatus>, LookupRepository<EventStatus>>();
             services.AddScoped<IBaseRepository<EventSummary>, BaseRepository<EventSummary>>();
             services.AddScoped<ILookupRepository<EventType>, LookupRepository<EventType>>();
+            services.AddScoped<ILookupRepository<InvitationStatus>, LookupRepository<InvitationStatus>>();
             services.AddScoped<IKeyedRepository<MessageRequest>, KeyedRepository<MessageRequest>>();
             services.AddScoped<IKeyedRepository<NonEventUserNotification>, KeyedRepository<NonEventUserNotification>>();
             services.AddScoped<IKeyedRepository<Partner>, KeyedRepository<Partner>>();
+            services.AddScoped<IBaseRepository<PartnerAdmin>, BaseRepository<PartnerAdmin>>();
+            services.AddScoped<IKeyedRepository<PartnerAdminInvitation>, KeyedRepository<PartnerAdminInvitation>>();
             services.AddScoped<IKeyedRepository<PartnerContact>, KeyedRepository<PartnerContact>>();
             services.AddScoped<IKeyedRepository<PartnerDocument>, KeyedRepository<PartnerDocument>>();
             services.AddScoped<IKeyedRepository<PartnerLocation>, KeyedRepository<PartnerLocation>>();
@@ -88,11 +97,12 @@
             services.AddScoped<IKeyedRepository<PartnerSocialMediaAccount>, KeyedRepository<PartnerSocialMediaAccount>>();
             services.AddScoped<ILookupRepository<PartnerStatus>, LookupRepository<PartnerStatus>>();
             services.AddScoped<ILookupRepository<PartnerType>, LookupRepository<PartnerType>>();
-            services.AddScoped<IBaseRepository<PartnerUser>, BaseRepository<PartnerUser>>();
+            services.AddScoped<IKeyedRepository<PickupLocation>, KeyedRepository<PickupLocation>>();
             services.AddScoped<ILookupRepository<ServiceType>, LookupRepository<ServiceType>>();
             services.AddScoped<ILookupRepository<SocialMediaAccountType>, LookupRepository<SocialMediaAccountType>>();
             services.AddScoped<IKeyedRepository<User>, KeyedRepository<User>>();
             services.AddScoped<IKeyedRepository<UserNotification>, KeyedRepository<UserNotification>>();
+            services.AddScoped<IKeyedRepository<Waiver>, KeyedRepository<Waiver>>();
         }
     }
 }

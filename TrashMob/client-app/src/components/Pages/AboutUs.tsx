@@ -6,6 +6,11 @@ import { GettingStartedSection } from '../GettingStartedSection';
 import { Col, Container, Image, Row } from 'react-bootstrap';
 
 export const AboutUs: React.FC = () => {
+
+    React.useEffect(() => {
+        window.scrollTo(0, 0);
+    })
+
     return (
         <>
             <Container fluid className="mt-1 bg-white p-5">
@@ -25,7 +30,7 @@ export const AboutUs: React.FC = () => {
                         </div>
                     </Col>
                     <Col className="mt-3 d-flex justify-content-center">
-                        <Image src={trashcans} alt="trashcans" className="h-75" />
+                        <Image src={trashcans} alt="trash cans" className="h-75" />
                     </Col>
                 </Row>
             </Container>
