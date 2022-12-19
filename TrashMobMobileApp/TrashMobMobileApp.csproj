@@ -69,6 +69,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Platforms\Android\Resources\values\styles.xml" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Compile Include="..\TrashMob.Models\Address.cs" Link="Models\Address.cs" />
 	  <Compile Include="..\TrashMob.Models\BaseModel.cs" Link="Models\BaseModel.cs" />
 	  <Compile Include="..\TrashMob.Models\ContactRequest.cs" Link="Models\ContactRequest.cs" />

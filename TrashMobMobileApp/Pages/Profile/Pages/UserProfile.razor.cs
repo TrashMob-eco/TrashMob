@@ -24,9 +24,24 @@ namespace TrashMobMobileApp.Pages.Profile.Pages
 
         private async Task GetUserAsync()
         {
-            _isLoading = true;
-            _user = await UserManager.GetUserAsync(App.CurrentUser.Id.ToString());
-            _isLoading = false;
+            try
+            {
+                _isLoading = true;
+                _user = await UserManager.GetUserAsync(App.CurrentUser.Id.ToString());
+                _isLoading = false;
+            }
+            catch (Exception)
+            {
+                //log exception somewhere
+                //try user service one more time
+                _isLoading = true;
+                _user = await UserManager.GetUserAsync(App.CurrentUser.Id.ToString());
+                _isLoading = false;
+            }
+            finally
+            {
+                _isLoading = false;
+            }
         }
 
         private string GetDateString(DateTimeOffset? date)
