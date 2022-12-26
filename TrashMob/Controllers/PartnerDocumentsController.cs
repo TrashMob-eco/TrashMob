@@ -7,6 +7,7 @@
     using System;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Managers.Partners;
 
@@ -29,7 +30,7 @@
         public async Task<IActionResult> GetPartnerDocuments(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -41,7 +42,7 @@
         }
 
         [HttpGet("{partnerDocumentId}")]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> Get(Guid partnerDocumentId, CancellationToken cancellationToken)
         {
             var partnerDocument = await manager.GetAsync(partnerDocumentId, cancellationToken);
@@ -53,7 +54,7 @@
         public async Task<IActionResult> Add(PartnerDocument partnerDocument, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerDocument.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -71,7 +72,7 @@
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
             var partner = await partnerManager.GetAsync(partnerDocument.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -88,7 +89,7 @@
         public async Task<IActionResult> Delete(Guid partnerDocumentId, CancellationToken cancellationToken)
         {
             var partner = await manager.GetPartnerForDocument(partnerDocumentId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {

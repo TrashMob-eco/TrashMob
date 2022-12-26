@@ -1,0 +1,49 @@
+﻿@page "/cancelevent/{EventId}"
+
+@*TODO: move to styles sheet*@
+<style>
+    .tm-cancel-event-container {
+        height: 100%;
+        padding: 20px;
+    }
+
+        .tm-cancel-event-container .tm-loader {
+            top: 50%;
+            position: fixed;
+        }
+
+        .tm-cancel-event-container .tm-form {
+            margin-top: 10%;
+        }
+
+            .tm-cancel-event-container .tm-form .tm-action-item {
+                position: fixed;
+                bottom: 5%;
+                width: 90%;
+            }
+
+        .tm-cancel-event-container .tm-back-btn-container {
+            margin-bottom: 10px;
+        }
+</style>
+
+<ErrorBoundary>
+    <ChildContent>
+        <MudContainer Class="tm-cancel-event-container">
+            <MudOverlay @bind-Visible="_isLoading" Absolute>
+                <MudProgressCircular Color="Color.Default" Indeterminate Class="tm-loader" />
+            </MudOverlay>
+            <MudText Typo="Typo.subtitle2">Are you sure you want to cancel this event?</MudText>
+            <MudText Typo="Typo.body2">This action will notify all registered attendees that the event is cancelled and the event will be removed from your dashboard and event history. This action cannot be undone.</MudText>
+            <MudForm @ref="_cancelEventForm" Class="tm-form" @bind-IsValid="@_success" @bind-Errors="@_errors">
+                <MudTextField FullWidth T="string" @bind-Text="_cancelReason" Variant="ComponentCommon.TextFieldVariant" Label="Cancellation Reason" Required RequiredError="Cancellation reason is required" Lines="ComponentCommon.TextAreaLinesSpan" />
+                <MudStack Row Justify="Justify.Center" Class="tm-action-item">
+                    <MudButton FullWidth Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnCancelEventAsync">Cancel Event</MudButton>
+                </MudStack>
+            </MudForm>
+        </MudContainer>
+    </ChildContent>
+    <ErrorContent>
+        @context.Message
+    </ErrorContent>
+</ErrorBoundary>

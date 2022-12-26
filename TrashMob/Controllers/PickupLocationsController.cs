@@ -7,6 +7,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/pickuplocations")]
@@ -44,7 +45,7 @@
         public async Task<IActionResult> Update(PickupLocation pickupLocation, CancellationToken cancellationToken)
         {
             // Todo: Add security
-            var authResult = await AuthorizationService.AuthorizeAsync(User, pickupLocation, "UserOwnsEntity");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, pickupLocation, AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -58,11 +59,11 @@
         }
 
         [HttpPost("markpickedup/{pickupLocationId}")]
-        [Authorize("ValidUser")]
+        [Authorize(AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> MarkAsPickedUp(Guid pickupLocationId, CancellationToken cancellationToken)
         {            
             // Todo: Add security
-            //var authResult = await AuthorizationService.AuthorizeAsync(User, pickupLocation, "UserOwnsEntity");
+            //var authResult = await AuthorizationService.AuthorizeAsync(User, pickupLocation, AuthorizationPolicyConstants.UserOwnsEntity);
 
             //if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             //{
@@ -80,7 +81,7 @@
         {
             var mobEvent = await eventManager.GetAsync(instance.EventId, cancellationToken);
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, "UserOwnsEntity");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -99,7 +100,7 @@
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, "UserOwnsEntity");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
