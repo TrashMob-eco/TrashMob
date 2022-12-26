@@ -50,6 +50,7 @@ public class CustomBoundaryLogger : IErrorBoundaryLogger
 {
     public ValueTask LogErrorAsync(Exception exception)
     {
+        Crashes.TrackError(exception);
         return ValueTask.CompletedTask;
     }
 }
