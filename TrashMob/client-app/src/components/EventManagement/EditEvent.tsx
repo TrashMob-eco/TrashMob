@@ -52,7 +52,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [eventStatusId, setEventStatusId] = React.useState<number>(EventStatusActive);
     const [eventTypeList, setEventTypeList] = React.useState<EventTypeData[]>([]);
     const [eventDateErrors, setEventDateErrors] = React.useState<string>("");
-    const [eventTimeErrors, setEventTimeErrors] = React.useState<string>("");
     const [maxNumberOfParticipantsErrors, setMaxNumberOfParticipantsErrors] = React.useState<string>("");
     const [durationHoursErrors, setDurationHoursErrors] = React.useState<string>("");
     const [durationMinutesErrors, setDurationMinutesErrors] = React.useState<string>("");
@@ -260,9 +259,9 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         }
         else {
             setEventDateErrors("");
-            setAbsTime(abTime);
         }
 
+        setAbsTime(abTime);
         validateForm();
     }
 
@@ -271,13 +270,13 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         var abTime = new Date(eventDate.toDateString() + " " + passedTime);
 
         if (isEventPublic && abTime < new Date()) {
-            setEventTimeErrors("Public event cannot be in the past");
+            setEventDateErrors("Public event cannot be in the past");
         }
         else {
-            setEventTimeErrors("");
-            setAbsTime(abTime);
+            setEventDateErrors("");
         }
 
+        setAbsTime(abTime);
         validateForm();
     }
 
@@ -489,6 +488,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                         <Form.Label className="control-label font-weight-bold h5" htmlFor="EventDate">Date</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="date" className='border-0 bg-light h-60 p-18' name="eventDate" value={dateForPicker(absTime)} onChange={(val: any) => handleEventDateChanged(val.target.value)} />
+                                    <span style={{ color: "red" }}>{eventDateErrors}</span>
                                 </Form.Group>
                             </Col>
                             <Col lg={6}>
@@ -498,7 +498,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     </OverlayTrigger>
                                     <div>
                                         <Form.Control type="time" className='border-0 bg-light h-60 p-18' size="sm" name="eventTime" defaultValue={timeForPicker(absTime)} onChange={(val) => handleEventTimeChanged(val.target.value)} />
-                                        <span style={{ color: "red" }}>{eventTimeErrors}</span>
                                     </div>
                                 </Form.Group>
                             </Col>
