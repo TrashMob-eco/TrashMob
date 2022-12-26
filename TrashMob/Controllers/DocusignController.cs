@@ -5,6 +5,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
 
@@ -21,7 +22,7 @@
         [HttpPost()]
         public async Task<IActionResult> SendEnvelope(EnvelopeRequest envelope)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, envelope, "UserOwnsEntity");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, envelope, AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -39,7 +40,7 @@
         {
             // This is a cheesy way to do this, but works for now
             var envelope = new EnvelopeRequest { CreatedByUserId = userId };
-            var authResult = await AuthorizationService.AuthorizeAsync(User, envelope, "UserOwnsEntityOrIsAdmin");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, envelope, AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {

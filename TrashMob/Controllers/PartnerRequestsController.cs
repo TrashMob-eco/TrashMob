@@ -7,6 +7,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/partnerrequests")]
@@ -20,7 +21,7 @@
         }
 
         [HttpPost]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> AddPartnerRequest(PartnerRequest partnerRequest, CancellationToken cancellationToken)
         {
             await partnerRequestManager.AddAsync(partnerRequest, UserId, cancellationToken).ConfigureAwait(false);
@@ -30,7 +31,7 @@
         }
 
         [HttpPut("approve/{partnerRequestId}")]
-        [Authorize(Policy = "UserIsAdmin")]
+        [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         public async Task<IActionResult> ApprovePartnerRequest(Guid partnerRequestId, CancellationToken cancellationToken)
         {
             var partnerRequest = await partnerRequestManager.ApproveBecomeAPartnerAsync(partnerRequestId, UserId, cancellationToken).ConfigureAwait(false);
@@ -40,7 +41,7 @@
         }
 
         [HttpPut("deny/{partnerRequestId}")]
-        [Authorize(Policy = "UserIsAdmin")]
+        [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         public async Task<IActionResult> DenyPartnerRequest(Guid partnerRequestId, CancellationToken cancellationToken)
         {
             var partnerRequest = await partnerRequestManager.DenyBecomeAPartnerAsync(partnerRequestId, UserId, cancellationToken).ConfigureAwait(false);
@@ -51,21 +52,21 @@
         }
 
         [HttpGet]
-        [Authorize(Policy = "UserIsAdmin")]
+        [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         public async Task<IActionResult> GetPartnerRequests(CancellationToken cancellationToken)
         {
             return Ok(await partnerRequestManager.GetAsync(cancellationToken));
         }
 
         [HttpGet("{partnerRequestId}")]
-        [Authorize(Policy = "UserIsAdmin")]
+        [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         public async Task<IActionResult> GetPartnerRequest(Guid partnerRequestId, CancellationToken cancellationToken)
         {
             return Ok(await partnerRequestManager.GetAsync(partnerRequestId, cancellationToken).ConfigureAwait(false));
         }
 
         [HttpGet("byuserid/{userId}")]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> GetPartnerRequestsByUser(Guid userId, CancellationToken cancellationToken)
         {
             return Ok(await partnerRequestManager.GetByCreatedUserIdAsync(userId, cancellationToken).ConfigureAwait(false));

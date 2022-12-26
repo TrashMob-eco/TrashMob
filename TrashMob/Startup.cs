@@ -49,11 +49,11 @@ namespace TrashMob
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("ValidUser", policy => policy.AddRequirements(new UserIsValidUserRequirement()));
-                options.AddPolicy("UserOwnsEntity", policy => policy.AddRequirements(new UserOwnsEntityRequirement()));
-                options.AddPolicy("UserOwnsEntityOrIsAdmin", policy => policy.AddRequirements(new UserOwnsEntityOrIsAdminRequirement()));
-                options.AddPolicy("UserIsPartnerUserOrIsAdmin", policy => policy.AddRequirements(new UserIsPartnerUserOrIsAdminRequirement()));
-                options.AddPolicy("UserIsAdmin", policy => policy.AddRequirements(new UserIsAdminRequirement()));
+                options.AddPolicy(AuthorizationPolicyConstants.ValidUser, policy => policy.AddRequirements(new UserIsValidUserRequirement()));
+                options.AddPolicy(AuthorizationPolicyConstants.UserOwnsEntity, policy => policy.AddRequirements(new UserOwnsEntityRequirement()));
+                options.AddPolicy(AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin, policy => policy.AddRequirements(new UserOwnsEntityOrIsAdminRequirement()));
+                options.AddPolicy(AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin, policy => policy.AddRequirements(new UserIsPartnerUserOrIsAdminRequirement()));
+                options.AddPolicy(AuthorizationPolicyConstants.UserIsAdmin, policy => policy.AddRequirements(new UserIsAdminRequirement()));
             });
 
             // In production, the React files will be served from this directory

@@ -20,8 +20,8 @@
 		<ApplicationIdGuid>788A46C9-E67B-45C1-AF56-EE14F93B7DD1</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>0.1.0</ApplicationDisplayVersion>
-		<ApplicationVersion>1</ApplicationVersion>
+		<ApplicationDisplayVersion>0.1.1</ApplicationDisplayVersion>
+		<ApplicationVersion>2</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
@@ -69,6 +69,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Platforms\Android\Resources\values\styles.xml" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Compile Include="..\TrashMob.Models\Address.cs" Link="Models\Address.cs" />
 	  <Compile Include="..\TrashMob.Models\BaseModel.cs" Link="Models\BaseModel.cs" />
 	  <Compile Include="..\TrashMob.Models\ContactRequest.cs" Link="Models\ContactRequest.cs" />
@@ -113,10 +117,12 @@
 	</ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.1" />
+      <PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.1" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="7.0.1" />
-      <PackageReference Include="Microsoft.Identity.Client" Version="4.49.0" />
-      <PackageReference Include="MudBlazor" Version="6.1.5" />
+      <PackageReference Include="Microsoft.Identity.Client" Version="4.48.0" />
+      <PackageReference Include="MudBlazor" Version="6.1.6" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
       <PackageReference Include="Polly.Extensions.Http" Version="3.0.0" />
     </ItemGroup>
