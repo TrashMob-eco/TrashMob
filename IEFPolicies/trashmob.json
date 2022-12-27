@@ -1,10 +1,9 @@
 {
   "Prefix": "TM_",
+  "FacebookClientId": "535691364481253",
   "Google": {
     "ClientId": "993349203789-oq6s09buht4e707itkukrljisikmth3k.apps.googleusercontent.com"
   },
-  "REST": {
-    "Validate": "https://fa-tm-dev-westus2.azurewebsites.net/api/SignUpValidate?code=NtQcQ6WVSRvU0tasMo4MrIHerO47RTHin7DVM5UTSP6QAzFuffRhrQ==",
-    "SignUp": "https://fa-tm-dev-westus2.azurewebsites.net/api/SignUpUser?code=7Ko8PG71eryS_dqSBfAr5-_lpV_U3ik7SZnP_O2MMXDzAzFuOkz3yw=="
-  }
+  "RESTApi": "https://www.trashmob.eco/api",
+  "TwitterClientId": "QmhKZ1Bfa1hXZXFJcnBheElYcGY6MTpjaQ"
 }

@@ -62,7 +62,8 @@
           <ClaimsProviderSelections>
             <ClaimsProviderSelection TargetClaimsExchangeId="ForgotPasswordExchange" />                
             <ClaimsProviderSelection TargetClaimsExchangeId="FacebookExchange"/>
-            <ClaimsProviderSelection TargetClaimsExchangeId="GoogleExchange"/>            
+            <ClaimsProviderSelection TargetClaimsExchangeId="GoogleExchange"/>       
+            <ClaimsProviderSelection TargetClaimsExchangeId="TwitterExchange"/>                         
             <ClaimsProviderSelection ValidationClaimsExchangeId="LocalAccountSigninEmailExchange"/>        
           </ClaimsProviderSelections>
           <ClaimsExchanges>
@@ -81,7 +82,8 @@
           <ClaimsExchanges>
             <ClaimsExchange Id="ForgotPasswordExchange" TechnicalProfileReferenceId="ForgotPassword" />                
             <ClaimsExchange Id="FacebookExchange" TechnicalProfileReferenceId="Facebook-OAUTH"/>
-            <ClaimsExchange Id="GoogleExchange" TechnicalProfileReferenceId="Google-OAUTH"/>            
+            <ClaimsExchange Id="GoogleExchange" TechnicalProfileReferenceId="Google-OAUTH"/>        
+            <ClaimsExchange Id="TwitterExchange" TechnicalProfileReferenceId="Twitter-OAuth1"/>                         
             <ClaimsExchange Id="SignUpWithLogonEmailExchange" TechnicalProfileReferenceId="LocalAccountSignUpWithEmailAndUserid"/>        
           </ClaimsExchanges>
         </OrchestrationStep>
