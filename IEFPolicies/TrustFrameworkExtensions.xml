@@ -297,9 +297,12 @@
           <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
           <Metadata>
             <Item Key="ServiceUrl">{RESTApi}/SignUpValidate</Item>
-            <Item Key="AuthenticationType">None</Item>
+            <Item Key="AuthenticationType">ApiKeyHeader</Item>
             <Item Key="SendClaimsIn">Body</Item>
           </Metadata>
+          <CryptographicKeys>
+            <Key Id="x-functions-key" StorageReferenceId="B2C_1A_ValidateRestApiKey" />
+          </CryptographicKeys>
           <InputClaims>
             <InputClaim ClaimTypeReferenceId="userId" PartnerClaimType="userName"/>
             <InputClaim ClaimTypeReferenceId="email" />
@@ -317,9 +320,12 @@
           <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
           <Metadata>
             <Item Key="ServiceUrl">{RESTApi}/SignupUser</Item>
-            <Item Key="AuthenticationType">None</Item>
+            <Item Key="AuthenticationType">ApiKeyHeader</Item>
             <Item Key="SendClaimsIn">Body</Item>
           </Metadata>
+          <CryptographicKeys>
+            <Key Id="x-functions-key" StorageReferenceId="B2C_1A_AddRestApiKey" />
+          </CryptographicKeys>
           <InputClaims>
             <InputClaim ClaimTypeReferenceId="userId" PartnerClaimType="userName"/>
             <InputClaim ClaimTypeReferenceId="email" />
