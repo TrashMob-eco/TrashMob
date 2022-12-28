@@ -3,7 +3,7 @@ import { getDefaultHeaders } from "./AuthStore";
 
 export function getPartnerType(partnerTypeList: PartnerTypeData[], partnerTypeId: any): string {
     if (partnerTypeList === null || partnerTypeList.length === 0) {
-        partnerTypeList = getPartnerTypees();
+        partnerTypeList = getPartnerTypes();
     }
 
     var partnerType = partnerTypeList.find(et => et.id === partnerTypeId)
@@ -12,10 +12,10 @@ export function getPartnerType(partnerTypeList: PartnerTypeData[], partnerTypeId
     return "Unknown";
 }
 
-function getPartnerTypees(): PartnerTypeData[] {
+function getPartnerTypes(): PartnerTypeData[] {
     const headers = getDefaultHeaders('GET');
 
-    fetch('/api/partnerTypees', {
+    fetch('/api/partnerTypes', {
         method: 'GET',
         headers: headers
     })
