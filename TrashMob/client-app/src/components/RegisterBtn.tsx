@@ -1,7 +1,7 @@
 
 import { FC, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import EventAttendeeData from './Models/EventAttendeeData';
 import UserData from './Models/UserData';
 import { DisplayEvent } from './MainEvents';
@@ -37,6 +37,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
 
     const addAttendee = (eventId: string) => {
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         const request = {
             scopes: apiConfig.b2cScopes,

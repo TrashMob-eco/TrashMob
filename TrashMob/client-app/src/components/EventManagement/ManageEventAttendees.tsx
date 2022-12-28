@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Guid } from 'guid-typescript';
 import { Container, Dropdown } from 'react-bootstrap';
@@ -41,6 +41,7 @@ export const ManageEventAttendees: React.FC<ManageEventAttendeesProps> = (props)
     React.useEffect(() => {
         if (props.isUserLoaded && props.eventId && props.eventId !== Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,

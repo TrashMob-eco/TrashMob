@@ -3,7 +3,7 @@ import UserData from '../Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button, Col, Container, Form, Image, ModalBody, Row } from 'react-bootstrap';
 import { Modal } from 'reactstrap';
@@ -64,6 +64,8 @@ const UserProfile: FC<UserProfileProps> = (props) => {
         setUnits(["mi", "km"]);
         if (props.isUserLoaded && !isDataLoaded) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
+
             setEventName("User's Base Location");
 
             const request = {
@@ -149,6 +151,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
     const deleteAccount = () => {
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         const request = {
             scopes: apiConfig.b2cScopes,
@@ -216,6 +219,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
 
         // PUT request for Edit Event.  
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         const request = {
             scopes: apiConfig.b2cScopes,
@@ -261,6 +265,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
         }
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         // Verify that this username is unique
         const request = {

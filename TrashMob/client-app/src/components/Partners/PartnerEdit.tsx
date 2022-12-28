@@ -2,7 +2,7 @@ import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Button, Col, Container, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import PartnerData from '../Models/PartnerData';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import PartnerStatusData from '../Models/PartnerStatusData';
 import PartnerTypeData from '../Models/PartnerTypeData';
@@ -35,6 +35,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
     React.useEffect(() => {
         if (props.isUserLoaded) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -123,6 +124,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
         var data = JSON.stringify(partnerData);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,

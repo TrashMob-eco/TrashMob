@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { CurrentTrashMobWaiverVersion } from './Waivers';
 
@@ -26,6 +26,7 @@ const WaiversReturn: FC<WaiversReturnProps> = ({ currentUser, isUserLoaded, onUs
         if (envelopeId) {
 
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,

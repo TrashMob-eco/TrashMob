@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { RouteComponentProps } from 'react-router-dom';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Col, Container, Row } from 'react-bootstrap';
 import EmailTemplateData from '../Models/EmailTemplateData';
@@ -21,6 +21,7 @@ export const AdminEmailTemplates: React.FC<AdminEmailTemplatesPropsType> = (prop
         if (props.isUserLoaded) {
 
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Button, Col, Container, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
 import PartnerContactData from '../Models/PartnerContactData';
@@ -40,6 +40,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
 
         if (props.isUserLoaded && props.partnerId && props.partnerId !== Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -92,6 +93,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
 
     function editContact(partnerContactId: string) {
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -127,6 +129,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -169,6 +172,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
         setIsSaveEnabled(false);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,

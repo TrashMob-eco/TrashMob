@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Button, Container, Dropdown } from 'react-bootstrap';
 import * as Constants from '../Models/Constants';
@@ -56,6 +56,7 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
 
         if (props.isUserLoaded && props.eventId && props.eventId !== Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -81,6 +82,7 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
 
     function OnEventPartnerLocationsUpdated() {
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -105,7 +107,7 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
 
     function handleViewPartnerServices(locationId: string, partnerLocName: string) {
         const account = msalClient.getAllAccounts()[0];
-
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -151,8 +153,8 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
 
         var evtdata = JSON.stringify(eventData);
 
-        // PUT request for Edit Event.  
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -178,8 +180,8 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
 
         var method = "DELETE";
 
-        // PUT request for Edit Event.  
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,

@@ -22,7 +22,7 @@ import { VolunteerOpportunities } from './components/VolunteerOpportunities';
 import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
-import { apiConfig, getDefaultHeaders, msalClient } from './store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from './store/AuthStore';
 import { EventDetails, DetailsMatchParams } from './components/Pages/EventDetails';
 import { NoMatch } from './components/NoMatch';
 import UserData from './components/Models/UserData';
@@ -178,6 +178,8 @@ export const App: FC = () => {
     function handleUserUpdated() {
         const account = msalClient.getAllAccounts()[0];
 
+        var apiConfig = getApiConfig();
+
         const request = {
             scopes: apiConfig.b2cScopes,
             account: account
@@ -206,6 +208,7 @@ export const App: FC = () => {
 
         var email = result.idTokenClaims["signInName"]
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         const request = {
             scopes: apiConfig.b2cScopes,
@@ -251,6 +254,7 @@ export const App: FC = () => {
 
         // If the user is logged in, get the events they are attending
         const accounts = msalClient.getAllAccounts();
+        var apiConfig = getApiConfig();
 
         if (accounts !== null && accounts.length > 0) {
             const request = {
