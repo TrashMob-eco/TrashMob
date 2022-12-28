@@ -2,6 +2,7 @@ import * as React from 'react';
 import { ButtonGroup, Col, Container, Row, ToggleButton } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import UserData from '../Models/UserData';
+import { AdminEmailTemplates } from './AdminEmailTemplates';
 import { AdminEvents } from './AdminEvents';
 import { AdminPartnerRequests } from './AdminPartnerRequests';
 import { AdminPartners } from './AdminPartners';
@@ -27,6 +28,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
         { name: 'Manage Partner Requests', value: '4' },
         { name: 'View Executive Summary', value: '5' },
         { name: 'Send Notifications', value: '6' },
+        { name: 'View Email Templates', value: '7' },
     ];
 
     React.useEffect(() => {
@@ -75,6 +77,14 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
         )
     }
 
+    function renderEmailTemplates() {
+        return (
+            <div>
+                <AdminEmailTemplates history={props.history} location={props.location} match={props.match} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+            </div>
+        )
+    }
+
     function renderExecutiveSummary() {
         return (
             <div>
@@ -109,6 +119,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
                 {radioValue === '4' && renderManagePartnerRequests()}
                 {radioValue === '5' && renderExecutiveSummary()}
                 {radioValue === '6' && renderSendNotifications()}
+                {radioValue === '7' && renderEmailTemplates()}
 
             </div>
         );
