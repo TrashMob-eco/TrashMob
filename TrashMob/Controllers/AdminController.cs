@@ -15,11 +15,13 @@
     [Route("api/admin")]
     public class AdminController : SecureController
     {
-        private readonly IBaseManager<PartnerRequest> partnerRequestManager;
+        private readonly IKeyedManager<PartnerRequest> partnerRequestManager;
+        private readonly IEmailManager emailManager;
 
-        public AdminController(IBaseManager<PartnerRequest> partnerRequestManager) : base()
+        public AdminController(IKeyedManager<PartnerRequest> partnerRequestManager, IEmailManager emailManager) : base()
         {
             this.partnerRequestManager = partnerRequestManager;
+            this.emailManager = emailManager;
         }
 
         [HttpPut("partnerrequestupdate/{userId}")]
@@ -29,6 +31,17 @@
         {
             var result = await partnerRequestManager.UpdateAsync(partnerRequest, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdatePartnerRequest));
+
+            return Ok(result);
+        }
+
+        [HttpGet("emailTemplates")]
+        [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        public async Task<IActionResult> GetEmails(CancellationToken cancellationToken)
+        {
+            var result = await emailManager.GetEmailTemplatesAsync(cancellationToken).ConfigureAwait(false);
+            TelemetryClient.TrackEvent(nameof(GetEmails));
 
             return Ok(result);
         }
