@@ -6,6 +6,7 @@
     using Microsoft.Identity.Web.Resource;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
 
@@ -20,7 +21,7 @@
         }
 
         [HttpPost]
-        [Authorize(Policy = "UserIsAdmin")]
+        [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> SendMessageRequest(MessageRequest messageRequest)
         {

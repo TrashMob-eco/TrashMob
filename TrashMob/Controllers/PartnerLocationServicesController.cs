@@ -7,6 +7,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
  
     [Route("api/partnerlocationservices")]
@@ -27,7 +28,7 @@
         }
 
         [HttpGet("getbypartnerlocation/{partnerLocationId}")]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> Get(Guid partnerLocationId, CancellationToken cancellationToken)
         {
             var partnerLocationServices = await partnerLocationServicesManager.GetByParentIdAsync(partnerLocationId, cancellationToken);
@@ -36,7 +37,7 @@
         }
 
         [HttpGet("{partnerLocationId}/{serviceTypeId}")]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> Get(Guid partnerLocationId, int serviceTypeId, CancellationToken cancellationToken)
         {
             var partnerLocationService = await partnerLocationServicesManager.GetAsync(partnerLocationId, serviceTypeId, cancellationToken);
@@ -49,7 +50,7 @@
         {
             var partnerLocation = await partnerLocationManager.GetAsync(partnerLocationService.PartnerLocationId, cancellationToken);
             var partner = await partnerManager.GetAsync(partnerLocation.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -66,7 +67,7 @@
         {
             var partnerLocation = await partnerLocationManager.GetAsync(partnerLocationService.PartnerLocationId, cancellationToken);
             var partner = await partnerManager.GetAsync(partnerLocation.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -84,7 +85,7 @@
         {
             var partnerLocation = await partnerLocationManager.GetAsync(partnerLocationId, cancellationToken);
             var partner = await partnerManager.GetAsync(partnerLocation.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, "UserIsPartnerUserOrIsAdmin");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {

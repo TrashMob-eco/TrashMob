@@ -10,7 +10,7 @@ using Microsoft.Identity.Client;
 using Plugin.CurrentActivity;
 using TrashMobMobileApp.Authentication;
 
-[Activity(Label = "Trash Mob", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
+[Activity(Theme = "@style/TMTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
 public class MainActivity : MauiAppCompatActivity
 {
     const int RequestLocationId = 0;
@@ -60,6 +60,7 @@ public class MainActivity : MauiAppCompatActivity
 
         base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
     }
+
     protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
     {
         base.OnActivityResult(requestCode, resultCode, data);

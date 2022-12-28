@@ -7,6 +7,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
 
     public abstract class KeyedController<T> : SecureController where T : KeyedModel
@@ -19,7 +20,7 @@
         }
 
         [HttpPost]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public virtual async Task<IActionResult> Add(T instance, CancellationToken cancellationToken)
         {
             await Manager.AddAsync(instance, UserId, cancellationToken).ConfigureAwait(false);
@@ -44,7 +45,7 @@
         {
             var entity = Manager.GetAsync(id, cancellationToken);
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, entity, "UserOwnsEntity");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, entity, AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
