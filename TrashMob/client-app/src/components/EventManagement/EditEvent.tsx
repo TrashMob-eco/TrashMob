@@ -143,6 +143,18 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         }
     }, [eventId, props.currentUser.dateAgreedToTrashMobWaiver, props.currentUser.trashMobWaiverVersion, props.history])
 
+    React.useEffect(() => {
+        if (eventName === "" ||
+            eventDateErrors !== "" ||
+            description === "" ||
+            durationHoursErrors !== "" ||
+            region === "") {
+            setIsSaveEnabled(false);
+        }
+        else {
+            setIsSaveEnabled(true);
+        }
+    }, [eventName, eventDateErrors, description, durationHoursErrors, region]);
 
     function handleEventNameChanged(val: string) {
         setEventName(val);
@@ -242,7 +254,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         setCountry(data.addresses[0].address.country);
                         setRegion(data.addresses[0].address.countrySubdivisionName);
                         setPostalCode(data.addresses[0].address.postalCode);
-                        validateForm();
                     })
             }
             )
