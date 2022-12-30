@@ -36,12 +36,7 @@ namespace TrashMob
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var b2cConfig = "AzureAdB2CProd";
-
-            if (CurrentEnvironment.IsDevelopment() || CurrentEnvironment.IsEnvironment("Test"))
-            {
-                b2cConfig = "AzureAdB2CDev";
-            }
+            var b2cConfig = "AzureAdB2C";
 
             // The following line enables Application Insights telemetry collection.
             services.AddApplicationInsightsTelemetry();
