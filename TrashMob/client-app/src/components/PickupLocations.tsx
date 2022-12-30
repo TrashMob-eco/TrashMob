@@ -12,6 +12,7 @@ import AddressData from './Models/AddressData';
 import MapControllerSinglePointNoEvent from './MapControllerSinglePointNoEvent';
 import PickupLocationData from './Models/PickupLocationData';
 import { Pencil, XSquare } from 'react-bootstrap-icons';
+import PhoneInput from 'react-phone-input-2'
 
 export interface PickupLocationsDataProps {
     eventId: string;
@@ -435,7 +436,10 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                             <tr key={contact.id}>
                                 <td>{contact.name}</td>
                                 <td>{contact.email}</td>
-                                <td>{contact.phone}</td>
+                                <td><PhoneInput
+                                    value={contact.phone}
+                                    disabled
+                                /></td>
                             </tr>
                         )}
                     </tbody>

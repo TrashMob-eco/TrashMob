@@ -16,6 +16,7 @@ import PartnerTypeData from '../Models/PartnerTypeData';
 import { getPartnerRequestStatus } from '../../store/partnerRequestStatusHelper';
 import { getPartnerType } from '../../store/partnerTypeHelper';
 import { Guid } from 'guid-typescript';
+import PhoneInput from 'react-phone-input-2'
 
 export interface PartnerRequestDetailsMatchParams {
     partnerRequestId: string;
@@ -269,7 +270,10 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
                                             <OverlayTrigger placement="top" overlay={renderPhoneToolTip}>
                                                 <Form.Label className="control-label font-weight-bold h5">Phone</Form.Label>
                                             </OverlayTrigger>
-                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="phone" value={phone} />
+                                            <PhoneInput
+                                                value={phone}
+                                                disabled
+                                            />
                                         </Form.Group >
                                     </Col>
                                 </Form.Row>

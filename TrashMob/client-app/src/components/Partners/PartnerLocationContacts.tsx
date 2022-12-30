@@ -7,6 +7,7 @@ import { Guid } from 'guid-typescript';
 import PartnerLocationContactData from '../Models/PartnerLocationContactData';
 import * as Constants from '../Models/Constants';
 import { Pencil, XSquare } from 'react-bootstrap-icons';
+import PhoneInput from 'react-phone-input-2'
 
 export interface PartnerLocationContactsDataProps {
     partnerLocationId: string;
@@ -352,6 +353,10 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                             <tr key={contact.id}>
                                 <td>{contact.name}</td>
                                 <td>{contact.email}</td>
+                                <td><PhoneInput
+                                    value={contact.phone}
+                                    disabled
+                                /></td>
                                 <td>{contact.phone}</td>
                                 <td>{contact.notes}</td>
                                 <td className="btn py-0">
@@ -398,7 +403,11 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                                 <OverlayTrigger placement="top" overlay={renderPhoneToolTip}>
                                     <Form.Label className="control-label font-weight-bold h5">Phone</Form.Label>
                                 </OverlayTrigger>
-                                <Form.Control type="text" defaultValue={phone} maxLength={parseInt('64')} onChange={(val) => handlePhoneChanged(val.target.value)} />
+                                <PhoneInput
+                                    country={'us'}
+                                    value={phone}
+                                    onChange={(val) => handlePhoneChanged(val)}
+                                />
                                 <span style={{ color: "red" }}>{phoneErrors}</span>
                             </Form.Group >
                         </Col>
