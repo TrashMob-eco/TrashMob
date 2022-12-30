@@ -1,7 +1,7 @@
 import * as React from 'react'
 import UserData from './Models/UserData';
 import { Button, Col, Container, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from './../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from './../store/AuthStore';
 import * as ToolTips from "./../store/ToolTips";
 import EventSummaryData from './Models/EventSummaryData';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
@@ -123,6 +123,7 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
         var data = JSON.stringify(eventSummaryData);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,

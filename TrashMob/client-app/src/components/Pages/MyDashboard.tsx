@@ -3,7 +3,7 @@ import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import { Col, Container, Dropdown, Image, Row } from 'react-bootstrap';
 import EventData from '../Models/EventData';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
 import MapControllerPointCollection from '../MapControllerPointCollection';
@@ -80,6 +80,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 
             setIsEventDataLoaded(false);
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             const request = {
                 scopes: apiConfig.b2cScopes,
@@ -236,6 +237,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 
     const handleAcceptInvitation = (partnerAdminInvitationId: string) => {
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -290,6 +292,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 
     const handleDeclineInvitation = (partnerAdminInvitationId: string) => {
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -326,6 +329,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             const request = {
                 scopes: apiConfig.b2cScopes,
@@ -346,6 +350,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 
     const handleMarkAsPickedUp = (id: string) => {
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         const request = {
             scopes: apiConfig.b2cScopes,

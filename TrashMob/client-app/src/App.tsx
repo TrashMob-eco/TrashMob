@@ -22,7 +22,7 @@ import { VolunteerOpportunities } from './components/VolunteerOpportunities';
 import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
-import { apiConfig, getDefaultHeaders, msalClient } from './store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from './store/AuthStore';
 import { EventDetails, DetailsMatchParams } from './components/Pages/EventDetails';
 import { NoMatch } from './components/NoMatch';
 import UserData from './components/Models/UserData';
@@ -40,6 +40,7 @@ import EventData from './components/Models/EventData';
 
 import './custom.css';
 import 'react-phone-input-2/lib/style.css'
+import DeleteMyData from './components/Pages/DeleteMyData';
 import Waivers from './components/Waivers/Waivers';
 import WaiversReturn from './components/Waivers/WaiversReturn';
 import PartnerRequestDetails, { PartnerRequestDetailsMatchParams } from './components/Partners/PartnerRequestDetails';
@@ -179,6 +180,8 @@ export const App: FC = () => {
     function handleUserUpdated() {
         const account = msalClient.getAllAccounts()[0];
 
+        var apiConfig = getApiConfig();
+
         const request = {
             scopes: apiConfig.b2cScopes,
             account: account
@@ -205,7 +208,9 @@ export const App: FC = () => {
 
     function verifyAccount(result: msal.AuthenticationResult) {
 
+        var email = result.idTokenClaims["signInName"]
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         const request = {
             scopes: apiConfig.b2cScopes,
@@ -213,22 +218,14 @@ export const App: FC = () => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const method = 'POST';
+            const method = 'GET';
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
             const user = new UserData();
 
-            user.nameIdentifier = result.idTokenClaims["sub"];
-            user.sourceSystemUserName = result.account?.username ?? "";
-
-            if (result.account?.idTokenClaims) {
-                user.email = result.account?.idTokenClaims["emails"][0] ?? "";
-            }
-
-            fetch('/api/Users', {
+            fetch('/api/Users/getuserbyemail/' + encodeURIComponent(email), {
                 method: method,
-                headers: headers,
-                body: JSON.stringify(user)
+                headers: headers
             })
                 .then(response => response.json() as Promise<UserData> | null)
                 .then(data => {
@@ -237,12 +234,8 @@ export const App: FC = () => {
                         user.userName = data.userName;
                         user.givenName = data.givenName;
                         user.surName = data.surName;
-                        user.dateAgreedToPrivacyPolicy = data.dateAgreedToPrivacyPolicy;
-                        user.dateAgreedToTermsOfService = data.dateAgreedToTermsOfService;
                         user.dateAgreedToTrashMobWaiver = data.dateAgreedToTrashMobWaiver;
                         user.memberSince = data.memberSince;
-                        user.privacyPolicyVersion = data.privacyPolicyVersion;
-                        user.termsOfServiceVersion = data.termsOfServiceVersion;
                         user.trashMobWaiverVersion = data.trashMobWaiverVersion;
                         user.isSiteAdmin = data.isSiteAdmin;
                         setCurrentUser(user);
@@ -263,6 +256,7 @@ export const App: FC = () => {
 
         // If the user is logged in, get the events they are attending
         const accounts = msalClient.getAllAccounts();
+        var apiConfig = getApiConfig();
 
         if (accounts !== null && accounts.length > 0) {
             const request = {
@@ -347,6 +341,14 @@ export const App: FC = () => {
                                     errorComponent={ErrorComponent}
                                     loadingComponent={LoadingComponent}>
                                     <Waivers currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                </MsalAuthenticationTemplate >
+                            </Route>
+                            <Route exact path="/deletemydata">
+                                <MsalAuthenticationTemplate
+                                    interactionType={InteractionType.Redirect}
+                                    errorComponent={ErrorComponent}
+                                    loadingComponent={LoadingComponent}>
+                                    <DeleteMyData currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
                             </Route>
                             <Route exact path="/partnerships">

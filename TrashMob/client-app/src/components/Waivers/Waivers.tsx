@@ -4,7 +4,7 @@ import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import UserData from '../Models/UserData';
 import { Col, Image, Row } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import EnvelopeResponse from '../Models/EnvelopeResponse';
 import logo from "../assets/logo.svg";
 import globes from '../assets/gettingStarted/globes.png';
@@ -38,6 +38,7 @@ const Waivers: React.FC<WaiversProps> = (props) => {
     async function signWaiver() {
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         const request = {
             scopes: apiConfig.b2cScopes,

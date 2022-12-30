@@ -3,7 +3,7 @@ import UserData from '../Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button, Col, Container, Form, Image, ModalBody, Row } from 'react-bootstrap';
 import { Modal } from 'reactstrap';
@@ -26,9 +26,7 @@ interface UserProfileProps extends RouteComponentProps<any> {
 const UserProfile: FC<UserProfileProps> = (props) => {
     const userId = props.currentUser.id;
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
-    const [nameIdentifier, setNameIdentifier] = useState<string>("");
     const [userName, setUserName] = useState<string>("");
-    const [sourceSystemUserName, setSourceSystemUserName] = useState<string>("");
     const [givenName, setGivenName] = useState<string>("");
     const [surname, setSurname] = useState<string>("");
     const [email, setEmail] = useState<string>();
@@ -37,11 +35,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
     const [country, setCountry] = useState<string>();
     const [region, setRegion] = useState<string>();
     const [postalCode, setPostalCode] = useState<string>();
-    const [dateAgreedToPrivacyPolicy, setDateAgreedToPrivacyPolicy] = useState<Date>(new Date());
-    const [dateAgreedToTermsOfService, setDateAgreedToTermsOfService] = useState<Date>(new Date());
     const [dateAgreedToTrashMobWaiver, setDateAgreedToTrashMobWaiver] = useState<Date>(new Date());
-    const [privacyPolicyVersion, setPrivacyPolicyVersion] = useState<string>("");
-    const [termsOfServiceVersion, setTermsOfServiceVersion] = useState<string>("");
     const [trashMobWaiverVersion, setTrashMobWaiverVersion] = useState<string>("");
     const [memberSince, setMemberSince] = useState<Date>(new Date());
     const [maxEventsRadiusErrors, setMaxEventsRadiusErrors] = useState<string>("");
@@ -70,6 +64,8 @@ const UserProfile: FC<UserProfileProps> = (props) => {
         setUnits(["mi", "km"]);
         if (props.isUserLoaded && !isDataLoaded) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
+
             setEventName("User's Base Location");
 
             const request = {
@@ -87,7 +83,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                 })
                     .then(response => response.json() as Promise<UserData>)
                     .then(data => {
-                        setNameIdentifier(data.nameIdentifier);
                         setUserName(data.userName);
                         setGivenName(data.givenName);
                         setSurname(data.surName);
@@ -96,14 +91,9 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                         setCountry(data.country);
                         setRegion(data.region);
                         setPostalCode(data.postalCode);
-                        setDateAgreedToPrivacyPolicy(data.dateAgreedToPrivacyPolicy);
-                        setDateAgreedToTermsOfService(data.dateAgreedToTermsOfService);
                         setDateAgreedToTrashMobWaiver(data.dateAgreedToTrashMobWaiver);
-                        setPrivacyPolicyVersion(data.privacyPolicyVersion);
-                        setTermsOfServiceVersion(data.termsOfServiceVersion);
                         setTrashMobWaiverVersion(data.trashMobWaiverVersion);
                         setMemberSince(data.memberSince);
-                        setSourceSystemUserName(data.sourceSystemUserName);
                         setLatitude(data.latitude);
                         setLongitude(data.longitude);
                         setPrefersMetric(data.prefersMetric);
@@ -161,6 +151,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
     const deleteAccount = () => {
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         const request = {
             scopes: apiConfig.b2cScopes,
@@ -208,7 +199,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
         const userData = new UserData();
 
         userData.id = userId;
-        userData.nameIdentifier = nameIdentifier;
         userData.userName = userName ?? "";
         userData.givenName = givenName ?? "";
         userData.surName = surname ?? "";
@@ -217,23 +207,19 @@ const UserProfile: FC<UserProfileProps> = (props) => {
         userData.region = region ?? "";
         userData.country = country ?? "";
         userData.postalCode = postalCode ?? "";
-        userData.dateAgreedToPrivacyPolicy = new Date(dateAgreedToPrivacyPolicy);
-        userData.dateAgreedToTermsOfService = new Date(dateAgreedToTermsOfService);
         userData.dateAgreedToTrashMobWaiver = new Date(dateAgreedToTrashMobWaiver);
-        userData.privacyPolicyVersion = privacyPolicyVersion ?? "";
-        userData.termsOfServiceVersion = termsOfServiceVersion;
         userData.memberSince = new Date(memberSince);
         userData.latitude = latitude;
         userData.longitude = longitude;
         userData.prefersMetric = prefersMetric;
         userData.travelLimitForLocalEvents = travelLimitForLocalEvents;
-        userData.sourceSystemUserName = sourceSystemUserName;
         userData.trashMobWaiverVersion = trashMobWaiverVersion;
 
         const usrdata = JSON.stringify(userData);
 
         // PUT request for Edit Event.  
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         const request = {
             scopes: apiConfig.b2cScopes,
@@ -279,6 +265,7 @@ const UserProfile: FC<UserProfileProps> = (props) => {
         }
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         // Verify that this username is unique
         const request = {
