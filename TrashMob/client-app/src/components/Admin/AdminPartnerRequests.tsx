@@ -9,6 +9,7 @@ import PartnerRequestStatusData from '../Models/PartnerRequestStatusData';
 import { getPartnerRequestStatus } from '../../store/partnerRequestStatusHelper';
 import * as Constants from '../Models/Constants'
 import { CheckSquare, XSquare } from 'react-bootstrap-icons';
+import PhoneInput from 'react-phone-input-2'
 
 interface AdminPartnerRequestsPropsType extends RouteComponentProps {
     isUserLoaded: boolean;
@@ -172,7 +173,10 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
                                 <tr key={partnerRequest.id.toString()}>
                                     <td>{partnerRequest.name}</td>
                                     <td>{partnerRequest.email}</td>
-                                    <td>{partnerRequest.phone}</td>
+                                    <td><PhoneInput
+                                        value={partnerRequest.phone}
+                                        disabled
+                                    /></td>
                                     <td>{partnerRequest.website}</td>
                                     <td>{partnerRequest.city}</td>
                                     <td>{partnerRequest.region}</td>

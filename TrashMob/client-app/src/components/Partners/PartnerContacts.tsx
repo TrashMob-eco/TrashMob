@@ -7,6 +7,7 @@ import { Guid } from 'guid-typescript';
 import PartnerContactData from '../Models/PartnerContactData';
 import * as Constants from '../Models/Constants';
 import { Pencil, XSquare } from 'react-bootstrap-icons';
+import PhoneInput from 'react-phone-input-2'
 
 export interface PartnerContactsDataProps {
     partnerId: string;
@@ -347,7 +348,10 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                             <tr key={contact.id}>
                                 <td>{contact.name}</td>
                                 <td>{contact.email}</td>
-                                <td>{contact.phone}</td>
+                                <td><PhoneInput
+                                    value={contact.phone}
+                                    disabled
+                                /></td>
                                 <td className="btn py-0">
                                     <Dropdown role="menuitem">
                                         <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
@@ -393,7 +397,11 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                                 <OverlayTrigger placement="top" overlay={renderPhoneToolTip}>
                                     <Form.Label className="control-label font-weight-bold h5">Phone</Form.Label>
                                 </OverlayTrigger>
-                                <Form.Control type="text" defaultValue={phone} maxLength={parseInt('64')} onChange={(val) => handlePhoneChanged(val.target.value)} />
+                                <PhoneInput
+                                    country={'us'}
+                                    value={phone}
+                                    onChange={(val) => handlePhoneChanged(val)}
+                                />
                                 <span style={{ color: "red" }}>{phoneErrors}</span>
                             </Form.Group >
                         </Col>
