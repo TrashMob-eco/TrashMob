@@ -39,6 +39,7 @@ import { CancelEvent, CancelEventMatchParams } from './components/EventManagemen
 import EventData from './components/Models/EventData';
 
 import './custom.css';
+import 'react-phone-input-2/lib/style.css'
 import Waivers from './components/Waivers/Waivers';
 import WaiversReturn from './components/Waivers/WaiversReturn';
 import PartnerRequestDetails, { PartnerRequestDetailsMatchParams } from './components/Partners/PartnerRequestDetails';

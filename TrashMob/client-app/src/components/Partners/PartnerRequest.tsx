@@ -13,6 +13,7 @@ import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import AddressData from '../Models/AddressData';
 import MapControllerSinglePointNoEvents from '../MapControllerSinglePointNoEvent';
+import PhoneInput from 'react-phone-input-2'
 
 interface PartnerRequestProps extends RouteComponentProps<any> {
     mode: string;
@@ -361,7 +362,11 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                             <OverlayTrigger placement="top" overlay={renderPhoneToolTip}>
                                                 <Form.Label className="control-label h5">Phone</Form.Label>
                                             </OverlayTrigger>
-                                            <Form.Control type="text" className='border-0 bg-light h-60 para' defaultValue={phone} maxLength={parseInt('64')} onChange={(val) => handlePhoneChanged(val.target.value)} />
+                                            <PhoneInput
+                                                country={'us'}
+                                                value={phone}
+                                                onChange={(val) => handlePhoneChanged(val)}
+                                            />
                                             <span style={{ color: "red" }}>{phoneErrors}</span>
                                         </Form.Group >
                                     </Col>
