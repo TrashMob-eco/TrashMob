@@ -10,7 +10,7 @@ import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapControllerPointCollection from '../MapControllerPointCollection';
 import UserData from '../Models/UserData';
 import { Button } from 'reactstrap';
-import { Col, Container, Form, Image, Row } from 'react-bootstrap';
+import { Col, Container, Image, Row } from 'react-bootstrap';
 import Drawings from '../assets/home/Drawings.png';
 import Trash from '../assets/home/cleanup.jpg';
 import Globe2 from '../assets/globe2.png';
@@ -38,8 +38,6 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, myAttendanceL
     const [isMapKeyLoaded, setIsMapKeyLoaded] = useState(false);
     const [center, setCenter] = useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
-    const [agree, setAgree] = useState(false);
-    const [isOpen, setIsOpen] = useState(false);
     const [eventView, setEventView] = useState<string>('map');
     const [totalBags, setTotalBags] = useState<number>(0);
     const [totalHours, setTotalHours] = useState<number>(0);
@@ -99,16 +97,6 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, myAttendanceL
 
     const handleLocationChange = (point: data.Position) => {
         // do nothing
-    }
-
-    const checkboxhandler = () => {
-        // if agree === true, it will be set to false
-        // if agree === false, it will be set to true
-        setAgree(!agree);
-    }
-
-    const togglemodal = () => {
-        setIsOpen(!isOpen);
     }
 
     const handleDetailsSelected = (eventId: string) => {
