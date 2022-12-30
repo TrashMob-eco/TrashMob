@@ -23,7 +23,7 @@
         <UserHelpText>Add help text here</UserHelpText>
         <UserInputType>RadioSingleSelect</UserInputType>
         <Restriction>
-          <Enumeration Text="Accepted" Value="Y" SelectByDefault="false" />
+          <Enumeration Text="" Value="Y" SelectByDefault="false" />
         </Restriction>
       </ClaimType>
       <ClaimType Id="extension_TOSAccepted">
@@ -32,7 +32,7 @@
         <UserHelpText>Add help text here</UserHelpText>
         <UserInputType>RadioSingleSelect</UserInputType>
         <Restriction>
-          <Enumeration Text="Accepted" Value="Y" SelectByDefault="false" />
+          <Enumeration Text="" Value="Y" SelectByDefault="false" />
         </Restriction>
       </ClaimType>
       <ClaimType Id="signInNames.userId">
@@ -42,6 +42,14 @@
         <UserInputType>TextBox</UserInputType>
       </ClaimType>  
     </ClaimsSchema>
+    <ContentDefinitions>
+      <ContentDefinition Id="api.signuporsignin">
+        <LoadUri>https://{UIAssets}.blob.core.windows.net/pages/SignUpSignIn.html</LoadUri>
+      </ContentDefinition> 
+      <ContentDefinition Id="api.localaccountsignup">
+        <LoadUri>https://{UIAssets}.blob.core.windows.net/pages/SignUpSignIn.html</LoadUri>
+      </ContentDefinition>           
+    </ContentDefinitions>
   </BuildingBlocks>
 
   
@@ -389,6 +397,9 @@
           <OutputClaims>
             <OutputClaim ClaimTypeReferenceId="extension_PrivacyAccepted" />
             <OutputClaim ClaimTypeReferenceId="extension_TOSAccepted" />            
+            <OutputClaim ClaimTypeReferenceId="userId" PartnerClaimType="signInNames.userId" />
+            <OutputClaim ClaimTypeReferenceId="email" PartnerClaimType="signInNames.emailAddress" />            
+            <OutputClaim ClaimTypeReferenceId="extension_TOSAccepted" />                       
           </OutputClaims>          
         </TechnicalProfile>           
         <TechnicalProfile Id="AAD-UserWriteUsingAlternativeSecurityId">
