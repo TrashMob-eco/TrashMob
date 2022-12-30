@@ -30,22 +30,30 @@ namespace TrashMob
         }
 
         public IConfiguration Configuration { get; }
+
         private IWebHostEnvironment CurrentEnvironment { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var b2cConfig = "AzureAdB2CProd";
+
+            if (CurrentEnvironment.IsDevelopment() || CurrentEnvironment.IsEnvironment("Test"))
+            {
+                b2cConfig = "AzureAdB2CDev";
+            }
+
             // The following line enables Application Insights telemetry collection.
             services.AddApplicationInsightsTelemetry();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(options => {
-                    Configuration.Bind("AzureAdB2C", options);
+                    Configuration.Bind(b2cConfig, options);
 
                     options.TokenValidationParameters.NameClaimType = "name";
                 },
 
-            options => { Configuration.Bind("AzureAdB2C", options); });
+            options => { Configuration.Bind(b2cConfig, options); });
 
             services.AddAuthorization(options =>
             {

@@ -25,9 +25,9 @@
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsPartnerUserOrIsAdminRequirement requirement, Partner resource)
         {
-            var nameIdentifier = context.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var email = context.User.FindFirst(ClaimTypes.Email).Value;
 
-            var user = await userManager.GetUserByNameIdentifierAsync(nameIdentifier, CancellationToken.None);
+            var user = await userManager.GetUserByEmailAsync(email, CancellationToken.None);
 
             if (user == null)
             {
