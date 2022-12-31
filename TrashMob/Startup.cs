@@ -30,25 +30,22 @@ namespace TrashMob
         }
 
         public IConfiguration Configuration { get; }
-
         private IWebHostEnvironment CurrentEnvironment { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var b2cConfig = "AzureAdB2C";
-
             // The following line enables Application Insights telemetry collection.
             services.AddApplicationInsightsTelemetry();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(options => {
-                    Configuration.Bind(b2cConfig, options);
+                    Configuration.Bind("AzureAdB2C", options);
 
                     options.TokenValidationParameters.NameClaimType = "name";
                 },
 
-            options => { Configuration.Bind(b2cConfig, options); });
+            options => { Configuration.Bind("AzureAdB2C", options); });
 
             services.AddAuthorization(options =>
             {
@@ -81,7 +78,7 @@ namespace TrashMob
             ServiceBuilder.AddRepositories(services);
 
             services.AddDatabaseDeveloperPageExceptionFilter();
-            
+
             if (CurrentEnvironment.IsDevelopment())
             {
                 services.AddScoped<IKeyVaultManager, LocalKeyVaultManager>();
@@ -103,7 +100,7 @@ namespace TrashMob
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "trashmobapi", Version = "v1" });
-            });            
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -141,7 +138,7 @@ namespace TrashMob
             {
                 spa.Options.SourcePath = "client-app";
 
-                if (env.IsDevelopment() && !env.IsEnvironment("Staging"))
+                if (env.IsDevelopment())
                 {
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }

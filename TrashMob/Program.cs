@@ -20,11 +20,6 @@ namespace TrashMob
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, config) =>
                 {
-                    var env = context.HostingEnvironment;
-
-                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                          .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true); // optional extra provider
-
                     if (context.HostingEnvironment.IsProduction())
                     {
                         var builtConfig = config.Build();
