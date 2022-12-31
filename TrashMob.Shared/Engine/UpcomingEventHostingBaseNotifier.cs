@@ -17,7 +17,7 @@ namespace TrashMob.Shared.Engine
                                                 IKeyedManager<User> userManager,
                                                 IEventAttendeeManager eventAttendeeManager,
                                                 IKeyedManager<UserNotification> userNotificationManager,
-                                                IKeyedManager<NonEventUserNotification> nonEventUserNotificationManager,
+                                                INonEventUserNotificationManager nonEventUserNotificationManager,
                                                 IEmailSender emailSender,
                                                 IEmailManager emailManager,
                                                 IMapManager mapRepository,
