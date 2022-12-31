@@ -65,17 +65,9 @@
             await VerifyAccount(userManager);
         }
 
-        private async Task VerifyAccount(IUserManager userManager)
+        private static async Task VerifyAccount(IUserManager userManager)
         {
-            var user = new User
-            {
-                Id = Guid.Empty,
-                NameIdentifier = UserState.UserContext.NameIdentifier,
-                SourceSystemUserName = UserState.UserContext.SourceSystemUserName ?? "",
-                Email = UserState.UserContext.EmailAddress ?? ""
-            };
-
-            App.CurrentUser = await userManager.AddUserAsync(user);
+            App.CurrentUser = await userManager.GetUserByEmailAsync(UserState.UserContext.EmailAddress);
         }
 
         private async Task<UserContext> AcquireTokenSilent()
@@ -97,7 +89,7 @@
                 .ExecuteAsync();
 
             UserState.UserContext = UpdateUserInfo(authResult);
-            await VerifyAccount(userManager);
+            await B2CAuthenticationService.VerifyAccount(userManager);
         }
 
         public async Task EditProfileAsync()

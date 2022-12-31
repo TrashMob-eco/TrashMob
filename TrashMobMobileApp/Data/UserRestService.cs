@@ -39,6 +39,28 @@
             }
         }
 
+        public async Task<User> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var requestUri = UserApi + "/getuserbyemail/" + email;
+                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
+
+                using (var response = await authorizedHttpClient.GetAsync(requestUri, cancellationToken))
+                {
+                    response.EnsureSuccessStatusCode();
+                    string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                    return JsonConvert.DeserializeObject<User>(responseString);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(@"\tERROR {0}", ex.Message);
+                throw;
+            }
+        }
+
         public async Task<User> AddUserAsync(User user, CancellationToken cancellationToken = default)
         {
             try
