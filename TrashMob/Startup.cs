@@ -141,7 +141,7 @@ namespace TrashMob
             {
                 spa.Options.SourcePath = "client-app";
 
-                if (env.IsDevelopment())
+                if (env.IsDevelopment() && !env.IsEnvironment("Staging"))
                 {
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
