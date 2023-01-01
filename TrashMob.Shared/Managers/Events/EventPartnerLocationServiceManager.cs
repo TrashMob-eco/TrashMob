@@ -13,8 +13,6 @@
     using System.Linq;
     using EmailAddress = Poco.EmailAddress;
     using TrashMob.Poco;
-    using TrashMob.Migrations;
-    using Microsoft.Extensions.Logging;
 
     public class EventPartnerLocationServiceManager : BaseManager<EventPartnerLocationService>, IEventPartnerLocationServiceManager
     {
@@ -23,6 +21,7 @@
         private readonly IKeyedRepository<PartnerLocation> partnerLocationRepository;
         private readonly IBaseRepository<PartnerLocationService> partnerLocationServiceRepository;
         private readonly IKeyedRepository<User> userRepository;
+        private readonly IBaseRepository<PartnerAdmin> partnerAdminRepository;
         private readonly IEmailManager emailManager;
 
         public EventPartnerLocationServiceManager(IBaseRepository<EventPartnerLocationService> repository,
@@ -31,6 +30,7 @@
                                            IKeyedRepository<PartnerLocation> partnerLocationRepository,
                                            IBaseRepository<PartnerLocationService> partnerLocationServiceRepository,
                                            IKeyedRepository<User> userRepository,
+                                           IBaseRepository<PartnerAdmin> partnerAdminRepository,
                                            IEmailManager emailManager)
             : base(repository)
         {
@@ -39,6 +39,7 @@
             this.partnerLocationRepository = partnerLocationRepository;
             this.partnerLocationServiceRepository = partnerLocationServiceRepository;
             this.userRepository = userRepository;
+            this.partnerAdminRepository = partnerAdminRepository;
             this.emailManager = emailManager;
         }
 
@@ -192,6 +193,54 @@
             return displayEventPartners;
         }
 
+        public async Task<IEnumerable<DisplayPartnerLocationServiceEvent>> GetByUserAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            var displayEventPartners = new List<DisplayPartnerLocationServiceEvent>();
+
+            // Get list of partners for a user
+            var partners = await partnerAdminRepository.Get(p => p.UserId == userId)
+                                                       .Include(p => p.Partner)
+                                                       .Select(p => p.Partner)
+                                                       .ToListAsync(cancellationToken);
+
+            foreach (var partner in partners)
+            {
+                var currentPartnerLocations = await Repository.Get(p => p.PartnerLocation.Partner.Id == partner.Id )
+                                                              .Include(p => p.PartnerLocation)
+                                                              .Include(p => p.Event)
+                                                              .ToListAsync(cancellationToken: cancellationToken);
+
+                if (currentPartnerLocations.Any())
+                {
+                    // Convert the current list of partner events for the event to a display partner (reduces round trips)
+                    foreach (var cpl in currentPartnerLocations)
+                    {
+                        var displayPartnerLocationEvent = new DisplayPartnerLocationServiceEvent
+                        {
+                            EventId = cpl.EventId,
+                            PartnerLocationId = cpl.PartnerLocationId,
+                            EventPartnerLocationStatusId = cpl.EventPartnerLocationServiceStatusId,
+                            PartnerName = partner.Name,
+                            PartnerLocationName = cpl.PartnerLocation.Name,
+                            EventName = cpl.Event.Name,
+                            EventStreetAddress = cpl.Event.StreetAddress,
+                            EventCity = cpl.Event.City,
+                            EventRegion = cpl.Event.Region,
+                            EventCountry = cpl.Event.Country,
+                            EventPostalCode = cpl.Event.PostalCode,
+                            EventDescription = cpl.Event.Description,
+                            EventDate = cpl.Event.EventDate,
+                            ServiceTypeId = cpl.ServiceTypeId,
+                        };
+
+                        displayEventPartners.Add(displayPartnerLocationEvent);
+                    }
+                }
+            }
+
+            return displayEventPartners;
+        }
+
         public async Task<IEnumerable<DisplayEventPartnerLocationService>> GetByEventAndPartnerLocationAsync(Guid eventId, Guid partnerLocationId, CancellationToken cancellationToken = default)
         {
             var existingServices = await Repository.Get(epls => epls.EventId == eventId && epls.PartnerLocationId == partnerLocationId)
@@ -245,10 +294,20 @@
             return displayEventPartnerLocationServices;
         }
 
+        public async Task<PartnerLocation> GetHaulingPartnerLocationForEvent(Guid eventId, CancellationToken cancellationToken = default)
+        {
+            var partnerLocation = await Repository.Get(ea => ea.EventId == eventId && ea.ServiceTypeId == (int)ServiceTypeEnum.Hauling && ea.EventPartnerLocationServiceStatusId == (int)EventPartnerLocationServiceStatusEnum.Accepted)
+                                                  .Include(p => p.PartnerLocation)
+                                                  .Include(p => p.PartnerLocation.PartnerLocationContacts)
+                                                  .Select(p => p.PartnerLocation)
+                                                  .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+            return partnerLocation;
+        }
+
         public async Task<IEnumerable<DisplayEventPartnerLocation>> GetByEventAsync(Guid eventId, CancellationToken cancellationToken = default)
         {
             var displayEventPartners = new List<DisplayEventPartnerLocation>();
-            var currentPartners = await GetCurrentPartnersAsync(eventId, cancellationToken).ConfigureAwait(false);
+            var currentPartners = (await GetCurrentPartnersAsync(eventId, cancellationToken).ConfigureAwait(false)).DistinctBy(p => new { p.EventId, p.PartnerLocationId });
             var possiblePartners = await GetPotentialPartnerLocationsAsync(eventId, cancellationToken).ConfigureAwait(false);
 
             // Convert the current list of partners for the event to a display partner (reduces round trips)
@@ -256,6 +315,7 @@
             {
                 var existingServices = await Repository.Get(epls => epls.EventId == eventId && epls.PartnerLocationId == cp.PartnerLocationId)
                                                    .Include(p => p.ServiceType)
+                                                   .Include(p => p.EventPartnerLocationServiceStatus)
                                                    .ToListAsync(cancellationToken);
 
                 var partnerServicesEngaged = "None";
@@ -264,12 +324,12 @@
                 {
                     if (isFirst)
                     {
-                        partnerServicesEngaged = service.ServiceType.Name;
+                        partnerServicesEngaged = service.ServiceType.Name + " (" + service.EventPartnerLocationServiceStatus.Name + ")";
                         isFirst = false;
                     }
                     else
                     {
-                        partnerServicesEngaged += ", " + service.ServiceType.Name;
+                        partnerServicesEngaged += ", " + service.ServiceType.Name + " (" + service.EventPartnerLocationServiceStatus.Name + ")";
                     }
                 }
 
@@ -327,8 +387,11 @@
             var mobEvent = await eventRepository.GetAsync(eventId, cancellationToken);
 
             // Simple match on postal code or city first. Radius later
-            var partnerLocations = partnerLocationRepository.Get(pl => pl.IsActive && pl.Partner.PartnerStatusId == (int)PartnerStatusEnum.Active &&
-                        (pl.PostalCode == mobEvent.PostalCode || pl.City == mobEvent.City))
+            var partnerLocations = partnerLocationRepository.Get(pl => pl.IsActive && 
+                                                                 pl.Partner.PartnerStatusId == (int)PartnerStatusEnum.Active &&
+                                                                 (pl.PostalCode == mobEvent.PostalCode || pl.City == mobEvent.City) 
+                                                                 && pl.PartnerLocationContacts.Count > 0
+                                                                 && pl.PartnerLocationServices.Count > 0)
                                 .Include(p => p.Partner);
 
             return partnerLocations;

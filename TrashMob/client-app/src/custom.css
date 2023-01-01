@@ -178,11 +178,15 @@ hr.rounded {
 
 .dropdown-divider {
   margin: 0.5rem 1.25rem !important;
-  border-top: 1px solid #6b6f74 !important;
+  border-top: 1px solid #696B72 !important;
 }
 
 .color-primary {
   color: #96ba00;
+}
+
+.color-grey {
+  color: #696B72;
 }
 
 .border-rounded-lg {
@@ -194,10 +198,17 @@ hr.rounded {
   height: 100px;
 }
 
+/* 14px */
+.font-size-sm {
+  font-size: 0.875rem;
+}
+
+/* 24px */
 .font-size-lg {
   font-size: 1.5rem;
 }
 
+/* 30px */
 .font-size-xl {
   font-size: 1.875rem;
 }
@@ -223,9 +234,14 @@ hr.rounded {
 }
 
 .event-list-event-type {
-  color: #FFBA00;
-  border: 1px solid #FFBA00;
+  color: #FFBA00 !important;
+  border: 1px solid #FFBA00 !important;
   width: fit-content;
+}
+
+.event-list-event-type:hover {
+  color: #FFF !important;
+  background-color: #FFBA00 !important;
 }
 
 input[type="radio"] {
@@ -374,4 +390,97 @@ input[type="radio"]:checked {
 .card-title {
   font-size: 25px;
   font-weight: 500;
+}
+
+.p-15 {
+  font-size: 15px !important;
+  line-height: 22px !important;
+}
+
+.p-18 {
+  font-size: 18px !important;
+  line-height: 27px !important;
+}
+
+.fw-500 {
+  font-weight: 500 !important;
+}
+
+.fw-600 {
+  font-weight: 600 !important;
+}
+
+input:disabled {
+  background-color: #EAEFF6 !important;
+}
+
+.w-24 {
+  width: 24px !important;
+}
+
+.h-49 {
+  height: 49px !important;
+}
+
+.h-60 {
+  height: 60px !important;
+}
+
+.main-header {
+  font-size: 25px;
+  line-height: 38px;
+}
+
+.hero-text {
+  font-weight: 700;
+  font-size: 72px;
+  line-height: 84px;
+  margin: 0;
+  z-index: 2;
+}
+
+.sub-hero-text {
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 36px;
+  margin: 0;
+}
+
+.title-header {
+  position: relative;
+  padding: 72px 0;
+
+}
+
+.globe-img {
+  position: absolute;
+  right: 15px;
+  top: 0;
+}
+
+.object-fit-cover {
+  object-fit: cover;
+}
+
+.directorCard {
+  background-color: white;
+  box-shadow: 0px 4px 17px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  margin-top: 6.5rem;
+}
+
+.card-shadow {
+  box-shadow: 0px 4px 17px rgba(0, 0, 0, 0.1);
+}
+
+.active-border {
+  border: 1px solid #96BA00;
+}
+
+.active-line {
+  border-bottom: 3px solid #96BA00;
+}
+
+.remove-drop-icon::after {
+  display: none !important;
 }

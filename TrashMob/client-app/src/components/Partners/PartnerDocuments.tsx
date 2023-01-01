@@ -1,10 +1,11 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
-import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { Button, Col, Container, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
 import PartnerDocumentData from '../Models/PartnerDocumentData';
+import { Pencil, XSquare } from 'react-bootstrap-icons';
 
 export interface PartnerDocumentsDataProps {
     partnerId: string;
@@ -33,6 +34,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
 
         if (props.isUserLoaded && props.partnerId && props.partnerId !== Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -81,6 +83,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
     }
     function editDocument(partnerDocumentId: string) {
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -114,6 +117,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -156,6 +160,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
         setIsSaveEnabled(false);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -253,16 +258,24 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
         return <Tooltip {...props}>{ToolTips.PartnerDocumentLastUpdatedDate}</Tooltip>
     }
 
+    const documentActionDropdownList = (documentId: string, documentName: string) => {
+        return (
+            <>
+                <Dropdown.Item onClick={() => editDocument(documentId)}><Pencil />Edit Document</Dropdown.Item>
+                <Dropdown.Item onClick={() => removeDocument(documentId, documentName)}><XSquare />Remove Document</Dropdown.Item>
+            </>
+        )
+    }
+
     function renderPartnerDocumentsTable(documents: PartnerDocumentData[]) {
         return (
             <div>
+                <h2 className="color-primary mt-4 mb-5">Partner Documents</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
                             <th>Name</th>
                             <th>Url</th>
-                            <th>Created Date</th>
-                            <th>Last Updated Date</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -270,11 +283,13 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
                             <tr key={document.id.toString()}>
                                 <td>{document.name}</td>
                                 <td>{document.url}</td>
-                                <td>{document.createdDate ? document.createdDate.toLocaleString() : ""}</td>
-                                <td>{document.lastUpdatedDate ? document.lastUpdatedDate.toLocaleString() : ""}</td>
-                                <td>
-                                    <Button className="action" onClick={() => editDocument(document.id)}>Edit Document</Button>
-                                    <Button className="action" onClick={() => removeDocument(document.id, document.url)}>Remove Document</Button>
+                                <td className="btn py-0">
+                                    <Dropdown role="menuitem">
+                                        <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                        <Dropdown.Menu id="share-menu">
+                                            {documentActionDropdownList(document.id, document.name)}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                 </td>
                             </tr>
                         )}
@@ -293,7 +308,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderDocumentNameToolTip}>
-                                    <Form.Label className="control-label" htmlFor="DocumentName">Document Name</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="DocumentName">Document Name</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="DocumentName" defaultValue={documentName} onChange={val => handleDocumentNameChanged(val.target.value)} maxLength={parseInt('64')} required />
                             </Form.Group>
@@ -301,7 +316,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderDocumentUrlToolTip}>
-                                    <Form.Label className="control-label" htmlFor="DocumentUrl">DocumentUrl</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="DocumentUrl">DocumentUrl</Form.Label>
                                 </OverlayTrigger>
                                 <div>
                                     <Form.Control type="text" name="DocumentUrl" defaultValue={documentUrl} onChange={val => handleDocumentUrlChanged(val.target.value)} maxLength={parseInt('64')} required />
@@ -316,7 +331,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
                     <Form.Group className="form-group">
                         <Col>
                             <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
-                                <Form.Label className="control-label">Created Date:</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5">Created Date</Form.Label>
                             </OverlayTrigger>
                             <Form.Group>
                                 <Form.Control type="text" disabled defaultValue={createdDate ? createdDate.toLocaleString() : ""} />
@@ -324,7 +339,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
                         </Col>
                         <Col>
                             <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
-                                <Form.Label className="control-label">Last Updated Date:</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5">Last Updated Date</Form.Label>
                             </OverlayTrigger>
                             <Form.Group>
                                 <Form.Control type="text" disabled defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
@@ -337,13 +352,26 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
     }
 
     return (
-        <>
-            <div>
-                {props.partnerId === Guid.EMPTY && <p> <em>Partner must be created first.</em></p>}
-                {!isPartnerDocumentsDataLoaded && props.partnerId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-                {isPartnerDocumentsDataLoaded && renderPartnerDocumentsTable(partnerDocuments)}
-                {isEditOrAdd && renderAddDocument()}
-            </div>
-        </>
+        <Container>
+            <Row className="gx-2 py-5" lg={2}>
+                <Col lg={4} className="d-flex">
+                    <div className="bg-white py-2 px-5 shadow-sm rounded">
+                        <h2 className="color-primary mt-4 mb-5">Edit Partner Documents</h2>
+                        <p>
+                            This page allows you and the TrashMob administrators to track documents relevant to the partnership. i.e. Volunteer Organizational Agreements or special waivers if needed.
+                            Note that this page will have more functionality added in the future to allow uploading filled out documents or to allow usage of docusign.
+                        </p>
+                    </div>
+                </Col>
+                <Col lg={8}>
+                    <div className="bg-white p-5 shadow-sm rounded">
+                        {props.partnerId === Guid.EMPTY && <p> <em>Partner must be created first.</em></p>}
+                        {!isPartnerDocumentsDataLoaded && props.partnerId !== Guid.EMPTY && <p><em>Loading...</em></p>}
+                        {isPartnerDocumentsDataLoaded && renderPartnerDocumentsTable(partnerDocuments)}
+                        {isEditOrAdd && renderAddDocument()}
+                    </div>
+                </Col>
+            </Row>
+        </Container >
     );
 }

@@ -1,24 +1,67 @@
 import * as React from 'react'
 
 import { RouteComponentProps } from 'react-router-dom';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
-import { Button } from 'react-bootstrap';
+import { Col, Container, Dropdown, Row } from 'react-bootstrap';
 import PartnerRequestData from '../Models/PartnerRequestData';
 import PartnerRequestStatusData from '../Models/PartnerRequestStatusData';
 import { getPartnerRequestStatus } from '../../store/partnerRequestStatusHelper';
 import * as Constants from '../Models/Constants'
+import { CheckSquare, XSquare } from 'react-bootstrap-icons';
+import PhoneInput from 'react-phone-input-2'
 
 interface AdminPartnerRequestsPropsType extends RouteComponentProps {
-    partnerRequestList: PartnerRequestData[];
-    partnerRequestStatusList: PartnerRequestStatusData[];
-    isPartnerRequestDataLoaded: boolean;
-    onPartnerRequestListChanged: any;
     isUserLoaded: boolean;
     currentUser: UserData;
 };
 
 export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (props) => {
+    const [partnerRequestList, setPartnerRequestList] = React.useState<PartnerRequestData[]>([]);
+    const [isPartnerRequestDataLoaded, setIsPartnerRequestDataLoaded] = React.useState<boolean>(false);
+    const [partnerRequestStatusList, setPartnerRequestStatusList] = React.useState<PartnerRequestStatusData[]>([]);
+
+    React.useEffect(() => {
+
+        if (props.isUserLoaded) {
+            const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
+
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                // Load the PartnerRequestStatusList
+                fetch('/api/partnerrequeststatuses', {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<Array<any>>)
+                    .then(data => {
+                        setPartnerRequestStatusList(data);
+                    })
+                    .then(() => {
+                        // Load the Partner Request List
+                        fetch('/api/partnerrequests', {
+                            method: 'GET',
+                            headers: headers,
+                        })
+                            .then(response => response.json() as Promise<Array<PartnerRequestData>>)
+                            .then(data => {
+                                setPartnerRequestList(data);
+                                setIsPartnerRequestDataLoaded(true);
+                            });
+                    });
+            })
+        }
+    }, [props.isUserLoaded])
+
 
     // Handle approve request for a partner  
     function handleApprove(id: string, name: string) {
@@ -26,6 +69,7 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -39,7 +83,21 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
                 fetch('api/partnerrequests/approve/' + id, {
                     method: 'put',
                     headers: headers
-                }).then(() => { props.onPartnerRequestListChanged(); });
+                }).then(() => {
+                    const getHeaders = getDefaultHeaders('GET');
+                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                    // Load the Partner Request List
+                    fetch('/api/partnerrequests', {
+                        method: 'GET',
+                        headers: getHeaders,
+                    })
+                        .then(response => response.json() as Promise<Array<PartnerRequestData>>)
+                        .then(data => {
+                            setPartnerRequestList(data);
+                            setIsPartnerRequestDataLoaded(true);
+                        });
+                });
             });
         }
     }
@@ -50,6 +108,7 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -63,14 +122,38 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
                 fetch('api/partnerrequests/deny/' + id, {
                     method: 'put',
                     headers: headers
-                }).then(() => { props.onPartnerRequestListChanged(); });
+                }).then(() => {
+                    const getHeaders = getDefaultHeaders('GET');
+                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                    // Load the Partner Request List
+                    fetch('/api/partnerrequests', {
+                        method: 'GET',
+                        headers: getHeaders,
+                    })
+                        .then(response => response.json() as Promise<Array<PartnerRequestData>>)
+                        .then(data => {
+                            setPartnerRequestList(data);
+                            setIsPartnerRequestDataLoaded(true);
+                        });
+                });
             });
         }
+    }
+
+    const partnerRequestsActionDropdownList = (partnerRequestId: string, partnerRequestName: string, isBecomeAPartnerRequest: boolean, partnerRequestStatusId: number) => {
+        return (
+            <>
+                <Dropdown.Item disabled={!isBecomeAPartnerRequest || partnerRequestStatusId !== Constants.PartnerRequestStatusPending} onClick={() => handleApprove(partnerRequestId, partnerRequestName)}><CheckSquare />Approve Partner</Dropdown.Item>
+                <Dropdown.Item disabled={!isBecomeAPartnerRequest || partnerRequestStatusId !== Constants.PartnerRequestStatusPending } onClick={() => handleDeny(partnerRequestId, partnerRequestName)}><XSquare />Deny Partner</Dropdown.Item>
+            </>
+        )
     }
 
     function renderPartnerRequestsTable(partnerRequests: PartnerRequestData[]) {
         return (
             <div>
+                <h2 className="color-primary mt-4 mb-5">Partner Requests</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel">
                     <thead>
                         <tr>
@@ -93,17 +176,24 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
                                 <tr key={partnerRequest.id.toString()}>
                                     <td>{partnerRequest.name}</td>
                                     <td>{partnerRequest.email}</td>
-                                    <td>{partnerRequest.phone}</td>
+                                    <td><PhoneInput
+                                        value={partnerRequest.phone}
+                                        disabled
+                                    /></td>
                                     <td>{partnerRequest.website}</td>
                                     <td>{partnerRequest.city}</td>
                                     <td>{partnerRequest.region}</td>
                                     <td>{partnerRequest.country}</td>
-                                    <td>{getPartnerRequestStatus(props.partnerRequestStatusList, partnerRequest.partnerRequestStatusId)}</td>
+                                    <td>{getPartnerRequestStatus(partnerRequestStatusList, partnerRequest.partnerRequestStatusId)}</td>
                                     <td>{partnerRequest.isBecomeAPartnerRequest}</td>
                                     <td>{partnerRequest.notes}</td>
-                                    <td>
-                                        <Button hidden={!partnerRequest.isBecomeAPartnerRequest || partnerRequest.partnerRequestStatusId !== Constants.PartnerRequestStatusSent } className="action" onClick={() => handleApprove(partnerRequest.id, partnerRequest.name)}>Approve Partner</Button>
-                                        <Button hidden={!partnerRequest.isBecomeAPartnerRequest || partnerRequest.partnerRequestStatusId !== Constants.PartnerRequestStatusSent} className="action" onClick={() => handleDeny(partnerRequest.id, partnerRequest.name)}>Deny Partner</Button>
+                                    <td className="btn py-0">
+                                        <Dropdown role="menuitem">
+                                            <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                            <Dropdown.Menu id="share-menu">
+                                                {partnerRequestsActionDropdownList(partnerRequest.id, partnerRequest.name, partnerRequest.isBecomeAPartnerRequest, partnerRequest.partnerRequestStatusId)}
+                                            </Dropdown.Menu>
+                                        </Dropdown>
                                     </td>
                                 </tr>)
                         }
@@ -114,15 +204,20 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
         );
     }
 
-    let contents = props.isPartnerRequestDataLoaded
-        ? renderPartnerRequestsTable(props.partnerRequestList)
+    let contents = isPartnerRequestDataLoaded
+        ? renderPartnerRequestsTable(partnerRequestList)
         : <p><em>Loading...</em></p>;
 
     return (
-        <div>
-            <h1 id="tableLabel">Partner Requests</h1>
-            {contents}
-        </div>
+        <Container>
+            <Row className="gx-2 py-5" lg={2}>
+                <Col lg={12}>
+                    <div className="bg-white p-5 shadow-sm rounded">
+                        {contents}
+                    </div>
+                </Col>
+            </Row>
+        </Container >
     );
 }
 

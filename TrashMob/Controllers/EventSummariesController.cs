@@ -10,6 +10,7 @@ namespace TrashMob.Controllers
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
     using TrashMob.Poco;
+    using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
 
@@ -60,7 +61,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdateEventSummary(EventSummary eventSummary, CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, eventSummary, "UserOwnsEntity");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, eventSummary, AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -77,7 +78,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddEventSummary(EventSummary eventSummary, CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, eventSummary, "UserOwnsEntity");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, eventSummary, AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -92,13 +93,12 @@ namespace TrashMob.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteEventSummary(Guid eventId, CancellationToken cancellationToken)
         {
-            var eventSummary = await eventSummaryManager.GetAsync(es => es.EventId == eventId, cancellationToken).ConfigureAwait(false);
+            var mobEvent = eventManager.GetAsync(eventId, cancellationToken);
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, eventSummary, "UserOwnsEntity");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {

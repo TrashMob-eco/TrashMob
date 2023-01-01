@@ -7,6 +7,7 @@ namespace TrashMobJobs
     using TrashMob.Shared.Persistence;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Configuration;
+    using TrashMob.Shared.Engine;
 
     public class Program
     {
@@ -22,6 +23,7 @@ namespace TrashMobJobs
                 {
                     ServiceBuilder.AddManagers(services);
                     ServiceBuilder.AddRepositories(services);
+                    services.AddScoped<IUserNotificationManager, UserNotificationManager>();
                     services.AddDbContext<MobDbContext>();
                 })
                 .Build();

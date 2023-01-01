@@ -1,0 +1,53 @@
+﻿@namespace TrashMobMobileApp.Features.Events.Components
+
+<style>
+    .tm-step6-container {
+        height: 100%;
+        padding: 20px;
+    }
+
+        .tm-step6-container .tm-loader {
+            top: 50%;
+            position: fixed;
+        }
+
+        .tm-step6-container .container-item {
+            margin-top: 10px;
+        }
+
+        .tm-step6-container .next-btn {
+            margin-top: 10%;
+            width: 100%;
+        }
+</style>
+
+<ErrorBoundary>
+    <ChildContent>
+        <MudContainer Class="tm-step6-container">
+            <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+                @if (_isLoading)
+                {
+                    <MudText Typo="Typo.subtitle2">Creating the event...</MudText>
+                    <MudProgressCircular Indeterminate />
+                }
+                else
+                {
+                    @if (_isCreated)
+                    {
+                        <MudIcon Class="container-item" Size="Size.Large" Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Dark" />
+                        <MudText Class="container-item" Typo="Typo.subtitle2">Event has been created!</MudText>
+                    }
+                    else
+                    {
+                        <MudIcon Class="container-item" Size="Size.Large" Icon="@Icons.Material.Filled.RemoveCircle" Color="Color.Error" />
+                        <MudText Class="container-item" Typo="Typo.subtitle2">Oops! Something went wrong creating your event.</MudText>
+                    }
+                }
+                <MudFab Class="next-btn" Color="Color.Primary" Label="Finish" OnClick="OnStepFinishedAsync" />
+            </MudStack>
+        </MudContainer>
+    </ChildContent>
+    <ErrorContent>
+        @context.Message
+    </ErrorContent>
+</ErrorBoundary>

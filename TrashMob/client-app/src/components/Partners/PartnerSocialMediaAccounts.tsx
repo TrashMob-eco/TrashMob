@@ -1,12 +1,13 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
-import { Button, Col, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { Button, Col, Container, Dropdown, Form, OverlayTrigger, Row, ToggleButton, Tooltip } from 'react-bootstrap';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
 import SocialMediaAccountTypeData from '../Models/SocialMediaAccountTypeData';
 import PartnerSocialMediaAccountData from '../Models/PartnerSocialMediaAccountData';
 import { getSocialMediaAccountType } from '../../store/socialMediaAccountTypeHelper';
+import { Pencil, XSquare } from 'react-bootstrap-icons';
 
 export interface PartnerSocialMediaAccountsDataProps {
     partnerId: string;
@@ -46,6 +47,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
 
         if (props.isUserLoaded && props.partnerId && props.partnerId !== Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -89,6 +91,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
 
     function editAccount(partnerAccountId: string) {
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -123,6 +126,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -141,15 +145,15 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                         setIsSocialMediaAccountDataLoaded(false);
 
                         fetch('/api/partnersocialmediaaccounts/getbypartner/' + props.partnerId, {
-                        method: 'GET',
-                        headers: headers,
+                            method: 'GET',
+                            headers: headers,
+                        })
+                            .then(response => response.json() as Promise<PartnerSocialMediaAccountData[]>)
+                            .then(data => {
+                                setSocialMediaAccounts(data);
+                                setIsSocialMediaAccountDataLoaded(true);
+                            });
                     })
-                        .then(response => response.json() as Promise<PartnerSocialMediaAccountData[]>)
-                        .then(data => {
-                            setSocialMediaAccounts(data);
-                            setIsSocialMediaAccountDataLoaded(true);
-                        });
-                })
             });
         }
     }
@@ -165,6 +169,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
         setIsSaveEnabled(false);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -269,9 +274,19 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
         return <Tooltip {...props}>{ToolTips.PartnerSocialMediaAccountLastUpdatedDate}</Tooltip>
     }
 
+    const accountActionDropdownList = (accountId: string, accountName: string) => {
+        return (
+            <>
+                <Dropdown.Item onClick={() => editAccount(accountId)}><Pencil />Edit Document</Dropdown.Item>
+                <Dropdown.Item onClick={() => removeAccount(accountId, accountName)}><XSquare />Remove Document</Dropdown.Item>
+            </>
+        )
+    }
+
     function renderPartnerSocialMediaAccountsTable(accounts: PartnerSocialMediaAccountData[]) {
         return (
             <div>
+                <h2 className="color-primary mt-4 mb-5">Partner Social Media Accounts</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
@@ -286,10 +301,14 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                                 <td>{account.accountIdentifier}</td>
                                 <td>{getSocialMediaAccountType(socialMediaAccountTypeList, account.socialMediaAccountTypeId)}</td>
                                 <td>{account.isActive === true ? "Yes" : "No"} </td>
-                                <td>
-                                    <Button className="action" onClick={() => editAccount(account.id)}>Edit</Button>
-                                    <Button className="action" onClick={() => removeAccount(account.id, account.accountIdentifier)}>Remove Account</Button>
-                                 </td>
+                                <td className="btn py-0">
+                                    <Dropdown role="menuitem">
+                                        <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                        <Dropdown.Menu id="share-menu">
+                                            {accountActionDropdownList(account.id, account.accountIdentifier)}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </td>
                             </tr>
                         )}
                     </tbody>
@@ -307,7 +326,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderSocialMediaAccountNameToolTip}>
-                                    <Form.Label className="control-label" htmlFor="AccountName">AccountName</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="AccountName">AccountName</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="username" defaultValue={accountName} onChange={val => handleAccountNameChanged(val.target.value)} maxLength={parseInt('64')} required />
                             </Form.Group>
@@ -315,7 +334,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderSocialMediaAccountTypeToolTip}>
-                                    <Form.Label className="control-label" htmlFor="SocialMediaAccountType">Social Media Account Type:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="SocialMediaAccountType">Social Media Account Type</Form.Label>
                                 </OverlayTrigger>
                                 <div>
                                     <select data-val="true" name="socialMediaAccountTypeId" defaultValue={socialMediaAccountTypeId} onChange={(val) => selectSocialMediaAccountType(val.target.value)} required>
@@ -350,7 +369,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                     <Form.Group className="form-group">
                         <Col>
                             <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
-                                <Form.Label className="control-label">Created Date:</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5">Created Date</Form.Label>
                             </OverlayTrigger>
                             <Form.Group>
                                 <Form.Control type="text" disabled defaultValue={createdDate ? createdDate.toLocaleString() : ""} />
@@ -358,7 +377,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                         </Col>
                         <Col>
                             <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
-                                <Form.Label className="control-label">Last Updated Date:</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5">Last Updated Date</Form.Label>
                             </OverlayTrigger>
                             <Form.Group>
                                 <Form.Control type="text" disabled defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
@@ -371,13 +390,26 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
     }
 
     return (
-        <>
-            <div>
-                {props.partnerId === Guid.EMPTY && <p> <em>Partner must be created first.</em></p>}
-                {!isSocialMediaAccountsDataLoaded && props.partnerId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-                {isSocialMediaAccountsDataLoaded && renderPartnerSocialMediaAccountsTable(socialMediaAccounts)}
-                {isEditOrAdd && renderAddPartnerSocialMediaAccount()}
-            </div>
-        </>
+        <Container>
+            <Row className="gx-2 py-5" lg={2}>
+                <Col lg={4} className="d-flex">
+                    <div className="bg-white py-2 px-5 shadow-sm rounded">
+                        <h2 className="color-primary mt-4 mb-5">Edit Partner Social Media Accounts</h2>
+                        <p>This page allows you to add a list of social media accounts you would like to have tagged when you approve a partnership request to both help spread the word about what TrashMob.eco users are
+                            doing within your community, and how your organization is helping your community. This feature is still in development, but adding the information when you set things up now will help
+                            when this feature fully launches.
+                        </p>
+                    </div>
+                </Col>
+                <Col lg={8}>
+                    <div className="bg-white p-5 shadow-sm rounded">
+                        {props.partnerId === Guid.EMPTY && <p> <em>Partner must be created first.</em></p>}
+                        {!isSocialMediaAccountsDataLoaded && props.partnerId !== Guid.EMPTY && <p><em>Loading...</em></p>}
+                        {isSocialMediaAccountsDataLoaded && renderPartnerSocialMediaAccountsTable(socialMediaAccounts)}
+                        {isEditOrAdd && renderAddPartnerSocialMediaAccount()}
+                    </div>
+                </Col>
+            </Row>
+        </Container >
     );
 }

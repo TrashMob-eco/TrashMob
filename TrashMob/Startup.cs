@@ -49,11 +49,11 @@ namespace TrashMob
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("ValidUser", policy => policy.AddRequirements(new UserIsValidUserRequirement()));
-                options.AddPolicy("UserOwnsEntity", policy => policy.AddRequirements(new UserOwnsEntityRequirement()));
-                options.AddPolicy("UserOwnsEntityOrIsAdmin", policy => policy.AddRequirements(new UserOwnsEntityOrIsAdminRequirement()));
-                options.AddPolicy("UserIsPartnerUserOrIsAdmin", policy => policy.AddRequirements(new UserIsPartnerUserOrIsAdminRequirement()));
-                options.AddPolicy("UserIsAdmin", policy => policy.AddRequirements(new UserIsAdminRequirement()));
+                options.AddPolicy(AuthorizationPolicyConstants.ValidUser, policy => policy.AddRequirements(new UserIsValidUserRequirement()));
+                options.AddPolicy(AuthorizationPolicyConstants.UserOwnsEntity, policy => policy.AddRequirements(new UserOwnsEntityRequirement()));
+                options.AddPolicy(AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin, policy => policy.AddRequirements(new UserOwnsEntityOrIsAdminRequirement()));
+                options.AddPolicy(AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin, policy => policy.AddRequirements(new UserIsPartnerUserOrIsAdminRequirement()));
+                options.AddPolicy(AuthorizationPolicyConstants.UserIsAdmin, policy => policy.AddRequirements(new UserIsAdminRequirement()));
             });
 
             // In production, the React files will be served from this directory
@@ -78,7 +78,7 @@ namespace TrashMob
             ServiceBuilder.AddRepositories(services);
 
             services.AddDatabaseDeveloperPageExceptionFilter();
-            
+
             if (CurrentEnvironment.IsDevelopment())
             {
                 services.AddScoped<IKeyVaultManager, LocalKeyVaultManager>();
@@ -100,7 +100,7 @@ namespace TrashMob
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "trashmobapi", Version = "v1" });
-            });            
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

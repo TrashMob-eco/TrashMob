@@ -1,16 +1,19 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
-import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { Button, Col, Dropdown, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
 import PartnerLocationContactData from '../Models/PartnerLocationContactData';
 import * as Constants from '../Models/Constants';
+import { Pencil, XSquare } from 'react-bootstrap-icons';
+import PhoneInput from 'react-phone-input-2'
 
 export interface PartnerLocationContactsDataProps {
     partnerLocationId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
+    onSave: any;
 };
 
 export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps> = (props) => {
@@ -39,6 +42,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
 
         if (props.isUserLoaded && props.partnerLocationId && props.partnerLocationId !== Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -91,6 +95,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
 
     function editContact(partnerLocationContactId: string) {
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -126,6 +131,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -168,6 +174,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
         setIsSaveEnabled(false);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -214,6 +221,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                             setIsPartnerLocationContactsDataLoaded(true);
                             setIsEditOrAdd(false);
                             setIsAddEnabled(true);
+                            props.onSave();
                         });
                 });
         });
@@ -317,9 +325,19 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
         return <Tooltip {...props}>{ToolTips.PartnerLocationContactLastUpdatedDate}</Tooltip>
     }
 
+    const locationContactActionDropdownList = (contactId: string, contactName: string) => {
+        return (
+            <>
+                <Dropdown.Item onClick={() => editContact(contactId)}><Pencil />Edit Service</Dropdown.Item>
+                <Dropdown.Item onClick={() => removeContact(contactId, contactName)}><XSquare />Remove Service</Dropdown.Item>
+            </>
+        )
+    }
+
     function renderPartnerLocationServicesTable(contacts: PartnerLocationContactData[]) {
         return (
             <div>
+                <h2 className="color-primary mt-4 mb-5">Partner Location Contacts</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
@@ -327,8 +345,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                             <th>Email</th>
                             <th>Phone</th>
                             <th>Notes</th>
-                            <th>Created Date</th>
-                            <th>Last Updated Date</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -336,15 +353,20 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                             <tr key={contact.id}>
                                 <td>{contact.name}</td>
                                 <td>{contact.email}</td>
+                                <td><PhoneInput
+                                    value={contact.phone}
+                                    disabled
+                                /></td>
                                 <td>{contact.phone}</td>
                                 <td>{contact.notes}</td>
-                                <td>{createdDate ? createdDate.toLocaleString() : ""}</td>
-                                <td>{lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""}</td>
-                                <td>
-                                    <Button className="action" onClick={() => editContact(contact.id)}>Edit Contact</Button>
-                                    <Button className="action" onClick={() => removeContact(contact.id, contact.name)}>Remove Contact</Button>
-                                </td>
-                            </tr>
+                                <td className="btn py-0">
+                                    <Dropdown role="menuitem">
+                                        <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                        <Dropdown.Menu id="share-menu">
+                                            {locationContactActionDropdownList(contact.id, contact.name)}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </td>                            </tr>
                         )}
                     </tbody>
                 </table>
@@ -361,7 +383,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderNameToolTip}>
-                                    <Form.Label className="control-label">Contact Name:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5">Contact Name</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{nameErrors}</span>
@@ -370,7 +392,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
-                                    <Form.Label className="control-label">Email:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5">Email</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required />
                                 <span style={{ color: "red" }}>{emailErrors}</span>
@@ -379,16 +401,20 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderPhoneToolTip}>
-                                    <Form.Label className="control-label">Phone:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5">Phone</Form.Label>
                                 </OverlayTrigger>
-                                <Form.Control type="text" defaultValue={phone} maxLength={parseInt('64')} onChange={(val) => handlePhoneChanged(val.target.value)} />
+                                <PhoneInput
+                                    country={'us'}
+                                    value={phone}
+                                    onChange={(val) => handlePhoneChanged(val)}
+                                />
                                 <span style={{ color: "red" }}>{phoneErrors}</span>
                             </Form.Group >
                         </Col>
                     </Form.Row>
                     <Form.Group className="required">
                         <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                            <Form.Label className="control-label">Notes:</Form.Label>
+                            <Form.Label className="control-label font-weight-bold h5">Notes</Form.Label>
                         </OverlayTrigger>
                         <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} required />
                         <span style={{ color: "red" }}>{notesErrors}</span>
@@ -400,7 +426,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                     <Form.Group className="form-group">
                         <Col>
                             <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
-                                <Form.Label className="control-label">Created Date:</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5">Created Date</Form.Label>
                             </OverlayTrigger>
                             <Form.Group>
                                 <Form.Control type="text" disabled defaultValue={createdDate ? createdDate.toLocaleString() : ""} />
@@ -408,7 +434,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                         </Col>
                         <Col>
                             <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
-                                <Form.Label className="control-label">Last Updated Date:</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5">Last Updated Date</Form.Label>
                             </OverlayTrigger>
                             <Form.Group>
                                 <Form.Control type="text" disabled defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
@@ -421,13 +447,11 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
     }
 
     return (
-        <>
-            <div>
-                {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner location must be created first.</em></p>}
-                {!isPartnerLocationContactsDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-                {isPartnerLocationContactsDataLoaded && renderPartnerLocationServicesTable(partnerLocationContacts)}
-                {isEditOrAdd && renderAddPartnerLocationContact()}
-            </div>
-        </>
+        <div className="bg-white p-5 shadow-sm rounded">
+            {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner location must be created first.</em></p>}
+            {!isPartnerLocationContactsDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
+            {isPartnerLocationContactsDataLoaded && renderPartnerLocationServicesTable(partnerLocationContacts)}
+            {isEditOrAdd && renderAddPartnerLocationContact()}
+        </div>
     );
 }

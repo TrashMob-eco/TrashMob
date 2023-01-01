@@ -11,6 +11,7 @@ namespace TrashMob.Controllers
     using TrashMob.Shared;
     using Microsoft.ApplicationInsights;
     using TrashMob.Models;
+    using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
     using System.Security.Claims;
 
@@ -26,15 +27,15 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "UserIsAdmin")]
+        [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
         {
             var result = await userManager.GetAsync(cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
-        [HttpGet("getUserByUserName/{userName}")]
-        [Authorize(Policy = "ValidUser")]
+        [HttpGet("getuserbyusername/{userName}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> GetUser(string userName, CancellationToken cancellationToken)
         {
             var user = await userManager.GetUserByUserNameAsync(userName, cancellationToken).ConfigureAwait(false);
@@ -47,8 +48,22 @@ namespace TrashMob.Controllers
             return Ok(user);
         }
 
-        [HttpGet("verifyunique/{userId}/{userName}")]
+        [HttpGet("getuserbyemail/{email}")]
         [Authorize(Policy = "ValidUser")]
+        public async Task<IActionResult> GetUserByEmail(string email, CancellationToken cancellationToken)
+        {
+            var user = await userManager.GetUserByEmailAsync(email, cancellationToken).ConfigureAwait(false);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
+        }
+
+        [HttpGet("verifyunique/{userId}/{userName}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> VerifyUnique(Guid userId, string userName, CancellationToken cancellationToken)
         {
             var user = await userManager.GetUserByUserNameAsync(userName, cancellationToken).ConfigureAwait(false);
@@ -67,7 +82,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> GetUserByInternalId(Guid id, CancellationToken cancellationToken = default)
         {
             var user = await userManager.GetUserByInternalIdAsync(id, cancellationToken).ConfigureAwait(false);
@@ -83,7 +98,7 @@ namespace TrashMob.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut()]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> PutUser(User user, CancellationToken cancellationToken)
         {
             try
@@ -105,49 +120,8 @@ namespace TrashMob.Controllers
             }
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPost]
-        [Authorize]
-        [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> PostUser(User user, CancellationToken cancellationToken)
-        {
-            User originalUser;
-
-            if ((originalUser = await userManager.UserExistsAsync(user.NameIdentifier, cancellationToken).ConfigureAwait(false)) != null)
-            {
-                if (!ValidateUser(originalUser.NameIdentifier))
-                {
-                    return Forbid();
-                }
-
-                originalUser.Email = user.Email;
-                originalUser.SourceSystemUserName = user.SourceSystemUserName;
-
-                var updatedUser = await userManager.UpdateAsync(originalUser, cancellationToken).ConfigureAwait(false);
-                TelemetryClient.TrackEvent("UpdateUser");
-
-                return Ok(updatedUser);
-            }
-
-            if (string.IsNullOrEmpty(user.UserName))
-            {
-                // On insert we need a random user name to avoid duplicates, but we don't want to show the full email address ever, so take a subset
-                // of their email and then add a random number to the end.
-                Random rnd = new();
-                var userNum = rnd.Next(100, 999).ToString();
-                var first = user.Email.Split("@")[0];
-                user.UserName = first.Substring(0, Math.Min(first.Length - 1, 8)) + userNum;
-            }
-
-            var newUser = await userManager.AddAsync(user, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent("AddUser");
-
-            return CreatedAtAction(nameof(GetUserByInternalId), new { id = newUser.Id }, newUser);
-        }
-
         [HttpDelete("{id}")]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteUser(Guid id, CancellationToken cancellationToken)
         {

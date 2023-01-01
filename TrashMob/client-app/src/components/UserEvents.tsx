@@ -3,7 +3,7 @@ import * as React from 'react'
 import { RouteComponentProps } from 'react-router-dom';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
-import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
 import UserData from './Models/UserData';
 import { Button } from 'react-bootstrap';
@@ -25,6 +25,7 @@ export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,

@@ -1,12 +1,13 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
-import { Button, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { Button, Col, Dropdown, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
 import ServiceTypeData from '../Models/ServiceTypeData';
 import { getServiceType } from '../../store/serviceTypeHelper';
 import PartnerLocationServiceData from '../Models/PartnerLocationServiceData';
+import { Pencil, XSquare } from 'react-bootstrap-icons';
 
 export interface PartnerLocationServicesDataProps {
     partnerLocationId: string;
@@ -45,6 +46,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
 
         if (props.isUserLoaded && props.partnerLocationId && props.partnerLocationId !== Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -94,6 +96,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
 
     function editService(serviceTypeId: number) {
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -126,6 +129,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -168,6 +172,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
         setIsSaveEnabled(false);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -260,16 +265,25 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
         return <Tooltip {...props}>{ToolTips.PartnerServiceType}</Tooltip>
     }
 
+    const locationServiceActionDropdownList = (serviceTypeId: number) => {
+        return (
+            <>
+                <Dropdown.Item onClick={() => editService(serviceTypeId)}><Pencil />Edit Service</Dropdown.Item>
+                <Dropdown.Item onClick={() => removeService(serviceTypeId)}><XSquare />Remove Service</Dropdown.Item>
+            </>
+        )
+    }
+
     function renderPartnerLocationServicesTable(services: PartnerLocationServiceData[]) {
         return (
             <div>
+                <h2 className="color-primary mt-4 mb-5">Partner Location Services</h2>
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
                             <th>Service Type</th>
                             <th>Notes</th>
-                            <th>Created Date</th>
-                            <th>Last Updated Date</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -277,11 +291,13 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                             <tr key={service.serviceTypeId}>
                                 <td>{getServiceType(serviceTypeList, service.serviceTypeId)}</td>
                                 <td>{service.notes}</td>
-                                <td>{createdDate ? createdDate.toLocaleString() : ""}</td>
-                                <td>{lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""}</td>
-                                <td>
-                                    <Button className="action" onClick={() => editService(service.serviceTypeId)}>Edit Service</Button>
-                                    <Button className="action" onClick={() => removeService(service.serviceTypeId)}>Remove Service</Button>
+                                <td className="btn py-0">
+                                    <Dropdown role="menuitem">
+                                        <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                        <Dropdown.Menu id="share-menu">
+                                            {locationServiceActionDropdownList(service.serviceTypeId)}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                 </td>
                             </tr>
                         )}
@@ -300,7 +316,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                         <Col>
                             <Form.Group>
                                 <OverlayTrigger placement="top" overlay={renderServiceTypeToolTip}>
-                                    <Form.Label className="control-label" htmlFor="ServiceType">Service Type:</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="ServiceType">Service Type</Form.Label>
                                 </OverlayTrigger>
                                 <div>
                                     <select disabled={isEdit} data-val="true" name="serviceTypeId" defaultValue={serviceTypeId} onChange={(val) => selectServiceType(val.target.value)} required>
@@ -315,7 +331,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                         <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                                    <Form.Label className="control-label" htmlFor="serviceType">Notes</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="serviceType">Notes</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="notes" defaultValue={notes} onChange={val => handleNotesChanged(val.target.value)} maxLength={parseInt('64')} required />
                                 <span style={{ color: "red" }}>{notesErrors}</span>
@@ -323,13 +339,13 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                         </Col>
                         <Col>
                             <Form.Group>
-                                <Form.Label className="control-label" htmlFor="createdDate">Created Date</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5" htmlFor="createdDate">Created Date</Form.Label>
                                 <Form.Control type="text" disabled defaultValue={createdDate ? createdDate.toLocaleString() : ""} />
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group>
-                                <Form.Label className="control-label" htmlFor="lastUpdatedDate">Last Updated Date</Form.Label>
+                                <Form.Label className="control-label font-weight-bold h5" htmlFor="lastUpdatedDate">Last Updated Date</Form.Label>
                                 <Form.Control type="text" disabled defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
                             </Form.Group>
                         </Col>
@@ -342,13 +358,11 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
     }
 
     return (
-        <>
-            <div>
-                {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner location must be created first.</em></p>}
-                {!isPartnerLocationServicesDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-                {isPartnerLocationServicesDataLoaded && partnerLocationServices && renderPartnerLocationServicesTable(partnerLocationServices)}
-                {(isEdit || isAdd) && renderAddPartnerService()}
-            </div>
-        </>
+        <div className="bg-white p-5 shadow-sm rounded">
+            {props.partnerLocationId === Guid.EMPTY && <p> <em>Partner location must be created first.</em></p>}
+            {!isPartnerLocationServicesDataLoaded && props.partnerLocationId !== Guid.EMPTY && <p><em>Loading...</em></p>}
+            {isPartnerLocationServicesDataLoaded && partnerLocationServices && renderPartnerLocationServicesTable(partnerLocationServices)}
+            {(isEdit || isAdd) && renderAddPartnerService()}
+        </div>
     );
 }

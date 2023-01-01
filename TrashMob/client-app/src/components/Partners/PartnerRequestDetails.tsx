@@ -1,22 +1,22 @@
 import * as React from 'react'
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
-import { Button, Col, Form } from 'react-bootstrap';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import PartnerRequestData from '../Models/PartnerRequestData';
 import UserData from '../Models/UserData';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import AddressData from '../Models/AddressData';
 import MapControllerSinglePointNoEvents from '../MapControllerSinglePointNoEvent';
 import PartnerRequestStatusData from '../Models/PartnerRequestStatusData';
 import PartnerTypeData from '../Models/PartnerTypeData';
 import { getPartnerRequestStatus } from '../../store/partnerRequestStatusHelper';
 import { getPartnerType } from '../../store/partnerTypeHelper';
 import { Guid } from 'guid-typescript';
+import PhoneInput from 'react-phone-input-2'
 
 export interface PartnerRequestDetailsMatchParams {
     partnerRequestId: string;
@@ -75,6 +75,7 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
 
             setIsPartnerRequestDataLoaded(false);
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             const request = {
                 scopes: apiConfig.b2cScopes,
@@ -149,7 +150,7 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
     // This will handle Cancel button click event.  
     function handleCancel(event: any) {
         event.preventDefault();
-        props.history.push("/");
+        props.history.push("/mydashboard");
     }
 
     function renderNameToolTip(props: any) {
@@ -209,167 +210,169 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
     }
 
     function handleLocationChange(point: data.Position) {
-        // In an Azure Map point, the longitude is the first position, and latitude is second
-        setLatitude(point[1]);
-        setLongitude(point[0]);
-        var locationString = point[1] + ',' + point[0]
-        var headers = getDefaultHeaders('GET');
-
-        MapStore.getKey()
-            .then(key => {
-                fetch('https://atlas.microsoft.com/search/address/reverse/json?subscription-key=' + key + '&api-version=1.0&query=' + locationString, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<AddressData>)
-                    .then(data => {
-                        setCity(data.addresses[0].address.municipality);
-                        setCountry(data.addresses[0].address.country);
-                        setRegion(data.addresses[0].address.countrySubdivisionName);
-                        setPostalCode(data.addresses[0].address.postalCode);
-                    })
-            })
+        // Do nothing. This is a read-only form
     }
 
     // Returns the HTML Form to the render() method.  
     function renderDetailsForm() {
-    return (
-        <div className="container-fluid card">
-            <h1>Your partner request has been sent</h1>
-            <Form>
-                <Form.Row>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderNameToolTip}>
-                                <Form.Label className="control-label">Partner Name:</Form.Label>
-                            </OverlayTrigger>
-                            <span>{name}</span>
-                        </Form.Group>
+        return (
+            <Container>
+                <Row className="gx-2 py-5" lg={2}>
+                    <Col lg={4} className="d-flex">
+                        <div className="bg-white py-2 px-5 shadow-sm rounded">
+                            <h2 className="color-primary mt-4 mb-5">Partner request sent</h2>
+                            <p>
+                                This partner request has been sent!
+                            </p>
+                        </div>
                     </Col>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderPartnerTypeToolTip}>
-                                <Form.Label className="control-label">Partner Types:</Form.Label>
-                            </OverlayTrigger>
-                            <span>{getPartnerType(partnerTypeList, partnerTypeId)}</span>
-                        </Form.Group>
+                    <Col lg={8}>
+                        <div className="bg-white p-5 shadow-sm rounded">
+                            <h2 className="color-primary mt-4 mb-5">Partner Request</h2>
+                            <Form>
+                                <Form.Row>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderNameToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5">Partner Name</Form.Label>
+                                            </OverlayTrigger>
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="name" value={name} />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderPartnerTypeToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5">Partner Type</Form.Label>
+                                            </OverlayTrigger>
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="partnerType" value={getPartnerType(partnerTypeList, partnerTypeId)} />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderPartnerRequestStatusToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5">Request Status</Form.Label>
+                                            </OverlayTrigger>
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="requestStatus" value={getPartnerRequestStatus(partnerRequestStatusList, partnerRequestStatusId)} />
+                                        </Form.Group>
+                                    </Col>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5">Email</Form.Label>
+                                            </OverlayTrigger>
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="email" value={email} />
+                                        </Form.Group >
+                                    </Col>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderPhoneToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5">Phone</Form.Label>
+                                            </OverlayTrigger>
+                                            <PhoneInput
+                                                value={phone}
+                                                disabled
+                                            />
+                                        </Form.Group >
+                                    </Col>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderWebsiteToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5">Website</Form.Label>
+                                            </OverlayTrigger>
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="website" value={website} />
+                                        </Form.Group >
+                                    </Col>
+                                </Form.Row>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
+                                        <Form.Label className="control-label font-weight-bold h5">Notes</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="notes" value={notes} />
+                                </Form.Group >
+                                <Form.Row>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5" htmlFor="City">Street Address</Form.Label>
+                                            </OverlayTrigger >
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="streetAddress" value={streetAddress} />
+                                        </Form.Group>
+                                    </Col>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderCityToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5" htmlFor="City">City</Form.Label>
+                                            </OverlayTrigger >
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="city" value={city} />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5" htmlFor="PostalCode">Postal Code</Form.Label>
+                                            </OverlayTrigger >
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="postalCode" value={postalCode} />
+                                        </Form.Group>
+                                    </Col>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5" htmlFor="Region">Region</Form.Label>
+                                            </OverlayTrigger >
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="region" value={region} />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5" htmlFor="Country">Country</Form.Label>
+                                            </OverlayTrigger >
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="country" value={country ?? ""} />
+                                        </Form.Group>
+                                    </Col>
+                                </Form.Row>
+                                <Form.Row>
+                                    <AzureMapsProvider>
+                                        <>
+                                            <MapControllerSinglePointNoEvents center={center} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isDraggable={false} />
+                                        </>
+                                    </AzureMapsProvider>
+                                </Form.Row>
+                                <Form.Group className="form-group">
+                                    <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
+                                </Form.Group >
+                                <Form.Row>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5" htmlFor="createdDate">Created Date</Form.Label>
+                                            </OverlayTrigger>
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="createdDate" value={createdDate.toString()} />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
+                                                <Form.Label className="control-label font-weight-bold h5" htmlFor="lastUpdatedDate">Last Updated Date</Form.Label>
+                                            </OverlayTrigger>
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="lastUpdatedDate" value={lastUpdatedDate.toString()} />
+                                        </Form.Group>
+                                    </Col>
+                                </Form.Row>
+                            </Form >
+                        </div>
                     </Col>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderPartnerRequestStatusToolTip}>
-                                <Form.Label className="control-label">Request Status:</Form.Label>
-                            </OverlayTrigger>
-                            <span>{getPartnerRequestStatus(partnerRequestStatusList, partnerRequestStatusId)}</span>
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
-                                <Form.Label className="control-label">Email:</Form.Label>
-                            </OverlayTrigger>
-                            <span>{email}</span>
-                        </Form.Group >
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderWebsiteToolTip}>
-                                <Form.Label className="control-label">Website:</Form.Label>
-                            </OverlayTrigger>
-                            <span>{website}</span>
-                        </Form.Group >
-                    </Col>
-                </Form.Row>
-                <Form.Row>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderPhoneToolTip}>
-                                <Form.Label className="control-label">Phone:</Form.Label>
-                            </OverlayTrigger>
-                            <span>{phone}</span>
-                        </Form.Group >
-                    </Col>
-                </Form.Row>
-                <Form.Group>
-                    <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                        <Form.Label className="control-label">Notes:</Form.Label>
-                    </OverlayTrigger>
-                    <span>{notes}</span>
-                </Form.Group >
-                <Form.Row>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
-                                <Form.Label className="control-label" htmlFor="City">Street Address:</Form.Label>
-                            </OverlayTrigger >
-                            <span>{streetAddress}</span>
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderCityToolTip}>
-                                <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
-                            </OverlayTrigger >
-                            <span>{city}</span>
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                <Form.Label className="control-label" htmlFor="PostalCode">Postal Code:</Form.Label>
-                            </OverlayTrigger >
-                            <span>{postalCode}</span>
-                        </Form.Group>
-                    </Col>
-                </Form.Row>
-                <Form.Row>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
-                                <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
-                            </OverlayTrigger >
-                            <span>{country ?? ""}</span>
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
-                                <Form.Label className="control-label" htmlFor="Region">Region:</Form.Label>
-                            </OverlayTrigger >
-                            <span>{region}</span>
-                        </Form.Group>
-                    </Col>
-                </Form.Row>
-                <Form.Row>
-                    <AzureMapsProvider>
-                        <>
-                            <MapControllerSinglePointNoEvents center={center} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isDraggable={false} />
-                        </>
-                    </AzureMapsProvider>
-                </Form.Row>
-                <Form.Group className="form-group">
-                    <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
-                </Form.Group >
-                <Form.Row>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderCreatedDateToolTip}>
-                                <Form.Label className="control-label" htmlFor="createdDate">Created Date:</Form.Label>
-                            </OverlayTrigger>
-                            <span>{createdDate.toString()}</span>
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <OverlayTrigger placement="top" overlay={renderLastUpdatedDateToolTip}>
-                                <Form.Label className="control-label" htmlFor="lastUpdatedDate">Last Updated Date:</Form.Label>
-                            </OverlayTrigger>
-                            <span>{lastUpdatedDate.toString()}</span>
-                        </Form.Group>
-                    </Col>
-                </Form.Row>
-            </Form >
-        </div>
-    )
+                </Row>
+            </Container>
+        )
     }
     var contents = isPartnerRequestDataLoaded && isPartnerRequestIdReady && partnerRequestId
         ? renderDetailsForm()

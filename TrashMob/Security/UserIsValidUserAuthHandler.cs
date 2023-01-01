@@ -20,16 +20,19 @@
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsValidUserRequirement requirement)
         {
-            var userName = context.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var email = context.User.FindFirst(ClaimTypes.Email).Value;
 
-            var user = await userManager.GetUserByUserNameAsync(userName, CancellationToken.None);
+            var user = await userManager.GetUserByEmailAsync(email, CancellationToken.None);
 
             if (user == null)
             {
                 return;
             }
 
-            httpContext.HttpContext.Items.Add("UserId", user.Id);
+            if (!httpContext.HttpContext.Items.ContainsKey("UserId"))
+            {
+                httpContext.HttpContext.Items.Add("UserId", user.Id);
+            }
 
             context.Succeed(requirement);
         }

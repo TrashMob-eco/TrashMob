@@ -1,18 +1,18 @@
 import * as React from 'react'
 import EventData from '../Models/EventData';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
-import { Button, Col, Form } from 'react-bootstrap';
+import { Button, Col, Container, Form } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
 
 export interface CancelEventMatchParams {
     eventId: string;
 }
 
-export interface CancelEventProps extends RouteComponentProps<CancelEventMatchParams>{
+export interface CancelEventProps extends RouteComponentProps<CancelEventMatchParams> {
     isUserLoaded: boolean;
     currentUser: UserData;
 }
@@ -78,6 +78,7 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
 
         // PUT request for Edit Event.  
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -112,7 +113,7 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
                         <Col>
                             <Form.Group className="required" >
                                 <OverlayTrigger placement="top" overlay={renderCancellationReasonToolTip}>
-                                    <Form.Label className="control-label" htmlFor="Name">Reason for Cancelling the Event?</Form.Label>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Name">Reason for Cancelling the Event?</Form.Label>
                                 </OverlayTrigger>
                                 <Form.Control type="text" name="cancellationReason" defaultValue={cancellationReason} onChange={(val) => handleCancellationReasonChanged(val.target.value)} maxLength={parseInt('200')} required />
                             </Form.Group>
@@ -137,8 +138,10 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
         : <p><em>Loading...</em></p>;
 
     return <div>
-        <h3>Cancel Event</h3>
-        <hr />
-        {contents}
+        <Container className='p-4 bg-white rounded my-5'>
+            <h2>Cancel Event</h2>
+            <hr />
+            {contents}
+        </Container>
     </div>;
 }

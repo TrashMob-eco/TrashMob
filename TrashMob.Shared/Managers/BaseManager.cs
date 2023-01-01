@@ -60,7 +60,7 @@ namespace TrashMob.Shared.Managers
             return await Repository.Get(expression).ToListAsync(cancellationToken);
         }
 
-        public virtual async Task<IEnumerable<T>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<T>> GetByCreatedUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             var results = await Repository.Get()
                 .Where(t => t.CreatedByUserId == userId)

@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { RouteComponentProps } from 'react-router-dom';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Button, ButtonGroup, Col, Container, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import * as ToolTips from "../../store/ToolTips";
@@ -45,6 +45,7 @@ export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> =
         var data = JSON.stringify(messageRequestData);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -125,7 +126,7 @@ export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> =
 
                                 <Form.Group className="required">
                                     <OverlayTrigger placement="top" overlay={renderNameToolTip}>
-                                        <Form.Label className="control-label">User Name:</Form.Label>
+                                        <Form.Label className="control-label font-weight-bold h5">User Name</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required placeholder="Enter Name" />
                                     <span style={{ color: "red" }}>{nameErrors}</span>
@@ -133,7 +134,7 @@ export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> =
 
                                 <Form.Group className="required">
                                     <OverlayTrigger placement="top" overlay={renderMessageToolTip}>
-                                        <Form.Label className="control-label">Message:</Form.Label>
+                                        <Form.Label className="control-label font-weight-bold h5">Message</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control as="textarea" defaultValue={message} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleMessageChanged(val.target.value)} required placeholder="Enter Message" />
                                     <span style={{ color: "red" }}>{messageErrors}</span>

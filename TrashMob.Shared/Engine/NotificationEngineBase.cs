@@ -22,7 +22,7 @@
 
         protected IKeyedManager<UserNotification> UserNotificationManager { get; }
 
-        protected IKeyedManager<NonEventUserNotification> NonEventUserNotificationManager { get; }
+        protected INonEventUserNotificationManager NonEventUserNotificationManager { get; }
 
         protected IEmailManager EmailManager { get; }
 
@@ -44,7 +44,7 @@
                                       IKeyedManager<User> userManager,
                                       IEventAttendeeManager eventAttendeeManager,
                                       IKeyedManager<UserNotification> userNotificationManager,
-                                      IKeyedManager<NonEventUserNotification> nonEventUserNotificationManager,
+                                      INonEventUserNotificationManager nonEventUserNotificationManager,
                                       IEmailSender emailSender,
                                       IEmailManager emailManager,
                                       IMapManager mapRepository,

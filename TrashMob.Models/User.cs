@@ -77,9 +77,13 @@ namespace TrashMob.Models
 
         public virtual ICollection<Partner> PartnersUpdated { get; set; }
 
-        public virtual ICollection<PartnerUser> PartnerUsersCreated { get; set; }
+        public virtual ICollection<PartnerAdmin> PartnerAdminsCreated { get; set; }
 
-        public virtual ICollection<PartnerUser> PartnerUsersUpdated { get; set; }
+        public virtual ICollection<PartnerAdmin> PartnerAdminsUpdated { get; set; }
+
+        public virtual ICollection<PartnerAdminInvitation> PartnerAdminInvitationsCreated { get; set; }
+
+        public virtual ICollection<PartnerAdminInvitation> PartnerAdminInvitationsUpdated { get; set; }
 
         public virtual ICollection<PartnerLocation> PartnerLocationsCreated { get; set; }
 
@@ -140,5 +144,13 @@ namespace TrashMob.Models
         public virtual ICollection<EventAttendee> EventAttendeesCreated { get; set; }
 
         public virtual ICollection<EventAttendee> EventAttendeesUpdated { get; set; }
+
+        public virtual ICollection<Waiver> WaiverStatusesCreated { get; set; }
+
+        public virtual ICollection<Waiver> WaiverStatusesUpdated { get; set; }
+
+        public virtual ICollection<PickupLocation> PickupLocationsCreated { get; set; }
+
+        public virtual ICollection<PickupLocation> PickupLocationsUpdated { get; set; }
     }
 }

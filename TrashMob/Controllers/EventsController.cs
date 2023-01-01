@@ -9,11 +9,11 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
-    using TrashMob.Common;
     using TrashMob.Shared;
     using System.Collections.Generic;
     using TrashMob.Poco;
     using Microsoft.ApplicationInsights;
+    using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Models;
 
@@ -60,7 +60,7 @@ namespace TrashMob.Controllers
 
         [HttpGet]
         [Route("eventsuserisattending/{userId}")]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
         public async Task<IActionResult> GetEventsUserIsAttending(Guid userId, CancellationToken cancellationToken)
         {
@@ -69,7 +69,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
         [Route("userevents/{userId}/{futureEventsOnly}")]
         public async Task<IActionResult> GetUserEvents(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken)
@@ -82,7 +82,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
         [Route("canceleduserevents/{userId}/{futureEventsOnly}")]
         public async Task<IActionResult> GetCanceledUserEvents(Guid userId, bool futureEventsOnly, CancellationToken cancellationToken)
@@ -111,7 +111,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdateEvent(Event mobEvent, CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, "UserOwnsEntity");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
             
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded )
             {
@@ -139,7 +139,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "ValidUser")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddEvent(Event mobEvent, CancellationToken cancellationToken)
         {
@@ -156,7 +156,7 @@ namespace TrashMob.Controllers
         {
             var mobEvent = await eventManager.GetAsync(eventCancellationRequest.EventId, cancellationToken).ConfigureAwait(false);
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, "UserOwnsEntity");
+            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {

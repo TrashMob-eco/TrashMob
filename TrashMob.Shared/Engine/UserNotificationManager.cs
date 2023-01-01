@@ -12,7 +12,7 @@
         private readonly IKeyedManager<User> userManager;
         private readonly IEventAttendeeManager eventAttendeeManager;
         private readonly IKeyedManager<UserNotification> userNotificationManager;
-        private readonly IKeyedManager<NonEventUserNotification> nonEventUserNotificationManager;
+        private readonly INonEventUserNotificationManager nonEventUserNotificationManager;
         private readonly IEmailSender emailSender;
         private readonly IEmailManager emailManager;
         private readonly IMapManager mapRepository;
@@ -23,7 +23,7 @@
                                        IKeyedManager<User> userManager,
                                        IEventAttendeeManager eventAttendeeManager,
                                        IKeyedManager<UserNotification> userNotificationManager,
-                                       IKeyedManager<NonEventUserNotification> nonEventUserNotificationManager,
+                                       INonEventUserNotificationManager nonEventUserNotificationManager,
                                        IEmailSender emailSender,
                                        IEmailManager emailManager,
                                        IMapManager mapRepository,

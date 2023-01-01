@@ -3,7 +3,7 @@ import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import { Col, Container, Dropdown, Image, Row } from 'react-bootstrap';
 import EventData from '../Models/EventData';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
 import MapControllerPointCollection from '../MapControllerPointCollection';
@@ -13,13 +13,17 @@ import { Table } from '../Table';
 import twofigure from '../assets/card/twofigure.svg';
 import calendarclock from '../assets/card/calendarclock.svg';
 import bucketplus from '../assets/card/bucketplus.svg';
-import { Eye, PersonX, Link as LinkIcon, Pencil } from 'react-bootstrap-icons';
+import { Eye, PersonX, Link as LinkIcon, Pencil, FileEarmarkCheck, CheckSquare, XSquare, ArrowRightSquare } from 'react-bootstrap-icons';
 import StatsData from '../Models/StatsData';
 import { PartnerStatusActive } from '../Models/Constants';
 import DisplayPartnershipData from '../Models/DisplayPartnershipData';
 import { getDisplayPartnershipStatus } from '../../store/displayPartnershipStatusHelper';
 import PartnerRequestStatusData from '../Models/PartnerRequestStatusData';
 import PartnerStatusData from '../Models/PartnerStatusData';
+import DisplayPartnerAdminInvitationData from '../Models/DisplayPartnerAdminInvitationData';
+import { PartnerLocationEventRequests } from '../Partners/PartnerLocationEventRequests';
+import { Guid } from 'guid-typescript';
+import PickupLocationData from '../Models/PickupLocationData';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -32,7 +36,11 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [partnerRequestStatusList, setPartnerRequestStatusList] = useState<PartnerRequestStatusData[]>([]);
     const [myPartnerRequests, setMyPartnerRequests] = useState<DisplayPartnershipData[]>([]);
     const [myPartners, setMyPartners] = useState<DisplayPartnershipData[]>([]);
+    const [myPartnerAdminInvitations, setMyPartnerAdminInvitations] = useState<DisplayPartnerAdminInvitationData[]>([]);
+    const [myPickupRequests, setMyPickupRequests] = useState<PickupLocationData[]>([]);
     const [isEventDataLoaded, setIsEventDataLoaded] = useState<boolean>(false);
+    const [isPartnerAdminInvitationsDataLoaded, setIsPartnerAdminInvitationsDataLoaded] = useState<boolean>(false);
+    const [isPickupRequestsDataLoaded, setIsPickupRequestsDataLoaded] = useState<boolean>(false);
     const [center, setCenter] = useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isMapKeyLoaded, setIsMapKeyLoaded] = useState<boolean>(false);
     const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
@@ -47,6 +55,8 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [totalEvents, setTotalEvents] = useState<number>(0);
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+
         MapStore.getOption().then(opts => {
             setMapOptions(opts);
             setIsMapKeyLoaded(true);
@@ -70,6 +80,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 
             setIsEventDataLoaded(false);
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             const request = {
                 scopes: apiConfig.b2cScopes,
@@ -88,6 +99,26 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     .then(data => {
                         setMyEventList(data);
                         setIsEventDataLoaded(true);
+                    });
+
+                fetch('/api/partnerAdminInvitations/getbyuser/' + props.currentUser.id, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<DisplayPartnerAdminInvitationData[]>)
+                    .then(data => {
+                        setMyPartnerAdminInvitations(data);
+                        setIsPartnerAdminInvitationsDataLoaded(true);
+                    });
+
+                fetch('/api/pickupLocations/getbyuser/' + props.currentUser.id, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<PickupLocationData[]>)
+                    .then(data => {
+                        setMyPickupRequests(data);
+                        setIsPickupRequestsDataLoaded(true);
                     });
 
                 fetch('/api/partnerRequestStatuses', {
@@ -129,7 +160,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         setPartnerStatusList(data);
                     })
                     .then(() => {
-                        fetch('/api/partnerusers/getpartnersforuser/' + props.currentUser.id, {
+                        fetch('/api/partneradmins/getpartnersforuser/' + props.currentUser.id, {
                             method: 'GET',
                             headers: headers
                         })
@@ -149,7 +180,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                 setMyPartners([]);
                             });
                     });
-            
+
                 fetch('/api/stats/' + props.currentUser.id, {
                     method: 'GET',
                     headers: headers
@@ -204,11 +235,101 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         }, 2000)
     }
 
+    const handleAcceptInvitation = (partnerAdminInvitationId: string) => {
+        const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
+
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = getDefaultHeaders('POST');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+            fetch('/api/partneradmininvitations/accept/' + partnerAdminInvitationId, {
+                method: 'POST',
+                headers: headers,
+            })
+                .then(() => {
+                    setIsPartnerAdminInvitationsDataLoaded(false);
+                    var getHeaders = getDefaultHeaders("GET");
+                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                    fetch('/api/partneradmininvitations/getbyuser/' + props.currentUser.id, {
+                        method: 'GET',
+                        headers: getHeaders,
+                    })
+                        .then(response => response.json() as Promise<DisplayPartnerAdminInvitationData[]>)
+                        .then(data => {
+                            setMyPartnerAdminInvitations(data);
+                            setIsPartnerAdminInvitationsDataLoaded(true);
+                        })
+                        .then(() => {
+                            fetch('/api/partneradmins/getpartnersforuser/' + props.currentUser.id, {
+                                method: 'GET',
+                                headers: headers
+                            })
+                                .then(response => {
+                                    if (response.ok) {
+                                        return response.json() as Promise<DisplayPartnershipData[]>
+                                    }
+                                    else {
+                                        throw new Error("No Partners found for this user");
+                                    }
+                                })
+                                .then(data => {
+                                    setMyPartners(data);
+                                    return;
+                                })
+                                .catch(_ => {
+                                    setMyPartners([]);
+                                });
+                        });
+                });
+        });
+    }
+
+    const handleDeclineInvitation = (partnerAdminInvitationId: string) => {
+        const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
+
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = getDefaultHeaders('POST');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+            fetch('/api/partneradmininvitations/decline/' + partnerAdminInvitationId, {
+                method: 'POST',
+                headers: headers,
+            })
+                .then(() => {
+                    setIsPartnerAdminInvitationsDataLoaded(false);
+                    var getHeaders = getDefaultHeaders("GET");
+                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                    fetch('/api/partneradmininvitations/getbyuser/' + props.currentUser.id, {
+                        method: 'GET',
+                        headers: getHeaders,
+                    })
+                        .then(response => response.json() as Promise<DisplayPartnerAdminInvitationData[]>)
+                        .then(data => {
+                            setMyPartnerAdminInvitations(data);
+                            setIsPartnerAdminInvitationsDataLoaded(true);
+                        })
+                })
+        })
+    }
+
     const handleUnregisterEvent = (id: string, name: string) => {
         if (!window.confirm("Do you want to remove yourself from this event: " + name + "?"))
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             const request = {
                 scopes: apiConfig.b2cScopes,
@@ -227,6 +348,38 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         }
     }
 
+    const handleMarkAsPickedUp = (id: string) => {
+        const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
+
+        const request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            const headers = getDefaultHeaders('POST');
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+            fetch('/api/pickuplocations/markpickedup/' + id, {
+                method: 'post',
+                headers: headers
+            }).then(() => {
+                const getHeaders = getDefaultHeaders('POST');
+                getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+                fetch('/api/pickupLocations/getbyuser/' + props.currentUser.id, {
+                    method: 'GET',
+                    headers: getHeaders
+                })
+                    .then(response => response.json() as Promise<PickupLocationData[]>)
+                    .then(data => {
+                        setMyPickupRequests(data);
+                        setIsPickupRequestsDataLoaded(true);
+                    });
+            })
+        });
+    }
+
     const attendeeActionDropdownList = (eventId: string) => {
         return (
             <>
@@ -243,6 +396,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                 <Dropdown.Item href={'/manageeventdashboard/' + eventId}><Pencil />Manage event</Dropdown.Item>
                 <Dropdown.Item href={'/eventdetails/' + eventId}><Eye />View event</Dropdown.Item>
                 <Dropdown.Item onClick={() => handleCopyLink(eventId)}><LinkIcon />{copied ? 'Copied!' : 'Copy event link'}</Dropdown.Item>
+                <Dropdown.Item href={'/cancelevent/' + eventId}><XSquare />Cancel event</Dropdown.Item>
             </>
         )
     }
@@ -250,7 +404,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const eventCompletedOwnerActionDropdownList = (eventId: string) => {
         return (
             <>
-                <Dropdown.Item href={'/eventsummary/' + eventId}><Pencil />Event Summary</Dropdown.Item>
+                <Dropdown.Item href={'/eventsummary/' + eventId}><FileEarmarkCheck />Event Summary</Dropdown.Item>
                 <Dropdown.Item href={'/manageeventdashboard/' + eventId}><Pencil />Manage event</Dropdown.Item>
                 <Dropdown.Item href={'/eventdetails/' + eventId}><Eye />View event</Dropdown.Item>
                 <Dropdown.Item onClick={() => handleCopyLink(eventId)}><LinkIcon />{copied ? 'Copied!' : 'Copy event link'}</Dropdown.Item>
@@ -258,9 +412,15 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         )
     }
 
-    // TODO: update icons
-    //    <Dropdown.Item href={'/partnerRequestStatus/' + partnerRequestId}><Eye />View status</Dropdown.Item>
-    //    <Dropdown.Item href={'/contactus/' + partnerRequestId}><Pencil />Contact TrashMob</Dropdown.Item>
+    const partnerAdminInvitationsActionDropdownList = (partnerAdminInvitationId: string) => {
+        return (
+            <>
+                <Dropdown.Item onClick={() => handleAcceptInvitation(partnerAdminInvitationId)}><CheckSquare />Accept Invitation</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleDeclineInvitation(partnerAdminInvitationId)}><XSquare />Decline Invitation</Dropdown.Item>
+            </>
+        )
+    }
+
     const partnerRequestActionDropdownList = (partnerRequestId: string) => {
         return (
             <>
@@ -269,9 +429,15 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         )
     }
 
-    // TODO: update icons
-    //    <Dropdown.Item href={'/partnerviewupcomingevents/' + partnerId}><Eye />View upcoming events</Dropdown.Item>
-    //    <Dropdown.Item href={'/partnervieweventsummaries/' + partnerId}><Eye />View event summaries</Dropdown.Item>
+    const pickupRequestActionDropdownList = (pickupRequestId: string, eventId: string) => {
+        return (
+            <>
+                <Dropdown.Item href={'/eventsummary/' + eventId}><FileEarmarkCheck />Event Summary</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleMarkAsPickedUp(pickupRequestId)}><CheckSquare />Marked picked up</Dropdown.Item>
+            </>
+        )
+    }
+
     const activePartnerActionDropdownList = (partnerId: string) => {
         return (
             <>
@@ -280,11 +446,10 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         )
     }
 
-    // TODO: update icons
     const inactivePartnerActionDropdownList = (partnerId: string) => {
         return (
             <>
-                <Dropdown.Item href={'/partnerDashboard/' + partnerId}><Pencil />Reactivate partnership</Dropdown.Item>
+                <Dropdown.Item href={'/partnerDashboard/' + partnerId}><ArrowRightSquare />Reactivate partnership</Dropdown.Item>
             </>
         )
     }
@@ -369,16 +534,14 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         )
     }
 
-    const PartnershipsTable = () => {
+    const MyPartnersTable = () => {
         const headerTitles = ['Name', 'Status', 'Actions']
-        if (myPartnerRequests || myPartners) {
-
-            var allPartnerships = myPartnerRequests.concat(myPartners);
+        if (myPartners) {
 
             return (
                 <div className="bg-white p-3 px-4">
                     <Table columnHeaders={headerTitles} >
-                        {allPartnerships.sort((a, b) => (a.name < b.name) ? 1 : -1).map(displayPartner => {
+                        {myPartners.sort((a, b) => (a.name < b.name) ? 1 : -1).map(displayPartner => {
                             return (
                                 <tr key={displayPartner.id.toString()}>
                                     <td>{displayPartner.name}</td>
@@ -389,9 +552,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                             <Dropdown.Menu id="share-menu">
                                                 {displayPartner.partnerStatusId === PartnerStatusActive ?
                                                     activePartnerActionDropdownList(displayPartner.id) :
-                                                    !displayPartner.partnerStatusId || displayPartner.partnerStatusId === 0 ?
-                                                        partnerRequestActionDropdownList(displayPartner.id) :
-                                                        inactivePartnerActionDropdownList(displayPartner.id)}
+                                                    inactivePartnerActionDropdownList(displayPartner.id)}
                                             </Dropdown.Menu>
                                         </Dropdown>
                                     </td>
@@ -399,6 +560,118 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                             )
                         }
                         )}
+                    </Table>
+                </div >
+            );
+        }
+        else {
+            return (
+                <div className="bg-white p-3 px-4">
+                    <Table columnHeaders={headerTitles} >
+                    </Table>
+                </div >
+            )
+        }
+    }
+
+    const MyPickupRequestsTable = () => {
+        const headerTitles = ['Street Address', 'City', 'Notes', 'Actions']
+        if (isPickupRequestsDataLoaded && myPickupRequests) {
+            return (
+                <div className="bg-white p-3 px-4">
+                    <Table columnHeaders={headerTitles} >
+                        {myPickupRequests.map(displayPickup => {
+                            return (
+                                <tr key={displayPickup.id.toString()}>
+                                    <td>{displayPickup.streetAddress}</td>
+                                    <td>{displayPickup.city}</td>
+                                    <td>{displayPickup.notes}</td>
+                                    <td className="btn py-0">
+                                        <Dropdown role="menuitem">
+                                            <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                            <Dropdown.Menu id="share-menu">
+                                                {pickupRequestActionDropdownList(displayPickup.id, displayPickup.eventId)}
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                    </td>
+                                </tr>
+                            )
+                        }
+                        )}
+                    </Table>
+                </div >
+            );
+        }
+        else {
+            return (
+                <div className="bg-white p-3 px-4">
+                    <Table columnHeaders={headerTitles} >
+                    </Table>
+                </div >
+            )
+        }
+    }
+
+    const MyPartnerRequestsTable = () => {
+        const headerTitles = ['Name', 'Status', 'Actions']
+        if (myPartnerRequests) {
+            return (
+                <div className="bg-white p-3 px-4">
+                    <Table columnHeaders={headerTitles} >
+                        {myPartnerRequests.sort((a, b) => (a.name < b.name) ? 1 : -1).map(displayPartner => {
+                            return (
+                                <tr key={displayPartner.id.toString()}>
+                                    <td>{displayPartner.name}</td>
+                                    <td>{getDisplayPartnershipStatus(partnerStatusList, partnerRequestStatusList, displayPartner.partnerStatusId, displayPartner.partnerRequestStatusId)}</td>
+                                    <td className="btn py-0">
+                                        <Dropdown role="menuitem">
+                                            <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                            <Dropdown.Menu id="share-menu">
+                                                {partnerRequestActionDropdownList(displayPartner.id)}
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                    </td>
+                                </tr>
+                            )
+                        }
+                        )}
+                    </Table>
+                </div >
+            );
+        }
+        else {
+            return (
+                <div className="bg-white p-3 px-4">
+                    <Table columnHeaders={headerTitles} >
+                    </Table>
+                </div >
+            )
+        }
+    }
+
+    const PartnerAdminInvitationsTable = () => {
+        const headerTitles = ['Partner Name', 'Actions']
+        if (isPartnerAdminInvitationsDataLoaded && myPartnerAdminInvitations) {
+            return (
+                <div className="bg-white p-3 px-4">
+                    <Table columnHeaders={headerTitles} >
+                        {
+                            myPartnerAdminInvitations.map(displayInvitation => {
+                                return (
+                                    <tr key={displayInvitation.id.toString()}>
+                                        <td>{displayInvitation.partnerName}</td>
+                                        <td className="btn py-0">
+                                            <Dropdown role="menuitem">
+                                                <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                                <Dropdown.Menu id="share-menu">
+                                                    {partnerAdminInvitationsActionDropdownList(displayInvitation.id)}
+                                                </Dropdown.Menu>
+                                            </Dropdown>
+                                        </td>
+                                    </tr>
+                                )
+                            })
+                        }
                     </Table>
                 </div >
             );
@@ -463,9 +736,9 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     </Col>
                 </Row>
             </Container>
-            <Container>
+            <Container className='mb-5 pb-5'>
                 <div className="d-flex my-5 mb-4 justify-content-between">
-                    <h4 className="font-weight-bold mr-2 mt-0 text-decoration-underline">My Events ({myEventList.length})</h4>
+                    <h4 className="font-weight-bold mr-2 pb-2 mt-0 active-line">My Events ({myEventList.length})</h4>
                     <Link className="btn btn-primary banner-button" to="/manageeventdashboard">Create Event</Link>
                 </div>
                 <div className="mb-4 bg-white">
@@ -513,12 +786,29 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         : <PastEventsTable />}
                 </div>
                 <div className="d-flex my-5 mb-4 justify-content-between">
-                    <h4 className="font-weight-bold mr-2 mt-0 text-decoration-underline">My Partnerships ({myPartnerRequests.length + myPartners.length})</h4>
-                    <Link className="btn btn-primary banner-button" to="/requestapartner">Send request to potential partner</Link>
+                    <h4 className="font-weight-bold mr-2 mt-0 active-line pb-2">My Partnerships ({myPartnerRequests.length + myPartners.length})</h4>
+                    <Link className="btn btn-primary banner-button" to="/inviteapartner">Send invitation to join TrashMob.eco as a partner</Link>
                     <Link className="btn btn-primary banner-button" to="/becomeapartner">Apply to become a partner</Link>
                 </div>
                 <div className="mb-4 bg-white">
-                    <PartnershipsTable />
+                    <p className="color-primary font-weight-bold pt-3">{'My Partners'} ({myPartners.length})</p>
+                    <MyPartnersTable />
+                </div>
+                <div className="mb-4 bg-white">
+                    <p className="color-primary font-weight-bold pt-3">{'Partner Requests and Invitations Sent'} ({myPartnerRequests.length})</p>
+                    <MyPartnerRequestsTable />
+                </div>
+                <div className="mb-4 bg-white">
+                    <p className="color-primary font-weight-bold pt-3">{'Partner Event Requests'}</p>
+                    <PartnerLocationEventRequests partnerLocationId={Guid.EMPTY} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                </div>
+                <div className="mb-4 bg-white">
+                    <p className="color-primary font-weight-bold pt-3">{'Pickup Requests Pending'} ({myPickupRequests.length})</p>
+                    <MyPickupRequestsTable />
+                </div>
+                <div className="mb-4 bg-white">
+                    <p className="color-primary font-weight-bold pt-3">{'Partner Admin Invitations Pending'} ({myPartnerAdminInvitations.length})</p>
+                    <PartnerAdminInvitationsTable />
                 </div>
             </Container>
         </>

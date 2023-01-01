@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
-import { Button, Col, Form } from 'react-bootstrap';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import PartnerRequestData from '../Models/PartnerRequestData';
 import UserData from '../Models/UserData';
 import * as Constants from '../Models/Constants';
@@ -13,7 +13,7 @@ import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import AddressData from '../Models/AddressData';
 import MapControllerSinglePointNoEvents from '../MapControllerSinglePointNoEvent';
-import PartnerTypeData from '../Models/PartnerTypeData';
+import PhoneInput from 'react-phone-input-2'
 
 interface PartnerRequestProps extends RouteComponentProps<any> {
     mode: string;
@@ -23,8 +23,8 @@ interface PartnerRequestProps extends RouteComponentProps<any> {
 
 export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const [name, setName] = React.useState<string>();
-    const [partnerTypeList, setPartnerTypeList] = React.useState<PartnerTypeData[]>([]);
-    const [partnerTypeId, setPartnerTypeId] = React.useState<number>(0);
+    const [partnerTypeId, setPartnerTypeId] = React.useState<number>(Constants.PartnerTypeGovernment);
+    const [isGovernmentPartner, setIsGovernmentPartner] = React.useState<boolean>(true);
     const [email, setEmail] = React.useState<string>();
     const [website, setWebsite] = React.useState<string>();
     const [phone, setPhone] = React.useState<string>();
@@ -33,7 +33,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const [emailErrors, setEmailErrors] = React.useState<string>("");
     const [websiteErrors, setWebsiteErrors] = React.useState<string>("");
     const [phoneErrors, setPhoneErrors] = React.useState<string>("");
-    const [notesErrors, setNotesErrors] = React.useState<string>("");
     const [latitude, setLatitude] = React.useState<number>(0);
     const [longitude, setLongitude] = React.useState<number>(0);
     const [streetAddress, setStreetAddress] = React.useState<string>();
@@ -45,38 +44,24 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
-    const [isPartnerTypeDataLoaded, setIsPartnerTypeDataLoaded] = React.useState<boolean>(false);
     const [title, setTitle] = React.useState<string>("Apply to become a partner");
-
+    const [subTitle, setSubTitle] = React.useState<string>("Apply now");
+    const [blurb, setBlurb] = React.useState<string>("");
+    const [mode, setMode] = React.useState<string>("");
 
     React.useEffect(() => {
 
+        setIsGovernmentPartner(true);
+
         if (props.mode && props.mode === "send") {
+            setMode("send");
             setTitle("Send invite to join TrashMob as a partner");
+            setSubTitle("Invite partner");
+            setBlurb("<p>Use this form to send an informational note to a potential TrashMob.eco partner in your community. Fill out as much detail as you can and TrashMob.eco will reach out to the email address provided with an information packet to see if they would like to become a TrashMob.eco Partner!</p><p>If connecting with a government partner, the department responsible for managing waste and maintaining cleanliness in a community is often a part of the public works department, environmental services division, or a similar agency. You can find contact information for these organizations by searching online or by calling the city's main government phone number and asking for the appropriate department.</p>")
         }
-
-        if (props.isUserLoaded) {
-            const account = msalClient.getAllAccounts()[0];
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/partnertypes', {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<PartnerTypeData[]>)
-                    .then(data => {
-                        setPartnerTypeList(data)
-                        setIsPartnerTypeDataLoaded(true);
-                    })
-            })
+        else {
+            setMode("request");
+            setBlurb("<p>Use this form to request to become a TrashMob.eco partner. TrashMob.eco site adminsitrators will review your request, and either approve it, or reach out to you for more information. If approved, you wil be sent a Welcome email with instructions on how to complete setup of your partnership.</p>");
         }
 
         MapStore.getOption().then(opts => {
@@ -96,10 +81,10 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
 
     function validateForm() {
         if (nameErrors !== "" ||
-            notesErrors !== "" ||
             emailErrors !== "" ||
             websiteErrors !== "" ||
-            phoneErrors !== "") {
+            phoneErrors !== "" ||
+            region === "") {
             setIsSaveEnabled(false);
         }
         else {
@@ -132,11 +117,12 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         partnerRequestData.longitude = longitude ?? 0;
         partnerRequestData.createdByUserId = props.currentUser.id;
         partnerRequestData.partnerTypeId = partnerTypeId;
-        partnerRequestData.isBecomeAPartnerRequest = (props.mode !== 'send')
+        partnerRequestData.isBecomeAPartnerRequest = (mode !== 'send')
 
         var data = JSON.stringify(partnerRequestData);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -160,7 +146,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     // This will handle Cancel button click event.  
     function handleCancel(event: any) {
         event.preventDefault();
-        props.history.push("/");
+        props.history.push("/partnerships");
     }
 
     function handleNameChanged(val: string) {
@@ -218,19 +204,8 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     }
 
     function handleNotesChanged(val: string) {
-        if (val.length < 0 || val.length > 1000) {
-            setNotesErrors("Notes cannot be empty and cannot be more than 1000 characters long.");
-        }
-        else {
-            setNotesErrors("");
-            setNotes(val);
-        }
-
+        setNotes(val);
         validateForm();
-    }
-
-    function selectPartnerType(val: string) {
-        setPartnerTypeId(parseInt(val));
     }
 
     function renderNameToolTip(props: any) {
@@ -242,7 +217,12 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     }
 
     function renderEmailToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestEmail}</Tooltip>
+        if (mode === "send") {
+            return <Tooltip {...props}>{ToolTips.PartnerRequestInviteEmail}</Tooltip>
+        }
+        else {
+            return <Tooltip {...props}>{ToolTips.PartnerRequestEmail}</Tooltip>
+        }
     }
 
     function renderWebsiteToolTip(props: any) {
@@ -250,11 +230,21 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     }
 
     function renderPhoneToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestPhone}</Tooltip>
+        if (mode === "send") {
+            return <Tooltip {...props}>{ToolTips.PartnerRequestInvitePhone}</Tooltip>
+        }
+        else {
+            return <Tooltip {...props}>{ToolTips.PartnerRequestPhone}</Tooltip>
+        }
     }
 
     function renderNotesToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestNotes}</Tooltip>
+        if (mode === "send") {
+            return <Tooltip {...props}>{ToolTips.PartnerRequestInviteNotes}</Tooltip>
+        }
+        else {
+            return <Tooltip {...props}>{ToolTips.PartnerRequestNotes}</Tooltip>
+        }
     }
 
     function renderStreetAddressToolTip(props: any) {
@@ -265,12 +255,13 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.PartnerRequestCity}</Tooltip>
     }
 
-    function renderCountryToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestCountry}</Tooltip>
-    }
-
-    function renderRegionToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestRegion}</Tooltip>
+    function setPartnerType(val: boolean) {
+        if (val) {
+            setPartnerTypeId(Constants.PartnerTypeGovernment)
+        }
+        else {
+            setPartnerTypeId(Constants.PartnerTypeBusiness);
+        }
     }
 
     function renderPostalCodeToolTip(props: any) {
@@ -303,142 +294,146 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     }
 
     // Returns the HTML Form to the render() method.  
-    function renderCreateForm(typeList: Array<PartnerTypeData>) {
+    function renderCreateForm() {
 
         return (
-            <div className="container-fluid card">
-                <h1>{title}</h1>
-                <Form onSubmit={handleSave} >
-                    <Form.Row>
-                        <Col>
-                            <Form.Group className="required">
-                                <OverlayTrigger placement="top" overlay={renderNameToolTip}>
-                                    <Form.Label className="control-label">Partner Name:</Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
-                                <span style={{ color: "red" }}>{nameErrors}</span>
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group className="required">
-                                <OverlayTrigger placement="top" overlay={renderPartnerTypeToolTip}>
-                                    <Form.Label className="control-label" htmlFor="PartnerType">Partner Type:</Form.Label>
-                                </OverlayTrigger>
-                                <div>
-                                    <select data-val="true" name="partnerTypeId" defaultValue={partnerTypeId} onChange={(val) => selectPartnerType(val.target.value)} required>
-                                        <option value="">-- Select Partner Type --</option>
-                                        {typeList.map(partnerType =>
-                                            <option key={partnerType.id} value={partnerType.id}>{partnerType.name}</option>
-                                        )}
-                                    </select>
-                                </div>
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group className="required">
-                                <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
-                                    <Form.Label className="control-label">Email:</Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control type="text" defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required />
-                                <span style={{ color: "red" }}>{emailErrors}</span>
-                            </Form.Group >
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderWebsiteToolTip}>
-                                    <Form.Label className="control-label">Website:</Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control type="text" defaultValue={website} maxLength={parseInt('1024')} onChange={(val) => handleWebsiteChanged(val.target.value)} />
-                                <span style={{ color: "red" }}>{websiteErrors}</span>
-                            </Form.Group >
-                        </Col>
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderPhoneToolTip}>
-                                    <Form.Label className="control-label">Phone:</Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control type="text" defaultValue={phone} maxLength={parseInt('64')} onChange={(val) => handlePhoneChanged(val.target.value)} />
-                                <span style={{ color: "red" }}>{phoneErrors}</span>
-                            </Form.Group >
-                        </Col>
-                    </Form.Row>
-                    <Form.Group className="required">
-                        <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
-                            <Form.Label className="control-label">Notes:</Form.Label>
-                        </OverlayTrigger>
-                        <Form.Control as="textarea" defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} required />
-                        <span style={{ color: "red" }}>{notesErrors}</span>
-                    </Form.Group >
-                    <Form.Row>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
-                                    <Form.Label className="control-label" htmlFor="StreetAddress">Street Address:</Form.Label>
-                                </OverlayTrigger >
-                                <span>{streetAddress}</span>
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group className="required">
-                                <OverlayTrigger placement="top" overlay={renderCityToolTip}>
-                                    <Form.Label className="control-label" htmlFor="City">City:</Form.Label>
-                                </OverlayTrigger >
-                                <span>{city}</span>
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                    <Form.Label className="control-label" htmlFor="PostalCode">Postal Code</Form.Label>
-                                </OverlayTrigger >
-                                <span>{postalCode}</span>
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group className="required">
-                                <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
-                                    <Form.Label className="control-label" htmlFor="Country">Country:</Form.Label>
-                                </OverlayTrigger >
-                                <div>
-                                    <span>{country}</span>
-                                </div>
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group className="required">
-                                <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
-                                    <Form.Label className="control-label" htmlFor="Region">Region:</Form.Label>
-                                </OverlayTrigger >
-                                <span>{region}</span>                                
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                    <Form.Row>
-                        <Form.Label>Click on the map to set the location for your Partner. The location fields above will be automatically populated.</Form.Label>
-                    </Form.Row>
-                    <Form.Row>
-                        <AzureMapsProvider>
-                            <>
-                                <MapControllerSinglePointNoEvents center={center} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isDraggable={true} />
-                            </>
-                        </AzureMapsProvider>
-                    </Form.Row>
-                    <Form.Group className="form-group">
-                        <Button disabled={!isSaveEnabled} type="submit" className="action btn-default">Save</Button>
-                        <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
-                    </Form.Group >
-                </Form >
-            </div>
+            <Container>
+                <Row className="gx-2 py-5" lg={2}>
+                    <Col lg={4} className="d-flex">
+                        <div className="bg-white py-2 px-5 shadow-sm rounded">
+                            <h2 className="color-primary mt-4 mb-5">{title}</h2>
+                            <div className="content" dangerouslySetInnerHTML={{ __html: blurb }}></div>
+                        </div>
+                    </Col>
+                    <Col lg={8}>
+                        <div className="bg-white p-5 shadow-sm rounded">
+                            <h2 className="color-primary mt-4 mb-5">{subTitle}</h2>
+                            <Form onSubmit={handleSave} className="mt-5 p-4 directorCard" >
+                                <Form.Row>
+                                    <Col>
+                                        <Form.Group className="required">
+                                            <OverlayTrigger placement="top" overlay={renderNameToolTip}>
+                                                <Form.Label className="control-label h5">Partner Name</Form.Label>
+                                            </OverlayTrigger>
+                                            <Form.Control type="text" className='border-0 bg-light h-60 para' defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required />
+                                            <span style={{ color: "red" }}>{nameErrors}</span>
+                                        </Form.Group>
+                                    </Col>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderPartnerTypeToolTip}>
+                                                <Form.Label className="control-label h5" htmlFor="PartnerType">Type</Form.Label>
+                                            </OverlayTrigger>
+                                            <div className='d-flex h-60'>
+                                                <div className='d-flex w-100 align-items-center'>
+                                                    <input type="radio" className='m-0' checked={isGovernmentPartner} name="type" onChange={() => setPartnerType(true)} />
+                                                    <label className="control-label m-0 ml-2">Government</label>
+                                                </div>
+                                                <div className='d-flex w-100 align-items-center'>
+                                                    <input type="radio" className='m-0' name="type" onChange={() => setPartnerType(false)} />
+                                                    <label className="control-label m-0 ml-2">Business</label>
+                                                </div>
+                                            </div>
+                                        </Form.Group>
+                                    </Col>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Col>
+                                        <Form.Group className="required">
+                                            <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
+                                                <Form.Label className="control-label h5">Email</Form.Label>
+                                            </OverlayTrigger>
+                                            <Form.Control type="text" className='border-0 bg-light h-60 para' defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required />
+                                            <span style={{ color: "red" }}>{emailErrors}</span>
+                                        </Form.Group >
+                                    </Col>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderWebsiteToolTip}>
+                                                <Form.Label className="control-label h5">Website</Form.Label>
+                                            </OverlayTrigger>
+                                            <Form.Control type="text" className='border-0 bg-light h-60 para' defaultValue={website} maxLength={parseInt('1024')} onChange={(val) => handleWebsiteChanged(val.target.value)} />
+                                            <span style={{ color: "red" }}>{websiteErrors}</span>
+                                        </Form.Group >
+                                    </Col>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderPhoneToolTip}>
+                                                <Form.Label className="control-label h5">Phone</Form.Label>
+                                            </OverlayTrigger>
+                                            <PhoneInput
+                                                country={'us'}
+                                                value={phone}
+                                                onChange={(val) => handlePhoneChanged(val)}
+                                            />
+                                            <span style={{ color: "red" }}>{phoneErrors}</span>
+                                        </Form.Group >
+                                    </Col>
+                                </Form.Row>
+                                <Form.Group>
+                                    <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
+                                        <Form.Label className="control-label h5">Notes</Form.Label>
+                                    </OverlayTrigger>
+                                    <Form.Control as="textarea" className='border-0 bg-light h-60 para' defaultValue={notes} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleNotesChanged(val.target.value)} />
+                                </Form.Group >
+
+                                <Form.Row>
+                                    <div>
+                                        <Form.Label>Choose a location!</Form.Label>
+                                    </div>
+                                </Form.Row>
+                                <Form.Row>
+                                    <AzureMapsProvider>
+                                        <>
+                                            <MapControllerSinglePointNoEvents center={center} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props?.currentUser} isUserLoaded={props?.isUserLoaded} isDraggable={true} />
+                                        </>
+                                    </AzureMapsProvider>
+                                </Form.Row>
+
+                                <Form.Row>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
+                                                <Form.Label className="control-label h5" htmlFor="StreetAddress">Street Address</Form.Label>
+                                            </OverlayTrigger >
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="streetAddress" value={streetAddress} />
+                                        </Form.Group>
+                                    </Col>
+                                </Form.Row>
+
+                                <Form.Row>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderCityToolTip}>
+                                                <Form.Label className="control-label h5" htmlFor="City">City</Form.Label>
+                                            </OverlayTrigger >
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="city" value={city} />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col>
+                                        <Form.Group>
+                                            <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
+                                                <Form.Label className="control-label h5" htmlFor="PostalCode">Postal Code</Form.Label>
+                                            </OverlayTrigger >
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="postalCode" value={postalCode} />
+                                        </Form.Group>
+                                    </Col>
+                                </Form.Row>
+                                <Form.Group className="form-group d-flex justify-content-end">
+                                    <Button disabled={!isSaveEnabled} type="submit" className="action btn-default px-3 h-49">Submit</Button>
+                                    <Button className="action" onClick={(e) => handleCancel(e)}>Cancel</Button>
+                                </Form.Group >
+                            </Form >
+                        </div>
+                    </Col>
+                </Row>
+            </Container>
         )
     }
 
-    var contents = isPartnerTypeDataLoaded
-        ? renderCreateForm(partnerTypeList)
-        : <p><em>Loading...</em></p>;
+    var contents = renderCreateForm();
 
     return <div>
         <hr />

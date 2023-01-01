@@ -9,7 +9,6 @@ namespace TrashMob.Shared.Engine
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Persistence.Interfaces;
 
     public abstract class UpcomingEventAttendingBaseNotifier : NotificationEngineBase, INotificationEngine
     {
@@ -17,7 +16,7 @@ namespace TrashMob.Shared.Engine
                                                   IKeyedManager<User> userManager,
                                                   IEventAttendeeManager eventAttendeeManager,
                                                   IKeyedManager<UserNotification> userNotificationManager,
-                                                  IKeyedManager<NonEventUserNotification> nonEventUserNotificationManager,
+                                                  INonEventUserNotificationManager nonEventUserNotificationManager,
                                                   IEmailSender emailSender,
                                                   IEmailManager emailManager,
                                                   IMapManager mapRepository,
