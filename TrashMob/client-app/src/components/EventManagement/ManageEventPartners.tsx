@@ -12,6 +12,7 @@ import ServiceTypeData from '../Models/ServiceTypeData';
 import EventPartnerLocationServiceData from '../Models/EventPartnerLocationServiceData';
 import DisplayEventPartnerLocationServiceData from '../Models/DisplayEventPartnerLocationServiceData';
 import { Eye } from 'react-bootstrap-icons';
+import { Link } from 'react-router-dom';
 
 export interface ManageEventPartnersProps {
     eventId: string;
@@ -300,6 +301,15 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
         );
     }
 
+    function renderPartnerInvite() {
+        return (
+            <div className='d-flex flex-column align-items-start'>
+                <p className="font-size-h5">Sorry, there are no registered partners in your area. Invite local government or business to join TrashMob.eco as a partner!</p>
+                <Link className="btn btn-primary banner-button" to="/inviteapartner">Invite a partner</Link>
+            </div>
+            )
+    }
+
     return (
         <Container className='p-4 bg-white rounded my-5'>
             <div className='d-flex align-items-center justify-content-between'>
@@ -307,7 +317,7 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
             </div>
             {props.eventId === Guid.EMPTY && <p> <em>Event must be created first.</em></p>}
             {!isEventPartnerLocationDataLoaded && props.eventId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-            {isEventPartnerLocationDataLoaded && eventPartnerLocations.length === 0 && <p> <em>Sorry, there are no registered partners in your area.</em></p>}
+            {isEventPartnerLocationDataLoaded && eventPartnerLocations.length === 0 && renderPartnerInvite()}
             {isEventPartnerLocationDataLoaded && eventPartnerLocations.length !== 0 && renderEventPartnerLocationsTable(eventPartnerLocations)}
             {isPartnerLocationServicesDataLoaded && eventPartnerLocationServices && renderEventPartnerLocationServicesTable(eventPartnerLocationServices, partnerLocationName)}
         </Container>
