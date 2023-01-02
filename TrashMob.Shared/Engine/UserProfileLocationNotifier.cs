@@ -47,13 +47,22 @@ namespace TrashMob.Shared.Engine
             {
                 if (await UserHasAlreadyReceivedNotification(user, cancellationToken).ConfigureAwait(false))
                 {
+                    Logger.LogInformation("User {0} has already received notification {1}. Skipping.", user.Id, NotificationType);
                     continue;
                 }
 
                 // Notify users who have not set their home location
                 if (user.Latitude == 0 && user.Longitude == 0)
                 {
-                    notificationCounter += await SendNotification(user, cancellationToken).ConfigureAwait(false);
+                    if (user.Id.ToString() == "2A648BA2-854C-4949-BB36-64D90E15B8CA")
+                    {
+                        Logger.LogInformation("User {0} has not set their location. Notifying.", user.Id);
+                        notificationCounter += await SendNotification(user, cancellationToken).ConfigureAwait(false);
+                    }
+                    else
+                    {                       
+                        Logger.LogInformation("User {0} has not set their location. We're in debug mode so skipping.", user.Id);
+                    }
                 }
             }
 
