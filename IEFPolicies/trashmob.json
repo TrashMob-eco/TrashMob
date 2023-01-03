@@ -1,9 +1,8 @@
 {
   "Prefix": "TM_",
-  "FacebookClientId": "535691364481253",
-  "Google": {
-    "ClientId": "993349203789-oq6s09buht4e707itkukrljisikmth3k.apps.googleusercontent.com"
-  },
   "RESTApi": "https://fa-tm-pr-westus2.azurewebsites.net/api",
+  "FacebookClientId": "535691364481253",
+  "GoogleId": "993349203789-oq6s09buht4e707itkukrljisikmth3k.apps.googleusercontent.com",
+  "AppleId": "367LR8J89Q.eco.trashmob.trashmobmobile",
   "TwitterClientId": "QmhKZ1Bfa1hXZXFJcnBheElYcGY6MTpjaQ"
 }
