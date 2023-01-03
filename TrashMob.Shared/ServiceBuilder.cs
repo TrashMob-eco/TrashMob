@@ -58,6 +58,7 @@
             services.AddScoped<IPartnerSocialMediaAccountManager, PartnerSocialMediaAccountManager>();
             services.AddScoped<IPickupLocationManager, PickupLocationManager>();
             services.AddScoped<IUserManager, UserManager>();
+            services.AddScoped<INonEventUserNotificationManager, NonEventUserNotificationManager>();
             services.AddScoped<IWaiverManager, WaiverManager>();
 
             // Non-patterned

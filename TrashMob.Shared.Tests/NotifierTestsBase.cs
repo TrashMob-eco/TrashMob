@@ -26,7 +26,7 @@ namespace TrashMob.Shared.Tests
         
         protected Mock<IKeyedManager<UserNotification>> UserNotificationManager { get; }
 
-        protected Mock<IKeyedManager<NonEventUserNotification>> NonEventUserNotificationManager { get; }
+        protected Mock<INonEventUserNotificationManager> NonEventUserNotificationManager { get; }
 
         protected Mock<IEmailSender> EmailSender { get; }
 
@@ -46,7 +46,7 @@ namespace TrashMob.Shared.Tests
             EventAttendeeManager = new Mock<IEventAttendeeManager>();
             UserManager = new Mock<IKeyedManager<User>>();
             UserNotificationManager = new Mock<IKeyedManager<UserNotification>>();
-            NonEventUserNotificationManager = new Mock<IKeyedManager<NonEventUserNotification>>();
+            NonEventUserNotificationManager = new Mock<INonEventUserNotificationManager>();
             EmailSender = new Mock<IEmailSender>();
             EmailManager = new Mock<IEmailManager>();
             MapRepository = new Mock<IMapManager>();
