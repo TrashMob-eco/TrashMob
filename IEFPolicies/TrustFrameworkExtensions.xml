@@ -21,7 +21,7 @@
         <DisplayName>Privacy policy accepted</DisplayName>
         <DataType>string</DataType>
         <UserHelpText>Add help text here</UserHelpText>
-        <UserInputType>RadioSingleSelect</UserInputType>
+        <UserInputType>CheckboxMultiSelect</UserInputType>
         <Restriction>
           <Enumeration Text="" Value="Y" SelectByDefault="false" />
         </Restriction>
@@ -30,7 +30,7 @@
         <DisplayName>Terms of service policy accepted</DisplayName>
         <DataType>string</DataType>
         <UserHelpText>Add help text here</UserHelpText>
-        <UserInputType>RadioSingleSelect</UserInputType>
+        <UserInputType>CheckboxMultiSelect</UserInputType>
         <Restriction>
           <Enumeration Text="" Value="Y" SelectByDefault="false" />
         </Restriction>
@@ -82,7 +82,7 @@
               <Item Key="scope">email</Item>
               <Item Key="HttpBinding">POST</Item>
               <Item Key="UsePolicyInRedirectUri">0</Item>
-              <Item Key="client_id">{Google:ClientId}</Item>
+              <Item Key="client_id">{GoogleId}</Item>
             </Metadata>
             <CryptographicKeys>
               <Key Id="client_secret" StorageReferenceId="B2C_1A_GoogleSecret" />
@@ -152,6 +152,50 @@
         </TechnicalProfile>
       </TechnicalProfiles>
     </ClaimsProvider>    
+
+    <ClaimsProvider>
+      <Domain>apple.com</Domain>
+      <DisplayName>Apple</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="Apple-OIDC">
+          <DisplayName>Sign in with Apple</DisplayName>
+          <Protocol Name="OpenIdConnect" />
+          <Metadata>
+            <Item Key="ProviderName">apple</Item>
+            <Item Key="authorization_endpoint">https://appleid.apple.com/auth/authorize</Item>
+            <Item Key="AccessTokenEndpoint">https://appleid.apple.com/auth/token</Item>
+            <Item Key="JWKS">https://appleid.apple.com/auth/keys</Item>
+            <Item Key="issuer">https://appleid.apple.com</Item>
+            <Item Key="scope">name email openid</Item>
+            <Item Key="HttpBinding">POST</Item>
+            <Item Key="response_types">code</Item>
+            <Item Key="external_user_identity_claim_id">sub</Item>
+            <Item Key="response_mode">form_post</Item>
+            <Item Key="ReadBodyClaimsOnIdpRedirect">user.name.firstName user.name.lastName user.email</Item>
+            <Item Key="client_id">{AppleId}</Item>
+            <Item Key="UsePolicyInRedirectUri">false</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="client_secret" StorageReferenceId="B2C_1A_AppleSecret"/>
+          </CryptographicKeys>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="issuerUserId" PartnerClaimType="sub" />
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="https://appleid.apple.com" AlwaysUseDefaultValue="true" />
+            <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" AlwaysUseDefaultValue="true" />
+            <OutputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="user.name.firstName"/>
+            <OutputClaim ClaimTypeReferenceId="surname" PartnerClaimType="user.name.lastName"/>
+            <OutputClaim ClaimTypeReferenceId="email" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName"/>
+            <OutputClaimsTransformation ReferenceId="CreateUserPrincipalName"/>
+            <OutputClaimsTransformation ReferenceId="CreateAlternativeSecurityId"/>
+            <OutputClaimsTransformation ReferenceId="CreateSubjectClaimFromAlternativeSecurityId"/>
+          </OutputClaimsTransformations>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-SocialLogin" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
 
     <ClaimsProvider>
       <DisplayName>Local Account SignIn</DisplayName>
