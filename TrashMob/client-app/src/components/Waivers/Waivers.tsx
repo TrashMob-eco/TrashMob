@@ -61,7 +61,7 @@ const Waivers: React.FC<WaiversProps> = (props) => {
 
             const envelopeRequest = {
                 signerEmail: email,
-                signerName: name,
+                signerName: fullName,
                 createdByUserId: props.currentUser.id,
                 returnUrl: "https://" + hostname + "/waiversreturn",
             };
