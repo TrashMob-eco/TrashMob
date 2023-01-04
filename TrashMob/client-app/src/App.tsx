@@ -233,7 +233,6 @@ export const App: FC = () => {
                         user.id = data.id;
                         user.userName = data.userName;
                         user.givenName = data.givenName;
-                        user.surName = data.surName;
                         user.dateAgreedToTrashMobWaiver = data.dateAgreedToTrashMobWaiver;
                         user.memberSince = data.memberSince;
                         user.trashMobWaiverVersion = data.trashMobWaiverVersion;

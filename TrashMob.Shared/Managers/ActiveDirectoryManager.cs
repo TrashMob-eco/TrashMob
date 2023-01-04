@@ -1,6 +1,8 @@
 ﻿
 namespace TrashMob.Shared.Managers
 {
+    using Microsoft.Extensions.Logging;
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Poco;
@@ -28,8 +30,8 @@ namespace TrashMob.Shared.Managers
             var user = new User
             {
                 Email = activeDirectoryNewUserRequest.email,
+                ObjectId = activeDirectoryNewUserRequest.objectId,
                 GivenName = activeDirectoryNewUserRequest.givenName,
-                SurName = activeDirectoryNewUserRequest.surname,
                 UserName = activeDirectoryNewUserRequest.userName
             };
 
@@ -42,6 +44,33 @@ namespace TrashMob.Shared.Managers
             };
 
             return newUserResponse;
+        }
+
+        public async Task<ActiveDirectoryResponseBase> DeleteUserAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            var user = await userManager.GetUserByObjectIdAsync(id, cancellationToken);
+
+            if (user == null)
+            {
+                var response = new ActiveDirectoryValidationFailedResponse
+                {
+                    action = "Failed",
+                    version = "1.0.0",
+                    userMessage = $"User not found."
+                };
+
+                return response;
+            }
+
+            await userManager.DeleteAsync(user.Id, cancellationToken).ConfigureAwait(false);
+
+            var deleteUserResponse = new ActiveDirectoryContinuationResponse
+            {
+                action = "Continue",
+                version = "1.0.0",
+            };
+
+            return deleteUserResponse;
         }
 
         public async Task<ActiveDirectoryResponseBase> ValidateNewUserAsync(ActiveDirectoryValidateNewUserRequest activeDirectoryValidateNewUserRequest, CancellationToken cancellationToken = default)

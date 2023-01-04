@@ -4,7 +4,6 @@ class UserData {
     id: string = Guid.createEmpty().toString();
     userName: string = "";
     givenName: string = "";
-    surName: string = "";
     city: string = "";
     region: string = "";
     country: string = "";

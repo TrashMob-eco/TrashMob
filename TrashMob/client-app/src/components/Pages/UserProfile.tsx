@@ -5,14 +5,12 @@ import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
 import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { Button, Col, Container, Form, Image, ModalBody, Row } from 'react-bootstrap';
-import { Modal } from 'reactstrap';
+import { Button, Col, Container, Form, Image, Row } from 'react-bootstrap';
 import * as MapStore from '../../store/MapStore';
 import { getKey } from '../../store/MapStore';
 import AddressData from '../Models/AddressData';
 import { data } from 'azure-maps-control';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import * as Constants from '../Models/Constants';
 import MapControllerSinglePoint from '../MapControllerSinglePoint';
 import globes from '../assets/gettingStarted/globes.png';
 import infoCycle from '../assets/info-circle.svg';
@@ -28,7 +26,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
     const [userName, setUserName] = useState<string>("");
     const [givenName, setGivenName] = useState<string>("");
-    const [surname, setSurname] = useState<string>("");
     const [email, setEmail] = useState<string>();
     const [city, setCity] = useState<string>();
     const [radiusType, setRadiusType] = useState<string>("");
@@ -41,7 +38,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
     const [maxEventsRadiusErrors, setMaxEventsRadiusErrors] = useState<string>("");
     const [userNameErrors, setUserNameErrors] = useState<string>("");
     const [givenNameErrors, setGivenNameErrors] = useState<string>("");
-    const [surNameErrors, setSurNameErrors] = useState<string>("");
     const [longitude, setLongitude] = useState<number>(0);
     const [latitude, setLatitude] = useState<number>(0);
     const [prefersMetric, setPrefersMetric] = useState<boolean>(false);
@@ -85,7 +81,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                     .then(data => {
                         setUserName(data.userName);
                         setGivenName(data.givenName);
-                        setSurname(data.surName);
                         setEmail(data.email);
                         setCity(data.city);
                         setCountry(data.country);
@@ -101,7 +96,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                         setMaxEventsRadiusErrors("");
                         setUserNameErrors("");
                         setGivenNameErrors("");
-                        setSurNameErrors("");
                         setTravelLimitForLocalEventsErrors("");
 
                         if (data.prefersMetric) {
@@ -110,7 +104,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                         else {
                             setRadiusType("mi");
                         }
-
 
                         setIsDataLoaded(true);
                     });
@@ -132,10 +125,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
         }
     }, [userId, props.isUserLoaded, isDataLoaded])
 
-    const togglemodal = () => {
-        setIsOpen(!isOpen);
-    }
-
     // This will handle Cancel button click event.  
     const handleCancel = (event: FormEvent<HTMLElement>) => {
         event.preventDefault();
@@ -147,36 +136,9 @@ const UserProfile: FC<UserProfileProps> = (props) => {
         setIsOpen(true);
     }
 
-    // This will handle the delete account
-    const deleteAccount = () => {
-
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        const request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        return msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            const headers = getDefaultHeaders('DELETE');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/users/' + userId, {
-                method: 'DELETE',
-                headers: headers
-            }).then(() => {
-                msalClient.logoutRedirect();
-                props.history.push("/");
-            })
-        })
-    }
-
     const validateForm = () => {
         if (userNameErrors !== "" ||
             givenNameErrors !== "" ||
-            surNameErrors !== "" ||
             travelLimitForLocalEventsErrors !== "") {
             setIsSaveEnabled(false);
         }
@@ -201,7 +163,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
         userData.id = userId;
         userData.userName = userName ?? "";
         userData.givenName = givenName ?? "";
-        userData.surName = surname ?? "";
         userData.email = email ?? "";
         userData.city = city ?? "";
         userData.region = region ?? "";
@@ -246,67 +207,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
         })
     }
 
-    const handleUserNameChanged = (val: string) => {
-        if (!val || val.length === 0) {
-            setUserNameErrors("Username cannot be empty. Username can consist of Letters A-Z (upper or lowercase), Numbers (0-9), and underscores (_)");
-            validateForm();
-            return;
-        }
-
-        const pattern = new RegExp(Constants.RegexUserName);
-
-        if (!pattern.test(val)) {
-            setUserNameErrors("Please enter a valid Username. Username can consist of Letters A-Z (upper or lowercase), Numbers (0-9), and underscores (_)");
-            validateForm();
-            return;
-        }
-        else {
-            setUserNameErrors("");
-        }
-
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        // Verify that this username is unique
-        const request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/users/verifyunique/' + userId + '/' + val, {
-                method: 'GET',
-                headers: headers,
-            }).then(response => {
-                if (response.status === 200) {
-                    setUserNameErrors("");
-                    setUserName(val);
-                }
-                else if (response.status === 409) {
-                    setUserNameErrors("This username is already in use. Please choose a different name.");
-                }
-                else {
-                    setUserNameErrors("Unknown error occured while checking user name. Please try again. Error Code: " + response.status);
-                }
-
-                validateForm();
-            })
-        })
-    }
-
-    const handleGivenNameChanged = (val: string) => {
-        setGivenName(val);
-        validateForm();
-    }
-
-    const handleSurnameChanged = (val: string) => {
-        setSurname(val);
-        validateForm();
-    }
-
     const handleTravelLimitForLocalEventsChanged = (val: string) => {
         try {
             if (val) {
@@ -340,22 +240,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
         }
 
         validateForm();
-    }
-
-    const renderUserNameToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileUserName}</Tooltip>
-    }
-
-    const renderFirstNameToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileFirstName}</Tooltip>
-    }
-
-    const renderLastNameToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileLastName}</Tooltip>
-    }
-
-    const renderEmailToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileEmail}</Tooltip>
     }
 
     const renderCityToolTip = (props: any) => {
@@ -413,95 +297,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                         </Col>
                     </Row>
                 </Container>
-                <Modal isOpen={isOpen} centered onrequestclose={togglemodal} contentlabel="Delete Account?" fade={true} size={"lg"}>
-                    <ModalBody>
-                        <h2 className='fw-500'>Delete your account?</h2>
-                        <p className='p-18'>
-                            Are you sure you want to delete your account? This action cannot be undone and you will not be able to reactivate your account, view your past events, or continue building your stats.
-                        </p>
-                        <div className='d-flex justify-content-end'>
-                            <Button className="action h-49 p-18" onClick={() => {
-                                togglemodal();
-                            }
-                            }>
-                                Cancel
-                            </Button>
-                            <Button variant="outline" className='ml-2 border-danger text-danger h-49' onClick={() => {
-                                togglemodal();
-                                deleteAccount();
-                            }
-                            }>
-                                Delete
-                            </Button>
-                        </div>
-                    </ModalBody>
-                </Modal>
-
-                <Container className='bg-white p-4 rounded mt-5'>
-                    <h4 className='fw-600 color-primary my-3 main-header'>Account</h4>
-                    <Form>
-                        <Form.Row>
-                            <Col lg={6}>
-                                <Form.Group className="required">
-                                    <OverlayTrigger placement="top" overlay={renderUserNameToolTip}>
-                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="UserName">User Name</Form.Label>
-                                    </OverlayTrigger>
-                                    <Form.Control type="text" className='border-0 bg-light p-18 h-60' name="userName" defaultValue={userName} onChange={(val) => handleUserNameChanged(val.target.value)} maxLength={parseInt('32')} required />
-                                    <span style={{ color: "red" }}>{userNameErrors}</span>
-                                </Form.Group>
-                            </Col>
-                            <Col lg={6}>
-                                <Form.Group>
-                                    <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
-                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="email">Email <img className='m-0 ml-2' src={infoCycle} alt="info" /></Form.Label>
-                                    </OverlayTrigger>
-                                    <Form.Control type="text" className='border-0 bg-light p-18 h-60' disabled defaultValue={email} />
-                                </Form.Group>
-                            </Col>
-                        </Form.Row>
-                        <Form.Row>
-                            <Col lg={6}>
-                                <Form.Group>
-                                    <OverlayTrigger placement="top" overlay={renderFirstNameToolTip}>
-                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="FirstName">First Name</Form.Label>
-                                    </OverlayTrigger>
-                                    <Form.Control type="text" className='border-0 bg-light p-18 h-60' name="firstName" defaultValue={givenName} onChange={(val) => handleGivenNameChanged(val.target.value)} maxLength={parseInt('32')} />
-                                    <span style={{ color: "red" }}>{givenNameErrors}</span>
-                                </Form.Group>
-                            </Col>
-                            <Col lg={6}>
-                                <Form.Group>
-                                    <OverlayTrigger placement="top" overlay={renderLastNameToolTip}>
-                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="lastName">Last Name</Form.Label>
-                                    </OverlayTrigger>
-                                    <Form.Control type="text" className='border-0 bg-light p-18 h-60' name="lastName" defaultValue={surname} onChange={(val) => handleSurnameChanged(val.target.value)} maxLength={parseInt('32')} />
-                                    <span style={{ color: "red" }}>{surNameErrors}</span>
-                                </Form.Group>
-                            </Col>
-                        </Form.Row>
-                        <Form.Row>
-                            <Col>
-                                <Form.Label className="control-label font-weight-bold h5" htmlFor="Password">Password</Form.Label>
-                                <Form.Group>
-                                </Form.Group>
-                                <Button variant="outline" className='text-center p-18 h-49'>
-                                    Reset password
-                                </Button>
-                            </Col>
-                        </Form.Row>
-                        <Form.Row>
-                            <Col>
-                                <Form.Group className='text-right'>
-                                    <Button className="action h-49 p-18" onClick={(e) => handleCancel(e)}>Discard</Button>
-                                    <Button disabled={!isSaveEnabled} type="submit" className="action btn-outline ml-2 h-49" variant="outline-primary">Save</Button>
-                                </Form.Group>
-                                <span>{formSubmitted ? 'Saved!' : ''}</span>
-                                <span>{formSubmitErrors ? formSubmitErrors : ''}</span>
-                            </Col>
-                        </Form.Row>
-                    </Form>
-                </Container>
-
                 <Container className='p-4 bg-white mt-5 rounded'>
                     <h4 className='fw-600 color-primary my-3 main-header'>Location preferences</h4>
                     <Form onSubmit={handleSave}>
