@@ -17,6 +17,8 @@ namespace TrashMob.Models
             PartnersUpdated = new HashSet<Partner>();
         }
 
+        public Guid ObjectId { get; set; }
+
         public string NameIdentifier { get; set; }
 
         public string SourceSystemUserName { get; set; }
@@ -24,8 +26,6 @@ namespace TrashMob.Models
         public string UserName { get; set; }
 
         public string GivenName { get; set; }
-
-        public string SurName { get; set; }
 
         public string Email { get; set; }
 
@@ -46,14 +46,6 @@ namespace TrashMob.Models
         public int TravelLimitForLocalEvents { get; set; }
 
         public bool IsSiteAdmin { get; set; }
-
-        public DateTimeOffset? DateAgreedToPrivacyPolicy { get; set; }
-
-        public string PrivacyPolicyVersion { get; set; }
-
-        public DateTimeOffset? DateAgreedToTermsOfService { get; set; }
-
-        public string TermsOfServiceVersion { get; set; }
 
         public DateTimeOffset? DateAgreedToTrashMobWaiver { get; set; }
 
