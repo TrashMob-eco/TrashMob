@@ -42,7 +42,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
     const [latitude, setLatitude] = useState<number>(0);
     const [prefersMetric, setPrefersMetric] = useState<boolean>(false);
     const [travelLimitForLocalEvents, setTravelLimitForLocalEvents] = useState<number>(10);
-    const [isOpen, setIsOpen] = useState(false);
     const [travelLimitForLocalEventsErrors, setTravelLimitForLocalEventsErrors] = useState<string>("");
     const [center, setCenter] = useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [isMapKeyLoaded, setIsMapKeyLoaded] = useState<boolean>(false);
@@ -129,11 +128,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
     const handleCancel = (event: FormEvent<HTMLElement>) => {
         event.preventDefault();
         props.history.push("/");
-    }
-
-    const handleDelete = (event: FormEvent<HTMLElement>) => {
-        event.preventDefault();
-        setIsOpen(true);
     }
 
     const validateForm = () => {
@@ -368,12 +362,6 @@ const UserProfile: FC<UserProfileProps> = (props) => {
                             </Col>
                         </Form.Row>
                     </Form>
-                </Container>
-                <Container className='p-0'>
-                    <div className='d-flex justify-content-end'>
-                        <Button className='mx-0 my-5 border border-danger text-danger h-49 p-18' variant="outline" onClick={(e) => handleDelete(e)}>Delete Account</Button>
-
-                    </div>
                 </Container>
             </div >
     );

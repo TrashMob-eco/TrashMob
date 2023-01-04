@@ -9,7 +9,6 @@ import EnvelopeResponse from '../Models/EnvelopeResponse';
 import logo from "../assets/logo.svg";
 import globes from '../assets/gettingStarted/globes.png';
 import * as ToolTips from "../../store/ToolTips";
-import { BooleanLiteral } from 'typescript';
 
 export interface WaiversProps {
     isUserLoaded: boolean;
@@ -85,7 +84,7 @@ const Waivers: React.FC<WaiversProps> = (props) => {
         else {
             setIsSignWaiverEnabled(true);
         }
-    }, [fullName])
+    }, [fullNameErrors])
 
     const handleFullNameChanged = (val: string) => {
         if (!val || val === "") {
