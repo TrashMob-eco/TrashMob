@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Components;
-using TrashMob.Models;
-using TrashMobMobileApp.Data;
-
+﻿
 namespace TrashMobMobileApp.Features.Terms.Pages
 {
+    using Microsoft.AspNetCore.Components;
+    using TrashMob.Models;
+    using TrashMobMobileApp.Data;
+
     public partial class TermsOfService
     {
         private bool _isLoading;
@@ -22,8 +23,6 @@ namespace TrashMobMobileApp.Features.Terms.Pages
             _isLoading = true;
             _user = await UserManager.GetUserAsync(App.CurrentUser.Id.ToString());
             _isLoading = false;
-            _agreeTermsOfService = _user.DateAgreedToTermsOfService.HasValue ? true : false;
-            _agreePrivacyPolicy = _user.DateAgreedToPrivacyPolicy.HasValue ? true : false;
         }
 
         private void OnTermsChange(bool val)
@@ -56,9 +55,6 @@ namespace TrashMobMobileApp.Features.Terms.Pages
         {
             if (_user != null)
             {
-                _user.DateAgreedToTermsOfService = _dateTermsSigned;
-                _user.DateAgreedToPrivacyPolicy = _datePrivacySigned;
-
                 _isLoading = true;
                 await UserManager.UpdateUserAsync(_user);
                 _isLoading = false;
