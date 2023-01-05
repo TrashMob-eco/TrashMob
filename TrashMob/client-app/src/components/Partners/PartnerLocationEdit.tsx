@@ -1,7 +1,7 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Button, Col, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import PartnerLocationData from '../Models/PartnerLocationData';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
@@ -50,6 +50,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         if (props.isUserLoaded && props.partnerLocationId && props.partnerLocationId !== Guid.EMPTY) {
 
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -225,6 +226,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         var data = JSON.stringify(partnerLocationData);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,

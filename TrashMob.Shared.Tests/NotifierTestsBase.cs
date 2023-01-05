@@ -26,7 +26,7 @@ namespace TrashMob.Shared.Tests
         
         protected Mock<IKeyedManager<UserNotification>> UserNotificationManager { get; }
 
-        protected Mock<IKeyedManager<NonEventUserNotification>> NonEventUserNotificationManager { get; }
+        protected Mock<INonEventUserNotificationManager> NonEventUserNotificationManager { get; }
 
         protected Mock<IEmailSender> EmailSender { get; }
 
@@ -46,7 +46,7 @@ namespace TrashMob.Shared.Tests
             EventAttendeeManager = new Mock<IEventAttendeeManager>();
             UserManager = new Mock<IKeyedManager<User>>();
             UserNotificationManager = new Mock<IKeyedManager<UserNotification>>();
-            NonEventUserNotificationManager = new Mock<IKeyedManager<NonEventUserNotification>>();
+            NonEventUserNotificationManager = new Mock<INonEventUserNotificationManager>();
             EmailSender = new Mock<IEmailSender>();
             EmailManager = new Mock<IEmailManager>();
             MapRepository = new Mock<IMapManager>();
@@ -63,8 +63,6 @@ namespace TrashMob.Shared.Tests
             {
                 City = "Seattle",
                 Country = "United States",
-                DateAgreedToPrivacyPolicy = DateTimeOffset.UtcNow.AddDays(-2),
-                DateAgreedToTermsOfService = DateTimeOffset.UtcNow.AddDays(-2),
                 DateAgreedToTrashMobWaiver = DateTimeOffset.UtcNow.AddDays(-2),
                 Email = "testuser@trashmob.eco",
                 GivenName = "Test",
@@ -72,12 +70,8 @@ namespace TrashMob.Shared.Tests
                 MemberSince = DateTimeOffset.UtcNow.AddDays(-2),
                 NameIdentifier = "123456789",
                 PostalCode = "98040",
-                PrivacyPolicyVersion = "1.0",
                 Region = "Washington",
                 SourceSystemUserName = "TestUser",
-                SurName = "Bleg",
-                TermsOfServiceVersion = "1.0",
-                TrashMobWaiverVersion = "1.0",
                 UserName = "BlegD",
                 TravelLimitForLocalEvents = 25,
                 Longitude = 1,
@@ -98,8 +92,6 @@ namespace TrashMob.Shared.Tests
             {
                 City = "Seattle",
                 Country = "United States",
-                DateAgreedToPrivacyPolicy = DateTimeOffset.UtcNow.AddDays(-2),
-                DateAgreedToTermsOfService = DateTimeOffset.UtcNow.AddDays(-2),
                 DateAgreedToTrashMobWaiver = DateTimeOffset.UtcNow.AddDays(-2),
                 Email = "testuser@trashmob.eco",
                 GivenName = "Test",
@@ -107,11 +99,8 @@ namespace TrashMob.Shared.Tests
                 MemberSince = DateTimeOffset.UtcNow.AddDays(-2),
                 NameIdentifier = "123456789",
                 PostalCode = "98040",
-                PrivacyPolicyVersion = "1.0",
                 Region = "Washington",
                 SourceSystemUserName = "TestUser",
-                SurName = "Bleg",
-                TermsOfServiceVersion = "1.0",
                 TrashMobWaiverVersion = "1.0",
                 UserName = "BlegD",
                 TravelLimitForLocalEvents = 25,
@@ -123,8 +112,6 @@ namespace TrashMob.Shared.Tests
             {
                 City = "Seattle",
                 Country = "United States",
-                DateAgreedToPrivacyPolicy = DateTimeOffset.UtcNow.AddDays(-2),
-                DateAgreedToTermsOfService = DateTimeOffset.UtcNow.AddDays(-2),
                 DateAgreedToTrashMobWaiver = DateTimeOffset.UtcNow.AddDays(-2),
                 Email = "testuser2@trashmob.eco",
                 GivenName = "Test2",
@@ -132,12 +119,8 @@ namespace TrashMob.Shared.Tests
                 MemberSince = DateTimeOffset.UtcNow.AddDays(-2),
                 NameIdentifier = "12345678901232",
                 PostalCode = "98040",
-                PrivacyPolicyVersion = "1.0",
                 Region = "Washington",
                 SourceSystemUserName = "TestUser2",
-                SurName = "Bleg2",
-                TermsOfServiceVersion = "1.0",
-                TrashMobWaiverVersion = "1.0",
                 UserName = "BlegD2",
                 TravelLimitForLocalEvents = 25,
                 Longitude = 1,

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import EventData from '../Models/EventData';
 import EventTypeData from '../Models/EventTypeData';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
 import { getKey } from '../../store/MapStore';
 import AddressData from '../Models/AddressData';
@@ -52,7 +52,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [eventStatusId, setEventStatusId] = React.useState<number>(EventStatusActive);
     const [eventTypeList, setEventTypeList] = React.useState<EventTypeData[]>([]);
     const [eventDateErrors, setEventDateErrors] = React.useState<string>("");
-    const [eventTimeErrors, setEventTimeErrors] = React.useState<string>("");
     const [maxNumberOfParticipantsErrors, setMaxNumberOfParticipantsErrors] = React.useState<string>("");
     const [durationHoursErrors, setDurationHoursErrors] = React.useState<string>("");
     const [durationMinutesErrors, setDurationMinutesErrors] = React.useState<string>("");
@@ -144,6 +143,18 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         }
     }, [eventId, props.currentUser.dateAgreedToTrashMobWaiver, props.currentUser.trashMobWaiverVersion, props.history])
 
+    React.useEffect(() => {
+        if (eventName === "" ||
+            eventDateErrors !== "" ||
+            description === "" ||
+            durationHoursErrors !== "" ||
+            region === "") {
+            setIsSaveEnabled(false);
+        }
+        else {
+            setIsSaveEnabled(true);
+        }
+    }, [eventName, eventDateErrors, description, durationHoursErrors, region]);
 
     function handleEventNameChanged(val: string) {
         setEventName(val);
@@ -243,7 +254,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         setCountry(data.addresses[0].address.country);
                         setRegion(data.addresses[0].address.countrySubdivisionName);
                         setPostalCode(data.addresses[0].address.postalCode);
-                        validateForm();
                     })
             }
             )
@@ -260,9 +270,9 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         }
         else {
             setEventDateErrors("");
-            setAbsTime(abTime);
         }
 
+        setAbsTime(abTime);
         validateForm();
     }
 
@@ -271,13 +281,13 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         var abTime = new Date(eventDate.toDateString() + " " + passedTime);
 
         if (isEventPublic && abTime < new Date()) {
-            setEventTimeErrors("Public event cannot be in the past");
+            setEventDateErrors("Public event cannot be in the past");
         }
         else {
-            setEventTimeErrors("");
-            setAbsTime(abTime);
+            setEventDateErrors("");
         }
 
+        setAbsTime(abTime);
         validateForm();
     }
 
@@ -419,6 +429,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
         // PUT request for Edit Event.  
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -489,6 +500,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                         <Form.Label className="control-label font-weight-bold h5" htmlFor="EventDate">Date</Form.Label>
                                     </OverlayTrigger>
                                     <Form.Control type="date" className='border-0 bg-light h-60 p-18' name="eventDate" value={dateForPicker(absTime)} onChange={(val: any) => handleEventDateChanged(val.target.value)} />
+                                    <span style={{ color: "red" }}>{eventDateErrors}</span>
                                 </Form.Group>
                             </Col>
                             <Col lg={6}>
@@ -498,7 +510,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     </OverlayTrigger>
                                     <div>
                                         <Form.Control type="time" className='border-0 bg-light h-60 p-18' size="sm" name="eventTime" defaultValue={timeForPicker(absTime)} onChange={(val) => handleEventTimeChanged(val.target.value)} />
-                                        <span style={{ color: "red" }}>{eventTimeErrors}</span>
                                     </div>
                                 </Form.Group>
                             </Col>

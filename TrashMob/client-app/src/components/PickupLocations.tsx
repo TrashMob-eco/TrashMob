@@ -1,7 +1,7 @@
 import * as React from 'react'
 import UserData from './Models/UserData';
 import { Button, Col, Dropdown, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from './../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from './../store/AuthStore';
 import * as ToolTips from ".././store/ToolTips";
 import PartnerLocationData from './Models/PartnerLocationData';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
@@ -12,6 +12,8 @@ import AddressData from './Models/AddressData';
 import MapControllerSinglePointNoEvent from './MapControllerSinglePointNoEvent';
 import PickupLocationData from './Models/PickupLocationData';
 import { Pencil, XSquare } from 'react-bootstrap-icons';
+import PhoneInput from 'react-phone-input-2'
+import { ManageEventPartners } from './EventManagement/ManageEventPartners';
 
 export interface PickupLocationsDataProps {
     eventId: string;
@@ -54,6 +56,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         if (props.isUserLoaded && props.eventId && props.eventId !== Guid.EMPTY) {
 
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -68,29 +71,34 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                     method: 'GET',
                     headers: headers,
                 })
-                    .then(response => response.json() as Promise<PartnerLocationData>)
-                    .then(data => {
-                        if (data) {
-                            setHaulingPartnerLocation(data);
-                            setIsPartnerLocationsDataLoaded(true);
-                            fetch('/api/pickuplocations/getbyevent/' + props.eventId, {
-                                method: 'GET',
-                                headers: headers,
-                            })
-                                .then(response => response.json() as Promise<PickupLocationData[]>)
-                                .then(data => {
-                                    setPickupLocationsData(data);
-                                    setIsPickupLocationsDataLoaded(true);
-
-                                    if (data.some(pl => pl.hasBeenSubmitted === false)) {
-                                        setIsSubmitEnabled(true);
-                                    }
-                                });
+                    .then(response => {
+                        if (response.status === 200) {
+                            return response.json() as Promise<PartnerLocationData>;
                         }
                         else {
-                            setStatusMessage("You must add a hauling partner and have it accepted before you can add pickup locations.")
+                            throw Error("You must add a hauling partner and have it accepted before you can add pickup locations.");
                         }
                     })
+                    .then(data => {
+                        setHaulingPartnerLocation(data);
+                        setIsPartnerLocationsDataLoaded(true);
+                        fetch('/api/pickuplocations/getbyevent/' + props.eventId, {
+                            method: 'GET',
+                            headers: headers,
+                        })
+                            .then(response => response.json() as Promise<PickupLocationData[]>)
+                            .then(data => {
+                                setPickupLocationsData(data);
+                                setIsPickupLocationsDataLoaded(true);
+
+                                if (data.some(pl => pl.hasBeenSubmitted === false)) {
+                                    setIsSubmitEnabled(true);
+                                }
+                            });
+                    })
+                    .catch((error) => {
+                        setStatusMessage(error.message);
+                    });
             });
         }
 
@@ -171,6 +179,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -210,6 +219,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -273,6 +283,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         var data = JSON.stringify(partnerLocationData);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -343,6 +354,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
 
     function editPickupLocation(locationId: string) {
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -430,7 +442,10 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                             <tr key={contact.id}>
                                 <td>{contact.name}</td>
                                 <td>{contact.email}</td>
-                                <td>{contact.phone}</td>
+                                <td><PhoneInput
+                                    value={contact.phone}
+                                    disabled
+                                /></td>
                             </tr>
                         )}
                     </tbody>
@@ -597,13 +612,22 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         );
     }
 
+    function renderManageEventPartners() {
+        return (
+            <div>
+                <p><em>{statusMessage}</em></p>
+                <ManageEventPartners eventId={props.eventId} isUserLoaded={props.isUserLoaded} currentUser={props.currentUser} />
+            </div>
+        );
+    }
+
     var pickupLocationsContents = isPickupLocationsDataLoaded && props.eventId !== Guid.EMPTY
         ? renderPickupLocationsTable(pickupLocationsData)
-        : <p><em>{statusMessage}</em></p>;
+        : renderManageEventPartners()
 
     var partnerLocationsContents = isPartnerLocationsDataLoaded && props.eventId !== Guid.EMPTY
         ? renderPartnerLocationContacts()
-        : <p><em>{statusMessage}</em></p>;
+        : ""
 
     return (
         <>

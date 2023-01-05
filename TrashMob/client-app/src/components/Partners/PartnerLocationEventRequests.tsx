@@ -1,7 +1,7 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Dropdown } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as Constants from '../Models/Constants';
 import EventPartnerLocationServiceStatusData from '../Models/EventPartnerLocationServiceStatusData';
 import EventPartnerLocationServiceData from '../Models/EventPartnerLocationServiceData';
@@ -29,6 +29,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
     React.useEffect(() => {
         if (props.isUserLoaded && props.partnerLocationId) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -99,6 +100,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
         var evtdata = JSON.stringify(eventData);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,

@@ -1574,12 +1574,6 @@ namespace TrashMob.Migrations
                     b.Property<DateTimeOffset?>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset?>("DateAgreedToPrivacyPolicy")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset?>("DateAgreedToTermsOfService")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<DateTimeOffset?>("DateAgreedToTrashMobWaiver")
                         .HasColumnType("datetimeoffset");
 
@@ -1612,6 +1606,9 @@ namespace TrashMob.Migrations
                     b.Property<string>("NameIdentifier")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("PostalCode")
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
@@ -1619,24 +1616,12 @@ namespace TrashMob.Migrations
                     b.Property<bool>("PrefersMetric")
                         .HasColumnType("bit");
 
-                    b.Property<string>("PrivacyPolicyVersion")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<string>("Region")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SourceSystemUserName")
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
-
-                    b.Property<string>("SurName")
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
-
-                    b.Property<string>("TermsOfServiceVersion")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("TrashMobWaiverVersion")
                         .HasMaxLength(50)
@@ -1672,9 +1657,9 @@ namespace TrashMob.Migrations
                             GivenName = "TrashMob",
                             IsSiteAdmin = false,
                             LastUpdatedByUserId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ObjectId = new Guid("00000000-0000-0000-0000-000000000000"),
                             PrefersMetric = false,
                             Region = "AnyState",
-                            SurName = "Eco",
                             TravelLimitForLocalEvents = 0,
                             UserName = "TrashMob"
                         });

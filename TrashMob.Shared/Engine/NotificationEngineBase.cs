@@ -22,7 +22,7 @@
 
         protected IKeyedManager<UserNotification> UserNotificationManager { get; }
 
-        protected IKeyedManager<NonEventUserNotification> NonEventUserNotificationManager { get; }
+        protected INonEventUserNotificationManager NonEventUserNotificationManager { get; }
 
         protected IEmailManager EmailManager { get; }
 
@@ -44,7 +44,7 @@
                                       IKeyedManager<User> userManager,
                                       IEventAttendeeManager eventAttendeeManager,
                                       IKeyedManager<UserNotification> userNotificationManager,
-                                      IKeyedManager<NonEventUserNotification> nonEventUserNotificationManager,
+                                      INonEventUserNotificationManager nonEventUserNotificationManager,
                                       IEmailSender emailSender,
                                       IEmailManager emailManager,
                                       IMapManager mapRepository,
@@ -174,10 +174,10 @@
         protected async Task<bool> UserHasAlreadyReceivedNotification(User user, CancellationToken cancellationToken = default)
         {
             // Get list of notification events user has already received for the event
-            var notifications = await NonEventUserNotificationManager.GetByCreatedUserIdAsync(user.Id, cancellationToken).ConfigureAwait(false);
+            var notifications = await NonEventUserNotificationManager.GetByUserIdAsync(user.Id, (int)NotificationType, cancellationToken).ConfigureAwait(false);
 
             // Verify that the user has not already received this type of notification for this event
-            return notifications.Any(un => un.UserNotificationTypeId == (int)NotificationType);
+            return notifications.Any();
         }
     }
 }

@@ -176,7 +176,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                 </thead>
                 <tbody>
                     {userList.map(user => {
-                        let uName = user.userName ? user.userName : user.sourceSystemUserName;
+                        let uName = user.userName;
                         if (user.id === createdById) {
                             uName += " (Lead)";
                         }

@@ -55,6 +55,11 @@ namespace TrashMob.Shared.Managers
             return await Repo.Get(u => u.NameIdentifier == nameIdentifier).FirstOrDefaultAsync(cancellationToken);
         }
 
+        public async Task<User> GetUserByObjectIdAsync(Guid objectId, CancellationToken cancellationToken = default)
+        {
+            return await Repo.Get(u => u.ObjectId == objectId).FirstOrDefaultAsync(cancellationToken);
+        }
+
         public async Task<User> GetUserByUserNameAsync(string userName, CancellationToken cancellationToken = default)
         {
             return await Repo.Get(u => u.UserName == userName).FirstOrDefaultAsync(cancellationToken);
@@ -238,11 +243,7 @@ namespace TrashMob.Shared.Managers
         {
             user.Id = Guid.NewGuid();
             user.MemberSince = DateTimeOffset.UtcNow;
-            user.DateAgreedToPrivacyPolicy = DateTimeOffset.MinValue;
-            user.DateAgreedToTermsOfService = DateTimeOffset.MinValue;
             user.DateAgreedToTrashMobWaiver = DateTimeOffset.MinValue;
-            user.PrivacyPolicyVersion = string.Empty;
-            user.TermsOfServiceVersion = string.Empty;
             user.TrashMobWaiverVersion = string.Empty;
             user.IsSiteAdmin = false;
 

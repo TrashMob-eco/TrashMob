@@ -1,13 +1,18 @@
 ﻿
 namespace TrashMob.Shared.Managers
 {
+    using Microsoft.EntityFrameworkCore.Query.Internal;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
+    using TrashMob.Poco;
+    using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
 
@@ -84,6 +89,25 @@ namespace TrashMob.Shared.Managers
             email.Addresses.AddRange(recipients);
 
             await emailSender.SendTemplatedEmailAsync(email, cancellationToken).ConfigureAwait(false);
+        }
+
+        public Task<IEnumerable<EmailTemplate>> GetEmailTemplatesAsync(CancellationToken cancellationToken)
+        {
+            var emailTemplates = new List<EmailTemplate>();
+            foreach (var notificationType in Enum.GetValues(typeof(NotificationTypeEnum)))
+            {
+                var content = GetHtmlEmailCopy(notificationType.ToString());
+
+                var template = new EmailTemplate
+                {
+                    Name = notificationType.ToString(),
+                    Content = content,
+                };
+
+                emailTemplates.Add(template);
+            }
+
+            return Task.FromResult(emailTemplates.AsEnumerable());
         }
     }
 }
