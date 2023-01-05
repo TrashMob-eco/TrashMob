@@ -241,7 +241,7 @@
             <!-- Optional claims, to be collected from the user -->
             <!--OutputClaim ClaimTypeReferenceId="displayName"/-->
             <OutputClaim ClaimTypeReferenceId="givenName"/>
-            <OutputClaim ClaimTypeReferenceId="surName"/>
+            <!-- <OutputClaim ClaimTypeReferenceId="surName"/> -->
             <OutputClaim ClaimTypeReferenceId="extension_PrivacyAccepted" Required="true" />      
             <OutputClaim ClaimTypeReferenceId="extension_TOSAccepted" Required="true" />                   
           </OutputClaims>
@@ -307,9 +307,9 @@
             <!-- Optional claims. These claims are collected from the user and can be modified. If a claim is to be persisted in the directory after having been 
                  collected from the user, it needs to be added as a PersistedClaim in the ValidationTechnicalProfile referenced below, i.e. 
                  in AAD-UserWriteUsingAlternativeSecurityId. -->
-            <OutputClaim ClaimTypeReferenceId="displayName" />
+            <!-- <OutputClaim ClaimTypeReferenceId="displayName" /> -->
             <OutputClaim ClaimTypeReferenceId="givenName" />
-            <OutputClaim ClaimTypeReferenceId="surname" />
+            <!-- <OutputClaim ClaimTypeReferenceId="surname" /> -->
             <OutputClaim ClaimTypeReferenceId="extension_PrivacyAccepted" Required="true" />      
             <OutputClaim ClaimTypeReferenceId="extension_TOSAccepted" Required="true" />                
           </OutputClaims>
@@ -361,12 +361,7 @@
           </InputClaims>
           <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
         </TechnicalProfile>
-      </TechnicalProfiles>
-    </ClaimsProvider>
 
-    <ClaimsProvider>
-      <DisplayName>Add REST API</DisplayName>
-      <TechnicalProfiles>
         <TechnicalProfile Id="REST-SignUp">
           <DisplayName>Validate user input data and return loyaltyNumber claim</DisplayName>
           <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
@@ -381,9 +376,29 @@
           <InputClaims>
             <InputClaim ClaimTypeReferenceId="userId" PartnerClaimType="userName"/>
             <InputClaim ClaimTypeReferenceId="email" />
+            <InputClaim ClaimTypeReferenceId="givenName" />
+            <InputClaim ClaimTypeReferenceId="objectId" />                        
           </InputClaims>
           <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
         </TechnicalProfile>
+
+        <TechnicalProfile Id="REST-DeleteUser">
+          <DisplayName>Delete user from db</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="ServiceUrl">{RESTApi}/DeleteUser</Item>
+            <Item Key="AuthenticationType">ApiKeyHeader</Item>
+            <Item Key="SendClaimsIn">Body</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="x-functions-key" StorageReferenceId="B2C_1A_DeleteUser" />
+          </CryptographicKeys>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="objectId" />                        
+          </InputClaims>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
+        </TechnicalProfile>
+
       </TechnicalProfiles>
     </ClaimsProvider>      
 

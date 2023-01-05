@@ -81,6 +81,19 @@
             <OutputClaim ClaimTypeReferenceId="userDeleted"/>                             
           </OutputClaims>
           <ValidationTechnicalProfiles>
+            <ValidationTechnicalProfile ReferenceId="REST-DeleteUser">
+              <Preconditions>
+                <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+                  <Value>confirmDelete</Value>
+                  <Action>SkipThisValidationTechnicalProfile</Action>
+                </Precondition>
+                <Precondition Type="ClaimEquals" ExecuteActionsIf="false">
+                  <Value>confirmDelete</Value>
+                  <Value>yes</Value>
+                  <Action>SkipThisValidationTechnicalProfile</Action>
+                </Precondition>                
+              </Preconditions>              
+            </ValidationTechnicalProfile>            
             <ValidationTechnicalProfile ReferenceId="AAD-UserDeleteUsingObjectId">
               <Preconditions>
                 <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
