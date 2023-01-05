@@ -14,25 +14,25 @@
       <ClaimType Id="userId">
         <DisplayName>User name</DisplayName>
         <DataType>string</DataType>
-        <UserHelpText>Add help text here</UserHelpText>
+        <UserHelpText>Choose a unique user name</UserHelpText>
         <UserInputType>TextBox</UserInputType>
       </ClaimType>
       <ClaimType Id="extension_PrivacyAccepted">
-        <DisplayName>Privacy policy accepted</DisplayName>
+        <DisplayName></DisplayName>
         <DataType>string</DataType>
-        <UserHelpText>Add help text here</UserHelpText>
+        <UserHelpText>You must agree to the TrashMob.eco Privacy Policy to continue</UserHelpText>
         <UserInputType>CheckboxMultiSelect</UserInputType>
         <Restriction>
-          <Enumeration Text="" Value="Y" SelectByDefault="false" />
+          <Enumeration Text="I have read and agree to the TrashMob.eco Privacy Policy" Value="Y" SelectByDefault="false" />
         </Restriction>
       </ClaimType>
       <ClaimType Id="extension_TOSAccepted">
-        <DisplayName>Terms of service policy accepted</DisplayName>
+        <DisplayName></DisplayName>
         <DataType>string</DataType>
-        <UserHelpText>Add help text here</UserHelpText>
+        <UserHelpText>You must agree to the TrashMob.eco Terms of Service to continue</UserHelpText>
         <UserInputType>CheckboxMultiSelect</UserInputType>
         <Restriction>
-          <Enumeration Text="" Value="Y" SelectByDefault="false" />
+          <Enumeration Text="I have read and agree to the TrashMob.eco Terms of Service" Value="Y" SelectByDefault="false" />
         </Restriction>
       </ClaimType>
       <ClaimType Id="signInNames.userId">
