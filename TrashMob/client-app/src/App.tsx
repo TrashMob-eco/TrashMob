@@ -28,7 +28,7 @@ import { NoMatch } from './components/NoMatch';
 import UserData from './components/Models/UserData';
 import * as msal from "@azure/msal-browser";
 import { Guid } from 'guid-typescript';
-import UserProfile from './components/Pages/UserProfile';
+import LocationPreference from './components/Pages/LocationPreference';
 import PartnerDashboard, { PartnerDashboardMatchParams } from './components/Partners/PartnerDashboard';
 import PartnerRequest from './components/Partners/PartnerRequest';
 import SiteAdmin from './components/Admin/SiteAdmin';
@@ -326,12 +326,12 @@ export const App: FC = () => {
                                     <SiteAdmin currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
                             </Route>
-                            <Route exact path="/userprofile">
+                            <Route exact path="/locationpreference">
                                 <MsalAuthenticationTemplate
                                     interactionType={InteractionType.Redirect}
                                     errorComponent={ErrorComponent}
                                     loadingComponent={LoadingComponent}>
-                                    <UserProfile currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
+                                    <LocationPreference currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
                                 </MsalAuthenticationTemplate >
                             </Route>
                             <Route exact path="/waivers">

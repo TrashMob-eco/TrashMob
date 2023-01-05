@@ -77,10 +77,8 @@ const UserProfile: React.FC = () => {
                     <p className='para'>Profile data is used to help event owners have an accurate list of registered attendees and their contact information. Event data is used to add to TrashMob’s total stats. Please read our <a href="https://www.trashmob.eco/privacypolicy>">privacy policy</a> and <a href="https://www.trashmob.eco/termsofservice">terms of service</a>.</p>
                 </Col>
                 <Col md={6}>
-                    <h5 className='font-weight-500'>Can I change my username? </h5>
-                    <p className='para'>Yes! Go to your <a href="https://www.trashmob.eco/userprofile>">User Profile</a> page and change it in the “User Name” field. Don't forget to save your changes! </p>
                     <h5 className='font-weight-500 mt-5'>Can I change my base location?</h5>
-                    <p className='para'>Yes. Simply go to your <a href="https://www.trashmob.eco/userprofile>">User Profile</a> page and drag the pin for your current location to wherever you want your base location to be. If you set the notification distance from this point, then you will be notified for any events that are created within that radius of your base location.</p>
+                    <p className='para'>Yes. Simply go to your <a href="https://www.trashmob.eco/locationpreference>">Location Preference</a> page and drag the pin for your current location to wherever you want your base location to be. If you set the notification distance from this point, then you will be notified for any events that are created within that radius of your base location.</p>
                 </Col>
             </Row>
         </div>

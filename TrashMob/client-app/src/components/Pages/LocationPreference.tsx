@@ -15,13 +15,13 @@ import MapControllerSinglePoint from '../MapControllerSinglePoint';
 import globes from '../assets/gettingStarted/globes.png';
 import infoCycle from '../assets/info-circle.svg';
 
-interface UserProfileProps extends RouteComponentProps<any> {
+interface LocationPreferenceProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
     currentUser: UserData;
     onUserUpdated: any;
 }
 
-const UserProfile: FC<UserProfileProps> = (props) => {
+const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     const userId = props.currentUser.id;
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
     const [userName, setUserName] = useState<string>("");
@@ -237,19 +237,19 @@ const UserProfile: FC<UserProfileProps> = (props) => {
     }
 
     const renderCityToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileCity}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.LocationPreferenceCity}</Tooltip>
     }
 
     const renderRegionToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileRegion}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.LocationPreferenceRegion}</Tooltip>
     }
 
     const renderPostalCodeToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfilePostalCode}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.LocationPreferencePostalCode}</Tooltip>
     }
 
     const renderTravelLimitForLocalEventsToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.UserProfileTravelLimitForLocalEvents}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.LocationPreferenceTravelLimitForLocalEvents}</Tooltip>
     }
 
     const handleLocationChange = (point: data.Position) => {
@@ -367,4 +367,4 @@ const UserProfile: FC<UserProfileProps> = (props) => {
     );
 }
 
-export default withRouter(UserProfile);
+export default withRouter(LocationPreference);
