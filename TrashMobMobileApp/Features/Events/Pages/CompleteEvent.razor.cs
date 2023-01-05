@@ -20,6 +20,9 @@ namespace TrashMobMobileApp.Features.Events.Pages
         [Parameter]
         public string EventId { get; set; }
 
+        [Parameter]
+        public bool IsReadOnly { get; set; }
+
         protected override async Task OnInitializedAsync()
         {
             TitleContainer.Title = "Complete Event";

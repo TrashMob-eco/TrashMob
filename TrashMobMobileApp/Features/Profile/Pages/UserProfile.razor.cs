@@ -66,6 +66,7 @@ namespace TrashMobMobileApp.Features.Profile.Pages
                 {
                     await GetUserAsync();
                 }
+
                 Snackbar.Add("Changes saved!", Severity.Success);
             }
         }

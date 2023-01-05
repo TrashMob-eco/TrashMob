@@ -23,7 +23,7 @@ namespace TrashMobMobileApp.Features.Events.Components
 
         protected override async Task OnInitializedAsync()
         {
-            TitleContainer.Title = "Create Event (6/6)";
+            TitleContainer.Title = "Create Event (5/5)";
             Event.CreatedByUserId = App.CurrentUser.Id;
             Event.LastUpdatedByUserId = App.CurrentUser.Id;
             Event.LastUpdatedDate = DateTime.Now;

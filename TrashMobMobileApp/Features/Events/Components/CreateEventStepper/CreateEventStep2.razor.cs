@@ -23,7 +23,7 @@ namespace TrashMobMobileApp.Features.Events.Components
 
         protected override void OnInitialized()
         {
-            TitleContainer.Title = "Create Event (2/6)";
+            TitleContainer.Title = "Create Event (2/5)";
         }
 
         private async Task OnStepFinishedAsync()

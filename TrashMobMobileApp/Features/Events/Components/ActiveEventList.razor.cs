@@ -2,6 +2,7 @@
 using MudBlazor;
 using TrashMob.Models;
 using TrashMobMobileApp.Data;
+using TrashMobMobileApp.Shared;
 
 namespace TrashMobMobileApp.Features.Events.Components
 {
@@ -28,8 +29,7 @@ namespace TrashMobMobileApp.Features.Events.Components
 
         private void OnViewEventDetails(Event mobEvent)
         {
-            _selectedEvent = mobEvent;
-            _isViewOpen = !_isViewOpen;
+            Navigator.NavigateTo(string.Format(Routes.EditEvent, mobEvent.Id, false));
         }
 
         private async Task OnRegisterAsync(Event mobEvent)

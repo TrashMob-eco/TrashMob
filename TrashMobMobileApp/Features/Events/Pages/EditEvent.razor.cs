@@ -30,9 +30,12 @@ namespace TrashMobMobileApp.Features.Events.Pages
         [Parameter]
         public string EventId { get; set; }
 
+        [Parameter]
+        public bool IsReadOnly { get; set; }
+
         protected override async Task OnInitializedAsync()
         {
-            TitleContainer.Title = "Edit Event";
+            TitleContainer.Title = IsReadOnly ? "View Event" : "Edit Event";
             await GetEventTypesAsync();
             await GetAndSetEventInfoAsync();
 
@@ -63,20 +66,28 @@ namespace TrashMobMobileApp.Features.Events.Pages
 
         private async Task OnSaveAsync()
         {
-            await _editEventForm?.Validate();
-            if (_success)
+            if (IsReadOnly)
             {
-                _event.EventDate = new DateTime(_eventDate.Value.Year, _eventDate.Value.Month, _eventDate.Value.Day,
-                    _eventTime.Value.Hours, _eventTime.Value.Minutes, default);
-                _event.PostalCode = _zip.ToString();
-                _event.CreatedByUserId = App.CurrentUser.Id;
-                _event.LastUpdatedByUserId = App.CurrentUser.Id;
-                _event.LastUpdatedDate = DateTime.Now;
-                _event.EventTypeId = _selectedEventType.Id;
-                _isLoading = true;
-                var eventAdd = await MobEventManager.UpdateEventAsync(_event);
-                _isLoading = false;
-                Snackbar.Add("Changes saved!", Severity.Success);
+                Navigator.NavigateTo(Routes.Events);
+            }
+            else
+            {
+                await _editEventForm?.Validate();
+                if (_success)
+                {
+                    _event.EventDate = new DateTime(_eventDate.Value.Year, _eventDate.Value.Month, _eventDate.Value.Day,
+                        _eventTime.Value.Hours, _eventTime.Value.Minutes, default);
+                    _event.PostalCode = _zip.ToString();
+                    _event.CreatedByUserId = App.CurrentUser.Id;
+                    _event.LastUpdatedByUserId = App.CurrentUser.Id;
+                    _event.LastUpdatedDate = DateTime.Now;
+                    _event.EventTypeId = _selectedEventType.Id;
+                    _isLoading = true;
+                    var eventAdd = await MobEventManager.UpdateEventAsync(_event);
+                    _isLoading = false;
+                    Snackbar.Add("Changes saved!", Severity.Success);
+                }
+
             }
         }
 

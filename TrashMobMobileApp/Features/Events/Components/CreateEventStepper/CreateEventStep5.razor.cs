@@ -31,7 +31,7 @@ namespace TrashMobMobileApp.Features.Events.Components
 
         protected override async Task OnInitializedAsync()
         {
-            TitleContainer.Title = "Create Event (5/6)";
+            TitleContainer.Title = "Create Event (4/5)";
             await GetEventTypesAsync();
             _selectedEventType = _eventTypes.Find(item => item.Id == Event.EventTypeId);
             //TODO: get user's timezone
