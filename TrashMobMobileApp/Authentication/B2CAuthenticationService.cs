@@ -81,30 +81,6 @@
             return newContext;
         }
 
-        public async Task ResetPasswordAsync(IUserManager userManager)
-        {
-            AuthenticationResult authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.ApiScopesArray)
-                .WithPrompt(Prompt.NoPrompt)
-                .WithAuthority(b2CConstants.AuthorityPasswordReset)
-                .ExecuteAsync();
-
-            UserState.UserContext = UpdateUserInfo(authResult);
-            await B2CAuthenticationService.VerifyAccount(userManager);
-        }
-
-        public async Task EditProfileAsync()
-        {
-            IEnumerable<IAccount> accounts = await b2CConstants.PublicClientApp.GetAccountsAsync();
-
-            AuthenticationResult authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.ApiScopesArray)
-                .WithAccount(GetAccountByPolicy(accounts, b2CConstants.PolicyEditProfile))
-                .WithPrompt(Prompt.NoPrompt)
-                .WithAuthority(b2CConstants.AuthorityEditProfile)
-                .ExecuteAsync();
-
-            UserState.UserContext = UpdateUserInfo(authResult);
-        }
-
         private async Task<UserContext> SignInInteractively()
         {
             var useEmbeddedWebview = true;

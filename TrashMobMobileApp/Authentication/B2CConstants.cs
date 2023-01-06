@@ -20,13 +20,7 @@
 
         public string Scopes { get; set; }
 
-        public string AuthorityBase { get; set; }
-        
         public string AuthoritySignInSignUp { get; set; }
-        
-        public string AuthorityEditProfile { get; set; }
-        
-        public string AuthorityPasswordReset { get; set; }
         
         public string IOSKeyChainGroup { get; set; }
 
