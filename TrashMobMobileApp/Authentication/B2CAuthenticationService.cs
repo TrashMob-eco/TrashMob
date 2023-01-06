@@ -81,30 +81,6 @@
             return newContext;
         }
 
-        public async Task ResetPasswordAsync(IUserManager userManager)
-        {
-            AuthenticationResult authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.ApiScopesArray)
-                .WithPrompt(Prompt.NoPrompt)
-                .WithAuthority(b2CConstants.AuthorityPasswordReset)
-                .ExecuteAsync();
-
-            UserState.UserContext = UpdateUserInfo(authResult);
-            await B2CAuthenticationService.VerifyAccount(userManager);
-        }
-
-        public async Task EditProfileAsync()
-        {
-            IEnumerable<IAccount> accounts = await b2CConstants.PublicClientApp.GetAccountsAsync();
-
-            AuthenticationResult authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.ApiScopesArray)
-                .WithAccount(GetAccountByPolicy(accounts, b2CConstants.PolicyEditProfile))
-                .WithPrompt(Prompt.NoPrompt)
-                .WithAuthority(b2CConstants.AuthorityEditProfile)
-                .ExecuteAsync();
-
-            UserState.UserContext = UpdateUserInfo(authResult);
-        }
-
         private async Task<UserContext> SignInInteractively()
         {
             var useEmbeddedWebview = true;
@@ -190,28 +166,9 @@
 
             JObject user = ParseIdToken(ar.IdToken);
 
-            newContext.NameIdentifier = ar.ClaimsPrincipal?.Claims?.FirstOrDefault(c => c.Type == "sub")?.Value;
-            newContext.SourceSystemUserName = ar.ClaimsPrincipal?.Claims?.FirstOrDefault(c => c.Type == "username")?.Value;
-
             newContext.AccessToken = ar.AccessToken;
-            newContext.Name = user["name"]?.ToString();
-            newContext.UserIdentifier = user["oid"]?.ToString();
-
             newContext.GivenName = user["given_name"]?.ToString();
-            newContext.FamilyName = user["family_name"]?.ToString();
-
-            newContext.StreetAddress = user["streetAddress"]?.ToString();
-            newContext.City = user["city"]?.ToString();
-            newContext.Province = user["state"]?.ToString();
-            newContext.PostalCode = user["postalCode"]?.ToString();
-            newContext.Country = user["country"]?.ToString();
-
-            newContext.JobTitle = user["jobTitle"]?.ToString();
-
-            if (user["emails"] is JArray emails)
-            {
-                newContext.EmailAddress = emails[0].ToString();
-            }
+            newContext.EmailAddress = user["email"]?.ToString();
 
             newContext.IsLoggedOn = true;
 

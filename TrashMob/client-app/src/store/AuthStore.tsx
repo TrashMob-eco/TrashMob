@@ -8,13 +8,13 @@ export function GetMsalClient() {
     var uri = protocol + "//" + host;
 
     var clientId = 'e46d67ba-fe46-40f4-b222-2f982b2bb112';
-    var authority = 'trashmobdev.b2clogin.com';
-    var fullAuthority = 'https://trashmobdev.b2clogin.com/Trashmobdev.onmicrosoft.com/B2C_1A_TM_SIGNUP_SIGNIN';
+    var authority = 'TrashMobDev.b2clogin.com';
+    var fullAuthority = 'https://TrashMobDev.b2clogin.com/TrashMobDev.onmicrosoft.com/B2C_1A_TM_SIGNUP_SIGNIN';
 
     if (host.startsWith("www.trashmob.eco") || host.startsWith("trashmob.eco")) {
         clientId = "0a1647a4-c758-4964-904f-a9b66958c071";
-        authority = 'trashmob.b2clogin.com';
-        fullAuthority = 'https://trashmob.b2clogin.com/Trashmob.onmicrosoft.com/B2C_1A_TM_SIGNUP_SIGNIN'
+        authority = 'TrashMob.b2clogin.com';
+        fullAuthority = 'https://TrashMob.b2clogin.com/TrashMob.onmicrosoft.com/B2C_1A_TM_SIGNUP_SIGNIN'
     }
 
     var msalC = new msal.PublicClientApplication({
@@ -71,11 +71,11 @@ export function getApiConfig() {
 }
 
 const apiConfigProd = {
-    b2cScopes: ["https://Trashmob.onmicrosoft.com/api/TrashMob.Read", "https://Trashmob.onmicrosoft.com/api/Trashmob.Writes"],
+    b2cScopes: ["https://TrashMob.onmicrosoft.com/api/TrashMob.Read", "https://TrashMob.onmicrosoft.com/api/TrashMob.Writes"],
 };
 
 const apiConfigDev = {
-    b2cScopes: ["https://TrashMobDev.onmicrosoft.com/devapi/TrashMob.Read", "https://TrashMobDev.onmicrosoft.com/devapi/TrashMob.Writes"],
+    b2cScopes: ["https://TrashMobDev.onmicrosoft.com/api/TrashMob.Read", "https://TrashMobDev.onmicrosoft.com/api/TrashMob.Writes"],
 };
 
 export const tokenRequest = {
