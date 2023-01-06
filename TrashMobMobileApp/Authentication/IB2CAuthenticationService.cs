@@ -6,10 +6,10 @@
 
     public interface IB2CAuthenticationService
     {
-        Task EditProfileAsync();
-        Task ResetPasswordAsync(IUserManager userManager);
         Task SignInAsync(IUserManager userManager);
+
         Task SignOutAsync();
+        
         UserContext UpdateUserInfo(AuthenticationResult ar);
     }
 }
