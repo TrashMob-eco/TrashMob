@@ -166,28 +166,9 @@
 
             JObject user = ParseIdToken(ar.IdToken);
 
-            newContext.NameIdentifier = ar.ClaimsPrincipal?.Claims?.FirstOrDefault(c => c.Type == "sub")?.Value;
-            newContext.SourceSystemUserName = ar.ClaimsPrincipal?.Claims?.FirstOrDefault(c => c.Type == "username")?.Value;
-
             newContext.AccessToken = ar.AccessToken;
-            newContext.Name = user["name"]?.ToString();
-            newContext.UserIdentifier = user["oid"]?.ToString();
-
             newContext.GivenName = user["given_name"]?.ToString();
-            newContext.FamilyName = user["family_name"]?.ToString();
-
-            newContext.StreetAddress = user["streetAddress"]?.ToString();
-            newContext.City = user["city"]?.ToString();
-            newContext.Province = user["state"]?.ToString();
-            newContext.PostalCode = user["postalCode"]?.ToString();
-            newContext.Country = user["country"]?.ToString();
-
-            newContext.JobTitle = user["jobTitle"]?.ToString();
-
-            if (user["emails"] is JArray emails)
-            {
-                newContext.EmailAddress = emails[0].ToString();
-            }
+            newContext.EmailAddress = user["email"]?.ToString();
 
             newContext.IsLoggedOn = true;
 
