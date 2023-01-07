@@ -89,7 +89,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
         }
     }, [props.currentUser, props.isUserLoaded, props.partnerId]);
 
-    function validateForm() {
+    React.useEffect(() => {
         if (name === "" ||
             nameErrors !== "") {
             setIsSaveEnabled(false);
@@ -97,7 +97,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [name, nameErrors]);
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
@@ -156,8 +156,6 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
             setNameErrors("");
             setName(val);
         }
-
-        validateForm();
     }
 
     function handlePublicNotesChanged(notes: string) {
@@ -168,28 +166,22 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
             setPublicNotes(notes);
             setPublicNotesErrors("");
         }
-
-        validateForm();
     }
 
     function handlePrivateNotesChanged(notes: string) {
         setPrivateNotes(notes);
-        validateForm();
     }
 
     function handleWebsiteChanged(val: string) {
         setWebsite(val);
-        validateForm();
     }
 
     function selectPartnerStatus(val: string) {
         setPartnerStatusId(parseInt(val));
-        validateForm();
     }
 
     function selectPartnerType(val: string) {
         setPartnerTypeId(parseInt(val));
-        validateForm();
     }
 
     function renderNameToolTip(props: any) {
