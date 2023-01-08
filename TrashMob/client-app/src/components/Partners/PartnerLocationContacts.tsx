@@ -227,7 +227,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
         });
     }
 
-    function validateForm() {
+    React.useEffect(() => {
         if (name === "" ||
             nameErrors !== "" ||
             notes === "" ||
@@ -240,7 +240,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [name, nameErrors, notes, notesErrors, email, emailErrors, phoneErrors]);
 
     function handleNameChanged(val: string) {
         if (val === "") {
@@ -250,8 +250,6 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             setNameErrors("");
             setName(val);
         }
-
-        validateForm();
     }
 
     function handleEmailChanged(val: string) {
@@ -264,8 +262,6 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             setEmailErrors("");
             setEmail(val);
         }
-
-        validateForm();
     }
 
     function handlePhoneChanged(val: string) {
@@ -285,8 +281,6 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             setPhoneErrors("");
             setPhone(val);
         }
-
-        validateForm();
     }
 
     function handleNotesChanged(val: string) {
@@ -297,8 +291,6 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             setNotesErrors("");
             setNotes(val);
         }
-
-        validateForm();
     }
 
     function renderNameToolTip(props: any) {

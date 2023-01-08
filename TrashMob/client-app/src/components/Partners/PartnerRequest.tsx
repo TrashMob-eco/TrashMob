@@ -79,7 +79,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         }
     }, [props.currentUser, props.isUserLoaded, props.mode]);
 
-    function validateForm() {
+    React.useEffect(() => {
         if (nameErrors !== "" ||
             emailErrors !== "" ||
             websiteErrors !== "" ||
@@ -90,7 +90,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [nameErrors, emailErrors, websiteErrors, phoneErrors, region]);
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
@@ -157,8 +157,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
             setNameErrors("");
             setName(val);
         }
-
-        validateForm();
     }
 
     function handleEmailChanged(val: string) {
@@ -171,8 +169,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
             setEmailErrors("");
             setEmail(val);
         }
-
-        validateForm();
     }
 
     function handleWebsiteChanged(val: string) {
@@ -185,8 +181,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
             setWebsiteErrors("");
             setWebsite(val);
         }
-
-        validateForm();
     }
 
     function handlePhoneChanged(val: string) {
@@ -199,13 +193,10 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
             setPhoneErrors("");
             setPhone(val);
         }
-
-        validateForm();
     }
 
     function handleNotesChanged(val: string) {
         setNotes(val);
-        validateForm();
     }
 
     function renderNameToolTip(props: any) {
@@ -288,7 +279,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                         setCountry(data.addresses[0].address.country);
                         setRegion(data.addresses[0].address.countrySubdivisionName);
                         setPostalCode(data.addresses[0].address.postalCode);
-                        validateForm();
                     })
             })
     }

@@ -119,12 +119,10 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
 
     function handleNotesChanged(val: string) {
         setNotes(val);
-        validateForm();
     }
 
     function handleHasBeenPickedUpChanged(val: boolean) {
         setHasBeenPickedUp(val);
-        validateForm();
     }
 
     function renderStreetAddressToolTip(props: any) {
@@ -159,14 +157,14 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.PickupLocationLastUpdatedDate}</Tooltip>
     }
 
-    function validateForm() {
+    React.useEffect(() => {
         if (country === "") {
             setIsSaveEnabled(false);
         }
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [country]);
 
     function addPickupLocation() {
         resetForm();
