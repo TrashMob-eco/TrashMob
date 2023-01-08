@@ -134,7 +134,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         else {
             setIsSaveEnabled(true);
         }
-    }, [travelLimitForLocalEvents]);
+    }, [travelLimitForLocalEventsErrors]);
 
     // This will handle the submit form event.  
     const handleSave = (event: ChangeEvent<HTMLFormElement>) => {
