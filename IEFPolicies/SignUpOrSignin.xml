@@ -219,7 +219,6 @@
         <OutputClaim ClaimTypeReferenceId="userId" />     
         <OutputClaim ClaimTypeReferenceId="signInName" />      
         <OutputClaim ClaimTypeReferenceId="newUser" />      
-        <OutputClaim ClaimTypeReferenceId="isForgotPassword" DefaultValue="false" />                
         <OutputClaim ClaimTypeReferenceId="objectId" PartnerClaimType="sub"/>
         <OutputClaim ClaimTypeReferenceId="identityProvider" />
         <OutputClaim ClaimTypeReferenceId="tenantId" AlwaysUseDefaultValue="true" DefaultValue="{Policy:TenantObjectId}" />
