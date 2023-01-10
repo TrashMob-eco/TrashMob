@@ -25,7 +25,7 @@ export function GetMsalClient() {
             postLogoutRedirectUri: "/",
             navigateToLoginRequestUrl: true,
             knownAuthorities: [authority],
-            redirectUri: uri
+            redirectUri: uri            
         },
         cache: { cacheLocation: "sessionStorage", storeAuthStateInCookie: false },
         system: {
@@ -71,11 +71,11 @@ export function getApiConfig() {
 }
 
 const apiConfigProd = {
-    b2cScopes: ["https://TrashMob.onmicrosoft.com/api/TrashMob.Read", "https://TrashMob.onmicrosoft.com/api/TrashMob.Writes"],
+    b2cScopes: ["https://TrashMob.onmicrosoft.com/api/TrashMob.Read", "https://TrashMob.onmicrosoft.com/api/TrashMob.Writes", "email"],
 };
 
 const apiConfigDev = {
-    b2cScopes: ["https://TrashMobDev.onmicrosoft.com/api/TrashMob.Read", "https://TrashMobDev.onmicrosoft.com/api/TrashMob.Writes"],
+    b2cScopes: ["https://TrashMobDev.onmicrosoft.com/api/TrashMob.Read", "https://TrashMobDev.onmicrosoft.com/api/TrashMob.Writes", "email"],
 };
 
 export const tokenRequest = {

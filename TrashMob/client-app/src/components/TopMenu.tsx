@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { msalClient } from '../store/AuthStore';
+import { getApiConfig, msalClient } from '../store/AuthStore';
 import UserData from './Models/UserData';
 import logo from './assets/logo.svg'
 import { Button, Dropdown, Nav } from 'react-bootstrap';
@@ -44,7 +44,11 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
 
     function signIn(e: any) {
         e.preventDefault();
-        msalClient.loginRedirect();
+        var apiConfig = getApiConfig();
+
+        msalClient.loginRedirect({
+            scopes: apiConfig.b2cScopes
+            });
     }
 
     return (
