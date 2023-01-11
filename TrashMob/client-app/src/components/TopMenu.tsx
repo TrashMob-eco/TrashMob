@@ -5,7 +5,7 @@ import UserData from './Models/UserData';
 import logo from './assets/logo.svg'
 import { Button, Dropdown, Nav } from 'react-bootstrap';
 import './assets/styles/header.css';
-import { BoxArrowLeft, Person, PersonBadge, PersonCircle, PlusLg, Speedometer2 } from 'react-bootstrap-icons';
+import { BoxArrowLeft, Map, PersonX, PersonBadge, PersonCircle, PlusLg, Speedometer2 } from 'react-bootstrap-icons';
 
 interface TopMenuProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -78,11 +78,13 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 <Dropdown.Divider />
                                 <Dropdown.Item eventKey="2" href="/manageeventdashboard"><PlusLg aria-hidden="true" />Add event</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="3" href="/locationpreference"><Person aria-hidden="true" />My location preference</Dropdown.Item>
+                                <Dropdown.Item eventKey="3" href="/locationpreference"><Map aria-hidden="true" />My location preference</Dropdown.Item>
                                 <Dropdown.Divider />
                                 {props.currentUser.isSiteAdmin ? <> <Dropdown.Item eventKey="4" href="/siteadmin" disabled={!props.currentUser.isSiteAdmin}><PersonBadge aria-hidden="true" />Site administration</Dropdown.Item>
                                 <Dropdown.Divider /></> : ""}
-                                <Dropdown.Item eventKey="5" onClick={(e) => signOut(e)}><BoxArrowLeft aria-hidden="true" />Sign out</Dropdown.Item>
+                                <Dropdown.Item eventKey="5" href="/deletemydata"><PersonX aria-hidden="true" />Delete my account</Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item eventKey="6" onClick={(e) => signOut(e)}><BoxArrowLeft aria-hidden="true" />Sign out</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
                     </div>
