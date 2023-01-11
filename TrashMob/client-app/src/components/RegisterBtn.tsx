@@ -77,7 +77,10 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
         const accounts = msalClient.getAllAccounts();
 
         if (accounts === null || accounts.length === 0) {
-            msalClient.loginRedirect().then(() => {
+            var apiConfig = getApiConfig();
+            msalClient.loginRedirect({
+                scopes: apiConfig.b2cScopes
+            }).then(() => {
                 addAttendee(eventId);
             })
         }

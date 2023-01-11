@@ -229,7 +229,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
         });
     }
 
-    function validateForm() {
+    React.useEffect(() => {
         if (notes === "" ||
             notesErrors !== "" ||
             serviceTypeId === 0) {
@@ -238,7 +238,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [notes, notesErrors, serviceTypeId]);
 
     function handleNotesChanged(val: string) {
         if (val === "") {
@@ -248,13 +248,10 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
             setNotesErrors("");
             setNotes(val);
         }
-
-        validateForm();
     }
 
     function selectServiceType(val: string) {
         setServiceTypeId(parseInt(val));
-        validateForm();
     }
 
     function renderNotesToolTip(props: any) {
