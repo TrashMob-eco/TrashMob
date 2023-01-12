@@ -17,6 +17,7 @@ namespace TrashMob.Shared.Managers
         private readonly Guid TrashMobUserId = Guid.Empty;
         private readonly IBaseRepository<EventAttendee> eventAttendeesRepository;
         private readonly IKeyedRepository<UserNotification> userNotificationRepository;
+        private readonly IKeyedRepository<NonEventUserNotification> nonEventUserNotificationRepository;
         private readonly IKeyedRepository<PartnerRequest> partnerRequestRepository;
         private readonly IBaseRepository<EventSummary> eventSummaryRepository;
         private readonly IBaseRepository<EventPartnerLocationService> eventPartnerRepository;
@@ -29,6 +30,7 @@ namespace TrashMob.Shared.Managers
         public UserManager(IKeyedRepository<User> repository,
                            IBaseRepository<EventAttendee> eventAttendeesRepository,
                            IKeyedRepository<UserNotification> userNotificationRepository,
+                           IKeyedRepository<NonEventUserNotification> nonEventUserNotificationRepository,
                            IKeyedRepository<PartnerRequest> partnerRequestRepository,
                            IBaseRepository<EventSummary> eventSummaryRepository,
                            IBaseRepository<EventPartnerLocationService> eventPartnerRepository,
@@ -40,6 +42,7 @@ namespace TrashMob.Shared.Managers
         {
             this.eventAttendeesRepository = eventAttendeesRepository;
             this.userNotificationRepository = userNotificationRepository;
+            this.nonEventUserNotificationRepository = nonEventUserNotificationRepository;
             this.partnerRequestRepository = partnerRequestRepository;
             this.eventSummaryRepository = eventSummaryRepository;
             this.eventPartnerRepository = eventPartnerRepository;
@@ -100,6 +103,13 @@ namespace TrashMob.Shared.Managers
             foreach (var userNotification in userNotifications)
             {
                 await userNotificationRepository.DeleteAsync(userNotification);
+            }
+
+            var nonEventUserNotifications = await nonEventUserNotificationRepository.Get(e => e.UserId == id).ToListAsync(cancellationToken);
+
+            foreach (var nonEventUserNotification in nonEventUserNotifications)
+            {
+                await nonEventUserNotificationRepository.DeleteAsync(nonEventUserNotification);
             }
 
             // Remove the Partner Requests
