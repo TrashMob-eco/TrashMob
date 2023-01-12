@@ -46,9 +46,9 @@ namespace TrashMob.Shared.Managers
             return newUserResponse;
         }
 
-        public async Task<ActiveDirectoryResponseBase> DeleteUserAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<ActiveDirectoryResponseBase> DeleteUserAsync(Guid objectId, CancellationToken cancellationToken = default)
         {
-            var user = await userManager.GetUserByObjectIdAsync(id, cancellationToken);
+            var user = await userManager.GetUserByObjectIdAsync(objectId, cancellationToken);
 
             if (user == null)
             {

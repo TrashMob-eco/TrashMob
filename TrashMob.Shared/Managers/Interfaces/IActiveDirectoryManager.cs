@@ -9,7 +9,7 @@
     {
         Task<ActiveDirectoryResponseBase> CreateUserAsync(ActiveDirectoryNewUserRequest activeDirectoryNewUserRequest, CancellationToken cancellationToken = default);
 
-        Task<ActiveDirectoryResponseBase> DeleteUserAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<ActiveDirectoryResponseBase> DeleteUserAsync(Guid objectId, CancellationToken cancellationToken = default);
 
         Task<ActiveDirectoryResponseBase> ValidateNewUserAsync(ActiveDirectoryValidateNewUserRequest activeDirectoryNewUserRequest, CancellationToken cancellationToken = default);
     }
