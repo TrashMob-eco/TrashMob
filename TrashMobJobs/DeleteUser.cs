@@ -23,13 +23,16 @@ namespace TrashMobJobs
         }
 
         [Function("DeleteUser")]
-        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "delete", Route = "DeleteUser/{id}")] HttpRequestData req, Guid id)
+        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "DeleteUser")] HttpRequestData req)
         {
-            logger.LogInformation("C# HTTP trigger function processed a request.");     
+            var json = await req.ReadAsStringAsync();
+            var activeDirectoryDeleteUserRequest = JsonSerializer.Deserialize<ActiveDirectoryDeleteUserRequest>(json);
+
+            logger.LogInformation($"Deleting User with objectId {activeDirectoryDeleteUserRequest.objectId}.");
 
             try
             {
-                var deleteResponse = await activeDirectoryManager.DeleteUserAsync(id);
+                var deleteResponse = await activeDirectoryManager.DeleteUserAsync(activeDirectoryDeleteUserRequest.objectId);
 
                 HttpResponseData response;
                 switch (deleteResponse.action)
@@ -60,7 +63,7 @@ namespace TrashMobJobs
                 };
 
                 response.WriteString(JsonSerializer.Serialize(blockingResponse));
-                logger.LogError(ex, $"User {id} failed to delete.");
+                logger.LogError(ex, $"User with objectId {activeDirectoryDeleteUserRequest.objectId} failed to delete.");
                 return response;
             }
         }

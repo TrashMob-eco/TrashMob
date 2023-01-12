@@ -1,9 +1,9 @@
 ﻿namespace TrashMob.Poco
 {
+    using System;
+
     public class ActiveDirectoryDeleteUserRequest
     {
-        public string id { get; set; }
-
-        public string email { get; set; }
+        public Guid objectId { get; set; }
     }
 }
