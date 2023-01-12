@@ -59,11 +59,11 @@ namespace TrashMobJobs
                 {
                     action = "Failed",
                     version = "1.0.0",
-                    userMessage = $"User failed to delete."
+                    userMessage = "User failed to delete."
                 };
 
                 response.WriteString(JsonSerializer.Serialize(blockingResponse));
-                logger.LogError(ex, $"User with objectId {activeDirectoryDeleteUserRequest.objectId} failed to delete.");
+                logger.LogError(ex, $"User with objectId {activeDirectoryDeleteUserRequest.objectId} failed to delete. Message: {ex.Message}, InnerException:  {ex.InnerException}");
                 return response;
             }
         }
