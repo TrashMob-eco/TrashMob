@@ -87,7 +87,7 @@ namespace TrashMob.Shared.Managers
         public override async Task<int> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             // Remove the records where the user is attending an event
-            var attendees = eventAttendeesRepository.Get(ea => ea.UserId == id);
+            var attendees = await eventAttendeesRepository.Get(ea => ea.UserId == id).ToListAsync(cancellationToken);
 
             foreach (var attendee in attendees)
             {
@@ -95,7 +95,7 @@ namespace TrashMob.Shared.Managers
             }
 
             // Remove the userNotification records where the user created or updated the event
-            var userNotifications = userNotificationRepository.Get(e => e.UserId == id);
+            var userNotifications = await userNotificationRepository.Get(e => e.UserId == id).ToListAsync(cancellationToken);
 
             foreach (var userNotification in userNotifications)
             {
@@ -103,7 +103,7 @@ namespace TrashMob.Shared.Managers
             }
 
             // Remove the Partner Requests
-            var partnerRequests = partnerRequestRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id);
+            var partnerRequests = await partnerRequestRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToListAsync(cancellationToken);
 
             foreach (var partnerRequest in partnerRequests)
             {
@@ -121,7 +121,7 @@ namespace TrashMob.Shared.Managers
             }
 
             // Remove the records where the user created or updated the event
-            var eventSummaries = eventSummaryRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id);
+            var eventSummaries = await eventSummaryRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToListAsync(cancellationToken);
 
             foreach (var eventSummary in eventSummaries)
             {
@@ -139,7 +139,7 @@ namespace TrashMob.Shared.Managers
             }
 
             // Remove the event partner records for this event
-            var eventPartners = eventPartnerRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id);
+            var eventPartners = await eventPartnerRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToListAsync(cancellationToken);
 
             foreach (var eventPartner in eventPartners)
             {
@@ -156,7 +156,7 @@ namespace TrashMob.Shared.Managers
                 await eventPartnerRepository.UpdateAsync(eventPartner);
             }
 
-            var events = eventRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id);
+            var events = await eventRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToListAsync(cancellationToken);
 
             foreach (var mobEvent in events)
             {
@@ -173,7 +173,7 @@ namespace TrashMob.Shared.Managers
                 await eventRepository.UpdateAsync(mobEvent);
             }
 
-            var partners = partnerRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id);
+            var partners = await partnerRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToListAsync(cancellationToken);
 
             foreach (var partner in partners)
             {
@@ -190,7 +190,7 @@ namespace TrashMob.Shared.Managers
                 await partnerRepository.UpdateAsync(partner);
             }
 
-            var partnerAdmins = partnerAdminRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id || e.UserId == id);
+            var partnerAdmins = await partnerAdminRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id || e.UserId == id).ToListAsync(cancellationToken);
 
             foreach (var partnerUser in partnerAdmins)
             {
@@ -215,7 +215,7 @@ namespace TrashMob.Shared.Managers
             }
 
             // Remove the Partner Locations
-            var partnerLocations = partnerLocationRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id);
+            var partnerLocations = await partnerLocationRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToListAsync(cancellationToken);
 
             foreach (var partnerLocation in partnerLocations)
             {
