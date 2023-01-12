@@ -23,7 +23,7 @@ namespace TrashMobJobs
         }
 
         [Function("DeleteUser")]
-        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "delete", Route = "{id:guid}")] HttpRequestData req, Guid id)
+        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "delete", Route = "DeleteUser/{id:guid}")] HttpRequestData req, Guid id)
         {
             logger.LogInformation("C# HTTP trigger function processed a request.");     
 
