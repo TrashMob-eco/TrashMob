@@ -136,10 +136,9 @@ namespace TrashMob
 
             app.UseSpa(spa =>
             {
-                spa.Options.SourcePath = "client-app";
-
                 if (env.IsDevelopment())
                 {
+                    spa.Options.SourcePath = "client-app";
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
