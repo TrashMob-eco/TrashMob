@@ -222,7 +222,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
         });
     }
 
-    function validateForm() {
+    React.useEffect(() => {
         if (accountName === "" ||
             accountNameErrors !== "") {
             setIsSaveEnabled(false);
@@ -230,7 +230,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [accountName, accountNameErrors]);
 
     function handleAccountNameChanged(val: string) {
         if (val === "") {
@@ -240,18 +240,14 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
             setAccountNameErrors("");
             setAccountName(val);
         }
-
-        validateForm();
     }
 
     function handleIsActiveChanged(active: boolean) {
         setIsActive(active);
-        validateForm();
     }
 
     function selectSocialMediaAccountType(val: string) {
         setSocialMediaAccountTypeId(parseInt(val));
-        validateForm();
     }
 
     function renderSocialMediaAccountNameToolTip(props: any) {

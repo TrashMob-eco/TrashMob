@@ -67,14 +67,14 @@ export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> =
         });
     }
 
-    function validateForm() {
+    React.useEffect(() => {
         if (nameErrors !== "" || messageErrors !== "" || name === "" || message === "") {
             setIsSendEnabled(false);
         }
         else {
             setIsSendEnabled(true);
         }
-    }
+    }, [nameErrors, messageErrors, name, message]);
 
     function handleNameChanged(val: string) {
         if (val.length <= 0 || val.length > 64) {
@@ -84,8 +84,6 @@ export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> =
             setNameErrors("");
             setName(val);
         }
-
-        validateForm();
     }
 
     function handleMessageChanged(val: string) {
@@ -96,8 +94,6 @@ export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> =
             setMessageErrors("");
             setMessage(val);
         }
-
-        validateForm();
     }
 
     function renderNameToolTip(props: any) {

@@ -39,18 +39,17 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
             });
     }, [eventId])
 
-    function validateForm() {
+    React.useEffect(() => {
         if (cancellationReason === "") {
             setIsSaveEnabled(false);
         }
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [cancellationReason]);
 
     function handleCancellationReasonChanged(val: string) {
         setCancellationReason(val);
-        validateForm();
     }
 
     function renderCancellationReasonToolTip(props: any) {

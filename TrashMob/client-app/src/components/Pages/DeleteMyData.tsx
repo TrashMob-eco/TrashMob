@@ -1,6 +1,6 @@
 import { FC, FormEvent, useEffect, useState } from 'react';
 import UserData from '../Models/UserData';
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getB2CPolicies, msalClient } from '../../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button, Col, Container, Image, ModalBody, Row } from 'react-bootstrap';
 import { Modal } from 'reactstrap';
@@ -12,7 +12,6 @@ interface DeleteMyDataProps extends RouteComponentProps<any> {
 }
 
 const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
-    const userId = props.currentUser.id;
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
@@ -31,27 +30,16 @@ const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
     // This will handle the delete account
     const deleteAccount = () => {
 
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
+        var policy = getB2CPolicies();
+        var scopes = getApiConfig();
 
-        const request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
+        var request = {
+            authority: policy.authorities.deleteUser.authority,
+            scopes: scopes.b2cScopes,
+            
         };
-
-        return msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            const headers = getDefaultHeaders('DELETE');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/users/' + userId, {
-                method: 'DELETE',
-                headers: headers
-            }).then(() => {
-                msalClient.logoutRedirect();
-                props.history.push("/");
-            })
-        })
+        msalClient.acquireTokenRedirect(request)
+            .then(() => props.history.push("/"));
     }
 
     return (
