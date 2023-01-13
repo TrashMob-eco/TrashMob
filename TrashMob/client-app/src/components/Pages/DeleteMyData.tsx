@@ -38,7 +38,8 @@ const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
             scopes: scopes.b2cScopes,
             
         };
-        msalClient.acquireTokenRedirect(request);
+        msalClient.acquireTokenRedirect(request)
+            .then(() => props.history.push("/"));
     }
 
     return (
