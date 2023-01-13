@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using MudBlazor;
 using TrashMob.Models;
 using TrashMobMobileApp.Data;
 using TrashMobMobileApp.Enums;
@@ -15,6 +16,7 @@ namespace TrashMobMobileApp.Features.Events.Components
         private string _eventSearchText;
         private EventActionGroup _currentSelectedChip = EventActionGroup.NONE;
         private bool _eventSummarySubmitted;
+        private User _user;
 
         [Inject]
         public IMobEventManager MobEventManager { get; set; }
@@ -24,18 +26,43 @@ namespace TrashMobMobileApp.Features.Events.Components
 
         protected override async Task OnInitializedAsync()
         {
+            _user = App.CurrentUser;
+            EventContainer.UserEventInteractionAction += HandleEventInteractionOutcome;
             await GetMyEventsAsync();
         }
 
         private async Task GetMyEventsAsync()
         {
-            var currentUser = App.CurrentUser;
-            if (currentUser != null)
+            _isLoading = true;
+            _myEventsStatic = (await MobEventManager.GetUserEventsAsync(_user.Id, StateInformation.ShowFutureEvents)).ToList();
+            _myEvents = _myEventsStatic;
+            _currentSelectedChip = EventActionGroup.OWNER;
+            _isLoading = false;
+        }
+
+        private void HandleEventInteractionOutcome(UserEventInteraction interaction)
+        {
+            switch (interaction)
             {
-                _isLoading = true;
-                _myEventsStatic = (await MobEventManager.GetUserEventsAsync(currentUser.Id, StateInformation.ShowFutureEvents)).ToList();
-                _myEvents = _myEventsStatic;
-                _isLoading = false;
+                case UserEventInteraction.CREATED_EVENT:
+                    Snackbar.Add("Event created!", Severity.Success);
+                    Navigator.NavigateTo(Routes.Events);
+                    break;
+                case UserEventInteraction.SUBMITTED_EVENT:
+                    Snackbar.Add("Event summary submitted!", Severity.Success);
+                    Navigator.NavigateTo(Routes.Events);
+                    break;
+                case UserEventInteraction.EDITED_EVENT:
+                    Snackbar.Add("Event edited!", Severity.Success);
+                    Navigator.NavigateTo(Routes.Events);
+                    break;
+                case UserEventInteraction.CANCELLED_EVENT:
+                    Snackbar.Add("Event cancelled!", Severity.Success);
+                    Navigator.NavigateTo(Routes.Events);
+                    break;
+                case UserEventInteraction.NONE:
+                default:
+                    break;
             }
         }
 
@@ -79,30 +106,40 @@ namespace TrashMobMobileApp.Features.Events.Components
 
         private async Task OnAttendingEventsFilterAsync()
         {
+            _myEvents.Clear();
             _currentSelectedChip = EventActionGroup.ATTENDING;
-            var currentUser = App.CurrentUser;
-            var attendingEvents = await MobEventManager.GetEventsUserIsAttending(currentUser.Id);
+            var attendingEvents = await MobEventManager.GetEventsUserIsAttending(_user.Id);
             _myEvents = attendingEvents.ToList() ?? new List<Event>();
         }
 
         private async Task OnOwningEventsFilterAsync()
         {
+            _myEvents.Clear();
             _currentSelectedChip = EventActionGroup.OWNER;
-            var currentUser = App.CurrentUser;
-            var owningEvents = await MobEventManager.GetUserEventsAsync(currentUser.Id, false);
+            var owningEvents = await MobEventManager.GetUserEventsAsync(_user.Id, false);
             _myEvents = owningEvents.ToList() ?? new List<Event>();
         }
 
-        private void OnPastEventsFilter()
+        private async Task OnPastEventsFilterAsync()
         {
+            _myEvents.Clear();
             _currentSelectedChip = EventActionGroup.PAST_EVENTS;
-            _myEvents = _myEvents.Where(mobEvent => mobEvent.EventDate <= DateTimeOffset.UtcNow).ToList() ?? new List<Event>();
+            var ownedEvents = (await MobEventManager.GetUserEventsAsync(_user.Id, false))?.Where(mobEvent => mobEvent.EventDate < DateTimeOffset.UtcNow);
+            var attendingEvents = (await MobEventManager.GetEventsUserIsAttending(_user.Id))?.Where(mobEvent => mobEvent.EventDate < DateTimeOffset.UtcNow);
+            
+            if (ownedEvents != null && ownedEvents.Any())
+            {
+                _myEvents.AddRange(ownedEvents);
+            }
+            if (attendingEvents != null && attendingEvents.Any())
+            {
+                _myEvents.AddRange(attendingEvents);
+            }
         }
 
         private bool DoesUserOwnEvent(Event mobEvent)
         {
-            var currentUser = App.CurrentUser;
-            if (currentUser.Id == mobEvent.CreatedByUserId)
+            if (_user.Id == mobEvent.CreatedByUserId)
             {
                 return true;
             }
@@ -115,29 +152,27 @@ namespace TrashMobMobileApp.Features.Events.Components
             return mobEvent.EventDate <= DateTimeOffset.UtcNow;
         }
 
-        private async Task<bool> IsEventSummarySubmitted(Event mobEvent)
+        private bool IsEventCompleted(Event mobEvent)
         {
-            var eventSummary = await MobEventManager.GetEventSummaryAsync(mobEvent.Id);
-            if (eventSummary != null)
-            {
-                return true;
-            }
-
-            return false;
+            return mobEvent.EventStatusId == 4; 
         }
 
         private EventActionType DetermineUserCardAction(Event mobEvent)
         {
-            if (DoesUserOwnEvent(mobEvent) && IsPastEvent(mobEvent))
+            if (DoesUserOwnEvent(mobEvent) && IsPastEvent(mobEvent) && !IsEventCompleted(mobEvent))
             {
                 return EventActionType.SUBMIT_SUMMARY;
             }
-            else if (DoesUserOwnEvent(mobEvent))
+            else if (DoesUserOwnEvent(mobEvent) && !IsEventCompleted(mobEvent))
             {
                 return EventActionType.MANAGE;
             }
+            else if (IsEventCompleted(mobEvent))
+            {
+                return EventActionType.VIEW_SUMMARY;
+            }
 
-            return EventActionType.VIEW_SUMMARY;
+            return EventActionType.NONE;
         }
     }
 }

@@ -2,6 +2,7 @@
 using MudBlazor;
 using TrashMobMobileApp.Data;
 using TrashMob.Models;
+using TrashMobMobileApp.Extensions;
 
 namespace TrashMobMobileApp.Features.Events.Pages
 {
@@ -30,22 +31,36 @@ namespace TrashMobMobileApp.Features.Events.Pages
 
         private async Task OnCancelEventAsync()
         {
-            await _cancelEventForm?.Validate();
-            if (_success)
+            try
             {
-                _isLoading = true;
-                var cancelEvent = new Models.CancelEvent
+                await _cancelEventForm?.Validate();
+                if (_success)
                 {
-                    EventId = _event.Id,
-                    CancellationReason = _cancelReason
-                };
+                    _isLoading = true;
+                    var cancelEvent = new Models.EventCancellationRequest
+                    {
+                        EventId = _event.Id,
+                        CancellationReason = _cancelReason
+                    };
 
-                _isLoading = true;
-                await MobEventManager.DeleteEventAsync(cancelEvent);
-                _isLoading = false;
-                Snackbar.Add("Event cancelled!", Severity.Success);
+                    _isLoading = true;
+                    await MobEventManager.DeleteEventAsync(cancelEvent);
+                    _isLoading = false;
+                }
+
             }
-
+            catch(Exception ex)
+            {
+                if (ex.IsClosedStreamException())
+                {
+                    return;
+                }
+            }
+            finally
+            {
+                _isLoading = false;
+                EventContainer.UserEventInteractionAction.Invoke(Enums.UserEventInteraction.CANCELLED_EVENT);
+            }
         }
     }
 }

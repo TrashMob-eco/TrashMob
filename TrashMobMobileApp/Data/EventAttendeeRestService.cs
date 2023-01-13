@@ -21,13 +21,9 @@
             try
             {
                 var content = JsonContent.Create(eventAttendee, typeof(EventAttendee), null, SerializerOptions);
-
                 var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
-
-                using (var response = await authorizedHttpClient.PostAsync(EventAttendeeApi, content, cancellationToken))
-                {
-                    response.EnsureSuccessStatusCode();
-                }
+                var response = await authorizedHttpClient.PostAsync(EventAttendeeApi, content, cancellationToken);
+                response.EnsureSuccessStatusCode();
             }
             catch (Exception ex)
             {

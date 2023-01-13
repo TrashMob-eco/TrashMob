@@ -37,29 +37,32 @@
                 <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
             </MudOverlay>
             <MudStack Style="width: 100%" Row>
-                <MudChip Icon="@(_currentSelectedChip == EventActionGroup.ATTENDING ? Icons.Material.Filled.Check : string.Empty)"
-                         Variant="ComponentCommon.MudChipVariant"
-                         OnClick="@OnAttendingEventsFilterAsync"
-                         Color="ComponentCommon.PrimaryColor">Attending</MudChip>
                 <MudChip Style="margin-left: 2px"
                          Icon="@(_currentSelectedChip == EventActionGroup.OWNER ? Icons.Material.Filled.Check : string.Empty)"
                          Variant="ComponentCommon.MudChipVariant"
                          OnClick="@OnOwningEventsFilterAsync"
                          Color="ComponentCommon.PrimaryColor">Created by me</MudChip>
+                <MudChip Icon="@(_currentSelectedChip == EventActionGroup.ATTENDING ? Icons.Material.Filled.Check : string.Empty)"
+                         Variant="ComponentCommon.MudChipVariant"
+                         OnClick="@OnAttendingEventsFilterAsync"
+                         Color="ComponentCommon.PrimaryColor">Attending</MudChip>
                 <MudChip Style="margin-left: 2px"
                          Icon="@(_currentSelectedChip == EventActionGroup.PAST_EVENTS ? Icons.Material.Filled.Check : string.Empty)"
                          Variant="ComponentCommon.MudChipVariant"
-                         OnClick="@OnPastEventsFilter"
+                         OnClick="@OnPastEventsFilterAsync"
                          Color="ComponentCommon.PrimaryColor">Past events</MudChip>
             </MudStack>
-            @if (_myEventsStatic.Any())
+            <MudStack Style="width: 100%" Row>
+                <MudTextField T="string" FullWidth Adornment="@Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" Placeholder="Search event.." Text="@_eventSearchText" TextChanged="@OnSearchTextChanged" Immediate />
+            </MudStack>
+            @if (_currentSelectedChip != EventActionGroup.PAST_EVENTS)
             {
-                <MudStack Style="width: 100%" Row>
-                    <MudTextField T="string" FullWidth Adornment="@Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" Placeholder="Search event.." Text="@_eventSearchText" TextChanged="@OnSearchTextChanged" Immediate />
-                </MudStack>
                 <MudStack>
                     <MudSwitch T="bool" Checked="StateInformation.ShowFutureEvents" CheckedChanged="OnShowFutureEventsChangedAsync" Color="ComponentCommon.PrimaryColor" Label="Show future events" />
                 </MudStack>
+            }
+            @if (_myEvents.Any())
+            {
                 <MudVirtualize Context="mob" Items="_myEvents">
                     <MudCard Class="tm-event-card">
                         <MudCardHeader>
@@ -68,8 +71,8 @@
                                     <MudChip Variant="ComponentCommon.MudChipVariant"
                                          Style="width: fit-content"
                                          Color="ComponentCommon.PrimaryColor">@(DoesUserOwnEvent(mob) ? "Owner" : "Attendee")</MudChip>
-                                    <MudText Typo="Typo.subtitle2">@mob.Name</MudText>
-                                </MudStack>
+                                        <MudText Typo="Typo.subtitle2">@mob.Name</MudText>
+                                    </MudStack>
                                 </CardHeaderContent>
                                 <CardHeaderActions>
                                     <MudMenu Icon="@Icons.Material.Filled.MoreVert">
@@ -86,14 +89,14 @@
                                         <MudButton Color="@ComponentCommon.PrimaryColor"
                                            Variant="@ComponentCommon.CardButtonVariant"
                                            OnClick="@(() => OnViewEventDetails(mob))">View</MudButton>
-                                    @{
+                                        @{
                                         EventActionType cardAction = DetermineUserCardAction(mob);
                                     }
                                     @if (cardAction == EventActionType.SUBMIT_SUMMARY)
                                     {
                                         <MudButton Color="@ComponentCommon.PrimaryColor"
                                            Variant="@ComponentCommon.CardButtonVariant"
-                                           OnClick="@(() => OnCompleteEvent(mob))">Submit Summary</MudButton>
+                                           OnClick="@(() => OnCompleteEvent(mob))">Submit</MudButton>
                                     }
                                     else if (cardAction == EventActionType.MANAGE)
                                     {
@@ -118,18 +121,8 @@
                         </MudCardActions>
                     </MudCard>
                 </MudVirtualize>
-                <MudFab Class="tm-create-event-btn-bottom" StartIcon="@Icons.Material.Filled.Edit" Color="ComponentCommon.PrimaryColor" Label="Create" OnClick="@OnCreateEvent" />
             }
-            else
-            {
-                if (!_isLoading)
-                {
-                    <MudContainer Class="tm-no-event-container">
-                        <MudText>No events to show. Create an event to get started.</MudText>
-                        <MudFab Class="tm-create-event-btn-center" StartIcon="@Icons.Material.Filled.Edit" Color="ComponentCommon.PrimaryColor" Label="Create" OnClick="@OnCreateEvent" />
-                    </MudContainer>
-                }
-            }
+            <MudFab Class="tm-create-event-btn-bottom" StartIcon="@Icons.Material.Filled.Edit" Color="ComponentCommon.PrimaryColor" Label="Create" OnClick="@OnCreateEvent" />
         </MudContainer>
     </ChildContent>
     <ErrorContent>

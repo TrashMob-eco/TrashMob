@@ -33,7 +33,7 @@ namespace TrashMobMobileApp.Extensions
         {
             services.AddScoped<PageTitleContainer>();
             services.AddScoped<UserStateInformation>();
-
+            services.AddScoped<EventStateInformation>();
             return services;
         }
 
