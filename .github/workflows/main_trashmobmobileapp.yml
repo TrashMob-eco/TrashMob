@@ -109,8 +109,11 @@ jobs:
       run: | 
         dotnet restore TrashMobMobileApp.sln
 
-    - name: Build MAUI iOS
+    - name: Build MAUI iOS for simulator
       run: dotnet build TrashMobMobileApp.sln -c Release -f net7.0-ios --no-restore /p:buildForSimulator=True /p:packageApp=True /p:ArchiveOnBuild=False
+
+    - name: Build MAUI iOS for devices
+      run: dotnet build TrashMobMobileApp.sln -c Release -f net7.0-ios --no-restore /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=False
 
     - name: Upload iOS Artifact
       uses: actions/upload-artifact@v3.1.0
