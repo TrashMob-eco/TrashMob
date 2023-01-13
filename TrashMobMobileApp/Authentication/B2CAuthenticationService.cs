@@ -7,7 +7,6 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-    using TrashMob.Models;
     using TrashMobMobileApp.Data;
 
     /// <summary>
@@ -19,25 +18,22 @@
 
         public B2CAuthenticationService(B2CConstants b2CConstants)
         {
-
+#if ANDROID
+            // default redirectURI; each platform specific project will have to override it with its own
+            var builder = PublicClientApplicationBuilder.Create(b2CConstants.ClientID)
+                .WithB2CAuthority(b2CConstants.AuthoritySignInSignUp)
+                .WithParentActivityOrWindow(() => Platform.CurrentActivity)
+                .WithRedirectUri(b2CConstants.AndroidRedirectUri);
+            b2CConstants.PublicClientApp = builder.Build();
+#elif IOS
             // default redirectURI; each platform specific project will have to override it with its own
             var builder = PublicClientApplicationBuilder.Create(b2CConstants.ClientID)
                 .WithB2CAuthority(b2CConstants.AuthoritySignInSignUp)
                 .WithIosKeychainSecurityGroup(b2CConstants.IOSKeyChainGroup)
-                // .WithRedirectUri("http://localhost");
-                .WithRedirectUri(b2CConstants.RedirectUri);
-
-            // Android implementation is based on https://github.com/jamesmontemagno/CurrentActivityPlugin
-            // iOS implementation would require to expose the current ViewControler - not currently implemented as it is not required
-            // UWP does not require this
-            var windowLocatorService = DependencyService.Get<IParentWindowLocatorService>();
-
-            if (windowLocatorService != null)
-            {
-                builder = builder.WithParentActivityOrWindow(() => windowLocatorService?.GetCurrentParentWindow());
-            }
-
+                .WithRedirectUri(b2CConstants.IOSRedirectUri);
             b2CConstants.PublicClientApp = builder.Build();
+#endif
+      
             this.b2CConstants = b2CConstants;
         }
 
