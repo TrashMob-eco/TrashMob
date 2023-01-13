@@ -149,7 +149,7 @@ namespace TrashMobMobileApp.Features.Events.Components
 
         private bool IsPastEvent(Event mobEvent)
         {
-            return mobEvent.EventDate <= DateTimeOffset.UtcNow;
+            return mobEvent.EventDate.LocalDateTime <= DateTimeOffset.UtcNow.LocalDateTime;
         }
 
         private bool IsEventCompleted(Event mobEvent)
