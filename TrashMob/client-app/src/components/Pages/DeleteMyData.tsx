@@ -47,8 +47,8 @@ const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
             <Container fluid className='bg-grass shadow'>
                 <Row className="text-center pt-0">
                     <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                        <h1 className='font-weight-bold'>About TrashMob</h1>
-                        <p className="font-weight-bold">Ideas Inspired by simple action.</p>
+                        <h1 className='font-weight-bold'>Delete your account?</h1>
+                        <p className="font-weight-bold">TrashMob members are making the world a better place!</p>
                     </Col>
                     <Col md={5}>
                         <Image src={globes} alt="globes" className="h-100 mt-0" />
