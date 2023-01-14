@@ -40,7 +40,8 @@
             var newEventAttendee = new EventAttendee
             {
                 UserId = userId,
-                EventId = instance.Id
+                EventId = instance.Id,
+                SignUpDate = DateTime.UtcNow,
             };
 
             await eventAttendeeManager.AddAsync(newEventAttendee, userId, cancellationToken);
