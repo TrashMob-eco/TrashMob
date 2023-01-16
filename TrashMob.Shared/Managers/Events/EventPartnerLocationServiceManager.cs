@@ -45,6 +45,8 @@
 
         public override async Task<EventPartnerLocationService> AddAsync(EventPartnerLocationService instance, Guid userId, CancellationToken cancellationToken = default)
         {
+            var pls = await partnerLocationServiceRepository.Get(pls => pls.ServiceTypeId == instance.ServiceTypeId && pls.PartnerLocationId == instance.PartnerLocationId).FirstOrDefaultAsync(cancellationToken);
+
             await base.AddAsync(instance, userId, cancellationToken);
 
             var existingService = await Repository.Get(epls => epls.EventId == instance.EventId && epls.PartnerLocationId == instance.PartnerLocationId && epls.ServiceTypeId == instance.ServiceTypeId)
@@ -72,7 +74,7 @@
 
             await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.EventRelated, adminDynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
 
-            var partnerMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventPartnerRequest.ToString());
+            var partnerMessage = pls.IsAutoApproved ? emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventPartnerRequest.ToString()) : emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventPartnerRequestAutoApproved.ToString());
             var partnerSubject = "A TrashMob.eco Event would like to Partner with you!";
 
             partnerMessage = partnerMessage.Replace("{PartnerLocationName}", existingService.PartnerLocation.Name);
@@ -93,6 +95,12 @@
             }
 
             await emailManager.SendTemplatedEmailAsync(partnerSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.EventRelated, dynamicTemplateData, partnerRecipients, CancellationToken.None).ConfigureAwait(false);
+
+            if (pls.IsAutoApproved)
+            {
+                instance.EventPartnerLocationServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Accepted;
+                await UpdateAsync(instance, userId, cancellationToken).ConfigureAwait(false);
+            }
 
             return existingService;
         }
