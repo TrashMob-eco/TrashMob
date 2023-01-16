@@ -15,6 +15,7 @@ namespace TrashMob.Models
             NonEventUserNotifications = new HashSet<NonEventUserNotification>();
             PartnersCreated = new HashSet<Partner>();
             PartnersUpdated = new HashSet<Partner>();
+            EventAttendees = new HashSet<EventAttendee>();
         }
 
         public Guid ObjectId { get; set; }
@@ -52,6 +53,8 @@ namespace TrashMob.Models
         public string TrashMobWaiverVersion { get; set; }
 
         public DateTimeOffset? MemberSince { get; set; }
+
+        public virtual ICollection<EventAttendee> EventAttendees { get; set; }
 
         public virtual ICollection<Event> EventsCreated { get; set; }
 
