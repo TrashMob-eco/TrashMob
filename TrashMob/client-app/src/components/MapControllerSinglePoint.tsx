@@ -65,14 +65,16 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
                 closeButton: false
             });
 
-            // Create an HtmlMarker.
-            const marker = new HtmlMarker({
-                draggable: props.isDraggable
-            });
-
             // Create a HTML marker layer for rendering data points.
             var markerLayer = new HtmlMarkerLayer(dataSourceRef, "marker1", {
                 markerCallback: (id: any, position: data.Position, properties: any) => {
+
+                    dataSourceRef.clear();
+
+                    // Create an HtmlMarker.
+                    const marker = new HtmlMarker({
+                        draggable: props.isDraggable
+                    });
 
                     marker.setOptions({
                         position: position
