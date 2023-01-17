@@ -27,6 +27,7 @@ namespace TrashMobMobileApp.Features.Events.Components
         protected override async Task OnInitializedAsync()
         {
             _user = App.CurrentUser;
+            _currentSelectedChip = EventActionGroup.OWNER;
             EventContainer.UserEventInteractionAction += HandleEventInteractionOutcome;
             await GetMyEventsAsync();
         }
@@ -36,7 +37,6 @@ namespace TrashMobMobileApp.Features.Events.Components
             _isLoading = true;
             _myEventsStatic = (await MobEventManager.GetUserEventsAsync(_user.Id, StateInformation.ShowFutureEvents)).ToList();
             _myEvents = _myEventsStatic;
-            _currentSelectedChip = EventActionGroup.OWNER;
             _isLoading = false;
         }
 
