@@ -464,6 +464,7 @@
         <TechnicalProfile Id="AAD-UserWriteUsingAlternativeSecurityId">
           <PersistedClaims>
             <PersistedClaim ClaimTypeReferenceId="userId" PartnerClaimType="signInNames.userId" />
+            <PersistedClaim ClaimTypeReferenceId="email" PartnerClaimType="signInNames.emailAddress" />               
             <PersistedClaim ClaimTypeReferenceId="extension_PrivacyAccepted" />      
             <PersistedClaim ClaimTypeReferenceId="extension_TOSAccepted" />                   
           </PersistedClaims>          
