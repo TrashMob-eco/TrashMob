@@ -274,7 +274,8 @@
                     EventPartnerLocationServiceStatusId = service.EventPartnerLocationServiceStatusId,
                     PartnerName = service.PartnerLocation.Partner.Name,
                     ServiceTypeId = service.ServiceTypeId,
-                    PartnerLocationServicePublicNotes = matchService.Notes
+                    PartnerLocationServicePublicNotes = matchService.Notes,
+                    IsAdvanceNoticeRequired = matchService.IsAdvanceNoticeRequired
                 };
 
                 displayEventPartnerLocationServices.Add(displayService);
@@ -292,7 +293,8 @@
                         EventPartnerLocationServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.None,
                         PartnerName = service.PartnerLocation.Partner.Name,
                         ServiceTypeId = service.ServiceTypeId,
-                        PartnerLocationServicePublicNotes = service.Notes
+                        PartnerLocationServicePublicNotes = service.Notes,
+                        IsAdvanceNoticeRequired = service.IsAdvanceNoticeRequired
                     };
 
                     displayEventPartnerLocationServices.Add(displayService);

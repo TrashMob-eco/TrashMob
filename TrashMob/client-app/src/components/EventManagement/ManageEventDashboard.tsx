@@ -8,6 +8,8 @@ import { ManageEventPartners } from './ManageEventPartners';
 import { ManageEventAttendees } from './ManageEventAttendees';
 import { Guid } from 'guid-typescript';
 import globes from '../assets/gettingStarted/globes.png';
+import { getDefaultHeaders } from '../../store/AuthStore';
+import EventData from '../Models/EventData';
 
 export interface ManageEventDashboardMatchParams {
     eventId?: string;
@@ -22,6 +24,7 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
     const [eventId, setEventId] = React.useState<string>("");
     const [isEventIdReady, setIsEventIdReady] = React.useState<boolean>();
     const [loadedEventId, setLoadedEventId] = React.useState<string | undefined>(props.match?.params["eventId"]);
+    const [isEventComplete, setIsEventComplete] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         var evId = loadedEventId;
@@ -31,6 +34,20 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
         }
         else {
             setEventId(evId);
+
+            const headers = getDefaultHeaders('GET');
+
+            // Check to see if this event has been completed
+            fetch('/api/Events/' + evId, {
+                method: 'GET',
+                headers: headers
+            })
+                .then(response => response.json() as Promise<EventData>)
+                .then(eventData => {
+                    if (new Date(eventData.eventDate) < new Date()) {
+                        setIsEventComplete(true);
+                    }
+                })
         }
 
         setIsEventIdReady(true);
@@ -44,13 +61,12 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
         props.history.push("/mydashboard");
     }
 
-
     function renderEventDashboard() {
         return (
             <>
                 <EditEvent eventId={eventId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onEditCancel={handleEditCancel} onEditSave={handleEditSave} history={props.history} location={props.location} match={props.match} />
                 <ManageEventAttendees eventId={eventId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
-                <ManageEventPartners eventId={eventId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                <ManageEventPartners eventId={eventId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isEventComplete={isEventComplete} />
             </>
         );
     }

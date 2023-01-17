@@ -18,6 +18,7 @@ export interface ManageEventPartnersProps {
     eventId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
+    isEventComplete: boolean;
 }
 
 export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) => {
@@ -264,6 +265,8 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
     }
 
     function renderEventPartnerLocationServicesTable(services: DisplayEventPartnerLocationServiceData[], partnerLocationName: string) {
+        var availableServices = services.filter(s => s.isAdvanceNoticeRequired === false || props.isEventComplete === false);
+
         return (
             <div>
                 <div className='d-flex align-items-center justify-content-between'>
@@ -279,7 +282,8 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
                         </tr>
                     </thead>
                     <tbody>
-                        {services.map(service =>
+                        {                            
+                            availableServices.map(service =>
                             <tr key={service.serviceTypeId}>
                                 <td>{getServiceType(serviceTypeList, service.serviceTypeId)}</td>
                                 <td>{service.partnerLocationServicePublicNotes}</td>
