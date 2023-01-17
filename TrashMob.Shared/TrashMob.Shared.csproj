@@ -9,6 +9,7 @@
     <None Remove="Engine\EmailCopy\ContactRequestReceived.html" />
     <None Remove="Engine\EmailCopy\EventPartnerPickupRequest.html" />
     <None Remove="Engine\EmailCopy\EventPartnerRequest.html" />
+    <None Remove="Engine\EmailCopy\EventPartnerRequestAutoApproved.html" />
     <None Remove="Engine\EmailCopy\EventPartnerResponse.html" />
     <None Remove="Engine\EmailCopy\EventSummaryAttendee.html" />
     <None Remove="Engine\EmailCopy\EventSummaryHostReminder.html" />
@@ -35,6 +36,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Engine\EmailCopy\ContactRequestReceived.html" />
     <EmbeddedResource Include="Engine\EmailCopy\EventPartnerPickupRequest.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\EventPartnerRequestAutoApproved.html" />
     <EmbeddedResource Include="Engine\EmailCopy\EventPartnerRequest.html" />
     <EmbeddedResource Include="Engine\EmailCopy\EventPartnerResponse.html" />
     <EmbeddedResource Include="Engine\EmailCopy\EventSummaryAttendee.html" />

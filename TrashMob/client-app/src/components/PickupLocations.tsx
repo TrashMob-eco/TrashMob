@@ -614,7 +614,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         return (
             <div>
                 <p><em>{statusMessage}</em></p>
-                <ManageEventPartners eventId={props.eventId} isUserLoaded={props.isUserLoaded} currentUser={props.currentUser} />
+                <ManageEventPartners eventId={props.eventId} isUserLoaded={props.isUserLoaded} currentUser={props.currentUser} isEventComplete={true} />
             </div>
         );
     }
