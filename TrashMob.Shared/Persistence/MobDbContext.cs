@@ -283,13 +283,13 @@
                     .IsRequired();
 
                 entity.HasOne(d => d.Event)
-                    .WithMany()
+                    .WithMany(d => d.EventAttendees)
                     .HasForeignKey(d => d.EventId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EventAttendees_Events");
 
                 entity.HasOne(d => d.User)
-                    .WithMany()
+                    .WithMany(d => d.EventAttendees)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EventAttendees_ApplicationUser");
@@ -948,9 +948,13 @@
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.HasIndex(e => e.UserName).IsUnique();
-
                 entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasIndex(e => e.UserName)
+                        .IsUnique();
+
+                entity.HasIndex(e => e.Email)
+                        .IsUnique();
 
                 entity.Property(e => e.UserName).HasMaxLength(32);
 
