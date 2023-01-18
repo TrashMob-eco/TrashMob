@@ -34,7 +34,7 @@ namespace TrashMobMobileApp.Features.Events.Components
 
         private void OnViewEventDetails(Event mobEvent)
         {
-            Navigator.NavigateTo(string.Format(Routes.EditEvent, mobEvent.Id, true));
+            Navigator.NavigateTo(string.Format(Routes.ViewEvent, mobEvent.Id));
         }
 
         private async Task OnRegisterAsync(Event mobEvent)

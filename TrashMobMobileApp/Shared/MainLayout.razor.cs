@@ -6,6 +6,7 @@
     using MudBlazor;
     using TrashMobMobileApp.Authentication;
     using TrashMobMobileApp.Data;
+    using TrashMobMobileApp.StateContainers;
 
     public partial class MainLayout
     {
@@ -14,6 +15,13 @@
         private string _pageTitle;
         private string _userInitials;
 
+        private List<string> _menuList { get; } = new List<string>
+        {
+            Routes.Home,
+            Routes.Events,
+            Routes.ContactUs,
+        };
+
         [Inject]
         public IB2CAuthenticationService AuthenticationService { get; set; }
 
@@ -21,13 +29,17 @@
         public IUserManager UserManager { get; set; }
 
         [Inject]
-        ILogger<NavigationManager> NavigationLogger { get; set; }
+        public ILogger<NavigationManager> NavigationLogger { get; set; }
+
+        [Inject]
+        public UserStateInformation UserContainer { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
+            await base.OnInitializedAsync();
+            UserContainer.OnSignOut += async () => await OnSignOutAsync();
             Navigator.LocationChanged += Navigator_LocationChanged;
             TitleContainer.OnTitleChange += (title) => SetPageTitle(title);
-            await base.OnInitializedAsync();
             await PerformAuthenticationAsync();
             SetTheme();
         }
@@ -77,6 +89,11 @@
         {
             _pageTitle = title;
             StateHasChanged();
+        }
+
+        private void DetermineBarIcon()
+        {
+
         }
 
         private async Task OnSignOutAsync()

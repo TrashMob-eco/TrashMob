@@ -82,8 +82,7 @@ namespace TrashMobMobileApp.Features.Events.Components
 
         private void OnViewEventDetails(Event mobEvent)
         {
-            var uri = string.Format(Routes.EditEvent, mobEvent.Id, true);
-            Navigator.NavigateTo(uri);
+            Navigator.NavigateTo(string.Format(Routes.ViewEvent, mobEvent.Id));
         }
 
         private void OnCompleteEvent(Event mobEvent)
@@ -102,7 +101,7 @@ namespace TrashMobMobileApp.Features.Events.Components
             => Navigator.NavigateTo(string.Format(Routes.CancelEvent, mobEvent.Id.ToString()));
 
         private void OnEdit(Event mobEvent)
-            => Navigator.NavigateTo(string.Format(Routes.EditEvent, mobEvent.Id, false));
+            => Navigator.NavigateTo(string.Format(Routes.EditEvent, mobEvent.Id));
 
         private async Task OnAttendingEventsFilterAsync()
         {

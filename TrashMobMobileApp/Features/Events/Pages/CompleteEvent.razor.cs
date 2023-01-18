@@ -30,7 +30,7 @@ namespace TrashMobMobileApp.Features.Events.Pages
             TitleContainer.Title = IsReadOnly ? "Summary" : "Complete Event";
             _isLoading = true;
             _event = await MobEventManager.GetEventAsync(Guid.Parse(EventId));
-            _eventSummary = await MobEventManager.GetEventSummaryAsync(Guid.Parse(EventId));
+            _eventSummary = (await MobEventManager.GetEventSummaryAsync(Guid.Parse(EventId))) ?? new();
             _isLoading = false;
         }
 

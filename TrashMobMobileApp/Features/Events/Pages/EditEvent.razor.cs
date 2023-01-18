@@ -31,12 +31,9 @@ namespace TrashMobMobileApp.Features.Events.Pages
         [Parameter]
         public string EventId { get; set; }
 
-        [Parameter]
-        public bool IsReadOnly { get; set; }
-
         protected override async Task OnInitializedAsync()
         {
-            TitleContainer.Title = IsReadOnly ? "View Event" : "Edit Event";
+            TitleContainer.Title = "Edit Event";
             await GetEventTypesAsync();
             await GetAndSetEventInfoAsync();
 
@@ -64,55 +61,36 @@ namespace TrashMobMobileApp.Features.Events.Pages
             }
         }
 
-        private async Task OnDoActionAsync()
-        {
-            if (IsReadOnly)
-            {
-                Navigator.NavigateTo(Routes.Events);
-            }
-            else
-            {
-                await OnSaveAsync();
-            }
-        }
-
         private async Task OnSaveAsync()
         {
-            if (IsReadOnly)
+            try
             {
-                Navigator.NavigateTo(Routes.Events);
-            }
-            else
-            {
-                try
+                await _editEventForm?.Validate();
+                if (_success)
                 {
-                    await _editEventForm?.Validate();
-                    if (_success)
-                    {
-                        _event.EventDate = new DateTime(_eventDate.Value.Year, _eventDate.Value.Month, _eventDate.Value.Day,
-                            _eventTime.Value.Hours, _eventTime.Value.Minutes, default);
-                        _event.PostalCode = _zip.ToString();
-                        _event.CreatedByUserId = App.CurrentUser.Id;
-                        _event.LastUpdatedByUserId = App.CurrentUser.Id;
-                        _event.LastUpdatedDate = DateTime.Now;
-                        _event.EventTypeId = _selectedEventType.Id;
-                        _isLoading = true;
-                        var eventAdd = await MobEventManager.UpdateEventAsync(_event);
-                        _isLoading = false;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (ex.IsClosedStreamException())
-                    {
-                        return;
-                    }
-                }
-                finally
-                {
+                    _event.EventDate = new DateTime(_eventDate.Value.Year, _eventDate.Value.Month, _eventDate.Value.Day,
+                        _eventTime.Value.Hours, _eventTime.Value.Minutes, default);
+                    _event.PostalCode = _zip.ToString();
+                    _event.CreatedByUserId = App.CurrentUser.Id;
+                    _event.LastUpdatedByUserId = App.CurrentUser.Id;
+                    _event.LastUpdatedDate = DateTime.Now;
+                    _event.EventTypeId = _selectedEventType.Id;
+                    _isLoading = true;
+                    var eventAdd = await MobEventManager.UpdateEventAsync(_event);
                     _isLoading = false;
-                    EventContainer.UserEventInteractionAction.Invoke(Enums.UserEventInteraction.EDITED_EVENT);
                 }
+            }
+            catch (Exception ex)
+            {
+                if (ex.IsClosedStreamException())
+                {
+                    return;
+                }
+            }
+            finally
+            {
+                _isLoading = false;
+                EventContainer.UserEventInteractionAction.Invoke(Enums.UserEventInteraction.EDITED_EVENT);
             }
         }
 
