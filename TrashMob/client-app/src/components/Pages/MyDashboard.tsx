@@ -791,23 +791,33 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     <Link className="btn btn-primary banner-button" to="/becomeapartner">Apply to become a partner</Link>
                 </div>
                 <div className="mb-4 bg-white">
-                    <p className="color-primary font-weight-bold pt-3">{'My Partners'} ({myPartners.length})</p>
+                    <div className="d-flex justify-content-between px-4">
+                        <p className="color-primary font-weight-bold pt-3">{'My Partners'} ({myPartners.length})</p>
+                    </div>
                     <MyPartnersTable />
                 </div>
                 <div className="mb-4 bg-white">
-                    <p className="color-primary font-weight-bold pt-3">{'Partner Requests and Invitations Sent'} ({myPartnerRequests.length})</p>
+                    <div className="d-flex justify-content-between px-4">
+                        <p className="color-primary font-weight-bold pt-3">{'Partner Requests and Invitations Sent'} ({myPartnerRequests.length})</p>
+                    </div>
                     <MyPartnerRequestsTable />
                 </div>
                 <div className="mb-4 bg-white">
-                    <p className="color-primary font-weight-bold pt-3">{'Partner Event Requests'}</p>
+                    <div className="d-flex justify-content-between px-4">
+                        <p className="color-primary font-weight-bold pt-3">{'Partner Event Requests'}</p>
+                    </div>
                     <PartnerLocationEventRequests partnerLocationId={Guid.EMPTY} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
                 </div>
                 <div className="mb-4 bg-white">
-                    <p className="color-primary font-weight-bold pt-3">{'Pickup Requests Pending'} ({myPickupRequests.length})</p>
+                    <div className="d-flex justify-content-between px-4">
+                        <p className="color-primary font-weight-bold pt-3">{'Pickup Requests Pending'} ({myPickupRequests.length})</p>
+                    </div>
                     <MyPickupRequestsTable />
                 </div>
                 <div className="mb-4 bg-white">
-                    <p className="color-primary font-weight-bold pt-3">{'Partner Admin Invitations Pending'} ({myPartnerAdminInvitations.length})</p>
+                    <div className="d-flex justify-content-between px-4">
+                        <p className="color-primary font-weight-bold pt-3">{'Partner Admin Invitations Pending'} ({myPartnerAdminInvitations.length})</p>
+                    </div>
                     <PartnerAdminInvitationsTable />
                 </div>
             </Container>
