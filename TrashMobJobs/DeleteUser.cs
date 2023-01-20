@@ -42,10 +42,12 @@ namespace TrashMobJobs
                         response = req.CreateResponse(HttpStatusCode.InternalServerError);
                         var blockingResponse = deleteResponse as ActiveDirectoryBlockingResponse;
                         response.WriteString(JsonSerializer.Serialize(blockingResponse));
+                        logger.LogError($"User with objectId {activeDirectoryDeleteUserRequest.objectId} failed to delete. Message: {JsonSerializer.Serialize(blockingResponse)}");
                         break;
                     default:
                         response = req.CreateResponse(HttpStatusCode.OK);
                         response.WriteString(JsonSerializer.Serialize(deleteResponse));
+                        logger.LogError($"User with objectId {activeDirectoryDeleteUserRequest.objectId} deleted. Message: {JsonSerializer.Serialize(deleteResponse)}");
                         break;
                 }
 
