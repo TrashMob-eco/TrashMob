@@ -38,7 +38,6 @@ namespace TrashMobJobs
                 switch (deleteResponse.action)
                 {
                     case "Failed":
-                        // Yes, really. It needs an Ok when failed...
                         response = req.CreateResponse(HttpStatusCode.InternalServerError);
                         var blockingResponse = deleteResponse as ActiveDirectoryBlockingResponse;
                         response.WriteString(JsonSerializer.Serialize(blockingResponse));
