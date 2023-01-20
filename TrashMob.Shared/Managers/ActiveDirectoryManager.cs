@@ -54,7 +54,7 @@ namespace TrashMob.Shared.Managers
             {
                 var response = new ActiveDirectoryValidationFailedResponse
                 {
-                    action = "Failed",
+                    action = "UserNotFound",
                     version = "1.0.0",
                     userMessage = $"User not found."
                 };
