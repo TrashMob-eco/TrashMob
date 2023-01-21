@@ -14,7 +14,7 @@ I read about a guy in California named [Edgar McGregor](https://twitter.com/edga
  
 Basically, TrashMob is the NerdDinner.com site re-purposed to allow people to start mobs of their own to tackle cleanup or whatever needs doing. And I keep coming up with more and more ideas for it. I'm hoping this site grows organically because of the good that we can do we get together.
 
-## What is website address?
+## What is the website address?
 
 To see what is currently deployed to the prod environment, go to:
 https://www.trashmob.eco
@@ -204,7 +204,7 @@ If the app loads, but data does not, it is likely that the firewall rule is not 
 1. Add a new Rule with your email address as the name, with the start and end ip address set as your Client IP Address (see the line above the form for what Azure thinks your IP address is)
 1. **Save** changes
 
-## Testing the App
+## Testing the Web App
 
 As the site's feature set has grown, so have the scenarios that need to be tested after large changes have been made. Please see the [Test Scenarios](./TestScenarios.md) document for a list of checks that should be run. At some point we will need to automate these tests.
 
@@ -260,6 +260,9 @@ If setting up a new environment, you will need to add the IP Address of the App 
 
 ## The site is asking me to login
 If you try to access a secure page, you will need a user id on the site. When you hit a secured page, the site will redirect you to a sign in page. Click the Sign up now link on the bottom of the login box. Multiple identity providers are now available, including Facebook, Twitter, Google, and Microsoft, along with the TrashMob tenant itself if you prefer not to use an integrated signup.
+
+## How to Change Mobile App from Test to Prod
+It is currently hard-coded in the Mobile app that if you run a Debug build, you will point to the test environment, and if you run the release build, you will point to the production environment. The main branch always builds in Debug mode, while the Release branch always builds in Release mode.
 
 ## How do I get a test distribution of the Mobile App?
 We currently use Microsoft App Center for building and distributing the Mobile apps. In order to get notified of a new distribution (or to download it). 
