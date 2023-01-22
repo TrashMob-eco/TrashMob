@@ -44,7 +44,7 @@ jobs:
 
     - name: Restore Dependencies
       run: | 
-        dotnet restore TrashMobMobileApp.sln -c:${{ env.CONFIGURATION }} 
+        dotnet restore TrashMobMobileApp.sln
 
     - name: Publish Android Mobile App
       run: |
