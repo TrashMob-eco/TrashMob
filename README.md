@@ -262,7 +262,7 @@ If setting up a new environment, you will need to add the IP Address of the App 
 If you try to access a secure page, you will need a user id on the site. When you hit a secured page, the site will redirect you to a sign in page. Click the Sign up now link on the bottom of the login box. Multiple identity providers are now available, including Facebook, Twitter, Google, and Microsoft, along with the TrashMob tenant itself if you prefer not to use an integrated signup.
 
 ## How to Change Mobile App from Test to Prod
-It is currently hard-coded in the Mobile app that if you run a Debug build, you will point to the test environment, and if you run the release build, you will point to the production environment. The main branch always builds in Debug mode, while the Release branch always builds in Release mode.
+It is currently hard-coded in the Mobile app that if you run a Debug build, you will point to the test environment, and if you run the release build, you will point to the production environment. At this time, debug builds can only be built locally, so if you need to distribute a debug build to real devices, you will need to build locally. This may be an issue with our build scripts, but the debug builds don't seem to be able to be signed and the packaging step fails.
 
 ## How do I get a test distribution of the Mobile App?
 We currently use Microsoft App Center for building and distributing the Mobile apps. In order to get notified of a new distribution (or to download it). 
