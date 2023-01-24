@@ -1,9 +1,8 @@
-import { FC, FormEvent, useEffect, useState } from 'react';
+import { FC, FormEvent, useEffect } from 'react';
 import UserData from '../Models/UserData';
 import { getApiConfig, getB2CPolicies, msalClient } from '../../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { Button, Col, Container, Image, ModalBody, Row } from 'react-bootstrap';
-import { Modal } from 'reactstrap';
+import { Button, Col, Container, Image, Row } from 'react-bootstrap';
 import globes from '../assets/gettingStarted/globes.png';
 
 interface DeleteMyDataProps extends RouteComponentProps<any> {
@@ -12,24 +11,14 @@ interface DeleteMyDataProps extends RouteComponentProps<any> {
 }
 
 const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
-    const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [])
 
-    const togglemodal = () => {
-        setIsOpen(!isOpen);
-    }
-
     const handleDelete = (event: FormEvent<HTMLElement>) => {
         event.preventDefault();
-        setIsOpen(true);
-    }
-
-    // This will handle the delete account
-    const deleteAccount = () => {
-
+        
         var policy = getB2CPolicies();
         var scopes = getApiConfig();
 
@@ -55,30 +44,6 @@ const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
                     </Col>
                 </Row>
             </Container>
-            <Modal isOpen={isOpen} centered onrequestclose={togglemodal} contentlabel="Delete Account?" fade={true} size={"lg"}>
-                <ModalBody>
-                    <h2 className='fw-500'>Delete your account?</h2>
-                    <p className='p-18'>
-                        Are you sure you want to delete your account? This action cannot be undone and you will not be able to reactivate your account, view your past events, or continue building your stats.
-                    </p>
-                    <div className='d-flex justify-content-end'>
-                        <Button className="action h-49 p-18" onClick={() => {
-                            togglemodal();
-                        }
-                        }>
-                            Cancel
-                        </Button>
-                        <Button variant="outline" className='ml-2 border-danger text-danger h-49' onClick={() => {
-                            togglemodal();
-                            deleteAccount();
-                        }
-                        }>
-                            Delete
-                        </Button>
-                    </div>
-                </ModalBody>
-            </Modal>
-
             <Container className='bodyMargin'>
                 <h2 className='fw-500 font-size-xl'>Delete my data</h2>
                 <p className="p-18">
