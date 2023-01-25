@@ -14,44 +14,7 @@
     <PolicyId>B2C_1A_TrustFrameworkExtensions</PolicyId>
   </BasePolicy>
 
-  <BuildingBlocks>
-    <ClaimsSchema>
-      <ClaimType Id="isForgotPassword">
-        <DisplayName>isForgotPassword</DisplayName>
-        <DataType>boolean</DataType>
-        <AdminHelpText>Whether the user has selected Forgot your Password</AdminHelpText>
-      </ClaimType>      
-    </ClaimsSchema>
-    <ContentDefinitions>
-      <ContentDefinition Id="api.signuporsignin">
-        <DataUri>urn:com:microsoft:aad:b2c:elements:contract:unifiedssp:2.1.2</DataUri>
-      </ContentDefinition>
-    </ContentDefinitions>    
-  </BuildingBlocks>
-
   <ClaimsProviders>
-    <ClaimsProvider>
-      <DisplayName>Local Account</DisplayName>
-      <TechnicalProfiles>
-        <TechnicalProfile Id="ForgotPassword">
-          <DisplayName>Forgot your password?</DisplayName>
-          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.ClaimsTransformationProtocolProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"/>
-          <OutputClaims>
-            <OutputClaim ClaimTypeReferenceId="isForgotPassword" DefaultValue="true" AlwaysUseDefaultValue="true"/>
-          </OutputClaims>
-          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
-        </TechnicalProfile>
-        <TechnicalProfile Id="SelfAsserted-LocalAccountSignin-EmailOrUserId">
-          <Metadata>
-            <Item Key="setting.forgotPasswordLinkOverride">ForgotPasswordExchange</Item>
-          </Metadata>
-        </TechnicalProfile>
-        <TechnicalProfile Id="LocalAccountWritePasswordUsingObjectId">
-          <UseTechnicalProfileForSessionManagement ReferenceId="SM-AAD" />
-        </TechnicalProfile>
-      </TechnicalProfiles>
-    </ClaimsProvider>
-
     <ClaimsProvider>
       <DisplayName>Self Asserted</DisplayName>
       <TechnicalProfiles>
@@ -93,7 +56,6 @@
 <UserJourneys>
   <UserJourney Id="SignUpOrSignIn2">
       <OrchestrationSteps>
-
         <OrchestrationStep Order="1" Type="CombinedSignInAndSignUp" ContentDefinitionReferenceId="api.signuporsignin">
           <ClaimsProviderSelections>
             <ClaimsProviderSelection TargetClaimsExchangeId="ForgotPasswordExchange" />                
@@ -170,13 +132,13 @@
         <!-- This step reads any user attributes that we may not have received when authenticating using ESTS so they can be sent 
           in the token. -->
         <OrchestrationStep Order="6" Type="ClaimsExchange">
-          <Preconditions>
+          <!-- <Preconditions>
             <Precondition Type="ClaimEquals" ExecuteActionsIf="true">
               <Value>authenticationSource</Value>
               <Value>socialIdpAuthentication</Value>
               <Action>SkipThisOrchestrationStep</Action>
             </Precondition>
-          </Preconditions>
+          </Preconditions> -->
           <ClaimsExchanges>
             <ClaimsExchange Id="AADUserReadWithObjectId" TechnicalProfileReferenceId="AAD-UserReadUsingObjectId"/>
           </ClaimsExchanges>
@@ -215,26 +177,6 @@
       <ClientDefinition ReferenceId="DefaultWeb"/>
     </UserJourney>
   </UserJourneys>
-
-  <SubJourneys>
-    <SubJourney Id="PasswordReset" Type="Call">
-      <OrchestrationSteps>
-        <!-- Validate user's email address. -->
-        <OrchestrationStep Order="1" Type="ClaimsExchange">
-          <ClaimsExchanges>
-            <ClaimsExchange Id="PasswordResetUsingEmailAddressExchange" TechnicalProfileReferenceId="LocalAccountDiscoveryUsingEmailAddress" />
-          </ClaimsExchanges>
-        </OrchestrationStep>
-
-        <!-- Collect and persist a new password. -->
-        <OrchestrationStep Order="2" Type="ClaimsExchange">
-          <ClaimsExchanges>
-            <ClaimsExchange Id="NewCredentials" TechnicalProfileReferenceId="LocalAccountWritePasswordUsingObjectId" />
-          </ClaimsExchanges>
-        </OrchestrationStep>
-      </OrchestrationSteps>
-    </SubJourney>
-  </SubJourneys> 
 
   <RelyingParty>
     <DefaultUserJourney ReferenceId="SignUpOrSignIn2" />

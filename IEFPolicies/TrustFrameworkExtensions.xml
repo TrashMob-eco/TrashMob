@@ -41,17 +41,22 @@
         <UserHelpText>User id to use for signing in.</UserHelpText>
         <UserInputType>TextBox</UserInputType>
       </ClaimType>  
+      <ClaimType Id="isForgotPassword">
+        <DisplayName>isForgotPassword</DisplayName>
+        <DataType>boolean</DataType>
+        <AdminHelpText>Whether the user has selected Forgot your Password</AdminHelpText>
+      </ClaimType>      
     </ClaimsSchema>
     <ContentDefinitions>
       <ContentDefinition Id="api.signuporsignin">
         <LoadUri>https://{UIAssets}.blob.core.windows.net/pages/SignUpSignIn.html</LoadUri>
+        <DataUri>urn:com:microsoft:aad:b2c:elements:contract:unifiedssp:2.1.2</DataUri>        
       </ContentDefinition> 
       <ContentDefinition Id="api.localaccountsignup">
         <LoadUri>https://{UIAssets}.blob.core.windows.net/pages/SignUpSignIn.html</LoadUri>
-      </ContentDefinition>           
+      </ContentDefinition>  
     </ContentDefinitions>
   </BuildingBlocks>
-
   
   <ClaimsProviders>
     <ClaimsProvider>
@@ -64,6 +69,17 @@
             <Item Key="ClaimsEndpoint">https://graph.facebook.com/me?fields=id,first_name,last_name,name,email</Item>
           </Metadata>
         </TechnicalProfile>
+        <TechnicalProfile Id="SM-SocialLogin">
+          <DisplayName>Session Mananagement Provider</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.SSO.ExternalLoginSSOSessionProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="AlwaysFetchClaimsFromProvider">true</Item>
+          </Metadata>
+          <PersistedClaims>
+            <PersistedClaim ClaimTypeReferenceId="email" />
+            <PersistedClaim ClaimTypeReferenceId="identityProvider" />            
+          </PersistedClaims>
+        </TechnicalProfile>          
       </TechnicalProfiles>
     </ClaimsProvider>
 
@@ -213,6 +229,22 @@
       </TechnicalProfiles>
     </ClaimsProvider>
     <ClaimsProvider>
+      <DisplayName>Local Account</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="ForgotPassword">
+          <DisplayName>Forgot your password?</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.ClaimsTransformationProtocolProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"/>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="isForgotPassword" DefaultValue="true" AlwaysUseDefaultValue="true"/>
+          </OutputClaims>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="LocalAccountWritePasswordUsingObjectId">
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-AAD" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>    
+    <ClaimsProvider>
       <DisplayName>Self asserted</DisplayName>
       <TechnicalProfiles>
         <TechnicalProfile Id="LocalAccountSignUpWithEmailAndUserid">
@@ -260,6 +292,7 @@
             <Item Key="setting.operatingMode">Email</Item>
             <Item Key="ContentDefinitionReferenceId">api.localaccountsignin</Item>
             <Item Key="IncludeClaimResolvingInClaimsHandling">true</Item>
+            <Item Key="setting.forgotPasswordLinkOverride">ForgotPasswordExchange</Item>            
           </Metadata>
           <IncludeInSso>false</IncludeInSso>
           <InputClaims>
@@ -458,7 +491,6 @@
             <OutputClaim ClaimTypeReferenceId="extension_TOSAccepted" />            
             <OutputClaim ClaimTypeReferenceId="userId" PartnerClaimType="signInNames.userId" />
             <OutputClaim ClaimTypeReferenceId="email" PartnerClaimType="signInNames.emailAddress" />            
-            <OutputClaim ClaimTypeReferenceId="extension_TOSAccepted" />                       
           </OutputClaims>          
         </TechnicalProfile>           
         <TechnicalProfile Id="AAD-UserWriteUsingAlternativeSecurityId">
@@ -495,4 +527,24 @@
   <!--UserJourneys>
 	
 	</UserJourneys-->
+
+
+  <SubJourneys>
+    <SubJourney Id="PasswordReset" Type="Call">
+      <OrchestrationSteps>
+        <!-- Validate user's email address. -->
+        <OrchestrationStep Order="1" Type="ClaimsExchange">
+          <ClaimsExchanges>
+            <ClaimsExchange Id="PasswordResetUsingEmailAddressExchange" TechnicalProfileReferenceId="LocalAccountDiscoveryUsingEmailAddress" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+        <OrchestrationStep Order="2" Type="ClaimsExchange">
+          <ClaimsExchanges>
+            <ClaimsExchange Id="NewCredentials" TechnicalProfileReferenceId="LocalAccountWritePasswordUsingObjectId" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+      </OrchestrationSteps>
+    </SubJourney>
+  </SubJourneys> 
+
 </TrustFrameworkPolicy>
