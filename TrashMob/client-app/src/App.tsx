@@ -45,6 +45,7 @@ import Waivers from './components/Waivers/Waivers';
 import WaiversReturn from './components/Waivers/WaiversReturn';
 import PartnerRequestDetails, { PartnerRequestDetailsMatchParams } from './components/Partners/PartnerRequestDetails';
 import { Partnerships } from './components/Partners/Partnerships';
+import { Help } from './components/Pages/Help';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }
@@ -62,6 +63,9 @@ interface PartnerRequestDetailsProps extends RouteComponentProps<PartnerRequestD
 }
 
 interface WaiversReturnProps extends RouteComponentProps {
+}
+
+interface DeleteMyDataProps extends RouteComponentProps {
 }
 
 export const App: FC = () => {
@@ -92,7 +96,9 @@ export const App: FC = () => {
                 setIsUserLoaded(true);
             }
         }
-    }, []);
+    },
+        // eslint-disable-next-line
+        []);
 
     useEffect(() => {
         handleAttendanceChanged();
@@ -170,6 +176,17 @@ export const App: FC = () => {
             </MsalAuthenticationTemplate >);
     }
 
+    function renderDeleteMyData(inp: DeleteMyDataProps) {
+        return (
+            <MsalAuthenticationTemplate
+                interactionType={InteractionType.Redirect}
+                errorComponent={ErrorComponent}
+                loadingComponent={LoadingComponent}>
+                <DeleteMyData {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} onUserDeleted={clearUser} />
+            </MsalAuthenticationTemplate >);
+    }
+
+
     function clearUser() {
         setIsUserLoaded(false);
         const user = new UserData();
@@ -208,7 +225,14 @@ export const App: FC = () => {
 
     function verifyAccount(result: msal.AuthenticationResult) {
 
-        var email = result.idTokenClaims["signInName"]
+        var userDeleted = result.idTokenClaims["userDeleted"];
+
+        if (userDeleted && userDeleted === true) {
+            clearUser();
+            return;
+        }
+
+        var email = result.idTokenClaims["email"];
         const account = msalClient.getAllAccounts()[0];
         var apiConfig = getApiConfig();
 
@@ -294,6 +318,7 @@ export const App: FC = () => {
                             <Route path="/eventdetails/:eventId" render={(props: DetailsProps) => renderEventDetails(props)} />
                             <Route path="/cancelevent/:eventId" render={(props: CancelProps) => renderCancelEvent(props)} />
                             <Route path="/waiversreturn" render={(props: WaiversReturnProps) => renderWaiversReturn(props)} />
+                            <Route path="/deletemydata" render={(props: DeleteMyDataProps) => renderDeleteMyData(props)} />
                             <Route exact path="/mydashboard">
                                 <MsalAuthenticationTemplate
                                     interactionType={InteractionType.Redirect}
@@ -342,19 +367,14 @@ export const App: FC = () => {
                                     <Waivers currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
                             </Route>
-                            <Route exact path="/deletemydata">
-                                <MsalAuthenticationTemplate
-                                    interactionType={InteractionType.Redirect}
-                                    errorComponent={ErrorComponent}
-                                    loadingComponent={LoadingComponent}>
-                                    <DeleteMyData currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                                </MsalAuthenticationTemplate >
-                            </Route>
                             <Route exact path="/partnerships">
                                 <Partnerships />
                             </Route>
                             <Route exact path="/shop">
                                 <Shop />
+                            </Route>
+                            <Route exact path="/help">
+                                <Help />
                             </Route>
                             <Route exact path="/aboutus">
                                 <AboutUs />
