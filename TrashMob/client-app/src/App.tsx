@@ -96,7 +96,9 @@ export const App: FC = () => {
                 setIsUserLoaded(true);
             }
         }
-    }, []);
+    },
+        // eslint-disable-next-line
+        []);
 
     useEffect(() => {
         handleAttendanceChanged();
