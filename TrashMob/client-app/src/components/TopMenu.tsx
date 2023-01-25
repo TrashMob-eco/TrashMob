@@ -5,7 +5,7 @@ import UserData from './Models/UserData';
 import logo from './assets/logo.svg'
 import { Button, Dropdown, Nav } from 'react-bootstrap';
 import './assets/styles/header.css';
-import { BoxArrowLeft, Map, PersonX, PersonBadge, PersonCircle, PlusLg, Speedometer2 } from 'react-bootstrap-icons';
+import { BoxArrowLeft, Map, PersonX, PersonBadge, PersonCircle, PlusLg, Speedometer2, QuestionCircle } from 'react-bootstrap-icons';
 
 interface TopMenuProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -66,8 +66,8 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 <li key={item.name}><Nav.Link href={item.url} >{item.name}</Nav.Link></li>
                             ))}
                         </ul>
-                        <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="loginBtn">Sign in</Button>
-                        <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="registerBtn">Sign up</Button>
+                        <Button className="btn" href="/help" id="helpBtn"><QuestionCircle /></Button>
+                        <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="loginBtn">Sign in / Sign Up</Button>
                         <Dropdown hidden={!isUserLoaded}>
                             <Dropdown.Toggle id="userBtn" variant="light">
                                 <PersonCircle className="mr-3" size={32} color="#96ba00" aria-labelledby="userName" />

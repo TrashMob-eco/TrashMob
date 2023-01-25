@@ -45,6 +45,7 @@ import Waivers from './components/Waivers/Waivers';
 import WaiversReturn from './components/Waivers/WaiversReturn';
 import PartnerRequestDetails, { PartnerRequestDetailsMatchParams } from './components/Partners/PartnerRequestDetails';
 import { Partnerships } from './components/Partners/Partnerships';
+import { Help } from './components/Pages/Help';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }
@@ -355,6 +356,9 @@ export const App: FC = () => {
                             </Route>
                             <Route exact path="/shop">
                                 <Shop />
+                            </Route>
+                            <Route exact path="/help">
+                                <Help />
                             </Route>
                             <Route exact path="/aboutus">
                                 <AboutUs />
