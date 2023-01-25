@@ -8,6 +8,7 @@ import globes from '../assets/gettingStarted/globes.png';
 interface DeleteMyDataProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
     currentUser: UserData;
+    onUserDeleted: any;
 }
 
 const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
@@ -24,10 +25,10 @@ const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
 
         var request = {
             authority: policy.authorities.deleteUser.authority,
-            scopes: scopes.b2cScopes,
-            
+            scopes: scopes.b2cScopes,            
         };
         msalClient.acquireTokenRedirect(request)
+            .then(() => props.onUserDeleted())
             .then(() => props.history.push("/"));
     }
 
