@@ -124,7 +124,7 @@ jobs:
         api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
 
     - name: Build MAUI iOS
-      run: dotnet publish TrashMobMobileApp.sln -c ${{ env.CONFIGURATION }} -f net7.0-ios -r ios-arm64 --no-restore /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=false
+      run: dotnet publish TrashMobMobileApp.sln -c ${{ env.CONFIGURATION }} -f net7.0-ios -r ios-arm64 --self-contained --no-restore /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=false
 
     - name: ls package
       run: ls **/*.ipa
