@@ -66,7 +66,7 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 <li key={item.name}><Nav.Link href={item.url} >{item.name}</Nav.Link></li>
                             ))}
                         </ul>
-                        <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="loginBtn">Sign in / Sign Up</Button>
+                        <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="loginBtn">Sign in</Button>
                         <Dropdown hidden={!isUserLoaded}>
                             <Dropdown.Toggle id="userBtn" variant="light">
                                 <PersonCircle className="mr-3" size={32} color="#96ba00" aria-labelledby="userName" />
