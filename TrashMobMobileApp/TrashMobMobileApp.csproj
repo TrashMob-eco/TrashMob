@@ -54,9 +54,6 @@
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
 		 <CreatePackage>false</CreatePackage>
-		 <CodesignKey>iPhone Developer</CodesignKey>
-		 <CodesignProvision>VS: eco.trashmobdev.trashmobmobile Development</CodesignProvision>
-		 <CodesignEntitlements></CodesignEntitlements>
 		 <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
