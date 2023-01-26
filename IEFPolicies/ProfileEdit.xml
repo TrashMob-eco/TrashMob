@@ -64,7 +64,8 @@
             <ClaimsProviderSelection TargetClaimsExchangeId="FacebookExchange"/>
             <ClaimsProviderSelection TargetClaimsExchangeId="GoogleExchange"/>       
             <ClaimsProviderSelection TargetClaimsExchangeId="TwitterExchange"/>        
-            <ClaimsProviderSelection TargetClaimsExchangeId="AppleExchange"/>                        
+            <ClaimsProviderSelection TargetClaimsExchangeId="AppleExchange"/>   
+            <ClaimsProviderSelection TargetClaimsExchangeId="LinkedInExchange"/>                                        
             <ClaimsProviderSelection TargetClaimsExchangeId="LocalAccountSigninEmailExchange"/>   
           </ClaimsProviderSelections>
         </OrchestrationStep>
@@ -75,6 +76,7 @@
             <ClaimsExchange Id="GoogleExchange" TechnicalProfileReferenceId="Google-OAUTH"/>        
             <ClaimsExchange Id="TwitterExchange" TechnicalProfileReferenceId="Twitter-OAuth2"/>        
             <ClaimsExchange Id="AppleExchange" TechnicalProfileReferenceId="Apple-OIDC"/>    
+            <ClaimsExchange Id="LinkedInExchange" TechnicalProfileReferenceId="LinkedIn-OAuth2"/>                 
             <ClaimsExchange Id="LocalAccountSigninEmailExchange" TechnicalProfileReferenceId="SelfAsserted-LocalAccountSignin-EmailOrUserId"/>                              
           </ClaimsExchanges>
         </OrchestrationStep>
