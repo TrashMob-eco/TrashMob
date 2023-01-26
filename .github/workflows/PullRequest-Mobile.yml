@@ -108,11 +108,26 @@ jobs:
       run: | 
         dotnet restore TrashMobMobileApp.sln
 
+    - name: name: Import Code-Signing Certificates
+      uses: Apple-Actions/import-codesign-certs@v1
+      with:
+        p12-file-base64: ${{ secrets.IOS_CERTIFICATES_P12 }}
+        p12-password: ${{ secrets.IOS_CERTIFICATES_P12_PASSWORD }}
+
+    - name: Download Apple Provisioning Profiles
+      uses: Apple-Actions/download-provisioning-profiles@v1
+      with:
+        bundle-id: 'eco.trashmobdev.trashmobmobile
+	profile-type: 'IOS_APP_DEVELOPMENT'
+        issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+        api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+        api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+
     - name: Build MAUI iOS
-      run: dotnet build TrashMobMobileApp.sln -c ${{ env.CONFIGURATION }} -f net7.0-ios --no-restore /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=False
+      run: dotnet publish TrashMobMobileApp.sln -c ${{ env.CONFIGURATION }} -f net7.0-ios --no-restore /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=false
 
     - name: Upload iOS Artifact
       uses: actions/upload-artifact@v3.1.0
       with:
         name: trashmobmobileapp-ios-pr-build
-        path: trashmobmobileapp/bin/${{ env.CONFIGURATION }}/net7.0-ios/**/*.app
+        path: TrashMobMobileApp/bin/package/*.ipa
