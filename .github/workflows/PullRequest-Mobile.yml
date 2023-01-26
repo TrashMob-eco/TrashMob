@@ -5,7 +5,9 @@ name: TrashMob Mobile App Pull Request Build
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - 'main'
+      - 'dev/sandra/appbuild'
     paths:
       - '.github/**'
       - 'TrashMob.Models/**'
@@ -125,6 +127,9 @@ jobs:
 
     - name: Build MAUI iOS
       run: dotnet publish TrashMobMobileApp.sln -c ${{ env.CONFIGURATION }} -f net7.0-ios --no-restore /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=false
+
+    - name: ls package
+      run: ls **/*.ipa
 
     - name: Upload iOS Artifact
       uses: actions/upload-artifact@v3.1.0
