@@ -124,9 +124,6 @@ jobs:
     - name: Build MAUI iOS
       run: dotnet publish TrashMobMobileApp.sln -c ${{ env.CONFIGURATION }} -f net7.0-ios -r ios-arm64 --self-contained --no-restore /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=false
 
-    - name: ls package
-      run: ls **/*.ipa
-
     - name: Upload iOS Artifact
       uses: actions/upload-artifact@v3.1.0
       with:
