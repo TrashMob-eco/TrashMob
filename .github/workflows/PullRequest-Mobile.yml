@@ -91,12 +91,6 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION2 }}
 
-    - name: Install MAUI Workload
-      run: |
-        dotnet nuget locals all --clear
-        dotnet workload install maui --ignore-failed-sources
-        dotnet workload install ios maccatalyst tvos macos maui wasm-tools --source https://api.nuget.org/v3/index.json --ignore-failed-sources
-
     - name: Set XCode Version
     #  if: runner.os == 'macOS'
     #  shell: bash
@@ -106,6 +100,12 @@ jobs:
       uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: '14.1'
+
+    - name: Install MAUI Workload
+      run: |
+        dotnet nuget locals all --clear
+        dotnet workload install maui --ignore-failed-sources
+        dotnet workload install ios maccatalyst tvos macos maui wasm-tools --source https://api.nuget.org/v3/index.json --ignore-failed-sources
 
     - name: Restore Dependencies
       run: | 
