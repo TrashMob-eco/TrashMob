@@ -5,9 +5,7 @@ name: TrashMob Mobile App Pull Request Build
 
 on:
   pull_request:
-    branches:
-      - 'main'
-      - 'dev/sandra/appbuild'
+    branches: [ "main" ]
     paths:
       - '.github/**'
       - 'TrashMob.Models/**'
