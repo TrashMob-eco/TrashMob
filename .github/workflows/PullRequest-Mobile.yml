@@ -128,14 +128,14 @@ jobs:
       shell: bash
       run: |
         pwd
-        ls bin/Debug/net7.0-ios/ios-arm64/publish//TrashMobMobileApp.ipa
-        ls /Users/runner/work/TrashMob/TrashMob/TrashMobMobileApp/bin/Debug/net7.0-ios/ios-arm64/publish//TrashMobMobileApp.ipa
-        ls /Users/runner/work/TrashMob/TrashMob/TrashMobMobileApp/bin/Debug/net7.0-ios/ios-arm64/*
-        ls /Users/runner/work/TrashMob/TrashMob/TrashMobMobileApp/bin/Debug/net7.0-ios/ios-arm64/publish/*
-        ls **/*.ipa
+        #ls bin/Debug/net7.0-ios/ios-arm64/publish//TrashMobMobileApp.ipa
+        #ls /Users/runner/work/TrashMob/TrashMob/TrashMobMobileApp/bin/Debug/net7.0-ios/ios-arm64/publish//TrashMobMobileApp.ipa
+        #ls /Users/runner/work/TrashMob/TrashMob/TrashMobMobileApp/bin/Debug/net7.0-ios/ios-arm64/*
+        #ls /Users/runner/work/TrashMob/TrashMob/TrashMobMobileApp/bin/Debug/net7.0-ios/ios-arm64/publish/*
+        #ls **/*.ipa
     
     - name: Upload iOS Artifact
       uses: actions/upload-artifact@v3.1.0
       with:
         name: trashmobmobileapp-ios-pr-build
-        path: bin/${{ env.CONFIGURATION }}/net7.0-ios/ios-arm64/publish//*.ipa
+        path: TrashMobMobileApp/bin/${{ env.CONFIGURATION }}/net7.0-ios/ios-arm64/publish//*.ipa
