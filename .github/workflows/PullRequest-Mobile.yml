@@ -13,8 +13,8 @@ on:
       - 'TrashMobMobileApp.sln'
 
 env:
-  DOTNET_VERSION: '7.0.1'  # set this to the dotnet version to use
-  DOTNET_VERSION2: '7.0.1'  # set this to the dotnet version to use
+  DOTNET_VERSION: '7.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION2: '7.0.x'  # set this to the dotnet version to use
   CONFIGURATION: Debug
 
 jobs:
@@ -97,10 +97,10 @@ jobs:
         dotnet workload install maui --ignore-failed-sources
         dotnet workload install ios maui wasm-tools --source https://api.nuget.org/v3/index.json --ignore-failed-sources
 
-    - name: Set XCode Version
-      uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: '14.1'
+    #- name: Set XCode Version
+    #  uses: maxim-lobanov/setup-xcode@v1
+    #  with:
+    #    xcode-version: '14.1'
 
     - name: Restore Dependencies
       run: | 
