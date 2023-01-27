@@ -34,7 +34,7 @@ const b2cPoliciesDev = {
     clientId: 'e46d67ba-fe46-40f4-b222-2f982b2bb112'
 };
 
-export function GetMsalClient() {
+export function GetMsalClient(navigateToLoginRequestUrl: boolean) {
 
     var host = window.location.host;
     var protocol = window.location.protocol;
@@ -52,7 +52,7 @@ export function GetMsalClient() {
             clientId: clientId,
             authority: fullAuthority,
             postLogoutRedirectUri: '/',
-            navigateToLoginRequestUrl: true,
+            navigateToLoginRequestUrl: navigateToLoginRequestUrl,
             knownAuthorities: [authorityDomain],
             redirectUri: uri            
         },
@@ -86,7 +86,8 @@ export function GetMsalClient() {
     return msalC;
 }
 
-export const msalClient: msal.PublicClientApplication = GetMsalClient();
+export const msalClient: msal.PublicClientApplication = GetMsalClient(true);
+export const msalClientNoRedirect: msal.PublicClientApplication = GetMsalClient(false);
 
 export function getApiConfig() {
     var host = window.location.host;

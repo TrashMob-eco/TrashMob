@@ -179,10 +179,10 @@ export const App: FC = () => {
 
 
     function clearUser() {
-        setIsUserLoaded(false);
         const user = new UserData();
         setCurrentUser(user)
         sessionStorage.setItem('user', JSON.stringify(user));
+        setIsUserLoaded(false);
     }
 
     function handleUserUpdated() {

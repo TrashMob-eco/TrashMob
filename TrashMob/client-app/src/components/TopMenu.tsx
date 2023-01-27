@@ -36,7 +36,6 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
         e.preventDefault();
         const logoutRequest = {
             account: msalClient.getActiveAccount(),
-
         }
 
         msalClient.logout(logoutRequest);

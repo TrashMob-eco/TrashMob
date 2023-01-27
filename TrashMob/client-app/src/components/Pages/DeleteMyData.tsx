@@ -1,10 +1,9 @@
 import { FC, FormEvent, useEffect } from 'react';
 import UserData from '../Models/UserData';
-import { getApiConfig, getB2CPolicies, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getB2CPolicies, msalClient, msalClientNoRedirect } from '../../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button, Col, Container, Image, Row } from 'react-bootstrap';
 import globes from '../assets/gettingStarted/globes.png';
-import React from 'react';
 
 interface DeleteMyDataProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -14,8 +13,6 @@ interface DeleteMyDataProps extends RouteComponentProps<any> {
 
 const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
 
-    const [isDeleted, setIsDeleted] = React.useState<boolean>(false);
-
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [])
@@ -23,35 +20,20 @@ const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
     const handleDelete = (event: FormEvent<HTMLElement>) => {
         event.preventDefault();
 
+        const account = msalClient.getAllAccounts()[0];
         var policy = getB2CPolicies();
         var scopes = getApiConfig();
 
         var request = {
+            account: account,
             authority: policy.authorities.deleteUser.authority,
             scopes: scopes.b2cScopes,
         };
-        msalClient.acquireTokenRedirect(request)
+        msalClientNoRedirect.acquireTokenRedirect(request)
             .then(() => {
-                setIsDeleted(true);
                 props.onUserDeleted();
-            })
-
-    }
-
-    const renderAccountDeleted = () => {
-        return (
-            <>
-                <Container className='bodyMargin'>
-                    <h2 className='fw-500 font-size-xl'>Your account has been deleted.</h2>
-                    <p className="p-18">
-                        We are sorry to see you go!
-                    </p>
-                    <p>
-                        The Team at TrashMob.eco
-                    </p>
-                </Container>
-            </>
-        )
+                props.history.push("/");
+            });
     }
 
     const renderDeleteYourAccount = () => {
@@ -75,6 +57,8 @@ const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
         )
     }
 
+    const contents = renderDeleteYourAccount();
+
     return (
         <div>
             <Container fluid className='bg-grass shadow'>
@@ -88,7 +72,7 @@ const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
                     </Col>
                 </Row>
             </Container>
-            {isDeleted ? renderAccountDeleted() : renderDeleteYourAccount() }
+            {contents}
         </div>
     );
 }
