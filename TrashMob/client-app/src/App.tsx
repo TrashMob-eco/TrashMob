@@ -22,7 +22,7 @@ import { VolunteerOpportunities } from './components/VolunteerOpportunities';
 import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
-import { getApiConfig, getDefaultHeaders, msalClient } from './store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from './store/AuthStore';
 import { EventDetails, DetailsMatchParams } from './components/Pages/EventDetails';
 import { NoMatch } from './components/NoMatch';
 import UserData from './components/Models/UserData';
@@ -36,7 +36,6 @@ import ManageEventDashboard, { ManageEventDashboardMatchParams } from './compone
 import { Shop } from './components/Shop';
 import { EventSummaries } from './components/EventSummaries';
 import { CancelEvent, CancelEventMatchParams } from './components/EventManagement/CancelEvent';
-import EventData from './components/Models/EventData';
 
 import './custom.css';
 import 'react-phone-input-2/lib/style.css'
@@ -71,8 +70,6 @@ interface DeleteMyDataProps extends RouteComponentProps {
 export const App: FC = () => {
     const [isUserLoaded, setIsUserLoaded] = useState(false);
     const [currentUser, setCurrentUser] = useState<UserData>(new UserData());
-    const [myAttendanceList, setMyAttendanceList] = useState<EventData[]>([]);
-    const [isUserEventDataLoaded, setIsUserEventDataLoaded] = useState(false);
 
     useEffect(() => {
         initializeIcons();
@@ -99,12 +96,6 @@ export const App: FC = () => {
     },
         // eslint-disable-next-line
         []);
-
-    useEffect(() => {
-        handleAttendanceChanged();
-    },
-        // eslint-disable-next-line
-        [isUserLoaded]);
 
     function ErrorComponent(error: MsalAuthenticationResult) {
         return <p>An Error Occurred: {error}</p>;
@@ -136,7 +127,7 @@ export const App: FC = () => {
 
     function renderEventDetails(inp: DetailsProps) {
         return (
-            <EventDetails {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={() => handleAttendanceChanged()} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} />
+            <EventDetails {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
         );
     }
 
@@ -207,6 +198,10 @@ export const App: FC = () => {
         setIsUserLoaded(false);
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -242,6 +237,11 @@ export const App: FC = () => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const method = 'GET';
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
@@ -267,41 +267,6 @@ export const App: FC = () => {
                     }
                 });
         });
-    }
-
-    function handleAttendanceChanged() {
-        setMyAttendanceList([]);
-        setIsUserEventDataLoaded(false);
-
-        if (!isUserLoaded || !currentUser) {            
-            return;
-        }
-
-        // If the user is logged in, get the events they are attending
-        const accounts = msalClient.getAllAccounts();
-        var apiConfig = getApiConfig();
-
-        if (accounts !== null && accounts.length > 0) {
-            const request = {
-                scopes: apiConfig.b2cScopes,
-                account: accounts[0]
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/events/eventsuserisattending/' + currentUser.id, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<EventData[]>)
-                    .then(data => {
-                        setMyAttendanceList(data);
-                        setIsUserEventDataLoaded(true);
-                    })
-            });
-        }
     }
 
     return (
@@ -404,7 +369,7 @@ export const App: FC = () => {
                                 <VolunteerOpportunities />
                             </Route>
                             <Route exact path='/'>
-                                <Home currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} onAttendanceChanged={handleAttendanceChanged} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} />
+                                <Home currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
                             </Route>
                             <Route>
                                 <NoMatch />

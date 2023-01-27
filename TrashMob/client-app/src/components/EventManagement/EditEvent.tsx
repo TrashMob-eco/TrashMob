@@ -1,7 +1,7 @@
 import * as React from 'react'
 import EventData from '../Models/EventData';
 import EventTypeData from '../Models/EventTypeData';
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
 import { getKey } from '../../store/MapStore';
 import AddressData from '../Models/AddressData';
@@ -399,6 +399,11 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         };
 
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 

@@ -110,6 +110,14 @@ export function getB2CPolicies() {
     }
 }
 
+export function validateToken(idTokenClaims: object): boolean {
+    if (!idTokenClaims.hasOwnProperty("email")) {
+        return false;
+    }
+
+    return true;
+}
+
 const apiConfigProd = {
     b2cScopes: ['https://TrashMob.onmicrosoft.com/api/TrashMob.Read', 'https://TrashMob.onmicrosoft.com/api/TrashMob.Writes', 'email'],
 };

@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { RouteComponentProps } from 'react-router-dom';
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Button, ButtonGroup, Col, Container, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import * as ToolTips from "../../store/ToolTips";
@@ -53,6 +53,11 @@ export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> =
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('POST');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 

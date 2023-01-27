@@ -1,7 +1,7 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Button, Col, Container, Dropdown, Form, OverlayTrigger, Row, ToggleButton, Tooltip } from 'react-bootstrap';
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
 import SocialMediaAccountTypeData from '../Models/SocialMediaAccountTypeData';
@@ -55,6 +55,11 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
                 fetch('/api/partnersocialmediaaccounts/getbypartner/' + props.partnerId, {
@@ -99,6 +104,11 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -134,6 +144,11 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -193,6 +208,11 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
         }
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 

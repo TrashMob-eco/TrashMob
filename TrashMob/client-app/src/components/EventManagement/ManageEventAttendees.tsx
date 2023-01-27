@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Guid } from 'guid-typescript';
 import { Container, Dropdown } from 'react-bootstrap';
@@ -49,6 +49,11 @@ export const ManageEventAttendees: React.FC<ManageEventAttendeesProps> = (props)
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
