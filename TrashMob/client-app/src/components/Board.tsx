@@ -8,6 +8,7 @@ import DarylBarber from './assets/boardOfDirectors/darylbarber.jpg';
 import JakeDiliberto from './assets/boardOfDirectors/JakeDiliberto.svg';
 import JeremiahSteen from './assets/boardOfDirectors/JeremiahSteen.svg';
 import KevinGleason from './assets/boardOfDirectors/KevinGleason.svg';
+import SandraMau from './assets/boardOfDirectors/SandraMau.png';
 import ValerieWilden from './assets/boardOfDirectors/ValerieWilden.svg';
 
 export const Board: React.FC = () => {
@@ -140,6 +141,24 @@ export const Board: React.FC = () => {
                                 Mr. Gleason has advised and transacted business globally on 5 continents including across Europe, the Middle East, Asia, and South America.  He has counseled C-suite executives and boards of directors on the creation of compliance and ethics programs; the development of controls, training, testing, conflicts identification, and risk assessments; and the structuring of governance frameworks.
                             </p>
                             <p className='font-size-sm color-grey'>Mr. Gleason has a law degree and a masters in financial services law.  He has earned an MBA from The University of Chicago and BA from University of Notre Dame.  He is or has been a board member at Arizona Science Center, National Society of Compliance Professionals, and Journal of Financial Compliance. He is a frequent speaker at and contributor to industry events and publications.</p>
+                        </Col>
+                    </Row>
+                </div>
+                <div className='p-4 directorCard'>
+                    <Row>
+                        <Col md={5}>
+                            <Image src={SandraMau} alt="Sandra Mau" className="h-100 mt-0 object-fit-cover rounded" />
+                        </Col>
+                        <Col md={7}>
+                            <div className='d-flex justify-content-between align-items-center'>
+                                <h2 className='m-0 fw-500 font-size-xl color-primary '>Sandra Mau</h2>
+                                <a href="https://www.linkedin.com/in/sandramau/"><Image src={linkedIn} alt="linkedIn icon" className="h-100 mt-0 object-fit-cover" /></a>
+                            </div>
+                            <h5 className='my-3 fw-500 color-grey'>Member at large</h5>
+                            <p className='font-size-sm color-grey'>Sandra is VP of Product for Cloud Solutions at Clarivate (NYSE:CLVT). Prior to joining Clarivate via acquisition, she was the CEO and Founder of TrademarkVision, an award-winning AI/Computer Vision startup doing visual brand protection.</p>
+                            <p className='font-size-sm color-grey'>She has over a decade of experience and leadership in productizing research and development. Prior to this startup, Sandra was a Senior Computer Vision Research Engineer at National ICT Australia. Additionally, she consulted for the government in several areas of advanced technologies. Earlier in her career, she also worked as a commercial analyst where she helped researchers protect their IP and commercialise their innovation.</p>
+                            <p className='font-size-sm color-grey'>Sandra is very active in supporting tech and startup communities. She was the Founding Chair of IEEE QLD Women in Engineering, and listed as one of Australia's Top 50 Female Programmers by Pollenizer 2014, and one of Australia's Top 100 Most Influential Engineers by Engineer's Australia 2015. She's also a regular participant in hackathons including past GovHacks and International Women's Day. She was recognised in 2018 by Pittsburgh Business Times with the Pittsburgh Innovator Award and by QUT with the Innovation and Entrepreneurship Outstanding Alumni Award.</p>
+                            <p className='font-size-sm color-grey'>She holds a Masters in Robotics from Carnegie Mellon University, a Bachelors in Engineering Science (Aerospace) from University of Toronto, and an MBA from Queensland University of Technology (QUT).</p> 
                         </Col>
                     </Row>
                 </div>

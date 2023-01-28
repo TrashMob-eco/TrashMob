@@ -66,21 +66,13 @@ namespace TrashMob.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddEventAttendee(EventAttendee eventAttendee, CancellationToken cancellationToken)
-        {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, eventAttendee, AuthorizationPolicyConstants.UserOwnsEntity);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
-            {
-                return Forbid();
-            }
-            
+        {            
             await eventAttendeeManager.AddAsync(eventAttendee, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddEventAttendee));
-
-            var result = (await eventAttendeeManager.GetAsync(e => e.EventId == eventAttendee.EventId, CancellationToken.None).ConfigureAwait(false)).Select(u => u.User.ToDisplayUser());
-            return Ok(result);
+            return Ok();
         }
 
         [HttpDelete("{eventId}/{userId}")]

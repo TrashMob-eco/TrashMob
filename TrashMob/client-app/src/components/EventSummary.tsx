@@ -1,7 +1,7 @@
 import * as React from 'react'
 import UserData from './Models/UserData';
 import { Button, Col, Container, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { getApiConfig, getDefaultHeaders, msalClient } from './../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from './../store/AuthStore';
 import * as ToolTips from "./../store/ToolTips";
 import EventSummaryData from './Models/EventSummaryData';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
@@ -84,14 +84,14 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
             });
     }, [loadedEventId, props.currentUser.id]);
 
-    function validateForm() {
+    React.useEffect(() => {
         if (notesErrors !== "" || actualNumberOfAttendeesErrors !== "" || numberOfBagsErrors !== "" || numberOfBucketsErrors !== "" || durationInMinutesErrors !== "") {
             setIsSaveEnabled(false);
         }
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [notesErrors, actualNumberOfAttendeesErrors, numberOfBagsErrors, numberOfBucketsErrors, durationInMinutesErrors]);
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
@@ -131,6 +131,11 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -163,8 +168,6 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
         catch {
             setactualNumberOfAttendeesErrors("Actual attendee count must be a number.");
         }
-
-        validateForm();
     }
 
     function handleNumberOfBagsChanged(val: string) {
@@ -188,8 +191,6 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
         catch {
             setNumberOfBagsErrors("Number of bags must be a number.")
         }
-
-        validateForm();
     }
 
     function handleNumberOfBucketsChanged(val: string) {
@@ -213,8 +214,6 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
         catch {
             setNumberOfBucketsErrors("Number of buckets must be a number.")
         }
-
-        validateForm();
     }
 
     function handleDurationInMinutesChanged(val: string) {
@@ -238,8 +237,6 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
         catch {
             setDurationInMinutesErrors("Actual Number of minutes must be a number.")
         }
-
-        validateForm();
     }
 
     function handleNotesChanged(val: string) {
@@ -250,8 +247,6 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
             setNotesErrors("");
             setNotes(val);
         }
-
-        validateForm();
     }
 
     function renderActualNumberOfAttendeesToolTip(props: any) {

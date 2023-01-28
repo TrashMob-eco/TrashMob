@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Button, Container, Dropdown } from 'react-bootstrap';
 import * as Constants from '../Models/Constants';
@@ -12,11 +12,13 @@ import ServiceTypeData from '../Models/ServiceTypeData';
 import EventPartnerLocationServiceData from '../Models/EventPartnerLocationServiceData';
 import DisplayEventPartnerLocationServiceData from '../Models/DisplayEventPartnerLocationServiceData';
 import { Eye } from 'react-bootstrap-icons';
+import { Link } from 'react-router-dom';
 
 export interface ManageEventPartnersProps {
     eventId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
+    isEventComplete: boolean;
 }
 
 export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) => {
@@ -64,6 +66,11 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -90,6 +97,11 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -115,6 +127,11 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -162,6 +179,11 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
         };
 
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -189,6 +211,11 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
         };
 
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -263,6 +290,8 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
     }
 
     function renderEventPartnerLocationServicesTable(services: DisplayEventPartnerLocationServiceData[], partnerLocationName: string) {
+        var availableServices = services.filter(s => s.isAdvanceNoticeRequired === false || props.isEventComplete === false);
+
         return (
             <div>
                 <div className='d-flex align-items-center justify-content-between'>
@@ -278,7 +307,8 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
                         </tr>
                     </thead>
                     <tbody>
-                        {services.map(service =>
+                        {                            
+                            availableServices.map(service =>
                             <tr key={service.serviceTypeId}>
                                 <td>{getServiceType(serviceTypeList, service.serviceTypeId)}</td>
                                 <td>{service.partnerLocationServicePublicNotes}</td>
@@ -300,6 +330,15 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
         );
     }
 
+    function renderPartnerInvite() {
+        return (
+            <div className='d-flex flex-column align-items-start'>
+                <p className="font-size-h5">Sorry, there are no registered partners in your area. Invite local government or business to join TrashMob.eco as a partner!</p>
+                <Link className="btn btn-primary banner-button" to="/inviteapartner">Invite a partner</Link>
+            </div>
+            )
+    }
+
     return (
         <Container className='p-4 bg-white rounded my-5'>
             <div className='d-flex align-items-center justify-content-between'>
@@ -307,7 +346,7 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
             </div>
             {props.eventId === Guid.EMPTY && <p> <em>Event must be created first.</em></p>}
             {!isEventPartnerLocationDataLoaded && props.eventId !== Guid.EMPTY && <p><em>Loading...</em></p>}
-            {isEventPartnerLocationDataLoaded && eventPartnerLocations.length === 0 && <p> <em>Sorry, there are no registered partners in your area.</em></p>}
+            {isEventPartnerLocationDataLoaded && eventPartnerLocations.length === 0 && renderPartnerInvite()}
             {isEventPartnerLocationDataLoaded && eventPartnerLocations.length !== 0 && renderEventPartnerLocationsTable(eventPartnerLocations)}
             {isPartnerLocationServicesDataLoaded && eventPartnerLocationServices && renderEventPartnerLocationServicesTable(eventPartnerLocationServices, partnerLocationName)}
         </Container>

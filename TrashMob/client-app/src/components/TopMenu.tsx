@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { msalClient } from '../store/AuthStore';
+import { getApiConfig, msalClient } from '../store/AuthStore';
 import UserData from './Models/UserData';
 import logo from './assets/logo.svg'
 import { Button, Dropdown, Nav } from 'react-bootstrap';
 import './assets/styles/header.css';
-import { BoxArrowLeft, Person, PersonBadge, PersonCircle, PlusLg, Speedometer2 } from 'react-bootstrap-icons';
+import { BoxArrowLeft, Map, PersonX, PersonBadge, PersonCircle, PlusLg, Speedometer2, QuestionCircle } from 'react-bootstrap-icons';
 
 interface TopMenuProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -36,7 +36,6 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
         e.preventDefault();
         const logoutRequest = {
             account: msalClient.getActiveAccount(),
-
         }
 
         msalClient.logout(logoutRequest);
@@ -44,7 +43,11 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
 
     function signIn(e: any) {
         e.preventDefault();
-        msalClient.loginRedirect();
+        var apiConfig = getApiConfig();
+
+        msalClient.loginRedirect({
+            scopes: apiConfig.b2cScopes
+            });
     }
 
     return (
@@ -63,7 +66,6 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                             ))}
                         </ul>
                         <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="loginBtn">Sign in</Button>
-                        <Button hidden={isUserLoaded} className="btn btn-primary" onClick={(e) => signIn(e)} id="registerBtn">Sign up</Button>
                         <Dropdown hidden={!isUserLoaded}>
                             <Dropdown.Toggle id="userBtn" variant="light">
                                 <PersonCircle className="mr-3" size={32} color="#96ba00" aria-labelledby="userName" />
@@ -74,13 +76,16 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 <Dropdown.Divider />
                                 <Dropdown.Item eventKey="2" href="/manageeventdashboard"><PlusLg aria-hidden="true" />Add event</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="3" href="/userprofile"><Person aria-hidden="true" />My profile</Dropdown.Item>
+                                <Dropdown.Item eventKey="3" href="/locationpreference"><Map aria-hidden="true" />My location preference</Dropdown.Item>
                                 <Dropdown.Divider />
                                 {props.currentUser.isSiteAdmin ? <> <Dropdown.Item eventKey="4" href="/siteadmin" disabled={!props.currentUser.isSiteAdmin}><PersonBadge aria-hidden="true" />Site administration</Dropdown.Item>
-                                    <Dropdown.Divider /></> : ""}
-                                <Dropdown.Item eventKey="5" onClick={(e) => signOut(e)}><BoxArrowLeft aria-hidden="true" />Sign out</Dropdown.Item>
+                                <Dropdown.Divider /></> : ""}
+                                <Dropdown.Item eventKey="5" href="/deletemydata"><PersonX aria-hidden="true" />Delete my account</Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item eventKey="6" onClick={(e) => signOut(e)}><BoxArrowLeft aria-hidden="true" />Sign out</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
+                        <Button className="btn" href="/help" id="helpBtn"><QuestionCircle /></Button>
                     </div>
                 </div>
             </div>

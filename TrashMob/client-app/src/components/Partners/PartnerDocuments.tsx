@@ -213,7 +213,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
         });
     }
 
-    function validateForm() {
+    React.useEffect(() => {
         if (documentName === "" ||
             documentNameErrors !== "") {
             setIsSaveEnabled(false);
@@ -221,7 +221,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [documentName, documentNameErrors]);
 
 
     function handleDocumentNameChanged(val: string) {
@@ -232,13 +232,10 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
             setDocumentNameErrors("");
             setDocumentName(val);
         }
-
-        validateForm();
     }
 
     function handleDocumentUrlChanged(val: string) {
         setDocumentUrl(val);
-        validateForm();
     }
 
 

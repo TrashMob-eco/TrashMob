@@ -6,7 +6,7 @@ import EventData from './Models/EventData';
 import * as MapStore from '../store/MapStore'
 import UserData from './Models/UserData';
 import ReactDOMServer from "react-dom/server"
-import { getApiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../store/AuthStore';
 import EventAttendeeData from './Models/EventAttendeeData';
 import { getEventType } from '../store/eventTypeHelper';
 import { RegisterBtn } from './RegisterBtn';
@@ -146,7 +146,10 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
                 const accounts = msalClient.getAllAccounts();
 
                 if (accounts === null || accounts.length === 0) {
-                    msalClient.loginRedirect().then(() => {
+                    var apiConfig = getApiConfig();
+                    msalClient.loginRedirect({
+                        scopes: apiConfig.b2cScopes
+                    }).then(() => {
                         addAttendee(eventId);
                     })
                 }
@@ -166,6 +169,10 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
                 };
 
                 msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                    if (!validateToken(tokenResponse.idTokenClaims)) {
+                        return;
+                    }
 
                     const eventAttendee = new EventAttendeeData();
                     eventAttendee.userId = props.currentUser.id;

@@ -18,9 +18,9 @@ namespace TrashMob.Shared.Managers
         { 
         }
 
-        public async Task<IEnumerable<NonEventUserNotification>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<NonEventUserNotification>> GetByUserIdAsync(Guid userId, int userNotificationTypeId, CancellationToken cancellationToken = default)
         {
-            return (await Repository.Get(n => n.UserId == userId).ToListAsync(cancellationToken)).AsEnumerable();
+            return (await Repository.Get(n => n.UserId == userId && n.UserNotificationTypeId == userNotificationTypeId).ToListAsync(cancellationToken)).AsEnumerable();
         }
     }
 }

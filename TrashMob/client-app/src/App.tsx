@@ -22,13 +22,13 @@ import { VolunteerOpportunities } from './components/VolunteerOpportunities';
 import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
-import { getApiConfig, getDefaultHeaders, msalClient } from './store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from './store/AuthStore';
 import { EventDetails, DetailsMatchParams } from './components/Pages/EventDetails';
 import { NoMatch } from './components/NoMatch';
 import UserData from './components/Models/UserData';
 import * as msal from "@azure/msal-browser";
 import { Guid } from 'guid-typescript';
-import UserProfile from './components/Pages/UserProfile';
+import LocationPreference from './components/Pages/LocationPreference';
 import PartnerDashboard, { PartnerDashboardMatchParams } from './components/Partners/PartnerDashboard';
 import PartnerRequest from './components/Partners/PartnerRequest';
 import SiteAdmin from './components/Admin/SiteAdmin';
@@ -36,7 +36,6 @@ import ManageEventDashboard, { ManageEventDashboardMatchParams } from './compone
 import { Shop } from './components/Shop';
 import { EventSummaries } from './components/EventSummaries';
 import { CancelEvent, CancelEventMatchParams } from './components/EventManagement/CancelEvent';
-import EventData from './components/Models/EventData';
 
 import './custom.css';
 import 'react-phone-input-2/lib/style.css'
@@ -45,6 +44,7 @@ import Waivers from './components/Waivers/Waivers';
 import WaiversReturn from './components/Waivers/WaiversReturn';
 import PartnerRequestDetails, { PartnerRequestDetailsMatchParams } from './components/Partners/PartnerRequestDetails';
 import { Partnerships } from './components/Partners/Partnerships';
+import { Help } from './components/Pages/Help';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }
@@ -64,11 +64,12 @@ interface PartnerRequestDetailsProps extends RouteComponentProps<PartnerRequestD
 interface WaiversReturnProps extends RouteComponentProps {
 }
 
+interface DeleteMyDataProps extends RouteComponentProps {
+}
+
 export const App: FC = () => {
     const [isUserLoaded, setIsUserLoaded] = useState(false);
     const [currentUser, setCurrentUser] = useState<UserData>(new UserData());
-    const [myAttendanceList, setMyAttendanceList] = useState<EventData[]>([]);
-    const [isUserEventDataLoaded, setIsUserEventDataLoaded] = useState(false);
 
     useEffect(() => {
         initializeIcons();
@@ -92,13 +93,9 @@ export const App: FC = () => {
                 setIsUserLoaded(true);
             }
         }
-    }, []);
-
-    useEffect(() => {
-        handleAttendanceChanged();
     },
         // eslint-disable-next-line
-        [isUserLoaded]);
+        []);
 
     function ErrorComponent(error: MsalAuthenticationResult) {
         return <p>An Error Occurred: {error}</p>;
@@ -130,7 +127,7 @@ export const App: FC = () => {
 
     function renderEventDetails(inp: DetailsProps) {
         return (
-            <EventDetails {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={() => handleAttendanceChanged()} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} />
+            <EventDetails {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
         );
     }
 
@@ -170,11 +167,22 @@ export const App: FC = () => {
             </MsalAuthenticationTemplate >);
     }
 
+    function renderDeleteMyData(inp: DeleteMyDataProps) {
+        return (
+            <MsalAuthenticationTemplate
+                interactionType={InteractionType.Redirect}
+                errorComponent={ErrorComponent}
+                loadingComponent={LoadingComponent}>
+                <DeleteMyData {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} onUserDeleted={clearUser} />
+            </MsalAuthenticationTemplate >);
+    }
+
+
     function clearUser() {
-        setIsUserLoaded(false);
         const user = new UserData();
         setCurrentUser(user)
         sessionStorage.setItem('user', JSON.stringify(user));
+        setIsUserLoaded(false);
     }
 
     function handleUserUpdated() {
@@ -190,6 +198,10 @@ export const App: FC = () => {
         setIsUserLoaded(false);
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -208,7 +220,14 @@ export const App: FC = () => {
 
     function verifyAccount(result: msal.AuthenticationResult) {
 
-        var email = result.idTokenClaims["signInName"]
+        var userDeleted = result.idTokenClaims["userDeleted"];
+
+        if (userDeleted && userDeleted === true) {
+            clearUser();
+            return;
+        }
+
+        var email = result.idTokenClaims["email"];
         const account = msalClient.getAllAccounts()[0];
         var apiConfig = getApiConfig();
 
@@ -218,6 +237,11 @@ export const App: FC = () => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const method = 'GET';
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
@@ -233,7 +257,6 @@ export const App: FC = () => {
                         user.id = data.id;
                         user.userName = data.userName;
                         user.givenName = data.givenName;
-                        user.surName = data.surName;
                         user.dateAgreedToTrashMobWaiver = data.dateAgreedToTrashMobWaiver;
                         user.memberSince = data.memberSince;
                         user.trashMobWaiverVersion = data.trashMobWaiverVersion;
@@ -244,41 +267,6 @@ export const App: FC = () => {
                     }
                 });
         });
-    }
-
-    function handleAttendanceChanged() {
-        setMyAttendanceList([]);
-        setIsUserEventDataLoaded(false);
-
-        if (!isUserLoaded || !currentUser) {            
-            return;
-        }
-
-        // If the user is logged in, get the events they are attending
-        const accounts = msalClient.getAllAccounts();
-        var apiConfig = getApiConfig();
-
-        if (accounts !== null && accounts.length > 0) {
-            const request = {
-                scopes: apiConfig.b2cScopes,
-                account: accounts[0]
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/events/eventsuserisattending/' + currentUser.id, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<EventData[]>)
-                    .then(data => {
-                        setMyAttendanceList(data);
-                        setIsUserEventDataLoaded(true);
-                    })
-            });
-        }
     }
 
     return (
@@ -295,6 +283,7 @@ export const App: FC = () => {
                             <Route path="/eventdetails/:eventId" render={(props: DetailsProps) => renderEventDetails(props)} />
                             <Route path="/cancelevent/:eventId" render={(props: CancelProps) => renderCancelEvent(props)} />
                             <Route path="/waiversreturn" render={(props: WaiversReturnProps) => renderWaiversReturn(props)} />
+                            <Route path="/deletemydata" render={(props: DeleteMyDataProps) => renderDeleteMyData(props)} />
                             <Route exact path="/mydashboard">
                                 <MsalAuthenticationTemplate
                                     interactionType={InteractionType.Redirect}
@@ -327,12 +316,12 @@ export const App: FC = () => {
                                     <SiteAdmin currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
                             </Route>
-                            <Route exact path="/userprofile">
+                            <Route exact path="/locationpreference">
                                 <MsalAuthenticationTemplate
                                     interactionType={InteractionType.Redirect}
                                     errorComponent={ErrorComponent}
                                     loadingComponent={LoadingComponent}>
-                                    <UserProfile currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
+                                    <LocationPreference currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
                                 </MsalAuthenticationTemplate >
                             </Route>
                             <Route exact path="/waivers">
@@ -343,19 +332,14 @@ export const App: FC = () => {
                                     <Waivers currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </MsalAuthenticationTemplate >
                             </Route>
-                            <Route exact path="/deletemydata">
-                                <MsalAuthenticationTemplate
-                                    interactionType={InteractionType.Redirect}
-                                    errorComponent={ErrorComponent}
-                                    loadingComponent={LoadingComponent}>
-                                    <DeleteMyData currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                                </MsalAuthenticationTemplate >
-                            </Route>
                             <Route exact path="/partnerships">
                                 <Partnerships />
                             </Route>
                             <Route exact path="/shop">
                                 <Shop />
+                            </Route>
+                            <Route exact path="/help">
+                                <Help />
                             </Route>
                             <Route exact path="/aboutus">
                                 <AboutUs />
@@ -385,7 +369,7 @@ export const App: FC = () => {
                                 <VolunteerOpportunities />
                             </Route>
                             <Route exact path='/'>
-                                <Home currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} onAttendanceChanged={handleAttendanceChanged} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} />
+                                <Home currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
                             </Route>
                             <Route>
                                 <NoMatch />

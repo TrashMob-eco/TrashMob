@@ -1,7 +1,7 @@
 import * as React from 'react'
 import UserData from './Models/UserData';
 import { Button, Col, Dropdown, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
-import { getApiConfig, getDefaultHeaders, msalClient } from './../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from './../store/AuthStore';
 import * as ToolTips from ".././store/ToolTips";
 import PartnerLocationData from './Models/PartnerLocationData';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
@@ -13,6 +13,7 @@ import MapControllerSinglePointNoEvent from './MapControllerSinglePointNoEvent';
 import PickupLocationData from './Models/PickupLocationData';
 import { Pencil, XSquare } from 'react-bootstrap-icons';
 import PhoneInput from 'react-phone-input-2'
+import { ManageEventPartners } from './EventManagement/ManageEventPartners';
 
 export interface PickupLocationsDataProps {
     eventId: string;
@@ -63,6 +64,11 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -70,29 +76,34 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                     method: 'GET',
                     headers: headers,
                 })
-                    .then(response => response.json() as Promise<PartnerLocationData>)
-                    .then(data => {
-                        if (data) {
-                            setHaulingPartnerLocation(data);
-                            setIsPartnerLocationsDataLoaded(true);
-                            fetch('/api/pickuplocations/getbyevent/' + props.eventId, {
-                                method: 'GET',
-                                headers: headers,
-                            })
-                                .then(response => response.json() as Promise<PickupLocationData[]>)
-                                .then(data => {
-                                    setPickupLocationsData(data);
-                                    setIsPickupLocationsDataLoaded(true);
-
-                                    if (data.some(pl => pl.hasBeenSubmitted === false)) {
-                                        setIsSubmitEnabled(true);
-                                    }
-                                });
+                    .then(response => {
+                        if (response.status === 200) {
+                            return response.json() as Promise<PartnerLocationData>;
                         }
                         else {
-                            setStatusMessage("You must add a hauling partner and have it accepted before you can add pickup locations.")
+                            throw Error("You must add a hauling partner and have it accepted before you can add pickup locations.");
                         }
                     })
+                    .then(data => {
+                        setHaulingPartnerLocation(data);
+                        setIsPartnerLocationsDataLoaded(true);
+                        fetch('/api/pickuplocations/getbyevent/' + props.eventId, {
+                            method: 'GET',
+                            headers: headers,
+                        })
+                            .then(response => response.json() as Promise<PickupLocationData[]>)
+                            .then(data => {
+                                setPickupLocationsData(data);
+                                setIsPickupLocationsDataLoaded(true);
+
+                                if (data.some(pl => pl.hasBeenSubmitted === false)) {
+                                    setIsSubmitEnabled(true);
+                                }
+                            });
+                    })
+                    .catch((error) => {
+                        setStatusMessage(error.message);
+                    });
             });
         }
 
@@ -113,12 +124,10 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
 
     function handleNotesChanged(val: string) {
         setNotes(val);
-        validateForm();
     }
 
     function handleHasBeenPickedUpChanged(val: boolean) {
         setHasBeenPickedUp(val);
-        validateForm();
     }
 
     function renderStreetAddressToolTip(props: any) {
@@ -153,14 +162,14 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.PickupLocationLastUpdatedDate}</Tooltip>
     }
 
-    function validateForm() {
+    React.useEffect(() => {
         if (country === "") {
             setIsSaveEnabled(false);
         }
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [country]);
 
     function addPickupLocation() {
         resetForm();
@@ -181,6 +190,11 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -221,6 +235,11 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('POST');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -285,6 +304,11 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             var method = "PUT";
 
             if (pickupLocationId === Guid.EMPTY) {
@@ -356,6 +380,11 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -606,13 +635,22 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         );
     }
 
+    function renderManageEventPartners() {
+        return (
+            <div>
+                <p><em>{statusMessage}</em></p>
+                <ManageEventPartners eventId={props.eventId} isUserLoaded={props.isUserLoaded} currentUser={props.currentUser} isEventComplete={true} />
+            </div>
+        );
+    }
+
     var pickupLocationsContents = isPickupLocationsDataLoaded && props.eventId !== Guid.EMPTY
         ? renderPickupLocationsTable(pickupLocationsData)
-        : <p><em>{statusMessage}</em></p>;
+        : renderManageEventPartners()
 
     var partnerLocationsContents = isPartnerLocationsDataLoaded && props.eventId !== Guid.EMPTY
         ? renderPartnerLocationContacts()
-        : <p><em>{statusMessage}</em></p>;
+        : ""
 
     return (
         <>

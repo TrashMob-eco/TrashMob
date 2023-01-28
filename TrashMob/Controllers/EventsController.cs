@@ -150,13 +150,12 @@ namespace TrashMob.Controllers
         }
 
         [HttpDelete]
-        [Authorize]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteEvent(EventCancellationRequest eventCancellationRequest, CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventCancellationRequest.EventId, cancellationToken).ConfigureAwait(false);
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {

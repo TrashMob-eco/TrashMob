@@ -70,14 +70,14 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
         }
     }
 
-    function validateForm() {
+    React.useEffect(() => {
         if (nameErrors !== "" || emailErrors !== "" || messageErrors !== "" || name === "" || email === "" || message === "") {
             setIsSaveEnabled(false);
         }
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [nameErrors, emailErrors, messageErrors, name, email, message ]);
 
     // This will handle Cancel button click event.  
     function handleCancel(event: any) {
@@ -94,8 +94,6 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
             setNameErrors("");
             setName(val);
         }
-
-        validateForm();
     }
 
     function handleEmailChanged(val: string) {
@@ -108,8 +106,6 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
             setEmailErrors("");
             setEmail(val);
         }
-
-        validateForm();
     }
 
     function handleMessageChanged(val: string) {
@@ -120,8 +116,6 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
             setMessageErrors("");
             setMessage(val);
         }
-
-        validateForm();
     }
 
     React.useEffect(() => {

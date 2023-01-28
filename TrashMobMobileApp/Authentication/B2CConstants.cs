@@ -16,7 +16,9 @@
         
         public string PolicyResetPassword { get; set; }
         
-        public string RedirectUri { get; set; }
+        public string AndroidRedirectUri { get; set; }
+
+        public string IOSRedirectUri { get; set; }
 
         public string Scopes { get; set; }
 

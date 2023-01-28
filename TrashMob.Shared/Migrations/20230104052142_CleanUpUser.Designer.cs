@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrashMob.Shared.Persistence;
 
@@ -11,9 +12,10 @@ using TrashMob.Shared.Persistence;
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    partial class MobDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230104052142_CleanUpUser")]
+    partial class CleanUpUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1043,12 +1045,6 @@ namespace TrashMob.Migrations
                     b.Property<DateTimeOffset?>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<bool>("IsAdvanceNoticeRequired")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsAutoApproved")
-                        .HasColumnType("bit");
-
                     b.Property<Guid>("LastUpdatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1644,10 +1640,6 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("CreatedByUserId");
 
-                    b.HasIndex("Email")
-                        .IsUnique()
-                        .HasFilter("[Email] IS NOT NULL");
-
                     b.HasIndex("LastUpdatedByUserId");
 
                     b.HasIndex("UserName")
@@ -1931,7 +1923,7 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_EventAttendees_User_CreatedBy");
 
                     b.HasOne("TrashMob.Models.Event", "Event")
-                        .WithMany("EventAttendees")
+                        .WithMany()
                         .HasForeignKey("EventId")
                         .IsRequired()
                         .HasConstraintName("FK_EventAttendees_Events");
@@ -1943,7 +1935,7 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_EventAttendees_User_LastUpdatedBy");
 
                     b.HasOne("TrashMob.Models.User", "User")
-                        .WithMany("EventAttendees")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .IsRequired()
                         .HasConstraintName("FK_EventAttendees_ApplicationUser");
@@ -2546,8 +2538,6 @@ namespace TrashMob.Migrations
 
             modelBuilder.Entity("TrashMob.Models.Event", b =>
                 {
-                    b.Navigation("EventAttendees");
-
                     b.Navigation("PickupLocations");
 
                     b.Navigation("UserNotifications");
@@ -2622,8 +2612,6 @@ namespace TrashMob.Migrations
                     b.Navigation("ContactRequestsCreated");
 
                     b.Navigation("ContactRequestsUpdated");
-
-                    b.Navigation("EventAttendees");
 
                     b.Navigation("EventAttendeesCreated");
 
