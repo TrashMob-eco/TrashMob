@@ -16,17 +16,13 @@
         
         public string PolicyResetPassword { get; set; }
         
-        public string RedirectUri { get; set; }
+        public string AndroidRedirectUri { get; set; }
+
+        public string IOSRedirectUri { get; set; }
 
         public string Scopes { get; set; }
 
-        public string AuthorityBase { get; set; }
-        
         public string AuthoritySignInSignUp { get; set; }
-        
-        public string AuthorityEditProfile { get; set; }
-        
-        public string AuthorityPasswordReset { get; set; }
         
         public string IOSKeyChainGroup { get; set; }
 

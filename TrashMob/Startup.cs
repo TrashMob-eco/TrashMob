@@ -78,7 +78,7 @@ namespace TrashMob
             ServiceBuilder.AddRepositories(services);
 
             services.AddDatabaseDeveloperPageExceptionFilter();
-            
+
             if (CurrentEnvironment.IsDevelopment())
             {
                 services.AddScoped<IKeyVaultManager, LocalKeyVaultManager>();
@@ -100,7 +100,7 @@ namespace TrashMob
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "trashmobapi", Version = "v1" });
-            });            
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -136,10 +136,9 @@ namespace TrashMob
 
             app.UseSpa(spa =>
             {
-                spa.Options.SourcePath = "client-app";
-
                 if (env.IsDevelopment())
                 {
+                    spa.Options.SourcePath = "client-app";
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });

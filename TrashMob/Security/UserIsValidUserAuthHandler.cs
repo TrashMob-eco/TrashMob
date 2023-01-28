@@ -2,6 +2,8 @@
 {
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Logging;
+    using System;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
@@ -11,30 +13,39 @@
     {
         private readonly IHttpContextAccessor httpContext;
         private readonly IUserManager userManager;
+        private readonly ILogger<UserIsValidUserAuthHandler> logger;
 
-        public UserIsValidUserAuthHandler(IHttpContextAccessor httpContext, IUserManager userManager)
+        public UserIsValidUserAuthHandler(IHttpContextAccessor httpContext, IUserManager userManager, ILogger<UserIsValidUserAuthHandler> logger)
         {
             this.httpContext = httpContext;
             this.userManager = userManager;
+            this.logger = logger;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsValidUserRequirement requirement)
         {
-            var nameIdentifier = context.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-            var user = await userManager.GetUserByNameIdentifierAsync(nameIdentifier, CancellationToken.None);
-
-            if (user == null)
+            try
             {
-                return;
-            }
+                var email = context.User.FindFirst(ClaimTypes.Email).Value;
 
-            if (!httpContext.HttpContext.Items.ContainsKey("UserId"))
+                var user = await userManager.GetUserByEmailAsync(email, CancellationToken.None);
+
+                if (user == null)
+                {
+                    return;
+                }
+
+                if (!httpContext.HttpContext.Items.ContainsKey("UserId"))
+                {
+                    httpContext.HttpContext.Items.Add("UserId", user.Id);
+                }
+
+                context.Succeed(requirement);
+            }
+            catch(Exception ex)
             {
-                httpContext.HttpContext.Items.Add("UserId", user.Id);
+                logger.LogError(ex, "Error occured while authenticating user.");
             }
-
-            context.Succeed(requirement);
         }
     }
 }

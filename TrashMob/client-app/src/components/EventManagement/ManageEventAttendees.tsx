@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Guid } from 'guid-typescript';
 import { Container, Dropdown } from 'react-bootstrap';
@@ -41,6 +41,7 @@ export const ManageEventAttendees: React.FC<ManageEventAttendeesProps> = (props)
     React.useEffect(() => {
         if (props.isUserLoaded && props.eventId && props.eventId !== Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -48,6 +49,11 @@ export const ManageEventAttendees: React.FC<ManageEventAttendeesProps> = (props)
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -80,7 +86,7 @@ export const ManageEventAttendees: React.FC<ManageEventAttendeesProps> = (props)
                     <tbody>
                         {users.map(user =>
                             <tr key={user.id.toString()}>
-                                <td className='color-grey p-18 py-3'>{user.userName ? user.userName : user.sourceSystemUserName}</td>
+                                <td className='color-grey p-18 py-3'>{user.userName}</td>
                                 <td className='color-grey p-18 py-3'>{user.city}</td>
                                 <td className='color-grey p-18 py-3'>{user.country}</td>
                                 <td className='color-grey p-18 py-3'>{new Date(user.memberSince).toLocaleDateString()}</td>

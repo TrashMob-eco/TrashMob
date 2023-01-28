@@ -15,7 +15,10 @@ namespace TrashMob.Models
             NonEventUserNotifications = new HashSet<NonEventUserNotification>();
             PartnersCreated = new HashSet<Partner>();
             PartnersUpdated = new HashSet<Partner>();
+            EventAttendees = new HashSet<EventAttendee>();
         }
+
+        public Guid ObjectId { get; set; }
 
         public string NameIdentifier { get; set; }
 
@@ -24,8 +27,6 @@ namespace TrashMob.Models
         public string UserName { get; set; }
 
         public string GivenName { get; set; }
-
-        public string SurName { get; set; }
 
         public string Email { get; set; }
 
@@ -47,19 +48,13 @@ namespace TrashMob.Models
 
         public bool IsSiteAdmin { get; set; }
 
-        public DateTimeOffset? DateAgreedToPrivacyPolicy { get; set; }
-
-        public string PrivacyPolicyVersion { get; set; }
-
-        public DateTimeOffset? DateAgreedToTermsOfService { get; set; }
-
-        public string TermsOfServiceVersion { get; set; }
-
         public DateTimeOffset? DateAgreedToTrashMobWaiver { get; set; }
 
         public string TrashMobWaiverVersion { get; set; }
 
         public DateTimeOffset? MemberSince { get; set; }
+
+        public virtual ICollection<EventAttendee> EventAttendees { get; set; }
 
         public virtual ICollection<Event> EventsCreated { get; set; }
 

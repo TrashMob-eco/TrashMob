@@ -1,6 +1,6 @@
 import * as React from 'react'
 import EventData from '../Models/EventData';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
@@ -39,18 +39,17 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
             });
     }, [eventId])
 
-    function validateForm() {
+    React.useEffect(() => {
         if (cancellationReason === "") {
             setIsSaveEnabled(false);
         }
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [cancellationReason]);
 
     function handleCancellationReasonChanged(val: string) {
         setCancellationReason(val);
-        validateForm();
     }
 
     function renderCancellationReasonToolTip(props: any) {
@@ -78,6 +77,7 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
 
         // PUT request for Edit Event.  
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -87,6 +87,11 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
         var content = { eventId: eventId, cancellationReason: cancellationReason };
 
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 

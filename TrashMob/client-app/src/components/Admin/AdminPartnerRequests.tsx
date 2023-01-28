@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { RouteComponentProps } from 'react-router-dom';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Col, Container, Dropdown, Row } from 'react-bootstrap';
 import PartnerRequestData from '../Models/PartnerRequestData';
@@ -9,6 +9,7 @@ import PartnerRequestStatusData from '../Models/PartnerRequestStatusData';
 import { getPartnerRequestStatus } from '../../store/partnerRequestStatusHelper';
 import * as Constants from '../Models/Constants'
 import { CheckSquare, XSquare } from 'react-bootstrap-icons';
+import PhoneInput from 'react-phone-input-2'
 
 interface AdminPartnerRequestsPropsType extends RouteComponentProps {
     isUserLoaded: boolean;
@@ -24,6 +25,7 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
 
         if (props.isUserLoaded) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -31,6 +33,10 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
 
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
@@ -67,6 +73,7 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -74,6 +81,11 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('PUT');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -105,6 +117,7 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -112,6 +125,11 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('PUT');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -172,7 +190,10 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
                                 <tr key={partnerRequest.id.toString()}>
                                     <td>{partnerRequest.name}</td>
                                     <td>{partnerRequest.email}</td>
-                                    <td>{partnerRequest.phone}</td>
+                                    <td><PhoneInput
+                                        value={partnerRequest.phone}
+                                        disabled
+                                    /></td>
                                     <td>{partnerRequest.website}</td>
                                     <td>{partnerRequest.city}</td>
                                     <td>{partnerRequest.region}</td>

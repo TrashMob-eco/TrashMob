@@ -1,7 +1,7 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Button, Col, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import PartnerLocationData from '../Models/PartnerLocationData';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
@@ -50,6 +50,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         if (props.isUserLoaded && props.partnerLocationId && props.partnerLocationId !== Guid.EMPTY) {
 
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -57,6 +58,11 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -114,8 +120,6 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
             setLocationName(locationName);
             setLocationNameErrors("");
         }
-
-        validateForm();
     }
 
     function handlePublicNotesChanged(notes: string) {
@@ -126,18 +130,14 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
             setPublicNotes(notes);
             setPublicNotesErrors("");
         }
-
-        validateForm();
     }
 
     function handleIsPartnerLocationActiveChanged(val: boolean) {
         setIsPartnerLocationActive(val);
-        validateForm();
     }
 
     function handlePrivateNotesChanged(notes: string) {
         setPrivateNotes(notes);
-        validateForm();
     }
 
     function renderPartnerLocationNameToolTip(props: any) {
@@ -184,7 +184,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         return <Tooltip {...props}>{ToolTips.PartnerLastUpdatedDate}</Tooltip>
     }
 
-    function validateForm() {
+    React.useEffect(() => {
         if (publicNotes === "" ||
             publicNotesErrors !== "" ||
             country === "") {
@@ -193,7 +193,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [publicNotes, publicNotesErrors, country]);
 
     function handleSave(event: any) {
 
@@ -225,6 +225,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         var data = JSON.stringify(partnerLocationData);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -232,6 +233,11 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             var method = "PUT";
 
             if (partnerLocationId === Guid.EMPTY) {
@@ -273,7 +279,6 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         setCountry(data.addresses[0].address.country);
                         setRegion(data.addresses[0].address.countrySubdivisionName);
                         setPostalCode(data.addresses[0].address.postalCode);
-                        validateForm();
                     })
             })
     }

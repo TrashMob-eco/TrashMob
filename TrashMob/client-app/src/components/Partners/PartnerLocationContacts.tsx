@@ -1,12 +1,13 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Button, Col, Dropdown, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
 import PartnerLocationContactData from '../Models/PartnerLocationContactData';
 import * as Constants from '../Models/Constants';
 import { Pencil, XSquare } from 'react-bootstrap-icons';
+import PhoneInput from 'react-phone-input-2'
 
 export interface PartnerLocationContactsDataProps {
     partnerLocationId: string;
@@ -41,6 +42,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
 
         if (props.isUserLoaded && props.partnerLocationId && props.partnerLocationId !== Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -48,6 +50,11 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
                 fetch('/api/partnerlocationcontacts/getbypartnerlocation/' + props.partnerLocationId, {
@@ -93,6 +100,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
 
     function editContact(partnerLocationContactId: string) {
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -100,6 +108,11 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -128,6 +141,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -135,6 +149,11 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -170,6 +189,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
         setIsSaveEnabled(false);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -194,6 +214,11 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
         var data = JSON.stringify(partnerLocationContact);
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -222,7 +247,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
         });
     }
 
-    function validateForm() {
+    React.useEffect(() => {
         if (name === "" ||
             nameErrors !== "" ||
             notes === "" ||
@@ -235,7 +260,7 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [name, nameErrors, notes, notesErrors, email, emailErrors, phoneErrors]);
 
     function handleNameChanged(val: string) {
         if (val === "") {
@@ -245,8 +270,6 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             setNameErrors("");
             setName(val);
         }
-
-        validateForm();
     }
 
     function handleEmailChanged(val: string) {
@@ -259,8 +282,6 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             setEmailErrors("");
             setEmail(val);
         }
-
-        validateForm();
     }
 
     function handlePhoneChanged(val: string) {
@@ -280,8 +301,6 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             setPhoneErrors("");
             setPhone(val);
         }
-
-        validateForm();
     }
 
     function handleNotesChanged(val: string) {
@@ -292,8 +311,6 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             setNotesErrors("");
             setNotes(val);
         }
-
-        validateForm();
     }
 
     function renderNameToolTip(props: any) {
@@ -348,6 +365,10 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                             <tr key={contact.id}>
                                 <td>{contact.name}</td>
                                 <td>{contact.email}</td>
+                                <td><PhoneInput
+                                    value={contact.phone}
+                                    disabled
+                                /></td>
                                 <td>{contact.phone}</td>
                                 <td>{contact.notes}</td>
                                 <td className="btn py-0">
@@ -394,7 +415,11 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
                                 <OverlayTrigger placement="top" overlay={renderPhoneToolTip}>
                                     <Form.Label className="control-label font-weight-bold h5">Phone</Form.Label>
                                 </OverlayTrigger>
-                                <Form.Control type="text" defaultValue={phone} maxLength={parseInt('64')} onChange={(val) => handlePhoneChanged(val.target.value)} />
+                                <PhoneInput
+                                    country={'us'}
+                                    value={phone}
+                                    onChange={(val) => handlePhoneChanged(val)}
+                                />
                                 <span style={{ color: "red" }}>{phoneErrors}</span>
                             </Form.Group >
                         </Col>

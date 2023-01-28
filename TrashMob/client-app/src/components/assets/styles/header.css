@@ -42,7 +42,7 @@
 
 #loginBtn, #registerBtn, #userBtn {
     width: 115px;
-    height: 45px;
+    height: fit-content;
     border-radius: 5px !important;
     font-style: normal;
     font-weight: 500;
@@ -62,7 +62,12 @@
     text-decoration: none;
 }
 
-#loginBtn, #welcomeBtn, #contactFormCancelBtn {
+#helpBtn {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+#loginBtn, #helpBtn, #welcomeBtn, #contactFormCancelBtn {
     background-color: unset !important;
     color: #96ba00 !important;
     border: 1px solid #96ba00 !important;

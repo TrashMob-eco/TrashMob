@@ -1,34 +1,67 @@
-import * as msal from "@azure/msal-browser";
+import * as msal from '@azure/msal-browser';
 
-export function GetMsalClient() {
+const b2cPoliciesProd = {
+    names: {
+        signUpSignIn: 'B2C_1A_TM_SIGNUP_SIGNIN',
+        deleteUser: 'B2C_1A_TM_DEREGISTER',
+    },
+    authorities: {
+        signUpSignIn: {
+            authority: 'https://TrashMob.b2clogin.com/TrashMob.onmicrosoft.com/B2C_1A_TM_SIGNUP_SIGNIN'
+        },
+        deleteUser: {
+            authority: 'https://TrashMob.b2clogin.com/TrashMob.onmicrosoft.com/B2C_1A_TM_DEREGISTER'
+        },
+    },
+    authorityDomain: 'TrashMob.b2clogin.com',
+    clientId: '0a1647a4-c758-4964-904f-a9b66958c071'
+};
+
+const b2cPoliciesDev = {
+    names: {
+        signUpSignIn: 'B2C_1A_TM_SIGNUP_SIGNIN',
+        deleteUser: 'B2C_1A_TM_DEREGISTER',
+    },
+    authorities: {
+        signUpSignIn: {
+            authority: 'https://TrashMobDev.b2clogin.com/TrashMobDev.onmicrosoft.com/B2C_1A_TM_SIGNUP_SIGNIN',
+        },
+        deleteUser: {
+            authority: 'https://TrashMobDev.b2clogin.com/TrashMobDev.onmicrosoft.com/B2C_1A_TM_DEREGISTER',
+        },
+    },
+    authorityDomain: 'TrashMobDev.b2clogin.com',
+    clientId: 'e46d67ba-fe46-40f4-b222-2f982b2bb112'
+};
+
+export function GetMsalClient(navigateToLoginRequestUrl: boolean) {
 
     var host = window.location.host;
     var protocol = window.location.protocol;
 
-    var uri = protocol + "//" + host;
+    var uri = protocol + '//' + host;
 
-    var clientId = 'f977762a-30a6-4664-af41-cd1fe21fffe1';
-
-    if (host.startsWith("www.trashmob.eco") || host.startsWith("trashmob.eco")) {
-        clientId = "0a1647a4-c758-4964-904f-a9b66958c071";
-    }
+    var policies = getB2CPolicies();
+    var clientId = policies.clientId;
+    var fullAuthority = policies.authorities.signUpSignIn.authority;
+    var authorityDomain = policies.authorityDomain;
 
     var msalC = new msal.PublicClientApplication({
         auth:
         {
             clientId: clientId,
-            authority: 'https://trashmob.b2clogin.com/Trashmob.onmicrosoft.com/b2c_1_signupsignin1',
-            postLogoutRedirectUri: "/",
-            navigateToLoginRequestUrl: true,
-            knownAuthorities: ['trashmob.b2clogin.com'],
-            redirectUri: uri
+            authority: fullAuthority,
+            postLogoutRedirectUri: '/',
+            navigateToLoginRequestUrl: navigateToLoginRequestUrl,
+            knownAuthorities: [authorityDomain],
+            redirectUri: uri            
         },
-        cache: { cacheLocation: "sessionStorage", storeAuthStateInCookie: false },
+        cache: { cacheLocation: 'sessionStorage', storeAuthStateInCookie: false },
         system: {
             loggerOptions: {
                 loggerCallback: (level, message, containsPii) => {
                     if (containsPii) {
-                        console.info("Note: Logging message contained PII");
+                        console.info('Note: Logging message contained PII');
                         return;
                     }
                     switch (level) {
@@ -53,14 +86,49 @@ export function GetMsalClient() {
     return msalC;
 }
 
-export const msalClient: msal.PublicClientApplication = GetMsalClient();
+export const msalClient: msal.PublicClientApplication = GetMsalClient(true);
+export const msalClientNoRedirect: msal.PublicClientApplication = GetMsalClient(false);
 
-export const apiConfig = {
-    b2cScopes: ["https://Trashmob.onmicrosoft.com/api/TrashMob.Read", "https://Trashmob.onmicrosoft.com/api/Trashmob.Writes"],
+export function getApiConfig() {
+    var host = window.location.host;
+
+    if (host.startsWith('www.trashmob.eco') || host.startsWith('trashmob.eco')) {
+        return apiConfigProd;
+    }
+    else {
+        return apiConfigDev;
+    }
+}
+
+export function getB2CPolicies() {
+    var host = window.location.host;
+
+    if (host.startsWith('www.trashmob.eco') || host.startsWith('trashmob.eco')) {
+        return b2cPoliciesProd;
+    }
+    else {
+        return b2cPoliciesDev;
+    }
+}
+
+export function validateToken(idTokenClaims: object): boolean {
+    if (!idTokenClaims.hasOwnProperty("email")) {
+        return false;
+    }
+
+    return true;
+}
+
+const apiConfigProd = {
+    b2cScopes: ['https://TrashMob.onmicrosoft.com/api/TrashMob.Read', 'https://TrashMob.onmicrosoft.com/api/TrashMob.Writes', 'email'],
+};
+
+const apiConfigDev = {
+    b2cScopes: ['https://TrashMobDev.onmicrosoft.com/api/TrashMob.Read', 'https://TrashMobDev.onmicrosoft.com/api/TrashMob.Writes', 'email'],
 };
 
 export const tokenRequest = {
-    scopes: apiConfig.b2cScopes
+    scopes: apiConfigProd.b2cScopes
 }
 
 export function getDefaultHeaders(method: string): Headers {

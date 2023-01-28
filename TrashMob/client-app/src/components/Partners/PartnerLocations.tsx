@@ -1,7 +1,7 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Button, Col, Container, Dropdown, Row } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import PartnerLocationData from '../Models/PartnerLocationData';
 import { PartnerLocationEdit } from './PartnerLocationEdit';
 import { PartnerLocationServices } from './PartnerLocationServices';
@@ -29,6 +29,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
 
         if (props.isUserLoaded) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -36,6 +37,11 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -57,6 +63,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -64,6 +71,11 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -107,6 +119,7 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
         setPartnerLocationId(Guid.EMPTY);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -114,6 +127,11 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 

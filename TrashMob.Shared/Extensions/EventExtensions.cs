@@ -9,7 +9,8 @@
     {      
         public static async Task<Tuple<string, string>> GetLocalEventTime(this Event mobEvent, IMapManager mapRepository)
         {
-            var localTime = await mapRepository.GetTimeForPointAsync(new Tuple<double, double>(mobEvent.Latitude.Value, mobEvent.Longitude.Value), mobEvent.EventDate).ConfigureAwait(false);
+            // Note that the UI should never be passing in a null latitude and longitude... but during testing, this is possible. This hack is bad and will have unintented consequences
+            var localTime = await mapRepository.GetTimeForPointAsync(new Tuple<double, double>(mobEvent.Latitude ?? 0, mobEvent.Longitude ?? 0), mobEvent.EventDate).ConfigureAwait(false);
 
             if (string.IsNullOrWhiteSpace(localTime))
             {
