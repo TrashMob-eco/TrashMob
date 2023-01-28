@@ -163,7 +163,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
             setMapOptions(opts);
             setIsMapKeyLoaded(true);
         })
-    }, [eventId]);
+    }, [eventId, currentUser, isUserLoaded]);
 
     useEffect(() => {
         if (!isUserLoaded || !currentUser) {
