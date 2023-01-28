@@ -3,7 +3,7 @@ import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import { Col, Container, Dropdown, Image, Row } from 'react-bootstrap';
 import EventData from '../Models/EventData';
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
 import MapControllerPointCollection from '../MapControllerPointCollection';
@@ -88,6 +88,11 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -245,6 +250,11 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('POST');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
             fetch('/api/partneradmininvitations/accept/' + partnerAdminInvitationId, {
@@ -300,6 +310,11 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('POST');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
             fetch('/api/partneradmininvitations/decline/' + partnerAdminInvitationId, {
@@ -337,6 +352,11 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -358,6 +378,11 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('POST');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 

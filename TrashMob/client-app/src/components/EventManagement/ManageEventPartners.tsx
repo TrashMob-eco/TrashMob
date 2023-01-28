@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Button, Container, Dropdown } from 'react-bootstrap';
 import * as Constants from '../Models/Constants';
@@ -66,6 +66,11 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -92,6 +97,11 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -117,6 +127,11 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -164,6 +179,11 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
         };
 
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -191,6 +211,11 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
         };
 
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 

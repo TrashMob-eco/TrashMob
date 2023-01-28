@@ -3,7 +3,7 @@ import * as React from 'react'
 import { RouteComponentProps } from 'react-router-dom';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
-import { getApiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
 import UserData from './Models/UserData';
 import { Button } from 'react-bootstrap';
@@ -33,6 +33,11 @@ export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
