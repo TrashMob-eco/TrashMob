@@ -1,7 +1,7 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Button, Col, Container, Dropdown, Form, OverlayTrigger, Row, ToggleButton, Tooltip } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
 import SocialMediaAccountTypeData from '../Models/SocialMediaAccountTypeData';
@@ -47,6 +47,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
 
         if (props.isUserLoaded && props.partnerId && props.partnerId !== Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -54,6 +55,11 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
                 fetch('/api/partnersocialmediaaccounts/getbypartner/' + props.partnerId, {
@@ -90,6 +96,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
 
     function editAccount(partnerAccountId: string) {
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -97,6 +104,11 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -124,6 +136,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -131,6 +144,11 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -166,6 +184,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
         setIsSaveEnabled(false);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -189,6 +208,11 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
         }
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -218,7 +242,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
         });
     }
 
-    function validateForm() {
+    React.useEffect(() => {
         if (accountName === "" ||
             accountNameErrors !== "") {
             setIsSaveEnabled(false);
@@ -226,7 +250,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [accountName, accountNameErrors]);
 
     function handleAccountNameChanged(val: string) {
         if (val === "") {
@@ -236,18 +260,14 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
             setAccountNameErrors("");
             setAccountName(val);
         }
-
-        validateForm();
     }
 
     function handleIsActiveChanged(active: boolean) {
         setIsActive(active);
-        validateForm();
     }
 
     function selectSocialMediaAccountType(val: string) {
         setSocialMediaAccountTypeId(parseInt(val));
-        validateForm();
     }
 
     function renderSocialMediaAccountNameToolTip(props: any) {

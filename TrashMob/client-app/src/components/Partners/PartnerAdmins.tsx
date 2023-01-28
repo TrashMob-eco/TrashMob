@@ -1,7 +1,7 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Button, Col, Container, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import PartnerAdminInvitationData from '../Models/PartnerAdminInvitationData';
 import * as Constants from '../Models/Constants';
@@ -44,6 +44,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
 
         if (props.isUserLoaded) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -51,6 +52,11 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -89,6 +95,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -96,6 +103,11 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -125,6 +137,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
         }
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -132,6 +145,11 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('POST');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
                 fetch('/api/partneradmininvitations/resend/' + invitationId, {
@@ -166,6 +184,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
         }
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -173,6 +192,11 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
                 fetch('/api/partneradmininvitations/' + invitationId, {
@@ -215,6 +239,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
         }
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -229,6 +254,11 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
             var data = JSON.stringify(partnerAdminInvitationData);
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('POST');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
                 fetch('/api/partneradmininvitations', {

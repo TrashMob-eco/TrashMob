@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
@@ -16,6 +16,7 @@ import PartnerTypeData from '../Models/PartnerTypeData';
 import { getPartnerRequestStatus } from '../../store/partnerRequestStatusHelper';
 import { getPartnerType } from '../../store/partnerTypeHelper';
 import { Guid } from 'guid-typescript';
+import PhoneInput from 'react-phone-input-2'
 
 export interface PartnerRequestDetailsMatchParams {
     partnerRequestId: string;
@@ -74,6 +75,7 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
 
             setIsPartnerRequestDataLoaded(false);
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             const request = {
                 scopes: apiConfig.b2cScopes,
@@ -268,7 +270,10 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
                                             <OverlayTrigger placement="top" overlay={renderPhoneToolTip}>
                                                 <Form.Label className="control-label font-weight-bold h5">Phone</Form.Label>
                                             </OverlayTrigger>
-                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="phone" value={phone} />
+                                            <PhoneInput
+                                                value={phone}
+                                                disabled
+                                            />
                                         </Form.Group >
                                     </Col>
                                 </Form.Row>

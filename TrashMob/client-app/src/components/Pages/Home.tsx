@@ -3,16 +3,14 @@ import { MainEvents } from '../MainEvents';
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import EventData from '../Models/EventData';
 import EventTypeData from '../Models/EventTypeData';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapControllerPointCollection from '../MapControllerPointCollection';
 import UserData from '../Models/UserData';
-import { Button, Modal } from 'reactstrap';
-import { CurrentTermsOfServiceVersion } from './TermsOfService';
-import { CurrentPrivacyPolicyVersion } from '../PrivacyPolicy';
-import { Col, Container, Form, Image, Row } from 'react-bootstrap';
+import { Button } from 'reactstrap';
+import { Col, Container, Image, Row } from 'react-bootstrap';
 import Drawings from '../assets/home/Drawings.png';
 import Trash from '../assets/home/cleanup.jpg';
 import Globe2 from '../assets/globe2.png';
@@ -28,25 +26,22 @@ export interface HomeProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
     currentUser: UserData;
     onUserUpdated: any;
-    onAttendanceChanged: () => void;
-    myAttendanceList: EventData[];
-    isUserEventDataLoaded: boolean;
 }
 
-const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated, myAttendanceList, isUserEventDataLoaded, onAttendanceChanged, location, match }) => {
+const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, match }) => {
     const [eventList, setEventList] = useState<EventData[]>([]);
     const [eventTypeList, setEventTypeList] = useState<EventTypeData[]>([]);
     const [isEventDataLoaded, setIsEventDataLoaded] = useState(false);
     const [isMapKeyLoaded, setIsMapKeyLoaded] = useState(false);
     const [center, setCenter] = useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
     const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
-    const [agree, setAgree] = useState(false);
-    const [isOpen, setIsOpen] = useState(false);
     const [eventView, setEventView] = useState<string>('map');
     const [totalBags, setTotalBags] = useState<number>(0);
     const [totalHours, setTotalHours] = useState<number>(0);
     const [totalEvents, setTotalEvents] = useState<number>(0);
     const [totalParticipants, setTotalParticipants] = useState<number>(0);
+    const [myAttendanceList, setMyAttendanceList] = useState<EventData[]>([]);
+    const [isUserEventDataLoaded, setIsUserEventDataLoaded] = useState(false);
 
     useEffect(() => {
 
@@ -99,105 +94,59 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
         }
     }, [])
 
-    useEffect(() => {
-        if (!isUserLoaded || !currentUser) {
-            return;
-        }
-
-        const isPrivacyPolicyOutOfDate = currentUser.dateAgreedToPrivacyPolicy < CurrentPrivacyPolicyVersion.versionDate;
-        const isTermsOfServiceOutOfDate = currentUser.dateAgreedToTermsOfService < CurrentTermsOfServiceVersion.versionDate;
-
-        // Get agreement for the privacy policy and terms of service 
-        if (isPrivacyPolicyOutOfDate || isTermsOfServiceOutOfDate || (currentUser.termsOfServiceVersion === "") || (currentUser.privacyPolicyVersion === "")) {
-            setIsOpen(true);
-        }
-    }, [isUserLoaded, currentUser]);
-
     const handleLocationChange = (point: data.Position) => {
         // do nothing
-    }
-
-    const checkboxhandler = () => {
-        // if agree === true, it will be set to false
-        // if agree === false, it will be set to true
-        setAgree(!agree);
-    }
-
-    const togglemodal = () => {
-        setIsOpen(!isOpen);
     }
 
     const handleDetailsSelected = (eventId: string) => {
         history.push("eventdetails/" + eventId);
     }
 
-    const updateAgreements = (tosVersion: string, privacyVersion: string) => {
-        const account = msalClient.getAllAccounts()[0];
-
-        const request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/Users/' + currentUser.id, {
-                method: 'GET',
-                headers: headers
-            })
-                .then(response => response.json() as Promise<UserData> | null)
-                .then(user => {
-                    if (user) {
-                        user.dateAgreedToPrivacyPolicy = new Date();
-                        user.dateAgreedToTermsOfService = new Date();
-                        user.termsOfServiceVersion = tosVersion;
-                        user.privacyPolicyVersion = privacyVersion;
-                        fetch('/api/Users/', {
-                            method: 'PUT',
-                            headers: headers,
-                            body: JSON.stringify(user)
-                        })
-                            .then(response => response.json() as Promise<UserData>)
-                            .then(data => {
-                                onUserUpdated();
-                                if (!currentUser.userName) {
-                                    history.push("/userprofile");
-                                }
-                            })
-                    }
-                })
-        })
-    }
-
     const handleEventView = (view: string) => {
         setEventView(view);
     }
 
+    function handleAttendanceChanged() {
+        setMyAttendanceList([]);
+        setIsUserEventDataLoaded(false);
+
+        if (!isUserLoaded || !currentUser) {
+            return;
+        }
+
+        // If the user is logged in, get the events they are attending
+        const accounts = msalClient.getAllAccounts();
+        var apiConfig = getApiConfig();
+
+        if (accounts !== null && accounts.length > 0) {
+            const request = {
+                scopes: apiConfig.b2cScopes,
+                account: accounts[0]
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                fetch('/api/events/eventsuserisattending/' + currentUser.id, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<EventData[]>)
+                    .then(data => {
+                        setMyAttendanceList(data);
+                        setIsUserEventDataLoaded(true);
+                    })
+            });
+        }
+    }
+
     return (
         <>
-            <Modal isOpen={isOpen} onrequestclose={togglemodal} contentlabel="Accept Terms of Use" fade={true} style={{ width: "500px", display: "block" }}>
-                <div className="container p-4">
-                    <Form>
-                        <Form.Row>
-                            <Form.Group>
-                                <Form.Label className="control-label font-weight-bold h5">I have reviewed and I agree to the TrashMob.eco <Link to='./termsofservice'>Terms of Use</Link> and the TrashMob.eco <Link to='./privacypolicy'>Privacy Policy</Link>.</Form.Label>
-                                <Form.Check id="agree" onChange={checkboxhandler} label="Yes" />
-                            </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                            <Button disabled={!agree} className="action" onClick={() => {
-                                updateAgreements(CurrentTermsOfServiceVersion.versionId, CurrentPrivacyPolicyVersion.versionId);
-                                togglemodal();
-                            }
-                            }>
-                                I Agree
-                            </Button>
-                        </Form.Row>
-                    </Form>
-                </div>
-            </Modal>
             <Container fluid>
                 <Row className="shadow position-relative" >
                     <Col className="d-flex flex-column px-0 py-4 pl-lg-5" sm={6} style={{ zIndex: 1 }}>
@@ -268,7 +217,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
                             <div className="w-100 m-0">
                                 <AzureMapsProvider>
                                     <>
-                                        <MapControllerPointCollection center={center} multipleEvents={eventList} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={onAttendanceChanged} onDetailsSelected={handleDetailsSelected} history={history} location={location} match={match} />
+                                        <MapControllerPointCollection center={center} multipleEvents={eventList} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={handleAttendanceChanged} onDetailsSelected={handleDetailsSelected} history={history} location={location} match={match} />
                                     </>
                                 </AzureMapsProvider>
                             </div>
@@ -277,7 +226,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, onUserUpdated
                         <>
                             <Button color='primary' className='mb-2' onClick={() => history.push("/manageeventdashboard")}>Create a New Event</Button>
                             <div className="container-lg">
-                                <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} history={history} location={location} match={match} />
+                                <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} history={history} location={location} match={match} />
                             </div>
                         </>
                     )}

@@ -11,6 +11,8 @@ namespace TrashMob.Shared.Poco
 
         public int ServiceTypeId { get; set; }
 
+        public bool IsAdvanceNoticeRequired { get; set; }
+
         public string PartnerLocationServicePublicNotes { get; set; }
 
         public string PartnerName { get; set; }

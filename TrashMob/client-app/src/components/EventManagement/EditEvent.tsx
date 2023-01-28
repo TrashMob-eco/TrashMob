@@ -1,7 +1,7 @@
 import * as React from 'react'
 import EventData from '../Models/EventData';
 import EventTypeData from '../Models/EventTypeData';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
 import { getKey } from '../../store/MapStore';
 import AddressData from '../Models/AddressData';
@@ -156,12 +156,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         }
     }, [eventName, eventDateErrors, description, durationHoursErrors, region]);
 
-    function handleEventNameChanged(val: string) {
-        setEventName(val);
-
-        validateForm();
-    }
-
     function handleDurationHoursChanged(val: string) {
         try {
             if (val) {
@@ -180,8 +174,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             }
         }
         catch { }
-
-        validateForm();
     }
 
     function handleDurationMinutesChanged(val: string) {
@@ -202,14 +194,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             }
         }
         catch { }
-
-        validateForm();
-    }
-
-    function handleDescriptionChanged(val: string) {
-        setDescription(val);
-
-        validateForm();
     }
 
     function handleMaxNumberOfParticipantsChanged(val: string) {
@@ -230,8 +214,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         catch {
             setMaxNumberOfParticipantsErrors("Invalid value specified for Max Number of Participants.");
         }
-
-        validateForm();
     }
 
     function handleLocationChange(point: data.Position) {
@@ -257,8 +239,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     })
             }
             )
-
-        validateForm();
     }
 
     function handleEventDateChanged(passedDate: string) {
@@ -273,7 +253,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         }
 
         setAbsTime(abTime);
-        validateForm();
     }
 
     function handleEventTimeChanged(passedTime: string) {
@@ -288,7 +267,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         }
 
         setAbsTime(abTime);
-        validateForm();
     }
 
     function handleIsEventPublicChanged(value: boolean) {
@@ -300,8 +278,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         else {
             setEventDateErrors("");
         }
-
-        validateForm();
     }
 
     function renderDescriptionToolTip(props: any) {
@@ -374,20 +350,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         props.onEditCancel();
     }
 
-    function validateForm() {
-        if (eventName === "" ||
-            eventDateErrors !== "" ||
-            description === "" ||
-            durationHoursErrors !== "" ||
-            region === "") {
-            setIsSaveEnabled(false);
-        }
-        else {
-            setIsSaveEnabled(true);
-        }
-    }
-
-
     // This will handle the submit form event.  
     function handleSave(event: any) {
 
@@ -429,6 +391,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
         // PUT request for Edit Event.  
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -436,6 +399,11 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         };
 
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -473,7 +441,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     <OverlayTrigger placement="top" overlay={renderEventNameToolTip}>
                                         <Form.Label className="control-label font-weight-bold h5" htmlFor="Name">Name</Form.Label>
                                     </OverlayTrigger>
-                                    <Form.Control type="text" className='border-0 bg-light h-60 p-18' name="name" defaultValue={eventName} onChange={(val) => handleEventNameChanged(val.target.value)} maxLength={parseInt('64')} required />
+                                    <Form.Control type="text" className='border-0 bg-light h-60 p-18' name="name" defaultValue={eventName} onChange={(val) => setEventName(val.target.value)} maxLength={parseInt('64')} required />
                                 </Form.Group>
                             </Col>
                             <Col lg={6}>
@@ -572,7 +540,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                     <OverlayTrigger placement="top" overlay={renderDescriptionToolTip}>
                                         <Form.Label className="control-label font-weight-bold h5" htmlFor="Description">Description</Form.Label>
                                     </OverlayTrigger>
-                                    <Form.Control as="textarea" className='border-0 bg-light h-60 p-18' name="description" defaultValue={description} onChange={(val) => handleDescriptionChanged(val.target.value)} maxLength={parseInt('2048')} rows={5} cols={5} required />
+                                    <Form.Control as="textarea" className='border-0 bg-light h-60 p-18' name="description" defaultValue={description} onChange={(val) => setDescription(val.target.value)} maxLength={parseInt('2048')} rows={5} cols={5} required />
                                 </Form.Group>
                             </Col>
                         </Form.Row>

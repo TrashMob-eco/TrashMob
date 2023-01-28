@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
@@ -13,6 +13,7 @@ import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import AddressData from '../Models/AddressData';
 import MapControllerSinglePointNoEvents from '../MapControllerSinglePointNoEvent';
+import PhoneInput from 'react-phone-input-2'
 
 interface PartnerRequestProps extends RouteComponentProps<any> {
     mode: string;
@@ -78,7 +79,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         }
     }, [props.currentUser, props.isUserLoaded, props.mode]);
 
-    function validateForm() {
+    React.useEffect(() => {
         if (nameErrors !== "" ||
             emailErrors !== "" ||
             websiteErrors !== "" ||
@@ -89,7 +90,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [nameErrors, emailErrors, websiteErrors, phoneErrors, region]);
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
@@ -121,6 +122,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         var data = JSON.stringify(partnerRequestData);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -128,6 +130,11 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('POST');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -155,8 +162,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
             setNameErrors("");
             setName(val);
         }
-
-        validateForm();
     }
 
     function handleEmailChanged(val: string) {
@@ -169,8 +174,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
             setEmailErrors("");
             setEmail(val);
         }
-
-        validateForm();
     }
 
     function handleWebsiteChanged(val: string) {
@@ -183,8 +186,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
             setWebsiteErrors("");
             setWebsite(val);
         }
-
-        validateForm();
     }
 
     function handlePhoneChanged(val: string) {
@@ -197,13 +198,10 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
             setPhoneErrors("");
             setPhone(val);
         }
-
-        validateForm();
     }
 
     function handleNotesChanged(val: string) {
         setNotes(val);
-        validateForm();
     }
 
     function renderNameToolTip(props: any) {
@@ -286,7 +284,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                         setCountry(data.addresses[0].address.country);
                         setRegion(data.addresses[0].address.countrySubdivisionName);
                         setPostalCode(data.addresses[0].address.postalCode);
-                        validateForm();
                     })
             })
     }
@@ -361,7 +358,11 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                             <OverlayTrigger placement="top" overlay={renderPhoneToolTip}>
                                                 <Form.Label className="control-label h5">Phone</Form.Label>
                                             </OverlayTrigger>
-                                            <Form.Control type="text" className='border-0 bg-light h-60 para' defaultValue={phone} maxLength={parseInt('64')} onChange={(val) => handlePhoneChanged(val.target.value)} />
+                                            <PhoneInput
+                                                country={'us'}
+                                                value={phone}
+                                                onChange={(val) => handlePhoneChanged(val)}
+                                            />
                                             <span style={{ color: "red" }}>{phoneErrors}</span>
                                         </Form.Group >
                                     </Col>

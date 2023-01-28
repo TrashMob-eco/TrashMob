@@ -3,11 +3,13 @@ import { useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import UserData from '../Models/UserData';
-import { Col, Image, Row } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { Col, Form, Image, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import EnvelopeResponse from '../Models/EnvelopeResponse';
 import logo from "../assets/logo.svg";
 import globes from '../assets/gettingStarted/globes.png';
+import * as ToolTips from "../../store/ToolTips";
+
 export interface WaiversProps {
     isUserLoaded: boolean;
     currentUser: UserData;
@@ -25,12 +27,13 @@ export class TrashMobWaiverVersion {
 
 const Waivers: React.FC<WaiversProps> = (props) => {
 
-    const [name, setName] = React.useState<string | undefined>();
+    const [fullName, setFullName] = React.useState<string>("");
+    const [fullNameErrors, setFullNameErrors] = React.useState<string>("");
     const [email, setEmail] = React.useState<string | undefined>();
+    const [isSignWaiverEnabled, setIsSignWaiverEnabled] = React.useState<boolean>(false);
 
     useEffect(() => {
         if (props.currentUser) {
-            setName(props.currentUser.givenName + " " + props.currentUser.surName)
             setEmail(props.currentUser.email)
         }
     }, [props.currentUser])
@@ -38,6 +41,7 @@ const Waivers: React.FC<WaiversProps> = (props) => {
     async function signWaiver() {
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         const request = {
             scopes: apiConfig.b2cScopes,
@@ -45,6 +49,10 @@ const Waivers: React.FC<WaiversProps> = (props) => {
         };
 
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
 
             const headers = getDefaultHeaders('POST');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
@@ -56,7 +64,7 @@ const Waivers: React.FC<WaiversProps> = (props) => {
 
             const envelopeRequest = {
                 signerEmail: email,
-                signerName: name,
+                signerName: fullName,
                 createdByUserId: props.currentUser.id,
                 returnUrl: "https://" + hostname + "/waiversreturn",
             };
@@ -71,6 +79,31 @@ const Waivers: React.FC<WaiversProps> = (props) => {
                     window.location.href = data.redirectUrl;
                 })
         });
+    }
+
+    React.useEffect(() => {
+        if (fullNameErrors !== "") {
+            setIsSignWaiverEnabled(false);
+        }
+        else {
+            setIsSignWaiverEnabled(true);
+        }
+    }, [fullNameErrors])
+
+    const handleFullNameChanged = (val: string) => {
+        if (!val || val === "") {
+            setFullNameErrors("Full Name is required.")
+            setFullName("");
+        }
+        else {
+            setFullNameErrors("")
+            setFullName(val);
+        }
+        setFullName(val);
+    }
+
+    const renderFullNameToolTip = (props: any) => {
+        return <Tooltip {...props}>{ToolTips.WaiverFullName}</Tooltip>
     }
 
     return (
@@ -99,9 +132,22 @@ const Waivers: React.FC<WaiversProps> = (props) => {
                 <p className="p-18">
                     You will only need to sign this waiver once unless we have to change the legalese.
                 </p>
-                <Button variant="primary" onClick={signWaiver} className="h-49 fw-600">
-                    Sign Waiver
-                </Button>
+                <Form>
+                    <Col>
+                        <Form.Group className="required">
+                            <OverlayTrigger placement="top" overlay={renderFullNameToolTip}>
+                                <Form.Label className="control-label font-weight-bold h5">Full Name</Form.Label>
+                            </OverlayTrigger>
+                            <Form.Control type="text" defaultValue={fullName} maxLength={parseInt('100')} onChange={(val) => handleFullNameChanged(val.target.value)} required />
+                            <span style={{ color: "red" }}>{fullNameErrors}</span>
+                        </Form.Group>
+                    </Col>
+                    <Col>
+                    <Button disabled={!isSignWaiverEnabled} variant="primary" onClick={signWaiver} className="h-49 fw-600">
+                        Sign Waiver
+                        </Button>
+                    </Col>
+                </Form>
                 <p className="p-18 mb-5">
                     Thank you!
                 </p>

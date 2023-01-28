@@ -2,7 +2,7 @@ import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Button, Col, Container, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import PartnerData from '../Models/PartnerData';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import PartnerStatusData from '../Models/PartnerStatusData';
 import PartnerTypeData from '../Models/PartnerTypeData';
@@ -35,6 +35,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
     React.useEffect(() => {
         if (props.isUserLoaded) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -88,7 +89,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
         }
     }, [props.currentUser, props.isUserLoaded, props.partnerId]);
 
-    function validateForm() {
+    React.useEffect(() => {
         if (name === "" ||
             nameErrors !== "") {
             setIsSaveEnabled(false);
@@ -96,7 +97,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [name, nameErrors]);
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
@@ -123,6 +124,7 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
         var data = JSON.stringify(partnerData);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -154,8 +156,6 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
             setNameErrors("");
             setName(val);
         }
-
-        validateForm();
     }
 
     function handlePublicNotesChanged(notes: string) {
@@ -166,28 +166,22 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
             setPublicNotes(notes);
             setPublicNotesErrors("");
         }
-
-        validateForm();
     }
 
     function handlePrivateNotesChanged(notes: string) {
         setPrivateNotes(notes);
-        validateForm();
     }
 
     function handleWebsiteChanged(val: string) {
         setWebsite(val);
-        validateForm();
     }
 
     function selectPartnerStatus(val: string) {
         setPartnerStatusId(parseInt(val));
-        validateForm();
     }
 
     function selectPartnerType(val: string) {
         setPartnerTypeId(parseInt(val));
-        validateForm();
     }
 
     function renderNameToolTip(props: any) {

@@ -1,7 +1,7 @@
 
 import { FC, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../store/AuthStore';
 import EventAttendeeData from './Models/EventAttendeeData';
 import UserData from './Models/UserData';
 import { DisplayEvent } from './MainEvents';
@@ -37,6 +37,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
 
     const addAttendee = (eventId: string) => {
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         const request = {
             scopes: apiConfig.b2cScopes,
@@ -44,6 +45,10 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
 
             const eventAttendee = new EventAttendeeData();
             eventAttendee.userId = currentUser.id;
@@ -76,7 +81,10 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
         const accounts = msalClient.getAllAccounts();
 
         if (accounts === null || accounts.length === 0) {
-            msalClient.loginRedirect().then(() => {
+            var apiConfig = getApiConfig();
+            msalClient.loginRedirect({
+                scopes: apiConfig.b2cScopes
+            }).then(() => {
                 addAttendee(eventId);
             })
         }

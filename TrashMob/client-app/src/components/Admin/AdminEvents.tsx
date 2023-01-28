@@ -4,7 +4,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
 import { Col, Container, Dropdown, Row } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import { Eye, Pencil, XSquare } from 'react-bootstrap-icons';
 
 interface AdminEventsPropsType extends RouteComponentProps {
@@ -21,6 +21,7 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
 
         if (props.isUserLoaded) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -28,6 +29,10 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
 
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);

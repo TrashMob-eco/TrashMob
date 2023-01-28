@@ -20,7 +20,12 @@ namespace TrashMob
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, config) =>
                 {
-                    if (context.HostingEnvironment.IsProduction())
+                    var env = context.HostingEnvironment;
+
+                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                          .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true); // optional extra provider
+
+                    if (!context.HostingEnvironment.IsDevelopment())
                     {
                         var builtConfig = config.Build();
                         var secretClient = new SecretClient(new Uri(builtConfig["VaultUri"]),

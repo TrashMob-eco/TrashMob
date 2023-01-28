@@ -1,7 +1,7 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
-import { Button, Col, Dropdown, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { apiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { Button, Col, Dropdown, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
 import ServiceTypeData from '../Models/ServiceTypeData';
@@ -19,6 +19,8 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
 
     const [notes, setNotes] = React.useState<string>("");
     const [notesErrors, setNotesErrors] = React.useState<string>("");
+    const [isAutoApproved, setIsAutoApproved] = React.useState<boolean>(false);
+    const [isAdvanceNoticeRequired, setIsAdvanceNoticeRequired] = React.useState<boolean>(false);
     const [partnerLocationServices, setPartnerLocationServices] = React.useState<PartnerLocationServiceData[]>([]);
     const [createdByUserId, setCreatedByUserId] = React.useState<string>(Guid.EMPTY);
     const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
@@ -46,6 +48,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
 
         if (props.isUserLoaded && props.partnerLocationId && props.partnerLocationId !== Guid.EMPTY) {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -53,6 +56,11 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
                 fetch('/api/partnerlocationservices/getbypartnerlocation/' + props.partnerLocationId, {
@@ -71,6 +79,8 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
     function addService() {
         setNotes("");
         setServiceTypeId(0);
+        setIsAutoApproved(false);
+        setIsAdvanceNoticeRequired(true);
         setNotes("");
         setCreatedByUserId(Guid.EMPTY);
         setCreatedDate(new Date());
@@ -84,6 +94,8 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
         event.preventDefault();
         setNotes("");
         setServiceTypeId(0);
+        setIsAutoApproved(false);
+        setIsAdvanceNoticeRequired(true);
         setNotes("");
         setCreatedByUserId(Guid.EMPTY);
         setCreatedDate(new Date());
@@ -95,6 +107,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
 
     function editService(serviceTypeId: number) {
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -102,6 +115,11 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -113,6 +131,8 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                 .then(data => {
                     setServiceTypeId(data.serviceTypeId);
                     setNotes(data.notes);
+                    setIsAutoApproved(data.isAutoApproved);
+                    setIsAdvanceNoticeRequired(data.isAdvanceNoticeRequired);
                     setCreatedByUserId(data.createdByUserId);
                     setCreatedDate(new Date(data.createdDate));
                     setLastUpdatedDate(new Date(data.lastUpdatedDate));
@@ -127,6 +147,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
             return;
         else {
             const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
             var request = {
                 scopes: apiConfig.b2cScopes,
@@ -134,6 +155,11 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -169,6 +195,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
         setIsSaveEnabled(false);
 
         const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
         var request = {
             scopes: apiConfig.b2cScopes,
@@ -191,11 +218,19 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
         partnerService.partnerLocationId = props.partnerLocationId;
         partnerService.serviceTypeId = serviceTypeId ?? 0;
         partnerService.notes = notes;
+        partnerService.isAutoApproved = isAutoApproved;
+        partnerService.isAdvanceNoticeRequired = isAdvanceNoticeRequired;
+        setIsAdvanceNoticeRequired(true);
         partnerService.createdByUserId = createdByUserId;
 
         var data = JSON.stringify(partnerService);
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -225,7 +260,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
         });
     }
 
-    function validateForm() {
+    React.useEffect(() => {
         if (notes === "" ||
             notesErrors !== "" ||
             serviceTypeId === 0) {
@@ -234,7 +269,7 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [notes, notesErrors, serviceTypeId]);
 
     function handleNotesChanged(val: string) {
         if (val === "") {
@@ -244,13 +279,26 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
             setNotesErrors("");
             setNotes(val);
         }
-
-        validateForm();
     }
 
     function selectServiceType(val: string) {
         setServiceTypeId(parseInt(val));
-        validateForm();
+    }
+
+    function handleIsAutoApprovedChanged(value: boolean) {
+        setIsAutoApproved(value);
+    }
+
+    function handleIsAdvanceNoticeRequiredChanged(value: boolean) {
+        setIsAdvanceNoticeRequired(value);
+    }
+
+    function renderIsAutoApprovedToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerServiceIsAutoApproved}</Tooltip>
+    }
+
+    function renderIsAdvanceNoticeRequiredToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PartnerServiceIsAdvanceNoticeRequired}</Tooltip>
     }
 
     function renderNotesToolTip(props: any) {
@@ -325,6 +373,44 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                             </Form.Group>
                         </Col>
                         <Col>
+                            <Form.Group>
+                                <div>
+                                    <OverlayTrigger placement="top" overlay={renderIsAutoApprovedToolTip}>
+                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="isAutoApproved">Auto Approve Requests?</Form.Label>
+                                    </OverlayTrigger >
+                                </div>
+                                <div>
+                                    <ToggleButton
+                                        type="checkbox"
+                                        variant="outline-dark"
+                                        checked={isAutoApproved}
+                                        value="1"
+                                        onChange={(e) => handleIsAutoApprovedChanged(e.currentTarget.checked)}
+                                    />
+                                </div>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <div>
+                                    <OverlayTrigger placement="top" overlay={renderIsAdvanceNoticeRequiredToolTip}>
+                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="isAdvanceNoticeRequired">Advance Notice Required?</Form.Label>
+                                    </OverlayTrigger >
+                                </div>
+                                <div>
+                                    <ToggleButton
+                                        type="checkbox"
+                                        variant="outline-dark"
+                                        checked={isAdvanceNoticeRequired}
+                                        value="1"
+                                        onChange={(e) => handleIsAdvanceNoticeRequiredChanged(e.currentTarget.checked)}
+                                    />
+                                </div>
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
                             <Form.Group className="required">
                                 <OverlayTrigger placement="top" overlay={renderNotesToolTip}>
                                     <Form.Label className="control-label font-weight-bold h5" htmlFor="serviceType">Notes</Form.Label>
@@ -333,6 +419,8 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                                 <span style={{ color: "red" }}>{notesErrors}</span>
                             </Form.Group>
                         </Col>
+                    </Form.Row>
+                    <Form.Row>
                         <Col>
                             <Form.Group>
                                 <Form.Label className="control-label font-weight-bold h5" htmlFor="createdDate">Created Date</Form.Label>
@@ -345,6 +433,8 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
                                 <Form.Control type="text" disabled defaultValue={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ""} />
                             </Form.Group>
                         </Col>
+                    </Form.Row>
+                    <Form.Row>
                         <Button disabled={!isSaveEnabled} type="submit" className="btn btn-default">Save</Button>
                         <Button className="action" onClick={(e: any) => handleCancel(e)}>Cancel</Button>
                     </Form.Row>

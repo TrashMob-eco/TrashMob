@@ -32,13 +32,18 @@
 
         public async Task<IEnumerable<Event>> GetEventsUserIsAttendingAsync(Guid attendeeId, bool futureEventsOnly = false, CancellationToken cancellationToken = default)
         {
-            var eventAttendees = Repository.Get(ea => ea.UserId == attendeeId);
+            var eventAttendees = await Repository.Get(ea => ea.UserId == attendeeId).ToListAsync(cancellationToken);
 
-            var events = await eventRepository.Get(e => e.EventStatusId != (int)EventStatusEnum.Canceled
-                                                     && (!futureEventsOnly || e.EventDate >= DateTimeOffset.UtcNow)
-                                                     && eventAttendees.Select(ea => ea.EventId).Contains(e.Id))
-                                              .ToListAsync(cancellationToken);
-            return events;
+            if (eventAttendees.Any())
+            {
+                var events = await eventRepository.Get(e => e.EventStatusId != (int)EventStatusEnum.Canceled
+                                                         && (!futureEventsOnly || e.EventDate >= DateTimeOffset.UtcNow)
+                                                         && eventAttendees.Select(ea => ea.EventId).Contains(e.Id))
+                                                  .ToListAsync(cancellationToken);
+                return events;
+            }
+
+            return new List<Event>();
         }
 
         public async Task<IEnumerable<Event>> GetCanceledEventsUserIsAttendingAsync(Guid attendeeId, bool futureEventsOnly = false, CancellationToken cancellationToken = default)

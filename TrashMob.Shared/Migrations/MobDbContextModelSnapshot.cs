@@ -1043,6 +1043,12 @@ namespace TrashMob.Migrations
                     b.Property<DateTimeOffset?>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<bool>("IsAdvanceNoticeRequired")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsAutoApproved")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("LastUpdatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1574,12 +1580,6 @@ namespace TrashMob.Migrations
                     b.Property<DateTimeOffset?>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset?>("DateAgreedToPrivacyPolicy")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset?>("DateAgreedToTermsOfService")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<DateTimeOffset?>("DateAgreedToTrashMobWaiver")
                         .HasColumnType("datetimeoffset");
 
@@ -1612,6 +1612,9 @@ namespace TrashMob.Migrations
                     b.Property<string>("NameIdentifier")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("PostalCode")
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
@@ -1619,24 +1622,12 @@ namespace TrashMob.Migrations
                     b.Property<bool>("PrefersMetric")
                         .HasColumnType("bit");
 
-                    b.Property<string>("PrivacyPolicyVersion")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<string>("Region")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SourceSystemUserName")
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
-
-                    b.Property<string>("SurName")
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
-
-                    b.Property<string>("TermsOfServiceVersion")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("TrashMobWaiverVersion")
                         .HasMaxLength(50)
@@ -1652,6 +1643,10 @@ namespace TrashMob.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.HasIndex("LastUpdatedByUserId");
 
@@ -1672,9 +1667,9 @@ namespace TrashMob.Migrations
                             GivenName = "TrashMob",
                             IsSiteAdmin = false,
                             LastUpdatedByUserId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ObjectId = new Guid("00000000-0000-0000-0000-000000000000"),
                             PrefersMetric = false,
                             Region = "AnyState",
-                            SurName = "Eco",
                             TravelLimitForLocalEvents = 0,
                             UserName = "TrashMob"
                         });
@@ -1936,7 +1931,7 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_EventAttendees_User_CreatedBy");
 
                     b.HasOne("TrashMob.Models.Event", "Event")
-                        .WithMany()
+                        .WithMany("EventAttendees")
                         .HasForeignKey("EventId")
                         .IsRequired()
                         .HasConstraintName("FK_EventAttendees_Events");
@@ -1948,7 +1943,7 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_EventAttendees_User_LastUpdatedBy");
 
                     b.HasOne("TrashMob.Models.User", "User")
-                        .WithMany()
+                        .WithMany("EventAttendees")
                         .HasForeignKey("UserId")
                         .IsRequired()
                         .HasConstraintName("FK_EventAttendees_ApplicationUser");
@@ -2551,6 +2546,8 @@ namespace TrashMob.Migrations
 
             modelBuilder.Entity("TrashMob.Models.Event", b =>
                 {
+                    b.Navigation("EventAttendees");
+
                     b.Navigation("PickupLocations");
 
                     b.Navigation("UserNotifications");
@@ -2625,6 +2622,8 @@ namespace TrashMob.Migrations
                     b.Navigation("ContactRequestsCreated");
 
                     b.Navigation("ContactRequestsUpdated");
+
+                    b.Navigation("EventAttendees");
 
                     b.Navigation("EventAttendeesCreated");
 
