@@ -1,9 +1,10 @@
 {
   "Prefix": "TM_",
+  "RESTApi": "https://fa-tm-pr-westus2.azurewebsites.net/api",  
+  "UIAssets": "tmstoradb2cprod",  
   "FacebookClientId": "535691364481253",
-  "Google": {
-    "ClientId": "993349203789-oq6s09buht4e707itkukrljisikmth3k.apps.googleusercontent.com"
-  },
-  "RESTApi": "https://fa-tm-pr-westus2.azurewebsites.net/api",
-  "TwitterClientId": "QmhKZ1Bfa1hXZXFJcnBheElYcGY6MTpjaQ"
+  "GoogleId": "993349203789-oq6s09buht4e707itkukrljisikmth3k.apps.googleusercontent.com",
+  "TwitterClientId": "QmhKZ1Bfa1hXZXFJcnBheElYcGY6MTpjaQ",  
+  "AppleId": "367LR8J89Q.eco.trashmob.trashmobmobile",
+  "LinkedInId": "86hrlt8mkv4is3"
 }
