@@ -126,7 +126,7 @@
         </TechnicalProfile>
       </TechnicalProfiles>
     </ClaimsProvider>
-        
+
     <ClaimsProvider>
       <DisplayName>Facebook</DisplayName>
       <TechnicalProfiles>

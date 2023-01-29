@@ -58,7 +58,8 @@
       <OrchestrationSteps>
         <OrchestrationStep Order="1" Type="CombinedSignInAndSignUp" ContentDefinitionReferenceId="api.signuporsignin">
           <ClaimsProviderSelections>
-            <ClaimsProviderSelection TargetClaimsExchangeId="ForgotPasswordExchange" />                
+            <ClaimsProviderSelection TargetClaimsExchangeId="ForgotPasswordExchange" />    
+            <ClaimsProviderSelection TargetClaimsExchangeId="MicrosoftAccountExchange"/>                        
             <ClaimsProviderSelection TargetClaimsExchangeId="FacebookExchange"/>
             <ClaimsProviderSelection TargetClaimsExchangeId="GoogleExchange"/>       
             <ClaimsProviderSelection TargetClaimsExchangeId="TwitterExchange"/>        
@@ -80,7 +81,8 @@
             </Precondition>
           </Preconditions>
           <ClaimsExchanges>
-            <ClaimsExchange Id="ForgotPasswordExchange" TechnicalProfileReferenceId="ForgotPassword" />                
+            <ClaimsExchange Id="ForgotPasswordExchange" TechnicalProfileReferenceId="ForgotPassword" />  
+            <ClaimsExchange Id="MicrosoftAccountExchange" TechnicalProfileReferenceId="MSA-MicrosoftAccount-OpenIdConnect"/>                          
             <ClaimsExchange Id="FacebookExchange" TechnicalProfileReferenceId="Facebook-OAUTH"/>
             <ClaimsExchange Id="GoogleExchange" TechnicalProfileReferenceId="Google-OAUTH"/>        
             <ClaimsExchange Id="TwitterExchange" TechnicalProfileReferenceId="Twitter-OAuth2"/>        
