@@ -2,6 +2,7 @@
   "Prefix": "TM_",
   "RESTApi": "https://fa-tm-dev-westus2.azurewebsites.net/api",
   "UIAssets": "tmstoradb2cdev",
+  "MicrosoftAppId": "0e1c958e-3393-4612-b441-69fff161502f",  
   "FacebookClientId": "1324278418367849",
   "GoogleId": "574027227705-ojvg93aoinf8fm0jvkfdbboumdei7j8f.apps.googleusercontent.com",
   "TwitterClientId": "NnlDWjM1SUp2dFV4cGJsU09keHQ6MTpjaQ",
