@@ -36,9 +36,8 @@
         {
             try
             {
-                var requestUri = new Uri(EventAttendeeApi + $"/{eventAttendee.EventId}/{eventAttendee.UserId}");
-
                 var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
+                var requestUri = new Uri(string.Concat(authorizedHttpClient.BaseAddress, EventAttendeeApi) + $"/{eventAttendee.EventId}/{eventAttendee.UserId}");
 
                 using (var response = await authorizedHttpClient.DeleteAsync(requestUri, cancellationToken))
                 {
