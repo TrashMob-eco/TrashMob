@@ -37,15 +37,17 @@ namespace TrashMobJobs
                 HttpResponseData response;
                 switch (deleteResponse.action)
                 {
-                    case "Failed":
-                        // Yes, really. It needs an Ok when failed...
-                        response = req.CreateResponse(HttpStatusCode.InternalServerError);
-                        var blockingResponse = deleteResponse as ActiveDirectoryBlockingResponse;
-                        response.WriteString(JsonSerializer.Serialize(blockingResponse));
+                    case "UserNotFound":
+                        // We need to return Ok here (even though there was an error) so the IEF framework calling this function continues to run and remove the user
+                        response = req.CreateResponse(HttpStatusCode.OK);
+                        var validationResponse = deleteResponse as ActiveDirectoryValidationFailedResponse;
+                        response.WriteString(JsonSerializer.Serialize(validationResponse));
+                        logger.LogError($"User with objectId {activeDirectoryDeleteUserRequest.objectId} was not found. Skipping.");
                         break;
                     default:
                         response = req.CreateResponse(HttpStatusCode.OK);
                         response.WriteString(JsonSerializer.Serialize(deleteResponse));
+                        logger.LogInformation($"User with objectId {activeDirectoryDeleteUserRequest.objectId} deleted. Message: {JsonSerializer.Serialize(deleteResponse)}");
                         break;
                 }
 

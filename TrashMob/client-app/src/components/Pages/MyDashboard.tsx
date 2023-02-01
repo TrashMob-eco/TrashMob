@@ -3,7 +3,7 @@ import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import { Col, Container, Dropdown, Image, Row } from 'react-bootstrap';
 import EventData from '../Models/EventData';
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
 import MapControllerPointCollection from '../MapControllerPointCollection';
@@ -88,6 +88,11 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -245,6 +250,11 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('POST');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
             fetch('/api/partneradmininvitations/accept/' + partnerAdminInvitationId, {
@@ -300,6 +310,11 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('POST');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
             fetch('/api/partneradmininvitations/decline/' + partnerAdminInvitationId, {
@@ -337,6 +352,11 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -358,6 +378,11 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('POST');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -739,7 +764,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             <Container className='mb-5 pb-5'>
                 <div className="d-flex my-5 mb-4 justify-content-between">
                     <h4 className="font-weight-bold mr-2 pb-2 mt-0 active-line">My Events ({myEventList.length})</h4>
-                    <Link className="btn btn-primary banner-button" to="/manageeventdashboard">Create Event</Link>
+                    <Link className="d-flex align-items-center btn btn-primary banner-button" to="/manageeventdashboard">Create Event</Link>
                 </div>
                 <div className="mb-4 bg-white">
                     <>
@@ -787,27 +812,37 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                 </div>
                 <div className="d-flex my-5 mb-4 justify-content-between">
                     <h4 className="font-weight-bold mr-2 mt-0 active-line pb-2">My Partnerships ({myPartnerRequests.length + myPartners.length})</h4>
-                    <Link className="btn btn-primary banner-button" to="/inviteapartner">Send invitation to join TrashMob.eco as a partner</Link>
-                    <Link className="btn btn-primary banner-button" to="/becomeapartner">Apply to become a partner</Link>
+                    <Link className="d-flex align-items-center btn btn-primary banner-button" to="/inviteapartner">Send invitation to join TrashMob.eco as a partner</Link>
+                    <Link className="d-flex align-items-center btn btn-primary banner-button" to="/becomeapartner">Apply to become a partner</Link>
                 </div>
                 <div className="mb-4 bg-white">
-                    <p className="color-primary font-weight-bold pt-3">{'My Partners'} ({myPartners.length})</p>
+                    <div className="d-flex justify-content-between px-4">
+                        <p className="color-primary font-weight-bold pt-3">{'My Partners'} ({myPartners.length})</p>
+                    </div>
                     <MyPartnersTable />
                 </div>
                 <div className="mb-4 bg-white">
-                    <p className="color-primary font-weight-bold pt-3">{'Partner Requests and Invitations Sent'} ({myPartnerRequests.length})</p>
+                    <div className="d-flex justify-content-between px-4">
+                        <p className="color-primary font-weight-bold pt-3">{'Partner Requests and Invitations Sent'} ({myPartnerRequests.length})</p>
+                    </div>
                     <MyPartnerRequestsTable />
                 </div>
                 <div className="mb-4 bg-white">
-                    <p className="color-primary font-weight-bold pt-3">{'Partner Event Requests'}</p>
+                    <div className="d-flex justify-content-between px-4">
+                        <p className="color-primary font-weight-bold pt-3">{'Partner Event Requests'}</p>
+                    </div>
                     <PartnerLocationEventRequests partnerLocationId={Guid.EMPTY} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
                 </div>
                 <div className="mb-4 bg-white">
-                    <p className="color-primary font-weight-bold pt-3">{'Pickup Requests Pending'} ({myPickupRequests.length})</p>
+                    <div className="d-flex justify-content-between px-4">
+                        <p className="color-primary font-weight-bold pt-3">{'Pickup Requests Pending'} ({myPickupRequests.length})</p>
+                    </div>
                     <MyPickupRequestsTable />
                 </div>
                 <div className="mb-4 bg-white">
-                    <p className="color-primary font-weight-bold pt-3">{'Partner Admin Invitations Pending'} ({myPartnerAdminInvitations.length})</p>
+                    <div className="d-flex justify-content-between px-4">
+                        <p className="color-primary font-weight-bold pt-3">{'Partner Admin Invitations Pending'} ({myPartnerAdminInvitations.length})</p>
+                    </div>
                     <PartnerAdminInvitationsTable />
                 </div>
             </Container>

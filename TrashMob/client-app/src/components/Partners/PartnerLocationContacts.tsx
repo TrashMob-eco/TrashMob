@@ -1,7 +1,7 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Button, Col, Dropdown, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
 import PartnerLocationContactData from '../Models/PartnerLocationContactData';
@@ -50,6 +50,11 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
                 fetch('/api/partnerlocationcontacts/getbypartnerlocation/' + props.partnerLocationId, {
@@ -103,6 +108,11 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -139,6 +149,11 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -199,6 +214,11 @@ export const PartnerLocationContacts: React.FC<PartnerLocationContactsDataProps>
         var data = JSON.stringify(partnerLocationContact);
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 

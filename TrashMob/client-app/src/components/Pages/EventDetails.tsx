@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
 import EventTypeData from '../Models/EventTypeData';
-import { getDefaultHeaders } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import { getEventType } from '../../store/eventTypeHelper';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
@@ -23,12 +23,9 @@ export interface DetailsMatchParams {
 export interface EventDetailsProps extends RouteComponentProps<DetailsMatchParams> {
     isUserLoaded: boolean;
     currentUser: UserData;
-    onAttendanceChanged: () => void;
-    myAttendanceList: EventData[];
-    isUserEventDataLoaded: boolean;
 }
 
-export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUserLoaded, myAttendanceList, onAttendanceChanged, isUserEventDataLoaded, history, location }) => {
+export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUserLoaded, history, location }) => {
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
     const [eventId, setEventId] = useState<string>(match.params["eventId"]);
     const [eventName, setEventName] = useState<string>("New Event");
@@ -55,6 +52,8 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
     const [createdById, setCreatedById] = useState<string>("");
     const [copied, setCopied] = useState(false);
     const [isAttending, setIsAttending] = useState<string>("No");
+    const [myAttendanceList, setMyAttendanceList] = useState<EventData[]>([]);
+    const [isUserEventDataLoaded, setIsUserEventDataLoaded] = useState(false);
 
     const startDateTime = moment(eventDate);
     const endDateTime = moment(startDateTime).add(durationHours, 'hours').add(durationMinutes, 'minutes');
@@ -121,14 +120,50 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                     setMaxNumberOfParticipants(eventData.maxNumberOfParticipants);
                     setCenter(new data.Position(eventData.longitude, eventData.latitude));
                     setIsDataLoaded(true);
-                });
+                })
+                .then(() => {
+                    if (!isUserLoaded || !currentUser) {
+                        return;
+                    }
+
+                    // If the user is logged in, get the events they are attending
+                    const accounts = msalClient.getAllAccounts();
+                    var apiConfig = getApiConfig();
+
+                    if (accounts !== null && accounts.length > 0) {
+                        const request = {
+                            scopes: apiConfig.b2cScopes,
+                            account: accounts[0]
+                        };
+
+                        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                            if (!validateToken(tokenResponse.idTokenClaims)) {
+                                return;
+                            }
+
+                            const headers = getDefaultHeaders('GET');
+                            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                            fetch('/api/events/eventsuserisattending/' + currentUser.id, {
+                                method: 'GET',
+                                headers: headers
+                            })
+                                .then(response => response.json() as Promise<EventData[]>)
+                                .then(data => {
+                                    setMyAttendanceList(data);
+                                    setIsUserEventDataLoaded(true);
+                                })
+                        });
+                    }
+                })
+
         }
 
         MapStore.getOption().then(opts => {
             setMapOptions(opts);
             setIsMapKeyLoaded(true);
         })
-    }, [eventId]);
+    }, [eventId, currentUser, isUserLoaded]);
 
     useEffect(() => {
         if (!isUserLoaded || !currentUser) {
@@ -150,6 +185,42 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                 setUserList(data);
             });
     }, [eventId])
+
+    const handleAttendanceChanged = () => {
+        if (!isUserLoaded || !currentUser) {
+            return;
+        }
+
+        // If the user is logged in, get the events they are attending
+        const accounts = msalClient.getAllAccounts();
+        var apiConfig = getApiConfig();
+
+        if (accounts !== null && accounts.length > 0) {
+            const request = {
+                scopes: apiConfig.b2cScopes,
+                account: accounts[0]
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                fetch('/api/events/eventsuserisattending/' + currentUser.id, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<EventData[]>)
+                    .then(data => {
+                        setMyAttendanceList(data);
+                        setIsUserEventDataLoaded(true);
+                    })
+            });
+        }
+    }
 
     const handleLocationChange = (point: data.Position) => {
         // do nothing
@@ -215,7 +286,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                                     <Dropdown.Item className="share-link" href={twitterUrl}><Twitter className="mr-2 p-18" aria-hidden="true" />Share to Twitter</Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
-                            <RegisterBtn eventId={eventId} isAttending={isAttending} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} isUserLoaded={isUserLoaded} history={history} location={location} match={match}></RegisterBtn>
+                            <RegisterBtn eventId={eventId} isAttending={isAttending} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} isUserLoaded={isUserLoaded} history={history} location={location} match={match}></RegisterBtn>
                         </div>
                     </div>
                     <span className="my-2 event-list-event-type p-2 rounded d-block p-15">{getEventType(eventTypeList, eventTypeId)}</span>
