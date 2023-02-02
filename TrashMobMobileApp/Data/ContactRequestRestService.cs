@@ -11,18 +11,11 @@
 
     public class ContactRequestRestService : RestServiceBase, IContactRequestRestService
     {
-        private readonly string ContactRequestApiPath = "contactrequest";
-        private readonly HttpClient httpClient;
+        protected override string Controller => "contactrequest";
 
         public ContactRequestRestService(IOptions<Settings> settings) 
             : base(settings)
         {
-            httpClient = new HttpClient
-            {
-                BaseAddress = new Uri(string.Concat(TrashMobApiAddress, ContactRequestApiPath))
-            };
-
-            httpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
         }
 
         public async Task AddContactRequest(ContactRequest contactRequest, CancellationToken cancellationToken = default)
@@ -32,7 +25,7 @@
                 contactRequest.Id = Guid.NewGuid();
                 var content = JsonContent.Create(contactRequest, typeof(ContactRequest), null, SerializerOptions);
 
-                using (var response = await httpClient.PostAsync(ContactRequestApiPath, content, cancellationToken))
+                using (var response = await AnonymousHttpClient.PostAsync(Controller, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                 }

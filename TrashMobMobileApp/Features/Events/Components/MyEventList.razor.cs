@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using TrashMob.Models;
-using TrashMobMobileApp.Data;
-using TrashMobMobileApp.Enums;
-using TrashMobMobileApp.Shared;
-using TrashMobMobileApp.StateContainers;
-
-namespace TrashMobMobileApp.Features.Events.Components
+﻿namespace TrashMobMobileApp.Features.Events.Components
 {
+    using Microsoft.AspNetCore.Components;
+    using MudBlazor;
+    using TrashMob.Models;
+    using TrashMobMobileApp.Data;
+    using TrashMobMobileApp.Enums;
+    using TrashMobMobileApp.Shared;
+    using TrashMobMobileApp.StateContainers;
+
     public partial class MyEventList
     {
         private List<Event> _myEvents = new();
@@ -15,7 +15,6 @@ namespace TrashMobMobileApp.Features.Events.Components
         private bool _isLoading;
         private string _eventSearchText;
         private EventActionGroup _currentSelectedChip = EventActionGroup.NONE;
-        private bool _eventSummarySubmitted;
         private User _user;
 
         [Inject]
@@ -130,6 +129,7 @@ namespace TrashMobMobileApp.Features.Events.Components
             {
                 _myEvents.AddRange(ownedEvents);
             }
+
             if (attendingEvents != null && attendingEvents.Any())
             {
                 _myEvents.AddRange(attendingEvents);

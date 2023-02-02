@@ -13,10 +13,7 @@
         private List<Event> _mobEvents = new();
         private List<Guid> _userAttendingEventIds = new();
         private bool _isLoading;
-        private Event _selectedEvent;
-        private bool _isViewOpen;
         private string _eventSearchText;
-        private bool _isButtonLoading;
         private User _user;
 
         [Inject]

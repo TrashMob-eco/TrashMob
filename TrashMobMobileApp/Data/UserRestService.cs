@@ -13,28 +13,20 @@
 
     public class UserRestService : RestServiceBase, IUserRestService
     {
-        private readonly string UserApi = "users";
-        private readonly HttpClient httpClient;
+        protected override string Controller => "users";
 
         public UserRestService(IOptions<Settings> settings) 
             : base(settings)
         {
-            httpClient = new HttpClient
-            {
-                BaseAddress = new Uri(string.Concat(TrashMobApiAddress, UserApi))
-            };
-
-            httpClient.DefaultRequestHeaders.Authorization = GetAuthToken();
-            httpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
         }
 
         public async Task<User> GetUserAsync(string userId, CancellationToken cancellationToken = default)
         {
             try
             {
-                var requestUri = UserApi + "/" + userId;
+                var requestUri = Controller + "/" + userId;
 
-                using (var response = await httpClient.GetAsync(requestUri, cancellationToken))
+                using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -55,13 +47,13 @@
             {
                 var localHttpClient = new HttpClient
                 {
-                    BaseAddress = new Uri(string.Concat(TrashMobApiAddress, UserApi))
+                    BaseAddress = new Uri(string.Concat(TrashMobApiAddress, Controller))
                 };
 
                 localHttpClient.DefaultRequestHeaders.Authorization = GetAuthToken(userContext);
                 localHttpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
 
-                var requestUri = UserApi + "/getuserbyemail/" + email;
+                var requestUri = Controller + "/getuserbyemail/" + email;
 
                 using (var response = await localHttpClient.GetAsync(requestUri, cancellationToken))
                 {
@@ -84,7 +76,7 @@
             {
                 var content = JsonContent.Create(user, typeof(User), null, SerializerOptions);
 
-                using (var response = await httpClient.PostAsync(UserApi, content, cancellationToken))
+                using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -105,7 +97,7 @@
             {
                 var content = JsonContent.Create(user, typeof(User), null, SerializerOptions);
 
-                using (var response = await httpClient.PutAsync(UserApi, content, cancellationToken))
+                using (var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string responseString = await response.Content.ReadAsStringAsync(cancellationToken);

@@ -10,19 +10,11 @@
 
     public class EventAttendeeRestService : RestServiceBase, IEventAttendeeRestService
     {
-        private const string EventAttendeesApi = "eventattendees";
-        private readonly HttpClient httpClient;
+        protected override string Controller => "eventattendees";
 
         public EventAttendeeRestService(IOptions<Settings> settings)
             : base(settings)
         {
-            httpClient = new HttpClient
-            {
-                BaseAddress = new Uri(string.Concat(TrashMobApiAddress, EventAttendeesApi))
-            };
-
-            httpClient.DefaultRequestHeaders.Authorization = GetAuthToken();
-            httpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
         }
 
         public async Task AddAttendeeAsync(EventAttendee eventAttendee, CancellationToken cancellationToken = default)
@@ -30,7 +22,7 @@
             try
             {
                 var content = JsonContent.Create(eventAttendee, typeof(EventAttendee), null, SerializerOptions);
-                var response = await httpClient.PostAsync(EventAttendeesApi, content, cancellationToken);
+                var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken);
                 response.EnsureSuccessStatusCode();
             }
             catch (Exception ex)
@@ -44,9 +36,9 @@
         {
             try
             {
-                var requestUri = string.Concat(EventAttendeesApi, $"/{eventAttendee.EventId}/{eventAttendee.UserId}");
+                var requestUri = string.Concat(Controller, $"/{eventAttendee.EventId}/{eventAttendee.UserId}");
 
-                using (var response = await httpClient.DeleteAsync(requestUri, cancellationToken))
+                using (var response = await AuthorizedHttpClient.DeleteAsync(requestUri, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                 }

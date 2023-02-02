@@ -1,15 +1,17 @@
-﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using TrashMob.Models;
-using TrashMobMobileApp.Data;
-
-namespace TrashMobMobileApp.Features.Profile.Pages
+﻿namespace TrashMobMobileApp.Features.Profile.Pages
 {
+    using Microsoft.AspNetCore.Components;
+    using MudBlazor;
+    using TrashMob.Models;
+    using TrashMobMobileApp.Data;
+
     public partial class UserProfile
     {
         private User _user;
         private bool _isLoading;
+#nullable enable
         private MudForm? _userForm;
+#nullable disable
         private bool _success;
         private string[] _errors;
 

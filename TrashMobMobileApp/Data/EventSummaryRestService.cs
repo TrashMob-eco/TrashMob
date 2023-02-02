@@ -12,36 +12,20 @@
 
     public class EventSummaryRestService : RestServiceBase, IEventSummaryRestService
     {
-        private readonly string EventSummariesApi = "eventsummaries";
-        private readonly HttpClient httpClient;
-        private readonly HttpClient anonymousHttpClient;
+        protected override string Controller => "eventsummaries";
 
         public EventSummaryRestService(IOptions<Settings> settings)
             : base(settings)
         {
-            httpClient = new HttpClient
-            {
-                BaseAddress = new Uri(string.Concat(TrashMobApiAddress, EventSummariesApi))
-            };
-
-            httpClient.DefaultRequestHeaders.Authorization = GetAuthToken();
-            httpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
-
-            anonymousHttpClient = new HttpClient
-            {
-                BaseAddress = new Uri(string.Concat(TrashMobApiAddress, EventSummariesApi))
-            };
-
-            anonymousHttpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
         }
 
         public async Task<EventSummary> GetEventSummaryAsync(Guid eventId, CancellationToken cancellationToken = default)
         {
             try
             {
-                var requestUri = EventSummariesApi + "/" + eventId;
+                var requestUri = Controller + "/" + eventId;
 
-                using (var response = await anonymousHttpClient.GetAsync(requestUri, cancellationToken))
+                using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string content = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -62,7 +46,7 @@
             {
                 var content = JsonContent.Create(eventSummary, typeof(EventSummary), null, SerializerOptions);
 
-                using (var response = await httpClient.PutAsync(EventSummariesApi, content, cancellationToken))
+                using (var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                 }
@@ -82,7 +66,7 @@
             {
                 var content = JsonContent.Create(eventSummary, typeof(EventSummary), null, SerializerOptions);
 
-                using (var response = await httpClient.PostAsync(EventSummariesApi, content, cancellationToken))
+                using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                 }

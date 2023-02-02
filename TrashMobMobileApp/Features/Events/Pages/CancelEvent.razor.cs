@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using TrashMobMobileApp.Data;
-using TrashMob.Models;
-using TrashMobMobileApp.Extensions;
-
-namespace TrashMobMobileApp.Features.Events.Pages
+﻿namespace TrashMobMobileApp.Features.Events.Pages
 {
+    using Microsoft.AspNetCore.Components;
+    using MudBlazor;
+    using TrashMobMobileApp.Data;
+    using TrashMob.Models;
+    using TrashMobMobileApp.Extensions;
+
     public partial class CancelEvent
     {
         private bool _isLoading;
@@ -13,7 +13,9 @@ namespace TrashMobMobileApp.Features.Events.Pages
         private MudForm _cancelEventForm;
         private bool _success;
         private string[] _errors;
+#nullable enable
         private string? _cancelReason;
+#nullable disable
 
         [Inject]
         public IMobEventManager MobEventManager { get; set; }
@@ -47,7 +49,6 @@ namespace TrashMobMobileApp.Features.Events.Pages
                     await MobEventManager.DeleteEventAsync(cancelEvent);
                     _isLoading = false;
                 }
-
             }
             catch(Exception ex)
             {
