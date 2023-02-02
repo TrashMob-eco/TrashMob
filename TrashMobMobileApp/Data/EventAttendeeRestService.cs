@@ -1,19 +1,28 @@
 ﻿namespace TrashMobMobileApp.Data
 {
+    using Microsoft.Extensions.Options;
     using System;
     using System.Diagnostics;
     using System.Net.Http.Json;
     using System.Threading.Tasks;
     using TrashMob.Models;
-    using TrashMobMobileApp.Authentication;
+    using TrashMobMobileApp.Config;
 
     public class EventAttendeeRestService : RestServiceBase, IEventAttendeeRestService
     {
-        private readonly string EventAttendeeApi = "eventattendee";
+        private const string EventAttendeesApi = "eventattendees";
+        private readonly HttpClient httpClient;
 
-        public EventAttendeeRestService(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService)
-            : base(httpClientService, b2CAuthenticationService)
+        public EventAttendeeRestService(IOptions<Settings> settings)
+            : base(settings)
         {
+            httpClient = new HttpClient
+            {
+                BaseAddress = new Uri(string.Concat(TrashMobApiAddress, EventAttendeesApi))
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization = GetAuthToken();
+            httpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
         }
 
         public async Task AddAttendeeAsync(EventAttendee eventAttendee, CancellationToken cancellationToken = default)
@@ -21,8 +30,7 @@
             try
             {
                 var content = JsonContent.Create(eventAttendee, typeof(EventAttendee), null, SerializerOptions);
-                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
-                var response = await authorizedHttpClient.PostAsync(EventAttendeeApi, content, cancellationToken);
+                var response = await httpClient.PostAsync(EventAttendeesApi, content, cancellationToken);
                 response.EnsureSuccessStatusCode();
             }
             catch (Exception ex)
@@ -36,10 +44,9 @@
         {
             try
             {
-                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
-                var requestUri = new Uri(string.Concat(authorizedHttpClient.BaseAddress, EventAttendeeApi) + $"/{eventAttendee.EventId}/{eventAttendee.UserId}");
+                var requestUri = string.Concat(EventAttendeesApi, $"/{eventAttendee.EventId}/{eventAttendee.UserId}");
 
-                using (var response = await authorizedHttpClient.DeleteAsync(requestUri, cancellationToken))
+                using (var response = await httpClient.DeleteAsync(requestUri, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                 }

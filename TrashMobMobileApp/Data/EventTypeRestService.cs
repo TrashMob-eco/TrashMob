@@ -1,28 +1,36 @@
 ﻿namespace TrashMobMobileApp.Data
 {
+    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Net.Http;
     using System.Threading.Tasks;
     using TrashMob.Models;
-    using TrashMobMobileApp.Authentication;
+    using TrashMobMobileApp.Config;
 
     public class EventTypeRestService : RestServiceBase, IEventTypeRestService
     {
         private readonly string EventTypesApi = "eventtypes";
+        private readonly HttpClient anonymousHttpClient;
 
-        public EventTypeRestService(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService)
-            : base(httpClientService, b2CAuthenticationService)
+        public EventTypeRestService(IOptions<Settings> settings)
+            : base(settings)
         {
+            anonymousHttpClient = new HttpClient
+            {
+                BaseAddress = new Uri(string.Concat(TrashMobApiAddress, EventTypesApi))
+            };
+
+            anonymousHttpClient.DefaultRequestHeaders.Authorization = GetAuthToken();
+            anonymousHttpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
         }
 
         public async Task<IEnumerable<EventType>> GetEventTypesAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                var anonymousHttpClient = HttpClientService.CreateAnonymousClient();
-
                 using (var response = await anonymousHttpClient.GetAsync(EventTypesApi, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();

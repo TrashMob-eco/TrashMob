@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using TrashMob.Models;
-using TrashMobMobileApp.Data;
-using TrashMobMobileApp.Extensions;
-using TrashMobMobileApp.Shared;
-
-namespace TrashMobMobileApp.Features.Events.Components
+﻿namespace TrashMobMobileApp.Features.Events.Components
 {
+    using Microsoft.AspNetCore.Components;
+    using MudBlazor;
+    using TrashMob.Models;
+    using TrashMobMobileApp.Data;
+    using TrashMobMobileApp.Extensions;
+    using TrashMobMobileApp.Shared;
+
     public partial class ActiveEventList
     {
         private List<Event> _mobEventsStatic = new();
