@@ -1,6 +1,6 @@
 import { FC, FormEvent, useEffect } from 'react';
 import UserData from '../Models/UserData';
-import { getApiConfig, getB2CPolicies, msalClient, msalClientNoRedirect } from '../../store/AuthStore';
+import { getApiConfig, getB2CPolicies, msalClient } from '../../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button, Col, Container, Image, Row } from 'react-bootstrap';
 import globes from '../assets/gettingStarted/globes.png';
@@ -8,7 +8,6 @@ import globes from '../assets/gettingStarted/globes.png';
 interface DeleteMyDataProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
     currentUser: UserData;
-    onUserDeleted: any;
 }
 
 const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
@@ -29,10 +28,12 @@ const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
             authority: policy.authorities.deleteUser.authority,
             scopes: scopes.b2cScopes,
         };
-        msalClientNoRedirect.acquireTokenRedirect(request)
+        msalClient.acquireTokenPopup(request)
             .then(() => {
-                props.onUserDeleted();
-                props.history.push("/");
+                const logoutRequest = {
+                    account: msalClient.getActiveAccount(),
+                }
+                msalClient.logoutRedirect(logoutRequest);
             });
     }
 
