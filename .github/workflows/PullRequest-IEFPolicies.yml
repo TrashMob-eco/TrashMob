@@ -14,7 +14,7 @@ env:
   DOTNET_VERSION: '7.0.x'  # set this to the dotnet version to use
   DOTNET_VERSION2: '7.0.x'  # set this to the dotnet version to use
   CLIENT_SECRET: $(secrets.IEF_POLICY_UPDATE_CLIENT_SECRET)
-  CLIENT_ID: '09b4348a-167d-4c90-b414-f0b498488ea9'
+  CLIENT_ID: 'e75e0bf9-aa83-4d06-a60e-89f4b29db739'
   TENANT_NAME: 'TrashMobDev'
 
 jobs:
