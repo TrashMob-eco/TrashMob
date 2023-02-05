@@ -13,8 +13,7 @@ on:
 env:
   DOTNET_VERSION: '7.0.x'  # set this to the dotnet version to use
   DOTNET_VERSION2: '7.0.x'  # set this to the dotnet version to use
-  CLIENT_SECRET: $(secrets.IEF_POLICY_UPDATE_CLIENT_SECRET)
-  CLIENT_ID: 'e75e0bf9-aa83-4d06-a60e-89f4b29db739'
+  CLIENT_ID: '09b4348a-167d-4c90-b414-f0b498488ea9'
   TENANT_NAME: 'TrashMobDev'
 
 jobs:
@@ -30,5 +29,5 @@ jobs:
       - name: Powershell
         run: |
           Install-Module -Name IefPolicies -Scope CurrentUser -Force -AllowPrerelease
-          Connect-IefPolicies -tenant ${env:TENANT_NAME} -clientId ${env:CLIENT_ID} -clientSecret ${env:CLIENT_SECRET}
+          Connect-IefPolicies -tenant ${{ env:TENANT_NAME }} -clientId ${{ env:CLIENT_ID }} -clientSecret ${{ secrets.IEF_POLICY_UPDATE_CLIENT_SECRET }}
           Import-IefPolicies -sourceDirectory "./../../IEFPolicies" -configurationFilePath "./../../IEFPolicies/trashmobdev.json"
