@@ -7,7 +7,6 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-    using TrashMob.Models;
     using TrashMobMobileApp.Data;
 
     /// <summary>
@@ -19,25 +18,22 @@
 
         public B2CAuthenticationService(B2CConstants b2CConstants)
         {
-
+#if ANDROID
+            // default redirectURI; each platform specific project will have to override it with its own
+            var builder = PublicClientApplicationBuilder.Create(b2CConstants.ClientID)
+                .WithB2CAuthority(b2CConstants.AuthoritySignInSignUp)
+                .WithParentActivityOrWindow(() => Platform.CurrentActivity)
+                .WithRedirectUri(b2CConstants.AndroidRedirectUri);
+            b2CConstants.PublicClientApp = builder.Build();
+#elif IOS
             // default redirectURI; each platform specific project will have to override it with its own
             var builder = PublicClientApplicationBuilder.Create(b2CConstants.ClientID)
                 .WithB2CAuthority(b2CConstants.AuthoritySignInSignUp)
                 .WithIosKeychainSecurityGroup(b2CConstants.IOSKeyChainGroup)
-                // .WithRedirectUri("http://localhost");
-                .WithRedirectUri(b2CConstants.RedirectUri);
-
-            // Android implementation is based on https://github.com/jamesmontemagno/CurrentActivityPlugin
-            // iOS implementation would require to expose the current ViewControler - not currently implemented as it is not required
-            // UWP does not require this
-            var windowLocatorService = DependencyService.Get<IParentWindowLocatorService>();
-
-            if (windowLocatorService != null)
-            {
-                builder = builder.WithParentActivityOrWindow(() => windowLocatorService?.GetCurrentParentWindow());
-            }
-
+                .WithRedirectUri(b2CConstants.IOSRedirectUri);
             b2CConstants.PublicClientApp = builder.Build();
+#endif
+      
             this.b2CConstants = b2CConstants;
         }
 
@@ -79,30 +75,6 @@
 
             var newContext = UpdateUserInfo(authResult);
             return newContext;
-        }
-
-        public async Task ResetPasswordAsync(IUserManager userManager)
-        {
-            AuthenticationResult authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.ApiScopesArray)
-                .WithPrompt(Prompt.NoPrompt)
-                .WithAuthority(b2CConstants.AuthorityPasswordReset)
-                .ExecuteAsync();
-
-            UserState.UserContext = UpdateUserInfo(authResult);
-            await B2CAuthenticationService.VerifyAccount(userManager);
-        }
-
-        public async Task EditProfileAsync()
-        {
-            IEnumerable<IAccount> accounts = await b2CConstants.PublicClientApp.GetAccountsAsync();
-
-            AuthenticationResult authResult = await b2CConstants.PublicClientApp.AcquireTokenInteractive(b2CConstants.ApiScopesArray)
-                .WithAccount(GetAccountByPolicy(accounts, b2CConstants.PolicyEditProfile))
-                .WithPrompt(Prompt.NoPrompt)
-                .WithAuthority(b2CConstants.AuthorityEditProfile)
-                .ExecuteAsync();
-
-            UserState.UserContext = UpdateUserInfo(authResult);
         }
 
         private async Task<UserContext> SignInInteractively()
@@ -190,28 +162,9 @@
 
             JObject user = ParseIdToken(ar.IdToken);
 
-            newContext.NameIdentifier = ar.ClaimsPrincipal?.Claims?.FirstOrDefault(c => c.Type == "sub")?.Value;
-            newContext.SourceSystemUserName = ar.ClaimsPrincipal?.Claims?.FirstOrDefault(c => c.Type == "username")?.Value;
-
             newContext.AccessToken = ar.AccessToken;
-            newContext.Name = user["name"]?.ToString();
-            newContext.UserIdentifier = user["oid"]?.ToString();
-
             newContext.GivenName = user["given_name"]?.ToString();
-            newContext.FamilyName = user["family_name"]?.ToString();
-
-            newContext.StreetAddress = user["streetAddress"]?.ToString();
-            newContext.City = user["city"]?.ToString();
-            newContext.Province = user["state"]?.ToString();
-            newContext.PostalCode = user["postalCode"]?.ToString();
-            newContext.Country = user["country"]?.ToString();
-
-            newContext.JobTitle = user["jobTitle"]?.ToString();
-
-            if (user["emails"] is JArray emails)
-            {
-                newContext.EmailAddress = emails[0].ToString();
-            }
+            newContext.EmailAddress = user["email"]?.ToString();
 
             newContext.IsLoggedOn = true;
 

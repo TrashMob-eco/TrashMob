@@ -14,25 +14,25 @@
       <ClaimType Id="userId">
         <DisplayName>User name</DisplayName>
         <DataType>string</DataType>
-        <UserHelpText>Add help text here</UserHelpText>
+        <UserHelpText>Choose a unique user name</UserHelpText>
         <UserInputType>TextBox</UserInputType>
       </ClaimType>
       <ClaimType Id="extension_PrivacyAccepted">
-        <DisplayName>Privacy policy accepted</DisplayName>
+        <DisplayName></DisplayName>
         <DataType>string</DataType>
-        <UserHelpText>Add help text here</UserHelpText>
+        <UserHelpText>You must agree to the TrashMob.eco Privacy Policy to continue</UserHelpText>
         <UserInputType>CheckboxMultiSelect</UserInputType>
         <Restriction>
-          <Enumeration Text="" Value="Y" SelectByDefault="false" />
+          <Enumeration Text="I have read and agree to the TrashMob.eco Privacy Policy" Value="Y" SelectByDefault="false" />
         </Restriction>
       </ClaimType>
       <ClaimType Id="extension_TOSAccepted">
-        <DisplayName>Terms of service policy accepted</DisplayName>
+        <DisplayName></DisplayName>
         <DataType>string</DataType>
-        <UserHelpText>Add help text here</UserHelpText>
+        <UserHelpText>You must agree to the TrashMob.eco Terms of Service to continue</UserHelpText>
         <UserInputType>CheckboxMultiSelect</UserInputType>
         <Restriction>
-          <Enumeration Text="" Value="Y" SelectByDefault="false" />
+          <Enumeration Text="I have read and agree to the TrashMob.eco Terms of Service" Value="Y" SelectByDefault="false" />
         </Restriction>
       </ClaimType>
       <ClaimType Id="signInNames.userId">
@@ -41,19 +41,92 @@
         <UserHelpText>User id to use for signing in.</UserHelpText>
         <UserInputType>TextBox</UserInputType>
       </ClaimType>  
+      <ClaimType Id="isForgotPassword">
+        <DisplayName>isForgotPassword</DisplayName>
+        <DataType>boolean</DataType>
+        <AdminHelpText>Whether the user has selected Forgot your Password</AdminHelpText>
+      </ClaimType>
+      <ClaimType Id="nullStringClaim">
+        <DisplayName>nullClaim</DisplayName>
+        <DataType>string</DataType>
+        <AdminHelpText>A policy claim to store output values from ClaimsTransformations that aren't useful. This claim should not be used in TechnicalProfiles.</AdminHelpText>
+        <UserHelpText>A policy claim to store output values from ClaimsTransformations that aren't useful. This claim should not be used in TechnicalProfiles.</UserHelpText>
+      </ClaimType>            
     </ClaimsSchema>
+    <ClaimsTransformations>
+      <!-- Claim transformations needed for LinkedIn technical profile -->
+      <ClaimsTransformation Id="ExtractGivenNameFromLinkedInResponse" TransformationMethod="GetSingleItemFromJson">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="givenName" TransformationClaimType="inputJson" />
+        </InputClaims>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="nullStringClaim" TransformationClaimType="key" />
+          <OutputClaim ClaimTypeReferenceId="givenName" TransformationClaimType="value" />
+        </OutputClaims>
+      </ClaimsTransformation>
+      <ClaimsTransformation Id="ExtractSurNameFromLinkedInResponse" TransformationMethod="GetSingleItemFromJson">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="surname" TransformationClaimType="inputJson" />
+        </InputClaims>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="nullStringClaim" TransformationClaimType="key" />
+          <OutputClaim ClaimTypeReferenceId="surname" TransformationClaimType="value" />
+        </OutputClaims>
+      </ClaimsTransformation>
+    </ClaimsTransformations>    
     <ContentDefinitions>
       <ContentDefinition Id="api.signuporsignin">
         <LoadUri>https://{UIAssets}.blob.core.windows.net/pages/SignUpSignIn.html</LoadUri>
+        <DataUri>urn:com:microsoft:aad:b2c:elements:contract:unifiedssp:2.1.2</DataUri>        
       </ContentDefinition> 
       <ContentDefinition Id="api.localaccountsignup">
         <LoadUri>https://{UIAssets}.blob.core.windows.net/pages/SignUpSignIn.html</LoadUri>
-      </ContentDefinition>           
+      </ContentDefinition>  
     </ContentDefinitions>
   </BuildingBlocks>
-
   
   <ClaimsProviders>
+
+    <ClaimsProvider>
+      <Domain>live.com</Domain>
+      <DisplayName>Microsoft Account</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="MSA-MicrosoftAccount-OpenIdConnect">
+          <DisplayName>Microsoft Account</DisplayName>
+          <Protocol Name="OpenIdConnect" />
+          <Metadata>
+            <Item Key="ProviderName">https://login.live.com</Item>
+            <Item Key="METADATA">https://login.live.com/.well-known/openid-configuration</Item>
+            <Item Key="response_types">code</Item>
+            <Item Key="response_mode">form_post</Item>
+            <Item Key="scope">openid profile email</Item>
+            <Item Key="HttpBinding">POST</Item>
+            <Item Key="UsePolicyInRedirectUri">false</Item>
+            <Item Key="client_id">{MicrosoftAppId}</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="client_secret" StorageReferenceId="B2C_1A_MicrosoftSecret" />
+          </CryptographicKeys>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="issuerUserId" PartnerClaimType="oid" />
+            <OutputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="given_name" />
+            <OutputClaim ClaimTypeReferenceId="surName" PartnerClaimType="family_name" />
+            <OutputClaim ClaimTypeReferenceId="displayName" PartnerClaimType="name" />
+            <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" />
+            <OutputClaim ClaimTypeReferenceId="identityProvider" PartnerClaimType="iss" />
+            <OutputClaim ClaimTypeReferenceId="email" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName" />
+            <OutputClaimsTransformation ReferenceId="CreateUserPrincipalName" />
+            <OutputClaimsTransformation ReferenceId="CreateAlternativeSecurityId" />
+            <OutputClaimsTransformation ReferenceId="CreateSubjectClaimFromAlternativeSecurityId" />
+          </OutputClaimsTransformations>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-SocialLogin" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+
     <ClaimsProvider>
       <DisplayName>Facebook</DisplayName>
       <TechnicalProfiles>
@@ -64,6 +137,17 @@
             <Item Key="ClaimsEndpoint">https://graph.facebook.com/me?fields=id,first_name,last_name,name,email</Item>
           </Metadata>
         </TechnicalProfile>
+        <TechnicalProfile Id="SM-SocialLogin">
+          <DisplayName>Session Mananagement Provider</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.SSO.ExternalLoginSSOSessionProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="AlwaysFetchClaimsFromProvider">true</Item>
+          </Metadata>
+          <PersistedClaims>
+            <PersistedClaim ClaimTypeReferenceId="email" />
+            <PersistedClaim ClaimTypeReferenceId="identityProvider" />            
+          </PersistedClaims>
+        </TechnicalProfile>          
       </TechnicalProfiles>
     </ClaimsProvider>
 
@@ -120,6 +204,37 @@
       <Domain>twitter.com</Domain>
       <DisplayName>Twitter</DisplayName>
       <TechnicalProfiles>
+        <TechnicalProfile Id="Twitter-OAuth2">
+          <DisplayName>Twitter</DisplayName>
+          <Protocol Name="OAuth2" />
+          <Metadata>
+            <Item Key="ProviderName">Twitter</Item>
+            <Item Key="authorization_endpoint">https://twitter.com/i/oauth2/authorize</Item>
+            <Item Key="AccessTokenEndpoint">https://api.twitter.com/2/oauth2/token</Item>
+            <Item Key="HttpBinding">POST</Item>
+            <Item Key="client_id">{TwitterClientId}</Item>
+            <Item Key="AdditionalRequestQueryParameters"></Item>
+            <Item Key="response_mode">users.read form_post</Item>
+            <Item Key="scope">offline.access</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="client_secret" StorageReferenceId="B2C_1A_TwitterSecret" />
+          </CryptographicKeys>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="issuerUserId" PartnerClaimType="user_id" />
+            <OutputClaim ClaimTypeReferenceId="displayName" PartnerClaimType="screen_name" />
+            <OutputClaim ClaimTypeReferenceId="email" />
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="twitter.com" />
+            <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName" />
+            <OutputClaimsTransformation ReferenceId="CreateUserPrincipalName" />
+            <OutputClaimsTransformation ReferenceId="CreateAlternativeSecurityId" />
+            <OutputClaimsTransformation ReferenceId="CreateSubjectClaimFromAlternativeSecurityId" />
+          </OutputClaimsTransformations>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-SocialLogin" />
+        </TechnicalProfile>        
         <TechnicalProfile Id="Twitter-OAuth1">
           <DisplayName>Twitter</DisplayName>
           <Protocol Name="OAuth1" />
@@ -198,6 +313,50 @@
     </ClaimsProvider>
 
     <ClaimsProvider>
+      <Domain>linkedin.com</Domain>
+      <DisplayName>LinkedIn</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="LinkedIn-OAuth2">
+          <DisplayName>LinkedIn</DisplayName>
+          <Protocol Name="OAuth2" />
+          <Metadata>
+            <Item Key="ProviderName">linkedin</Item>
+            <Item Key="authorization_endpoint">https://www.linkedin.com/oauth/v2/authorization</Item>
+            <Item Key="AccessTokenEndpoint">https://www.linkedin.com/oauth/v2/accessToken</Item>
+            <Item Key="ClaimsEndpoint">https://api.linkedin.com/v2/me</Item>
+            <Item Key="scope">r_emailaddress r_liteprofile</Item>
+            <Item Key="HttpBinding">POST</Item>
+            <Item Key="external_user_identity_claim_id">id</Item>
+            <Item Key="BearerTokenTransmissionMethod">AuthorizationHeader</Item>
+            <Item Key="ResolveJsonPathsInJsonTokens">true</Item>
+            <Item Key="UsePolicyInRedirectUri">false</Item>
+            <Item Key="client_id">{LinkedInId}</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="client_secret" StorageReferenceId="B2C_1A_LinkedInSecret" />
+          </CryptographicKeys>
+          <InputClaims />
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="issuerUserId" PartnerClaimType="id" />
+            <OutputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="firstName.localized" />
+            <OutputClaim ClaimTypeReferenceId="surname" PartnerClaimType="lastName.localized" />
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="linkedin.com" AlwaysUseDefaultValue="true" />
+            <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" AlwaysUseDefaultValue="true" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="ExtractGivenNameFromLinkedInResponse" />
+            <OutputClaimsTransformation ReferenceId="ExtractSurNameFromLinkedInResponse" />
+            <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName" />
+            <OutputClaimsTransformation ReferenceId="CreateUserPrincipalName" />
+            <OutputClaimsTransformation ReferenceId="CreateAlternativeSecurityId" />
+            <OutputClaimsTransformation ReferenceId="CreateSubjectClaimFromAlternativeSecurityId" />
+          </OutputClaimsTransformations>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-SocialLogin" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>    
+
+    <ClaimsProvider>
       <DisplayName>Local Account SignIn</DisplayName>
       <TechnicalProfiles>
         <TechnicalProfile Id="login-NonInteractive">
@@ -212,6 +371,22 @@
         </TechnicalProfile>
       </TechnicalProfiles>
     </ClaimsProvider>
+    <ClaimsProvider>
+      <DisplayName>Local Account</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="ForgotPassword">
+          <DisplayName>Forgot your password?</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.ClaimsTransformationProtocolProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"/>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="isForgotPassword" DefaultValue="true" AlwaysUseDefaultValue="true"/>
+          </OutputClaims>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="LocalAccountWritePasswordUsingObjectId">
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-AAD" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>    
     <ClaimsProvider>
       <DisplayName>Self asserted</DisplayName>
       <TechnicalProfiles>
@@ -241,7 +416,7 @@
             <!-- Optional claims, to be collected from the user -->
             <!--OutputClaim ClaimTypeReferenceId="displayName"/-->
             <OutputClaim ClaimTypeReferenceId="givenName"/>
-            <OutputClaim ClaimTypeReferenceId="surName"/>
+            <!-- <OutputClaim ClaimTypeReferenceId="surName"/> -->
             <OutputClaim ClaimTypeReferenceId="extension_PrivacyAccepted" Required="true" />      
             <OutputClaim ClaimTypeReferenceId="extension_TOSAccepted" Required="true" />                   
           </OutputClaims>
@@ -260,6 +435,7 @@
             <Item Key="setting.operatingMode">Email</Item>
             <Item Key="ContentDefinitionReferenceId">api.localaccountsignin</Item>
             <Item Key="IncludeClaimResolvingInClaimsHandling">true</Item>
+            <Item Key="setting.forgotPasswordLinkOverride">ForgotPasswordExchange</Item>            
           </Metadata>
           <IncludeInSso>false</IncludeInSso>
           <InputClaims>
@@ -307,9 +483,9 @@
             <!-- Optional claims. These claims are collected from the user and can be modified. If a claim is to be persisted in the directory after having been 
                  collected from the user, it needs to be added as a PersistedClaim in the ValidationTechnicalProfile referenced below, i.e. 
                  in AAD-UserWriteUsingAlternativeSecurityId. -->
-            <OutputClaim ClaimTypeReferenceId="displayName" />
+            <!-- <OutputClaim ClaimTypeReferenceId="displayName" /> -->
             <OutputClaim ClaimTypeReferenceId="givenName" />
-            <OutputClaim ClaimTypeReferenceId="surname" />
+            <!-- <OutputClaim ClaimTypeReferenceId="surname" /> -->
             <OutputClaim ClaimTypeReferenceId="extension_PrivacyAccepted" Required="true" />      
             <OutputClaim ClaimTypeReferenceId="extension_TOSAccepted" Required="true" />                
           </OutputClaims>
@@ -361,12 +537,7 @@
           </InputClaims>
           <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
         </TechnicalProfile>
-      </TechnicalProfiles>
-    </ClaimsProvider>
 
-    <ClaimsProvider>
-      <DisplayName>Add REST API</DisplayName>
-      <TechnicalProfiles>
         <TechnicalProfile Id="REST-SignUp">
           <DisplayName>Validate user input data and return loyaltyNumber claim</DisplayName>
           <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
@@ -381,9 +552,29 @@
           <InputClaims>
             <InputClaim ClaimTypeReferenceId="userId" PartnerClaimType="userName"/>
             <InputClaim ClaimTypeReferenceId="email" />
+            <InputClaim ClaimTypeReferenceId="givenName" />
+            <InputClaim ClaimTypeReferenceId="objectId" />                        
           </InputClaims>
           <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
         </TechnicalProfile>
+
+        <TechnicalProfile Id="REST-DeleteUser">
+          <DisplayName>Delete user from db</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="ServiceUrl">{RESTApi}/DeleteUser</Item>
+            <Item Key="AuthenticationType">ApiKeyHeader</Item>
+            <Item Key="SendClaimsIn">Body</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="x-functions-key" StorageReferenceId="B2C_1A_DeleteUser" />
+          </CryptographicKeys>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="objectId" />                        
+          </InputClaims>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
+        </TechnicalProfile>
+
       </TechnicalProfiles>
     </ClaimsProvider>      
 
@@ -443,12 +634,12 @@
             <OutputClaim ClaimTypeReferenceId="extension_TOSAccepted" />            
             <OutputClaim ClaimTypeReferenceId="userId" PartnerClaimType="signInNames.userId" />
             <OutputClaim ClaimTypeReferenceId="email" PartnerClaimType="signInNames.emailAddress" />            
-            <OutputClaim ClaimTypeReferenceId="extension_TOSAccepted" />                       
           </OutputClaims>          
         </TechnicalProfile>           
         <TechnicalProfile Id="AAD-UserWriteUsingAlternativeSecurityId">
           <PersistedClaims>
             <PersistedClaim ClaimTypeReferenceId="userId" PartnerClaimType="signInNames.userId" />
+            <PersistedClaim ClaimTypeReferenceId="email" PartnerClaimType="signInNames.emailAddress" />               
             <PersistedClaim ClaimTypeReferenceId="extension_PrivacyAccepted" />      
             <PersistedClaim ClaimTypeReferenceId="extension_TOSAccepted" />                   
           </PersistedClaims>          
@@ -479,4 +670,24 @@
   <!--UserJourneys>
 	
 	</UserJourneys-->
+
+
+  <SubJourneys>
+    <SubJourney Id="PasswordReset" Type="Call">
+      <OrchestrationSteps>
+        <!-- Validate user's email address. -->
+        <OrchestrationStep Order="1" Type="ClaimsExchange">
+          <ClaimsExchanges>
+            <ClaimsExchange Id="PasswordResetUsingEmailAddressExchange" TechnicalProfileReferenceId="LocalAccountDiscoveryUsingEmailAddress" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+        <OrchestrationStep Order="2" Type="ClaimsExchange">
+          <ClaimsExchanges>
+            <ClaimsExchange Id="NewCredentials" TechnicalProfileReferenceId="LocalAccountWritePasswordUsingObjectId" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+      </OrchestrationSteps>
+    </SubJourney>
+  </SubJourneys> 
+
 </TrustFrameworkPolicy>

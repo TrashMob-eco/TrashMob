@@ -19,9 +19,9 @@
   <BuildingBlocks>
     <ClaimsSchema>
       <ClaimType Id="confirmDelete">
-        <DisplayName>Are you sure you want to de-register?</DisplayName>
+        <DisplayName>Are you sure you want to delete your account? It cannot be recovered.</DisplayName>
         <DataType>string</DataType>
-        <UserHelpText>Select this checkbox if you are you want to de-register from this system.</UserHelpText>
+        <UserHelpText>Are you sure you want to delete your account? It cannot be recovered.</UserHelpText>
         <UserInputType>CheckboxMultiSelect</UserInputType>
         <Restriction>
           <Enumeration Text="Yes" Value="yes" SelectByDefault="false" />
@@ -42,7 +42,7 @@
       <TechnicalProfiles>
         <TechnicalProfile Id="AAD-UserDeleteUsingObjectId">
           <Metadata>
-            <Item Key="Operation">Delete</Item>
+            <Item Key="Operation">DeleteClaimsPrincipal</Item>
             <Item Key="RaiseErrorIfClaimsPrincipalDoesNotExist">true</Item>
           </Metadata>
           <IncludeInSso>false</IncludeInSso>
@@ -67,7 +67,7 @@
           </Metadata>
         </TechnicalProfile>        
         <TechnicalProfile Id="SelfAsserted-DeleteUser">
-          <DisplayName>User ID signup</DisplayName>
+          <DisplayName>User deregister UI</DisplayName>
           <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.SelfAssertedAttributeProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
           <Metadata>
             <Item Key="ContentDefinitionReferenceId">api.selfasserted.profileupdate</Item>
@@ -78,22 +78,11 @@
           </InputClaims>             
           <OutputClaims>
             <OutputClaim ClaimTypeReferenceId="confirmDelete" Required="true"  />    
-            <OutputClaim ClaimTypeReferenceId="userDeleted"/>                             
+            <OutputClaim ClaimTypeReferenceId="userDeleted" DefaultValue="true" AlwaysUseDefaultValue="true" />                             
           </OutputClaims>
           <ValidationTechnicalProfiles>
-            <ValidationTechnicalProfile ReferenceId="AAD-UserDeleteUsingObjectId">
-              <Preconditions>
-                <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
-                  <Value>confirmDelete</Value>
-                  <Action>SkipThisValidationTechnicalProfile</Action>
-                </Precondition>
-                <Precondition Type="ClaimEquals" ExecuteActionsIf="false">
-                  <Value>confirmDelete</Value>
-                  <Value>yes</Value>
-                  <Action>SkipThisValidationTechnicalProfile</Action>
-                </Precondition>                
-              </Preconditions>              
-            </ValidationTechnicalProfile>
+            <ValidationTechnicalProfile ReferenceId="REST-DeleteUser" ContinueOnError="true" ContinueOnSuccess="true" />          
+            <ValidationTechnicalProfile ReferenceId="AAD-UserDeleteUsingObjectId" />
           </ValidationTechnicalProfiles>
         </TechnicalProfile>        
       </TechnicalProfiles>
@@ -107,10 +96,13 @@
 
         <OrchestrationStep Order="1" Type="CombinedSignInAndSignUp" ContentDefinitionReferenceId="api.signuporsignin">
           <ClaimsProviderSelections>
+            <ClaimsProviderSelection TargetClaimsExchangeId="ForgotPasswordExchange" />   
+            <ClaimsProviderSelection TargetClaimsExchangeId="MicrosoftAccountExchange"/>                                      
             <ClaimsProviderSelection TargetClaimsExchangeId="FacebookExchange"/>
             <ClaimsProviderSelection TargetClaimsExchangeId="GoogleExchange"/>       
             <ClaimsProviderSelection TargetClaimsExchangeId="TwitterExchange"/>        
-            <ClaimsProviderSelection TargetClaimsExchangeId="AppleExchange"/>                        
+            <ClaimsProviderSelection TargetClaimsExchangeId="AppleExchange"/>    
+            <ClaimsProviderSelection TargetClaimsExchangeId="LinkedInExchange"/>                                       
             <ClaimsProviderSelection ValidationClaimsExchangeId="LocalAccountSigninEmailExchange"/>        
           </ClaimsProviderSelections>
           <ClaimsExchanges>
@@ -127,35 +119,29 @@
             </Precondition>
           </Preconditions>
           <ClaimsExchanges>
+            <ClaimsExchange Id="ForgotPasswordExchange" TechnicalProfileReferenceId="ForgotPassword" />    
+            <ClaimsExchange Id="MicrosoftAccountExchange" TechnicalProfileReferenceId="MSA-MicrosoftAccount-OpenIdConnect"/>                            
             <ClaimsExchange Id="FacebookExchange" TechnicalProfileReferenceId="Facebook-OAUTH"/>
             <ClaimsExchange Id="GoogleExchange" TechnicalProfileReferenceId="Google-OAUTH"/>        
             <ClaimsExchange Id="TwitterExchange" TechnicalProfileReferenceId="Twitter-OAuth1"/>        
-            <ClaimsExchange Id="AppleExchange" TechnicalProfileReferenceId="Apple-OIDC"/>                      
+            <ClaimsExchange Id="AppleExchange" TechnicalProfileReferenceId="Apple-OIDC"/>   
+            <ClaimsExchange Id="LinkedInExchange" TechnicalProfileReferenceId="LinkedIn-OAuth2"/>                                    
           </ClaimsExchanges>
-        </OrchestrationStep>        
+        </OrchestrationStep>    
+         
+        <OrchestrationStep Order="3" Type="InvokeSubJourney">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+              <Value>isForgotPassword</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <JourneyList>
+            <Candidate SubJourneyReferenceId="PasswordReset" />
+          </JourneyList>
+        </OrchestrationStep> 
 
-        <!-- <OrchestrationStep Order="1" Type="ClaimsProviderSelection" ContentDefinitionReferenceId="api.idpselections">
-          <ClaimsProviderSelections>
-            <ClaimsProviderSelection TargetClaimsExchangeId="LocalAccountSigninEmailExchange"/>                 
-            <ClaimsProviderSelection TargetClaimsExchangeId="FacebookExchange"/>
-            <ClaimsProviderSelection TargetClaimsExchangeId="GoogleExchange"/>       
-            <ClaimsProviderSelection TargetClaimsExchangeId="TwitterExchange"/>        
-            <ClaimsProviderSelection TargetClaimsExchangeId="AppleExchange"/>                           
-          </ClaimsProviderSelections>
-        </OrchestrationStep>
-
-        <OrchestrationStep Order="2" Type="ClaimsExchange">
-          <ClaimsExchanges>
-            <ClaimsExchange Id="LocalAccountSigninEmailExchange" TechnicalProfileReferenceId="SelfAsserted-LocalAccountSignin-EmailOrUserId"/>                
-            <ClaimsExchange Id="FacebookExchange" TechnicalProfileReferenceId="Facebook-OAUTH"/>
-            <ClaimsExchange Id="GoogleExchange" TechnicalProfileReferenceId="Google-OAUTH"/>        
-            <ClaimsExchange Id="TwitterExchange" TechnicalProfileReferenceId="Twitter-OAuth1"/>        
-            <ClaimsExchange Id="AppleExchange" TechnicalProfileReferenceId="Apple-OIDC"/>                      
-          </ClaimsExchanges>
-        </OrchestrationStep> -->
-    
-        <!-- For social IDP authentication, attempt to find the user account in the directory. -->
-        <OrchestrationStep Order="3" Type="ClaimsExchange">
+        <OrchestrationStep Order="4" Type="ClaimsExchange">
           <Preconditions>
             <Precondition Type="ClaimEquals" ExecuteActionsIf="true">
               <Value>authenticationSource</Value>
@@ -168,13 +154,13 @@
           </ClaimsExchanges>
         </OrchestrationStep>
 
-        <OrchestrationStep Order="4" Type="ClaimsExchange">
+        <OrchestrationStep Order="5" Type="ClaimsExchange">
           <ClaimsExchanges>
             <ClaimsExchange Id="ConfirmDeleteExchange" TechnicalProfileReferenceId="SelfAsserted-DeleteUser"/>
           </ClaimsExchanges>
         </OrchestrationStep>        
 
-        <OrchestrationStep Order="5" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="JwtIssuer"/>
+        <OrchestrationStep Order="6" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="JwtIssuer"/>
 
       </OrchestrationSteps>
       <ClientDefinition ReferenceId="DefaultWeb"/>
@@ -183,9 +169,9 @@
 
   <RelyingParty>
     <DefaultUserJourney ReferenceId="DeregisterUser" />
-    <UserJourneyBehaviors>
+    <!-- <UserJourneyBehaviors>
       <JourneyInsights TelemetryEngine="ApplicationInsights" InstrumentationKey="{AppInsightsKey}" DeveloperMode="true" ClientEnabled="false" ServerEnabled="true" TelemetryVersion="1.0.0" />    
-    </UserJourneyBehaviors> 
+    </UserJourneyBehaviors>  -->
     <TechnicalProfile Id="PolicyProfile">
       <DisplayName>PolicyProfile</DisplayName>
       <Protocol Name="OpenIdConnect" />
@@ -194,7 +180,7 @@
         <OutputClaim ClaimTypeReferenceId="surname" />
         <OutputClaim ClaimTypeReferenceId="email" />
         <OutputClaim ClaimTypeReferenceId="signInName" />      
-        <!-- <OutputClaim ClaimTypeReferenceId="userDeleted" />              -->
+        <OutputClaim ClaimTypeReferenceId="userDeleted" />
         <OutputClaim ClaimTypeReferenceId="objectId" PartnerClaimType="sub"/>
         <OutputClaim ClaimTypeReferenceId="identityProvider" />
         <OutputClaim ClaimTypeReferenceId="tenantId" AlwaysUseDefaultValue="true" DefaultValue="{Policy:TenantObjectId}" />

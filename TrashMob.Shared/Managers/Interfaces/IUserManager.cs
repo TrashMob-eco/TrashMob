@@ -15,6 +15,8 @@
 
         Task<User> GetUserByInternalIdAsync(Guid id, CancellationToken cancellationToken = default);
 
+        Task<User> GetUserByObjectIdAsync(Guid id, CancellationToken cancellationToken = default);
+
         Task<bool> UserExistsAsync(Guid id, CancellationToken cancellationToken = default);
 
         Task<User> UserExistsAsync(string nameIdentifier, CancellationToken cancellationToken = default);

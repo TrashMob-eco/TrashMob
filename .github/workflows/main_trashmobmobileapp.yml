@@ -1,7 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: TrashMobMobile App - Test
+name: TrashMob IEF Policies Pull Request - Dev Deployment
 
 on:
   push:
@@ -66,13 +63,13 @@ jobs:
       shell: bash
       run: |
         cd TrashMobMobileApp
-        jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -signedjar bin/Release/net7.0-android/publish/eco.trashmob.trashmobmobileapp-Signed.aab bin/Release/net7.0-android/publish/eco.trashmob.trashmobmobileapp.aab key
+        jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -signedjar bin/${{ env.CONFIGURATION }}/net7.0-android/publish/eco.trashmob.trashmobmobileapp-Signed.aab bin/${{ env.CONFIGURATION }}/net7.0-android/publish/eco.trashmob.trashmobmobileapp.aab key
 
     - uses: actions/upload-artifact@v2
       with:
         name: artifacts-android
         path: |
-          TrashMobMobileApp\bin\Release\net7.0-android\publish\*.apk
+          TrashMobMobileApp\bin\${{ env.CONFIGURATION }}\net7.0-android\publish\*.apk
 
   buildiOSApp:
     runs-on: macos-12
@@ -96,24 +93,32 @@ jobs:
       run: |
         dotnet nuget locals all --clear
         dotnet workload install maui --ignore-failed-sources
-        dotnet workload install ios maccatalyst tvos macos maui wasm-tools --source https://api.nuget.org/v3/index.json --ignore-failed-sources
+        dotnet workload install ios macos maui wasm-tools --source https://api.nuget.org/v3/index.json --ignore-failed-sources
 
-    - name: Set XCode Version
-      if: runner.os == 'macOS'
-      shell: bash
-      run: |
-        sudo xcode-select -s "/Applications/Xcode_14.1.app"
-        echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_14.1.app" >> $GITHUB_ENV
-        
     - name: Restore Dependencies
       run: | 
         dotnet restore TrashMobMobileApp.sln
 
+    - name: Import Code-Signing Certificates
+      uses: Apple-Actions/import-codesign-certs@v1
+      with:
+        p12-file-base64: ${{ secrets.IOS_CERTIFICATES_P12 }}
+        p12-password: ${{ secrets.IOS_CERTIFICATES_P12_PASSWORD }}
+
+    - name: Download Apple Provisioning Profiles
+      uses: Apple-Actions/download-provisioning-profiles@v1
+      with:
+        bundle-id: 'eco.trashmobdev.trashmobmobile'
+        profile-type: 'IOS_APP_DEVELOPMENT'
+        issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+        api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+        api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+
     - name: Build MAUI iOS
-      run: dotnet build TrashMobMobileApp.sln -c Release -f net7.0-ios --no-restore /p:buildForSimulator=True /p:packageApp=True /p:ArchiveOnBuild=False
+      run: dotnet publish TrashMobMobileApp.sln -c ${{ env.CONFIGURATION }} -f net7.0-ios -r ios-arm64 --self-contained --no-restore /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=false
 
     - name: Upload iOS Artifact
       uses: actions/upload-artifact@v3.1.0
       with:
-        name: trashmobmobileapp-ios-main-build
-        path: trashmobmobileapp/bin/Release/net7.0-ios/**/*.app
+        name: trashmobmobileapp-ios-pr-build
+        path: TrashMobMobileApp/bin/${{ env.CONFIGURATION }}/net7.0-ios/ios-arm64/publish//*.ipa

@@ -1,8 +1,11 @@
 {
   "Prefix": "TM_",
-  "RESTApi": "https://fa-tm-pr-westus2.azurewebsites.net/api",
+  "RESTApi": "https://fa-tm-pr-westus2.azurewebsites.net/api",  
+  "UIAssets": "tmstoradb2cprod",  
+  "MicrosoftAppId": "82ec9442-0cdf-4f57-bfb1-2b643b383325",
   "FacebookClientId": "535691364481253",
   "GoogleId": "993349203789-oq6s09buht4e707itkukrljisikmth3k.apps.googleusercontent.com",
-  "AppleId": "367LR8J89Q.eco.trashmob.trashmobmobile",
-  "TwitterClientId": "QmhKZ1Bfa1hXZXFJcnBheElYcGY6MTpjaQ"
+  "TwitterClientId": "QmhKZ1Bfa1hXZXFJcnBheElYcGY6MTpjaQ",  
+  "AppleId": "eco.trashmob.trashmobb2c",
+  "LinkedInId": "86gb3xy6jb4qo8"
 }

@@ -3,7 +3,7 @@ import { MainEvents } from '../MainEvents';
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import EventData from '../Models/EventData';
 import EventTypeData from '../Models/EventTypeData';
-import { getDefaultHeaders } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
@@ -26,12 +26,9 @@ export interface HomeProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
     currentUser: UserData;
     onUserUpdated: any;
-    onAttendanceChanged: () => void;
-    myAttendanceList: EventData[];
-    isUserEventDataLoaded: boolean;
 }
 
-const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, myAttendanceList, isUserEventDataLoaded, onAttendanceChanged, location, match }) => {
+const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, match }) => {
     const [eventList, setEventList] = useState<EventData[]>([]);
     const [eventTypeList, setEventTypeList] = useState<EventTypeData[]>([]);
     const [isEventDataLoaded, setIsEventDataLoaded] = useState(false);
@@ -43,6 +40,8 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, myAttendanceL
     const [totalHours, setTotalHours] = useState<number>(0);
     const [totalEvents, setTotalEvents] = useState<number>(0);
     const [totalParticipants, setTotalParticipants] = useState<number>(0);
+    const [myAttendanceList, setMyAttendanceList] = useState<EventData[]>([]);
+    const [isUserEventDataLoaded, setIsUserEventDataLoaded] = useState(false);
 
     useEffect(() => {
 
@@ -105,6 +104,45 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, myAttendanceL
 
     const handleEventView = (view: string) => {
         setEventView(view);
+    }
+
+    function handleAttendanceChanged() {
+        setMyAttendanceList([]);
+        setIsUserEventDataLoaded(false);
+
+        if (!isUserLoaded || !currentUser) {
+            return;
+        }
+
+        // If the user is logged in, get the events they are attending
+        const accounts = msalClient.getAllAccounts();
+        var apiConfig = getApiConfig();
+
+        if (accounts !== null && accounts.length > 0) {
+            const request = {
+                scopes: apiConfig.b2cScopes,
+                account: accounts[0]
+            };
+
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
+                const headers = getDefaultHeaders('GET');
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                fetch('/api/events/eventsuserisattending/' + currentUser.id, {
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => response.json() as Promise<EventData[]>)
+                    .then(data => {
+                        setMyAttendanceList(data);
+                        setIsUserEventDataLoaded(true);
+                    })
+            });
+        }
     }
 
     return (
@@ -179,7 +217,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, myAttendanceL
                             <div className="w-100 m-0">
                                 <AzureMapsProvider>
                                     <>
-                                        <MapControllerPointCollection center={center} multipleEvents={eventList} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={onAttendanceChanged} onDetailsSelected={handleDetailsSelected} history={history} location={location} match={match} />
+                                        <MapControllerPointCollection center={center} multipleEvents={eventList} myAttendanceList={myAttendanceList} isUserEventDataLoaded={isUserEventDataLoaded} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={handleAttendanceChanged} onDetailsSelected={handleDetailsSelected} history={history} location={location} match={match} />
                                     </>
                                 </AzureMapsProvider>
                             </div>
@@ -188,7 +226,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, myAttendanceL
                         <>
                             <Button color='primary' className='mb-2' onClick={() => history.push("/manageeventdashboard")}>Create a New Event</Button>
                             <div className="container-lg">
-                                <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} history={history} location={location} match={match} />
+                                <MainEvents eventList={eventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} history={history} location={location} match={match} />
                             </div>
                         </>
                     )}

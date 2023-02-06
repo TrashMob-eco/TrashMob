@@ -11,6 +11,7 @@ namespace TrashMob.Models
         {
             UserNotifications = new HashSet<UserNotification>();
             PickupLocations = new HashSet<PickupLocation>();
+            EventAttendees = new HashSet<EventAttendee>();
         }
 
         public string Name { get; set; }
@@ -52,6 +53,8 @@ namespace TrashMob.Models
         public virtual EventType EventType { get; set; }
 
         public virtual EventSummary EventSummary { get; set; }
+
+        public virtual ICollection<EventAttendee> EventAttendees {get;set;}
 
         public virtual ICollection<UserNotification> UserNotifications { get; set; }
 

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import UserData from './Models/UserData';
 import { Button, Col, Dropdown, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
-import { getApiConfig, getDefaultHeaders, msalClient } from './../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from './../store/AuthStore';
 import * as ToolTips from ".././store/ToolTips";
 import PartnerLocationData from './Models/PartnerLocationData';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
@@ -64,6 +64,11 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -119,12 +124,10 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
 
     function handleNotesChanged(val: string) {
         setNotes(val);
-        validateForm();
     }
 
     function handleHasBeenPickedUpChanged(val: boolean) {
         setHasBeenPickedUp(val);
-        validateForm();
     }
 
     function renderStreetAddressToolTip(props: any) {
@@ -159,14 +162,14 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.PickupLocationLastUpdatedDate}</Tooltip>
     }
 
-    function validateForm() {
+    React.useEffect(() => {
         if (country === "") {
             setIsSaveEnabled(false);
         }
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [country]);
 
     function addPickupLocation() {
         resetForm();
@@ -187,6 +190,11 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('DELETE');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -227,6 +235,11 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('POST');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -291,6 +304,11 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             var method = "PUT";
 
             if (pickupLocationId === Guid.EMPTY) {
@@ -362,6 +380,11 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -616,7 +639,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         return (
             <div>
                 <p><em>{statusMessage}</em></p>
-                <ManageEventPartners eventId={props.eventId} isUserLoaded={props.isUserLoaded} currentUser={props.currentUser} />
+                <ManageEventPartners eventId={props.eventId} isUserLoaded={props.isUserLoaded} currentUser={props.currentUser} isEventComplete={true} />
             </div>
         );
     }

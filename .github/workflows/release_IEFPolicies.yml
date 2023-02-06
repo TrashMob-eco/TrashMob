@@ -1,0 +1,31 @@
+name: TrashMob IEF Policies Prod Deployment
+
+on:
+   push:
+    branches:
+      - release
+    paths:
+      - '.github/**'
+      - 'IEFPolicies/**'
+ 
+env:
+  DOTNET_VERSION: '7.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION2: '7.0.x'  # set this to the dotnet version to use
+  CLIENT_ID: '9f34f18f-027d-4e5e-97e9-199344d541d9'
+  TENANT_NAME: 'TrashMob'
+
+jobs:
+  DeployIEF:
+    runs-on: windows-latest
+    environment: production
+    name: IEF Deploy
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Powershell
+        run: |
+          Install-Module -Name IefPolicies -Scope CurrentUser -Force -AllowPrerelease
+          Connect-IefPolicies -tenant ${{ env:TENANT_NAME }} -clientId ${{ env:CLIENT_ID }} -clientSecret ${{ secrets.IEF_POLICY_UPDATE_CLIENT_SECRET }}
+          Import-IefPolicies -sourceDirectory "./../../IEFPolicies" -configurationFilePath "./../../IEFPolicies/trashmobdev.json"
