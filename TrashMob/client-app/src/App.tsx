@@ -173,7 +173,7 @@ export const App: FC = () => {
                 interactionType={InteractionType.Redirect}
                 errorComponent={ErrorComponent}
                 loadingComponent={LoadingComponent}>
-                <DeleteMyData {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} onUserDeleted={clearUser} />
+                <DeleteMyData {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </MsalAuthenticationTemplate >);
     }
 
