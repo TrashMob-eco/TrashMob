@@ -27,5 +27,5 @@ jobs:
       - name: Powershell
         run: |
           Install-Module -Name IefPolicies -Scope CurrentUser -Force -AllowPrerelease
-          Connect-IefPolicies -tenant ${{ env:TENANT_NAME }} -clientId ${{ env:CLIENT_ID }} -clientSecret ${{ secrets.IEF_POLICY_UPDATE_CLIENT_SECRET }}
+          Connect-IefPolicies -tenant ${{ env.TENANT_NAME }} -clientId ${{ env.CLIENT_ID }} -clientSecret ${{ secrets.IEF_POLICY_UPDATE_CLIENT_SECRET }}
           Import-IefPolicies -sourceDirectory "./../../IEFPolicies" -configurationFilePath "./../../IEFPolicies/trashmobdev.json"
