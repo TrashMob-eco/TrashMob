@@ -82,6 +82,9 @@
       <ContentDefinition Id="api.localaccountsignup">
         <LoadUri>https://{UIAssets}.blob.core.windows.net/pages/SignUpSignIn.html</LoadUri>
       </ContentDefinition>  
+      <ContentDefinition Id="api.socialccountsignup">
+        <LoadUri>https://{UIAssets}.blob.core.windows.net/pages/SignUpSignIn.html</LoadUri>
+      </ContentDefinition>        
     </ContentDefinitions>
   </BuildingBlocks>
   
