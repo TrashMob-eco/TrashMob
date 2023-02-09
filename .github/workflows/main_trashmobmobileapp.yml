@@ -1,4 +1,4 @@
-name: TrashMob IEF Policies Pull Request - Dev Deployment
+name: TrashMobMobileApp - Dev
 
 on:
   push:
