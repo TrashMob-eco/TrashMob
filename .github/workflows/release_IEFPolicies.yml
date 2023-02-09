@@ -7,7 +7,8 @@ on:
     paths:
       - '.github/**'
       - 'IEFPolicies/**'
- 
+   workflow_dispatch:
+
 env:
   DOTNET_VERSION: '7.0.x'  # set this to the dotnet version to use
   DOTNET_VERSION2: '7.0.x'  # set this to the dotnet version to use
