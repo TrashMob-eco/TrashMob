@@ -1,0 +1,33 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: TrashMob Mobile App Pull Request Build
+
+on:
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - '.github/**'
+      - 'IEFPolicies/**'
+ 
+env:
+  DOTNET_VERSION: '7.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION2: '7.0.x'  # set this to the dotnet version to use
+  CLIENT_ID: '09b4348a-167d-4c90-b414-f0b498488ea9'
+  TENANT_NAME: 'TrashMobDev'
+
+jobs:
+  DeployIEF:
+    runs-on: windows-latest
+    environment: test
+    name: IEF Deploy
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Powershell
+        run: |
+          Install-Module -Name IefPolicies -Scope CurrentUser -Force -AllowPrerelease
+          Connect-IefPolicies -tenant ${{ env.TENANT_NAME }} -clientId ${{ env.CLIENT_ID }} -clientSecret ${{ secrets.IEF_POLICY_UPDATE_CLIENT_SECRET }}
+          Import-IefPolicies -sourceDirectory "./IEFPolicies" -configurationFilePath "./IEFPolicies/trashmobdev.json"

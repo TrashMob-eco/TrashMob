@@ -84,7 +84,7 @@ namespace TrashMob.Controllers
             await eventAttendeeManager.Delete(eventId, userId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeleteEventAttendee));
 
-            return Ok();
+            return new NoContentResult();
         }
 
         private async Task<bool> EventAttendeeExists(Guid eventId, Guid userId, CancellationToken cancellationToken)

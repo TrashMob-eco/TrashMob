@@ -1,10 +1,11 @@
 {
   "Prefix": "TM_",
-  "FacebookClientId": "1324278418367849",
-  "Google": {
-    "ClientId": "574027227705-ojvg93aoinf8fm0jvkfdbboumdei7j8f.apps.googleusercontent.com"
-  },
   "RESTApi": "https://fa-tm-dev-westus2.azurewebsites.net/api",
+  "UIAssets": "tmstoradb2cdev",
+  "MicrosoftAppId": "0a8f0ef2-23bd-4b43-92bc-8c97e1b66cb0",  
+  "FacebookClientId": "1324278418367849",
+  "GoogleId": "574027227705-ojvg93aoinf8fm0jvkfdbboumdei7j8f.apps.googleusercontent.com",
   "TwitterClientId": "NnlDWjM1SUp2dFV4cGJsU09keHQ6MTpjaQ",
-  "UIAssets": "tmstoradb2cdev"
+  "AppleId": "eco.trashmobdev.trashmobb2c",
+  "LinkedInId": "86atu0u0h2e77t"  
 }
