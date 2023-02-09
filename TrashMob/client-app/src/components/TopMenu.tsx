@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { getApiConfig, msalClient } from '../store/AuthStore';
+import { getApiConfig, getB2CPolicies, msalClient } from '../store/AuthStore';
 import UserData from './Models/UserData';
 import logo from './assets/logo.svg'
 import { Button, Dropdown, Nav } from 'react-bootstrap';
 import './assets/styles/header.css';
-import { BoxArrowLeft, Map, PersonX, PersonBadge, PersonCircle, PlusLg, Speedometer2, QuestionCircle } from 'react-bootstrap-icons';
+import { BoxArrowLeft, Map, Person, PersonX, PersonBadge, PersonCircle, PlusLg, Speedometer2, QuestionCircle } from 'react-bootstrap-icons';
 
 interface TopMenuProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -39,6 +39,22 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
         }
 
         msalClient.logout(logoutRequest);
+    }
+
+    function profileEdit(e: any) {
+        e.preventDefault();
+
+        const account = msalClient.getAllAccounts()[0];
+        var policy = getB2CPolicies();
+        var scopes = getApiConfig();
+
+        var request = {
+            account: account,
+            authority: policy.authorities.profileEdit.authority,
+            scopes: scopes.b2cScopes,
+        };
+
+        msalClient.acquireTokenRedirect(request);
     }
 
     function signIn(e: any) {
@@ -76,13 +92,15 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
                                 <Dropdown.Divider />
                                 <Dropdown.Item eventKey="2" href="/manageeventdashboard"><PlusLg aria-hidden="true" />Add event</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="3" href="/locationpreference"><Map aria-hidden="true" />My location preference</Dropdown.Item>
+                                <Dropdown.Item eventKey="3" onClick={(e) => profileEdit(e)}><Person aria-hidden="true" />Update my profile</Dropdown.Item>
                                 <Dropdown.Divider />
-                                {props.currentUser.isSiteAdmin ? <> <Dropdown.Item eventKey="4" href="/siteadmin" disabled={!props.currentUser.isSiteAdmin}><PersonBadge aria-hidden="true" />Site administration</Dropdown.Item>
+                                <Dropdown.Item eventKey="4" href="/locationpreference"><Map aria-hidden="true" />My location preference</Dropdown.Item>
+                                <Dropdown.Divider />
+                                {props.currentUser.isSiteAdmin ? <> <Dropdown.Item eventKey="5" href="/siteadmin" disabled={!props.currentUser.isSiteAdmin}><PersonBadge aria-hidden="true" />Site administration</Dropdown.Item>
                                 <Dropdown.Divider /></> : ""}
-                                <Dropdown.Item eventKey="5" href="/deletemydata"><PersonX aria-hidden="true" />Delete my account</Dropdown.Item>
+                                <Dropdown.Item eventKey="6" href="/deletemydata"><PersonX aria-hidden="true" />Delete my account</Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item eventKey="6" onClick={(e) => signOut(e)}><BoxArrowLeft aria-hidden="true" />Sign out</Dropdown.Item>
+                                <Dropdown.Item eventKey="7" onClick={(e) => signOut(e)}><BoxArrowLeft aria-hidden="true" />Sign out</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
                         <Button className="btn" href="/help" id="helpBtn"><QuestionCircle /></Button>

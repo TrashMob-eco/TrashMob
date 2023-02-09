@@ -76,7 +76,7 @@ jobs:
 
   buildiOSApp:
     runs-on: macos-12
-    environment: test
+    environment: production
     name: iOS Build
 
     steps:
