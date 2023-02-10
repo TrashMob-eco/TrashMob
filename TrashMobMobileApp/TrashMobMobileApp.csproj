@@ -50,13 +50,16 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
 		<CreatePackage>false</CreatePackage>
-		<CodesignKey>iPhone Developer</CodesignKey>
+		<CodesignKey>Apple Development</CodesignKey>
 		<CodesignProvision>VS: eco.trashmobdev.trashmobmobile Development</CodesignProvision>
 		<CodesignEntitlements></CodesignEntitlements>
 		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
 		 <CreatePackage>false</CreatePackage>
+		 <CodesignKey>Apple Distribution: TrashMob (367LR8J89Q)</CodesignKey>
+		 <CodesignProvision>eco.trashmob.distribution.appstore</CodesignProvision>
+		 <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
 		 <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
