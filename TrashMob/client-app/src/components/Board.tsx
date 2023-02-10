@@ -3,7 +3,6 @@ import { Col, Container, Image, Row } from 'react-bootstrap';
 import globes from './assets/gettingStarted/globes.png';
 import linkedIn from './assets/card/linkedin.svg';
 import JoeBeernink from './assets/boardOfDirectors/JoeBeernink.svg';
-import DarrylWalter from './assets/boardOfDirectors/DarrylWalter.svg';
 import DarylBarber from './assets/boardOfDirectors/darylbarber.jpg';
 import JakeDiliberto from './assets/boardOfDirectors/JakeDiliberto.svg';
 import JeremiahSteen from './assets/boardOfDirectors/JeremiahSteen.svg';
@@ -176,25 +175,6 @@ export const Board: React.FC = () => {
                             <p className='font-size-sm color-grey'>Jeremiah Steen is the Environmental Leadership Program’s Program Manager and the National Audubon Society’s Development Associate, Institutional Giving working out of Detroit, Michigan.</p>
                             <p className='font-size-sm color-grey'>Additionally, Jeremiah is the Director of the Steen Foundation, which has the goal of positively impacting the socialization of youth, promoting strong inquisitive thinking, and allowing teens to advance their view of community through a creative perspective. </p>
                             <p className='font-size-sm color-grey'>Also, he serves on the Board of Directors for TrashMob.eco and EEqual.</p>
-                        </Col>
-                    </Row>
-                </div>
-                <div className='p-4 directorCard'>
-                    <Row>
-                        <Col md={5}>
-                            <a href="https://www.linkedin.com/in/darrylwalter/"><Image src={DarrylWalter} alt="Darryl Walter" className="h-100 mt-0 object-fit-cover rounded" /></a>
-                        </Col>
-                        <Col md={7}>
-                            <div className='d-flex justify-content-between align-items-center'>
-                                <h2 className='m-0 fw-500 font-size-xl color-primary '>Darryl Walter</h2>
-                                <Image src={linkedIn} alt="linkedIn icon" className="h-100 mt-0 object-fit-cover" />
-                            </div>
-                            <h5 className='my-3 fw-500 color-grey'>Member at large</h5>
-                            <p className='font-size-sm color-grey'>Darryl Walter has over 25 years of membership marketing and nonprofit fundraising experience with such diverse organizations as the Solid Waste Association of North America (SWANA), The Wildlife Society (TWS), American Association for the Advancement of Science (AAAS), and Special Olympics Inc (SOI).</p>
-                            <p className='font-size-sm color-grey'>
-                                Under his guidance, SWANA and TWS reached record membership. Darryl’s professional experience includes all aspects of direct marketing as well as conference planning.</p>
-                            <p className='font-size-sm color-grey'>
-                                Darryl is a long suffering Cleveland sports fan and lives in Bethesda, MD with his wife and is incredibly proud of his three adult children.</p>
                         </Col>
                     </Row>
                 </div>
