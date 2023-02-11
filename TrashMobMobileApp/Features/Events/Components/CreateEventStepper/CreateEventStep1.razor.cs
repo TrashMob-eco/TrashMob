@@ -28,7 +28,7 @@ namespace TrashMobMobileApp.Features.Events.Components
 
         protected override async Task OnInitializedAsync()
         {
-            TitleContainer.Title = "Create Event (1/6)";
+            TitleContainer.Title = "Create Event (1/5)";
             await GetEventTypesAsync();
             _selectedEventType = _eventTypes.FirstOrDefault();
         }

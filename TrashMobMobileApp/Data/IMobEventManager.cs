@@ -20,7 +20,7 @@
 
         Task<Event> AddEventAsync(Event mobEvent, CancellationToken cancellationToken = default);
 
-        Task DeleteEventAsync(CancelEvent cancelEvent, CancellationToken cancellationToken = default);
+        Task DeleteEventAsync(EventCancellationRequest cancelEvent, CancellationToken cancellationToken = default);
 
         Task AddEventAttendeeAsync(EventAttendee eventAttendee, CancellationToken cancellationToken = default);
 

@@ -1,4 +1,4 @@
-﻿@page "/editevent/{EventId}"
+﻿@page "/events/editevent/{EventId}"
 
 <style>
     .tm-edit-event-container {
@@ -25,9 +25,6 @@
 
         .tm-edit-event-container .tm-action-btn-container {
             margin-top: 20px;
-/*            position: fixed;
-            bottom: 5%;
-            width: 90%;*/
         }
 </style>
 
@@ -35,7 +32,7 @@
     <ChildContent>
         <MudContainer Class="tm-edit-event-container">
             <MudOverlay @bind-Visible="_isLoading" Absolute>
-                <MudProgressCircular Color="Color.Default" Indeterminate Class="tm-loader" />
+                <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
             </MudOverlay>
             <MudForm @ref="@_editEventForm" Class="tm-form" @bind-IsValid="@_success" @bind-Errors="@_errors">
                 <MudText Class="tm-form-label" Typo="Typo.subtitle2">Basics</MudText>
@@ -66,7 +63,7 @@
                 <MudNumericField FullWidth T="double?" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Longitude" @bind-Value="@_event.Longitude" />
             </MudForm>
             <MudStack Row Class="tm-action-btn-container">
-                <MudButton FullWidth Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnSaveAsync">Save</MudButton>
+                <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnSaveAsync">Save</MudButton>
             </MudStack>
         </MudContainer>
     </ChildContent>

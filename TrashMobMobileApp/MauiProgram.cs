@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TrashMobMobileApp.Extensions;
+using TrashMobMobileApp.Config;
 
 public static class MauiProgram
 {
@@ -32,6 +33,7 @@ public static class MauiProgram
 
         builder.Services.AddMudblazorServices();
         builder.Services.AddStateContainers();
+        builder.Services.Configure<Settings>(options => builder.Configuration.GetSection("Settings").Bind(options));
         builder.Services.AddTrashMobServices(builder.Configuration);
         builder.Services.AddRestClientServices(builder.Configuration);
 

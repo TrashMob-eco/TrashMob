@@ -1,27 +1,52 @@
 ﻿namespace TrashMobMobileApp.Data
 {
-    using System.Net.Http;
+    using Microsoft.Extensions.Options;
     using System.Text.Json;
-    using System.Threading.Tasks;
     using TrashMobMobileApp.Authentication;
+    using TrashMobMobileApp.Config;
 
-    public class RestServiceBase
+    public abstract class RestServiceBase
     {
         protected JsonSerializerOptions SerializerOptions { get; private set; }
         
-        public HttpClientService HttpClientService { get; }
+        protected string TrashMobApiAddress { get; }
 
-        private readonly IB2CAuthenticationService b2CAuthenticationService;
+        protected abstract string Controller { get; }
 
-        protected RestServiceBase(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService)
+        protected HttpClient AuthorizedHttpClient { get; }
+
+        protected HttpClient AnonymousHttpClient { get; }
+
+        protected RestServiceBase(IOptions<Settings> settings)
         {
             SerializerOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 WriteIndented = true
             };
-            HttpClientService = httpClientService;
-            this.b2CAuthenticationService = b2CAuthenticationService;
+
+            TrashMobApiAddress = settings.Value.ApiBaseUrl;
+
+            AuthorizedHttpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(string.Concat(TrashMobApiAddress, Controller))
+            };
+
+            AuthorizedHttpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
+            AuthorizedHttpClient.DefaultRequestHeaders.Authorization = GetAuthToken(UserState.UserContext);
+
+            AnonymousHttpClient = new HttpClient
+            {
+                BaseAddress = new Uri(string.Concat(TrashMobApiAddress, Controller))
+            };
+
+            AnonymousHttpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
+        }
+
+        protected virtual System.Net.Http.Headers.AuthenticationHeaderValue GetAuthToken(UserContext userContext)
+        {
+            return new System.Net.Http.Headers
+                .AuthenticationHeaderValue("bearer", userContext.AccessToken);
         }
     }
 }

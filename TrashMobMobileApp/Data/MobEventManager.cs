@@ -50,7 +50,7 @@
             return mobEventRestService.AddEventAsync(mobEvent, cancellationToken);
         }
 
-        public Task DeleteEventAsync(CancelEvent cancelEvent, CancellationToken cancellationToken = default)
+        public Task DeleteEventAsync(EventCancellationRequest cancelEvent, CancellationToken cancellationToken = default)
         {
             return mobEventRestService.DeleteEventAsync(cancelEvent, cancellationToken);
         }

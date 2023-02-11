@@ -29,11 +29,9 @@
 
 <ErrorBoundary>
     <ChildContent>
-        <EventDetails @bind-Open="@_isViewOpen" Event="@_selectedEvent" />
-
         <MudContainer Class="tm-event-list">
             <MudOverlay @bind-Visible="_isLoading" Absolute>
-                <MudProgressCircular Color="Color.Default" Indeterminate Class="tm-loader" />
+                <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
             </MudOverlay>
             @if (_mobEventsStatic.Any())
             {
@@ -65,9 +63,18 @@
                                     <MudButton Color="@ComponentCommon.PrimaryColor"
                                            Variant="@ComponentCommon.CardButtonVariant"
                                            OnClick="@(() => OnViewEventDetails(mob))">View</MudButton>
-                                    <MudButton Color="@ComponentCommon.PrimaryColor"
+                                    @if (!_userAttendingEventIds.Contains(mob.Id))
+                                    {
+                                        <MudButton Color="@ComponentCommon.PrimaryColor"
                                            Variant="@ComponentCommon.CardButtonVariant"
                                            OnClick="@(async () => await OnRegisterAsync(mob))">Register</MudButton>
+                                    }
+                                    else
+                                    {
+                                        <MudButton Color="@ComponentCommon.PrimaryColor"
+                                           Variant="@ComponentCommon.CardButtonVariant"
+                                           OnClick="@(async () => await OnUnregisterAsync(mob))">Unregister</MudButton>
+                                    }
                                 </MudStack>
                                 <MudStack Row>
                                     <MudIconButton Icon="@Icons.Material.Filled.Map"

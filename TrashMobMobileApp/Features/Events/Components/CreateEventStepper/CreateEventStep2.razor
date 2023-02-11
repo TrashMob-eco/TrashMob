@@ -11,31 +11,37 @@
             position: fixed;
         }
 
-        .tm-step2-container .form-item {
+        .tm-step2-container .tm-form {
             margin-top: 10%;
         }
 
-        .tm-step2-container .container-item {
-            margin-top: 10px;
-        }
+            .tm-step2-container .tm-form .tm-form-item {
+                margin-top: 20px;
+            }
 
-        .tm-step2-container .next-btn {
-            margin-top: 10%;
-            width: 100%;
-        }
+            .tm-step2-container .tm-form .tm-action-item {
+                margin-top: 20px;
+/*                position: fixed;
+                bottom: 5%;
+                width: 90%;*/
+            }
 </style>
 
 <ErrorBoundary>
     <ChildContent>
         <MudContainer Class="tm-step2-container">
-            <MudText Typo="Typo.subtitle2">Now onto logistics.</MudText>
-            <MudText Typo="Typo.body2">Tell us the date of your event, the start time, and intended length of the event. Keep in mind that event lengths are an estimate.</MudText>
-            <MudForm @ref="_form" Class="form-item" @bind-IsValid="_success" @bind-Errors="_errors">
-                <MudDatePicker Variant="Variant.Outlined" @bind-Date="_eventDate" Label="Date" Required RequiredError="Date is required" />
-                <MudTimePicker Class="container-item" Variant="Variant.Outlined" @bind-Time="_eventTime" Label="Time" Required RequiredError="Time is required" />
-                <MudNumericField Class="container-item" T="int" Variant="Variant.Outlined" @bind-Value="Event.DurationHours" Label="Duration Hours" />
-                <MudNumericField Class="container-item" T="int" Variant="Variant.Outlined" @bind-Value="Event.DurationMinutes" Label="Duration Minutes" />
-                <MudFab Class="next-btn" Color="Color.Primary" Label="Next" OnClick="OnStepFinishedAsync" />
+            <MudText Typo="Typo.subtitle2">Now onto the details.</MudText>
+            <MudText Typo="Typo.body2">Tell us the date and time of the event, then give us some details. Keep in mind that event lengths are an estimate.</MudText>
+            <MudForm @ref="_form" Class="tm-form" @bind-IsValid="_success" @bind-Errors="_errors">
+                <MudDatePicker Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Date="_eventDate" Label="Date" Required RequiredError="Date is required" />
+                <MudTimePicker Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Time="_eventTime" Label="Time" Required RequiredError="Time is required" />
+                <MudNumericField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" T="int" @bind-Value="Event.DurationHours" Label="Duration Hours" />
+                <MudNumericField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" T="int" @bind-Value="Event.DurationMinutes" Label="Duration Minutes" />
+                <MudTextField T="string" FullWidth Lines="ComponentCommon.TextAreaLinesSpan" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Text="Event.Description" Label="Description" Required RequiredError="Description is required" />
+                <MudNumericField T="int?" FullWidth Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Value="Event.MaxNumberOfParticipants" Label="Maximum number of participants" Required RequiredError="Max participants is required" />
+                <MudStack Row Justify="Justify.Center" Class="tm-action-item">
+                    <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnStepFinishedAsync">Next</MudButton>
+                </MudStack>
             </MudForm>
         </MudContainer>
     </ChildContent>

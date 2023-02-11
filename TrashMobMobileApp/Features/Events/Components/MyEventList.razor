@@ -4,7 +4,7 @@
         height: 100%;
         padding: 20px;
     }
-        
+
         .tm-my-event-list .tm-loader {
             top: 50%;
             position: fixed;
@@ -32,60 +32,97 @@
 
 <ErrorBoundary>
     <ChildContent>
-        <EventDetails @bind-Open="@_isViewOpen" Event="@_selectedEvent" />
-
         <MudContainer Class="tm-my-event-list">
             <MudOverlay @bind-Visible="_isLoading" Absolute>
-                <MudProgressCircular Color="Color.Default" Indeterminate Class="tm-loader" />
+                <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
             </MudOverlay>
-            @if (_myEventsStatic.Any())
+            <MudStack Style="width: 100%" Row>
+                <MudChip Style="margin-left: 2px"
+                         Icon="@(_currentSelectedChip == EventActionGroup.OWNER ? Icons.Material.Filled.Check : string.Empty)"
+                         Variant="ComponentCommon.MudChipVariant"
+                         OnClick="@OnOwningEventsFilterAsync"
+                         Color="ComponentCommon.PrimaryColor">Created by me</MudChip>
+                <MudChip Icon="@(_currentSelectedChip == EventActionGroup.ATTENDING ? Icons.Material.Filled.Check : string.Empty)"
+                         Variant="ComponentCommon.MudChipVariant"
+                         OnClick="@OnAttendingEventsFilterAsync"
+                         Color="ComponentCommon.PrimaryColor">Attending</MudChip>
+                <MudChip Style="margin-left: 2px"
+                         Icon="@(_currentSelectedChip == EventActionGroup.PAST_EVENTS ? Icons.Material.Filled.Check : string.Empty)"
+                         Variant="ComponentCommon.MudChipVariant"
+                         OnClick="@OnPastEventsFilterAsync"
+                         Color="ComponentCommon.PrimaryColor">Past events</MudChip>
+            </MudStack>
+            <MudStack Style="width: 100%" Row>
+                <MudTextField T="string" FullWidth Adornment="@Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" Placeholder="Search event.." Text="@_eventSearchText" TextChanged="@OnSearchTextChanged" Immediate />
+            </MudStack>
+            @if (_currentSelectedChip != EventActionGroup.PAST_EVENTS)
             {
-                <MudStack Style="width: 100%" Row>
-                    <MudTextField T="string" FullWidth Adornment="@Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" Placeholder="Search event.." Text="@_eventSearchText" TextChanged="@OnSearchTextChanged" Immediate />
-                </MudStack>
                 <MudStack>
-                    <MudSwitch T="bool" Checked="StateInformation.ShowFutureEvents" CheckedChanged="OnShowFutureEventsChangedAsync" Color="Color.Primary" Label="Show future events" />
+                    <MudSwitch T="bool" Checked="StateInformation.ShowFutureEvents" CheckedChanged="OnShowFutureEventsChangedAsync" Color="ComponentCommon.PrimaryColor" Label="Show future events" />
                 </MudStack>
+            }
+            @if (_myEvents.Any())
+            {
                 <MudVirtualize Context="mob" Items="_myEvents">
                     <MudCard Class="tm-event-card">
                         <MudCardHeader>
-                            <CardHeaderAvatar>
-                                <MudAvatar Color="Color.Primary">@mob.Name.FirstOrDefault()</MudAvatar>
-                            </CardHeaderAvatar>
                             <CardHeaderContent>
-                                <MudStack Row>
-                                    <MudText Typo="Typo.subtitle2">@mob.Name</MudText>
-                                    <MudChip Size="Size.Small" Color="Color.Default">@mob.GetEventStatusText()</MudChip>
+                                <MudStack>
+                                    <MudChip Variant="ComponentCommon.MudChipVariant"
+                                         Style="width: fit-content"
+                                         Color="ComponentCommon.PrimaryColor">@(DoesUserOwnEvent(mob) ? "Owner" : "Attendee")</MudChip>
+                                        <MudText Typo="Typo.subtitle2">@mob.Name</MudText>
+                                    </MudStack>
+                                </CardHeaderContent>
+                                <CardHeaderActions>
+                                    <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                                        <MudMenuItem Icon="@Icons.Material.Filled.Cancel" IconSize="Size.Small" OnClick="@(() => OnCancelEvent(mob))">Cancel</MudMenuItem>
+                                    </MudMenu>
+                                </CardHeaderActions>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudText Typo="Typo.body2"><strong>Address: </strong>@mob.GetFormattedAddress()</MudText>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudStack Style="@ComponentCommon.FullWidth" Row Justify="@Justify.SpaceBetween">
+                                    <MudStack Row>
+                                        <MudButton Color="@ComponentCommon.PrimaryColor"
+                                           Variant="@ComponentCommon.CardButtonVariant"
+                                           OnClick="@(() => OnViewEventDetails(mob))">View</MudButton>
+                                        @{
+                                        EventActionType cardAction = DetermineUserCardAction(mob);
+                                    }
+                                    @if (cardAction == EventActionType.SUBMIT_SUMMARY)
+                                    {
+                                        <MudButton Color="@ComponentCommon.PrimaryColor"
+                                           Variant="@ComponentCommon.CardButtonVariant"
+                                           OnClick="@(() => OnCompleteEvent(mob))">Submit</MudButton>
+                                    }
+                                    else if (cardAction == EventActionType.MANAGE)
+                                    {
+                                        <MudButton Color="@ComponentCommon.PrimaryColor"
+                                           Variant="@ComponentCommon.CardButtonVariant"
+                                           OnClick="@(() => OnEdit(mob))">Manage</MudButton>
+                                    }
+                                    else
+                                    {
+                                        <MudButton Color="@ComponentCommon.PrimaryColor"
+                                           OnClick="@(() => OnViewEventSummary(mob))"
+                                           Variant="@ComponentCommon.CardButtonVariant">View Summary</MudButton>
+                                    }
                                 </MudStack>
-                            </CardHeaderContent>
-                            <CardHeaderActions>
-                                <MudMenu Icon="@Icons.Material.Filled.MoreVert">
-                                    <MudMenuItem Icon="@Icons.Material.Filled.Cancel" IconSize="Size.Small" OnClick="@(() => OnCancelEvent(mob))">Cancel</MudMenuItem>
-                                    <MudMenuItem Icon="@Icons.Material.Filled.Edit" IconSize="Size.Small" OnClick="@(() => OnEdit(mob))">Edit</MudMenuItem>
-                                    <MudMenuItem Icon="@Icons.Material.Filled.Comment" IconSize="Size.Small" OnClick="@(() => OnCompleteEvent(mob))">Complete</MudMenuItem>
-                                </MudMenu>
-                            </CardHeaderActions>
-                        </MudCardHeader>
-                        <MudCardContent>
-                            <MudText Typo="Typo.body2"><strong>Address: </strong>@mob.GetFormattedAddress()</MudText>
-                        </MudCardContent>
-                        <MudCardActions>
-                            <MudButton Style="width: 30%; margin-right: 5px" Color="Color.Primary" Variant="Variant.Outlined" OnClick="@(() => OnViewEventDetails(mob))">View</MudButton>
+                                <MudStack Row>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Map"
+                                               Color="ComponentCommon.PrimaryColor" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.Share"
+                                               Color="ComponentCommon.PrimaryColor" />
+                                </MudStack>
+                            </MudStack>
                         </MudCardActions>
                     </MudCard>
                 </MudVirtualize>
-                <MudFab Class="tm-create-event-btn-bottom" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Primary" Label="Create" OnClick="@OnCreateEvent" />
             }
-            else
-            {
-                if (!_isLoading)
-                {
-                    <MudContainer Class="tm-no-event-container">
-                        <MudText>No events to show. Create an event to get started.</MudText>
-                        <MudFab Class="tm-create-event-btn-center" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Primary" Label="Create" OnClick="@OnCreateEvent" />
-                    </MudContainer>
-                }
-            }
+            <MudFab Class="tm-create-event-btn-bottom" StartIcon="@Icons.Material.Filled.Edit" Color="ComponentCommon.PrimaryColor" Label="Create" OnClick="@OnCreateEvent" />
         </MudContainer>
     </ChildContent>
     <ErrorContent>

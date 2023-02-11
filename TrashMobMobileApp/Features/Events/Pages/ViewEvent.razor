@@ -1,0 +1,74 @@
+﻿@page "/events/viewevent/{EventId}"
+
+<style>
+    .tm-view-event-container {
+        height: 100vh;
+        padding: 20px;
+    }
+
+        .tm-view-event-container .tm-loader {
+            top: 50%;
+            position: fixed;
+        }
+
+        .tm-view-event-container .tm-view-details {
+            margin-top: 20px;
+        }
+
+        .tm-view-event-container .tm-action-item {
+            position: fixed;
+            bottom: 0;
+            width: 90%;
+            margin-bottom: 20px;
+        }
+</style>
+
+<ErrorBoundary>
+    <ChildContent>
+        <MudContainer Class="tm-view-event-container">
+            <MudOverlay @bind-Visible="_isLoading" Absolute>
+                <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
+            </MudOverlay>
+            <MudStack Class="tm-view-details">
+                <MudText Typo="Typo.h5">@_event.Name</MudText>
+                <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                    <div>
+                        <MudChip>@_eventType.Name</MudChip>
+                    </div>
+                    <div>
+                        <MudIcon Title="Share" Icon="@Icons.Material.Filled.Share" />
+                    </div>
+                </MudStack>
+            </MudStack>
+            <MudStack Class="tm-view-details">
+                <MudStack Row>
+                    <MudIcon Icon="@Icons.Material.Filled.CalendarToday" />
+                    <MudText Typo="Typo.body1">@_event.EventDate.GetFormattedLocalDate()</MudText>
+                </MudStack>
+                <MudStack Row>
+                    <MudIcon Icon="@Icons.Material.Filled.AccessTime" />
+                    <MudText Typo="Typo.body1">@_event.EventDate.GetFormattedLocalTime()</MudText>
+                </MudStack>
+                <MudStack Row>
+                    <MudIcon Icon="@Icons.Material.Filled.AccessAlarm" />
+                    <MudText Typo="Typo.body1">@_event.GetFormattedDuration()</MudText>
+                </MudStack>
+            </MudStack>
+            <MudStack Class="tm-view-details">
+                <MudStack Row>
+                    <MudIcon Icon="@Icons.Material.Filled.PinDrop" />
+                    <MudText Typo="Typo.body1">@_event.GetFormattedAddress()</MudText>
+                </MudStack>
+            </MudStack>
+            <MudStack Class="tm-view-details">
+                <MudText Typo="Typo.body2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Dolor purus non enim praesent elementum. Viverra justo nec ultrices dui sapien eget mi proin. Interdum velit laoreet id donec. Id consectetur purus ut faucibus pulvinar elementum integer enim neque. Odio facilisis mauris sit amet massa vitae tortor condimentum. Orci sagittis eu volutpat odio facilisis mauris sit. Morbi enim nunc faucibus a pellentesque sit amet porttitor. Ornare aenean euismod elementum nisi quis eleifend quam adipiscing. Turpis egestas sed tempus urna et pharetra pharetra massa. Volutpat sed cras ornare arcu dui vivamus arcu felis. Tristique et egestas quis ipsum. Amet nisl suscipit adipiscing bibendum est ultricies integer. Magna ac placerat vestibulum lectus mauris ultrices eros in cursus.</MudText>
+            </MudStack>
+            <MudStack Row Justify="Justify.Center" Class="tm-action-item">
+                <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor">Register</MudButton>
+            </MudStack>
+        </MudContainer>
+    </ChildContent>
+    <ErrorContent>
+        @context.Message
+    </ErrorContent>
+</ErrorBoundary>

@@ -1,19 +1,21 @@
 ﻿namespace TrashMobMobileApp.Data
 {
+    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using System;
     using System.Diagnostics;
+    using System.Net.Http;
     using System.Net.Http.Json;
     using System.Threading.Tasks;
     using TrashMob.Models;
-    using TrashMobMobileApp.Authentication;
+    using TrashMobMobileApp.Config;
 
     public class EventSummaryRestService : RestServiceBase, IEventSummaryRestService
     {
-        private readonly string EventSummaryApi = "eventsummaries";
+        protected override string Controller => "eventsummaries";
 
-        public EventSummaryRestService(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService)
-            : base(httpClientService, b2CAuthenticationService)
+        public EventSummaryRestService(IOptions<Settings> settings)
+            : base(settings)
         {
         }
 
@@ -21,15 +23,14 @@
         {
             try
             {
-                var requestUri = EventSummaryApi + "/" + eventId;
+                var requestUri = Controller + "/" + eventId;
 
-                var anonymousHttpClient = HttpClientService.CreateAnonymousClient();
-
-                using (var response = await anonymousHttpClient.GetAsync(requestUri, cancellationToken))
+                using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string content = await response.Content.ReadAsStringAsync(cancellationToken);
-                    return JsonConvert.DeserializeObject<EventSummary>(content);
+                    var result = JsonConvert.DeserializeObject<List<EventSummary>>(content);
+                    return result.FirstOrDefault();
                 }
             }
             catch (Exception ex)
@@ -45,9 +46,7 @@
             {
                 var content = JsonContent.Create(eventSummary, typeof(EventSummary), null, SerializerOptions);
 
-                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
-
-                using (var response = await authorizedHttpClient.PutAsync(EventSummaryApi, content, cancellationToken))
+                using (var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                 }
@@ -67,9 +66,7 @@
             {
                 var content = JsonContent.Create(eventSummary, typeof(EventSummary), null, SerializerOptions);
 
-                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
-
-                using (var response = await authorizedHttpClient.PostAsync(EventSummaryApi, content, cancellationToken))
+                using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                 }
