@@ -102,6 +102,11 @@
         private void OnEdit(Event mobEvent)
             => Navigator.NavigateTo(string.Format(Routes.EditEvent, mobEvent.Id));
 
+        private void OnViewMap(Event mobEvent)
+        {
+            Navigator.NavigateTo(string.Format(Routes.ViewEventMap, mobEvent.Id));
+        }
+
         private async Task OnAttendingEventsFilterAsync()
         {
             _myEvents.Clear();

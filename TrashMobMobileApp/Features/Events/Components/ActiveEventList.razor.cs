@@ -34,6 +34,11 @@
             Navigator.NavigateTo(string.Format(Routes.ViewEvent, mobEvent.Id));
         }
 
+        private void OnViewMap(Event mobEvent)
+        {
+            Navigator.NavigateTo(string.Format(Routes.ViewEventMap, mobEvent.Id));
+        }
+
         private async Task OnRegisterAsync(Event mobEvent)
         {
             try
