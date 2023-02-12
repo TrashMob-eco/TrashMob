@@ -5,6 +5,7 @@
     using TrashMob.Models;
     using TrashMobMobileApp.Data;
     using TrashMobMobileApp.Extensions;
+    using TrashMobMobileApp.Features.Map;
     using TrashMobMobileApp.Shared;
 
     public partial class ActiveEventList
@@ -36,7 +37,7 @@
 
         private void OnViewMap(Event mobEvent)
         {
-            Navigator.NavigateTo(string.Format(Routes.ViewEventMap, mobEvent.Id));
+            App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageSingleEvent());
         }
 
         private async Task OnRegisterAsync(Event mobEvent)

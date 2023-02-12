@@ -157,5 +157,18 @@
     <ItemGroup>
 	<BundleResource Include="Resources\Images\dotnet_bot.svg" />
     </ItemGroup>
+    <ItemGroup>
+      <Compile Update="Features\Map\MauiMapPageMultipleEvent.xaml.cs">
+        <DependentUpon>MauiMapPageMultipleEvent.xaml</DependentUpon>
+      </Compile>
+    </ItemGroup>
+    <ItemGroup>
+      <MauiXaml Update="Features\Map\MauiMapPageSingleEvent.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+      <MauiXaml Update="Features\Map\MauiMapPageMultipleEvent.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+    </ItemGroup>
 
 </Project>
