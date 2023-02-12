@@ -58,13 +58,22 @@
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
 		 <CreatePackage>false</CreatePackage>
 		 <CodesignKey>Apple Distribution: TrashMob (367LR8J89Q)</CodesignKey>
-		 <CodesignProvision>eco.trashmob.distribution.appstore</CodesignProvision>
+		 <CodesignProvision>eco.trashmob</CodesignProvision>
 		 <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
 		 <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 		<WarningLevel>4</WarningLevel>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="Info.plist" Condition=" '$(Configuration)' == 'Debug' ">
+			<LogicalName>Info.plist</LogicalName>
+		</None>
+		<None Include="Info-AppStore.plist" Condition=" '$(Configuration)' == 'Release' ">
+			<LogicalName>Info.plist</LogicalName>
+		</None>
+	</ItemGroup>
 
 	<ItemGroup>
 		<!-- App Icon -->
