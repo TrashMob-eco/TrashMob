@@ -63,6 +63,9 @@
             }
             @if (_myEvents.Any())
             {
+                <MudIconButton Icon="@Icons.Material.Filled.Map"
+                           Color="ComponentCommon.PrimaryColor"
+                           OnClick="@(() => OnViewMapAllEvents(_myEvents))" />
                 <MudVirtualize Context="mob" Items="_myEvents">
                     <MudCard Class="tm-event-card">
                         <MudCardHeader>

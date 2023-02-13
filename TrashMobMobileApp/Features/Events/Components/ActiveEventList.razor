@@ -29,6 +29,9 @@
 
 <ErrorBoundary>
     <ChildContent>
+        <MudIconButton Icon="@Icons.Material.Filled.Map"
+                       Color="ComponentCommon.PrimaryColor"
+                       OnClick="@(() => OnViewMapAllEvents(_mobEvents))" />
         <MudContainer Class="tm-event-list">
             <MudOverlay @bind-Visible="_isLoading" Absolute>
                 <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />

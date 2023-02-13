@@ -38,6 +38,11 @@
             Navigator.NavigateTo(string.Format(Routes.ViewEvent, mobEvent.Id));
         }
 
+        private void OnViewMapAllEvents(IEnumerable<Event> mobEvents)
+        {
+            App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageMultipleEvent(mobEvents));
+        }
+
         private void OnViewMap(Event mobEvent)
         {
             var isEventOwner = _user.Id == mobEvent.CreatedByUserId;

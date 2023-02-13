@@ -106,6 +106,11 @@
         private void OnEdit(Event mobEvent)
             => Navigator.NavigateTo(string.Format(Routes.EditEvent, mobEvent.Id));
 
+        private void OnViewMapAllEvents(IEnumerable<Event> mobEvents)
+        {
+            App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageMultipleEvent(mobEvents));
+        }
+
         private void OnViewMap(Event mobEvent)
         {
             var isEventOwner = _user.Id == mobEvent.CreatedByUserId;

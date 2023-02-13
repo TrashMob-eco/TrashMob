@@ -5,6 +5,6 @@
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              Title="NewPage1MauiMapPageMultipleEvent">
     <VerticalStackLayout>
-        <maps:Map x:Name="map" HeightRequest="400" />
+        <maps:Map x:Name="mappy" HeightRequest="400" />
     </VerticalStackLayout>
 </ContentPage>
