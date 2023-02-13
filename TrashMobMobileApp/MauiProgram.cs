@@ -9,13 +9,14 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TrashMobMobileApp.Extensions;
 using TrashMobMobileApp.Config;
+using CommunityToolkit.Maui;
 
 public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
-        builder.UseMauiApp<App>();
+        builder.UseMauiApp<App>().UseMauiCommunityToolkit();
 
         string strAppConfigStreamName = string.Empty;
 

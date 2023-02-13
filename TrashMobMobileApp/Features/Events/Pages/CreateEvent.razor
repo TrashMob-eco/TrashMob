@@ -28,9 +28,14 @@
         {
             <CreateEventStep1 @bind-Event="@_event" OnStepFinished="() => OnNextStep(EventStep.STEP_2)" />
         }
-        else if (_step == EventStep.STEP_2)
+@*        else if (_step == EventStep.STEP_2)
         {
             <CreateEventStep2 @bind-Event="@_event" OnStepFinished="() => OnNextStep(EventStep.STEP_3)" />
+        }
+*@
+        else if (_step == EventStep.STEP_2)
+        {
+            <CreateEventStep2 @bind-Event="@_event" OnStepFinished="() => OpenMap()" />
         }
         else if (_step == EventStep.STEP_3)
         {

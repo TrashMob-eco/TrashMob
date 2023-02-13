@@ -1,14 +1,19 @@
-﻿using Microsoft.AspNetCore.Components;
-using TrashMobMobileApp.Data;
-using TrashMobMobileApp.Shared;
-using TrashMob.Models;
-
-namespace TrashMobMobileApp.Features.Events.Pages
+﻿namespace TrashMobMobileApp.Features.Events.Pages
 {
+    using Microsoft.AspNetCore.Components;
+    using TrashMobMobileApp.Data;
+    using TrashMobMobileApp.Shared;
+    using TrashMob.Models;
+    using CommunityToolkit.Maui.Views;
+    using TrashMobMobileApp.Features.Map;
+
     public partial class CreateEvent
     {
         private Event _event = new();
         private EventStep _step;
+
+        [Inject]
+        public IMapRestService MapRestService { get; set; }
 
         [Inject]
         public IEventTypeRestService EventTypesService { get; set; }
@@ -23,6 +28,13 @@ namespace TrashMobMobileApp.Features.Events.Pages
         }
 
         private void OnNextStep(EventStep _nextStep) => _step = _nextStep;
+
+        private async void OpenMap()
+        {
+            var result = await App.Current.MainPage.ShowPopupAsync(new EditMapPopup(MapRestService, _event));
+            _event = result as Event;
+            StateHasChanged();
+        }
 
         private void OnFinished() => Navigator.NavigateTo(Routes.Events);
     }

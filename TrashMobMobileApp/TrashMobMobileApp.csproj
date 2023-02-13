@@ -127,6 +127,7 @@
 	</ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="CommunityToolkit.Maui" Version="4.0.0" />
       <PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.1" />
       <PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.1" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
@@ -159,6 +160,9 @@
       </Compile>
     </ItemGroup>
     <ItemGroup>
+      <MauiXaml Update="Features\Map\EditMapPopup.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
       <MauiXaml Update="Features\Map\MauiMapPageSingleEvent.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
