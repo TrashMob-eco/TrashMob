@@ -20,21 +20,6 @@ public partial class MauiMapPageMultipleEvent : ContentPage
     {
         InitializeComponent();
 
-        //var locationHelper = new LocationHelper();
-        //var userLocation = locationHelper.GetCurrentLocation().GetAwaiter().GetResult();
-
-        //if (userLocation != null)
-        //{
-        //    var mapSpan = new MapSpan(userLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
-        //    mappy.MoveToRegion(mapSpan);
-        //}
-        //else
-        //{
-        //    var defaultLocation = new Location(DefaultLatitude, DefaultLongitude);
-        //    var mapSpan = new MapSpan(defaultLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
-        //    mappy.MoveToRegion(mapSpan);
-        //}
-
         foreach (var mobEvent in mobEvents)
         {
             var location = new Location(mobEvent.Latitude.Value, mobEvent.Longitude.Value);
@@ -45,6 +30,24 @@ public partial class MauiMapPageMultipleEvent : ContentPage
             pin.Location = location;
 
             mappy.Pins.Add(pin);
+        }
+    }
+
+    private async void mappy_Loaded(object sender, EventArgs e)
+    {
+        var locationHelper = new LocationHelper();
+        var userLocation = await locationHelper.GetCurrentLocation();
+
+        if (userLocation != null)
+        {
+            var mapSpan = new MapSpan(userLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
+            mappy.MoveToRegion(mapSpan);
+        }
+        else
+        {
+            var defaultLocation = new Location(DefaultLatitude, DefaultLongitude);
+            var mapSpan = new MapSpan(defaultLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
+            mappy.MoveToRegion(mapSpan);
         }
     }
 }
