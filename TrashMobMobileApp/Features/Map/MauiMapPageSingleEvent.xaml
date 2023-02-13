@@ -5,6 +5,24 @@
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              Title="MauiMapPageSingleEvent">
     <VerticalStackLayout>
-        <maps:Map x:Name="map" HeightRequest="400"  />
+        <maps:Map x:Name="mappy" HeightRequest="400"  />
+        <HorizontalStackLayout>
+            <Label Text="Street Address" MaximumWidthRequest="200" />
+            <Label x:Name="streetAddress" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label Text="City"  MaximumWidthRequest="200" />
+            <Label x:Name="city" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label Text="State"  MaximumWidthRequest="200"/>
+            <Label x:Name="state" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label Text="Postal Code"  MaximumWidthRequest="200" />
+            <Label x:Name="postalCode" />
+        </HorizontalStackLayout>
+
+        <Button Text="Close" Clicked="CloseButton_Clicked" />
     </VerticalStackLayout>
 </ContentPage>

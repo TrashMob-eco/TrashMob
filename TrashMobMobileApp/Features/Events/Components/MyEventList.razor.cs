@@ -24,6 +24,9 @@
         [Inject]
         public UserStateInformation StateInformation { get; set; }
 
+        [Inject]
+        public IMapRestService MapRestService { get; set; }
+
         protected override async Task OnInitializedAsync()
         {
             _user = App.CurrentUser;
@@ -105,7 +108,9 @@
 
         private void OnViewMap(Event mobEvent)
         {
-            App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageSingleEvent());
+            var isEventOwner = _user.Id == mobEvent.CreatedByUserId;
+
+            App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageSingleEvent(MapRestService, mobEvent, isEventOwner));
         }
 
         private async Task OnAttendingEventsFilterAsync()
