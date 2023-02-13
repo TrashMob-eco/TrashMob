@@ -50,4 +50,9 @@ public partial class MauiMapPageMultipleEvent : ContentPage
             mappy.MoveToRegion(mapSpan);
         }
     }
+
+    private void CloseButton_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PopModalAsync();
+    }
 }

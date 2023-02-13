@@ -6,5 +6,6 @@
              Title="NewPage1MauiMapPageMultipleEvent" >
     <VerticalStackLayout>
         <maps:Map x:Name="mappy" HeightRequest="400" Loaded="mappy_Loaded" />
+        <Button Text="Close" Clicked="CloseButton_Clicked" />
     </VerticalStackLayout>
 </ContentPage>
