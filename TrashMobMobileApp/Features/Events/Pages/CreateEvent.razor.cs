@@ -33,6 +33,7 @@
         {
             var result = await App.Current.MainPage.ShowPopupAsync(new EditMapPopup(MapRestService, _event));
             _event = result as Event;
+            _step = EventStep.STEP_5;
             StateHasChanged();
         }
 

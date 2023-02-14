@@ -49,7 +49,11 @@ namespace TrashMobMobileApp.Features.Events.Components
             finally
             {
                 _isLoading = false;
-                EventContainer.UserEventInteractionAction.Invoke(Enums.UserEventInteraction.CREATED_EVENT);
+
+                if (EventContainer.UserEventInteractionAction != null)
+                {
+                    EventContainer.UserEventInteractionAction.Invoke(Enums.UserEventInteraction.CREATED_EVENT);
+                }
             }
         }
 
