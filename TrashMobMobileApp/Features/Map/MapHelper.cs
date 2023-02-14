@@ -18,5 +18,19 @@
 
             return pin;
         }
+
+        public static Pin GetPinForUser(User user)
+        {
+            var userHeader = user.UserName;
+
+            var pin = new Pin
+            {
+                Label = userHeader,
+                Address = string.Format("{city}, {region}", user.City, user.Region),
+                Type = PinType.Place
+            };
+
+            return pin;
+        }
     }
 }

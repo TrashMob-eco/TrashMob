@@ -169,6 +169,9 @@
       <MauiXaml Update="Features\Map\MauiMapPageMultipleEvent.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
+      <MauiXaml Update="Features\Map\UserLocationPreferencePopup.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
     </ItemGroup>
 
 </Project>

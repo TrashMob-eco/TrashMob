@@ -13,8 +13,31 @@
 
         protected abstract string Controller { get; }
 
-        protected HttpClient AuthorizedHttpClient { get; }
+        private HttpClient authorizedHttpClient;
 
+        protected HttpClient AuthorizedHttpClient
+        {
+            get
+            {
+                if (authorizedHttpClient?.DefaultRequestHeaders.Authorization == null)
+                {
+                    if (authorizedHttpClient != null)
+                    {
+                        authorizedHttpClient.Dispose();
+                    }
+
+                    authorizedHttpClient = new HttpClient()
+                    {
+                        BaseAddress = new Uri(string.Concat(TrashMobApiAddress, Controller))
+                    };
+
+                    authorizedHttpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
+                    authorizedHttpClient.DefaultRequestHeaders.Authorization = GetAuthToken(UserState.UserContext);
+                }
+
+                return authorizedHttpClient;
+            }
+        }
         protected HttpClient AnonymousHttpClient { get; }
 
         protected RestServiceBase(IOptions<Settings> settings)
@@ -27,13 +50,13 @@
 
             TrashMobApiAddress = settings.Value.ApiBaseUrl;
 
-            AuthorizedHttpClient = new HttpClient()
+            authorizedHttpClient = new HttpClient()
             {
                 BaseAddress = new Uri(string.Concat(TrashMobApiAddress, Controller))
             };
 
-            AuthorizedHttpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
-            AuthorizedHttpClient.DefaultRequestHeaders.Authorization = GetAuthToken(UserState.UserContext);
+            authorizedHttpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
+            authorizedHttpClient.DefaultRequestHeaders.Authorization = GetAuthToken(UserState.UserContext);
 
             AnonymousHttpClient = new HttpClient
             {
@@ -45,6 +68,11 @@
 
         protected virtual System.Net.Http.Headers.AuthenticationHeaderValue GetAuthToken(UserContext userContext)
         {
+            if (userContext == null || string.IsNullOrWhiteSpace(userContext.AccessToken))
+            {
+                return null;
+            }
+
             return new System.Net.Http.Headers
                 .AuthenticationHeaderValue("bearer", userContext.AccessToken);
         }
