@@ -38,7 +38,7 @@
 		<RunAOTCompilation>False</RunAOTCompilation>
 		<AndroidUseAapt2>True</AndroidUseAapt2>
 		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-		<AndroidPackageFormat>apk</AndroidPackageFormat>
+		<AndroidPackageFormat>aab</AndroidPackageFormat>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-android|AnyCPU'">
