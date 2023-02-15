@@ -1,5 +1,6 @@
 namespace TrashMobMobileApp.Features.Map;
 
+using Microsoft.AspNetCore.Components;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 using TrashMob.Models;
@@ -7,7 +8,8 @@ using TrashMobMobileApp.Data;
 
 public partial class EditMapPopup
 {
-    private readonly IMapRestService mapRestService;
+    public IMapRestService MapRestService { get; set; }
+
     private readonly Event mobEvent;
     private const double DefaultLatitudeDegrees = 0.02;
     private const double DefaultLongitudeDegrees = 0.02;
@@ -17,7 +19,7 @@ public partial class EditMapPopup
     public EditMapPopup(IMapRestService mapRestService, Event mobEvent)
     {
         InitializeComponent();
-        this.mapRestService = mapRestService;
+        MapRestService = mapRestService;
         this.mobEvent = mobEvent;
     }
 
@@ -59,7 +61,7 @@ public partial class EditMapPopup
             mobEvent.Latitude = e.Location.Latitude;
 
             // Get the actual address for this point
-            var address = await mapRestService.GetAddressAsync(e.Location.Latitude, e.Location.Longitude);
+            var address = await MapRestService.GetAddressAsync(e.Location.Latitude, e.Location.Longitude);
             mobEvent.StreetAddress = address.StreetAddress;
             mobEvent.City = address.City;
             mobEvent.Region = address.Region;

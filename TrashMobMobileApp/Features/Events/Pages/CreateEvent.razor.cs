@@ -13,13 +13,13 @@
         private EventStep _step;
 
         [Inject]
-        public IMapRestService MapRestService { get; set; }
-
-        [Inject]
         public IEventTypeRestService EventTypesService { get; set; }
 
         [Inject]
         public IMobEventManager MobEventManager { get; set; }
+
+        [Inject]
+        public IMapRestService MapRestService { get; set; }
 
         protected override void OnInitialized()
         {

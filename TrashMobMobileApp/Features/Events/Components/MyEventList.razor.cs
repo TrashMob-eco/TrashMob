@@ -19,13 +19,13 @@
         private User _user;
 
         [Inject]
+        public IMapRestService MapRestService { get; set; }
+
+        [Inject]
         public IMobEventManager MobEventManager { get; set; }
 
         [Inject]
         public UserStateInformation StateInformation { get; set; }
-
-        [Inject]
-        public IMapRestService MapRestService { get; set; }
 
         protected override async Task OnInitializedAsync()
         {

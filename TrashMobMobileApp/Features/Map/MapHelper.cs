@@ -22,11 +22,11 @@
         public static Pin GetPinForUser(User user)
         {
             var userHeader = user.UserName;
-
+            var address = string.Format("{0}, {1}", user.City, user.Region);
             var pin = new Pin
             {
                 Label = userHeader,
-                Address = string.Format("{city}, {region}", user.City, user.Region),
+                Address = address,
                 Type = PinType.Place
             };
 

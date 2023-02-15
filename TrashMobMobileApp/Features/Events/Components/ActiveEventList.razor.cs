@@ -18,10 +18,10 @@
         private User _user;
 
         [Inject]
-        public IMobEventManager MobEventManager { get; set; }
+        public IMapRestService MapRestService { get; set; }
 
         [Inject]
-        public IMapRestService MapRestService { get; set; }
+        public IMobEventManager MobEventManager { get; set; }
 
         protected override async Task OnInitializedAsync()
         {

@@ -38,7 +38,8 @@
 		<RunAOTCompilation>False</RunAOTCompilation>
 		<AndroidUseAapt2>True</AndroidUseAapt2>
 		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-		<AndroidPackageFormat>aab</AndroidPackageFormat>
+		<AndroidPackageFormat>apk</AndroidPackageFormat>
+		<EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-android|AnyCPU'">
@@ -46,6 +47,8 @@
 		<AndroidSigningKeyStore>trashmobmobileapp.keystore</AndroidSigningKeyStore>
 		<AndroidSigningKeyAlias>key</AndroidSigningKeyAlias>
 		<RunAOTCompilation>False</RunAOTCompilation>
+		<EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+		<AndroidPackageFormat>apk</AndroidPackageFormat>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">

@@ -17,7 +17,7 @@
 
         public async void OnUserLocationPreference_Click()
         {
-            await App.Current.MainPage.ShowPopupAsync(new UserLocationPreferencePopup(MapRestService, UserManager));
+            await App.Current.MainPage.ShowPopupAsync(new UserLocationPreferencePopup(UserManager, MapRestService));
             StateHasChanged();
         }
     }

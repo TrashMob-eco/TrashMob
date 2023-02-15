@@ -1,5 +1,6 @@
 namespace TrashMobMobileApp.Features.Map;
 
+using Microsoft.AspNetCore.Components;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 using TrashMob.Models;
@@ -7,10 +8,11 @@ using TrashMobMobileApp.Data;
 
 public partial class MauiMapPageSingleEvent : ContentPage
 {
-    private readonly IMapRestService mapRestService;
     private readonly Event mobEvent;
     private const double DefaultLatitudeDegrees = 0.02;
     private const double DefaultLongitudeDegrees = 0.02;
+
+    public IMapRestService MapRestService { get; set; }
 
     public MauiMapPageSingleEvent()
 	{
@@ -20,7 +22,7 @@ public partial class MauiMapPageSingleEvent : ContentPage
     public MauiMapPageSingleEvent(IMapRestService mapRestService, Event mobEvent, bool isPinMovable)
     {
         InitializeComponent();
-        this.mapRestService = mapRestService;
+        MapRestService = mapRestService;
         this.mobEvent = mobEvent;
 
         var location = new Location(mobEvent.Latitude.Value, mobEvent.Longitude.Value);
@@ -59,7 +61,7 @@ public partial class MauiMapPageSingleEvent : ContentPage
             mobEvent.Latitude = e.Location.Latitude;
 
             // Get the actual address for this point
-            var address = await mapRestService.GetAddressAsync(e.Location.Latitude, e.Location.Longitude);
+            var address = await MapRestService.GetAddressAsync(e.Location.Latitude, e.Location.Longitude);
             mobEvent.StreetAddress = address.StreetAddress;
             mobEvent.City = address.City; 
             mobEvent.Region = address.Region; 

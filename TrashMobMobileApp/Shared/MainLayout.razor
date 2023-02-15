@@ -13,7 +13,7 @@
                 <MudAvatar Color="Color.Primary">@_userInitials</MudAvatar>
                 <MudStack Class="gap-y-0">
                     <MudText Typo="Typo.body2">@App.CurrentUser?.UserName</MudText>
-                    <MudLink Href="@Routes.Profile" Underline="Underline.Always" Typo="Typo.body2">Edit Profile</MudLink>
+                    <MudLink OnClick="() => OnUserLocationPreference_Click()" Underline="Underline.Always" Typo="Typo.body2">Set Location Preference</MudLink>
                 </MudStack>
             </MudStack>
         </MudDrawerHeader>
