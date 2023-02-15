@@ -11,37 +11,40 @@
             position: fixed;
         }
 
-        .tm-step1-container .form-item {
+        .tm-step1-container .tm-form {
             margin-top: 10%;
         }
 
-        .tm-step1-container .container-item {
-            margin-top: 10px;
-        }
+            .tm-step1-container .tm-form-item {
+                margin-top: 20px;
+            }
 
-        .tm-step1-container .next-btn {
-            margin-top: 10%;
-            width: 100%;
-        }
+            .tm-step1-container .tm-form .action-items {
+                position: fixed;
+                bottom: 5%;
+                width: 90%;
+            }
 </style>
 
 <ErrorBoundary>
     <ChildContent>
         <MudContainer Class="tm-step1-container">
             <MudOverlay @bind-Visible="_isLoading" Absolute>
-                <MudProgressCircular Color="Color.Default" Indeterminate Class="tm-loader" />
+                <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
             </MudOverlay>
             <MudText Typo="Typo.subtitle2">Let's start with the basics.</MudText>
             <MudText Typo="Typo.body2">Choose a name for your event and tell us what type of event it will be.</MudText>
-            <MudForm @ref="_step1Form" Class="form-item" @bind-IsValid="_success" @bind-Errors="_errors">
-                <MudTextField T="string" Class="container-item" Label="Name" @bind-Text="Event.Name" Variant="Variant.Outlined" Required RequiredError="Name is required" />
-                <MudSelect FullWidth T="EventType" Class="container-item" Label="Event Type" @bind-Value="@_selectedEventType" AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined" Required RequiredError="Event type is required">
+            <MudForm @ref="_step1Form" Class="tm-form" @bind-IsValid="_success" @bind-Errors="_errors">
+                <MudTextField T="string" Class="tm-form-item" Label="Name" @bind-Text="Event.Name" Variant="ComponentCommon.TextFieldVariant" Required RequiredError="Name is required" />
+                <MudSelect FullWidth T="EventType" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Event Type" @bind-Value="@_selectedEventType" AnchorOrigin="Origin.BottomCenter" Required RequiredError="Event type is required">
                     @foreach (var eventType in _eventTypes)
                     {
                         <MudSelectItem T="EventType" Value="@eventType">@eventType.Name</MudSelectItem>
                     }
                 </MudSelect>
-                <MudFab Class="next-btn" Color="Color.Primary" Label="Next" OnClick="OnStepFinishedAsync" />
+                <MudStack Row Justify="Justify.Center" Class="action-items">
+                    <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnStepFinishedAsync">Next</MudButton>
+                </MudStack>
             </MudForm>
         </MudContainer>
     </ChildContent>

@@ -1,18 +1,20 @@
 ﻿namespace TrashMobMobileApp.Data
 {
+    using Microsoft.Extensions.Options;
     using System;
     using System.Diagnostics;
+    using System.Net.Http;
     using System.Net.Http.Json;
     using System.Threading.Tasks;
     using TrashMob.Models;
-    using TrashMobMobileApp.Authentication;
+    using TrashMobMobileApp.Config;
 
     public class ContactRequestRestService : RestServiceBase, IContactRequestRestService
     {
-        private readonly string ContactRequestApiPath = "contactrequest";
+        protected override string Controller => "contactrequest";
 
-        public ContactRequestRestService(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService) 
-            : base(httpClientService, b2CAuthenticationService)
+        public ContactRequestRestService(IOptions<Settings> settings) 
+            : base(settings)
         {
         }
 
@@ -23,9 +25,7 @@
                 contactRequest.Id = Guid.NewGuid();
                 var content = JsonContent.Create(contactRequest, typeof(ContactRequest), null, SerializerOptions);
 
-                var anonymousHttpClient = HttpClientService.CreateAnonymousClient();
-
-                using (var response = await anonymousHttpClient.PostAsync(ContactRequestApiPath, content, cancellationToken))
+                using (var response = await AnonymousHttpClient.PostAsync(Controller, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                 }

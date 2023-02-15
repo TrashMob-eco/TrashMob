@@ -8,6 +8,7 @@
 @using TrashMobMobileApp.Shared
 
 @* Custom namespaces *@
+@using TrashMobMobileApp.Enums
 @using TrashMobMobileApp.StateContainers
 @using TrashMob.Models
 @using TrashMobMobileApp.Models
@@ -17,6 +18,7 @@
 
 @* Custom service injections *@
 @inject PageTitleContainer TitleContainer
+@inject EventStateInformation EventContainer
 @inject NavigationManager Navigator
 @inject ISnackbar Snackbar
 @inject IErrorBoundaryLogger BoundaryLogger

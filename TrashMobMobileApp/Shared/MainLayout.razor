@@ -1,24 +1,24 @@
 ﻿@inherits LayoutComponentBase
 
 <MudLayout>
-    <MudAppBar>
+    <MudAppBar Style="padding-left: 16px; padding-right: 16px">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudContainer Style="width: 100%; text-align: center;">
             @_pageTitle
         </MudContainer>
-        <MudSpacer />
-        <MudMenu Color="Color.Primary">
-            <ActivatorContent>
-                <MudAvatar Color="Color.Dark">@_userInitials</MudAvatar>
-            </ActivatorContent>
-            <ChildContent>
-                <MudMenuItem Icon="@Icons.Material.Filled.Person" IconSize="Size.Small" OnClick="() => Navigator.NavigateTo(Routes.Profile)">Profile</MudMenuItem>
-                <MudMenuItem Icon="@Icons.Material.Filled.ExitToApp" IconSize="Size.Small" OnClick="@OnSignOutAsync">Sign Out</MudMenuItem>
-            </ChildContent>
-        </MudMenu>
     </MudAppBar>
     <MudDrawer @bind-Open="@_drawerOpen">
-        <NavMenu/>
+        <MudDrawerHeader>
+            <MudStack Row>
+                <MudAvatar Color="Color.Primary">@_userInitials</MudAvatar>
+                <MudStack Class="gap-y-0">
+                    <MudText Typo="Typo.body2">@App.CurrentUser?.UserName</MudText>
+                    <MudLink OnClick="() => OnUserLocationPreference_Click()" Underline="Underline.Always" Typo="Typo.body2">Set Location Preference</MudLink>
+                </MudStack>
+            </MudStack>
+        </MudDrawerHeader>
+        <MudDivider />
+        <NavMenu />
     </MudDrawer>
     <MudMainContent>
         @Body

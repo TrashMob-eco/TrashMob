@@ -1,7 +1,8 @@
-﻿<MudNavMenu Color="Color.Dark">
+﻿@inject UserStateInformation UserContainer
+
+<MudNavMenu Color="Color.Dark">
     <MudNavLink Icon="@Icons.Material.Filled.Home" Href="@Routes.Home" Match="NavLinkMatch.All">Home</MudNavLink>
     <MudNavLink Icon="@Icons.Material.Filled.Event" Href="@Routes.Events" Match="NavLinkMatch.Prefix">Events</MudNavLink>
     <MudNavLink Icon="@Icons.Material.Filled.ContactPage" Href="@Routes.ContactUs" Match="NavLinkMatch.Prefix">Contact Us</MudNavLink>
-    <MudNavLink Icon="@Icons.Material.Filled.SpeakerNotes" Href="@Routes.Terms" Match="NavLinkMatch.Prefix">Terms</MudNavLink>
-    <MudNavLink Icon="@Icons.Material.Filled.Map" Map Href="@Routes.Map" Match="NavLinkMatch.Prefix">Map</MudNavLink>
+    <MudNavLink Icon="@Icons.Material.Filled.ExitToApp" OnClick="() => UserContainer.OnSignOut.Invoke()">Sign Out</MudNavLink>
 </MudNavMenu>

@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMobMobileApp.Authentication;
 
     public class UserManager : IUserManager
     {
@@ -17,9 +18,9 @@
             return userRestService.GetUserAsync(userId, cancellationToken);
         }
 
-        public Task<User> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
+        public Task<User> GetUserByEmailAsync(string email, UserContext userContext, CancellationToken cancellationToken = default)
         {
-            return userRestService.GetUserByEmailAsync(email, cancellationToken);
+            return userRestService.GetUserByEmailAsync(email, userContext, cancellationToken);
         }
 
         public Task<User> AddUserAsync(User user, CancellationToken cancellationToken = default)
