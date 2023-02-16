@@ -5,6 +5,7 @@
     using TrashMob.Models;
     using TrashMobMobileApp.Data;
     using TrashMobMobileApp.Enums;
+    using TrashMobMobileApp.Features.Map;
     using TrashMobMobileApp.Shared;
     using TrashMobMobileApp.StateContainers;
 
@@ -16,6 +17,9 @@
         private string _eventSearchText;
         private EventActionGroup _currentSelectedChip = EventActionGroup.NONE;
         private User _user;
+
+        [Inject]
+        public IMapRestService MapRestService { get; set; }
 
         [Inject]
         public IMobEventManager MobEventManager { get; set; }
@@ -52,7 +56,7 @@
                     Navigator.NavigateTo(Routes.Events);
                     break;
                 case UserEventInteraction.EDITED_EVENT:
-                    Snackbar.Add("Event edited!", Severity.Success);
+                    Snackbar.Add("Event updated!", Severity.Success);
                     Navigator.NavigateTo(Routes.Events);
                     break;
                 case UserEventInteraction.CANCELLED_EVENT:
@@ -101,6 +105,16 @@
 
         private void OnEdit(Event mobEvent)
             => Navigator.NavigateTo(string.Format(Routes.EditEvent, mobEvent.Id));
+
+        private void OnViewMapAllEvents(IEnumerable<Event> mobEvents)
+        {
+            App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageMultipleEvent(mobEvents));
+        }
+
+        private void OnViewMap(Event mobEvent)
+        {
+            App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageSingleEvent(MapRestService, mobEvent));
+        }
 
         private async Task OnAttendingEventsFilterAsync()
         {

@@ -5,6 +5,7 @@
     using TrashMob.Models;
     using TrashMobMobileApp.Data;
     using TrashMobMobileApp.Extensions;
+    using TrashMobMobileApp.Features.Map;
     using TrashMobMobileApp.Shared;
 
     public partial class ActiveEventList
@@ -15,6 +16,9 @@
         private bool _isLoading;
         private string _eventSearchText;
         private User _user;
+
+        [Inject]
+        public IMapRestService MapRestService { get; set; }
 
         [Inject]
         public IMobEventManager MobEventManager { get; set; }
@@ -32,6 +36,16 @@
         private void OnViewEventDetails(Event mobEvent)
         {
             Navigator.NavigateTo(string.Format(Routes.ViewEvent, mobEvent.Id));
+        }
+
+        private void OnViewMapAllEvents(IEnumerable<Event> mobEvents)
+        {
+            App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageMultipleEvent(mobEvents));
+        }
+
+        private void OnViewMap(Event mobEvent)
+        {
+            App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageSingleEvent(MapRestService, mobEvent));
         }
 
         private async Task OnRegisterAsync(Event mobEvent)

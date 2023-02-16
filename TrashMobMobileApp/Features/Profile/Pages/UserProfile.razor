@@ -39,27 +39,13 @@
             @if (_user != null)
             {
                 <MudForm @ref="@_userForm" Class="tm-form" @bind-IsValid="@_success" @bind-Errors="@_errors">
-                    <MudText Class="tm-form-label" Typo="Typo.subtitle2">Account</MudText>
-                    <MudTextField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="string" @bind-Text="@_user.GivenName" Label="Given name" />
-                    <MudTextField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="string" @bind-Text="@_user.UserName" Label="User name" Required RequiredError="User name is required" />
-                    <MudTextField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="string" @bind-Text="@_user.Email" Label="Email" Required RequiredError="Email is required"
-                              Validation="@(new EmailAddressAttribute() { ErrorMessage = "The email address is invalid"} )" />
-@*                    <MudTextField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="string" @bind-Text="@_user.NameIdentifier" Label="Name identifier" />
-                    <MudTextField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="string" @bind-Text="@_user.SourceSystemUserName" Label="Source system name" />*@
                     <MudText Class="tm-form-label" Typo="Typo.subtitle2">Location</MudText>
                     <MudTextField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="string" @bind-Text="@_user.City" Label="City" />
                     <MudTextField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="string" @bind-Text="@_user.Region" Label="Region" />
                     <MudTextField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="string" @bind-Text="@_user.Country" Label="Country" />
                     <MudTextField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="string" @bind-Text="@_user.PostalCode" Label="Postal code" />
                     <MudNumericField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="int" @bind-Value="@_user.TravelLimitForLocalEvents" Label="Travel limit for local events" />
-@*                    <MudTextField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="string" Text="@(GetDateString(_user.DateAgreedToPrivacyPolicy))" Label="Date agreed to privacy policy" Disabled />
-                    <MudTextField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="string" Text="@_user.PrivacyPolicyVersion" Label="Privacy policy version" Disabled />
-                    <MudTextField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="string" Text="@(GetDateString(_user.DateAgreedToTermsOfService))" Label="Date agreed to terms of service" Disabled />
-                    <MudTextField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="string" Text="@_user.TermsOfServiceVersion" Label="Terms of service version" Disabled />
-                    <MudNumericField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="int" @bind-Value="@_user.TravelLimitForLocalEvents" Label="Travel limit for local events" />
-                    <MudTextField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="string" Text="@(GetDateString(_user.MemberSince))" Label="Member since" Disabled />
                     <MudCheckBox T="bool" @bind-Checked="@_user.PrefersMetric" Label="Prefers Metrics" />
-                    <MudCheckBox T="bool" @bind-Checked="@_user.IsSiteAdmin" Label="Is site admin" />*@
                 </MudForm>
                 <MudStack Row Class="tm-action-btn-container">
                     <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnSaveUserAsync">Save</MudButton>

@@ -63,6 +63,9 @@
             }
             @if (_myEvents.Any())
             {
+                <MudIconButton Icon="@Icons.Material.Filled.Map"
+                           Color="ComponentCommon.PrimaryColor"
+                           OnClick="@(() => OnViewMapAllEvents(_myEvents))" />
                 <MudVirtualize Context="mob" Items="_myEvents">
                     <MudCard Class="tm-event-card">
                         <MudCardHeader>
@@ -76,8 +79,11 @@
                                 </CardHeaderContent>
                                 <CardHeaderActions>
                                     <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                                    @if (mob.IsEventLead())
+                                    {
                                         <MudMenuItem Icon="@Icons.Material.Filled.Cancel" IconSize="Size.Small" OnClick="@(() => OnCancelEvent(mob))">Cancel</MudMenuItem>
-                                    </MudMenu>
+                                    }
+                                </MudMenu>
                                 </CardHeaderActions>
                             </MudCardHeader>
                             <MudCardContent>
@@ -113,7 +119,8 @@
                                 </MudStack>
                                 <MudStack Row>
                                     <MudIconButton Icon="@Icons.Material.Filled.Map"
-                                               Color="ComponentCommon.PrimaryColor" />
+                                               Color="ComponentCommon.PrimaryColor"
+                                               OnClick="@(() => OnViewMap(mob))" />
                                     <MudIconButton Icon="@Icons.Material.Filled.Share"
                                                Color="ComponentCommon.PrimaryColor" />
                                 </MudStack>

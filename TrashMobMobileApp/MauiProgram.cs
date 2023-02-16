@@ -9,13 +9,14 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TrashMobMobileApp.Extensions;
 using TrashMobMobileApp.Config;
+using CommunityToolkit.Maui;
 
 public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
-        builder.UseMauiApp<App>();
+        builder.UseMauiApp<App>().UseMauiCommunityToolkit();
 
         string strAppConfigStreamName = string.Empty;
 
@@ -39,6 +40,7 @@ public static class MauiProgram
 
         builder.Services.AddLogging();
         builder.Services.AddScoped<IErrorBoundaryLogger, CustomBoundaryLogger>();
+        builder.UseMauiMaps();
 
         //AppCenter.Start("android=d044d1b4-6fbc-4547-8fae-d0286d9ccbaa;" +
         //      "ios=0f9bed29-14d0-4e38-a396-64e5cd185d10;",

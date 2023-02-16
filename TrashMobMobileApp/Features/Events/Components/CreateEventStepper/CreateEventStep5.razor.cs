@@ -1,16 +1,15 @@
-﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using TrashMob.Models;
-using TrashMobMobileApp.Data;
-
-namespace TrashMobMobileApp.Features.Events.Components
+﻿namespace TrashMobMobileApp.Features.Events.Components
 {
+    using Microsoft.AspNetCore.Components;
+    using MudBlazor;
+    using TrashMob.Models;
+    using TrashMobMobileApp.Data;
+
     public partial class CreateEventStep5
     {
         private MudForm _form;
         private bool _success;
         private string[] _errors;
-        private bool _isLoading;
         private List<EventType> _eventTypes = new();
         private EventType _selectedEventType;
         private DateTime? _eventDate;
@@ -41,9 +40,7 @@ namespace TrashMobMobileApp.Features.Events.Components
 
         private async Task GetEventTypesAsync()
         {
-            _isLoading = true;
             _eventTypes = (await EventTypesService.GetEventTypesAsync()).ToList();
-            _isLoading = false;
         }
 
         private async Task OnStepFinishedAsync()

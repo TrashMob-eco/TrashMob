@@ -1,11 +1,13 @@
 ﻿namespace TrashMobMobileApp.Shared
 {
+    using CommunityToolkit.Maui.Views;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Routing;
     using Microsoft.Extensions.Logging;
     using MudBlazor;
     using TrashMobMobileApp.Authentication;
     using TrashMobMobileApp.Data;
+    using TrashMobMobileApp.Features.Map;
     using TrashMobMobileApp.StateContainers;
 
     public partial class MainLayout
@@ -29,6 +31,9 @@
         public IUserManager UserManager { get; set; }
 
         [Inject]
+        public IMapRestService MapRestService { get; set; }
+
+        [Inject]
         public ILogger<NavigationManager> NavigationLogger { get; set; }
 
         [Inject]
@@ -42,6 +47,12 @@
             TitleContainer.OnTitleChange += (title) => SetPageTitle(title);
             await PerformAuthenticationAsync();
             SetTheme();
+        }
+
+        public async void OnUserLocationPreference_Click()
+        {
+            await App.Current.MainPage.ShowPopupAsync(new UserLocationPreferencePopup(UserManager, MapRestService));
+            StateHasChanged();
         }
 
         private void Navigator_LocationChanged(object sender, LocationChangedEventArgs e)

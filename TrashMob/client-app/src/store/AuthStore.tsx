@@ -4,6 +4,7 @@ const b2cPoliciesProd = {
     names: {
         signUpSignIn: 'B2C_1A_TM_SIGNUP_SIGNIN',
         deleteUser: 'B2C_1A_TM_DEREGISTER',
+        profileEdit: 'B2C_1A_TM_PROFILEEDIT',
     },
     authorities: {
         signUpSignIn: {
@@ -11,6 +12,9 @@ const b2cPoliciesProd = {
         },
         deleteUser: {
             authority: 'https://TrashMob.b2clogin.com/TrashMob.onmicrosoft.com/B2C_1A_TM_DEREGISTER'
+        },
+        profileEdit: {
+            authority: 'https://TrashMob.b2clogin.com/TrashMob.onmicrosoft.com/B2C_1A_TM_PROFILEEDIT'
         },
     },
     authorityDomain: 'TrashMob.b2clogin.com',
@@ -21,6 +25,7 @@ const b2cPoliciesDev = {
     names: {
         signUpSignIn: 'B2C_1A_TM_SIGNUP_SIGNIN',
         deleteUser: 'B2C_1A_TM_DEREGISTER',
+        profileEdit: 'B2C_1A_TM_PROFILEEDIT',
     },
     authorities: {
         signUpSignIn: {
@@ -28,6 +33,9 @@ const b2cPoliciesDev = {
         },
         deleteUser: {
             authority: 'https://TrashMobDev.b2clogin.com/TrashMobDev.onmicrosoft.com/B2C_1A_TM_DEREGISTER',
+        },
+        profileEdit: {
+            authority: 'https://TrashMobDev.b2clogin.com/TrashMobDev.onmicrosoft.com/B2C_1A_TM_PROFILEEDIT',
         },
     },
     authorityDomain: 'TrashMobDev.b2clogin.com',
@@ -87,7 +95,6 @@ export function GetMsalClient(navigateToLoginRequestUrl: boolean) {
 }
 
 export const msalClient: msal.PublicClientApplication = GetMsalClient(true);
-export const msalClientNoRedirect: msal.PublicClientApplication = GetMsalClient(false);
 
 export function getApiConfig() {
     var host = window.location.host;
