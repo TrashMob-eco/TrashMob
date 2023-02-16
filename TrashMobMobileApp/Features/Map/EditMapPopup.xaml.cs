@@ -1,6 +1,5 @@
 namespace TrashMobMobileApp.Features.Map;
 
-using Microsoft.AspNetCore.Components;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 using TrashMob.Models;
@@ -34,20 +33,35 @@ public partial class EditMapPopup
     private async void mappy_Loaded(object sender, EventArgs e)
     {
         var locationHelper = new LocationHelper();
-        var userLocation = await locationHelper.GetCurrentLocation();
 
-        if (userLocation != null)
+        if (mobEvent.Latitude != null && mobEvent.Longitude != null)
         {
-            var mapSpan = new MapSpan(userLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
+            var eventLocation = new Location(mobEvent.Latitude.Value, mobEvent.Longitude.Value);
+            var mapSpan = new MapSpan(eventLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
             mappy.MoveToRegion(mapSpan);
+
+            mappy.Pins.Clear();
+            var pin = MapHelper.GetPinForEvent(mobEvent);
+            pin.Location = eventLocation;
+            mappy.Pins.Add(pin);
         }
         else
         {
-            var defaultLocation = new Location(DefaultLatitude, DefaultLongitude);
-            var mapSpan = new MapSpan(defaultLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
-            mappy.MoveToRegion(mapSpan);
-        }
+            var userLocation = await locationHelper.GetCurrentLocation();
 
+            if (userLocation != null)
+            {
+                var mapSpan = new MapSpan(userLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
+                mappy.MoveToRegion(mapSpan);
+            }
+            else
+            {
+                var defaultLocation = new Location(DefaultLatitude, DefaultLongitude);
+                var mapSpan = new MapSpan(defaultLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
+                mappy.MoveToRegion(mapSpan);
+            }
+        }
+        
         mappy.IsShowingUser = true;
         mappy.MapClicked += Map_MapClicked;
     }

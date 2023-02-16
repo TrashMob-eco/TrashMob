@@ -61,11 +61,26 @@
                 </MudStack>
             </MudStack>
             <MudStack Class="tm-view-details">
-                <MudText Typo="Typo.body2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Dolor purus non enim praesent elementum. Viverra justo nec ultrices dui sapien eget mi proin. Interdum velit laoreet id donec. Id consectetur purus ut faucibus pulvinar elementum integer enim neque. Odio facilisis mauris sit amet massa vitae tortor condimentum. Orci sagittis eu volutpat odio facilisis mauris sit. Morbi enim nunc faucibus a pellentesque sit amet porttitor. Ornare aenean euismod elementum nisi quis eleifend quam adipiscing. Turpis egestas sed tempus urna et pharetra pharetra massa. Volutpat sed cras ornare arcu dui vivamus arcu felis. Tristique et egestas quis ipsum. Amet nisl suscipit adipiscing bibendum est ultricies integer. Magna ac placerat vestibulum lectus mauris ultrices eros in cursus.</MudText>
+                <MudText Typo="Typo.body2">@_event.Description</MudText>
             </MudStack>
             <MudStack Row Justify="Justify.Center" Class="tm-action-item">
-                <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor">Register</MudButton>
+                @if (!_event.IsEventLead())
+                {
+                    @if (!_userAttendingEventIds.Contains(_event.Id))
+                    {
+                        <MudButton Color="@ComponentCommon.PrimaryColor"
+                        Variant="@ComponentCommon.CardButtonVariant"
+                               OnClick="@(async () => await OnRegisterAsync(_event))">Register</MudButton>
+                    }
+                    else
+                    {
+                        <MudButton Color="@ComponentCommon.PrimaryColor"
+                        Variant="@ComponentCommon.CardButtonVariant"
+                               OnClick="@(async () => await OnUnregisterAsync(_event))">Unregister</MudButton>
+                    }
+                }
             </MudStack>
+            <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@(() => Navigator.NavigateTo(Routes.Events))">Back</MudButton>
         </MudContainer>
     </ChildContent>
     <ErrorContent>

@@ -45,9 +45,7 @@
 
         private void OnViewMap(Event mobEvent)
         {
-            var isEventOwner = _user.Id == mobEvent.CreatedByUserId;
-            
-            App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageSingleEvent(MapRestService, mobEvent, isEventOwner));
+            App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageSingleEvent(MapRestService, mobEvent));
         }
 
         private async Task OnRegisterAsync(Event mobEvent)

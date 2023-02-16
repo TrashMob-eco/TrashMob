@@ -66,17 +66,20 @@
                                     <MudButton Color="@ComponentCommon.PrimaryColor"
                                            Variant="@ComponentCommon.CardButtonVariant"
                                            OnClick="@(() => OnViewEventDetails(mob))">View</MudButton>
-                                    @if (!_userAttendingEventIds.Contains(mob.Id))
+                                    @if (!mob.IsEventLead())
                                     {
-                                        <MudButton Color="@ComponentCommon.PrimaryColor"
-                                           Variant="@ComponentCommon.CardButtonVariant"
-                                           OnClick="@(async () => await OnRegisterAsync(mob))">Register</MudButton>
-                                    }
-                                    else
-                                    {
-                                        <MudButton Color="@ComponentCommon.PrimaryColor"
-                                           Variant="@ComponentCommon.CardButtonVariant"
-                                           OnClick="@(async () => await OnUnregisterAsync(mob))">Unregister</MudButton>
+                                        @if (!_userAttendingEventIds.Contains(mob.Id))
+                                        {
+                                            <MudButton Color="@ComponentCommon.PrimaryColor"
+                                               Variant="@ComponentCommon.CardButtonVariant"
+                                               OnClick="@(async () => await OnRegisterAsync(mob))">Register</MudButton>
+                                        }
+                                        else
+                                        {
+                                            <MudButton Color="@ComponentCommon.PrimaryColor"
+                                               Variant="@ComponentCommon.CardButtonVariant"
+                                               OnClick="@(async () => await OnUnregisterAsync(mob))">Unregister</MudButton>
+                                        }
                                     }
                                 </MudStack>
                                 <MudStack Row>
