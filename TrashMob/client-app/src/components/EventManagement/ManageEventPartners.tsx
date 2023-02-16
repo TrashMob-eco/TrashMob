@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Button, Container, Dropdown } from 'react-bootstrap';
 import * as Constants from '../Models/Constants';
@@ -18,6 +18,7 @@ export interface ManageEventPartnersProps {
     eventId: string;
     isUserLoaded: boolean;
     currentUser: UserData;
+    isEventComplete: boolean;
 }
 
 export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) => {
@@ -65,6 +66,11 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -91,6 +97,11 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -116,6 +127,11 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('GET');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -163,6 +179,11 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
         };
 
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -190,6 +211,11 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
         };
 
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -264,6 +290,8 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
     }
 
     function renderEventPartnerLocationServicesTable(services: DisplayEventPartnerLocationServiceData[], partnerLocationName: string) {
+        var availableServices = services.filter(s => s.isAdvanceNoticeRequired === false || props.isEventComplete === false);
+
         return (
             <div>
                 <div className='d-flex align-items-center justify-content-between'>
@@ -279,7 +307,8 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
                         </tr>
                     </thead>
                     <tbody>
-                        {services.map(service =>
+                        {                            
+                            availableServices.map(service =>
                             <tr key={service.serviceTypeId}>
                                 <td>{getServiceType(serviceTypeList, service.serviceTypeId)}</td>
                                 <td>{service.partnerLocationServicePublicNotes}</td>

@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { RouteComponentProps } from 'react-router-dom';
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Col, Container, Row } from 'react-bootstrap';
 import EmailTemplateData from '../Models/EmailTemplateData';
@@ -29,6 +29,10 @@ export const AdminEmailTemplates: React.FC<AdminEmailTemplatesPropsType> = (prop
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
 
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);

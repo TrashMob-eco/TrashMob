@@ -7,7 +7,6 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-    using TrashMob.Models;
     using TrashMobMobileApp.Data;
 
     /// <summary>
@@ -19,25 +18,22 @@
 
         public B2CAuthenticationService(B2CConstants b2CConstants)
         {
-
+#if ANDROID
+            // default redirectURI; each platform specific project will have to override it with its own
+            var builder = PublicClientApplicationBuilder.Create(b2CConstants.ClientID)
+                .WithB2CAuthority(b2CConstants.AuthoritySignInSignUp)
+                .WithParentActivityOrWindow(() => Platform.CurrentActivity)
+                .WithRedirectUri(b2CConstants.AndroidRedirectUri);
+            b2CConstants.PublicClientApp = builder.Build();
+#elif IOS
             // default redirectURI; each platform specific project will have to override it with its own
             var builder = PublicClientApplicationBuilder.Create(b2CConstants.ClientID)
                 .WithB2CAuthority(b2CConstants.AuthoritySignInSignUp)
                 .WithIosKeychainSecurityGroup(b2CConstants.IOSKeyChainGroup)
-                // .WithRedirectUri("http://localhost");
-                .WithRedirectUri(b2CConstants.RedirectUri);
-
-            // Android implementation is based on https://github.com/jamesmontemagno/CurrentActivityPlugin
-            // iOS implementation would require to expose the current ViewControler - not currently implemented as it is not required
-            // UWP does not require this
-            var windowLocatorService = DependencyService.Get<IParentWindowLocatorService>();
-
-            if (windowLocatorService != null)
-            {
-                builder = builder.WithParentActivityOrWindow(() => windowLocatorService?.GetCurrentParentWindow());
-            }
-
+                .WithRedirectUri(b2CConstants.IOSRedirectUri);
             b2CConstants.PublicClientApp = builder.Build();
+#endif
+      
             this.b2CConstants = b2CConstants;
         }
 
@@ -62,12 +58,12 @@
         {
             UserState.UserContext = await SignInAsync();
 
-            await VerifyAccount(userManager);
+            await VerifyAccount(userManager, UserState.UserContext);
         }
 
-        private static async Task VerifyAccount(IUserManager userManager)
+        private static async Task VerifyAccount(IUserManager userManager, UserContext userContext)
         {
-            App.CurrentUser = await userManager.GetUserByEmailAsync(UserState.UserContext.EmailAddress);
+            App.CurrentUser = await userManager.GetUserByEmailAsync(UserState.UserContext.EmailAddress, userContext);
         }
 
         private async Task<UserContext> AcquireTokenSilent()
@@ -166,28 +162,9 @@
 
             JObject user = ParseIdToken(ar.IdToken);
 
-            newContext.NameIdentifier = ar.ClaimsPrincipal?.Claims?.FirstOrDefault(c => c.Type == "sub")?.Value;
-            newContext.SourceSystemUserName = ar.ClaimsPrincipal?.Claims?.FirstOrDefault(c => c.Type == "username")?.Value;
-
             newContext.AccessToken = ar.AccessToken;
-            newContext.Name = user["name"]?.ToString();
-            newContext.UserIdentifier = user["oid"]?.ToString();
-
             newContext.GivenName = user["given_name"]?.ToString();
-            newContext.FamilyName = user["family_name"]?.ToString();
-
-            newContext.StreetAddress = user["streetAddress"]?.ToString();
-            newContext.City = user["city"]?.ToString();
-            newContext.Province = user["state"]?.ToString();
-            newContext.PostalCode = user["postalCode"]?.ToString();
-            newContext.Country = user["country"]?.ToString();
-
-            newContext.JobTitle = user["jobTitle"]?.ToString();
-
-            if (user["emails"] is JArray emails)
-            {
-                newContext.EmailAddress = emails[0].ToString();
-            }
+            newContext.EmailAddress = user["email"]?.ToString();
 
             newContext.IsLoggedOn = true;
 

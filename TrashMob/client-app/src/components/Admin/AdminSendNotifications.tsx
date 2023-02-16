@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { RouteComponentProps } from 'react-router-dom';
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Button, ButtonGroup, Col, Container, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import * as ToolTips from "../../store/ToolTips";
@@ -53,6 +53,11 @@ export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> =
         };
 
         msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('POST');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -67,14 +72,14 @@ export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> =
         });
     }
 
-    function validateForm() {
+    React.useEffect(() => {
         if (nameErrors !== "" || messageErrors !== "" || name === "" || message === "") {
             setIsSendEnabled(false);
         }
         else {
             setIsSendEnabled(true);
         }
-    }
+    }, [nameErrors, messageErrors, name, message]);
 
     function handleNameChanged(val: string) {
         if (val.length <= 0 || val.length > 64) {
@@ -84,8 +89,6 @@ export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> =
             setNameErrors("");
             setName(val);
         }
-
-        validateForm();
     }
 
     function handleMessageChanged(val: string) {
@@ -96,8 +99,6 @@ export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> =
             setMessageErrors("");
             setMessage(val);
         }
-
-        validateForm();
     }
 
     function renderNameToolTip(props: any) {

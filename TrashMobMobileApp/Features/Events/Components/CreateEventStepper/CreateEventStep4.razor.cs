@@ -1,14 +1,16 @@
-﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using TrashMob.Models;
-
-namespace TrashMobMobileApp.Features.Events.Components
+﻿namespace TrashMobMobileApp.Features.Events.Components
 {
+    using Microsoft.AspNetCore.Components;
+    using MudBlazor;
+    using TrashMob.Models;
+
     public partial class CreateEventStep4
     {
-        private MudForm _form;
-        private bool _success;
-        private string[] _errors;
+#nullable enable
+        private readonly MudForm? _form;
+#nullable disable
+        private readonly bool _success;
+        private readonly string[] _errors;
 
         [Parameter]
         public Event Event { get; set; }

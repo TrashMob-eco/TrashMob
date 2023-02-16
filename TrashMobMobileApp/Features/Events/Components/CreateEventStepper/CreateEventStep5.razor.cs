@@ -34,8 +34,7 @@ namespace TrashMobMobileApp.Features.Events.Components
             TitleContainer.Title = "Create Event (4/5)";
             await GetEventTypesAsync();
             _selectedEventType = _eventTypes.Find(item => item.Id == Event.EventTypeId);
-            //TODO: get user's timezone
-            _eventDate = TimeZoneInfo.ConvertTime(Event.EventDate, TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time")).DateTime;
+            _eventDate = TimeZoneInfo.ConvertTime(Event.EventDate, TimeZoneInfo.FindSystemTimeZoneById(TimeZoneInfo.Local.StandardName)).DateTime;
             _eventTime = new TimeSpan(Event.EventDate.Hour, Event.EventDate.Minute, 0);
             _postal = Convert.ToInt32(Event.PostalCode);
         }

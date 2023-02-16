@@ -3,7 +3,7 @@ import UserData from '../Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button, Col, Container, Form, Image, Row } from 'react-bootstrap';
 import * as MapStore from '../../store/MapStore';
@@ -14,6 +14,7 @@ import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapControllerSinglePoint from '../MapControllerSinglePoint';
 import globes from '../assets/gettingStarted/globes.png';
 import infoCycle from '../assets/info-circle.svg';
+import React from 'react';
 
 interface LocationPreferenceProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -36,8 +37,6 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     const [trashMobWaiverVersion, setTrashMobWaiverVersion] = useState<string>("");
     const [memberSince, setMemberSince] = useState<Date>(new Date());
     const [maxEventsRadiusErrors, setMaxEventsRadiusErrors] = useState<string>("");
-    const [userNameErrors, setUserNameErrors] = useState<string>("");
-    const [givenNameErrors, setGivenNameErrors] = useState<string>("");
     const [longitude, setLongitude] = useState<number>(0);
     const [latitude, setLatitude] = useState<number>(0);
     const [prefersMetric, setPrefersMetric] = useState<boolean>(false);
@@ -69,6 +68,11 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -93,8 +97,6 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                         setPrefersMetric(data.prefersMetric);
                         setTravelLimitForLocalEvents(data.travelLimitForLocalEvents);
                         setMaxEventsRadiusErrors("");
-                        setUserNameErrors("");
-                        setGivenNameErrors("");
                         setTravelLimitForLocalEventsErrors("");
 
                         if (data.prefersMetric) {
@@ -130,16 +132,14 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         props.history.push("/");
     }
 
-    const validateForm = () => {
-        if (userNameErrors !== "" ||
-            givenNameErrors !== "" ||
-            travelLimitForLocalEventsErrors !== "") {
+    React.useEffect(() => {
+        if (travelLimitForLocalEventsErrors !== "") {
             setIsSaveEnabled(false);
         }
         else {
             setIsSaveEnabled(true);
         }
-    }
+    }, [travelLimitForLocalEventsErrors]);
 
     // This will handle the submit form event.  
     const handleSave = (event: ChangeEvent<HTMLFormElement>) => {
@@ -182,6 +182,11 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         };
 
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
             const headers = getDefaultHeaders('PUT');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -221,8 +226,6 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         catch {
             setTravelLimitForLocalEventsErrors("Travel limit must be a valid number.");
         }
-
-        validateForm();
     }
 
     const handleRadiusTypeChanged = (val: string) => {
@@ -232,8 +235,6 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         else {
             setPrefersMetric(true);
         }
-
-        validateForm();
     }
 
     const renderCityToolTip = (props: any) => {
@@ -271,7 +272,6 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                         setCountry(data.addresses[0].address.country);
                         setRegion(data.addresses[0].address.countrySubdivisionName);
                         setPostalCode(data.addresses[0].address.postalCode);
-                        validateForm();
                     })
             }
             )

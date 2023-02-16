@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class CancelEvent
+    public class EventCancellationRequest
     {
         public Guid EventId { get; set; }
 

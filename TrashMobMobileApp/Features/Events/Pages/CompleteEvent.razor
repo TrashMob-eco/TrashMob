@@ -56,7 +56,7 @@
                     }
                     else
                     {
-                        <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnSubmitAsync">Submit</MudButton>
+                        <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnDoActionAsync">@(IsReadOnly ? "Back" : "Submit")</MudButton>
                     }
                 </MudStack>
             </MudForm>

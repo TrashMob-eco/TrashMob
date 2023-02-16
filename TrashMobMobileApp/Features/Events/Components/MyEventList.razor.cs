@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Components;
-using TrashMob.Models;
-using TrashMobMobileApp.Data;
-using TrashMobMobileApp.Enums;
-using TrashMobMobileApp.Shared;
-using TrashMobMobileApp.StateContainers;
-
-namespace TrashMobMobileApp.Features.Events.Components
+﻿namespace TrashMobMobileApp.Features.Events.Components
 {
+    using Microsoft.AspNetCore.Components;
+    using MudBlazor;
+    using TrashMob.Models;
+    using TrashMobMobileApp.Data;
+    using TrashMobMobileApp.Enums;
+    using TrashMobMobileApp.Shared;
+    using TrashMobMobileApp.StateContainers;
+
     public partial class MyEventList
     {
         private List<Event> _myEvents = new();
@@ -14,7 +15,7 @@ namespace TrashMobMobileApp.Features.Events.Components
         private bool _isLoading;
         private string _eventSearchText;
         private EventActionGroup _currentSelectedChip = EventActionGroup.NONE;
-        private bool _eventSummarySubmitted;
+        private User _user;
 
         [Inject]
         public IMobEventManager MobEventManager { get; set; }
@@ -24,18 +25,43 @@ namespace TrashMobMobileApp.Features.Events.Components
 
         protected override async Task OnInitializedAsync()
         {
+            _user = App.CurrentUser;
+            _currentSelectedChip = EventActionGroup.OWNER;
+            EventContainer.UserEventInteractionAction += HandleEventInteractionOutcome;
             await GetMyEventsAsync();
         }
 
         private async Task GetMyEventsAsync()
         {
-            var currentUser = App.CurrentUser;
-            if (currentUser != null)
+            _isLoading = true;
+            _myEventsStatic = (await MobEventManager.GetUserEventsAsync(_user.Id, StateInformation.ShowFutureEvents)).ToList();
+            _myEvents = _myEventsStatic;
+            _isLoading = false;
+        }
+
+        private void HandleEventInteractionOutcome(UserEventInteraction interaction)
+        {
+            switch (interaction)
             {
-                _isLoading = true;
-                _myEventsStatic = (await MobEventManager.GetUserEventsAsync(currentUser.Id, StateInformation.ShowFutureEvents)).ToList();
-                _myEvents = _myEventsStatic;
-                _isLoading = false;
+                case UserEventInteraction.CREATED_EVENT:
+                    Snackbar.Add("Event created!", Severity.Success);
+                    Navigator.NavigateTo(Routes.Events);
+                    break;
+                case UserEventInteraction.SUBMITTED_EVENT:
+                    Snackbar.Add("Event summary submitted!", Severity.Success);
+                    Navigator.NavigateTo(Routes.Events);
+                    break;
+                case UserEventInteraction.EDITED_EVENT:
+                    Snackbar.Add("Event edited!", Severity.Success);
+                    Navigator.NavigateTo(Routes.Events);
+                    break;
+                case UserEventInteraction.CANCELLED_EVENT:
+                    Snackbar.Add("Event cancelled!", Severity.Success);
+                    Navigator.NavigateTo(Routes.Events);
+                    break;
+                case UserEventInteraction.NONE:
+                default:
+                    break;
             }
         }
 
@@ -55,8 +81,7 @@ namespace TrashMobMobileApp.Features.Events.Components
 
         private void OnViewEventDetails(Event mobEvent)
         {
-            var uri = string.Format(Routes.EditEvent, mobEvent.Id, true);
-            Navigator.NavigateTo(uri);
+            Navigator.NavigateTo(string.Format(Routes.ViewEvent, mobEvent.Id));
         }
 
         private void OnCompleteEvent(Event mobEvent)
@@ -75,34 +100,45 @@ namespace TrashMobMobileApp.Features.Events.Components
             => Navigator.NavigateTo(string.Format(Routes.CancelEvent, mobEvent.Id.ToString()));
 
         private void OnEdit(Event mobEvent)
-            => Navigator.NavigateTo(string.Format(Routes.EditEvent, mobEvent.Id, false));
+            => Navigator.NavigateTo(string.Format(Routes.EditEvent, mobEvent.Id));
 
         private async Task OnAttendingEventsFilterAsync()
         {
+            _myEvents.Clear();
             _currentSelectedChip = EventActionGroup.ATTENDING;
-            var currentUser = App.CurrentUser;
-            var attendingEvents = await MobEventManager.GetEventsUserIsAttending(currentUser.Id);
+            var attendingEvents = await MobEventManager.GetEventsUserIsAttending(_user.Id);
             _myEvents = attendingEvents.ToList() ?? new List<Event>();
         }
 
         private async Task OnOwningEventsFilterAsync()
         {
+            _myEvents.Clear();
             _currentSelectedChip = EventActionGroup.OWNER;
-            var currentUser = App.CurrentUser;
-            var owningEvents = await MobEventManager.GetUserEventsAsync(currentUser.Id, false);
+            var owningEvents = await MobEventManager.GetUserEventsAsync(_user.Id, false);
             _myEvents = owningEvents.ToList() ?? new List<Event>();
         }
 
-        private void OnPastEventsFilter()
+        private async Task OnPastEventsFilterAsync()
         {
+            _myEvents.Clear();
             _currentSelectedChip = EventActionGroup.PAST_EVENTS;
-            _myEvents = _myEvents.Where(mobEvent => mobEvent.EventDate <= DateTimeOffset.UtcNow).ToList() ?? new List<Event>();
+            var ownedEvents = (await MobEventManager.GetUserEventsAsync(_user.Id, false))?.Where(mobEvent => mobEvent.EventDate < DateTimeOffset.UtcNow);
+            var attendingEvents = (await MobEventManager.GetEventsUserIsAttending(_user.Id))?.Where(mobEvent => mobEvent.EventDate < DateTimeOffset.UtcNow);
+            
+            if (ownedEvents != null && ownedEvents.Any())
+            {
+                _myEvents.AddRange(ownedEvents);
+            }
+
+            if (attendingEvents != null && attendingEvents.Any())
+            {
+                _myEvents.AddRange(attendingEvents);
+            }
         }
 
         private bool DoesUserOwnEvent(Event mobEvent)
         {
-            var currentUser = App.CurrentUser;
-            if (currentUser.Id == mobEvent.CreatedByUserId)
+            if (_user.Id == mobEvent.CreatedByUserId)
             {
                 return true;
             }
@@ -112,32 +148,30 @@ namespace TrashMobMobileApp.Features.Events.Components
 
         private bool IsPastEvent(Event mobEvent)
         {
-            return mobEvent.EventDate <= DateTimeOffset.UtcNow;
+            return mobEvent.EventDate.LocalDateTime <= DateTimeOffset.UtcNow.LocalDateTime;
         }
 
-        private async Task<bool> IsEventSummarySubmitted(Event mobEvent)
+        private bool IsEventCompleted(Event mobEvent)
         {
-            var eventSummary = await MobEventManager.GetEventSummaryAsync(mobEvent.Id);
-            if (eventSummary != null)
-            {
-                return true;
-            }
-
-            return false;
+            return mobEvent.EventStatusId == 4; 
         }
 
         private EventActionType DetermineUserCardAction(Event mobEvent)
         {
-            if (DoesUserOwnEvent(mobEvent) && IsPastEvent(mobEvent))
+            if (DoesUserOwnEvent(mobEvent) && IsPastEvent(mobEvent) && !IsEventCompleted(mobEvent))
             {
                 return EventActionType.SUBMIT_SUMMARY;
             }
-            else if (DoesUserOwnEvent(mobEvent))
+            else if (DoesUserOwnEvent(mobEvent) && !IsEventCompleted(mobEvent))
             {
                 return EventActionType.MANAGE;
             }
+            else if (IsEventCompleted(mobEvent))
+            {
+                return EventActionType.VIEW_SUMMARY;
+            }
 
-            return EventActionType.VIEW_SUMMARY;
+            return EventActionType.NONE;
         }
     }
 }

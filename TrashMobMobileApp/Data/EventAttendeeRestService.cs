@@ -1,18 +1,19 @@
 ﻿namespace TrashMobMobileApp.Data
 {
+    using Microsoft.Extensions.Options;
     using System;
     using System.Diagnostics;
     using System.Net.Http.Json;
     using System.Threading.Tasks;
     using TrashMob.Models;
-    using TrashMobMobileApp.Authentication;
+    using TrashMobMobileApp.Config;
 
     public class EventAttendeeRestService : RestServiceBase, IEventAttendeeRestService
     {
-        private readonly string EventAttendeeApi = "eventattendee";
+        protected override string Controller => "eventattendees";
 
-        public EventAttendeeRestService(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService)
-            : base(httpClientService, b2CAuthenticationService)
+        public EventAttendeeRestService(IOptions<Settings> settings)
+            : base(settings)
         {
         }
 
@@ -21,13 +22,8 @@
             try
             {
                 var content = JsonContent.Create(eventAttendee, typeof(EventAttendee), null, SerializerOptions);
-
-                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
-
-                using (var response = await authorizedHttpClient.PostAsync(EventAttendeeApi, content, cancellationToken))
-                {
-                    response.EnsureSuccessStatusCode();
-                }
+                var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken);
+                response.EnsureSuccessStatusCode();
             }
             catch (Exception ex)
             {
@@ -40,11 +36,9 @@
         {
             try
             {
-                var requestUri = new Uri(EventAttendeeApi + $"/{eventAttendee.EventId}/{eventAttendee.UserId}");
+                var requestUri = string.Concat(Controller, $"/{eventAttendee.EventId}/{eventAttendee.UserId}");
 
-                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
-
-                using (var response = await authorizedHttpClient.DeleteAsync(requestUri, cancellationToken))
+                using (var response = await AuthorizedHttpClient.DeleteAsync(requestUri, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                 }

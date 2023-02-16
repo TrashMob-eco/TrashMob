@@ -1043,6 +1043,12 @@ namespace TrashMob.Migrations
                     b.Property<DateTimeOffset?>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<bool>("IsAdvanceNoticeRequired")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsAutoApproved")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("LastUpdatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1638,6 +1644,10 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("CreatedByUserId");
 
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
+
                     b.HasIndex("LastUpdatedByUserId");
 
                     b.HasIndex("UserName")
@@ -1921,7 +1931,7 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_EventAttendees_User_CreatedBy");
 
                     b.HasOne("TrashMob.Models.Event", "Event")
-                        .WithMany()
+                        .WithMany("EventAttendees")
                         .HasForeignKey("EventId")
                         .IsRequired()
                         .HasConstraintName("FK_EventAttendees_Events");
@@ -1933,7 +1943,7 @@ namespace TrashMob.Migrations
                         .HasConstraintName("FK_EventAttendees_User_LastUpdatedBy");
 
                     b.HasOne("TrashMob.Models.User", "User")
-                        .WithMany()
+                        .WithMany("EventAttendees")
                         .HasForeignKey("UserId")
                         .IsRequired()
                         .HasConstraintName("FK_EventAttendees_ApplicationUser");
@@ -2536,6 +2546,8 @@ namespace TrashMob.Migrations
 
             modelBuilder.Entity("TrashMob.Models.Event", b =>
                 {
+                    b.Navigation("EventAttendees");
+
                     b.Navigation("PickupLocations");
 
                     b.Navigation("UserNotifications");
@@ -2610,6 +2622,8 @@ namespace TrashMob.Migrations
                     b.Navigation("ContactRequestsCreated");
 
                     b.Navigation("ContactRequestsUpdated");
+
+                    b.Navigation("EventAttendees");
 
                     b.Navigation("EventAttendeesCreated");
 

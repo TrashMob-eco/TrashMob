@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { RouteComponentProps } from 'react-router-dom';
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Col, Container, Dropdown, Row } from 'react-bootstrap';
 import PartnerRequestData from '../Models/PartnerRequestData';
@@ -33,6 +33,10 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
 
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
@@ -77,6 +81,11 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('PUT');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
@@ -116,6 +125,11 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
             };
 
             msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
                 const headers = getDefaultHeaders('PUT');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 

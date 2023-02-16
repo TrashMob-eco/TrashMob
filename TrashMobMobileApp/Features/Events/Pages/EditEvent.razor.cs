@@ -2,6 +2,7 @@
 using MudBlazor;
 using TrashMob.Models;
 using TrashMobMobileApp.Data;
+using TrashMobMobileApp.Extensions;
 using TrashMobMobileApp.Shared;
 
 namespace TrashMobMobileApp.Features.Events.Pages
@@ -30,12 +31,9 @@ namespace TrashMobMobileApp.Features.Events.Pages
         [Parameter]
         public string EventId { get; set; }
 
-        [Parameter]
-        public bool IsReadOnly { get; set; }
-
         protected override async Task OnInitializedAsync()
         {
-            TitleContainer.Title = IsReadOnly ? "View Event" : "Edit Event";
+            TitleContainer.Title = "Edit Event";
             await GetEventTypesAsync();
             await GetAndSetEventInfoAsync();
 
@@ -56,8 +54,7 @@ namespace TrashMobMobileApp.Features.Events.Pages
             _isLoading = false;
             if (_event != null)
             {
-                //TODO: get user's timezone
-                _eventDate = TimeZoneInfo.ConvertTime(_event.EventDate, TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time")).DateTime;
+                _eventDate = TimeZoneInfo.ConvertTime(_event.EventDate, TimeZoneInfo.FindSystemTimeZoneById(TimeZoneInfo.Local.StandardName)).DateTime;
                 _eventTime = new TimeSpan(_event.EventDate.Hour, _event.EventDate.Minute, 0);
                 _zip = Convert.ToInt32(_event.PostalCode);
                 _selectedEventType = _eventTypes.FirstOrDefault(item => item.Id == _event.EventTypeId);
@@ -66,11 +63,7 @@ namespace TrashMobMobileApp.Features.Events.Pages
 
         private async Task OnSaveAsync()
         {
-            if (IsReadOnly)
-            {
-                Navigator.NavigateTo(Routes.Events);
-            }
-            else
+            try
             {
                 await _editEventForm?.Validate();
                 if (_success)
@@ -85,9 +78,19 @@ namespace TrashMobMobileApp.Features.Events.Pages
                     _isLoading = true;
                     var eventAdd = await MobEventManager.UpdateEventAsync(_event);
                     _isLoading = false;
-                    Snackbar.Add("Changes saved!", Severity.Success);
                 }
-
+            }
+            catch (Exception ex)
+            {
+                if (ex.IsClosedStreamException())
+                {
+                    return;
+                }
+            }
+            finally
+            {
+                _isLoading = false;
+                EventContainer.UserEventInteractionAction.Invoke(Enums.UserEventInteraction.EDITED_EVENT);
             }
         }
 

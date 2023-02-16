@@ -4,9 +4,10 @@
     {
         public const string Home = "/";
         public const string CreateEvent = "/events/createevent";
-        public const string EditEvent = "/events/editevent/{0}/{1}";
+        public const string EditEvent = "/events/editevent/{0}";
         public const string CancelEvent = "/events/cancelevent/{0}";
         public const string CompleteEvent = "/events/completeevent/{0}/{1}";
+        public const string ViewEvent = "/events/viewevent/{0}";
         public const string Events = "/events";
         public const string ContactUs = "/contactus";
         public const string Profile = "/profile";

@@ -2,6 +2,8 @@
 using MudBlazor;
 using TrashMob.Models;
 using TrashMobMobileApp.Data;
+using TrashMobMobileApp.Extensions;
+using TrashMobMobileApp.Shared;
 
 namespace TrashMobMobileApp.Features.Events.Pages
 {
@@ -25,27 +27,54 @@ namespace TrashMobMobileApp.Features.Events.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            TitleContainer.Title = "Complete Event";
+            TitleContainer.Title = IsReadOnly ? "Summary" : "Complete Event";
             _isLoading = true;
             _event = await MobEventManager.GetEventAsync(Guid.Parse(EventId));
+            _eventSummary = (await MobEventManager.GetEventSummaryAsync(Guid.Parse(EventId))) ?? new();
             _isLoading = false;
+        }
+
+        private async Task OnDoActionAsync()
+        {
+            if (IsReadOnly)
+            {
+                Navigator.NavigateTo(Routes.Events);
+            }
+            else
+            {
+                await OnSubmitAsync();
+            }
         }
 
         private async Task OnSubmitAsync()
         {
-            await _completeEventForm?.Validate();
-            if (_success)
+            try
             {
-                _eventSummary.EventId = _event.Id;
-                _eventSummary.CreatedByUserId = App.CurrentUser.Id;
-                _eventSummary.CreatedDate = DateTimeOffset.UtcNow;
-                _eventSummary.LastUpdatedByUserId = App.CurrentUser.Id;
-                _isLoading = true;
-                await MobEventManager.AddEventSummaryAsync(_eventSummary);
-                _event.EventStatusId = 4;
-                await MobEventManager.UpdateEventAsync(_event);
+                await _completeEventForm?.Validate();
+                if (_success)
+                {
+                    _eventSummary.EventId = _event.Id;
+                    _eventSummary.CreatedByUserId = App.CurrentUser.Id;
+                    _eventSummary.CreatedDate = DateTimeOffset.UtcNow;
+                    _eventSummary.LastUpdatedByUserId = App.CurrentUser.Id;
+                    _event.EventStatusId = 4;
+                    _event.EventSummary = _eventSummary;
+                    _isLoading = true;
+                    await MobEventManager.UpdateEventAsync(_event);
+                    _isLoading = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex.IsClosedStreamException())
+                {
+                    return;
+                }
+            }
+            finally
+            {
                 _isLoading = false;
-                Snackbar.Add("Event completed!", Severity.Success);
+                EventContainer.UserEventInteractionAction.Invoke(Enums.UserEventInteraction.SUBMITTED_EVENT);
             }
         }
     }

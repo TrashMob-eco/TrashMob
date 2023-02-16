@@ -1,4 +1,4 @@
-﻿@page "/events/editevent/{EventId}/{IsReadOnly:bool}"
+﻿@page "/events/editevent/{EventId}"
 
 <style>
     .tm-edit-event-container {
@@ -25,9 +25,6 @@
 
         .tm-edit-event-container .tm-action-btn-container {
             margin-top: 20px;
-/*            position: fixed;
-            bottom: 5%;
-            width: 90%;*/
         }
 </style>
 
@@ -39,8 +36,8 @@
             </MudOverlay>
             <MudForm @ref="@_editEventForm" Class="tm-form" @bind-IsValid="@_success" @bind-Errors="@_errors">
                 <MudText Class="tm-form-label" Typo="Typo.subtitle2">Basics</MudText>
-                <MudTextField FullWidth T="string" Disabled="IsReadOnly" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Name" @bind-Text="@_event.Name" Required RequiredError="Name is required" />
-                <MudSelect FullWidth T="EventType" Disabled="IsReadOnly" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Event Type" @bind-Value="@_selectedEventType" AnchorOrigin="Origin.BottomCenter">
+                <MudTextField FullWidth T="string" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Name" @bind-Text="@_event.Name" Required RequiredError="Name is required" />
+                <MudSelect FullWidth T="EventType" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Event Type" @bind-Value="@_selectedEventType" AnchorOrigin="Origin.BottomCenter">
                     @foreach (var eventType in _eventTypes)
                     {
                         <MudSelectItem T="EventType" Value="@eventType">@eventType.Name</MudSelectItem>
@@ -48,22 +45,22 @@
                 </MudSelect>
 
                 <MudText Class="tm-form-label" Typo="Typo.subtitle2">Details</MudText>
-                <MudDatePicker Class="tm-form-item" Disabled="IsReadOnly" Label="Event Date" Variant="ComponentCommon.TextFieldVariant" @bind-Date="@_eventDate" Required RequiredError="Event date is required" />
-                <MudTimePicker Class="tm-form-item" Disabled="IsReadOnly" Label="Event Time" Variant="ComponentCommon.TextFieldVariant" @bind-Time="@_eventTime" Required RequiredError="Event time is required" />
-                <MudNumericField FullWidth T="int" Disabled="IsReadOnly" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Duration Hours" @bind-Value="@_event.DurationHours" />
-                <MudNumericField FullWidth T="int" Disabled="IsReadOnly" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Duration Minutes" @bind-Value="@_event.DurationMinutes" />
-                <MudNumericField FullWidth T="int?" Disabled="IsReadOnly" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Max Participants" @bind-Value="@_event.MaxNumberOfParticipants" />
-                <MudTextField FullWidth T="string" Disabled="IsReadOnly" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Description" @bind-Text="@_event.Description" Required RequiredError="Description is required" Lines="ComponentCommon.TextAreaLinesSpan" />
-                <MudCheckBox T="bool" Disabled="IsReadOnly" Label="Public event" @bind-Checked="@_event.IsEventPublic" />
+                <MudDatePicker Class="tm-form-item" Label="Event Date" Variant="ComponentCommon.TextFieldVariant" @bind-Date="@_eventDate" Required RequiredError="Event date is required" />
+                <MudTimePicker Class="tm-form-item" Label="Event Time" Variant="ComponentCommon.TextFieldVariant" @bind-Time="@_eventTime" Required RequiredError="Event time is required" />
+                <MudNumericField FullWidth T="int" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Duration Hours" @bind-Value="@_event.DurationHours" />
+                <MudNumericField FullWidth T="int" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Duration Minutes" @bind-Value="@_event.DurationMinutes" />
+                <MudNumericField FullWidth T="int?" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Max Participants" @bind-Value="@_event.MaxNumberOfParticipants" />
+                <MudTextField FullWidth T="string" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Description" @bind-Text="@_event.Description" Required RequiredError="Description is required" Lines="ComponentCommon.TextAreaLinesSpan" />
+                <MudCheckBox T="bool" Label="Public event" @bind-Checked="@_event.IsEventPublic" />
 
                 <MudText Class="tm-form-label" Typo="Typo.subtitle2">Location</MudText>
-                <MudTextField FullWidth Disabled="IsReadOnly" T="string" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Street Address" @bind-Text="@_event.StreetAddress" Required RequiredError="Address is required" />
-                <MudTextField FullWidth Disabled="IsReadOnly" T="string" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="City" @bind-Text="@_event.City" Required RequiredError="City is required" />
-                <MudTextField FullWidth Disabled="IsReadOnly" T="string" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="State" @bind-Text="@_event.Region" Required RequiredError="State is required" />
-                <MudTextField FullWidth Disabled="IsReadOnly" T="string" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Country" @bind-Text="@_event.Country" Required RequiredError="Country is required" />
-                <MudNumericField FullWidth Disabled="IsReadOnly" T="int" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Zip Code" @bind-Value="@_zip" Required RequiredError="Zip code is required" />
-                <MudNumericField FullWidth Disabled="IsReadOnly" T="double?" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Latitude" @bind-Value="@_event.Latitude" />
-                <MudNumericField FullWidth Disabled="IsReadOnly" T="double?" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Longitude" @bind-Value="@_event.Longitude" />
+                <MudTextField FullWidth T="string" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Street Address" @bind-Text="@_event.StreetAddress" Required RequiredError="Address is required" />
+                <MudTextField FullWidth T="string" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="City" @bind-Text="@_event.City" Required RequiredError="City is required" />
+                <MudTextField FullWidth T="string" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="State" @bind-Text="@_event.Region" Required RequiredError="State is required" />
+                <MudTextField FullWidth T="string" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Country" @bind-Text="@_event.Country" Required RequiredError="Country is required" />
+                <MudNumericField FullWidth T="int" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Zip Code" @bind-Value="@_zip" Required RequiredError="Zip code is required" />
+                <MudNumericField FullWidth T="double?" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Latitude" @bind-Value="@_event.Latitude" />
+                <MudNumericField FullWidth T="double?" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Longitude" @bind-Value="@_event.Longitude" />
             </MudForm>
             <MudStack Row Class="tm-action-btn-container">
                 <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnSaveAsync">Save</MudButton>

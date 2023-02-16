@@ -15,16 +15,19 @@
 
     public class EventManager : KeyedManager<Event>, IKeyedManager<Event>, IEventManager
     {
+        private readonly IEventAttendeeManager eventAttendeeManager;
         private readonly IBaseRepository<EventAttendee> eventAttendeeRepository;
         private readonly IMapManager mapManager;
         private readonly IEmailManager emailManager;
         private const int StandardEventWindowInMinutes = 120;
 
-        public EventManager(IKeyedRepository<Event> repository, 
+        public EventManager(IKeyedRepository<Event> repository,
+                            IEventAttendeeManager eventAttendeeManager,
                             IBaseRepository<EventAttendee> eventAttendeeRepository,
                             IMapManager mapManager,
                             IEmailManager emailManager) : base(repository)
         {
+            this.eventAttendeeManager = eventAttendeeManager;
             this.eventAttendeeRepository = eventAttendeeRepository;
             this.mapManager = mapManager;
             this.emailManager = emailManager;
@@ -33,6 +36,15 @@
         public override async Task<Event> AddAsync(Event instance, Guid userId, CancellationToken cancellationToken = default)
         {
             var newEvent = await base.AddAsync(instance, userId, cancellationToken);
+
+            var newEventAttendee = new EventAttendee
+            {
+                UserId = userId,
+                EventId = instance.Id,
+                SignUpDate = DateTime.UtcNow,
+            };
+
+            await eventAttendeeManager.AddAsync(newEventAttendee, userId, cancellationToken);
 
             var message = $"A new event: {instance.Name} in {instance.City} has been created on TrashMob.eco!";
             var subject = "New Event Alert";
@@ -155,7 +167,7 @@
             
             await base.UpdateAsync(instance, userId, cancellationToken);
 
-            var eventAttendees = eventAttendeeRepository.Get(e => e.EventId == id);
+            var eventAttendees = eventAttendeeRepository.Get(e => e.EventId == id).Include(e => e.User);
 
             var subject = "A TrashMob.eco event you were scheduled to attend has been cancelled!";
 

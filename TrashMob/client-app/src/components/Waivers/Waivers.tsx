@@ -4,7 +4,7 @@ import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import UserData from '../Models/UserData';
 import { Col, Form, Image, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import EnvelopeResponse from '../Models/EnvelopeResponse';
 import logo from "../assets/logo.svg";
 import globes from '../assets/gettingStarted/globes.png';
@@ -49,6 +49,10 @@ const Waivers: React.FC<WaiversProps> = (props) => {
         };
 
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
 
             const headers = getDefaultHeaders('POST');
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);

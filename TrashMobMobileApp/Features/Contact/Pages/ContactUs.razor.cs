@@ -1,13 +1,15 @@
-﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using TrashMob.Models;
-using TrashMobMobileApp.Data;
-
-namespace TrashMobMobileApp.Features.Contact.Pages
+﻿namespace TrashMobMobileApp.Features.Contact.Pages
 {
+    using Microsoft.AspNetCore.Components;
+    using MudBlazor;
+    using TrashMob.Models;
+    using TrashMobMobileApp.Data;
+
     public partial class ContactUs
     {
+#nullable enable
         private MudForm? _contactForm;
+#nullable disable
         private bool _success;
         private bool _isLoading;
         private string[] _errors;

@@ -23,26 +23,31 @@ namespace TrashMobJobs
         }
 
         [Function("DeleteUser")]
-        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "delete", Route = "{id:guid}")] HttpRequestData req, Guid id)
+        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "DeleteUser")] HttpRequestData req)
         {
-            logger.LogInformation("C# HTTP trigger function processed a request.");     
+            var json = await req.ReadAsStringAsync();
+            var activeDirectoryDeleteUserRequest = JsonSerializer.Deserialize<ActiveDirectoryDeleteUserRequest>(json);
+
+            logger.LogInformation($"Deleting User with objectId {activeDirectoryDeleteUserRequest.objectId}.");
 
             try
             {
-                var deleteResponse = await activeDirectoryManager.DeleteUserAsync(id);
+                var deleteResponse = await activeDirectoryManager.DeleteUserAsync(activeDirectoryDeleteUserRequest.objectId);
 
                 HttpResponseData response;
                 switch (deleteResponse.action)
                 {
-                    case "Failed":
-                        // Yes, really. It needs an Ok when failed...
-                        response = req.CreateResponse(HttpStatusCode.InternalServerError);
-                        var blockingResponse = deleteResponse as ActiveDirectoryBlockingResponse;
-                        response.WriteString(JsonSerializer.Serialize(blockingResponse));
+                    case "UserNotFound":
+                        // We need to return Ok here (even though there was an error) so the IEF framework calling this function continues to run and remove the user
+                        response = req.CreateResponse(HttpStatusCode.OK);
+                        var validationResponse = deleteResponse as ActiveDirectoryValidationFailedResponse;
+                        response.WriteString(JsonSerializer.Serialize(validationResponse));
+                        logger.LogError($"User with objectId {activeDirectoryDeleteUserRequest.objectId} was not found. Skipping.");
                         break;
                     default:
                         response = req.CreateResponse(HttpStatusCode.OK);
                         response.WriteString(JsonSerializer.Serialize(deleteResponse));
+                        logger.LogInformation($"User with objectId {activeDirectoryDeleteUserRequest.objectId} deleted. Message: {JsonSerializer.Serialize(deleteResponse)}");
                         break;
                 }
 
@@ -56,11 +61,11 @@ namespace TrashMobJobs
                 {
                     action = "Failed",
                     version = "1.0.0",
-                    userMessage = $"User failed to delete."
+                    userMessage = "User failed to delete."
                 };
 
                 response.WriteString(JsonSerializer.Serialize(blockingResponse));
-                logger.LogError(ex, $"User {id} failed to delete.");
+                logger.LogError(ex, $"User with objectId {activeDirectoryDeleteUserRequest.objectId} failed to delete. Message: {ex.Message}, InnerException:  {ex.InnerException}");
                 return response;
             }
         }
