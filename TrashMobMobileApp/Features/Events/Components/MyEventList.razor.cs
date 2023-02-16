@@ -56,7 +56,7 @@
                     Navigator.NavigateTo(Routes.Events);
                     break;
                 case UserEventInteraction.EDITED_EVENT:
-                    Snackbar.Add("Event edited!", Severity.Success);
+                    Snackbar.Add("Event updated!", Severity.Success);
                     Navigator.NavigateTo(Routes.Events);
                     break;
                 case UserEventInteraction.CANCELLED_EVENT:
@@ -113,9 +113,7 @@
 
         private void OnViewMap(Event mobEvent)
         {
-            var isEventOwner = _user.Id == mobEvent.CreatedByUserId;
-
-            App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageSingleEvent(MapRestService, mobEvent, isEventOwner));
+            App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageSingleEvent(MapRestService, mobEvent));
         }
 
         private async Task OnAttendingEventsFilterAsync()

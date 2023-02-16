@@ -34,7 +34,12 @@
             <MudOverlay @bind-Visible="_isLoading" Absolute>
                 <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
             </MudOverlay>
-            <MudText Typo="Typo.subtitle2">Thanks for reaching out!</MudText>
+            <MudText Typo="Typo.subtitle2">
+                Have a question for the TrashMob team, want to submit a suggestion for improving the website, or just want to tell us you love us? Drop us a note here and we'll be sure to read it.
+            </MudText>
+            <MudText Typo="Typo.subtitle2">
+                Can't wait to hear from you!
+            </MudText>
             <MudForm @ref="_contactForm" Class="tm-form" @bind-IsValid="@_success" @bind-Errors="@_errors">
                 <MudTextField FullWidth Class="tm-form-item" Variant="@ComponentCommon.TextFieldVariant" T="string" Label="Name" Required RequiredError="Name is required" />
                 <MudTextField FullWidth Class="tm-form-item" T="string" Variant="@ComponentCommon.TextFieldVariant" Label="Email" Required RequiredError="Email is required"

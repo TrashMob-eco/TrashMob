@@ -61,5 +61,12 @@
 
             return "N/A";
         }
+
+        public static bool IsEventLead(this Event mobEvent)
+        {
+            var userId = App.CurrentUser.Id;
+
+            return mobEvent.CreatedByUserId == userId;
+        }
     }
 }

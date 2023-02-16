@@ -5,6 +5,7 @@ using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 using TrashMob.Models;
 using TrashMobMobileApp.Data;
+using TrashMobMobileApp.Extensions;
 
 public partial class MauiMapPageSingleEvent : ContentPage
 {
@@ -19,7 +20,7 @@ public partial class MauiMapPageSingleEvent : ContentPage
 		InitializeComponent();
 	}
 
-    public MauiMapPageSingleEvent(IMapRestService mapRestService, Event mobEvent, bool isPinMovable)
+    public MauiMapPageSingleEvent(IMapRestService mapRestService, Event mobEvent)
     {
         InitializeComponent();
         MapRestService = mapRestService;
@@ -38,7 +39,7 @@ public partial class MauiMapPageSingleEvent : ContentPage
 
         mappy.Pins.Add(pin);
 
-        if (isPinMovable)
+        if (mobEvent.IsEventLead())
         {
             mappy.MapClicked += Map_MapClicked;
         }

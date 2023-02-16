@@ -1,14 +1,18 @@
-﻿using Microsoft.AspNetCore.Components;
-using TrashMob.Models;
-using TrashMobMobileApp.Data;
-
-namespace TrashMobMobileApp.Features.Events.Pages
+﻿namespace TrashMobMobileApp.Features.Events.Pages
 {
+    using Microsoft.AspNetCore.Components;
+    using MudBlazor;
+    using TrashMob.Models;
+    using TrashMobMobileApp.Data;
+    using TrashMobMobileApp.Extensions;
+
     public partial class ViewEvent
     {
         private bool _isLoading;
         private Event _event = new();
-        private EventType _eventType = new();
+        private EventType _eventType = new(); 
+        private User _user;
+        private List<Guid> _userAttendingEventIds = new();
 
         [Parameter]
         public string EventId { get; set; }
@@ -22,7 +26,9 @@ namespace TrashMobMobileApp.Features.Events.Pages
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
+            _user = App.CurrentUser;
             _isLoading = true;
+            _userAttendingEventIds = (await MobEventManager.GetEventsUserIsAttending(_user.Id)).Select(x => x.Id).ToList();
             await GetEventDetails();
             _isLoading = false;
         }
@@ -35,6 +41,62 @@ namespace TrashMobMobileApp.Features.Events.Pages
             if (eventTypes != null && eventTypes.Any())
             {
                 _eventType = eventTypes.First(item => item.Id == _event.EventTypeId);
+            }
+        }
+
+        private async Task OnRegisterAsync(Event mobEvent)
+        {
+            try
+            {
+                var attendee = new EventAttendee
+                {
+                    UserId = _user.Id,
+                    EventId = mobEvent.Id
+                };
+
+                _isLoading = true;
+                await MobEventManager.AddEventAttendeeAsync(attendee);
+                _isLoading = false;
+            }
+            catch (Exception ex)
+            {
+                if (ex.IsClosedStreamException())
+                {
+                    return;
+                }
+            }
+            finally
+            {
+                _isLoading = false;
+                Snackbar.Add($"Registered!", Severity.Success);
+            }
+        }
+
+        private async Task OnUnregisterAsync(Event mobEvent)
+        {
+            try
+            {
+                var attendee = new EventAttendee
+                {
+                    UserId = _user.Id,
+                    EventId = mobEvent.Id
+                };
+
+                _isLoading = true;
+                await MobEventManager.RemoveEventAttendeeAsync(attendee);
+                _isLoading = false;
+            }
+            catch (Exception ex)
+            {
+                if (ex.IsClosedStreamException())
+                {
+                    return;
+                }
+            }
+            finally
+            {
+                _isLoading = false;
+                Snackbar.Add($"Unregistered!", Severity.Success);
             }
         }
     }

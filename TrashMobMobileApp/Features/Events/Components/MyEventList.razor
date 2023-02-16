@@ -79,8 +79,11 @@
                                 </CardHeaderContent>
                                 <CardHeaderActions>
                                     <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                                    @if (mob.IsEventLead())
+                                    {
                                         <MudMenuItem Icon="@Icons.Material.Filled.Cancel" IconSize="Size.Small" OnClick="@(() => OnCancelEvent(mob))">Cancel</MudMenuItem>
-                                    </MudMenu>
+                                    }
+                                </MudMenu>
                                 </CardHeaderActions>
                             </MudCardHeader>
                             <MudCardContent>
