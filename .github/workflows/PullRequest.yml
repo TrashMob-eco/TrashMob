@@ -17,8 +17,8 @@ on:
       - '!TrashMobMobileApp/**'
 
 env:
-  DOTNET_VERSION: '6.0.x'  # set this to the dotnet version to use
-  DOTNET_VERSION2: '6.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION: '7.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION2: '7.0.x'  # set this to the dotnet version to use
   CONFIGURATION: Release
 
 jobs:
@@ -43,7 +43,7 @@ jobs:
       run: dotnet restore .\TrashMob.sln
 
     - name: Publish Web App
-      run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} --output ${{env.DOTNET_ROOT}}\trashmobwebapp --no-restore
+      run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} --output "${{env.DOTNET_ROOT}}\trashmobwebapp" --no-restore
 
     - name: Test
       run: dotnet test .\TrashMob.sln
