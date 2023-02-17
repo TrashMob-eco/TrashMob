@@ -70,4 +70,4 @@ jobs:
       run: dotnet restore .\TrashMob.sln
 
     - name: Publish Function App
-      run: dotnet publish TrashMobJobs\TrashMobJobs.csproj --configuration ${{ env.CONFIGURATION }} --output ${{env.DOTNET_ROOT}}/trashmobjobsfunctionapp --no-restore
+      run: dotnet publish TrashMobJobs\TrashMobJobs.csproj --configuration ${{ env.CONFIGURATION }} --output "${{env.DOTNET_ROOT}}/trashmobjobsfunctionapp" --no-restore
