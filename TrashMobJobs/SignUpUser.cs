@@ -50,7 +50,6 @@ namespace TrashMobJobs
                     break;
                 default:
                     response = req.CreateResponse(HttpStatusCode.OK);
-                    response.WriteString(JsonSerializer.Serialize(createResponse));
                     break;
             }
 

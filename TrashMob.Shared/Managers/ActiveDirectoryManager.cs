@@ -37,11 +37,7 @@ namespace TrashMob.Shared.Managers
 
             await userManager.AddAsync(user, cancellationToken).ConfigureAwait(false);
 
-            var newUserResponse = new ActiveDirectoryContinuationResponse
-            {
-                action = "Continue",
-                version = "1.0.0",
-            };
+            var newUserResponse = new ActiveDirectoryContinuationResponse();
 
             return newUserResponse;
         }
@@ -101,7 +97,7 @@ namespace TrashMob.Shared.Managers
                 {
                     action = "ValidationError",
                     version = "1.0.0",
-                    userMessage = "This email is already in use."
+                    userMessage = "This email is already in uze."
                 };
 
                 return response;
@@ -115,7 +111,7 @@ namespace TrashMob.Shared.Managers
                 {
                     action = "ValidationError",
                     version = "1.0.0",
-                    userMessage = "Please choose a different User Name. This name already in use."
+                    userMessage = "Please choose a different Uzer Name. This name already in use."
                 };
 
                 return response;
