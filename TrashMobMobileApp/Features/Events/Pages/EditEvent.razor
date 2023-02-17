@@ -49,7 +49,7 @@
                 <MudTimePicker Class="tm-form-item" Label="Event Time" Variant="ComponentCommon.TextFieldVariant" @bind-Time="@_eventTime" Required RequiredError="Event time is required" />
                 <MudNumericField FullWidth T="int" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Duration Hours" @bind-Value="@_event.DurationHours" />
                 <MudNumericField FullWidth T="int" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Duration Minutes" @bind-Value="@_event.DurationMinutes" />
-                <MudNumericField FullWidth T="int?" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Max Participants" @bind-Value="@_event.MaxNumberOfParticipants" />
+                <MudNumericField FullWidth T="int" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Max Participants" @bind-Value="@_event.MaxNumberOfParticipants" />
                 <MudTextField FullWidth T="string" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Description" @bind-Text="@_event.Description" Required RequiredError="Description is required" Lines="ComponentCommon.TextAreaLinesSpan" />
                 <MudCheckBox T="bool" Label="Public event" @bind-Checked="@_event.IsEventPublic" />
 
