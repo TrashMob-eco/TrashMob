@@ -1,0 +1,89 @@
+﻿@page "/events/viewevent/{EventId}"
+
+<style>
+    .tm-view-event-container {
+        height: 100vh;
+        padding: 20px;
+    }
+
+        .tm-view-event-container .tm-loader {
+            top: 50%;
+            position: fixed;
+        }
+
+        .tm-view-event-container .tm-view-details {
+            margin-top: 20px;
+        }
+
+        .tm-view-event-container .tm-action-item {
+            position: fixed;
+            bottom: 0;
+            width: 90%;
+            margin-bottom: 20px;
+        }
+</style>
+
+<ErrorBoundary>
+    <ChildContent>
+        <MudContainer Class="tm-view-event-container">
+            <MudOverlay @bind-Visible="_isLoading" Absolute>
+                <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
+            </MudOverlay>
+            <MudStack Class="tm-view-details">
+                <MudText Typo="Typo.h5">@_event.Name</MudText>
+                <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                    <div>
+                        <MudChip>@_eventType.Name</MudChip>
+                    </div>
+                    <div>
+                        <MudIcon Title="Share" Icon="@Icons.Material.Filled.Share" />
+                    </div>
+                </MudStack>
+            </MudStack>
+            <MudStack Class="tm-view-details">
+                <MudStack Row>
+                    <MudIcon Icon="@Icons.Material.Filled.CalendarToday" />
+                    <MudText Typo="Typo.body1">@_event.EventDate.GetFormattedLocalDate()</MudText>
+                </MudStack>
+                <MudStack Row>
+                    <MudIcon Icon="@Icons.Material.Filled.AccessTime" />
+                    <MudText Typo="Typo.body1">@_event.EventDate.GetFormattedLocalTime()</MudText>
+                </MudStack>
+                <MudStack Row>
+                    <MudIcon Icon="@Icons.Material.Filled.AccessAlarm" />
+                    <MudText Typo="Typo.body1">@_event.GetFormattedDuration()</MudText>
+                </MudStack>
+            </MudStack>
+            <MudStack Class="tm-view-details">
+                <MudStack Row>
+                    <MudIcon Icon="@Icons.Material.Filled.PinDrop" />
+                    <MudText Typo="Typo.body1">@_event.GetFormattedAddress()</MudText>
+                </MudStack>
+            </MudStack>
+            <MudStack Class="tm-view-details">
+                <MudText Typo="Typo.body2">@_event.Description</MudText>
+            </MudStack>
+            <MudStack Row Justify="Justify.Center" Class="tm-action-item">
+                @if (!_event.IsEventLead())
+                {
+                    @if (!_userAttendingEventIds.Contains(_event.Id))
+                    {
+                        <MudButton Color="@ComponentCommon.PrimaryColor"
+                        Variant="@ComponentCommon.CardButtonVariant"
+                               OnClick="@(async () => await OnRegisterAsync(_event))">Register</MudButton>
+                    }
+                    else
+                    {
+                        <MudButton Color="@ComponentCommon.PrimaryColor"
+                        Variant="@ComponentCommon.CardButtonVariant"
+                               OnClick="@(async () => await OnUnregisterAsync(_event))">Unregister</MudButton>
+                    }
+                }
+            </MudStack>
+            <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@(() => Navigator.NavigateTo(Routes.Events))">Back</MudButton>
+        </MudContainer>
+    </ChildContent>
+    <ErrorContent>
+        @context.Message
+    </ErrorContent>
+</ErrorBoundary>

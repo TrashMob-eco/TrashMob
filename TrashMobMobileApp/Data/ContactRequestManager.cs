@@ -2,7 +2,6 @@
 {
     using System.Threading.Tasks;
     using TrashMob.Models;
-    using TrashMobMobileApp.Models;
 
     public class ContactRequestManager : IContactRequestManager
     {

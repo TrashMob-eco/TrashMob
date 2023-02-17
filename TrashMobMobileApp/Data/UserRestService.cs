@@ -1,19 +1,22 @@
 ﻿namespace TrashMobMobileApp.Data
 {
+    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using System;
     using System.Diagnostics;
+    using System.Net.Http;
     using System.Net.Http.Json;
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMobMobileApp.Authentication;
+    using TrashMobMobileApp.Config;
 
     public class UserRestService : RestServiceBase, IUserRestService
     {
-        private readonly string UserApi = "users";
+        protected override string Controller => "users";
 
-        public UserRestService(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService)
-            : base(httpClientService, b2CAuthenticationService)
+        public UserRestService(IOptions<Settings> settings) 
+            : base(settings)
         {
         }
 
@@ -21,10 +24,9 @@
         {
             try
             {
-                var requestUri = UserApi + "/" + userId;
-                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
+                var requestUri = Controller + "/" + userId;
 
-                using (var response = await authorizedHttpClient.GetAsync(requestUri, cancellationToken))
+                using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -39,14 +41,21 @@
             }
         }
 
-        public async Task<User> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
+        public async Task<User> GetUserByEmailAsync(string email, UserContext userContext, CancellationToken cancellationToken = default)
         {
             try
             {
-                var requestUri = UserApi + "/getuserbyemail/" + email;
-                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
+                var localHttpClient = new HttpClient
+                {
+                    BaseAddress = new Uri(string.Concat(TrashMobApiAddress, Controller))
+                };
 
-                using (var response = await authorizedHttpClient.GetAsync(requestUri, cancellationToken))
+                localHttpClient.DefaultRequestHeaders.Authorization = GetAuthToken(userContext);
+                localHttpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
+
+                var requestUri = Controller + "/getuserbyemail/" + email;
+
+                using (var response = await localHttpClient.GetAsync(requestUri, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -67,9 +76,7 @@
             {
                 var content = JsonContent.Create(user, typeof(User), null, SerializerOptions);
 
-                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
-
-                using (var response = await authorizedHttpClient.PostAsync(UserApi, content, cancellationToken))
+                using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -90,9 +97,7 @@
             {
                 var content = JsonContent.Create(user, typeof(User), null, SerializerOptions);
 
-                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
-
-                using (var response = await authorizedHttpClient.PutAsync(UserApi, content, cancellationToken))
+                using (var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string responseString = await response.Content.ReadAsStringAsync(cancellationToken);

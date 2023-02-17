@@ -13,8 +13,20 @@
             position: fixed;
         }
 
-        .tm-user-profile-container .tm-back-btn-container {
-            margin-bottom: 10px;
+        .tm-user-profile-container .tm-form {
+            margin-top: 10%;
+        }
+
+            .tm-user-profile-container .tm-form .tm-form-label {
+                margin-top: 25px;
+            }
+
+            .tm-user-profile-container .tm-form .tm-form-item {
+                margin-top: 20px;
+            }
+
+        .tm-user-profile-container .tm-action-btn-container {
+            margin-top: 20px;
         }
 </style>
 
@@ -22,26 +34,22 @@
     <ChildContent>
         <MudContainer Class="tm-user-profile-container">
             <MudOverlay @bind-Visible="_isLoading" Absolute>
-                <MudProgressCircular Color="Color.Default" Indeterminate Class="tm-loader" />
+                <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
             </MudOverlay>
-            <MudStack Class="tm-back-btn-container" Row AlignItems="AlignItems.Start">
-                <MudFab StartIcon="@Icons.Material.Filled.ArrowLeft" Color="Color.Primary" IconSize="Size.Small" Size="Size.Small" Label="Home" OnClick="() => Navigator.NavigateTo(Routes.Home)" />
-            </MudStack>
             @if (_user != null)
             {
-                <MudForm @ref="@_userForm" @bind-IsValid="@_success" @bind-Errors="@_errors">
-                    <MudTextField FullWidth T="string" @bind-Text="@_user.City" Label="City" />
-                    <MudTextField FullWidth T="string" @bind-Text="@_user.Region" Label="Region" />
-                    <MudTextField FullWidth T="string" @bind-Text="@_user.Country" Label="Country" />
-                    <MudTextField FullWidth T="string" @bind-Text="@_user.PostalCode" Label="Postal code" />
-                    <MudNumericField FullWidth T="int" @bind-Value="@_user.TravelLimitForLocalEvents" Label="Travel limit for local events" />
-                    <MudTextField FullWidth T="string" Text="@(GetDateString(_user.MemberSince))" Label="Member since" Disabled />
+                <MudForm @ref="@_userForm" Class="tm-form" @bind-IsValid="@_success" @bind-Errors="@_errors">
+                    <MudText Class="tm-form-label" Typo="Typo.subtitle2">Location</MudText>
+                    <MudTextField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="string" @bind-Text="@_user.City" Label="City" />
+                    <MudTextField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="string" @bind-Text="@_user.Region" Label="Region" />
+                    <MudTextField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="string" @bind-Text="@_user.Country" Label="Country" />
+                    <MudTextField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="string" @bind-Text="@_user.PostalCode" Label="Postal code" />
+                    <MudNumericField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" FullWidth T="int" @bind-Value="@_user.TravelLimitForLocalEvents" Label="Travel limit for local events" />
                     <MudCheckBox T="bool" @bind-Checked="@_user.PrefersMetric" Label="Prefers Metrics" />
-                    <MudStack Row Style="margin-top: 10px">
-                        <MudButton Style="width: 50%; margin-right: 10px" Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => Navigator.NavigateTo(Routes.Home)">Cancel</MudButton>
-                        <MudButton Style="width: 50%; margin-left: 10px" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnSaveUserAsync">Save</MudButton>
-                    </MudStack>
                 </MudForm>
+                <MudStack Row Class="tm-action-btn-container">
+                    <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnSaveUserAsync">Save</MudButton>
+                </MudStack>
             }
         </MudContainer>
     </ChildContent>

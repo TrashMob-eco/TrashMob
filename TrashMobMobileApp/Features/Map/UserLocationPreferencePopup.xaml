@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
+             x:Class="TrashMobMobileApp.Features.Map.UserLocationPreferencePopup">
+    <VerticalStackLayout WidthRequest="400">
+        <Label Text="Click on the map to set your preferred home location, then set the distance you are willing to travel for events, and where or not you prefer to use metric units" />
+        <maps:Map x:Name="mappy" HeightRequest="400" Loaded="mappy_Loaded" />
+        <HorizontalStackLayout>
+            <Label Text="Travel limit for local events"  MaximumWidthRequest="200" />
+            <Slider x:Name="travelLimitForLocalEvents" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label Text="Prefer Metric Units?"  MaximumWidthRequest="200" />
+            <CheckBox x:Name="prefersMetrics" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label Text="City"  MaximumWidthRequest="200" />
+            <Label x:Name="city" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label Text="State"  MaximumWidthRequest="200"/>
+            <Label x:Name="state" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label Text="Postal Code"  MaximumWidthRequest="200" />
+            <Label x:Name="postalCode" />
+        </HorizontalStackLayout>
+        <Button Text="Save" Clicked="SaveButton_Clicked" />
+        <Button Text="Close" Clicked="CloseButton_Clicked" />
+    </VerticalStackLayout>
+</mct:Popup>

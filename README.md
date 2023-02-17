@@ -262,7 +262,18 @@ If setting up a new environment, you will need to add the IP Address of the App 
 If you try to access a secure page, you will need a user id on the site. When you hit a secured page, the site will redirect you to a sign in page. Click the Sign up now link on the bottom of the login box. Multiple identity providers are now available, including Facebook, Twitter, Google, and Microsoft, along with the TrashMob tenant itself if you prefer not to use an integrated signup.
 
 ## How to Change Mobile App from Test to Prod
-It is currently hard-coded in the Mobile app that if you run a Debug build, you will point to the test environment, and if you run the release build, you will point to the production environment. At this time, debug builds can only be built locally, so if you need to distribute a debug build to real devices, you will need to build locally. This may be an issue with our build scripts, but the debug builds don't seem to be able to be signed and the packaging step fails.
+It is currently hard-coded in the Mobile app that if you run a Debug build, you will point to the test environment, and if you run the release build, you will point to the production environment. 
+
+## My Android Pull Request is Failing with Unable to Open jar File
+In Debug mode, by default, the Android package format is set to apk, and does not build the bundle needed for signing. In order to change that
+1. Open the TrashMobMobileApp.sln in Visual Studio
+2. Right click on the TrashMobMobileApp project
+3. Select "Properties"
+4. Go to the Android Settings / Options
+5. Change the Android Package Format for Debug & net7.0-android to "bundle" instead of "apk".
+6. Save you changes and push to your branch.
+
+Note: this may make deployments to your local emulator slower (more data must be copied into the emulator session). You can change this back to "apk" for local development, but failure to switch it back to "bundle" before checkin will cause the PR build to fail. There may be a way to pass this setting in on the command line for the publish step. That has not yet been investigated.
 
 ## How do I get a test distribution of the Mobile App?
 We currently use Microsoft App Center for building and distributing the Mobile apps. In order to get notified of a new distribution (or to download it). 
