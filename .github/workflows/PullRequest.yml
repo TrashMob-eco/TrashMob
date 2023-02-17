@@ -43,7 +43,7 @@ jobs:
       run: dotnet restore .\TrashMob.sln
 
     - name: Publish Web App
-      run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobwebapp --no-restore
+      run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}\trashmobwebapp --no-restore
 
     - name: Test
       run: dotnet test .\TrashMob.sln
