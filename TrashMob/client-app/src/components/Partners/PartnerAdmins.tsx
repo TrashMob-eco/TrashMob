@@ -132,7 +132,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
 
     function handleResendInvite(invitationId: string, email: string) {
 
-        if (!window.confirm("Please confirm you want to resend invite to user with Emails: '" + email + "'")) {
+        if (!window.confirm("Please confirm you want to resend invite to user with Email: '" + email + "'")) {
             return;
         }
         else {

@@ -27,7 +27,7 @@ jobs:
     environment: test
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v1
@@ -43,7 +43,7 @@ jobs:
       run: dotnet restore .\TrashMob.sln
 
     - name: Publish Web App
-      run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobwebapp --no-restore
+      run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} --output "${{env.DOTNET_ROOT}}/trashmobwebapp" --no-restore
 
     - name: Test
       run: dotnet test .\TrashMob.sln
@@ -54,7 +54,7 @@ jobs:
     environment: test
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v1
@@ -70,4 +70,4 @@ jobs:
       run: dotnet restore .\TrashMob.sln
 
     - name: Publish Function App
-      run: dotnet publish TrashMobJobs\TrashMobJobs.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/trashmobjobsfunctionapp --no-restore
+      run: dotnet publish TrashMobJobs\TrashMobJobs.csproj --configuration ${{ env.CONFIGURATION }} --output "${{env.DOTNET_ROOT}}/trashmobjobsfunctionapp" --no-restore

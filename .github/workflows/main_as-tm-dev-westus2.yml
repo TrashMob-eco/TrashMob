@@ -27,7 +27,7 @@ jobs:
     environment: test
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v1
@@ -43,13 +43,13 @@ jobs:
       run: dotnet restore .\TrashMob.sln
 
     - name: dotnet publish
-      run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} -o ${{env.DOTNET_ROOT}}/myapp --no-restore
+      run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} --output "${{env.DOTNET_ROOT}}/trashmobwebapp" --no-restore
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v2
       with:
         name: .net-app
-        path: ${{env.DOTNET_ROOT}}/myapp
+        path: "${{env.DOTNET_ROOT}}/trashmobwebapp"
 
   deploy:
     runs-on: windows-latest
