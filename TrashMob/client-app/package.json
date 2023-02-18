@@ -26,8 +26,6 @@
     "json.date-extensions": "^1.2.2",
     "merge": "^2.1.1",
     "moment": "^2.29.1",
-    "node-gyp": "^9.3.1",
-    "node-sass": "^6.0.1",
     "oidc-client": "^1.11.5",
     "react": "^17.0.2",
     "react-azure-maps": "^0.4.4",
@@ -73,5 +71,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "node-gyp": "^9.3.1",
+    "node-sass": "^8.0.0"
   }
 }

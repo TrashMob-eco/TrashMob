@@ -28,7 +28,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-
+    - uses: ilammy/msvc-dev-cmd@v1.4.1
+    
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v3
       with:
