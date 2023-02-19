@@ -24,7 +24,7 @@ env:
 jobs:
   buildAndroidApp:
     runs-on: windows-latest
-    environment: ${{ env.ENVIRONMENT }}
+    environment: test
     name: Android Build
 
     steps:
@@ -79,7 +79,7 @@ jobs:
 
   buildiOSApp:
     runs-on: macos-12
-    environment: ${{ env.ENVIRONMENT }}
+    environment: test
     name: iOS Build
 
     steps:
