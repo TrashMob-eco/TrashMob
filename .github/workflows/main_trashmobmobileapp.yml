@@ -13,7 +13,11 @@ on:
 env:
   DOTNET_VERSION: '7.0.x'  # set this to the dotnet version to use
   DOTNET_VERSION2: '7.0.x'  # set this to the dotnet version to use
-  CONFIGURATION: Debug
+  CONFIGURATION: Debug      # Values: Debug, Release
+  ENVIRONMENT: test         # Values: test, production
+  IOS_BUNDLE_ID: 'eco.trashmobdev.trashmobmobile'   # Values: 'eco.trashmobdev.trashmobmobile', 'eco.trashmob'
+  IOS_PROFILE_TYPE: 'IOS_APP_DEVELOPMENT'           # Values: 'IOS_APP_DEVELOPMENT', 'IOS_APP_STORE'
+
 
 jobs:
   buildAndroidApp:
@@ -108,8 +112,8 @@ jobs:
     - name: Download Apple Provisioning Profiles
       uses: Apple-Actions/download-provisioning-profiles@v1
       with:
-        bundle-id: 'eco.trashmobdev.trashmobmobile'
-        profile-type: 'IOS_APP_DEVELOPMENT'
+        bundle-id: ${{ env.IOS_BUNDLE_ID }}
+        profile-type: ${{ env.IOS_PROFILE_TYPE }}
         issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
         api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
         api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
