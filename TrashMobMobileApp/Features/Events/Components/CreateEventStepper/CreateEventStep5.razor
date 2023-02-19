@@ -51,12 +51,16 @@
                 <MudTextField T="string" FullWidth Lines="5" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Text="Event.Description" Label="Description" Required RequiredError="Description is required" />
 
                 <MudText Typo="Typo.subtitle2" Class="tm-form-label">Location</MudText>
-                <MudTextField T="string" FullWidth Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Text="Event.StreetAddress" Label="Street Address" Required RequiredError="Street address is required" />
-                <MudTextField T="string" FullWidth Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Text="Event.City" Label="City" Required RequiredError="City is required" />
-                <MudTextField T="string" FullWidth Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Text="Event.Region" Label="State" Required RequiredError="State is required" />
-                <MudNumericField T="int" FullWidth Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Value="_postal" Label="Postal" Required RequiredError="Postal is required" />
-                <MudNumericField FullWidth T="double?" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Latitude" @bind-Value="@Event.Latitude" />
-                <MudNumericField FullWidth T="double?" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Longitude" @bind-Value="@Event.Longitude" />
+                <MudText Class="tm-form-label" Variant="ComponentCommon.TextFieldVariant">Street Address</MudText>
+                <MudText Class="tm-form-label" Variant="ComponentCommon.TextFieldVariant">@Event.StreetAddress</MudText>
+                <MudText Class="tm-form-label" Variant="ComponentCommon.TextFieldVariant">City</MudText>
+                <MudText Class="tm-form-label" Variant="ComponentCommon.TextFieldVariant">@Event.City</MudText>
+                <MudText Class="tm-form-label" Variant="ComponentCommon.TextFieldVariant">State</MudText>
+                <MudText Class="tm-form-label" Variant="ComponentCommon.TextFieldVariant">@Event.Region</MudText>
+                <MudText Class="tm-form-label" Variant="ComponentCommon.TextFieldVariant">Country</MudText>
+                <MudText Class="tm-form-label" Variant="ComponentCommon.TextFieldVariant">@Event.Country</MudText>
+                <MudText Class="tm-form-label" Variant="ComponentCommon.TextFieldVariant">Postal Code</MudText>
+                <MudText Class="tm-form-label" Variant="ComponentCommon.TextFieldVariant">@Event.PostalCode</MudText>
             </MudForm>
             <MudStack Row Justify="Justify.Center" Class="tm-action-item">
                 <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnStepFinishedAsync">Next</MudButton>

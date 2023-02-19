@@ -47,6 +47,7 @@ public partial class EditMapPopup
         }
         else
         {
+            mappy.Pins.Clear();
             var userLocation = await locationHelper.GetCurrentLocation();
 
             if (userLocation != null)
