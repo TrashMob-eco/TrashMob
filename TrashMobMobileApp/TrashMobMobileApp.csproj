@@ -72,10 +72,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Include="Info-Debug.plist" Condition=" '$(Configuration)' == 'Debug' ">
+		<None Include="Info.plist" Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
 			<LogicalName>Info.plist</LogicalName>
 		</None>
-		<None Include="Info.plist" Condition=" '$(Configuration)' == 'Release' ">
+		<None Include="Info-Debug.plist" Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
 			<LogicalName>Info.plist</LogicalName>
 		</None>
 	</ItemGroup>
