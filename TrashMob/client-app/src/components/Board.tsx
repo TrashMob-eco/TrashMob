@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Col, Container, Image, Row } from 'react-bootstrap';
 import globes from './assets/gettingStarted/globes.png';
 import linkedIn from './assets/card/linkedin.svg';
-import JoeBeernink from './assets/boardOfDirectors/JoeBeernink.svg';
+import JoeBeernink from './assets/boardOfDirectors/JoeBeernink.jpg';
 import DarylBarber from './assets/boardOfDirectors/darylbarber.jpg';
 import JakeDiliberto from './assets/boardOfDirectors/JakeDiliberto.svg';
 import JeremiahSteen from './assets/boardOfDirectors/JeremiahSteen.svg';
