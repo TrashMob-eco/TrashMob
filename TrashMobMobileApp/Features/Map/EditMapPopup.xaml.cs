@@ -44,6 +44,7 @@ public partial class EditMapPopup
             var pin = MapHelper.GetPinForEvent(mobEvent);
             pin.Location = eventLocation;
             mappy.Pins.Add(pin);
+            SetFields(mobEvent);
         }
         else
         {
