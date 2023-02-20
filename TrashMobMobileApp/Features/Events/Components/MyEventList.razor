@@ -32,6 +32,7 @@
 
 <ErrorBoundary>
     <ChildContent>
+        <MudIconButton Icon="@Icons.Material.Filled.Map" Color="ComponentCommon.PrimaryColor" OnClick="@(() => OnViewMapAllEvents(_myEvents))" />
         <MudContainer Class="tm-my-event-list">
             <MudOverlay @bind-Visible="_isLoading" Absolute>
                 <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
@@ -87,6 +88,8 @@
                             </MudCardHeader>
                             <MudCardContent>
                                 <MudText Typo="Typo.body2"><strong>Address: </strong>@mob.GetFormattedAddress()</MudText>
+                                <MudText Typo="Typo.body2"><strong>Event date: </strong>@mob.EventDate.GetFormattedLocalDate()</MudText>
+                                <MudText Typo="Typo.body2"><strong>Event time: </strong>@mob.EventDate.GetFormattedLocalTime()</MudText>
                             </MudCardContent>
                             <MudCardActions>
                                 <MudStack Style="@ComponentCommon.FullWidth" Row Justify="@Justify.SpaceBetween">
@@ -101,7 +104,7 @@
                                     {
                                         <MudButton Color="@ComponentCommon.PrimaryColor"
                                            Variant="@ComponentCommon.CardButtonVariant"
-                                           OnClick="@(() => OnCompleteEvent(mob))">Submit</MudButton>
+                                           OnClick="@(() => OnCompleteEvent(mob))">Submit Summary</MudButton>
                                     }
                                     else if (cardAction == EventActionType.MANAGE)
                                     {
@@ -120,8 +123,6 @@
                                     <MudIconButton Icon="@Icons.Material.Filled.Map"
                                                Color="ComponentCommon.PrimaryColor"
                                                OnClick="@(() => OnViewMap(mob))" />
-                                    <MudIconButton Icon="@Icons.Material.Filled.Share"
-                                               Color="ComponentCommon.PrimaryColor" />
                                 </MudStack>
                             </MudStack>
                         </MudCardActions>
