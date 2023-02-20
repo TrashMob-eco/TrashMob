@@ -22,7 +22,7 @@ public partial class UserLocationPreferencePopup
     public UserLocationPreferencePopup(IUserManager userManager, IMapRestService mapRestService)
     {
         InitializeComponent();
-        travelLimitForLocalEvents = new Slider(1, 100, 5);
+        travelLimitForLocalEvents = new Stepper(1, 100, 5, 1);
         UserManager = userManager;
         MapRestService = mapRestService;
     }
@@ -39,11 +39,12 @@ public partial class UserLocationPreferencePopup
         try
         {
             user = await UserManager.GetUserAsync(App.CurrentUser.Id.ToString());
+            SetFields(user);
         }
         catch (Exception)
         {
-            //log exception somewhere
-            //try user service one more time
+            // log exception somewhere
+            // try user service one more time
             user = await UserManager.GetUserAsync(App.CurrentUser.Id.ToString());
         }
 
@@ -62,6 +63,7 @@ public partial class UserLocationPreferencePopup
 
         travelLimitForLocalEvents.Value = user.TravelLimitForLocalEvents;
         prefersMetrics.IsChecked = user.PrefersMetric;
+        stepValue.Text = user.TravelLimitForLocalEvents.ToString();
 
         if (userLocation != null)
         {
@@ -121,5 +123,11 @@ public partial class UserLocationPreferencePopup
     private void CloseButton_Clicked(object sender, EventArgs e)
     {
         Close();
+    }
+
+    private void travelLimitForLocalEvents_ValueChanged(object sender, ValueChangedEventArgs e)
+    {
+        double value = e.NewValue;
+        stepValue.Text = value.ToString();
     }
 }
