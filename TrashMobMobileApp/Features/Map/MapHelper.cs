@@ -9,11 +9,12 @@
         {
             var eventHeader = string.Format("{0}: {1:yyyy-MM-dd HH:mm}", mobEvent.Name, mobEvent.EventDate);
 
-            var pin = new Pin
+            var pin = new TrashMobPin
             {
                 Label = eventHeader,
                 Address = mobEvent.StreetAddress,
-                Type = PinType.Place
+                Type = PinType.Place,
+                EventId = mobEvent.Id,                
             };
 
             return pin;

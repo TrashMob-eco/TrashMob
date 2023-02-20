@@ -2,16 +2,10 @@
 
 <ErrorBoundary>
     <ChildContent>
-        <MudContainer Style="height: 100%; margin-top: 10%">
-            <MudText Typo="Typo.h4">Welcome to TrashMob</MudText>
-            <MudText Typo="Typo.h5">Meet up. Clean up. Feel good.</MudText>
-            <MudCard>
+        <MudContainer Style="height: 100%; margin-top: 5%">
+            <MudCard Style="margin: 5%">
                 <MudCardContent>
-                    <MudCarousel Style="height:200px;" ShowBullets=false EnableSwipeGesture AutoCycle TData="object">
-                        <MudCarouselItem Transition="Transition.Slide" Color="@Color.Primary">
-                            <MudImage Src="images/meetup.png" Height="200" ObjectFit="ObjectFit.ScaleDown"  />
-                        </MudCarouselItem>
-                    </MudCarousel>
+                    <MudImage Src="images/meetup.png" Height="250" ObjectFit="ObjectFit.Fill" ObjectPosition="ObjectPosition.Center"  />
                 </MudCardContent>
                 <MudCardActions>
                     <MudLink Href="https://www.trashmob.eco/aboutus" Color="Color.Primary" Underline="Underline.Always">Learn More</MudLink>
@@ -28,7 +22,6 @@
                     <MudFab StartIcon="@Icons.Material.Filled.Person" Color="Color.Primary" Label="Set Location Preference" OnClick="() => OnUserLocationPreference_Click()" />
                 </MudStack>
             </MudStack>
-
         </MudContainer>
     </ChildContent>
     <ErrorContent>

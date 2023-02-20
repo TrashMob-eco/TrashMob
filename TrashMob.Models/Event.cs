@@ -42,7 +42,7 @@ namespace TrashMob.Models
 
         public double? Longitude { get; set; }
 
-        public int? MaxNumberOfParticipants { get; set; }
+        public int MaxNumberOfParticipants { get; set; }
 
         public bool IsEventPublic { get; set; }
 

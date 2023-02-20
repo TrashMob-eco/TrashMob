@@ -32,13 +32,13 @@
             _user = App.CurrentUser;
             _currentSelectedChip = EventActionGroup.OWNER;
             EventContainer.UserEventInteractionAction += HandleEventInteractionOutcome;
-            await GetMyEventsAsync();
+            await ReInitializeAsync();
         }
 
-        private async Task GetMyEventsAsync()
+        private async Task ReInitializeAsync()
         {
             _isLoading = true;
-            _myEventsStatic = (await MobEventManager.GetUserEventsAsync(_user.Id, StateInformation.ShowFutureEvents)).ToList();
+            _myEventsStatic = (await MobEventManager.GetUserEventsAsync(_user.Id, StateInformation.ShowFutureEvents)).OrderByDescending(x => x.EventDate).ToList();
             _myEvents = _myEventsStatic;
             _isLoading = false;
         }
@@ -94,7 +94,7 @@
         private async Task OnShowFutureEventsChangedAsync(bool val)
         {
             StateInformation.ShowFutureEvents = val;
-            await GetMyEventsAsync();
+            await ReInitializeAsync();
         }
 
         private void OnViewEventSummary(Event mobEvent)
@@ -106,14 +106,15 @@
         private void OnEdit(Event mobEvent)
             => Navigator.NavigateTo(string.Format(Routes.EditEvent, mobEvent.Id));
 
-        private void OnViewMapAllEvents(IEnumerable<Event> mobEvents)
+        private async void OnViewMapAllEvents(IEnumerable<Event> mobEvents)
         {
-            App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageMultipleEvent(mobEvents));
+            await App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageMultipleEvent(MobEventManager, mobEvents));
         }
 
-        private void OnViewMap(Event mobEvent)
+        private async void OnViewMap(Event mobEvent)
         {
-            App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageSingleEvent(MapRestService, mobEvent));
+            await App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageSingleEvent(MapRestService, mobEvent));
+            await ReInitializeAsync();
         }
 
         private async Task OnAttendingEventsFilterAsync()

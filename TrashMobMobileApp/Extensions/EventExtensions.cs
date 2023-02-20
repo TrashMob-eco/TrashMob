@@ -68,5 +68,10 @@
 
             return mobEvent.CreatedByUserId == userId;
         }
+
+        public static bool IsCancellable(this Event mobEvent)
+        {
+            return mobEvent.EventDate.ToUniversalTime() > DateTimeOffset.UtcNow;
+        }
     }
 }
