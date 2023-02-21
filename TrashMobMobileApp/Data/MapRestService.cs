@@ -1,18 +1,19 @@
 ﻿namespace TrashMobMobileApp.Data
 {
+    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using System;
     using System.Diagnostics;
     using System.Threading.Tasks;
     using TrashMob.Models;
-    using TrashMobMobileApp.Authentication;
+    using TrashMobMobileApp.Config;
 
     public class MapRestService : RestServiceBase, IMapRestService
     {
-        private readonly string MapsApi = "maps";
+        protected override string Controller => "maps";
 
-        public MapRestService(HttpClientService httpClientService, IB2CAuthenticationService b2CAuthenticationService)
-            : base(httpClientService, b2CAuthenticationService)
+        public MapRestService(IOptions<Settings> settings)
+            : base(settings)
         {
         }
 
@@ -20,11 +21,9 @@
         {
             try
             {
-                var requestUri = MapsApi + $"/GetAddress?latitude={latitude}&longitude={longitude}";
+                var requestUri = Controller + $"/GetAddress?latitude={latitude}&longitude={longitude}";
 
-                var authorizedHttpClient = HttpClientService.CreateAuthorizedClient();
-
-                using (var response = await authorizedHttpClient.GetAsync(requestUri, cancellationToken))
+                using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
                     string responseString = await response.Content.ReadAsStringAsync(cancellationToken);

@@ -58,12 +58,12 @@
         {
             UserState.UserContext = await SignInAsync();
 
-            await VerifyAccount(userManager);
+            await VerifyAccount(userManager, UserState.UserContext);
         }
 
-        private static async Task VerifyAccount(IUserManager userManager)
+        private static async Task VerifyAccount(IUserManager userManager, UserContext userContext)
         {
-            App.CurrentUser = await userManager.GetUserByEmailAsync(UserState.UserContext.EmailAddress);
+            App.CurrentUser = await userManager.GetUserByEmailAsync(UserState.UserContext.EmailAddress, userContext);
         }
 
         private async Task<UserContext> AcquireTokenSilent()

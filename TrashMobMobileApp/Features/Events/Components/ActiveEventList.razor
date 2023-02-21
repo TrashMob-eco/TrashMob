@@ -29,11 +29,10 @@
 
 <ErrorBoundary>
     <ChildContent>
-        <EventDetails @bind-Open="@_isViewOpen" Event="@_selectedEvent" />
-
+        <MudButton Color="ComponentCommon.PrimaryColor" OnClick="@(() => OnViewMapAllEvents(_mobEvents))">Show Map View</MudButton>
         <MudContainer Class="tm-event-list">
             <MudOverlay @bind-Visible="_isLoading" Absolute>
-                <MudProgressCircular Color="Color.Default" Indeterminate Class="tm-loader" />
+                <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
             </MudOverlay>
             @if (_mobEventsStatic.Any())
             {
@@ -58,6 +57,8 @@
                         </MudCardHeader>
                         <MudCardContent>
                             <MudText Typo="Typo.body2"><strong>Address: </strong>@mob.GetFormattedAddress()</MudText>
+                            <MudText Typo="Typo.body2"><strong>Event date: </strong>@mob.EventDate.GetFormattedLocalDate()</MudText>
+                            <MudText Typo="Typo.body2"><strong>Event time: </strong>@mob.EventDate.GetFormattedLocalTime()</MudText>
                         </MudCardContent>
                         <MudCardActions>
                             <MudStack Style="@ComponentCommon.FullWidth" Row Justify="@Justify.SpaceBetween">
@@ -65,15 +66,26 @@
                                     <MudButton Color="@ComponentCommon.PrimaryColor"
                                            Variant="@ComponentCommon.CardButtonVariant"
                                            OnClick="@(() => OnViewEventDetails(mob))">View</MudButton>
-                                    <MudButton Color="@ComponentCommon.PrimaryColor"
-                                           Variant="@ComponentCommon.CardButtonVariant"
-                                           OnClick="@(async () => await OnRegisterAsync(mob))">Register</MudButton>
+                                    @if (!mob.IsEventLead())
+                                    {
+                                        @if (!_userAttendingEventIds.Contains(mob.Id))
+                                        {
+                                            <MudButton Color="@ComponentCommon.PrimaryColor"
+                                               Variant="@ComponentCommon.CardButtonVariant"
+                                               OnClick="@(async () => await OnRegisterAsync(mob))">Register</MudButton>
+                                        }
+                                        else
+                                        {
+                                            <MudButton Color="@ComponentCommon.PrimaryColor"
+                                               Variant="@ComponentCommon.CardButtonVariant"
+                                               OnClick="@(async () => await OnUnregisterAsync(mob))">Unregister</MudButton>
+                                        }
+                                    }
                                 </MudStack>
                                 <MudStack Row>
                                     <MudIconButton Icon="@Icons.Material.Filled.Map"
-                                               Color="ComponentCommon.PrimaryColor" />
-                                    <MudIconButton Icon="@Icons.Material.Filled.Share"
-                                               Color="ComponentCommon.PrimaryColor" />
+                                               Color="ComponentCommon.PrimaryColor" 
+                                               OnClick="@(() => OnViewMap(mob))" />
                                 </MudStack>
                             </MudStack>
                         </MudCardActions>

@@ -21,6 +21,18 @@
             return string.Concat(mobEvent.DurationHours, " hour ", mobEvent.DurationMinutes, " minutes");
         }
 
+        public static string GetFormattedLocalDate(this DateTimeOffset dateTime)
+        {
+            var localDateTime = TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.FindSystemTimeZoneById(TimeZoneInfo.Local.StandardName)).DateTime;
+            return String.Format("{0:dddd, MMMM d, yyyy}", localDateTime);
+        }
+
+        public static string GetFormattedLocalTime(this DateTimeOffset dateTime)
+        {
+            var localDateTime = TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.FindSystemTimeZoneById(TimeZoneInfo.Local.StandardName)).DateTime;
+            return localDateTime.ToShortTimeString();
+        }
+
         public static string GetPublicEventText(this Event mobEvent)
         {
             //TODO: move hard code string to resource file
@@ -48,6 +60,18 @@
             }
 
             return "N/A";
+        }
+
+        public static bool IsEventLead(this Event mobEvent)
+        {
+            var userId = App.CurrentUser.Id;
+
+            return mobEvent.CreatedByUserId == userId;
+        }
+
+        public static bool IsCancellable(this Event mobEvent)
+        {
+            return mobEvent.EventDate.ToUniversalTime() > DateTimeOffset.UtcNow;
         }
     }
 }

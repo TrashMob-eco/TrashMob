@@ -1,10 +1,10 @@
 ﻿@page "/events"
 
-<MudTabs Style="width: 100%" AlwaysShowScrollButtons=false Color="@Color.Primary" @bind-ActivePanelIndex="@StateInformation.CurrentlyActiveTab" >
-    <MudTabPanel Text="Browse" Style="width: 50%">
+<MudTabs Centered Style="width: 100%" Color="ComponentCommon.PrimaryColor" @bind-ActivePanelIndex="@StateInformation.CurrentlyActiveTab">
+    <MudTabPanel Text="Browse">
         <ActiveEventList />
     </MudTabPanel>
-    <MudTabPanel Text="My events" Style="width: 50%">
+    <MudTabPanel Text="My events">
         <MyEventList />
     </MudTabPanel>
 </MudTabs>

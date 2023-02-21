@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using TrashMob.Models;
-
-namespace TrashMobMobileApp.Features.Events.Components
+﻿namespace TrashMobMobileApp.Features.Events.Components
 {
+    using Microsoft.AspNetCore.Components;
+    using MudBlazor;
+    using TrashMob.Models;
+
     public partial class CreateEventStep2
     {
         private MudForm _form;
@@ -23,7 +23,7 @@ namespace TrashMobMobileApp.Features.Events.Components
 
         protected override void OnInitialized()
         {
-            TitleContainer.Title = "Create Event (2/6)";
+            TitleContainer.Title = "Create Event (2/5)";
         }
 
         private async Task OnStepFinishedAsync()

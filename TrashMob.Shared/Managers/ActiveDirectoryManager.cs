@@ -37,11 +37,7 @@ namespace TrashMob.Shared.Managers
 
             await userManager.AddAsync(user, cancellationToken).ConfigureAwait(false);
 
-            var newUserResponse = new ActiveDirectoryContinuationResponse
-            {
-                action = "Continue",
-                version = "1.0.0",
-            };
+            var newUserResponse = new ActiveDirectoryContinuationResponse();
 
             return newUserResponse;
         }

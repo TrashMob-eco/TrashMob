@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TrashMobMobileApp.Features.Map.MauiMapPageMultipleEvent"
+             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
+             Title="NewPage1MauiMapPageMultipleEvent" >
+    <VerticalStackLayout>
+        <maps:Map x:Name="mappy" HeightRequest="400" Loaded="mappy_Loaded" MapClicked="mappy_MapClicked" />
+
+        <VerticalStackLayout x:Name="addressDisplay" Loaded="addressDisplay_Loaded">
+            <HorizontalStackLayout>
+                <Label FontSize="Medium" Text="Event Name" MaximumWidthRequest="200" />
+                <Entry IsReadOnly="True" x:Name="eventName" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout>
+                <Label FontSize="Medium" Text="Event Date" MaximumWidthRequest="200" />
+                <Entry IsReadOnly="True" x:Name="eventDate" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout>
+                <Label FontSize="Medium" Text="Street Address" MaximumWidthRequest="200" />
+                <Entry IsReadOnly="True" x:Name="streetAddress" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout>
+                <Label FontSize="Medium" Text="City"  MaximumWidthRequest="200" />
+                <Entry IsReadOnly="True" x:Name="city" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout>
+                <Label FontSize="Medium" Text="State"  MaximumWidthRequest="200"/>
+                <Entry IsReadOnly="True" x:Name="state" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout>
+                <Label FontSize="Medium" Text="Postal Code"  MaximumWidthRequest="200" />
+                <Entry IsReadOnly="True" x:Name="postalCode" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout x:Name="isEventLead">
+                <Button Clicked="RegisterButton_Clicked" Text="Register" x:Name="register" />
+                <Button Clicked="UnregisterButton_Clicked" Text="Unregister" x:Name="unregister" />
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+
+        <Button Text="Close" Clicked="CloseButton_Clicked" />
+    </VerticalStackLayout>
+</ContentPage>

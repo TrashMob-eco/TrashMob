@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
+             x:Class="TrashMobMobileApp.Features.Map.UserLocationPreferencePopup">
+    <VerticalStackLayout WidthRequest="400">
+        <Label FontSize="Header" Text="Set your preferred location" />
+        <Label FontSize="Caption" Text="Click on the map to set your preferred home location, then set the distance you are willing to travel for events, and where or not you prefer to use metric units" MaximumWidthRequest="300"/>
+        <maps:Map x:Name="mappy" HeightRequest="400" Loaded="mappy_Loaded" />
+        <HorizontalStackLayout>
+            <Label FontSize="Medium" Text="Travel limit for local events"  MaximumWidthRequest="200" />
+            <Stepper x:Name="travelLimitForLocalEvents" MaximumWidthRequest="100" ValueChanged="travelLimitForLocalEvents_ValueChanged" />
+            <Label FontSize="Medium" x:Name="stepValue"  MaximumWidthRequest="50" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label FontSize="Medium" Text="Prefer Metric Units?"  MaximumWidthRequest="200" />
+            <CheckBox x:Name="prefersMetrics" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label FontSize="Medium" Text="City"  MaximumWidthRequest="200" />
+            <Entry IsReadOnly="True" FontSize="Medium" x:Name="city" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label FontSize="Medium" Text="State"  MaximumWidthRequest="200"/>
+            <Entry IsReadOnly="True" FontSize="Medium" x:Name="state" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label FontSize="Medium" Text="Postal Code"  MaximumWidthRequest="200" />
+            <Entry IsReadOnly="True" FontSize="Medium" x:Name="postalCode" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Button Text="Save" Clicked="SaveButton_Clicked" MaximumWidthRequest="200" />
+            <Button Text="Close" Clicked="CloseButton_Clicked" MaximumWidthRequest="200" />
+        </HorizontalStackLayout>
+    </VerticalStackLayout>
+</mct:Popup>

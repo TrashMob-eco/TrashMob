@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TrashMobMobileApp.Features.Map.MauiMapPageSingleEvent"
+             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
+             Title="MauiMapPageSingleEvent">
+    <VerticalStackLayout>
+        <maps:Map x:Name="mappy" HeightRequest="400"  />
+        <HorizontalStackLayout>
+            <Label FontSize="Medium" Text="Street Address" MaximumWidthRequest="200" />
+            <Entry IsReadOnly="True" x:Name="streetAddress" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label FontSize="Medium" Text="City"  MaximumWidthRequest="200" />
+            <Entry IsReadOnly="True" x:Name="city" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label FontSize="Medium" Text="State"  MaximumWidthRequest="200"/>
+            <Entry IsReadOnly="True" x:Name="state" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label FontSize="Medium" Text="Postal Code"  MaximumWidthRequest="200" />
+            <Entry IsReadOnly="True" x:Name="postalCode" />
+        </HorizontalStackLayout>
+
+        <Button Text="Close" Clicked="CloseButton_Clicked" />
+    </VerticalStackLayout>
+</ContentPage>
