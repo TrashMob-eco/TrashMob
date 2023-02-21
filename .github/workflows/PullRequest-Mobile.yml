@@ -52,7 +52,7 @@ jobs:
 
     - name: Publish Android Mobile App
       run: |
-        dotnet publish TrashMobMobileApp.sln -c:${{ env.CONFIGURATION }} -f:net7.0-android --no-restore 
+        dotnet publish TrashMobMobileApp.sln -c:${{ env.CONFIGURATION }} -f:net7.0-android --no-restore /p:AndroidPackageFormat="aab"
       
     # Store Android Signing Keystore and password in Secrets using base64 encoding
     # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil
