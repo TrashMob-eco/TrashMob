@@ -26,8 +26,13 @@
         protected override async Task OnInitializedAsync()
         {
             _user = App.CurrentUser;
+            await ReInitializeAsync();
+        }
+
+        private async Task ReInitializeAsync()
+        {
             _isLoading = true;
-            _mobEventsStatic = (await MobEventManager.GetActiveEventsAsync()).ToList();
+            _mobEventsStatic = (await MobEventManager.GetActiveEventsAsync()).OrderByDescending(x => x.EventDate).ToList();
             _userAttendingEventIds = (await MobEventManager.GetEventsUserIsAttending(_user.Id)).Select(x => x.Id).ToList();
             _mobEvents = _mobEventsStatic;
             _isLoading = false;
@@ -38,9 +43,10 @@
             Navigator.NavigateTo(string.Format(Routes.ViewEvent, mobEvent.Id));
         }
 
-        private void OnViewMapAllEvents(IEnumerable<Event> mobEvents)
+        private async void OnViewMapAllEvents(IEnumerable<Event> mobEvents)
         {
-            App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageMultipleEvent(mobEvents));
+            await App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageMultipleEvent(MobEventManager, mobEvents));
+            await ReInitializeAsync();
         }
 
         private void OnViewMap(Event mobEvent)
@@ -74,6 +80,8 @@
                 _isLoading = false;
                 Snackbar.Add($"Registered!", Severity.Success);
             }
+
+            await ReInitializeAsync();
         }
 
         private async Task OnUnregisterAsync(Event mobEvent)
@@ -102,6 +110,8 @@
                 _isLoading = false;
                 Snackbar.Add($"Unregistered!", Severity.Success);
             }
+
+            await ReInitializeAsync();
         }
 
         private void OnSearchTextChanged(string searchText)

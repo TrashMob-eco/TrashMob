@@ -29,9 +29,7 @@
 
 <ErrorBoundary>
     <ChildContent>
-        <MudIconButton Icon="@Icons.Material.Filled.Map"
-                       Color="ComponentCommon.PrimaryColor"
-                       OnClick="@(() => OnViewMapAllEvents(_mobEvents))" />
+        <MudButton Color="ComponentCommon.PrimaryColor" OnClick="@(() => OnViewMapAllEvents(_mobEvents))">Show Map View</MudButton>
         <MudContainer Class="tm-event-list">
             <MudOverlay @bind-Visible="_isLoading" Absolute>
                 <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
@@ -59,6 +57,8 @@
                         </MudCardHeader>
                         <MudCardContent>
                             <MudText Typo="Typo.body2"><strong>Address: </strong>@mob.GetFormattedAddress()</MudText>
+                            <MudText Typo="Typo.body2"><strong>Event date: </strong>@mob.EventDate.GetFormattedLocalDate()</MudText>
+                            <MudText Typo="Typo.body2"><strong>Event time: </strong>@mob.EventDate.GetFormattedLocalTime()</MudText>
                         </MudCardContent>
                         <MudCardActions>
                             <MudStack Style="@ComponentCommon.FullWidth" Row Justify="@Justify.SpaceBetween">
@@ -86,8 +86,6 @@
                                     <MudIconButton Icon="@Icons.Material.Filled.Map"
                                                Color="ComponentCommon.PrimaryColor" 
                                                OnClick="@(() => OnViewMap(mob))" />
-                                    <MudIconButton Icon="@Icons.Material.Filled.Share"
-                                               Color="ComponentCommon.PrimaryColor" />
                                 </MudStack>
                             </MudStack>
                         </MudCardActions>

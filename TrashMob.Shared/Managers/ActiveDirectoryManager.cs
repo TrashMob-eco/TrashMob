@@ -97,7 +97,7 @@ namespace TrashMob.Shared.Managers
                 {
                     action = "ValidationError",
                     version = "1.0.0",
-                    userMessage = "This email is already in uze."
+                    userMessage = "This email is already in use."
                 };
 
                 return response;
@@ -111,7 +111,7 @@ namespace TrashMob.Shared.Managers
                 {
                     action = "ValidationError",
                     version = "1.0.0",
-                    userMessage = "Please choose a different Uzer Name. This name already in use."
+                    userMessage = "Please choose a different User Name. This name already in use."
                 };
 
                 return response;

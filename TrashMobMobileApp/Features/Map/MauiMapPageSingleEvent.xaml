@@ -7,20 +7,20 @@
     <VerticalStackLayout>
         <maps:Map x:Name="mappy" HeightRequest="400"  />
         <HorizontalStackLayout>
-            <Label Text="Street Address" MaximumWidthRequest="200" />
-            <Label x:Name="streetAddress" />
+            <Label FontSize="Medium" Text="Street Address" MaximumWidthRequest="200" />
+            <Entry IsReadOnly="True" x:Name="streetAddress" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label Text="City"  MaximumWidthRequest="200" />
-            <Label x:Name="city" />
+            <Label FontSize="Medium" Text="City"  MaximumWidthRequest="200" />
+            <Entry IsReadOnly="True" x:Name="city" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label Text="State"  MaximumWidthRequest="200"/>
-            <Label x:Name="state" />
+            <Label FontSize="Medium" Text="State"  MaximumWidthRequest="200"/>
+            <Entry IsReadOnly="True" x:Name="state" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label Text="Postal Code"  MaximumWidthRequest="200" />
-            <Label x:Name="postalCode" />
+            <Label FontSize="Medium" Text="Postal Code"  MaximumWidthRequest="200" />
+            <Entry IsReadOnly="True" x:Name="postalCode" />
         </HorizontalStackLayout>
 
         <Button Text="Close" Clicked="CloseButton_Clicked" />
