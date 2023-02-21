@@ -75,7 +75,7 @@ jobs:
       with:
         name: artifacts-android
         path: |
-          TrashMobMobileApp\bin\${{ env.CONFIGURATION }}\net7.0-android\publish\*.apk
+          TrashMobMobileApp\bin\${{ env.CONFIGURATION }}\net7.0-android\publish\*.aab
 
   buildiOSApp:
     runs-on: macos-12
