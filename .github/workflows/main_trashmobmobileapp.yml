@@ -69,7 +69,7 @@ jobs:
         cd TrashMobMobileApp
         jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -signedjar bin/${{ env.CONFIGURATION }}/net7.0-android/publish/eco.trashmob.trashmobmobileapp-Signed.aab bin/${{ env.CONFIGURATION }}/net7.0-android/publish/eco.trashmob.trashmobmobileapp.aab key
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3.1.2
       with:
         name: artifacts-android
         path: |
@@ -122,7 +122,7 @@ jobs:
       run: dotnet publish TrashMobMobileApp.sln -c ${{ env.CONFIGURATION }} -f net7.0-ios -r ios-arm64 --self-contained --no-restore /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=false
 
     - name: Upload iOS Artifact
-      uses: actions/upload-artifact@v3.1.0
+      uses: actions/upload-artifact@v3.1.2
       with:
         name: trashmobmobileapp-ios-pr-build
         path: TrashMobMobileApp/bin/${{ env.CONFIGURATION }}/net7.0-ios/ios-arm64/publish//*.ipa
