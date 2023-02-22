@@ -40,6 +40,6 @@
             }
         }
 
-        private void OnFinished() => Navigator.NavigateTo(Routes.Events);
+        private void OnFinished() => Navigator.NavigateTo(Routes.Events, forceLoad: true);
     }
 }

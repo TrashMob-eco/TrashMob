@@ -107,6 +107,6 @@
             }
         }
 
-        private void OnCancel() => Navigator.NavigateTo(Routes.Events);
+        private void OnCancel() => Navigator.NavigateTo(Routes.Events, forceLoad: true);
     }
 }
