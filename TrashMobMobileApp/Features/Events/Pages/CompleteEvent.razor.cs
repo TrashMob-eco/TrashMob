@@ -38,7 +38,7 @@
         {
             if (IsReadOnly)
             {
-                Navigator.NavigateTo(Routes.Events);
+                Navigator.NavigateTo(Routes.Events, forceLoad: true);
             }
             else
             {

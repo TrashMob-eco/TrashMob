@@ -69,7 +69,7 @@
             </MudForm>
             <MudStack Row Class="tm-action-btn-container">
                 <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnSaveAsync">Save</MudButton>
-                <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@(() => Navigator.NavigateTo(Routes.Events))">Back</MudButton>
+                <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@(() => Navigator.NavigateTo(Routes.Events, forceLoad: true))">Back</MudButton>
             </MudStack>
         </MudContainer>
     </ChildContent>
