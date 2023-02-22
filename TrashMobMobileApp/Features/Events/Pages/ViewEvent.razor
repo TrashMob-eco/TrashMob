@@ -80,7 +80,7 @@
                     }
                 }
             </MudStack>
-            <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@(() => Navigator.NavigateTo(Routes.Events))">Back</MudButton>
+            <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@(() => Navigator.NavigateTo(Routes.Events, forceLoad: true))">Back</MudButton>
         </MudContainer>
     </ChildContent>
     <ErrorContent>

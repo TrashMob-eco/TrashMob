@@ -51,6 +51,8 @@
                 <MudTextField T="string" FullWidth Lines="5" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Text="Event.Description" Label="Description" Required RequiredError="Description is required" />
 
                 <MudText Typo="Typo.subtitle2" Class="tm-form-label">Location</MudText>
+                <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OpenMap">Update Location</MudButton>
+
                 <MudText Class="tm-form-label" Variant="ComponentCommon.TextFieldVariant">Street Address</MudText>
                 <MudText Class="tm-form-label" Variant="ComponentCommon.TextFieldVariant">@Event.StreetAddress</MudText>
                 <MudText Class="tm-form-label" Variant="ComponentCommon.TextFieldVariant">City</MudText>

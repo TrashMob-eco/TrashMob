@@ -261,6 +261,7 @@ export const App: FC = () => {
                         user.memberSince = data.memberSince;
                         user.trashMobWaiverVersion = data.trashMobWaiverVersion;
                         user.isSiteAdmin = data.isSiteAdmin;
+                        user.email = data.email;
                         setCurrentUser(user);
                         setIsUserLoaded(true);
                         sessionStorage.setItem('user', JSON.stringify(user));

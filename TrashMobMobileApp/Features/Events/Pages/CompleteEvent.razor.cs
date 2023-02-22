@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using TrashMob.Models;
-using TrashMobMobileApp.Data;
-using TrashMobMobileApp.Extensions;
-using TrashMobMobileApp.Shared;
-
-namespace TrashMobMobileApp.Features.Events.Pages
+﻿namespace TrashMobMobileApp.Features.Events.Pages
 {
+    using Microsoft.AspNetCore.Components;
+    using MudBlazor;
+    using TrashMob.Models;
+    using TrashMobMobileApp.Data;
+    using TrashMobMobileApp.Extensions;
+    using TrashMobMobileApp.Shared;
+
     public partial class CompleteEvent
     {
         MudForm _completeEventForm;
@@ -38,7 +38,7 @@ namespace TrashMobMobileApp.Features.Events.Pages
         {
             if (IsReadOnly)
             {
-                Navigator.NavigateTo(Routes.Events);
+                Navigator.NavigateTo(Routes.Events, forceLoad: true);
             }
             else
             {

@@ -67,8 +67,12 @@
         private async void OpenMap()
         {
             var result = await App.Current.MainPage.ShowPopupAsync(new EditMapPopup(MapRestService, _event));
-            _event = result as Event;
-            StateHasChanged();
+
+            if (result != null)
+            {
+                _event = result as Event;
+                StateHasChanged();
+            }
         }
 
         private async Task OnSaveAsync()
@@ -103,6 +107,6 @@
             }
         }
 
-        private void OnCancel() => Navigator.NavigateTo(Routes.Events);
+        private void OnCancel() => Navigator.NavigateTo(Routes.Events, forceLoad: true);
     }
 }

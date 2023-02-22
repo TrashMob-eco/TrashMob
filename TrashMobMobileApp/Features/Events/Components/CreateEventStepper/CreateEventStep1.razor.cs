@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using TrashMob.Models;
-using TrashMobMobileApp.Data;
-
-namespace TrashMobMobileApp.Features.Events.Components
+﻿namespace TrashMobMobileApp.Features.Events.Components
 {
+    using Microsoft.AspNetCore.Components;
+    using MudBlazor;
+    using TrashMob.Models;
+    using TrashMobMobileApp.Data;
+
     public partial class CreateEventStep1
     {
         private MudForm _step1Form;

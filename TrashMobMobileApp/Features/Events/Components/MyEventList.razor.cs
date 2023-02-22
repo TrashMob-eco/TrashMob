@@ -49,19 +49,19 @@
             {
                 case UserEventInteraction.CREATED_EVENT:
                     Snackbar.Add("Event created!", Severity.Success);
-                    Navigator.NavigateTo(Routes.Events);
+                    Navigator.NavigateTo(Routes.Events, forceLoad: true);
                     break;
                 case UserEventInteraction.SUBMITTED_EVENT:
                     Snackbar.Add("Event summary submitted!", Severity.Success);
-                    Navigator.NavigateTo(Routes.Events);
+                    Navigator.NavigateTo(Routes.Events, forceLoad: true);
                     break;
                 case UserEventInteraction.EDITED_EVENT:
                     Snackbar.Add("Event updated!", Severity.Success);
-                    Navigator.NavigateTo(Routes.Events);
+                    Navigator.NavigateTo(Routes.Events, forceLoad: true);
                     break;
                 case UserEventInteraction.CANCELLED_EVENT:
                     Snackbar.Add("Event cancelled!", Severity.Success);
-                    Navigator.NavigateTo(Routes.Events);
+                    Navigator.NavigateTo(Routes.Events, forceLoad: true);
                     break;
                 case UserEventInteraction.NONE:
                 default:

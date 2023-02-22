@@ -63,7 +63,8 @@ public partial class EditMapPopup
                 mappy.MoveToRegion(mapSpan);
             }
         }
-        
+
+        SaveButton.IsEnabled = false;
         mappy.IsShowingUser = true;
         mappy.MapClicked += Map_MapClicked;
     }
@@ -90,10 +91,16 @@ public partial class EditMapPopup
             map.Pins.Add(pin);
 
             SetFields(mobEvent);
+            SaveButton.IsEnabled = true;
         }
     }
 
-    private void CloseButton_Clicked(object sender, EventArgs e)
+    private void CancelButton_Clicked(object sender, EventArgs e)
+    {
+        Close();
+    }
+
+    private void SaveButton_Clicked(object sender, EventArgs e)
     {
         Close(mobEvent);
     }

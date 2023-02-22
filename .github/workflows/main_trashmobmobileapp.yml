@@ -16,6 +16,7 @@ env:
   CONFIGURATION: Release
 
 jobs:
+
   buildAndroidApp:
     runs-on: windows-latest
     environment: test
