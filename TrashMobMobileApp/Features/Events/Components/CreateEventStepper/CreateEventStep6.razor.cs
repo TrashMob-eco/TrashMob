@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Components;
-using TrashMobMobileApp.Data;
-using TrashMob.Models;
-using TrashMobMobileApp.Extensions;
-
-namespace TrashMobMobileApp.Features.Events.Components
+﻿namespace TrashMobMobileApp.Features.Events.Components
 {
+    using Microsoft.AspNetCore.Components;
+    using TrashMobMobileApp.Data;
+    using TrashMob.Models;
+    using TrashMobMobileApp.Extensions;
+
     public partial class CreateEventStep6
     {
         private bool _isLoading;
