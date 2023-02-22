@@ -32,9 +32,12 @@
         private async void OpenMap()
         {
             var result = await App.Current.MainPage.ShowPopupAsync(new EditMapPopup(MapRestService, _event));
-            _event = result as Event;
-            _step = EventStep.STEP_5;
-            StateHasChanged();
+            if (result != null)
+            { 
+                _event = result as Event;
+                _step = EventStep.STEP_5;
+                StateHasChanged();
+            }
         }
 
         private void OnFinished() => Navigator.NavigateTo(Routes.Events);

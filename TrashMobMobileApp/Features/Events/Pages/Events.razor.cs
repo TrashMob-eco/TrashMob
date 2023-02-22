@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Components;
-using TrashMobMobileApp.StateContainers;
-
-namespace TrashMobMobileApp.Features.Events.Pages
+﻿namespace TrashMobMobileApp.Features.Events.Pages
 {
+    using Microsoft.AspNetCore.Components;
+    using TrashMobMobileApp.StateContainers;
+
     public partial class Events
     {
         [Inject]
