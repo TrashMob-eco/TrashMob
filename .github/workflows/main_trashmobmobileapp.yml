@@ -84,6 +84,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Rename info.plist for Debug
+      run: |
+        rm ./TrashMobMobileApp/Platforms/iOS/Info.plist 
+        cp ./TrashMobMobileApp/Platforms/iOS/Info-Debug.plist TrashMobMobileApp/Platforms/iOS/Info.plist 
+
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v3
       with:
