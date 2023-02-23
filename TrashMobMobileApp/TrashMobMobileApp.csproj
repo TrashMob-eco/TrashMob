@@ -95,6 +95,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Resources\Images\**" />
+	  <Content Remove="Resources\Images\**" />
+	  <EmbeddedResource Remove="Resources\Images\**" />
+	  <MauiXaml Remove="Resources\Images\**" />
+	  <None Remove="Resources\Images\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Content Remove="appSettings.Development.json" />
 	  <Content Remove="appSettings.json" />
 	</ItemGroup>
@@ -159,10 +167,6 @@
     <ItemGroup Condition="'$(TargetFramework)' == 'net7.0-android'">
       <PackageReference Include="Plugin.CurrentActivity" Version="2.1.0.4">
       </PackageReference>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Resources\Images\" />
     </ItemGroup>
     <ItemGroup>
       <Compile Update="Features\Map\MauiMapPageMultipleEvent.xaml.cs">
