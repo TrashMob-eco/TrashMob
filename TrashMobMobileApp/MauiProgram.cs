@@ -42,9 +42,9 @@ public static class MauiProgram
         builder.Services.AddScoped<IErrorBoundaryLogger, CustomBoundaryLogger>();
         builder.UseMauiMaps();
 
-        //AppCenter.Start("android=d044d1b4-6fbc-4547-8fae-d0286d9ccbaa;" +
-        //      "ios=0f9bed29-14d0-4e38-a396-64e5cd185d10;",
-        //      typeof(Analytics), typeof(Crashes));
+        AppCenter.Start("android=d044d1b4-6fbc-4547-8fae-d0286d9ccbaa;" +
+              "ios=0f9bed29-14d0-4e38-a396-64e5cd185d10;",
+              typeof(Analytics), typeof(Crashes));
 
         return builder.Build();
     }
