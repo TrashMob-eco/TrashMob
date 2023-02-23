@@ -20,7 +20,7 @@ public partial class MauiMapPageSingleEvent : ContentPage
 		InitializeComponent();
 	}
 
-    public MauiMapPageSingleEvent(IMapRestService mapRestService, Event mobEvent)
+    public MauiMapPageSingleEvent(IMapRestService mapRestService, Event mobEvent, bool isViewOnly = true)
     {
         InitializeComponent();
         MapRestService = mapRestService;
@@ -39,7 +39,7 @@ public partial class MauiMapPageSingleEvent : ContentPage
 
         mappy.Pins.Add(pin);
 
-        if (mobEvent.IsEventLead())
+        if (mobEvent.IsEventLead() && !isViewOnly)
         {
             mappy.MapClicked += Map_MapClicked;
         }

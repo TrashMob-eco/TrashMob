@@ -9,25 +9,25 @@
         <Label FontSize="Caption" Text="Click on the map to set your preferred home location, then set the distance you are willing to travel for events, and where or not you prefer to use metric units" MaximumWidthRequest="300"/>
         <maps:Map x:Name="mappy" HeightRequest="400" Loaded="mappy_Loaded" />
         <HorizontalStackLayout>
-            <Label FontSize="Medium" Text="Travel limit for local events"  MaximumWidthRequest="200" />
-            <Stepper x:Name="travelLimitForLocalEvents" MaximumWidthRequest="100" ValueChanged="travelLimitForLocalEvents_ValueChanged" />
-            <Label FontSize="Medium" x:Name="stepValue"  MaximumWidthRequest="50" />
+            <Label Text="Travel limit for local events"  MaximumWidthRequest="200" StyleClass="tm-form-item" />
+            <Stepper x:Name="travelLimitForLocalEvents" MaximumWidthRequest="100" ValueChanged="travelLimitForLocalEvents_ValueChanged" StyleClass="tm-form-item" />
+            <Label x:Name="stepValue"  MaximumWidthRequest="50" class="tm-form-item" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label FontSize="Medium" Text="Prefer Metric Units?"  MaximumWidthRequest="200" />
-            <CheckBox x:Name="prefersMetrics" />
+            <Label Text="Prefer Metric Units?"  MaximumWidthRequest="200" StyleClass="tm-form-item"/>
+            <CheckBox x:Name="prefersMetrics" StyleClass="tm-form-item" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label FontSize="Medium" Text="City"  MaximumWidthRequest="200" />
-            <Entry IsReadOnly="True" FontSize="Medium" x:Name="city" />
+            <Label Text="City"  MaximumWidthRequest="200" StyleClass="tm-form-item"/>
+            <Entry IsReadOnly="True" x:Name="city" StyleClass="tm-form-item"/>
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label FontSize="Medium" Text="State"  MaximumWidthRequest="200"/>
-            <Entry IsReadOnly="True" FontSize="Medium" x:Name="state" />
+            <Label Text="State"  MaximumWidthRequest="200" StyleClass="tm-form-item"/>
+            <Entry IsReadOnly="True" x:Name="state" StyleClass="tm-form-item" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label FontSize="Medium" Text="Postal Code"  MaximumWidthRequest="200" />
-            <Entry IsReadOnly="True" FontSize="Medium" x:Name="postalCode" />
+            <Label Text="Postal Code"  MaximumWidthRequest="200" StyleClass="tm-form-item" />
+            <Entry IsReadOnly="True" x:Name="postalCode" StyleClass="tm-form-item" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
             <Button Text="Save" Clicked="SaveButton_Clicked" MaximumWidthRequest="200" />

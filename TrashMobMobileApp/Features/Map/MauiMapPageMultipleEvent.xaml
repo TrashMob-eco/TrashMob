@@ -4,33 +4,37 @@
              x:Class="TrashMobMobileApp.Features.Map.MauiMapPageMultipleEvent"
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              Title="NewPage1MauiMapPageMultipleEvent" >
+    <ContentPage.Resources>
+        <StyleSheet Source="/Resources/styles.css" />
+    </ContentPage.Resources>
+    
     <VerticalStackLayout>
         <maps:Map x:Name="mappy" HeightRequest="400" Loaded="mappy_Loaded" MapClicked="mappy_MapClicked" />
 
         <VerticalStackLayout x:Name="addressDisplay" Loaded="addressDisplay_Loaded">
             <HorizontalStackLayout>
-                <Label FontSize="Medium" Text="Event Name" MaximumWidthRequest="200" />
-                <Entry IsReadOnly="True" x:Name="eventName" />
+                <Label Text="Event Name" MaximumWidthRequest="200" StyleClass="tm-form-item" />
+                <Entry IsReadOnly="True" x:Name="eventName" StyleClass="tm-form-item" />
             </HorizontalStackLayout>
             <HorizontalStackLayout>
-                <Label FontSize="Medium" Text="Event Date" MaximumWidthRequest="200" />
-                <Entry IsReadOnly="True" x:Name="eventDate" />
+                <Label Text="Event Date" MaximumWidthRequest="200" StyleClass="tm-form-item" />
+                <Entry IsReadOnly="True" x:Name="eventDate" StyleClass="tm-form-item" />
             </HorizontalStackLayout>
             <HorizontalStackLayout>
-                <Label FontSize="Medium" Text="Street Address" MaximumWidthRequest="200" />
-                <Entry IsReadOnly="True" x:Name="streetAddress" />
+                <Label Text="Street Address" MaximumWidthRequest="200" StyleClass="tm-form-item" />
+                <Entry IsReadOnly="True" x:Name="streetAddress" StyleClass="tm-form-item" />
             </HorizontalStackLayout>
             <HorizontalStackLayout>
-                <Label FontSize="Medium" Text="City"  MaximumWidthRequest="200" />
-                <Entry IsReadOnly="True" x:Name="city" />
+                <Label Text="City"  MaximumWidthRequest="200" StyleClass="tm-form-item" />
+                <Entry IsReadOnly="True" x:Name="city" StyleClass="tm-form-item" />
             </HorizontalStackLayout>
             <HorizontalStackLayout>
-                <Label FontSize="Medium" Text="State"  MaximumWidthRequest="200"/>
-                <Entry IsReadOnly="True" x:Name="state" />
+                <Label Text="State"  MaximumWidthRequest="200" StyleClass="tm-form-item" />
+                <Entry IsReadOnly="True" x:Name="state" StyleClass="tm-form-item" />
             </HorizontalStackLayout>
             <HorizontalStackLayout>
-                <Label FontSize="Medium" Text="Postal Code"  MaximumWidthRequest="200" />
-                <Entry IsReadOnly="True" x:Name="postalCode" />
+                <Label Text="Postal Code"  MaximumWidthRequest="200" StyleClass="tm-form-item" />
+                <Entry IsReadOnly="True" x:Name="postalCode" StyleClass="tm-form-item" />
             </HorizontalStackLayout>
             <HorizontalStackLayout x:Name="isEventLead">
                 <Button Clicked="RegisterButton_Clicked" Text="Register" x:Name="register" />

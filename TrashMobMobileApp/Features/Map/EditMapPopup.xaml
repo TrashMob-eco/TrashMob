@@ -5,22 +5,24 @@
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              x:Class="TrashMobMobileApp.Features.Map.EditMapPopup">
     <VerticalStackLayout WidthRequest="400">
+        <Label FontSize="Header" Text="Set your event location" />
+        <Label FontSize="Caption" Text="Click on the map to set your event location." MaximumWidthRequest="300"/>
         <maps:Map x:Name="mappy" HeightRequest="400" Loaded="mappy_Loaded" />
         <HorizontalStackLayout>
-            <Label FontSize="Medium" Text="Street Address" MaximumWidthRequest="200" />
-            <Entry IsReadOnly="True" x:Name="streetAddress" />
+            <Label Text="Street Address" MaximumWidthRequest="200" StyleClass="tm-form-item" />
+            <Entry IsReadOnly="True" x:Name="streetAddress" StyleClass="tm-form-item" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label FontSize="Medium" Text="City"  MaximumWidthRequest="200" />
-            <Entry IsReadOnly="True" x:Name="city" />
+            <Label Text="City"  MaximumWidthRequest="200" StyleClass="tm-form-item" />
+            <Entry IsReadOnly="True" x:Name="city" StyleClass="tm-form-item" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label FontSize="Medium" Text="State"  MaximumWidthRequest="200"/>
-            <Entry IsReadOnly="True" x:Name="state" />
+            <Label Text="State"  MaximumWidthRequest="200" StyleClass="tm-form-item"/>
+            <Entry IsReadOnly="True" x:Name="state" StyleClass="tm-form-item"/>
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label FontSize="Medium" Text="Postal Code"  MaximumWidthRequest="200" />
-            <Entry IsReadOnly="True" x:Name="postalCode" />
+            <Label Text="Postal Code"  MaximumWidthRequest="200" StyleClass="tm-form-item"/>
+            <Entry IsReadOnly="True" x:Name="postalCode" StyleClass="tm-form-item"/>
         </HorizontalStackLayout>
         <HorizontalStackLayout>
             <Button x:Name="SaveButton" Text="Save" Clicked="SaveButton_Clicked" />

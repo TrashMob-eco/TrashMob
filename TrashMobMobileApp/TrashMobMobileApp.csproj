@@ -108,6 +108,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\styles.css" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Compile Include="..\TrashMob.Models\Address.cs" Link="Models\Address.cs" />
 	  <Compile Include="..\TrashMob.Models\BaseModel.cs" Link="Models\BaseModel.cs" />
 	  <Compile Include="..\TrashMob.Models\ContactRequest.cs" Link="Models\ContactRequest.cs" />
@@ -149,6 +153,10 @@
 	<ItemGroup>
 	  <EmbeddedResource Include="appSettings.Development.json" />
 	  <EmbeddedResource Include="appSettings.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiCss Include="Resources\styles.css" />
 	</ItemGroup>
 
     <ItemGroup>

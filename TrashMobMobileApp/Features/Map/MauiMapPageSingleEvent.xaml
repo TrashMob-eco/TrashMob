@@ -4,25 +4,29 @@
              x:Class="TrashMobMobileApp.Features.Map.MauiMapPageSingleEvent"
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              Title="MauiMapPageSingleEvent">
+    <ContentPage.Resources>
+        <StyleSheet Source="/Resources/styles.css" />
+    </ContentPage.Resources>
+    
     <VerticalStackLayout>
         <maps:Map x:Name="mappy" HeightRequest="400"  />
+        
         <HorizontalStackLayout>
-            <Label FontSize="Medium" Text="Street Address" MaximumWidthRequest="200" />
-            <Entry IsReadOnly="True" x:Name="streetAddress" />
+            <Label Text="Street Address" MaximumWidthRequest="200" StyleClass="tm-form-item" />
+            <Entry IsReadOnly="True" x:Name="streetAddress" StyleClass="tm-form-item" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label FontSize="Medium" Text="City"  MaximumWidthRequest="200" />
-            <Entry IsReadOnly="True" x:Name="city" />
+            <Label Text="City"  MaximumWidthRequest="200" StyleClass="tm-form-item" />
+            <Entry IsReadOnly="True" x:Name="city" StyleClass="tm-form-item" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label FontSize="Medium" Text="State"  MaximumWidthRequest="200"/>
-            <Entry IsReadOnly="True" x:Name="state" />
+            <Label Text="State"  MaximumWidthRequest="200" StyleClass="tm-form-item" />
+            <Entry IsReadOnly="True" x:Name="state" StyleClass="tm-form-item" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label FontSize="Medium" Text="Postal Code"  MaximumWidthRequest="200" />
-            <Entry IsReadOnly="True" x:Name="postalCode" />
+            <Label Text="Postal Code"  MaximumWidthRequest="200" StyleClass="tm-form-item" />
+            <Entry IsReadOnly="True" x:Name="postalCode" StyleClass="tm-form-item" />
         </HorizontalStackLayout>
-
         <Button Text="Close" Clicked="CloseButton_Clicked" />
     </VerticalStackLayout>
 </ContentPage>
