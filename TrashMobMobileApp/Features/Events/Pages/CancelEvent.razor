@@ -38,7 +38,7 @@
             <MudForm @ref="_cancelEventForm" Class="tm-form" @bind-IsValid="@_success" @bind-Errors="@_errors">
                 <MudTextField FullWidth T="string" @bind-Text="_cancelReason" Variant="ComponentCommon.TextFieldVariant" Label="Cancellation Reason" Required RequiredError="Cancellation reason is required" Lines="ComponentCommon.TextAreaLinesSpan" />
                 <MudStack Row Justify="Justify.Center" Class="tm-action-item">
-                    <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@(() => Navigator.NavigateTo(Routes.Events))">Back</MudButton>
+                    <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@(() => Navigator.NavigateTo(Routes.Events, forceLoad: true))">Back</MudButton>
                     <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnCancelEventAsync">Cancel Event</MudButton>
                 </MudStack>
             </MudForm>

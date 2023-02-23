@@ -22,6 +22,9 @@
             <Label FontSize="Medium" Text="Postal Code"  MaximumWidthRequest="200" />
             <Entry IsReadOnly="True" x:Name="postalCode" />
         </HorizontalStackLayout>
-        <Button Text="Close" Clicked="CloseButton_Clicked" />
+        <HorizontalStackLayout>
+            <Button x:Name="SaveButton" Text="Save" Clicked="SaveButton_Clicked" />
+            <Button x:Name="CancelButton" Text="Cancel" Clicked="CancelButton_Clicked" />
+        </HorizontalStackLayout>
     </VerticalStackLayout>
 </mct:Popup>
