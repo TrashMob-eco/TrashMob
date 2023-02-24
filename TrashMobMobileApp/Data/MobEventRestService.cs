@@ -123,12 +123,11 @@
             try
             {
                 var content = JsonContent.Create(cancelEvent, typeof(EventCancellationRequest), null, SerializerOptions);
-                var requestUri = new Uri(string.Concat(AuthorizedHttpClient.BaseAddress, Controller));
                 var httpRequestMessage = new HttpRequestMessage
                 {
                     Method = HttpMethod.Delete,
                     Content = content,
-                    RequestUri = requestUri,
+                    RequestUri = AuthorizedHttpClient.BaseAddress,
                 };
 
                 response = await AuthorizedHttpClient.SendAsync(httpRequestMessage, cancellationToken);
