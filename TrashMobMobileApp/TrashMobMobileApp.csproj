@@ -156,7 +156,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiCss Include="Resources\styles.css" />
+	  <MauiCss Include="Resources\Styles\styles.css" />
 	</ItemGroup>
 
     <ItemGroup>

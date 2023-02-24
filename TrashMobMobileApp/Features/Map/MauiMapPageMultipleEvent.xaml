@@ -5,7 +5,7 @@
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              Title="NewPage1MauiMapPageMultipleEvent" >
     <ContentPage.Resources>
-        <StyleSheet Source="/Resources/styles.css" />
+        <StyleSheet Source="/Resources/Styles/styles.css" />
     </ContentPage.Resources>
     
     <VerticalStackLayout>
