@@ -24,7 +24,7 @@ namespace TrashMobJobs
             this.activeDirectoryManager = activeDirectoryManager;
         }
 
-        [Function("UpdateProfileValidate")]
+        [Function("UpdateUserProfileValidate")]
         public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
         {
             logger.LogInformation("C# HTTP trigger function processed a request.");
