@@ -1,7 +1,6 @@
 ﻿
 namespace TrashMob.Shared.Managers
 {
-    using Microsoft.Extensions.Logging;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
@@ -77,6 +76,75 @@ namespace TrashMob.Shared.Managers
             {
                 return response;
             }
+
+            var newUserResponse = new ActiveDirectoryContinuationResponse
+            {
+                action = "Continue",
+                version = "1.0.0",
+            };
+
+            return newUserResponse;
+        }
+
+        public async Task<ActiveDirectoryResponseBase> ValidateUpdateUserProfileAsync(ActiveDirectoryUpdateUserProfileRequest activeDirectoryUpdateUserProfileRequest, CancellationToken cancellationToken = default)
+        {
+            var originalUser = await userManager.GetUserByObjectIdAsync(activeDirectoryUpdateUserProfileRequest.objectId, cancellationToken).ConfigureAwait(false);
+
+            if (originalUser == null)
+            {
+                var response = new ActiveDirectoryValidationFailedResponse
+                {
+                    action = "UserNotFound",
+                    version = "1.0.0",
+                    userMessage = $"User not found."
+                };
+
+                return response;
+            }
+
+            var checkUser = await userManager.GetUserByUserNameAsync(activeDirectoryUpdateUserProfileRequest.userName, CancellationToken.None).ConfigureAwait(false);
+
+            if (checkUser != null && checkUser.ObjectId != activeDirectoryUpdateUserProfileRequest.objectId)
+            {
+                var response = new ActiveDirectoryValidationFailedResponse
+                {
+                    action = "ValidationError",
+                    version = "1.0.0",
+                    userMessage = "Please choose a different User Name. This name already in use."
+                };
+
+                return response;
+            }
+
+            var newUserResponse = new ActiveDirectoryContinuationResponse
+            {
+                action = "Continue",
+                version = "1.0.0",
+            };
+
+            return newUserResponse;
+        }
+
+        public async Task<ActiveDirectoryResponseBase> UpdateUserProfileAsync(ActiveDirectoryUpdateUserProfileRequest activeDirectoryUpdateUserProfileRequest, CancellationToken cancellationToken = default)
+        {
+            var originalUser = await userManager.GetUserByObjectIdAsync(activeDirectoryUpdateUserProfileRequest.objectId, cancellationToken).ConfigureAwait(false);
+
+            if (originalUser == null)
+            {
+                var response = new ActiveDirectoryValidationFailedResponse
+                {
+                    action = "UserNotFound",
+                    version = "1.0.0",
+                    userMessage = $"User not found."
+                };
+
+                return response;
+            }
+
+            originalUser.GivenName = activeDirectoryUpdateUserProfileRequest.givenName;
+            originalUser.UserName= activeDirectoryUpdateUserProfileRequest.userName;
+
+            await userManager.UpdateAsync(originalUser, cancellationToken).ConfigureAwait(false);
 
             var newUserResponse = new ActiveDirectoryContinuationResponse
             {

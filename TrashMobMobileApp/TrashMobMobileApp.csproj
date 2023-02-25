@@ -38,7 +38,7 @@
 		<RunAOTCompilation>False</RunAOTCompilation>
 		<AndroidUseAapt2>True</AndroidUseAapt2>
 		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-		<AndroidPackageFormat>aab</AndroidPackageFormat>
+		<AndroidPackageFormat>apk</AndroidPackageFormat>
 		<EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
 	</PropertyGroup>
 
@@ -55,18 +55,30 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
 		<CreatePackage>false</CreatePackage>
-		<CodesignKey>iPhone Developer</CodesignKey>
+		<CodesignKey>Apple Development</CodesignKey>
 		<CodesignProvision>VS: eco.trashmobdev.trashmobmobile Development</CodesignProvision>
 		<CodesignEntitlements></CodesignEntitlements>
 		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
 		 <CreatePackage>false</CreatePackage>
+		 <CodesignKey>Apple Distribution: TrashMob (367LR8J89Q)</CodesignKey>
+		 <CodesignProvision>eco.trashmob App Store Distribution</CodesignProvision>
+		 <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
 		 <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 		<WarningLevel>4</WarningLevel>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="Info.plist" Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
+			<LogicalName>Info.plist</LogicalName>
+		</None>
+		<None Include="Info-Debug.plist" Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
+			<LogicalName>Info.plist</LogicalName>
+		</None>
+	</ItemGroup>
 
 	<ItemGroup>
 		<!-- App Icon -->
@@ -80,6 +92,14 @@
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Resources\Images\**" />
+	  <Content Remove="Resources\Images\**" />
+	  <EmbeddedResource Remove="Resources\Images\**" />
+	  <MauiXaml Remove="Resources\Images\**" />
+	  <None Remove="Resources\Images\**" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -147,10 +167,6 @@
     <ItemGroup Condition="'$(TargetFramework)' == 'net7.0-android'">
       <PackageReference Include="Plugin.CurrentActivity" Version="2.1.0.4">
       </PackageReference>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Resources\Images\" />
     </ItemGroup>
     <ItemGroup>
       <Compile Update="Features\Map\MauiMapPageMultipleEvent.xaml.cs">
