@@ -5,8 +5,8 @@
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              x:Class="TrashMobMobileApp.Features.Map.EditMapPopup">
     <VerticalStackLayout WidthRequest="400">
-        <Label FontSize="Header" Text="Set your event location" />
-        <Label FontSize="Caption" Text="Click on the map to set your event location." MaximumWidthRequest="300"/>
+        <Label Text="Set your event location" Style="{StaticResource headerLabel}" />
+        <Label Text="Click on the map to set your event location." Style="{StaticResource instructionsLabel}" />
         <maps:Map x:Name="mappy" HeightRequest="400" Loaded="mappy_Loaded" />
         <HorizontalStackLayout>
             <Label Text="Street Address" Style="{StaticResource fieldLabel}" />
