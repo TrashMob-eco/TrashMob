@@ -32,6 +32,8 @@ public partial class UserLocationPreferencePopup
         city.Text = user.City;
         state.Text = user.Region;
         postalCode.Text = user.PostalCode;
+        travelLimitForLocalEvents.Value = user.TravelLimitForLocalEvents;
+        prefersMetrics.IsChecked = user.PrefersMetric;
     }
 
     private async void mappy_Loaded(object sender, EventArgs e)
