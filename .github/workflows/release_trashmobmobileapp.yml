@@ -6,7 +6,7 @@ name: TrashMobMobileApp - Prod
 on:
   push:
     branches:
-      - Release
+      - release
     paths: 
       - '.github/**'
       - 'TrashMob.Models/**'
