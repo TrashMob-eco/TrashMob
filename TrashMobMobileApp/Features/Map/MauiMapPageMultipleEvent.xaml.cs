@@ -5,6 +5,7 @@ using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 using TrashMob.Models;
 using TrashMobMobileApp.Data;
+using TrashMobMobileApp.Extensions;
 
 public partial class MauiMapPageMultipleEvent : ContentPage
 {
@@ -142,7 +143,8 @@ public partial class MauiMapPageMultipleEvent : ContentPage
     private void SetFields(Event mobEvent)
     {
         eventName.Text = mobEvent.Name;
-        eventDate.Text = mobEvent.EventDate.ToString();
+        eventDate.Text = mobEvent.EventDate.GetFormattedLocalDate();
+        eventTime.Text = mobEvent.EventDate.GetFormattedLocalTime();
         streetAddress.Text = mobEvent.StreetAddress;
         city.Text = mobEvent.City;
         state.Text = mobEvent.Region;

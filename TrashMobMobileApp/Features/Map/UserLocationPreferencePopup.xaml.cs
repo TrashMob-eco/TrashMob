@@ -22,9 +22,10 @@ public partial class UserLocationPreferencePopup
     public UserLocationPreferencePopup(IUserManager userManager, IMapRestService mapRestService)
     {
         InitializeComponent();
-        travelLimitForLocalEvents = new Stepper(1, 100, 5, 1);
         UserManager = userManager;
         MapRestService = mapRestService;
+        units.Items.Add("miles");
+        units.Items.Add("kilometers");
     }
 
     private void SetFields(User user)
@@ -32,6 +33,16 @@ public partial class UserLocationPreferencePopup
         city.Text = user.City;
         state.Text = user.Region;
         postalCode.Text = user.PostalCode;
+        travelLimitForLocalEvents.Text = user.TravelLimitForLocalEvents.ToString();
+
+        if (user.PrefersMetric)
+        {
+            units.SelectedItem = "kilometers";
+        }
+        else
+        {
+            units.SelectedItem = "miles";
+        }
     }
 
     private async void mappy_Loaded(object sender, EventArgs e)
@@ -39,7 +50,6 @@ public partial class UserLocationPreferencePopup
         try
         {
             user = await UserManager.GetUserAsync(App.CurrentUser.Id.ToString());
-            SetFields(user);
         }
         catch (Exception)
         {
@@ -61,9 +71,7 @@ public partial class UserLocationPreferencePopup
             user.TravelLimitForLocalEvents = DefaultTravelDistance;
         }
 
-        travelLimitForLocalEvents.Value = user.TravelLimitForLocalEvents;
-        prefersMetrics.IsChecked = user.PrefersMetric;
-        stepValue.Text = user.TravelLimitForLocalEvents.ToString();
+        SetFields(user);
 
         if (userLocation != null)
         {
@@ -79,7 +87,7 @@ public partial class UserLocationPreferencePopup
 
         mappy.Pins.Clear();
         var pin = MapHelper.GetPinForUser(user);
-                pin.Location = userLocation;
+        pin.Location = userLocation;
         mappy.Pins.Add(pin);
 
         mappy.IsShowingUser = true;
@@ -112,8 +120,10 @@ public partial class UserLocationPreferencePopup
 
     private async void SaveButton_Clicked(object sender, EventArgs e)
     {
-        user.TravelLimitForLocalEvents = (int)travelLimitForLocalEvents.Value;
-        user.PrefersMetric = prefersMetrics.IsChecked;
+        user.TravelLimitForLocalEvents = Convert.ToInt32(travelLimitForLocalEvents.Text);
+        var unitSelected = units.SelectedItem.ToString();
+
+        user.PrefersMetric = unitSelected != "miles";
 
         await UserManager.UpdateUserAsync(user);
         
@@ -123,11 +133,5 @@ public partial class UserLocationPreferencePopup
     private void CloseButton_Clicked(object sender, EventArgs e)
     {
         Close();
-    }
-
-    private void travelLimitForLocalEvents_ValueChanged(object sender, ValueChangedEventArgs e)
-    {
-        double value = e.NewValue;
-        stepValue.Text = value.ToString();
     }
 }
