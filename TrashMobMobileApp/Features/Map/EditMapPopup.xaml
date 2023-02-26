@@ -9,24 +9,24 @@
         <Label FontSize="Caption" Text="Click on the map to set your event location." MaximumWidthRequest="300"/>
         <maps:Map x:Name="mappy" HeightRequest="400" Loaded="mappy_Loaded" />
         <HorizontalStackLayout>
-            <Label Text="Street Address" MaximumWidthRequest="200" StyleClass="tm-form-item" />
-            <Entry IsReadOnly="True" x:Name="streetAddress" StyleClass="tm-form-item" />
+            <Label Text="Street Address" Style="{StaticResource fieldLabel}" />
+            <Entry IsReadOnly="True" x:Name="streetAddress" Style="{StaticResource fieldEntry}" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label Text="City"  MaximumWidthRequest="200" StyleClass="tm-form-item" />
-            <Entry IsReadOnly="True" x:Name="city" StyleClass="tm-form-item" />
+            <Label Text="City" Style="{StaticResource fieldLabel}" />
+            <Entry IsReadOnly="True" x:Name="city" Style="{StaticResource fieldEntry}" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label Text="State"  MaximumWidthRequest="200" StyleClass="tm-form-item"/>
-            <Entry IsReadOnly="True" x:Name="state" StyleClass="tm-form-item"/>
+            <Label Text="State" Style="{StaticResource fieldLabel}" />
+            <Entry IsReadOnly="True" x:Name="state" Style="{StaticResource fieldEntry}" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label Text="Postal Code"  MaximumWidthRequest="200" StyleClass="tm-form-item"/>
-            <Entry IsReadOnly="True" x:Name="postalCode" StyleClass="tm-form-item"/>
+            <Label Text="Postal Code" Style="{StaticResource fieldLabel}" />
+            <Entry IsReadOnly="True" x:Name="postalCode" Style="{StaticResource fieldEntry}" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Button x:Name="SaveButton" Text="Save" Clicked="SaveButton_Clicked" />
-            <Button x:Name="CancelButton" Text="Cancel" Clicked="CancelButton_Clicked" />
+            <Button x:Name="SaveButton" Text="Save" Clicked="SaveButton_Clicked" Style="{StaticResource formButton}" />
+            <Button x:Name="CancelButton" Text="Cancel" Clicked="CancelButton_Clicked" Style="{StaticResource formButton}" />
         </HorizontalStackLayout>
     </VerticalStackLayout>
 </mct:Popup>

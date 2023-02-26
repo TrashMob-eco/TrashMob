@@ -5,55 +5,40 @@
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              Title="MauiMapPageSingleEvent">
     <ContentPage.Resources>
-        <!--<StyleSheet Source="/Resources/Styles/styles.css" />-->
-        <StyleSheet>
-            <![CDATA[
-            .tm-form-item {
-                font-size: 60px;
-            }
-
-            .tm-form-item Label {
-                font-size: 60px;
-                color: rgba(0, 0, 0, 0.6);
-                margin-bottom: 8px;
-            }
-
-            .tm-form-item input {
-                padding: 10px 12px;
-                font-size: 14px;
-                line-height: 1.5;
-                color: #495057;
-                background-color: #fff;
-                width: 100%;
-                height: 38px;
-            }
-
-            .tm-form-item input:focus {
-                border-color: #80bdff;
-            }
-            ]]>
-        </StyleSheet>
+        <ResourceDictionary Source="/Resources/Styles/Styles.xaml" />
     </ContentPage.Resources>
     
     <VerticalStackLayout>
         <maps:Map x:Name="mappy" HeightRequest="400"  />
-        
+
         <HorizontalStackLayout>
-            <Label Text="Street Address" MaximumWidthRequest="200" StyleClass="tm-form-item" />
-            <Entry IsReadOnly="True" x:Name="streetAddress" StyleClass="tm-form-item" />
+            <Label Text="Event Name:" Style="{StaticResource fieldLabel}" />
+            <Entry IsReadOnly="True" x:Name="eventName" Style="{StaticResource fieldEntry}" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label Text="City"  MaximumWidthRequest="200" StyleClass="tm-form-item" />
-            <Entry IsReadOnly="True" x:Name="city" StyleClass="tm-form-item" />
+            <Label Text="Event Date:" Style="{StaticResource fieldLabel}" />
+            <Entry IsReadOnly="True" x:Name="eventDate" Style="{StaticResource fieldEntry}" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label Text="State"  MaximumWidthRequest="200" StyleClass="tm-form-item" />
-            <Entry IsReadOnly="True" x:Name="state" StyleClass="tm-form-item" />
+            <Label Text="Event Time:" Style="{StaticResource fieldLabel}" />
+            <Entry IsReadOnly="True" x:Name="eventTime" Style="{StaticResource fieldEntry}" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label Text="Postal Code"  MaximumWidthRequest="200" StyleClass="tm-form-item" />
-            <Entry IsReadOnly="True" x:Name="postalCode" StyleClass="tm-form-item" />
+            <Label Text="Street Address:" Style="{StaticResource fieldLabel}" />
+            <Entry IsReadOnly="True" x:Name="streetAddress" Style="{StaticResource fieldEntry}" />
         </HorizontalStackLayout>
-        <Button Text="Close" Clicked="CloseButton_Clicked" />
+        <HorizontalStackLayout>
+            <Label Text="City:" Style="{StaticResource fieldLabel}" />
+            <Entry IsReadOnly="True" x:Name="city" Style="{StaticResource fieldEntry}" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label Text="State:" Style="{StaticResource fieldLabel}" />
+            <Entry IsReadOnly="True" x:Name="state" Style="{StaticResource fieldEntry}" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label Text="Postal Code:" Style="{StaticResource fieldLabel}" />
+            <Entry IsReadOnly="True" x:Name="postalCode" Style="{StaticResource fieldEntry}" />
+        </HorizontalStackLayout>
+        <Button Text="Close" Clicked="CloseButton_Clicked" Style="{StaticResource formButton}" />
     </VerticalStackLayout>
 </ContentPage>

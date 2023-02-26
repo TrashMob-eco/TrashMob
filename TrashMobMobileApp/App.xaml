@@ -5,4 +5,7 @@
              xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
              android:Application.WindowSoftInputModeAdjust="Resize"
              x:Class="TrashMobMobileApp.App">
+    <Application.Resources>
+        <ResourceDictionary Source="/Resources/Styles/Styles.xaml" />
+    </Application.Resources>
 </Application>

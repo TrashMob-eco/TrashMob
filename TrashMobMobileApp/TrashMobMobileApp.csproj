@@ -108,10 +108,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Resources\styles.css" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <Compile Include="..\TrashMob.Models\Address.cs" Link="Models\Address.cs" />
 	  <Compile Include="..\TrashMob.Models\BaseModel.cs" Link="Models\BaseModel.cs" />
 	  <Compile Include="..\TrashMob.Models\ContactRequest.cs" Link="Models\ContactRequest.cs" />
@@ -155,10 +151,6 @@
 	  <EmbeddedResource Include="appSettings.json" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <MauiCss Include="Resources\Styles\styles.css" />
-	</ItemGroup>
-
     <ItemGroup>
       <PackageReference Include="CommunityToolkit.Maui" Version="4.0.0" />
       <PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.1" />
@@ -198,6 +190,9 @@
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
       <MauiXaml Update="Features\Map\UserLocationPreferencePopup.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+      <MauiXaml Update="Resources\Styles\Styles.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
     </ItemGroup>

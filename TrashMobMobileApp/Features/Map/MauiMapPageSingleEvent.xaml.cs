@@ -47,6 +47,9 @@ public partial class MauiMapPageSingleEvent : ContentPage
 
     private void SetFields(Event mobEvent)
     {
+        eventName.Text = mobEvent.Name;
+        eventDate.Text = mobEvent.EventDate.GetFormattedLocalDate();
+        eventTime.Text = mobEvent.EventDate.GetFormattedLocalTime();
         streetAddress.Text = mobEvent.StreetAddress;
         city.Text = mobEvent.City;
         state.Text = mobEvent.Region;

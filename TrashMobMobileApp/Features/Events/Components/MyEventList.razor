@@ -32,7 +32,7 @@
 
 <ErrorBoundary>
     <ChildContent>
-        <MudIconButton Icon="@Icons.Material.Filled.Map" Color="ComponentCommon.PrimaryColor" OnClick="@(() => OnViewMapAllEvents(_myEvents))" />
+        <MudButton Color="ComponentCommon.PrimaryColor" OnClick="@(() => OnViewMapAllEvents(_myEvents))">Show Map View</MudButton>
         <MudContainer Class="tm-my-event-list">
             <MudOverlay @bind-Visible="_isLoading" Absolute>
                 <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
@@ -64,8 +64,6 @@
             }
             @if (_myEvents.Any())
             {
-                <MudButton Color="ComponentCommon.PrimaryColor"
-                               OnClick="@(() => OnViewMapAllEvents(_myEvents))">Show Map View</MudButton>
                 <MudVirtualize Context="mob" Items="_myEvents">
                     <MudCard Class="tm-event-card">
                         <MudCardHeader>
