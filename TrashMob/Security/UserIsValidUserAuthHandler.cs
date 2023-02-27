@@ -6,6 +6,7 @@
     using Newtonsoft.Json;
     using System;
     using System.Security.Claims;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Managers.Interfaces;
@@ -27,10 +28,20 @@
         {
             try
             {
+                var allClaims = context.User.Claims;
+
+                StringBuilder stringBuilder = new StringBuilder();
+                foreach(var claim in allClaims)
+                {
+                    stringBuilder.AppendFormat("Claim: '{0}' : '{1}'\n", claim.Subject, claim.Value);                    
+                }
+
+                logger.LogInformation(stringBuilder.ToString());
+
                 var emailAddressClaim = context.User.FindFirst(ClaimTypes.Email);
                 var emailClaim = context.User.FindFirst("email");
 
-                string email = emailAddressClaim == null ? emailClaim.Value : emailAddressClaim.Value;
+                string email = emailAddressClaim == null ? emailClaim?.Value : emailAddressClaim?.Value;
 
                 var user = await userManager.GetUserByEmailAsync(email, CancellationToken.None);
 
