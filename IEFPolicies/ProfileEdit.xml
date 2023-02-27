@@ -57,6 +57,7 @@
         </TechnicalProfile>    
         <TechnicalProfile Id="AAD-UserWriteProfileUsingObjectId">
           <PersistedClaims>
+            <PersistedClaim ClaimTypeReferenceId="email" PartnerClaimType="signInNames.emailAddress" />                 
             <PersistedClaim ClaimTypeReferenceId="userId" PartnerClaimType="signInNames.userId" />
           </PersistedClaims>
         </TechnicalProfile>          
