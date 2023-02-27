@@ -56,9 +56,11 @@
 
         public async Task SignInAsync(IUserManager userManager)             
         {
-            UserState.UserContext = await SignInAsync();
+            // Copy to a local variable first to make sure the context is populated on next call (threading issue on property setter)            
+            var localUserContext = await SignInAsync();
 
-            await VerifyAccount(userManager, UserState.UserContext);
+            await VerifyAccount(userManager, localUserContext);
+            UserState.UserContext = localUserContext;
         }
 
         private static async Task VerifyAccount(IUserManager userManager, UserContext userContext)
