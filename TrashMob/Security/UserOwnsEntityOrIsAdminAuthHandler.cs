@@ -27,10 +27,10 @@
         {
             try
             {
-                var emailClaim = context.User.FindFirst(ClaimTypes.Email);
-                var emailAddressClaim = context.User.FindFirst("emailAddress");
+                var emailAddressClaim = context.User.FindFirst(ClaimTypes.Email);
+                var emailClaim = context.User.FindFirst("email");
 
-                string email = emailClaim == null ? emailAddressClaim.Value : emailClaim.Value;
+                string email = emailAddressClaim == null ? emailClaim.Value : emailAddressClaim.Value;
 
                 var user = await userManager.GetUserByEmailAsync(email, CancellationToken.None);
 
