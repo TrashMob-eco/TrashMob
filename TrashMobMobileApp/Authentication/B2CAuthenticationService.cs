@@ -1,5 +1,7 @@
 ﻿namespace TrashMobMobileApp.Authentication
 {
+    using Microsoft.AppCenter.Analytics;
+    using Microsoft.AppCenter.Crashes;
     using Microsoft.Identity.Client;
     using Newtonsoft.Json.Linq;
     using System;
@@ -56,15 +58,35 @@
 
         public async Task SignInAsync(IUserManager userManager)             
         {
-            // Copy to a local variable first to make sure the context is populated on next call (threading issue on property setter)            
-            var localUserContext = await SignInAsync();
+            UserContext localUserContext = null;
+            try
+            {
+                Analytics.TrackEvent("SignInAsync");
 
-            await VerifyAccount(userManager, localUserContext);
-            UserState.UserContext = localUserContext;
+                // Copy to a local variable first to make sure the context is populated on next call (threading issue on property setter)            
+                localUserContext = await SignInAsync();
+
+                await VerifyAccount(userManager, localUserContext);
+                UserState.UserContext = localUserContext;
+            }
+            catch(Exception ex)
+            {
+                var properties = new Dictionary<string, string>();
+
+                if (localUserContext != null)
+                {
+                    properties.Add("emailAddress", localUserContext.EmailAddress);
+                    properties.Add("givenName", localUserContext.GivenName);
+                    properties.Add("accessToken", localUserContext.AccessToken);
+                }
+
+                Crashes.TrackError(ex, properties);
+            }
         }
 
         private static async Task VerifyAccount(IUserManager userManager, UserContext userContext)
         {
+            Analytics.TrackEvent("VerifyAccount");
             App.CurrentUser = await userManager.GetUserByEmailAsync(UserState.UserContext.EmailAddress, userContext);
         }
 
