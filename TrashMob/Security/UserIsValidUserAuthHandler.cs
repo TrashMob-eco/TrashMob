@@ -3,6 +3,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
     using System;
     using System.Security.Claims;
     using System.Threading;
@@ -44,7 +45,7 @@
             }
             catch(Exception ex)
             {
-                logger.LogError(ex, "Error occured while authenticating user.");
+                logger.LogError(ex, "Error occured while authenticating user. {0}", JsonConvert.SerializeObject(context.User));
             }
         }
     }

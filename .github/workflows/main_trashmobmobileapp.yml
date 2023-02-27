@@ -130,5 +130,5 @@ jobs:
     - name: Upload iOS Artifact
       uses: actions/upload-artifact@v3.1.2
       with:
-        name: trashmobmobileapp-ios-pr-build
+        name: trashmobmobileapp-ios-main-build
         path: TrashMobMobileApp/bin/${{ env.CONFIGURATION }}/net7.0-ios/ios-arm64/publish//*.ipa
