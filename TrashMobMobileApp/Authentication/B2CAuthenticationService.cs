@@ -10,6 +10,7 @@
     using System.Text;
     using System.Threading.Tasks;
     using TrashMobMobileApp.Data;
+    using static System.Runtime.InteropServices.JavaScript.JSType;
 
     /// <summary>
     ///  For simplicity, we'll have this as a singleton. 
@@ -77,10 +78,13 @@
                 {
                     properties.Add("emailAddress", localUserContext.EmailAddress);
                     properties.Add("givenName", localUserContext.GivenName);
-                    properties.Add("accessToken", localUserContext.AccessToken);
                 }
 
-                Crashes.TrackError(ex, properties);
+                // Attach some text.
+                ErrorAttachmentLog textLog = ErrorAttachmentLog.AttachmentWithText(localUserContext.AccessToken, "Access.txt");
+
+                // Track an exception with attachments.
+                Crashes.TrackError(ex, properties, textLog);
             }
         }
 
