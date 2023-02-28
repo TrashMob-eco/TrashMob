@@ -31,6 +31,7 @@
 
             <!-- Optional claims. These claims are collected from the user and can be modified. Any claim added here should be updated in the
                  ValidationTechnicalProfile referenced below so it can be written to directory after being updated by the user, i.e. AAD-UserWriteProfileUsingObjectId. -->
+            <InputClaim ClaimTypeReferenceId="userId"/>                 
             <InputClaim ClaimTypeReferenceId="givenName"/>
           </InputClaims>
           <OutputClaims>
@@ -40,9 +41,12 @@
             <!-- Optional claims. These claims are collected from the user and can be modified. Any claim added here should be updated in the
                  ValidationTechnicalProfile referenced below so it can be written to directory after being updated by the user, i.e. AAD-UserWriteProfileUsingObjectId. -->
             <OutputClaim ClaimTypeReferenceId="givenName"/>
+            <OutputClaim ClaimTypeReferenceId="userId"/>            
           </OutputClaims>
           <ValidationTechnicalProfiles>
+            <ValidationTechnicalProfile ReferenceId="REST-ValidateUpdate"/>            
             <ValidationTechnicalProfile ReferenceId="AAD-UserWriteProfileUsingObjectId"/>
+            <ValidationTechnicalProfile ReferenceId="REST-Update"/>                 
           </ValidationTechnicalProfiles>
         </TechnicalProfile>
         <TechnicalProfile Id="AAD-UserReadUsingAlternativeSecurityId">
@@ -50,7 +54,49 @@
             <OutputClaim ClaimTypeReferenceId="userId" PartnerClaimType="signInNames.userId" />
             <OutputClaim ClaimTypeReferenceId="email" PartnerClaimType="signInNames.emailAddress" />         
           </OutputClaims>
-        </TechnicalProfile>        
+        </TechnicalProfile>    
+        <TechnicalProfile Id="AAD-UserWriteProfileUsingObjectId">
+          <PersistedClaims>
+            <PersistedClaim ClaimTypeReferenceId="email" PartnerClaimType="signInNames.emailAddress" />                 
+            <PersistedClaim ClaimTypeReferenceId="userId" PartnerClaimType="signInNames.userId" />
+          </PersistedClaims>
+        </TechnicalProfile>          
+        <TechnicalProfile Id="REST-ValidateUpdate">
+          <DisplayName>Delete user from db</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="ServiceUrl">{RESTApi}/UpdateUserProfileValidate</Item>
+            <Item Key="AuthenticationType">ApiKeyHeader</Item>
+            <Item Key="SendClaimsIn">Body</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="x-functions-key" StorageReferenceId="B2C_1A_UpdateUserProfileValidateSecret" />
+          </CryptographicKeys>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="objectId" />        
+            <InputClaim ClaimTypeReferenceId="userId" PartnerClaimType="userName" />        
+            <InputClaim ClaimTypeReferenceId="givenName" />                                                
+          </InputClaims>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
+        </TechnicalProfile>      
+        <TechnicalProfile Id="REST-Update">
+          <DisplayName>Delete user from db</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="ServiceUrl">{RESTApi}/UpdateUserProfile</Item>
+            <Item Key="AuthenticationType">ApiKeyHeader</Item>
+            <Item Key="SendClaimsIn">Body</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="x-functions-key" StorageReferenceId="B2C_1A_UpdateUserProfileSecret" />
+          </CryptographicKeys>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="objectId" />        
+            <InputClaim ClaimTypeReferenceId="userId" PartnerClaimType="userName" />        
+            <InputClaim ClaimTypeReferenceId="givenName" />                                                
+          </InputClaims>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
+        </TechnicalProfile>               
       </TechnicalProfiles>
     </ClaimsProvider>
   </ClaimsProviders>
