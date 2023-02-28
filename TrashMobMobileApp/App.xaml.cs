@@ -1,6 +1,6 @@
-﻿using TrashMob.Models;
+﻿namespace TrashMobMobileApp;
 
-namespace TrashMobMobileApp;
+using TrashMob.Models;
 
 public partial class App : Application
 {

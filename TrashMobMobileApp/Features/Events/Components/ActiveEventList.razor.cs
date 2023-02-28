@@ -51,7 +51,7 @@
 
         private void OnViewMap(Event mobEvent)
         {
-            App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageSingleEvent(MapRestService, mobEvent));
+            App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageSingleEvent(MapRestService, mobEvent, true));
         }
 
         private async Task OnRegisterAsync(Event mobEvent)

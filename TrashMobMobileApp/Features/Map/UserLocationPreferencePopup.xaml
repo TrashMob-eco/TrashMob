@@ -5,33 +5,29 @@
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              x:Class="TrashMobMobileApp.Features.Map.UserLocationPreferencePopup">
     <VerticalStackLayout WidthRequest="400">
-        <Label FontSize="Header" Text="Set your preferred location" />
-        <Label FontSize="Caption" Text="Click on the map to set your preferred home location, then set the distance you are willing to travel for events, and where or not you prefer to use metric units" MaximumWidthRequest="300"/>
+        <Label Text="Set your preferred location" Style="{StaticResource headerLabel}" />
+        <Label Text="Click on the map to set your preferred home location, then set the distance you are willing to travel for events, and where or not you prefer to use miles or kilometers" Style="{StaticResource instructionsLabel}" />
         <maps:Map x:Name="mappy" HeightRequest="400" Loaded="mappy_Loaded" />
         <HorizontalStackLayout>
-            <Label FontSize="Medium" Text="Travel limit for local events"  MaximumWidthRequest="200" />
-            <Stepper x:Name="travelLimitForLocalEvents" MaximumWidthRequest="100" ValueChanged="travelLimitForLocalEvents_ValueChanged" />
-            <Label FontSize="Medium" x:Name="stepValue"  MaximumWidthRequest="50" />
+            <Label Text="Travel limit for local events:" Style="{StaticResource fieldLabel}" MaximumWidthRequest="150" />
+            <Entry x:Name="travelLimitForLocalEvents" Style="{StaticResource fieldEntry}" Keyboard="Numeric" MaximumWidthRequest="50" />
+            <Picker x:Name="units" Style="{StaticResource fieldPicker}" MaximumWidthRequest="100" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label FontSize="Medium" Text="Prefer Metric Units?"  MaximumWidthRequest="200" />
-            <CheckBox x:Name="prefersMetrics" />
+            <Label Text="City:" Style="{StaticResource fieldLabel}" />
+            <Entry IsReadOnly="True" x:Name="city" Style="{StaticResource fieldEntry}" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label FontSize="Medium" Text="City"  MaximumWidthRequest="200" />
-            <Entry IsReadOnly="True" FontSize="Medium" x:Name="city" />
+            <Label Text="State:" Style="{StaticResource fieldLabel}" />
+            <Entry IsReadOnly="True" x:Name="state" Style="{StaticResource fieldEntry}" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Label FontSize="Medium" Text="State"  MaximumWidthRequest="200"/>
-            <Entry IsReadOnly="True" FontSize="Medium" x:Name="state" />
+            <Label Text="Postal Code:" Style="{StaticResource fieldLabel}" />
+            <Entry IsReadOnly="True" x:Name="postalCode" Style="{StaticResource fieldEntry}" />
         </HorizontalStackLayout>
-        <HorizontalStackLayout>
-            <Label FontSize="Medium" Text="Postal Code"  MaximumWidthRequest="200" />
-            <Entry IsReadOnly="True" FontSize="Medium" x:Name="postalCode" />
-        </HorizontalStackLayout>
-        <HorizontalStackLayout>
-            <Button Text="Save" Clicked="SaveButton_Clicked" MaximumWidthRequest="200" />
-            <Button Text="Close" Clicked="CloseButton_Clicked" MaximumWidthRequest="200" />
+        <HorizontalStackLayout Padding="10">
+            <Button Text="Save" Clicked="SaveButton_Clicked" Style="{StaticResource formButton}" />
+            <Button Text="Close" Clicked="CloseButton_Clicked" Style="{StaticResource formButton}" />
         </HorizontalStackLayout>
     </VerticalStackLayout>
 </mct:Popup>

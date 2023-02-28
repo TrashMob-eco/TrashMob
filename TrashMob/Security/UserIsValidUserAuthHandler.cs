@@ -3,8 +3,10 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
     using System;
     using System.Security.Claims;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Shared.Managers.Interfaces;
@@ -26,7 +28,10 @@
         {
             try
             {
-                var email = context.User.FindFirst(ClaimTypes.Email).Value;
+                var emailAddressClaim = context.User.FindFirst(ClaimTypes.Email);
+                var emailClaim = context.User.FindFirst("email");
+
+                string email = emailAddressClaim == null ? emailClaim?.Value : emailAddressClaim?.Value;
 
                 var user = await userManager.GetUserByEmailAsync(email, CancellationToken.None);
 
@@ -44,7 +49,7 @@
             }
             catch(Exception ex)
             {
-                logger.LogError(ex, "Error occured while authenticating user.");
+                logger.LogError(ex, "Error occured while authenticating user. {0}", JsonConvert.SerializeObject(context.User));
             }
         }
     }
