@@ -37,7 +37,7 @@ namespace TrashMob
         {
             // The following line enables Application Insights telemetry collection.
             services.AddApplicationInsightsTelemetry();
-
+            
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(options => {
                     Configuration.Bind("AzureAdB2C", options);
