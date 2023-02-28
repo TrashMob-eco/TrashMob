@@ -80,18 +80,15 @@
                     properties.Add("givenName", localUserContext.GivenName);
                 }
 
-                // Attach some text.
-                ErrorAttachmentLog textLog = ErrorAttachmentLog.AttachmentWithText(localUserContext.AccessToken, "Access.txt");
-
                 // Track an exception with attachments.
-                Crashes.TrackError(ex, properties, textLog);
+                Crashes.TrackError(ex, properties);
             }
         }
 
         private static async Task VerifyAccount(IUserManager userManager, UserContext userContext)
         {
             Analytics.TrackEvent("VerifyAccount");
-            App.CurrentUser = await userManager.GetUserByEmailAsync(UserState.UserContext.EmailAddress, userContext);
+            App.CurrentUser = await userManager.GetUserByEmailAsync(userContext.EmailAddress, userContext);
         }
 
         private async Task<UserContext> AcquireTokenSilent()

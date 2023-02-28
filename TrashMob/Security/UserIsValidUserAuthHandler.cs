@@ -28,16 +28,6 @@
         {
             try
             {
-                var allClaims = context.User.Claims;
-
-                StringBuilder stringBuilder = new StringBuilder();
-                foreach(var claim in allClaims)
-                {
-                    stringBuilder.AppendFormat("Claim: '{0}' : '{1}'\n", claim.Subject, claim.Value);                    
-                }
-
-                logger.LogInformation(stringBuilder.ToString());
-
                 var emailAddressClaim = context.User.FindFirst(ClaimTypes.Email);
                 var emailClaim = context.User.FindFirst("email");
 
