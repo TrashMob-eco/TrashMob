@@ -91,7 +91,7 @@
         private static async Task VerifyAccount(IUserManager userManager, UserContext userContext)
         {
             Analytics.TrackEvent("VerifyAccount");
-            App.CurrentUser = await userManager.GetUserByEmailAsync(UserState.UserContext.EmailAddress, userContext);
+            App.CurrentUser = await userManager.GetUserByEmailAsync(userContext.EmailAddress, userContext);
         }
 
         private async Task<UserContext> AcquireTokenSilent()

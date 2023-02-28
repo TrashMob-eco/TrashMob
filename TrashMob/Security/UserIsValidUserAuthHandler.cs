@@ -33,7 +33,7 @@
                 StringBuilder stringBuilder = new StringBuilder();
                 foreach(var claim in allClaims)
                 {
-                    stringBuilder.AppendFormat("Claim: '{0}' : '{1}'\n", claim.Subject, claim.Value);                    
+                    stringBuilder.AppendFormat("Claim: '{0}' : '{1}'\n", claim.Subject.Name, claim.Value);                    
                 }
 
                 logger.LogInformation(stringBuilder.ToString());
