@@ -18,7 +18,7 @@ env:
   DOTNET_VERSION: '7.0.x'  # set this to the dotnet version to use
   DOTNET_VERSION2: '7.0.x'  # set this to the dotnet version to use
   CONFIGURATION: Release      # Values: Debug, Release
-  ENVIRONMENT: PROD         # Values: test, production
+  ENVIRONMENT: production         # Values: test, production
   IOS_BUNDLE_ID: 'eco.trashmob.trashmobmobile'   # Values: 'eco.trashmobdev.trashmobmobile', 'eco.trashmob'
   IOS_PROFILE_TYPE: 'IOS_APP_STORE'           # Values: 'IOS_APP_DEVELOPMENT', 'IOS_APP_STORE'
 
