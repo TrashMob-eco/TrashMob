@@ -79,8 +79,8 @@
                                OnClick="@(async () => await OnUnregisterAsync(_event))">Unregister</MudButton>
                     }
                 }
+                <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@(() => Navigator.NavigateTo(Routes.Events, forceLoad: true))">Back</MudButton>
             </MudStack>
-            <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@(() => Navigator.NavigateTo(Routes.Events, forceLoad: true))">Back</MudButton>
         </MudContainer>
     </ChildContent>
     <ErrorContent>

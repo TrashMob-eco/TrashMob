@@ -283,8 +283,8 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                 <Container fluid className='bg-grass shadow'>
                     <Row className="text-center pt-0">
                         <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                            <h1 className='font-weight-bold'>About TrashMob</h1>
-                            <p className="font-weight-bold">Ideas Inspired by simple action.</p>
+                            <h1 className='font-weight-bold'>Set your location</h1>
+                            <p className="font-weight-bold">Get notified for events near you!</p>
                         </Col>
                         <Col md={5}>
                             <Image src={globes} alt="globes" className="h-100 mt-0" />

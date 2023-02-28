@@ -8,6 +8,7 @@ namespace TrashMob
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
 
     public class Program
     {
@@ -32,6 +33,10 @@ namespace TrashMob
                                                                 new DefaultAzureCredential());
                         config.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
                     }
+                })
+                .ConfigureLogging((context, config) =>
+                {
+                    config.AddApplicationInsights();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

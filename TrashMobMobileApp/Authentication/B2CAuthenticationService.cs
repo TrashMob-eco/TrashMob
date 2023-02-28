@@ -1,5 +1,7 @@
 ﻿namespace TrashMobMobileApp.Authentication
 {
+    using Microsoft.AppCenter.Analytics;
+    using Microsoft.AppCenter.Crashes;
     using Microsoft.Identity.Client;
     using Newtonsoft.Json.Linq;
     using System;
@@ -8,6 +10,7 @@
     using System.Text;
     using System.Threading.Tasks;
     using TrashMobMobileApp.Data;
+    using static System.Runtime.InteropServices.JavaScript.JSType;
 
     /// <summary>
     ///  For simplicity, we'll have this as a singleton. 
@@ -56,14 +59,36 @@
 
         public async Task SignInAsync(IUserManager userManager)             
         {
-            UserState.UserContext = await SignInAsync();
+            UserContext localUserContext = null;
+            try
+            {
+                Analytics.TrackEvent("SignInAsync");
 
-            await VerifyAccount(userManager, UserState.UserContext);
+                // Copy to a local variable first to make sure the context is populated on next call (threading issue on property setter)            
+                localUserContext = await SignInAsync();
+
+                await VerifyAccount(userManager, localUserContext);
+                UserState.UserContext = localUserContext;
+            }
+            catch(Exception ex)
+            {
+                var properties = new Dictionary<string, string>();
+
+                if (localUserContext != null)
+                {
+                    properties.Add("emailAddress", localUserContext.EmailAddress);
+                    properties.Add("givenName", localUserContext.GivenName);
+                }
+
+                // Track an exception with attachments.
+                Crashes.TrackError(ex, properties);
+            }
         }
 
         private static async Task VerifyAccount(IUserManager userManager, UserContext userContext)
         {
-            App.CurrentUser = await userManager.GetUserByEmailAsync(UserState.UserContext.EmailAddress, userContext);
+            Analytics.TrackEvent("VerifyAccount");
+            App.CurrentUser = await userManager.GetUserByEmailAsync(userContext.EmailAddress, userContext);
         }
 
         private async Task<UserContext> AcquireTokenSilent()
@@ -164,7 +189,7 @@
 
             newContext.AccessToken = ar.AccessToken;
             newContext.GivenName = user["given_name"]?.ToString();
-            newContext.EmailAddress = user["email"]?.ToString();
+            newContext.EmailAddress = user["email"]?.ToString() ?? user["emailAddress"]?.ToString();
 
             newContext.IsLoggedOn = true;
 

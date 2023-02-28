@@ -2,17 +2,18 @@
 {
     using Microsoft.Maui.Controls.Maps;
     using TrashMob.Models;
+    using TrashMobMobileApp.Extensions;
 
     internal static class MapHelper
     {
         public static Pin GetPinForEvent(Event mobEvent)
         {
-            var eventHeader = string.Format("{0}: {1:yyyy-MM-dd HH:mm}", mobEvent.Name, mobEvent.EventDate);
-
+            var eventHeader = string.Format("{0}: {1} {2}", mobEvent.Name, mobEvent.EventDate.GetFormattedLocalDate(), mobEvent.EventDate.GetFormattedLocalTime());
+            var eventLocation = string.Format("{0}, {1}, {2}", mobEvent.StreetAddress, mobEvent.City, mobEvent.Region);
             var pin = new TrashMobPin
             {
                 Label = eventHeader,
-                Address = mobEvent.StreetAddress,
+                Address = eventLocation,
                 Type = PinType.Place,
                 EventId = mobEvent.Id,                
             };

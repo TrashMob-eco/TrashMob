@@ -113,7 +113,7 @@
 
         private async void OnViewMap(Event mobEvent)
         {
-            await App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageSingleEvent(MapRestService, mobEvent));
+            await App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageSingleEvent(MapRestService, mobEvent, false));
             await ReInitializeAsync();
         }
 

@@ -4,40 +4,48 @@
              x:Class="TrashMobMobileApp.Features.Map.MauiMapPageMultipleEvent"
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              Title="NewPage1MauiMapPageMultipleEvent" >
+    <ContentPage.Resources>
+        <ResourceDictionary Source="/Resources/Styles/Styles.xaml" />
+    </ContentPage.Resources>
+    
     <VerticalStackLayout>
         <maps:Map x:Name="mappy" HeightRequest="400" Loaded="mappy_Loaded" MapClicked="mappy_MapClicked" />
 
         <VerticalStackLayout x:Name="addressDisplay" Loaded="addressDisplay_Loaded">
             <HorizontalStackLayout>
-                <Label FontSize="Medium" Text="Event Name" MaximumWidthRequest="200" />
+                <Label Text="Event Name" Style="{StaticResource fieldLabel}" />
                 <Entry IsReadOnly="True" x:Name="eventName" />
             </HorizontalStackLayout>
             <HorizontalStackLayout>
-                <Label FontSize="Medium" Text="Event Date" MaximumWidthRequest="200" />
+                <Label Text="Event Date" Style="{StaticResource fieldLabel}" />
                 <Entry IsReadOnly="True" x:Name="eventDate" />
             </HorizontalStackLayout>
             <HorizontalStackLayout>
-                <Label FontSize="Medium" Text="Street Address" MaximumWidthRequest="200" />
+                <Label Text="Event Time" Style="{StaticResource fieldLabel}" />
+                <Entry IsReadOnly="True" x:Name="eventTime" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout>
+                <Label Text="Street Address" Style="{StaticResource fieldLabel}" />
                 <Entry IsReadOnly="True" x:Name="streetAddress" />
             </HorizontalStackLayout>
             <HorizontalStackLayout>
-                <Label FontSize="Medium" Text="City"  MaximumWidthRequest="200" />
+                <Label Text="City" Style="{StaticResource fieldLabel}" />
                 <Entry IsReadOnly="True" x:Name="city" />
             </HorizontalStackLayout>
             <HorizontalStackLayout>
-                <Label FontSize="Medium" Text="State"  MaximumWidthRequest="200"/>
+                <Label Text="State" Style="{StaticResource fieldLabel}" />
                 <Entry IsReadOnly="True" x:Name="state" />
             </HorizontalStackLayout>
             <HorizontalStackLayout>
-                <Label FontSize="Medium" Text="Postal Code"  MaximumWidthRequest="200" />
+                <Label Text="Postal Code" Style="{StaticResource fieldLabel}" />
                 <Entry IsReadOnly="True" x:Name="postalCode" />
             </HorizontalStackLayout>
             <HorizontalStackLayout x:Name="isEventLead">
-                <Button Clicked="RegisterButton_Clicked" Text="Register" x:Name="register" />
-                <Button Clicked="UnregisterButton_Clicked" Text="Unregister" x:Name="unregister" />
+                <Button Clicked="RegisterButton_Clicked" Text="Register" x:Name="register" Style="{StaticResource formButton}" />
+                <Button Clicked="UnregisterButton_Clicked" Text="Unregister" x:Name="unregister" Style="{StaticResource formButton}" />
             </HorizontalStackLayout>
         </VerticalStackLayout>
 
-        <Button Text="Close" Clicked="CloseButton_Clicked" />
+        <Button Text="Close" Clicked="CloseButton_Clicked" Style="{StaticResource formButton}"/>
     </VerticalStackLayout>
 </ContentPage>
