@@ -80,11 +80,8 @@
                     properties.Add("givenName", localUserContext.GivenName);
                 }
 
-                // Attach some text.
-                ErrorAttachmentLog textLog = ErrorAttachmentLog.AttachmentWithText(localUserContext.AccessToken, "Access.txt");
-
                 // Track an exception with attachments.
-                Crashes.TrackError(ex, properties, textLog);
+                Crashes.TrackError(ex, properties);
             }
         }
 
