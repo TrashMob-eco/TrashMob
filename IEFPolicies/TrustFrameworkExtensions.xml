@@ -62,6 +62,7 @@
         <OutputClaims>
           <OutputClaim ClaimTypeReferenceId="nullStringClaim" TransformationClaimType="key" />
           <OutputClaim ClaimTypeReferenceId="givenName" TransformationClaimType="value" />
+          <OutputClaim ClaimTypeReferenceId="email" />
         </OutputClaims>
       </ClaimsTransformation>
       <ClaimsTransformation Id="ExtractSurNameFromLinkedInResponse" TransformationMethod="GetSingleItemFromJson">
