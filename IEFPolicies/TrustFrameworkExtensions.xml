@@ -62,7 +62,6 @@
         <OutputClaims>
           <OutputClaim ClaimTypeReferenceId="nullStringClaim" TransformationClaimType="key" />
           <OutputClaim ClaimTypeReferenceId="givenName" TransformationClaimType="value" />
-          <OutputClaim ClaimTypeReferenceId="email" />
         </OutputClaims>
       </ClaimsTransformation>
       <ClaimsTransformation Id="ExtractSurNameFromLinkedInResponse" TransformationMethod="GetSingleItemFromJson">
@@ -346,6 +345,7 @@
             <OutputClaim ClaimTypeReferenceId="surname" PartnerClaimType="lastName.localized" />
             <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="linkedin.com" AlwaysUseDefaultValue="true" />
             <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" AlwaysUseDefaultValue="true" />
+            <OutputClaim ClaimTypeReferenceId="email" />
           </OutputClaims>
           <OutputClaimsTransformations>
             <OutputClaimsTransformation ReferenceId="ExtractGivenNameFromLinkedInResponse" />
