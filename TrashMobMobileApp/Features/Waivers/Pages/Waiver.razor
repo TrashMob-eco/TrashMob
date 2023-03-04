@@ -1,0 +1,56 @@
+﻿@page "/waiver"
+@using System.ComponentModel.DataAnnotations
+
+@*TODO: move to styles sheet*@
+<style>
+    .tm-waiver-container {
+        height: 100%;
+        padding: 20px;
+    }
+
+        .tm-waiver-container .tm-form {
+            margin-top: 10%;
+        }
+
+            .tm-waiver-container .tm-form .tm-form-item {
+                margin-top: 20px;
+            }
+
+            .tm-waiver-container .tm-form .tm-action-item {
+                position: fixed;
+                bottom: 5%;
+                width: 90%;
+            }
+
+        .tm-waiver-container .tm-waiver-submit-btn {
+            margin-top: 10%;
+            width: 100%;
+        }
+</style>
+
+<ErrorBoundary>
+    <ChildContent>
+        <MudContainer Class="tm-waiver-container">
+            <MudOverlay @bind-Visible="_isLoading" Absolute>
+                <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
+            </MudOverlay>
+            <MudText Typo="Typo.subtitle2">
+                In order to participate in TrashMob.eco events, you must agree to a liability waiver. Please click the
+                <span className='color-primary'> Sign Waiver</span> button below. This will take you to a screen which will ask you to view and sign the waiver.
+                Once that is done, you will be redirected back to TrashMob.eco.
+            </MudText>
+            <MudText Typo="Typo.subtitle2">
+                You will only need to sign this waiver once unless we have to change the legalese
+            </MudText>
+            <MudForm @ref="_waiverForm" Class="tm-form" @bind-IsValid="@_success" @bind-Errors="@_errors">
+                <MudTextField FullWidth Class="tm-form-item" Variant="@ComponentCommon.TextFieldVariant" T="string" Label="FullName" Required RequiredError="Full Name is required" />
+                <MudStack Row Justify="Justify.Center" Class="tm-action-item">
+                    <MudButton FullWidth Variant="@ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnSignWaiverAsync">Sign Waiver</MudButton>
+                </MudStack>
+            </MudForm>
+        </MudContainer>
+    </ChildContent>
+    <ErrorContent>
+        @context.Message
+    </ErrorContent>
+</ErrorBoundary>
