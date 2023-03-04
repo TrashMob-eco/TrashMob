@@ -19,6 +19,30 @@ namespace TrashMob.Shared.Managers
 
         public async Task<ActiveDirectoryResponseBase> CreateUserAsync(ActiveDirectoryNewUserRequest activeDirectoryNewUserRequest, CancellationToken cancellationToken = default)
         {
+            if (string.IsNullOrWhiteSpace(activeDirectoryNewUserRequest.email))
+            {
+                var failResponse = new ActiveDirectoryValidationFailedResponse
+                {
+                    action = "ValidationError",
+                    version = "1.0.0",
+                    userMessage = "Email cannot be blank."
+                };
+
+                return failResponse;
+            }
+
+            if (string.IsNullOrWhiteSpace(activeDirectoryNewUserRequest.userName))
+            {
+                var failResponse = new ActiveDirectoryValidationFailedResponse
+                {
+                    action = "ValidationError",
+                    version = "1.0.0",
+                    userMessage = "Username cannot be blank."
+                };
+
+                return failResponse;
+            }
+
             var response = await DoesUserExist(activeDirectoryNewUserRequest.userName, activeDirectoryNewUserRequest.email, cancellationToken).ConfigureAwait(false);
             
             if (response != null)
@@ -70,6 +94,30 @@ namespace TrashMob.Shared.Managers
 
         public async Task<ActiveDirectoryResponseBase> ValidateNewUserAsync(ActiveDirectoryValidateNewUserRequest activeDirectoryValidateNewUserRequest, CancellationToken cancellationToken = default)
         {
+            if (string.IsNullOrWhiteSpace(activeDirectoryValidateNewUserRequest.email))
+            {
+                var failResponse = new ActiveDirectoryValidationFailedResponse
+                {
+                    action = "ValidationError",
+                    version = "1.0.0",
+                    userMessage = "Email cannot be blank."
+                };
+
+                return failResponse;
+            }
+
+            if (string.IsNullOrWhiteSpace(activeDirectoryValidateNewUserRequest.userName))
+            {
+                var failResponse = new ActiveDirectoryValidationFailedResponse
+                {
+                    action = "ValidationError",
+                    version = "1.0.0",
+                    userMessage = "Username cannot be blank."
+                };
+
+                return failResponse;
+            }
+
             var response = await DoesUserExist(activeDirectoryValidateNewUserRequest.userName, activeDirectoryValidateNewUserRequest.email, cancellationToken).ConfigureAwait(false);
             
             if (response != null)
@@ -88,6 +136,18 @@ namespace TrashMob.Shared.Managers
 
         public async Task<ActiveDirectoryResponseBase> ValidateUpdateUserProfileAsync(ActiveDirectoryUpdateUserProfileRequest activeDirectoryUpdateUserProfileRequest, CancellationToken cancellationToken = default)
         {
+            if (string.IsNullOrWhiteSpace(activeDirectoryUpdateUserProfileRequest.userName))
+            {
+                var failResponse = new ActiveDirectoryValidationFailedResponse
+                {
+                    action = "ValidationError",
+                    version = "1.0.0",
+                    userMessage = "Username cannot be blank."
+                };
+
+                return failResponse;
+            }
+
             var originalUser = await userManager.GetUserByObjectIdAsync(activeDirectoryUpdateUserProfileRequest.objectId, cancellationToken).ConfigureAwait(false);
 
             if (originalUser == null)
@@ -127,6 +187,18 @@ namespace TrashMob.Shared.Managers
 
         public async Task<ActiveDirectoryResponseBase> UpdateUserProfileAsync(ActiveDirectoryUpdateUserProfileRequest activeDirectoryUpdateUserProfileRequest, CancellationToken cancellationToken = default)
         {
+            if (string.IsNullOrWhiteSpace(activeDirectoryUpdateUserProfileRequest.userName))
+            {
+                var failResponse = new ActiveDirectoryValidationFailedResponse
+                {
+                    action = "ValidationError",
+                    version = "1.0.0",
+                    userMessage = "Username cannot be blank."
+                };
+
+                return failResponse;
+            }
+
             var originalUser = await userManager.GetUserByObjectIdAsync(activeDirectoryUpdateUserProfileRequest.objectId, cancellationToken).ConfigureAwait(false);
 
             if (originalUser == null)
