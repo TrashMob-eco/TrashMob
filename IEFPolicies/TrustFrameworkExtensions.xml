@@ -207,7 +207,7 @@
       <Domain>twitter.com</Domain>
       <DisplayName>Twitter</DisplayName>
       <TechnicalProfiles>
-        <TechnicalProfile Id="Twitter-OAuth1">
+        <TechnicalProfile Id="Twitter-OAuth2">
           <DisplayName>Twitter</DisplayName>
           <Protocol Name="OAuth2" />
           <Metadata>
