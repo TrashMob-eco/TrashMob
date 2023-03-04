@@ -217,8 +217,9 @@
             <Item Key="HttpBinding">POST</Item>
             <Item Key="client_id">{TwitterClientId}</Item>
             <Item Key="AdditionalRequestQueryParameters"></Item>
-            <Item Key="response_mode">users.read form_post</Item>
-            <Item Key="scope">offline.access</Item>
+            <Item Key="response_mode">form_post</Item>
+            <Item Key="scope">offline.access users.read</Item>
+            <Item Key="UsePolicyInRedirectUri">false</Item>
           </Metadata>
           <CryptographicKeys>
             <Key Id="client_secret" StorageReferenceId="B2C_1A_TwitterSecret" />
