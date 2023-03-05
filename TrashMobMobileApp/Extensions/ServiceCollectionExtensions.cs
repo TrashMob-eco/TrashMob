@@ -43,6 +43,7 @@
             services.AddSingleton<IB2CAuthenticationService, B2CAuthenticationService>();
             services.AddSingleton<IContactRequestManager, ContactRequestManager>();
             services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
+            services.AddSingleton<IDocusignRestService, DocusignRestService>();
             services.AddSingleton<IEventAttendeeRestService, EventAttendeeRestService>();
             services.AddSingleton<IEventSummaryRestService, EventSummaryRestService>();
             services.AddSingleton<IEventTypeRestService, EventTypeRestService>();
@@ -51,6 +52,8 @@
             services.AddSingleton<IMobEventRestService, MobEventRestService>();
             services.AddSingleton<IUserManager, UserManager>();
             services.AddSingleton<IUserRestService, UserRestService>();
+            services.AddSingleton<IWaiverManager, WaiverManager>();
+            services.AddSingleton<IWaiverRestService, WaiverRestService>();
             var settings = configuration.GetSection("Settings").Get<Settings>();
             services.AddSingleton(settings.B2CConstants);
 

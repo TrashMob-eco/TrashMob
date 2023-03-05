@@ -51,7 +51,12 @@
         <DataType>string</DataType>
         <AdminHelpText>A policy claim to store output values from ClaimsTransformations that aren't useful. This claim should not be used in TechnicalProfiles.</AdminHelpText>
         <UserHelpText>A policy claim to store output values from ClaimsTransformations that aren't useful. This claim should not be used in TechnicalProfiles.</UserHelpText>
-      </ClaimType>            
+      </ClaimType>  
+      <ClaimType Id="identityProviderAccessToken">
+        <DisplayName>Identity Provider Access Token</DisplayName>
+        <DataType>string</DataType>
+        <AdminHelpText>Stores the access token of the identity provider.</AdminHelpText>
+      </ClaimType>                
     </ClaimsSchema>
     <ClaimsTransformations>
       <!-- Claim transformations needed for LinkedIn technical profile -->
@@ -217,8 +222,9 @@
             <Item Key="HttpBinding">POST</Item>
             <Item Key="client_id">{TwitterClientId}</Item>
             <Item Key="AdditionalRequestQueryParameters"></Item>
-            <Item Key="response_mode">users.read form_post</Item>
-            <Item Key="scope">offline.access</Item>
+            <Item Key="response_mode">form_post</Item>
+            <Item Key="scope">offline.access users.read</Item>
+            <Item Key="UsePolicyInRedirectUri">false</Item>
           </Metadata>
           <CryptographicKeys>
             <Key Id="client_secret" StorageReferenceId="B2C_1A_TwitterSecret" />
@@ -345,6 +351,7 @@
             <OutputClaim ClaimTypeReferenceId="surname" PartnerClaimType="lastName.localized" />
             <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="linkedin.com" AlwaysUseDefaultValue="true" />
             <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" AlwaysUseDefaultValue="true" />
+            <OutputClaim ClaimTypeReferenceId="identityProviderAccessToken" PartnerClaimType="{oauth2:access_token}" />
           </OutputClaims>
           <OutputClaimsTransformations>
             <OutputClaimsTransformation ReferenceId="ExtractGivenNameFromLinkedInResponse" />
@@ -358,6 +365,30 @@
         </TechnicalProfile>
       </TechnicalProfiles>
     </ClaimsProvider>    
+
+    <ClaimsProvider>
+      <DisplayName>REST APIs</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="API-LinkedInEmail">
+          <DisplayName>Get LinkedIn email</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+              <Item Key="ServiceUrl">https://api.linkedin.com/v2/emailAddress?q=members&amp;projection=(elements*(handle~))</Item>
+              <Item Key="AuthenticationType">Bearer</Item>
+              <Item Key="UseClaimAsBearerToken">identityProviderAccessToken</Item>
+              <Item Key="SendClaimsIn">Url</Item>
+              <Item Key="ResolveJsonPathsInJsonTokens">true</Item>
+          </Metadata>
+          <InputClaims>
+              <InputClaim ClaimTypeReferenceId="identityProviderAccessToken" />
+          </InputClaims>
+          <OutputClaims>
+              <OutputClaim ClaimTypeReferenceId="email" PartnerClaimType="elements[0].handle~.emailAddress" />
+          </OutputClaims>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
 
     <ClaimsProvider>
       <DisplayName>Local Account SignIn</DisplayName>

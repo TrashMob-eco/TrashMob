@@ -5,6 +5,7 @@
     using TrashMob.Models;
     using TrashMobMobileApp.Data;
     using TrashMobMobileApp.Extensions;
+    using TrashMobMobileApp.Shared;
 
     public partial class ViewEvent
     {
@@ -19,6 +20,9 @@
 
         [Inject]
         public IMobEventManager MobEventManager { get; set; }
+
+        [Inject]
+        public IWaiverManager WaiverManager { get; set; }
 
         [Inject]
         public IEventTypeRestService EventTypeManager { get; set; }
@@ -48,6 +52,13 @@
         {
             try
             {
+                var hasSignedWaiver = await WaiverManager.HasUserSignedTrashMobWaiverAsync();
+
+                if (!hasSignedWaiver)
+                {
+                    Navigator.NavigateTo(Routes.Waiver);
+                }
+
                 var attendee = new EventAttendee
                 {
                     UserId = _user.Id,
