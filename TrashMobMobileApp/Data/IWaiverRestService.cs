@@ -1,10 +1,10 @@
 ﻿namespace TrashMobMobileApp.Data
 {
     using System.Threading.Tasks;
-    using TrashMobMobileApp.Models;
+    using TrashMob.Models;
 
     public interface IWaiverRestService
     {
-        public Task<EnvelopeResponse> GetWaiverEnvelopeAsync(EnvelopeRequest envelopeRequest, CancellationToken cancellationToken = default);
+        public Task<Waiver> GetWaiver(string waiverName, CancellationToken cancellationToken = default);
     }
 }

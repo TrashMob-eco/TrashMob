@@ -34,16 +34,19 @@
             <MudOverlay @bind-Visible="_isLoading" Absolute>
                 <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
             </MudOverlay>
-            <MudText Typo="Typo.subtitle2">
-                In order to participate in TrashMob.eco events, you must agree to a liability waiver. Please click the
+            <MudText Typo="Typo.body1">
+                In order to create or participate in TrashMob.eco events, you must agree to a liability waiver. Please click the
                 <span className='color-primary'> Sign Waiver</span> button below. This will open a browser which will ask you to view and sign the waiver.
-                Once that is done, you will be redirected to the TrashMob.eco website to sign in and complete the signing experience there. If you don't complete that last step, you will
+                Once that is done, you will be redirected to the TrashMob.eco <b>website</b> to sign in and complete the waiver signing experience there. If you don't complete that last step, you will
                 need to repeat the process.
             </MudText>
-            <MudText Typo="Typo.subtitle2">
-                You will only need to sign this waiver once unless we have to change the legalese
+            <MudText Typo="Typo.body1">
+                You will only need to sign this waiver once unless we have to change the legalese.
             </MudText>
-            <MudTextField T="string" Class="tm-form-item" Label="Name" @bind-Text="FullName" Variant="ComponentCommon.TextFieldVariant" Required RequiredError="Full Name is required" />
+            <MudText Typo="Typo.body1">
+                Thank you!
+            </MudText>
+            <MudTextField T="string" Class="tm-form-item" Label="Full Name" @bind-Text="FullName" Variant="ComponentCommon.TextFieldVariant" Required RequiredError="Full Name is required" />
             <MudStack Row Justify="Justify.Center" Class="tm-action-item">
                 <MudButton FullWidth Variant="@ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnSignWaiverAsync">Sign Waiver</MudButton>
             </MudStack>

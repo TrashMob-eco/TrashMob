@@ -20,7 +20,7 @@
 
         protected override void OnInitialized()
         {
-            TitleContainer.Title = "Waiver";
+            TitleContainer.Title = "Sign Waiver";
         }
 
         private async Task OnSignWaiverAsync()

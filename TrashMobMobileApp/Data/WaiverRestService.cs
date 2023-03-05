@@ -4,31 +4,32 @@
     using Newtonsoft.Json;
     using System;
     using System.Diagnostics;
-    using System.Net.Http.Json;
     using System.Threading;
     using System.Threading.Tasks;
+    using TrashMob.Models;
     using TrashMobMobileApp.Config;
-    using TrashMobMobileApp.Models;
 
     public class WaiverRestService : RestServiceBase, IWaiverRestService
     {
-        protected override string Controller => "docusign";
+        protected override string Controller => "waivers";
 
         public WaiverRestService(IOptions<Settings> settings)
             : base(settings)
         {
         }
 
-        public async Task<EnvelopeResponse> GetWaiverEnvelopeAsync(EnvelopeRequest envelopeRequest, CancellationToken cancellationToken)
+        public async Task<Waiver> GetWaiver(string waiverName, CancellationToken cancellationToken)
         {
             try
             {
-                var content = JsonContent.Create(envelopeRequest, typeof(EnvelopeRequest), null, SerializerOptions);
-                
-                HttpResponseMessage response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken);
-                response.EnsureSuccessStatusCode();
-                string returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
-                return JsonConvert.DeserializeObject<EnvelopeResponse>(returnContent);
+                var requestUri = Controller + "/" + waiverName;
+                using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
+                {
+                    response.EnsureSuccessStatusCode();
+                    string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                    return JsonConvert.DeserializeObject<Waiver>(responseString);
+                }
             }
             catch (Exception ex)
             {

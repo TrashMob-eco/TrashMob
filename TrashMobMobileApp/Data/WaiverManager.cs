@@ -1,25 +1,36 @@
 ﻿namespace TrashMobMobileApp.Data
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+    using Microsoft.Extensions.Options;
     using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Models;
+    using TrashMobMobileApp.Config;
+    using TrashMobMobileApp.Extensions;
     using TrashMobMobileApp.Models;
 
     public class WaiverManager : IWaiverManager
     {
-        private readonly IWaiverRestService waiverRestService;
+        const string TrashMobWaiverName = "trashmob";
 
-        public WaiverManager(IWaiverRestService service)
+        private readonly IWaiverRestService waiverRestService;
+        private readonly IDocusignRestService docusignRestService;
+        private readonly IOptions<Settings> settings;
+
+        public WaiverManager(IWaiverRestService service, IDocusignRestService docusignRestService, IOptions<Settings> settings)
         {
             waiverRestService = service;
+            this.docusignRestService = docusignRestService;
+            this.settings = settings;
         }
 
         public Task<EnvelopeResponse> GetWaiverEnvelopeAsync(EnvelopeRequest envelopeRequest, CancellationToken cancellationToken = default)
         {
-            return waiverRestService.GetWaiverEnvelopeAsync(envelopeRequest, cancellationToken);
+            return docusignRestService.GetWaiverEnvelopeAsync(envelopeRequest, cancellationToken);
+        }
+
+        public async Task<bool> HasUserSignedTrashMobWaiverAsync(CancellationToken cancellationToken = default)
+        {
+            var waiver = await waiverRestService.GetWaiver(TrashMobWaiverName, cancellationToken);
+            return App.CurrentUser.HasUserSignedWaiver(waiver, settings.Value.CurrentTrashMobWaiverVersion);
         }
     }
 }

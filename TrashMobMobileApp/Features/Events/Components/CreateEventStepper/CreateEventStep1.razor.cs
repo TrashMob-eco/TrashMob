@@ -4,6 +4,7 @@
     using MudBlazor;
     using TrashMob.Models;
     using TrashMobMobileApp.Data;
+    using TrashMobMobileApp.Shared;
 
     public partial class CreateEventStep1
     {
@@ -17,6 +18,9 @@
         [Inject]
         public IEventTypeRestService EventTypesService { get; set; }
 
+        [Inject]
+        public IWaiverManager WaiverManager { get; set; }
+
         [Parameter]
         public Event Event { get; set; }
 
@@ -28,6 +32,13 @@
 
         protected override async Task OnInitializedAsync()
         {
+            var hasSignedWaiver = await WaiverManager.HasUserSignedTrashMobWaiverAsync();
+
+            if (!hasSignedWaiver)
+            {
+                Navigator.NavigateTo(Routes.Waiver);
+            }
+
             TitleContainer.Title = "Create Event (1/5)";
             await GetEventTypesAsync();
             _selectedEventType = _eventTypes.FirstOrDefault();
