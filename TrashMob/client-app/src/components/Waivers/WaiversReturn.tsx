@@ -103,7 +103,7 @@ const WaiversReturn: FC<WaiversReturnProps> = (props) => {
         else {
             setIsSigned(true);
         }
-    }, [props.isUserLoaded, props.currentUser, props.history, props.onUserUpdated]);
+    }, [props.isUserLoaded, props.currentUser, props.history, props.onUserUpdated, envelopeId, loadedEnvelopeId, props]);
 
     const renderIncomplete = () => {
         return (
