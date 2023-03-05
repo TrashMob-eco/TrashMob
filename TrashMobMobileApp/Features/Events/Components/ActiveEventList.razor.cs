@@ -23,6 +23,9 @@
         [Inject]
         public IMobEventManager MobEventManager { get; set; }
 
+        [Inject]
+        public IWaiverManager WaiverManager { get; set; }
+
         protected override async Task OnInitializedAsync()
         {
             _user = App.CurrentUser;
@@ -58,6 +61,13 @@
         {
             try
             {
+                var hasSignedWaiver = await WaiverManager.HasUserSignedTrashMobWaiverAsync();
+
+                if (!hasSignedWaiver)
+                {
+                    Navigator.NavigateTo(Routes.Waiver);
+                }
+
                 var attendee = new EventAttendee
                 {
                     UserId = _user.Id,

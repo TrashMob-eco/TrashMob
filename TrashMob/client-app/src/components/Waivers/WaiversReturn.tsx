@@ -4,26 +4,38 @@ import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../.
 import UserData from '../Models/UserData';
 import { CurrentTrashMobWaiverVersion } from './Waivers';
 
-export interface WaiversReturnProps extends RouteComponentProps {
+export interface WaiversReturnMatchParams {
+    envelopeId?: string;
+}
+
+export interface WaiversReturnProps extends RouteComponentProps<WaiversReturnMatchParams> {
     isUserLoaded: boolean;
     currentUser: UserData;
     onUserUpdated: any;
 };
 
-const WaiversReturn: FC<WaiversReturnProps> = ({ currentUser, isUserLoaded, onUserUpdated, history }) => {
+const WaiversReturn: FC<WaiversReturnProps> = (props) => {
 
+    const [envelopeId, setEnvelopeId] = useState<string>("");
     const [isSigned, setIsSigned] = useState<boolean>(false);
+    const [loadedEnvelopeId, setLoadedEnvelopeId] = useState<string | undefined>(props.match?.params["envelopeId"]);
 
     useEffect(() => {
-        if (!isUserLoaded || !currentUser) {
+        if (!props.isUserLoaded || !props.currentUser) {
             return;
         }
 
-        var envelopeId = sessionStorage.getItem("envelopeId");
+        var envId: string | null | undefined = loadedEnvelopeId;
 
-        // var targetUrl = sessionStorage.getItem("targetUrl");
+        if (!envId) {
+            envId = sessionStorage.getItem("envelopeId");            
+        }
+        else {
+            setEnvelopeId(envId);
+            setLoadedEnvelopeId(envId);
+        }
 
-        if (envelopeId) {
+        if (envId) {
 
             const account = msalClient.getAllAccounts()[0];
             var apiConfig = getApiConfig();
@@ -42,14 +54,14 @@ const WaiversReturn: FC<WaiversReturnProps> = ({ currentUser, isUserLoaded, onUs
                 const headers = getDefaultHeaders('GET');
                 headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-                fetch('/api/docusign/' + currentUser.id + '/' + envelopeId, {
+                fetch('/api/docusign/' + props.currentUser.id + '/' + envelopeId, {
                     method: 'GET',
                     headers: headers,
                 })
                     .then(response => response.json() as Promise<string>)
                     .then(envelopeStatus => {
                         if (envelopeStatus === "completed") {
-                            fetch('/api/users/' + currentUser.id, {
+                            fetch('/api/users/' + props.currentUser.id, {
                                 method: 'GET',
                                 headers: headers,
                             })
@@ -65,11 +77,11 @@ const WaiversReturn: FC<WaiversReturnProps> = ({ currentUser, isUserLoaded, onUs
                                         })
                                             .then(response => response.json() as Promise<UserData>)
                                             .then(_ => {
-                                                onUserUpdated();
+                                                props.onUserUpdated();
                                                 // Todo: figure out how to make the history.push wait for the onUserUpdated to complete firing. Since the user is not updated before
                                                 // the history redirect, the waiver is brought back up.
                                                 // For now, just redirect to the home page.
-                                                history.push("/");
+                                                props.history.push("/");
 
                                             //    if (!targetUrl || targetUrl === "") {
                                             //        history.push("/");
@@ -91,7 +103,7 @@ const WaiversReturn: FC<WaiversReturnProps> = ({ currentUser, isUserLoaded, onUs
         else {
             setIsSigned(true);
         }
-    }, [isUserLoaded, currentUser, history, onUserUpdated]);
+    }, [props.isUserLoaded, props.currentUser, props.history, props.onUserUpdated, envelopeId, loadedEnvelopeId, props]);
 
     const renderIncomplete = () => {
         return (

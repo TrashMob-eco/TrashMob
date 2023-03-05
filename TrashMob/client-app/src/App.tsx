@@ -283,7 +283,7 @@ export const App: FC = () => {
                             <Route path="/eventsummary/:eventId?" render={(props: AppProps) => renderEventSummary(props)} />
                             <Route path="/eventdetails/:eventId" render={(props: DetailsProps) => renderEventDetails(props)} />
                             <Route path="/cancelevent/:eventId" render={(props: CancelProps) => renderCancelEvent(props)} />
-                            <Route path="/waiversreturn" render={(props: WaiversReturnProps) => renderWaiversReturn(props)} />
+                            <Route path="/waiversreturn/:envelopeId?" render={(props: WaiversReturnProps) => renderWaiversReturn(props)} />
                             <Route path="/deletemydata" render={(props: DeleteMyDataProps) => renderDeleteMyData(props)} />
                             <Route exact path="/mydashboard">
                                 <MsalAuthenticationTemplate

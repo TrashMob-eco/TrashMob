@@ -13,5 +13,6 @@
         public const string ContactUs = "/contactus";
         public const string Terms = "/terms";
         public const string Map = "/map";
+        public const string Waiver = "/waiver";
     }
 }
