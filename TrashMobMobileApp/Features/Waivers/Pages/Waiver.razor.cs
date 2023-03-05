@@ -1,19 +1,14 @@
-﻿namespace TrashMobMobileApp.Features.Contact.Pages
+﻿namespace TrashMobMobileApp.Features.Waivers.Pages
 {
     using Microsoft.AspNetCore.Components;
-    using MudBlazor;
-    using TrashMob.Models;
     using TrashMobMobileApp.Data;
+    using TrashMobMobileApp.Models;
 
     public partial class Waiver
     {
-#nullable enable
-        private MudForm? _waiverForm;
-#nullable disable
-        private bool _success;
         private bool _isLoading;
-        private string[] _errors;
-        private WaiverRequest _waiverRequest = new();
+
+        public string FullName { get; set; }
 
         [Inject]
         public IWaiverManager WaiverManager { get; set; }
@@ -25,13 +20,14 @@
 
         private async Task OnSignWaiverAsync()
         {
-            await _waiverForm.Validate();
-            if (_success)
-            {
-                _isLoading = true;
-                await WaiverManager.AddContactRequestAsync(_waiverRequest);
-                _isLoading = false;
-            }
+            _isLoading = true;
+            var envelopeRequest = new EnvelopeRequest();
+            envelopeRequest.SignerEmail = App.CurrentUser.Email;
+            envelopeRequest.CreatedByUserId = App.CurrentUser.Id;
+            envelopeRequest.SignerName = FullName;
+
+            var response = await WaiverManager.GetWaiverEnvelopeAsync(envelopeRequest);
+            _isLoading = false;
         }
     }
 }

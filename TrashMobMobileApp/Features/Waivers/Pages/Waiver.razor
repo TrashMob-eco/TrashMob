@@ -42,12 +42,10 @@
             <MudText Typo="Typo.subtitle2">
                 You will only need to sign this waiver once unless we have to change the legalese
             </MudText>
-            <MudForm @ref="_waiverForm" Class="tm-form" @bind-IsValid="@_success" @bind-Errors="@_errors">
-                <MudTextField FullWidth Class="tm-form-item" Variant="@ComponentCommon.TextFieldVariant" T="string" Label="FullName" Required RequiredError="Full Name is required" />
-                <MudStack Row Justify="Justify.Center" Class="tm-action-item">
-                    <MudButton FullWidth Variant="@ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnSignWaiverAsync">Sign Waiver</MudButton>
-                </MudStack>
-            </MudForm>
+            <MudTextField T="string" Class="tm-form-item" Label="Name" @bind-Text="FullName" Variant="ComponentCommon.TextFieldVariant" Required RequiredError="Full Name is required" />
+            <MudStack Row Justify="Justify.Center" Class="tm-action-item">
+                <MudButton FullWidth Variant="@ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnSignWaiverAsync">Sign Waiver</MudButton>
+            </MudStack>
         </MudContainer>
     </ChildContent>
     <ErrorContent>

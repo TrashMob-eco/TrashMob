@@ -21,6 +21,9 @@
                 <MudStack Style="margin-bottom: 10px; width: 100%" Row Justify="Justify.Center">
                     <MudFab StartIcon="@Icons.Material.Filled.Person" Color="Color.Primary" Label="Set Location Preference" OnClick="() => OnUserLocationPreference_Click()" />
                 </MudStack>
+                <MudStack Style="margin-bottom: 10px; width: 100%" Row Justify="Justify.Center">
+                    <MudFab StartIcon="@Icons.Material.Filled.Event" Color="Color.Primary" Label="Sign Waiver" OnClick="() => Navigator.NavigateTo(Routes.Waiver)"  />
+                </MudStack>
             </MudStack>
         </MudContainer>
     </ChildContent>
