@@ -25,6 +25,7 @@
             envelopeRequest.SignerEmail = App.CurrentUser.Email;
             envelopeRequest.CreatedByUserId = App.CurrentUser.Id;
             envelopeRequest.SignerName = FullName;
+            envelopeRequest.ReturnUrl = "https://www.trashmob.eco";
 
             var response = await WaiverManager.GetWaiverEnvelopeAsync(envelopeRequest);
             _isLoading = false;
