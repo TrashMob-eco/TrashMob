@@ -6,6 +6,8 @@
     {
         public string ApiBaseUrl { get; set; }
 
+        public string SiteBaseUrl { get; set; }
+
         public B2CConstants B2CConstants { get; set; }
     }
 }

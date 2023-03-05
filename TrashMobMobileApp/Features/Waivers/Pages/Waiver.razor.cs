@@ -1,6 +1,8 @@
 ﻿namespace TrashMobMobileApp.Features.Waivers.Pages
 {
     using Microsoft.AspNetCore.Components;
+    using Microsoft.Extensions.Options;
+    using TrashMobMobileApp.Config;
     using TrashMobMobileApp.Data;
     using TrashMobMobileApp.Models;
 
@@ -12,6 +14,9 @@
 
         [Inject]
         public IWaiverManager WaiverManager { get; set; }
+
+        [Inject] 
+        public IOptions<Settings> Settings { get; set; }
 
         protected override void OnInitialized()
         {
@@ -25,9 +30,13 @@
             envelopeRequest.SignerEmail = App.CurrentUser.Email;
             envelopeRequest.CreatedByUserId = App.CurrentUser.Id;
             envelopeRequest.SignerName = FullName;
-            envelopeRequest.ReturnUrl = "https://www.trashmob.eco";
+            envelopeRequest.ReturnUrl = $"{Settings.Value.SiteBaseUrl}/waiversreturn";
 
             var response = await WaiverManager.GetWaiverEnvelopeAsync(envelopeRequest);
+
+            var uri = new Uri(response.RedirectUrl);
+            await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
+
             _isLoading = false;
         }
     }
