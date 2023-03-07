@@ -79,7 +79,7 @@ namespace TrashMob.Shared.Managers
             EnvelopeSummary result = envelopesApi.CreateEnvelope(accountId, envelope);
 
             var envelopeId = result.EnvelopeId;
-            var returnUrl = envelopeRequest.ReturnUrl + "?envelopeId=" + envelopeId;
+            var returnUrl = envelopeRequest.ReturnUrl + "/" + envelopeId;
 
             // Step 3. create the recipient view, the Signing Ceremony
             RecipientViewRequest viewRequest = MakeRecipientViewRequest(envelopeRequest.SignerEmail, envelopeRequest.SignerName, returnUrl, envelopeRequest.CreatedByUserId, envelopeRequest.PingUrl);

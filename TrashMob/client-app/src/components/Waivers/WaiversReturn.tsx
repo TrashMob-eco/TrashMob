@@ -5,7 +5,7 @@ import UserData from '../Models/UserData';
 import { CurrentTrashMobWaiverVersion } from './Waivers';
 
 export interface WaiversReturnMatchParams {
-    envelopeId?: string;
+    envelopeId: string;
 }
 
 export interface WaiversReturnProps extends RouteComponentProps<WaiversReturnMatchParams> {
@@ -18,7 +18,7 @@ const WaiversReturn: FC<WaiversReturnProps> = (props) => {
 
     const [envelopeId, setEnvelopeId] = useState<string>("");
     const [isSigned, setIsSigned] = useState<boolean>(false);
-    const [loadedEnvelopeId, setLoadedEnvelopeId] = useState<string | undefined>(props.match?.params["envelopeId"]);
+    const [loadedEnvelopeId, setLoadedEnvelopeId] = useState<string | undefined>(props.match.params["envelopeId"]);
 
     useEffect(() => {
         if (!props.isUserLoaded || !props.currentUser) {
@@ -36,7 +36,6 @@ const WaiversReturn: FC<WaiversReturnProps> = (props) => {
         }
 
         if (envId) {
-
             const account = msalClient.getAllAccounts()[0];
             var apiConfig = getApiConfig();
 
