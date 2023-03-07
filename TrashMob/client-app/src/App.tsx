@@ -41,7 +41,7 @@ import './custom.css';
 import 'react-phone-input-2/lib/style.css'
 import DeleteMyData from './components/Pages/DeleteMyData';
 import Waivers from './components/Waivers/Waivers';
-import WaiversReturn from './components/Waivers/WaiversReturn';
+import WaiversReturn, { WaiversReturnMatchParams } from './components/Waivers/WaiversReturn';
 import PartnerRequestDetails, { PartnerRequestDetailsMatchParams } from './components/Partners/PartnerRequestDetails';
 import { Partnerships } from './components/Partners/Partnerships';
 import { Help } from './components/Pages/Help';
@@ -61,7 +61,7 @@ interface DetailsProps extends RouteComponentProps<DetailsMatchParams> {
 interface PartnerRequestDetailsProps extends RouteComponentProps<PartnerRequestDetailsMatchParams> {
 }
 
-interface WaiversReturnProps extends RouteComponentProps {
+interface WaiversReturnProps extends RouteComponentProps<WaiversReturnMatchParams> {
 }
 
 interface DeleteMyDataProps extends RouteComponentProps {
@@ -283,7 +283,7 @@ export const App: FC = () => {
                             <Route path="/eventsummary/:eventId?" render={(props: AppProps) => renderEventSummary(props)} />
                             <Route path="/eventdetails/:eventId" render={(props: DetailsProps) => renderEventDetails(props)} />
                             <Route path="/cancelevent/:eventId" render={(props: CancelProps) => renderCancelEvent(props)} />
-                            <Route path="/waiversreturn/:envelopeId?" render={(props: WaiversReturnProps) => renderWaiversReturn(props)} />
+                            <Route path="/waiversreturn/:envelopeId" render={(props: WaiversReturnProps) => renderWaiversReturn(props)} />
                             <Route path="/deletemydata" render={(props: DeleteMyDataProps) => renderDeleteMyData(props)} />
                             <Route exact path="/mydashboard">
                                 <MsalAuthenticationTemplate
