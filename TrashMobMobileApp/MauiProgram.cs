@@ -10,6 +10,9 @@ using System.Reflection;
 using TrashMobMobileApp.Extensions;
 using TrashMobMobileApp.Config;
 using CommunityToolkit.Maui;
+using TrashMobMobileApp.Data;
+using TrashMobMobileApp.Authentication;
+using TrashMobMobileApp.StateContainers;
 
 public static class MauiProgram
 {
@@ -38,9 +41,13 @@ public static class MauiProgram
         builder.Services.AddTrashMobServices(builder.Configuration);
         builder.Services.AddRestClientServices(builder.Configuration);
 
+        // Need these for injection on main page
+        builder.Services.AddScoped<MainPage>();
+        builder.Services.AddScoped<AppHost>();
+
         builder.Services.AddLogging();
         builder.Services.AddScoped<IErrorBoundaryLogger, CustomBoundaryLogger>();
-        builder.UseMauiMaps();
+        builder.UseMauiMaps();        
 
         AppCenter.Start("android=d044d1b4-6fbc-4547-8fae-d0286d9ccbaa;" +
               "ios=0f9bed29-14d0-4e38-a396-64e5cd185d10;",

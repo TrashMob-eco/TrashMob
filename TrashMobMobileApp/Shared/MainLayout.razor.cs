@@ -25,9 +25,6 @@
         };
 
         [Inject]
-        public IB2CAuthenticationService AuthenticationService { get; set; }
-
-        [Inject]
         public IUserManager UserManager { get; set; }
 
         [Inject]
@@ -42,10 +39,9 @@
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
-            UserContainer.OnSignOut += async () => await OnSignOutAsync();
             Navigator.LocationChanged += Navigator_LocationChanged;
             TitleContainer.OnTitleChange += (title) => SetPageTitle(title);
-            await PerformAuthenticationAsync();
+            
             SetTheme();
         }
 
@@ -62,21 +58,6 @@
         }
 
         private void DrawerToggle() => _drawerOpen = !_drawerOpen;
-
-        private async Task PerformAuthenticationAsync()
-        {
-            try
-            {
-                await AuthenticationService.SignInAsync(UserManager);
-                _userInitials = App.CurrentUser.UserName
-                    .ToUpperInvariant().First().ToString();
-                Navigator.NavigateTo(Routes.Home);
-            }
-            catch
-            {
-                await OnSignOutAsync();
-            }
-        }
 
         private void SetTheme()
         {
@@ -105,12 +86,6 @@
         private void DetermineBarIcon()
         {
 
-        }
-
-        private async Task OnSignOutAsync()
-        {
-            await AuthenticationService.SignOutAsync();
-            await PerformAuthenticationAsync();
         }
     }
 }

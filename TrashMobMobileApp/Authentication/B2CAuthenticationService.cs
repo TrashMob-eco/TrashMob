@@ -104,7 +104,7 @@
 
         private async Task<UserContext> SignInInteractively()
         {
-            var useEmbeddedWebview = true;
+            var useEmbeddedWebview = false;
             try
             {
                 // Android implementation is based on https://github.com/jamesmontemagno/CurrentActivityPlugin
