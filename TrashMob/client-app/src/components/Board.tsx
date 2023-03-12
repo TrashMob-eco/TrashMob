@@ -5,7 +5,6 @@ import linkedIn from './assets/card/linkedin.svg';
 import JoeBeernink from './assets/boardOfDirectors/JoeBeernink.jpg';
 import DarylBarber from './assets/boardOfDirectors/darylbarber.jpg';
 import JakeDiliberto from './assets/boardOfDirectors/JakeDiliberto.svg';
-import JeremiahSteen from './assets/boardOfDirectors/JeremiahSteen.svg';
 import KevinGleason from './assets/boardOfDirectors/KevinGleason.svg';
 import SandraMau from './assets/boardOfDirectors/SandraMau.png';
 import ValerieWilden from './assets/boardOfDirectors/ValerieWilden.svg';
@@ -158,23 +157,6 @@ export const Board: React.FC = () => {
                             <p className='font-size-sm color-grey'>She has over a decade of experience and leadership in productizing research and development. Prior to this startup, Sandra was a Senior Computer Vision Research Engineer at National ICT Australia. Additionally, she consulted for the government in several areas of advanced technologies. Earlier in her career, she also worked as a commercial analyst where she helped researchers protect their IP and commercialise their innovation.</p>
                             <p className='font-size-sm color-grey'>Sandra is very active in supporting tech and startup communities. She was the Founding Chair of IEEE QLD Women in Engineering, and listed as one of Australia's Top 50 Female Programmers by Pollenizer 2014, and one of Australia's Top 100 Most Influential Engineers by Engineer's Australia 2015. She's also a regular participant in hackathons including past GovHacks and International Women's Day. She was recognised in 2018 by Pittsburgh Business Times with the Pittsburgh Innovator Award and by QUT with the Innovation and Entrepreneurship Outstanding Alumni Award.</p>
                             <p className='font-size-sm color-grey'>She holds a Masters in Robotics from Carnegie Mellon University, a Bachelors in Engineering Science (Aerospace) from University of Toronto, and an MBA from Queensland University of Technology (QUT).</p> 
-                        </Col>
-                    </Row>
-                </div>
-                <div className='p-4 directorCard'>
-                    <Row>
-                        <Col md={5}>
-                            <Image src={JeremiahSteen} alt="Jeremiah Steen" className="h-100 mt-0 object-fit-cover rounded" />
-                        </Col>
-                        <Col md={7}>
-                            <div className='d-flex justify-content-between align-items-center'>
-                                <h2 className='m-0 fw-500 font-size-xl color-primary '>Jeremiah Steen</h2>
-                                <a href="https://www.linkedin.com/in/jeremiah-steen-439321177/"><Image src={linkedIn} alt="linkedIn icon" className="h-100 mt-0 object-fit-cover" /></a>
-                            </div>
-                            <h5 className='my-3 fw-500 color-grey'>Member at large</h5>
-                            <p className='font-size-sm color-grey'>Jeremiah Steen is the Environmental Leadership Program’s Program Manager and the National Audubon Society’s Development Associate, Institutional Giving working out of Detroit, Michigan.</p>
-                            <p className='font-size-sm color-grey'>Additionally, Jeremiah is the Director of the Steen Foundation, which has the goal of positively impacting the socialization of youth, promoting strong inquisitive thinking, and allowing teens to advance their view of community through a creative perspective. </p>
-                            <p className='font-size-sm color-grey'>Also, he serves on the Board of Directors for TrashMob.eco and EEqual.</p>
                         </Col>
                     </Row>
                 </div>
