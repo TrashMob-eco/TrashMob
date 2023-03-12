@@ -1,5 +1,9 @@
 ﻿namespace TrashMobMobileApp;
 
+using Microsoft.AppCenter.Analytics;
+using Microsoft.Identity.Client;
+using Newtonsoft.Json.Linq;
+using System.Text;
 using TrashMobMobileApp.Authentication;
 using TrashMobMobileApp.Data;
 using TrashMobMobileApp.StateContainers;
@@ -8,15 +12,13 @@ public partial class MainPage : ContentPage
 {
     private readonly AppHost appHost;
 
-    private readonly IB2CAuthenticationService b2CAuthenticationService;
     private readonly IUserManager userManager;
     private readonly UserStateInformation userStateInformation;
 
-    public MainPage(AppHost appHost, IB2CAuthenticationService b2CAuthenticationService, IUserManager userManager, UserStateInformation userStateInformation)
+    public MainPage(AppHost appHost, IUserManager userManager, UserStateInformation userStateInformation)
     {
         InitializeComponent();
         this.appHost = appHost;
-        this.b2CAuthenticationService = b2CAuthenticationService;
         this.userManager = userManager;
         this.userStateInformation = userStateInformation;
     }
@@ -37,14 +39,23 @@ public partial class MainPage : ContentPage
     {
         try
         {
-            await b2CAuthenticationService.SignInAsync(userManager);
+            IAccount cachedUserAccount = PublicClientSingleton.Instance.MSALClientHelperInstance.FetchSignedInUserFromCache().Result;
 
-            if (UserState.UserContext.AccessToken != null)
+            _ = Dispatcher.DispatchAsync(async () =>
             {
-                await Navigation.PushAsync(appHost);
-            }
+                if (cachedUserAccount != null)
+                {
+                    await Shell.Current.GoToAsync("appHost");
+                }
+            });
+
+            await PublicClientSingleton.Instance.AcquireTokenSilentAsync();
+
+            var newUserContext = UpdateUserInfo(PublicClientSingleton.Instance.MSALClientHelperInstance.AuthResult);
+            await VerifyAccount(userManager, newUserContext);
+            UserState.UserContext = newUserContext;
         }
-        catch
+        catch (Exception ex)
         {
             await OnSignOutAsync();
         }
@@ -52,7 +63,48 @@ public partial class MainPage : ContentPage
 
     private async Task OnSignOutAsync()
     {
-        await b2CAuthenticationService.SignOutAsync();
+        await PublicClientSingleton.Instance.SignOutAsync();
         await PerformAuthenticationAsync();
+    }
+
+    private static async Task VerifyAccount(IUserManager userManager, UserContext userContext)
+    {
+        Analytics.TrackEvent("VerifyAccount");
+        App.CurrentUser = await userManager.GetUserByEmailAsync(userContext.EmailAddress, userContext);
+    }
+
+    private string Base64UrlDecode(string s)
+    {
+        s = s.Replace('-', '+').Replace('_', '/');
+        s = s.PadRight(s.Length + (4 - s.Length % 4) % 4, '=');
+        var byteArray = Convert.FromBase64String(s);
+        var decoded = Encoding.UTF8.GetString(byteArray, 0, byteArray.Count());
+        return decoded;
+    }
+
+    public UserContext UpdateUserInfo(AuthenticationResult ar)
+    {
+        var newContext = new UserContext
+        {
+            IsLoggedOn = false
+        };
+
+        JObject user = ParseIdToken(ar.IdToken);
+
+        newContext.AccessToken = ar.AccessToken;
+        newContext.GivenName = user["given_name"]?.ToString();
+        newContext.EmailAddress = user["email"]?.ToString() ?? user["emailAddress"]?.ToString();
+
+        newContext.IsLoggedOn = true;
+
+        return newContext;
+    }
+
+    JObject ParseIdToken(string idToken)
+    {
+        // Get the piece with actual user info
+        idToken = idToken.Split('.')[1];
+        idToken = Base64UrlDecode(idToken);
+        return JObject.Parse(idToken);
     }
 }

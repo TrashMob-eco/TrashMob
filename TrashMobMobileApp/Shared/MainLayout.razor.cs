@@ -41,7 +41,7 @@
             await base.OnInitializedAsync();
             Navigator.LocationChanged += Navigator_LocationChanged;
             TitleContainer.OnTitleChange += (title) => SetPageTitle(title);
-            
+            _userInitials = App.CurrentUser.UserName.ToUpperInvariant().First().ToString();
             SetTheme();
         }
 

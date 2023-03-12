@@ -55,7 +55,7 @@
             services.AddSingleton<IWaiverManager, WaiverManager>();
             services.AddSingleton<IWaiverRestService, WaiverRestService>();
             var settings = configuration.GetSection("Settings").Get<Settings>();
-            services.AddSingleton(settings.B2CConstants);
+            services.AddSingleton(settings.AzureADB2C);
 
             return services;
         }

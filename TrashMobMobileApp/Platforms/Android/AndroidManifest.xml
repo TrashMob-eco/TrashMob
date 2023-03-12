@@ -11,6 +11,14 @@
         <data android:scheme="msal31cb1c9a-eaa6-4fd0-b59f-0bd0099845ee" android:host="auth" />
       </intent-filter>
     </activity>
+    <activity android:name="TrashMobMobileApp.Platforms.Android.Resources.MsalActivity" android:configChanges="orientation|screenSize" android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="msal31cb1c9a-eaa6-4fd0-b59f-0bd0099845ee" android:host="auth" />
+      </intent-filter>
+    </activity>
 	</application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
