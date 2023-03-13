@@ -34,7 +34,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [eventName, setEventName] = React.useState<string>("New Event");
     const [description, setDescription] = React.useState<string>("");
     const [eventDate, setEventDate] = React.useState<Date>(new Date());
-    const [eventTime, setEventTime] = React.useState<string>("");
+    const [eventTime, setEventTime] = React.useState<string>(moment(new Date()).format('HH:mm'));
     const [absTime, setAbsTime] = React.useState<Date>(new Date());
     const [durationHours, setDurationHours] = React.useState<number>(1);
     const [durationMinutes, setDurationMinutes] = React.useState<number>(0);
@@ -242,7 +242,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     }
 
     function handleEventDateChanged(passedDate: string) {
-
         var abTime = new Date(passedDate + " " + eventTime);
 
         if (isEventPublic && abTime < new Date()) {
@@ -252,13 +251,13 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             setEventDateErrors("");
         }
 
+        setEventDate(abTime);
         setAbsTime(abTime);
     }
 
     function handleEventTimeChanged(passedTime: string) {
-
         var abTime = new Date(eventDate.toDateString() + " " + passedTime);
-
+        
         if (isEventPublic && abTime < new Date()) {
             setEventDateErrors("Public event cannot be in the past");
         }
@@ -266,6 +265,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             setEventDateErrors("");
         }
 
+        setEventTime(moment(abTime).format('HH:mm'))
+        setEventDate(abTime);
         setAbsTime(abTime);
     }
 
@@ -476,7 +477,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                         <Form.Label className="control-label font-weight-bold h5" htmlFor="Event Time">Time</Form.Label>
                                     </OverlayTrigger>
                                     <div>
-                                        <Form.Control type="time" className='border-0 bg-light h-60 p-18' size="sm" name="eventTime" defaultValue={timeForPicker(absTime)} onChange={(val) => handleEventTimeChanged(val.target.value)} />
+                                        <Form.Control type="time" className='border-0 bg-light h-60 p-18' size="sm" name="eventTime" value={timeForPicker(absTime)} onChange={(val) => handleEventTimeChanged(val.target.value)} />
                                     </div>
                                 </Form.Group>
                             </Col>
