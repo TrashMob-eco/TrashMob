@@ -3,20 +3,6 @@
     public class AzureADB2CConfig
     {
         /// <summary>
-        /// Gets or sets the Azure AD authority.
-        /// </summary>
-        /// <value>
-        /// The Azure AD authority URL.
-        /// </value>
-        /// <remarks>
-        ///   - For Work or School account in your org, use your tenant ID, or domain
-        ///   - for any Work or School accounts, use organizations
-        ///   - for any Work or School accounts, or Microsoft personal account, use common
-        ///   - for Microsoft Personal account, use consumers
-        /// </remarks>
-        public string Authority { get; set; }
-
-        /// <summary>
         /// Gets or sets the login instance for your B2C tenant. In B2C usually of the form https://YOUR_DOMAIN.b2clogin.com
         /// </summary>
         /// <value>
@@ -39,14 +25,6 @@
         /// The client identifier.
         /// </value>
         public string ClientId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the tenant identifier (tenant Id/directory id) of the Azure AD tenant where the app registration exists.
-        /// </summary>
-        /// <value>
-        /// The tenant identifier.
-        /// </value>
-        public string TenantId { get; set; }
 
         /// <summary>
         /// Gets or sets the file name of the token cache file.

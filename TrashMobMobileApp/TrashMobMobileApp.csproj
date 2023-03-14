@@ -175,6 +175,12 @@
       <Compile Update="Features\Map\MauiMapPageMultipleEvent.xaml.cs">
         <DependentUpon>MauiMapPageMultipleEvent.xaml</DependentUpon>
       </Compile>
+      <Compile Update="AppShell.xaml.cs">
+        <DependentUpon>AppShell.xaml</DependentUpon>
+      </Compile>
+      <Compile Update="Shared\MainView.xaml.cs">
+        <DependentUpon>MainView.xaml</DependentUpon>
+      </Compile>
     </ItemGroup>
     <ItemGroup>
       <Content Update="wwwroot\images\meetup.png">
@@ -199,6 +205,9 @@
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
       <MauiXaml Update="Resources\Styles\Styles.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+      <MauiXaml Update="Shared\MainView.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
     </ItemGroup>

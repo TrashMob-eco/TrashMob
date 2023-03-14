@@ -8,17 +8,14 @@ using TrashMobMobileApp.Authentication;
 using TrashMobMobileApp.Data;
 using TrashMobMobileApp.StateContainers;
 
-public partial class MainPage : ContentPage
+public partial class MainView : ContentPage
 {
-    private readonly AppHost appHost;
-
     private readonly IUserManager userManager;
     private readonly UserStateInformation userStateInformation;
 
-    public MainPage(AppHost appHost, IUserManager userManager, UserStateInformation userStateInformation)
+    public MainView(IUserManager userManager, UserStateInformation userStateInformation)
     {
         InitializeComponent();
-        this.appHost = appHost;
         this.userManager = userManager;
         this.userStateInformation = userStateInformation;
     }
@@ -45,7 +42,7 @@ public partial class MainPage : ContentPage
             {
                 if (cachedUserAccount != null)
                 {
-                    await Shell.Current.GoToAsync("appHost");
+                    await Shell.Current.GoToAsync("apphost");
                 }
             });
 
@@ -54,6 +51,7 @@ public partial class MainPage : ContentPage
             var newUserContext = UpdateUserInfo(PublicClientSingleton.Instance.MSALClientHelperInstance.AuthResult);
             await VerifyAccount(userManager, newUserContext);
             UserState.UserContext = newUserContext;
+            await Shell.Current.GoToAsync("apphost");
         }
         catch (Exception ex)
         {

@@ -25,7 +25,8 @@ public class MainActivity : MauiAppCompatActivity
         base.OnCreate(savedInstanceState);
         //CrossCurrentActivity.Current.Init(this, savedInstanceState);
         //DependencyService.Register<IParentWindowLocatorService, AndroidParentWindowLocatorService>();
-        PlatformConfig.Instance.RedirectUri = $"msal{PublicClientSingleton.Instance.MSALClientHelperInstance.AzureADB2CConfig.ClientId}://auth";
+        PlatformConfig.Instance.RedirectUri = $"";
+ //       PlatformConfig.Instance.RedirectUri = $"msauth://eco.trashmobeco.trashmobdevmobile/EjFLkitZ%2BGotx7AfSESspVmDL3o%3D";
         PlatformConfig.Instance.ParentWindow = this;
 
         // Initialize MSAL and platformConfig is set
