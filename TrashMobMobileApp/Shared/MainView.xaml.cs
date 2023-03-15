@@ -36,16 +36,6 @@ public partial class MainView : ContentPage
     {
         try
         {
-            IAccount cachedUserAccount = PublicClientSingleton.Instance.MSALClientHelperInstance.FetchSignedInUserFromCache().Result;
-
-            _ = Dispatcher.DispatchAsync(async () =>
-            {
-                if (cachedUserAccount != null)
-                {
-                    await Shell.Current.GoToAsync("apphost");
-                }
-            });
-
             await PublicClientSingleton.Instance.AcquireTokenSilentAsync();
 
             var newUserContext = UpdateUserInfo(PublicClientSingleton.Instance.MSALClientHelperInstance.AuthResult);
@@ -53,7 +43,7 @@ public partial class MainView : ContentPage
             UserState.UserContext = newUserContext;
             await Shell.Current.GoToAsync("apphost");
         }
-        catch (Exception ex)
+        catch
         {
             await OnSignOutAsync();
         }

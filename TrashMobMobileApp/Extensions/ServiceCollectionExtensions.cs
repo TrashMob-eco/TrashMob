@@ -40,7 +40,6 @@
 
         public static IServiceCollection AddTrashMobServices(this IServiceCollection services, ConfigurationManager configuration)
         {
-            services.AddSingleton<IB2CAuthenticationService, B2CAuthenticationService>();
             services.AddSingleton<IContactRequestManager, ContactRequestManager>();
             services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
             services.AddSingleton<IDocusignRestService, DocusignRestService>();
