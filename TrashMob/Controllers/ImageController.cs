@@ -3,19 +3,25 @@
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
     using TrashMob.Poco;
+    using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/[controller]")]
     [ApiController]
     public class ImageController : ControllerBase
     {
-        public ImageController() 
+        private readonly IImageManager imageManager;
+
+        public ImageController(IImageManager imageManager) 
         {
+            this.imageManager = imageManager;
         }
 
         [HttpPost]
-        public Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload)
+        public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload)
         {
-            return null;
+            await imageManager.UploadImage(imageUpload);
+
+            return Ok();
         }
     }
 }

@@ -5,7 +5,6 @@
 
     public interface IImageManager
     {
-        public Task<bool> UpdloadImage(ImageUpload imageUpload);
-
+        public Task UploadImage(ImageUpload imageUpload);
     }
 }

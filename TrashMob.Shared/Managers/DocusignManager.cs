@@ -68,7 +68,7 @@ namespace TrashMob.Shared.Managers
                 basePath = localBaseUri;
             }
 
-            var apiClient = new ApiClient(basePath);
+            var apiClient = new DocuSignClient(basePath);
             apiClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + accessToken.access_token);
 
             string docxDocument = "Docusign\\TrashMob_Volunteer_Waiver_V1.docx";
@@ -253,7 +253,7 @@ namespace TrashMob.Shared.Managers
                 basePath = localBaseUri;
             }
 
-            var apiClient = new ApiClient(basePath);
+            var apiClient = new DocuSignClient(basePath);
             apiClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + accessToken.access_token);
 
             EnvelopesApi envelopesApi = new EnvelopesApi(apiClient);

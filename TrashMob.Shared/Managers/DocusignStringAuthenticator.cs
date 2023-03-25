@@ -27,7 +27,7 @@
             var privateKeyEncoded = keyVaultManager.GetSecret("DocusignPrivateKeyEncoded");
             var privateKey = Convert.FromBase64String(privateKeyEncoded);
 
-            var apiClient = new ApiClient();
+            var apiClient = new DocuSignClient();
             var scopes = new List<string>
                 {
                     "signature",
