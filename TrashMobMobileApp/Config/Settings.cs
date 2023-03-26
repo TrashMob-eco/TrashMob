@@ -9,7 +9,9 @@
 
         public string SiteBaseUrl { get; set; }
 
-        public B2CConstants B2CConstants { get; set; }
+        public AzureADB2CConfig AzureADB2C { get; set; }
+
+        public DownStreamApiConfig DownStreamApi { get; set; }
 
         public WaiverVersion CurrentTrashMobWaiverVersion { get; set; }
     }

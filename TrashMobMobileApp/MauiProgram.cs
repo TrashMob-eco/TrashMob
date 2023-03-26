@@ -37,10 +37,12 @@ public static class MauiProgram
         builder.Services.Configure<Settings>(options => builder.Configuration.GetSection("Settings").Bind(options));
         builder.Services.AddTrashMobServices(builder.Configuration);
         builder.Services.AddRestClientServices(builder.Configuration);
+        builder.Services.AddSingleton<MainView>();
+        builder.Services.AddTransient<AppHost>();
 
         builder.Services.AddLogging();
         builder.Services.AddScoped<IErrorBoundaryLogger, CustomBoundaryLogger>();
-        builder.UseMauiMaps();
+        builder.UseMauiMaps();        
 
         AppCenter.Start("android=d044d1b4-6fbc-4547-8fae-d0286d9ccbaa;" +
               "ios=0f9bed29-14d0-4e38-a396-64e5cd185d10;",
