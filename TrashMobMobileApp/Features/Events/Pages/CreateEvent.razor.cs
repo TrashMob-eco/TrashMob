@@ -9,7 +9,7 @@
 
     public partial class CreateEvent
     {
-        private Event _event = new();
+        private Event _event = new() { IsEventPublic = true };
         private EventStep _step;
 
         [Inject]

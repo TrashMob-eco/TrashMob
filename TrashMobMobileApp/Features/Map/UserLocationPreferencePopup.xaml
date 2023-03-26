@@ -7,10 +7,10 @@
     <VerticalStackLayout WidthRequest="400">
         <Label Text="Set your preferred location" Style="{StaticResource headerLabel}" />
         <Label Text="Click on the map to set your preferred home location, then set the distance you are willing to travel for events, and where or not you prefer to use miles or kilometers" Style="{StaticResource instructionsLabel}" />
-        <maps:Map x:Name="mappy" HeightRequest="400" Loaded="mappy_Loaded" />
+        <maps:Map x:Name="mappy" HeightRequest="300" Loaded="mappy_Loaded" />
         <HorizontalStackLayout>
-            <Label Text="Travel limit for local events:" Style="{StaticResource fieldLabel}" MaximumWidthRequest="150" />
-            <Entry x:Name="travelLimitForLocalEvents" Style="{StaticResource fieldEntry}" Keyboard="Numeric" MaximumWidthRequest="50" />
+            <Label Text="Travel limit for events:" Style="{StaticResource fieldLabel}" MaximumWidthRequest="150" />
+            <Entry x:Name="travelLimitForLocalEvents" Style="{StaticResource fieldEntry}" Keyboard="Numeric" MaxLength="3" />
             <Picker x:Name="units" Style="{StaticResource fieldPicker}" MaximumWidthRequest="100" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
