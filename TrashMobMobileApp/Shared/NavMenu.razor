@@ -3,6 +3,7 @@
 <MudNavMenu Color="Color.Dark">
     <MudNavLink Icon="@Icons.Material.Filled.Home" Href="@Routes.Home" Match="NavLinkMatch.All">Home</MudNavLink>
     <MudNavLink Icon="@Icons.Material.Filled.Event" Href="@Routes.Events" Match="NavLinkMatch.Prefix">Events</MudNavLink>
+    <MudNavLink Icon="@Icons.Material.Filled.Map" OnClick="() => OnUserLocationPreference_Click()">Location Preference</MudNavLink>
     <MudNavLink Icon="@Icons.Material.Filled.ContactPage" Href="@Routes.ContactUs" Match="NavLinkMatch.Prefix">Contact Us</MudNavLink>
     <MudNavLink Icon="@Icons.Material.Filled.ExitToApp" OnClick="() => Shell.Current.Navigation.PopToRootAsync()">Sign Out</MudNavLink>
 </MudNavMenu>
