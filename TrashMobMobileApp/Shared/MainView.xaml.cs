@@ -11,22 +11,21 @@ using TrashMobMobileApp.StateContainers;
 public partial class MainView : ContentPage
 {
     private readonly IUserManager userManager;
-    private readonly UserStateInformation userStateInformation;
 
-    public MainView(IUserManager userManager, UserStateInformation userStateInformation)
+    public MainView(IUserManager userManager)
     {
         InitializeComponent();
         this.userManager = userManager;
-        this.userStateInformation = userStateInformation;
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
 
-        if (userStateInformation.OnSignOut == null)
+        if (UserState.UserContext.IsLoggedOn) 
         {
-            userStateInformation.OnSignOut += async () => await OnSignOutAsync();
+            await PublicClientSingleton.Instance.SignOutAsync();
+            UserState.UserContext.IsLoggedOn = false;
         }
 
         await PerformAuthenticationAsync();
@@ -52,6 +51,7 @@ public partial class MainView : ContentPage
     private async Task OnSignOutAsync()
     {
         await PublicClientSingleton.Instance.SignOutAsync();
+        UserState.UserContext.IsLoggedOn = false;
         await PerformAuthenticationAsync();
     }
 

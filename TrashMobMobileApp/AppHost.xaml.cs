@@ -6,4 +6,9 @@ public partial class AppHost : ContentPage
 	{
 		InitializeComponent();
 	}
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+    }
 }

@@ -38,7 +38,7 @@ public static class MauiProgram
         builder.Services.AddTrashMobServices(builder.Configuration);
         builder.Services.AddRestClientServices(builder.Configuration);
         builder.Services.AddSingleton<MainView>();
-        builder.Services.AddSingleton<AppHost>();
+        builder.Services.AddTransient<AppHost>();
 
         builder.Services.AddLogging();
         builder.Services.AddScoped<IErrorBoundaryLogger, CustomBoundaryLogger>();
