@@ -40,7 +40,6 @@
 
         public static IServiceCollection AddTrashMobServices(this IServiceCollection services, ConfigurationManager configuration)
         {
-            services.AddSingleton<IB2CAuthenticationService, B2CAuthenticationService>();
             services.AddSingleton<IContactRequestManager, ContactRequestManager>();
             services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
             services.AddSingleton<IDocusignRestService, DocusignRestService>();
@@ -55,7 +54,7 @@
             services.AddSingleton<IWaiverManager, WaiverManager>();
             services.AddSingleton<IWaiverRestService, WaiverRestService>();
             var settings = configuration.GetSection("Settings").Get<Settings>();
-            services.AddSingleton(settings.B2CConstants);
+            services.AddSingleton(settings.AzureADB2C);
 
             return services;
         }

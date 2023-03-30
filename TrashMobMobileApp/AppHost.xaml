@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TrashMobMobileApp.AppHost"
+             xmlns:local="clr-namespace:TrashMobMobileApp">
+    <BlazorWebView HostPage="wwwroot/index.html" x:Name="hostView">
+        <BlazorWebView.RootComponents>
+            <RootComponent Selector="#app" ComponentType="{x:Type local:Main}" />
+        </BlazorWebView.RootComponents>
+    </BlazorWebView>
+</ContentPage>
