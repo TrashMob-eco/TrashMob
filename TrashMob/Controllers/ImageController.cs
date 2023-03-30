@@ -5,7 +5,7 @@
     using TrashMob.Poco;
     using TrashMob.Shared.Managers.Interfaces;
 
-    [Route("api/[controller]")]
+    [Route("api/image")]
     [ApiController]
     public class ImageController : ControllerBase
     {
