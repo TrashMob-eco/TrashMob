@@ -125,4 +125,11 @@
         Instagram = 3,
         TikTok = 4,
     }
+
+    public enum ImageTypeEnum
+    {
+        Before = 1,
+        After = 2,
+        Pickup = 3,
+    }
 }
