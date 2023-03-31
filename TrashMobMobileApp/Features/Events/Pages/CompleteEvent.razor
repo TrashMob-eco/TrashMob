@@ -43,6 +43,7 @@
                 <MudText Typo="Typo.body2">We'd love to hear how your event went, as it helps us keep track of TrashMob stats, inspire others, and improve our mobile app and website.</MudText>
 
             }
+
             <MudForm @ref="_completeEventForm" Class="tm-form" @bind-IsValid="@_success" @bind-Errors="@_errors">
                 <MudNumericField FullWidth T="int" Disabled="IsReadOnly" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Value="@_eventSummary.ActualNumberOfAttendees" Label="Number of attendees" Required RequiredError="Attendee count is required" />
                 <MudNumericField FullWidth T="int" Disabled="IsReadOnly" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Value="@_eventSummary.DurationInMinutes" Label="Duration in minutes" Required RequiredError="Duration is required" />
@@ -50,6 +51,7 @@
                 <MudNumericField FullWidth T="int" Disabled="IsReadOnly" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Value="@_eventSummary.NumberOfBags" Label="Number of bags" />
                 <MudTextField FullWidth T="string" Disabled="IsReadOnly" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Text="@_eventSummary.Notes" Label="Notes" Lines="ComponentCommon.TextAreaLinesSpan" />
                 <MudStack Row Justify="Justify.Center" Class="tm-action-item">
+                    <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnPhotos">Take Photos</MudButton>
                     <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@(() => Navigator.NavigateTo(Routes.Events, forceLoad: true))">Back</MudButton>
                     @if (!IsReadOnly)
                     {

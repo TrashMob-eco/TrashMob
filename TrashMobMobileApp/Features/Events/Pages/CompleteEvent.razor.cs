@@ -5,6 +5,7 @@
     using TrashMob.Models;
     using TrashMobMobileApp.Data;
     using TrashMobMobileApp.Extensions;
+    using TrashMobMobileApp.Features.Pickups;
     using TrashMobMobileApp.Shared;
 
     public partial class CompleteEvent
@@ -32,6 +33,11 @@
             _event = await MobEventManager.GetEventAsync(Guid.Parse(EventId));
             _eventSummary = (await MobEventManager.GetEventSummaryAsync(Guid.Parse(EventId))) ?? new();
             _isLoading = false;
+        }
+
+        private void OnPhotos()
+        {
+            App.Current.MainPage.Navigation.PushModalAsync(new Pickups());
         }
 
         private async Task OnDoActionAsync()
