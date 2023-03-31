@@ -18,6 +18,7 @@
         public ImageController(IImageManager imageManager, IEventManager eventManager) 
         {
             this.imageManager = imageManager;
+            this.eventManager = eventManager;
         }
 
         [HttpPost]
