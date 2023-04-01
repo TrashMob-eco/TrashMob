@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI.Xaml;
+using TrashMobMobileApp.Authentication;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -17,7 +18,8 @@ public partial class App : MauiWinUIApplication
 	public App()
 	{
 		this.InitializeComponent();
-	}
+        _ = Task.Run(async () => await PublicClientSingleton.Instance.MSALClientHelperInstance.InitializePublicClientAppAsync()).Result;
+    }
 
 	protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 }
