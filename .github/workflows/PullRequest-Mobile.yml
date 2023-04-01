@@ -88,7 +88,13 @@ jobs:
     - name: Rename info.plist for Debug
       run: |
         rm ./TrashMobMobileApp/Platforms/iOS/Info.plist 
-        cp ./TrashMobMobileApp/Platforms/iOS/Info-Debug.plist TrashMobMobileApp/Platforms/iOS/Info.plist 
+        cp ./TrashMobMobileApp/Platforms/iOS/Info-Debug.plist TrashMobMobileApp/Platforms/iOS/Info.plist
+
+    - name: Update Build Number
+      run: |
+        buildNumber=`/bin/date +%Y%m%d%H%M%S`
+        echo $buildNumber
+        /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" "TrashMobMobileApp/Platforms/iOS/Info.plist"
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v3
