@@ -46,13 +46,6 @@ jobs:
         dotnet workload install maui --ignore-failed-sources
         dotnet workload install android maui wasm-tools --source https://api.nuget.org/v3/index.json
 
-    - name: Set XCode Version
-      if: runner.os == 'macOS'
-      shell: bash
-      run: |
-        sudo xcode-select -s "/Applications/Xcode_14.1.app"
-        echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_14.1.app" >> $GITHUB_ENV
-
     - name: Restore Dependencies
       run: | 
         dotnet restore TrashMobMobileApp.sln
@@ -103,7 +96,7 @@ jobs:
         echo $buildNumber
         /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" "TrashMobMobileApp/Platforms/iOS/Info.plist"
         echo "checking Version number updated:"
-        tail TrashMobMobileApp/Platforms/iOS/Info.plist
+        cat TrashMobMobileApp/Platforms/iOS/Info.plist
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v3
@@ -120,6 +113,13 @@ jobs:
         dotnet nuget locals all --clear
         dotnet workload install maui --ignore-failed-sources
         dotnet workload install ios maui wasm-tools --source https://api.nuget.org/v3/index.json --ignore-failed-sources
+
+    - name: Set XCode Version
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        sudo xcode-select -s "/Applications/Xcode_14.1.app"
+        echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_14.1.app" >> $GITHUB_ENV
 
     - name: Restore Dependencies
       run: | 
