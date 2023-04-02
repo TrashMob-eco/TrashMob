@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TrashMobMobileApp.Features.Pickups.AddPickupLocation"
+             Title="Add Pickup Location">
+    <VerticalStackLayout>
+        <Editor x:Name="Notes" Style="{StaticResource fieldEntry}" MaxLength="1024" />
+        <Button Text="Take Photo" Clicked="TakePhoto_Clicked" Style="{StaticResource formButton}" />
+        <HorizontalStackLayout>
+            <Label Text="Street Address:" Style="{StaticResource fieldLabel}" />
+            <Entry IsReadOnly="True" x:Name="streetAddress" Style="{StaticResource fieldEntry}" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label Text="City:" Style="{StaticResource fieldLabel}" />
+            <Entry IsReadOnly="True" x:Name="city" Style="{StaticResource fieldEntry}" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label Text="State:" Style="{StaticResource fieldLabel}" />
+            <Entry IsReadOnly="True" x:Name="state" Style="{StaticResource fieldEntry}" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <Label Text="Postal Code:" Style="{StaticResource fieldLabel}" />
+            <Entry IsReadOnly="True" x:Name="postalCode" Style="{StaticResource fieldEntry}" />
+        </HorizontalStackLayout>
+        <Button Text="Save" Clicked="SaveButton_Clicked" Style="{StaticResource formButton}" />
+        <Button Text="Close" Clicked="CloseButton_Clicked" Style="{StaticResource formButton}" />
+    </VerticalStackLayout>
+</ContentPage>

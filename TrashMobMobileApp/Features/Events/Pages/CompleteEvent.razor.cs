@@ -35,7 +35,7 @@
             _isLoading = false;
         }
 
-        private void OnPhotos()
+        private void AddPickupLocation()
         {
             App.Current.MainPage.Navigation.PushModalAsync(new Pickups());
         }

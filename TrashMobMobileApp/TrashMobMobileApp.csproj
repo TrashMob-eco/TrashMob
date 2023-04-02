@@ -178,6 +178,9 @@
       <Compile Update="AppShell.xaml.cs">
         <DependentUpon>AppShell.xaml</DependentUpon>
       </Compile>
+      <Compile Update="Features\Pickups\AddPickupLocation.xaml.cs">
+        <DependentUpon>AddPickupLocation.xaml</DependentUpon>
+      </Compile>
       <Compile Update="Shared\MainView.xaml.cs">
         <DependentUpon>MainView.xaml</DependentUpon>
       </Compile>
@@ -204,7 +207,7 @@
       <MauiXaml Update="Features\Map\UserLocationPreferencePopup.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
-      <MauiXaml Update="Features\Pickups\Pickups.xaml">
+      <MauiXaml Update="Features\Pickups\AddPickupLocation.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
       <MauiXaml Update="Resources\Styles\Styles.xaml">
