@@ -33,7 +33,7 @@
             var bytes = new Span<byte>();
             pk.TryExportRSAPrivateKey(bytes, out var bytesWritten);
 
-            var apiClient = new ApiClient();
+            var apiClient = new DocuSignClient();
             var scopes = new List<string>
                 {
                     "signature",

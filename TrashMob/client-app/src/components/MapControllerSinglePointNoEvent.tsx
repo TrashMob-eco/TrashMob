@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react';
 import * as React from 'react';
 import { AzureMapsContext, IAzureMapOptions, IAzureMapsContextProps } from 'react-azure-maps';
-import { data, source, Popup, HtmlMarker } from 'azure-maps-control';
+import { data, source, HtmlMarker } from 'azure-maps-control';
 import MapComponent from './MapComponent';
 import * as MapStore from '../store/MapStore'
 import UserData from './Models/UserData';
@@ -32,6 +32,7 @@ export const MapControllerSinglePointNoEvent: React.FC<MapControllerProps> = (pr
     const [options, setOptions] = React.useState([]);
     const [query, setQuery] = React.useState('');
     const mapKeyRef = React.useRef('');
+    const [isPrevLoaded, setIsPrevLoaded] = React.useState<boolean>(false);
 
     const handleInputChange = (q: string) => {
         setQuery(q);
@@ -54,12 +55,6 @@ export const MapControllerSinglePointNoEvent: React.FC<MapControllerProps> = (pr
 
             mapRef.sources.add(dataSourceRef);
             setIsDataSourceLoaded(true);
-
-            // Create a reusable popup.
-            const popup = new Popup({
-                pixelOffset: [0, -20],
-                closeButton: false
-            });
 
             // Create a HTML marker layer for rendering data points.
             var markerLayer = new HtmlMarkerLayer(dataSourceRef, "marker1", {
@@ -86,8 +81,6 @@ export const MapControllerSinglePointNoEvent: React.FC<MapControllerProps> = (pr
                         handleLocationChange(pos);
                     });
 
-                    mapRef.events.add('mouseout', marker, () => popup.close());
-
                     return marker
                 }
             });
@@ -113,7 +106,7 @@ export const MapControllerSinglePointNoEvent: React.FC<MapControllerProps> = (pr
         isMapReady]);
 
     useEffect(() => {
-        if (mapRef && props.isMapKeyLoaded && isDataSourceLoaded && isMapReady) {
+        if (mapRef && props.isMapKeyLoaded && isDataSourceLoaded && isMapReady && !isPrevLoaded) {
             var dsr = mapRef.sources.getById("mainDataSource") as source.DataSource;
             var feature = dsr.getShapes()[0];
 
@@ -128,6 +121,7 @@ export const MapControllerSinglePointNoEvent: React.FC<MapControllerProps> = (pr
 
             // Simple Camera options modification
             mapRef.setCamera({ center: position, zoom: MapStore.defaultUserLocationZoom });
+            setIsPrevLoaded(true);
         }
     }, [mapRef,
         props.center,
@@ -135,7 +129,8 @@ export const MapControllerSinglePointNoEvent: React.FC<MapControllerProps> = (pr
         props.longitude,
         props.latitude,
         isDataSourceLoaded,
-        isMapReady]);
+        isMapReady,
+        isPrevLoaded]);
 
     // eslint-disable-next-line
     function handleLocationChange(e: any) {

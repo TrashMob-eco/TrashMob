@@ -1,5 +1,6 @@
 namespace TrashMob
 {
+    using Azure.Core.Extensions;
     using Azure.Identity;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
@@ -83,6 +84,11 @@ namespace TrashMob
             {
                 services.AddScoped<IKeyVaultManager, LocalKeyVaultManager>();
                 services.AddScoped<IDocusignAuthenticator, DocusignStringAuthenticator>();
+                services.AddAzureClients(azureClientFactoryBuilder =>
+                {
+                    azureClientFactoryBuilder.UseCredential(new DefaultAzureCredential());
+                    azureClientFactoryBuilder.AddBlobServiceClient(Configuration.GetValue<Uri>("StorageAccountUri"));
+                });
             }
             else
             {
@@ -90,6 +96,7 @@ namespace TrashMob
                 {
                     azureClientFactoryBuilder.UseCredential(new DefaultAzureCredential());
                     azureClientFactoryBuilder.AddSecretClient(Configuration.GetValue<Uri>("VaultUri"));
+                    azureClientFactoryBuilder.AddBlobServiceClient(Configuration.GetValue<Uri>("StorageAccountUri"));
                 });
 
                 services.AddScoped<IKeyVaultManager, KeyVaultManager>();

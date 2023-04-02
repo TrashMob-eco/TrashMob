@@ -14,6 +14,7 @@ public partial class UserLocationPreferencePopup
     private const double DefaultLatitude = 39.8283;
     private const double DefaultLongitude = 98.5795;
     private const int DefaultTravelDistance = 5;
+    private Map mappy;
 
     public IMapRestService MapRestService { get; set; }
 
@@ -22,6 +23,15 @@ public partial class UserLocationPreferencePopup
     public UserLocationPreferencePopup(IUserManager userManager, IMapRestService mapRestService)
     {
         InitializeComponent();
+#if !WINDOWS
+        mappy = new Microsoft.Maui.Controls.Maps.Map();
+        mappy.Loaded += mappy_Loaded;
+        mapGrid.Add(mappy);
+#else
+        // Add label with text to mapGrid view
+        mapGrid.Add(new Label { Text = "Map not supported on Windows" });
+#endif
+
         UserManager = userManager;
         MapRestService = mapRestService;
         units.Items.Add("miles");
@@ -60,7 +70,7 @@ public partial class UserLocationPreferencePopup
 
         var locationHelper = new LocationHelper();
 
-        Location userLocation = new Location(user.Latitude.Value, user.Longitude.Value);
+        var userLocation = new Location(user.Latitude ?? 0, user.Longitude ?? 0);
         if (user.Latitude == null || user.Longitude == null || user.Latitude == 0 && user.Longitude == 0)
         {
             userLocation = await locationHelper.GetCurrentLocation();

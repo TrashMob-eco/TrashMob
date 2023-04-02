@@ -66,6 +66,7 @@
             services.AddScoped<IDocusignManager, DocusignManager>();
             services.AddScoped<IEmailManager, EmailManager>();
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IImageManager, ImageManager>();
             services.AddScoped<IMapManager, MapManager>();
             services.AddScoped<ISecretRepository, SecretRepository>();
             services.AddScoped<INotificationManager, NotificationManager>();
