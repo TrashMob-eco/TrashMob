@@ -4,10 +4,10 @@
              xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              x:Class="TrashMobMobileApp.Features.Map.UserLocationPreferencePopup">
-    <VerticalStackLayout WidthRequest="400">
+    <VerticalStackLayout>
         <Label Text="Set your preferred location" Style="{StaticResource headerLabel}" />
         <Label Text="Click on the map to set your preferred home location, then set the distance you are willing to travel for events, and where or not you prefer to use miles or kilometers" Style="{StaticResource instructionsLabel}" />
-        <maps:Map x:Name="mappy" HeightRequest="300" Loaded="mappy_Loaded" />
+        <Grid x:Name="mapGrid" HeightRequest="300"/>
         <HorizontalStackLayout>
             <Label Text="Travel limit for events:" Style="{StaticResource fieldLabel}" MaximumWidthRequest="150" />
             <Entry x:Name="travelLimitForLocalEvents" Style="{StaticResource fieldEntry}" Keyboard="Numeric" MaxLength="3" />
