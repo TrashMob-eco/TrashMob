@@ -25,7 +25,6 @@ public partial class UserLocationPreferencePopup
         InitializeComponent();
 #if !WINDOWS
         mappy = new Microsoft.Maui.Controls.Maps.Map();
-        mappy.HeightRequest = 300;
         mappy.Loaded += mappy_Loaded;
         mapGrid.Add(mappy);
 #else
