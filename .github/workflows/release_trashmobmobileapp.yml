@@ -86,6 +86,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Update Build Number
+      run: |
+        buildNumber=`/bin/date +%Y%m%d%H%M%S`
+        echo $buildNumber
+        /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" "TrashMobMobileApp/Platforms/iOS/Info.plist"
+
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v3
       with:
