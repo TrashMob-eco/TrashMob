@@ -138,16 +138,19 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
                         <Form onSubmit={handleSave} >
 
                             <Form.Group className="required">
+                                <Form.Label className="control-label font-weight-bold h5">Name</Form.Label>
                                 <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required placeholder="Enter Name" />
                                 <span style={{ color: "red" }}>{nameErrors}</span>
                             </Form.Group>
 
                             <Form.Group className="required">
+                                <Form.Label className="control-label font-weight-bold h5">Email</Form.Label>
                                 <Form.Control type="text" defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required placeholder="Enter Email" />
                                 <span style={{ color: "red" }}>{emailErrors}</span>
                             </Form.Group >
 
                             <Form.Group className="required">
+                                <Form.Label className="control-label font-weight-bold h5">Message</Form.Label>
                                 <Form.Control as="textarea" defaultValue={message} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleMessageChanged(val.target.value)} required placeholder="Enter Message" />
                                 <span style={{ color: "red" }}>{messageErrors}</span>
                             </Form.Group >
