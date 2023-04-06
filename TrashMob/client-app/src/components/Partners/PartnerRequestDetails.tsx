@@ -284,6 +284,7 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
                                 <Form.Row>
                                     <Col>
                                         <Form.Group>
+                                            <Form.Label className="control-label font-weight-bold h5" htmlFor="City">Street Address</Form.Label>
                                             <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="streetAddress" value={streetAddress} />
                                         </Form.Group>
                                     </Col>
@@ -291,11 +292,13 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
                                 <Form.Row>
                                     <Col>
                                         <Form.Group>
+                                            <Form.Label className="control-label font-weight-bold h5" htmlFor="City">City</Form.Label>
                                             <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="city" value={city} />
                                         </Form.Group>
                                     </Col>
                                     <Col>
                                         <Form.Group>
+                                            <Form.Label className="control-label font-weight-bold h5" htmlFor="PostalCode">Postal Code</Form.Label>
                                             <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="postalCode" value={postalCode} />
                                         </Form.Group>
                                     </Col>

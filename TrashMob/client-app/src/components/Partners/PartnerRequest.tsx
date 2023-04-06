@@ -378,6 +378,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                 <Form.Row>
                                     <Col>
                                         <Form.Group>
+                                            <Form.Label className="control-label h5" htmlFor="StreetAddress">Street Address</Form.Label>
                                             <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="streetAddress" value={streetAddress} />
                                         </Form.Group>
                                     </Col>
@@ -386,11 +387,13 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                 <Form.Row>
                                     <Col>
                                         <Form.Group>
+                                            <Form.Label className="control-label h5" htmlFor="City">City</Form.Label>
                                             <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="city" value={city} />
                                         </Form.Group>
                                     </Col>
                                     <Col>
                                         <Form.Group>
+                                            <Form.Label className="control-label h5" htmlFor="PostalCode">Postal Code</Form.Label>
                                             <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="postalCode" value={postalCode} />
                                         </Form.Group>
                                     </Col>
