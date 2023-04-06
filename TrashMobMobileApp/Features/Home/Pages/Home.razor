@@ -2,27 +2,20 @@
 
 <ErrorBoundary>
     <ChildContent>
-        <MudContainer Style="height: 100%; margin-top: 5%">
-            <MudCard>
-                <MudCardContent>
-                    <MudImage Src="images/meetup.png" ObjectFit="ObjectFit.Cover" ObjectPosition="ObjectPosition.Center" Fluid="true"/>
-                </MudCardContent>
-                <MudCardActions>
-                    <MudLink Href="https://www.trashmob.eco/aboutus" Color="Color.Primary" Underline="Underline.Always">Learn More</MudLink>
-                </MudCardActions>
-            </MudCard>
-            <MudStack Style="width: 100%; margin-top: 10%">
-                <MudStack Style="margin-bottom: 10px; width: 100%" Row Justify="Justify.Center">
+        <MudPaper Class="d-flex flex-column flex-grow-1" Elevation="0">
+            <MudPaper Class="d-flex flex-column justify-center mud-width-full pa-10">
+                <MudImage Src="images/meetup.png" ObjectFit="ObjectFit.Contain" />
+                <MudLink Href="https://www.trashmob.eco/aboutus" Color="Color.Primary" Underline="Underline.Always">Learn More</MudLink>
+            </MudPaper>
+            <MudPaper Class="d-flex align-end justify-center mud-width-full" Elevation="0">
+                <MudStack>
+
                     <MudFab StartIcon="@Icons.Material.Filled.Event" Color="Color.Primary" Label="Events" OnClick="() => Navigator.NavigateTo(Routes.Events)" />
-                </MudStack>
-                <MudStack Style="margin-bottom: 10px; width: 100%" Row Justify="Justify.Center">
                     <MudFab StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Label="Create Event" OnClick="() => Navigator.NavigateTo(Routes.CreateEvent)" />
-                </MudStack>
-                <MudStack Style="margin-bottom: 10px; width: 100%" Row Justify="Justify.Center">
                     <MudFab StartIcon="@Icons.Material.Filled.Person" Color="Color.Primary" Label="Set Location Preference" OnClick="() => OnUserLocationPreference_Click()" />
                 </MudStack>
-            </MudStack>
-        </MudContainer>
+            </MudPaper>
+        </MudPaper>
     </ChildContent>
     <ErrorContent>
         @context.Message

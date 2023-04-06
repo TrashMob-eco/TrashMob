@@ -49,7 +49,7 @@ jobs:
       run: | 
         dotnet restore TrashMobMobileApp.sln
 
-    - name: Publish Mobile App
+    - name: Publish Android Mobile App
       run: |
         dotnet publish TrashMobMobileApp.sln -c:${{ env.CONFIGURATION }} -f:net7.0-android --no-restore /p:AndroidPackageFormat="aab"
       
@@ -88,6 +88,12 @@ jobs:
       run: |
         rm ./TrashMobMobileApp/Platforms/iOS/Info.plist 
         cp ./TrashMobMobileApp/Platforms/iOS/Info-Debug.plist TrashMobMobileApp/Platforms/iOS/Info.plist 
+
+    - name: Update Build Number
+      run: |
+        buildNumber=`/bin/date +%Y%m%d%H%M%S`
+        echo $buildNumber
+        /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" "TrashMobMobileApp/Platforms/iOS/Info.plist"
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v3
