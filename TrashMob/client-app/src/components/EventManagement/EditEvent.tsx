@@ -543,16 +543,19 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         <Form.Row className='mt-5'>
                             <Col lg={4}>
                                 <Form.Group>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="StreetAddress">Street Address</Form.Label>
                                     <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="streetAddress" value={streetAddress} />
                                 </Form.Group>
                             </Col>
                             <Col lg={4}>
                                 <Form.Group className="required">
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="City">City</Form.Label>
                                     <Form.Control className='border-0 bg-light h-60 p-18' disabled type="text" name="city" value={city} />
                                 </Form.Group>
                             </Col>
                             <Col lg={4}>
                                 <Form.Group>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="PostalCode">Postal Code</Form.Label>
                                     <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="postalCode" value={postalCode} />
                                 </Form.Group>
                             </Col>
@@ -560,16 +563,19 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         <Form.Row className='mt-4'>
                             <Col lg={4}>
                                 <Form.Group className="required">
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Country">Country</Form.Label>
                                     <Form.Control type="text" className='border-0 bg-light h-60 p-18' name="country" value={country ?? ""} />
                                 </Form.Group>
                             </Col>
                             <Col lg={4}>
                                 <Form.Group>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Latitude">Latitude</Form.Label>
                                     <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="latitude" value={latitude} />
                                 </Form.Group>
                             </Col>
                             <Col lg={4}>
                                 <Form.Group>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Longitude">Longitude</Form.Label>
                                     <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="longitude" value={longitude} />
                                 </Form.Group>
                             </Col>
