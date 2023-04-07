@@ -301,32 +301,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.EventDurationMinutes}</Tooltip>
     }
 
-    function renderStreetAddressToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.EventStreetAddress}</Tooltip>
-    }
-
-    function renderCityToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.EventCity}</Tooltip>
-    }
-
-    function renderCountryToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.EventCountry}</Tooltip>
-    }
-
-    function renderPostalCodeToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.EventPostalCode}</Tooltip>
-    }
-
     function renderMaxNumberOfParticipantsToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.EventMaxNumberOfParticipants}</Tooltip>
-    }
-
-    function renderLatitudeToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.EventLatitude}</Tooltip>
-    }
-
-    function renderLongitudeToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.EventLongitude}</Tooltip>
     }
 
     function renderEventTypeToolTip(props: any) {
@@ -567,25 +543,19 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         <Form.Row className='mt-5'>
                             <Col lg={4}>
                                 <Form.Group>
-                                    <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
-                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="StreetAddress">Street Address</Form.Label>
-                                    </OverlayTrigger>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="StreetAddress">Street Address</Form.Label>
                                     <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="streetAddress" value={streetAddress} />
                                 </Form.Group>
                             </Col>
                             <Col lg={4}>
                                 <Form.Group className="required">
-                                    <OverlayTrigger placement="top" overlay={renderCityToolTip}>
-                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="City">City</Form.Label>
-                                    </OverlayTrigger >
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="City">City</Form.Label>
                                     <Form.Control className='border-0 bg-light h-60 p-18' disabled type="text" name="city" value={city} />
                                 </Form.Group>
                             </Col>
                             <Col lg={4}>
                                 <Form.Group>
-                                    <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="PostalCode">Postal Code</Form.Label>
-                                    </OverlayTrigger >
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="PostalCode">Postal Code</Form.Label>
                                     <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="postalCode" value={postalCode} />
                                 </Form.Group>
                             </Col>
@@ -593,25 +563,19 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                         <Form.Row className='mt-4'>
                             <Col lg={4}>
                                 <Form.Group className="required">
-                                    <OverlayTrigger placement="top" overlay={renderCountryToolTip}>
-                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="Country">Country</Form.Label>
-                                    </OverlayTrigger >
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Country">Country</Form.Label>
                                     <Form.Control type="text" className='border-0 bg-light h-60 p-18' name="country" value={country ?? ""} />
                                 </Form.Group>
                             </Col>
                             <Col lg={4}>
                                 <Form.Group>
-                                    <OverlayTrigger placement="top" overlay={renderLatitudeToolTip}>
-                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="Latitude">Latitude</Form.Label>
-                                    </OverlayTrigger>
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Latitude">Latitude</Form.Label>
                                     <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="latitude" value={latitude} />
                                 </Form.Group>
                             </Col>
                             <Col lg={4}>
                                 <Form.Group>
-                                    <OverlayTrigger placement="top" overlay={renderLongitudeToolTip}>
-                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="Longitude">Longitude</Form.Label>
-                                    </OverlayTrigger >
+                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Longitude">Longitude</Form.Label>
                                     <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="longitude" value={longitude} />
                                 </Form.Group>
                             </Col>

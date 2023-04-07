@@ -3,9 +3,6 @@ import ContactRequestData from '../Models/ContactRequestData';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { loadCaptchaEnginge, LoadCanvasTemplateNoReload, validateCaptcha } from 'react-simple-captcha';
 import { getDefaultHeaders } from '../../store/AuthStore';
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
-import * as ToolTips from "../../store/ToolTips";
 import { Button, ButtonGroup, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import * as Constants from '../Models/Constants';
 
@@ -122,19 +119,6 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
         loadCaptchaEnginge(6, 'white', 'black');
     }, []);
 
-
-    function renderNameToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.ContactUsName}</Tooltip>
-    }
-
-    function renderEmailToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.ContactUsEmail}</Tooltip>
-    }
-
-    function renderMessageToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.ContactUsMessage}</Tooltip>
-    }
-
     return (
         <Container>
             <Row className="gx-2 py-5" lg={2}>
@@ -154,25 +138,19 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
                         <Form onSubmit={handleSave} >
 
                             <Form.Group className="required">
-                                <OverlayTrigger placement="top" overlay={renderNameToolTip}>
-                                    <Form.Label className="control-label font-weight-bold h5">Name</Form.Label>
-                                </OverlayTrigger>
+                                <Form.Label className="control-label font-weight-bold h5">Name</Form.Label>
                                 <Form.Control type="text" defaultValue={name} maxLength={parseInt('64')} onChange={(val) => handleNameChanged(val.target.value)} required placeholder="Enter Name" />
                                 <span style={{ color: "red" }}>{nameErrors}</span>
                             </Form.Group>
 
                             <Form.Group className="required">
-                                <OverlayTrigger placement="top" overlay={renderEmailToolTip}>
-                                    <Form.Label className="control-label font-weight-bold h5">Email</Form.Label>
-                                </OverlayTrigger>
+                                <Form.Label className="control-label font-weight-bold h5">Email</Form.Label>
                                 <Form.Control type="text" defaultValue={email} maxLength={parseInt('64')} onChange={(val) => handleEmailChanged(val.target.value)} required placeholder="Enter Email" />
                                 <span style={{ color: "red" }}>{emailErrors}</span>
                             </Form.Group >
 
                             <Form.Group className="required">
-                                <OverlayTrigger placement="top" overlay={renderMessageToolTip}>
-                                    <Form.Label className="control-label font-weight-bold h5">Message</Form.Label>
-                                </OverlayTrigger>
+                                <Form.Label className="control-label font-weight-bold h5">Message</Form.Label>
                                 <Form.Control as="textarea" defaultValue={message} maxLength={parseInt('2048')} rows={5} cols={5} onChange={(val) => handleMessageChanged(val.target.value)} required placeholder="Enter Message" />
                                 <span style={{ color: "red" }}>{messageErrors}</span>
                             </Form.Group >
