@@ -37,7 +37,7 @@
 
         private void AddPickupLocation()
         {
-            App.Current.MainPage.Navigation.PushModalAsync(new Pickups());
+            App.Current.MainPage.Navigation.PushModalAsync(new AddPickupLocation());
         }
 
         private async Task OnDoActionAsync()
