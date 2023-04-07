@@ -1,7 +1,6 @@
-﻿using ObjCRuntime;
-using UIKit;
+﻿namespace TrashMobMobileApp.Platforms.iOS;
 
-namespace TrashMobMobileApp.Platforms.iOS;
+using UIKit;
 
 public class Program
 {

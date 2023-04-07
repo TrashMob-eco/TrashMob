@@ -51,6 +51,11 @@ jobs:
       run: | 
         dotnet restore TrashMobMobileApp.sln
 
+    - name: Rename AndroidManifest.xml for Release
+      run: |
+        rm ./TrashMobMobileApp/Platforms/Android/AndroidManifest.xml 
+        cp ./TrashMobMobileApp/Platforms/Android/AndroidManifest-Release.xml TrashMobMobileApp/Platforms/Android/AndroidManifest.xml 
+
     - name: Publish Mobile App
       run: |
         dotnet publish TrashMobMobileApp.sln -c:${{ env.CONFIGURATION }} -f:net7.0-android --no-restore /p:AndroidPackageFormat="aab"
