@@ -1,14 +1,18 @@
 ﻿namespace TrashMobMobileApp.Data
 {
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Http.Internal;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Net.Http.Json;
+    using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMobMobileApp.Config;
+    using TrashMobMobileApp.Models;
 
     public class PickupLocationRestService : RestServiceBase, IPickupLocationRestService
     {
@@ -64,7 +68,7 @@
         {
             try
             {
-                var content = JsonContent.Create(pickupLocation, typeof(EventSummary), null, SerializerOptions);
+                var content = JsonContent.Create(pickupLocation, typeof(PickupLocation), null, SerializerOptions);
 
                 using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
                 {
@@ -130,6 +134,36 @@
                 using (var response = await AuthorizedHttpClient.PostAsync(requestUri, null, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(@"\tERROR {0}", ex.Message);
+                throw;
+            }
+        }
+
+        public async Task AddPickupLocationImageAsync(Guid eventId, Guid pickupLocationId, string localFileName, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var requestUri = Controller + "/image/" + eventId;
+
+                using (var stream = File.OpenRead(localFileName))
+                {
+                    var pickupImage = new ImageUpload()
+                    {
+                        ParentId = pickupLocationId,
+                        ImageType = ImageTypeEnum.Pickup,
+                        FormFile = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(stream.Name))
+                    };
+
+                    var content = JsonContent.Create(pickupImage, typeof(ImageUpload), null, SerializerOptions);
+
+                    using (var response = await AuthorizedHttpClient.PostAsync(requestUri, content, cancellationToken))
+                    {
+                        response.EnsureSuccessStatusCode();
+                    }
                 }
             }
             catch (Exception ex)

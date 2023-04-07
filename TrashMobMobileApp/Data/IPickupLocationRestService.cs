@@ -17,5 +17,7 @@
         Task SubmitLocationsAsync(Guid eventId, CancellationToken cancellationToken = default);
 
         Task<IEnumerable<PickupLocation>> DeletePickupLocationAsync(PickupLocation pickupLocation, CancellationToken cancellationToken = default);
+
+        Task AddPickupLocationImageAsync(Guid eventId, Guid pickupLocationId, string localFileName, CancellationToken cancellationToken = default);
     }
 }

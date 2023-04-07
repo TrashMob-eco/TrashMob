@@ -20,6 +20,12 @@
         [Inject]
         public IMobEventManager MobEventManager { get; set; }
 
+        [Inject]
+        public IMapRestService MapRestService { get; set; }
+
+        [Inject]
+        public IPickupLocationRestService PickupLocationRestService { get; set; }
+
         [Parameter]
         public string EventId { get; set; }
 
@@ -37,7 +43,7 @@
 
         private void AddPickupLocation()
         {
-            App.Current.MainPage.Navigation.PushModalAsync(new AddPickupLocation());
+            App.Current.MainPage.Navigation.PushModalAsync(new AddPickupLocation(MapRestService, PickupLocationRestService, _event.Id));
         }
 
         private async Task OnDoActionAsync()

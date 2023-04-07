@@ -10,10 +10,13 @@ public partial class AddPickupLocation : ContentPage
     private PickupLocation pickupLocation = new PickupLocation();
     private string localFilePath = string.Empty;
     private IMapRestService mapRestService;
+    private readonly IPickupLocationRestService pickupLocationRestService;
 
-    public AddPickupLocation(IMapRestService mapRestService)
+    public AddPickupLocation(IMapRestService mapRestService, IPickupLocationRestService pickupLocationRestService, Guid eventId)
     {
         this.mapRestService = mapRestService;
+        this.pickupLocationRestService = pickupLocationRestService;
+        pickupLocation.EventId = eventId;
     }
 
     public AddPickupLocation()
@@ -93,9 +96,11 @@ public partial class AddPickupLocation : ContentPage
         postalCode.Text = address.PostalCode;
     }
 
-    private void SaveButton_Clicked(object sender, EventArgs e)
+    private async void SaveButton_Clicked(object sender, EventArgs e)
     {
-        
+        await pickupLocationRestService.AddPickupLocationAsync(pickupLocation);
+
+        await pickupLocationRestService.AddPickupLocationImageAsync(pickupLocation.EventId, pickupLocation.Id, localFilePath);
     }
 
     private void CloseButton_Clicked(object sender, EventArgs e)
