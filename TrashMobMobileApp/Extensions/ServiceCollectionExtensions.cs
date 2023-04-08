@@ -49,6 +49,7 @@
             services.AddSingleton<IMapRestService, MapRestService>();
             services.AddSingleton<IMobEventManager, MobEventManager>();
             services.AddSingleton<IMobEventRestService, MobEventRestService>();
+            services.AddSingleton<IPickupLocationRestService, PickupLocationRestService>();
             services.AddSingleton<IUserManager, UserManager>();
             services.AddSingleton<IUserRestService, UserRestService>();
             services.AddSingleton<IWaiverManager, WaiverManager>();

@@ -14,31 +14,14 @@ public partial class AddPickupLocation : ContentPage
 
     public AddPickupLocation(IMapRestService mapRestService, IPickupLocationRestService pickupLocationRestService, Guid eventId)
     {
+        InitializeComponent();
         this.mapRestService = mapRestService;
         this.pickupLocationRestService = pickupLocationRestService;
         pickupLocation.EventId = eventId;
     }
 
-    public AddPickupLocation()
-	{
-		InitializeComponent();
-	}
-
     public async void TakePhoto_Clicked(object sender, EventArgs e)
     {
-        Location location = await GetCurrentLocation();
-        var address = await mapRestService.GetAddressAsync(location.Latitude, location.Longitude);
-        pickupLocation.Longitude = location.Longitude;
-        pickupLocation.Latitude = location.Latitude;
-        pickupLocation.City = address.City; 
-        pickupLocation.Country = address.Country; 
-        pickupLocation.County = address.County; 
-        pickupLocation.PostalCode = address.PostalCode;
-        pickupLocation.Region = address.Region;
-        pickupLocation.StreetAddress = address.StreetAddress;
-
-        SetFields(address);
-
         if (MediaPicker.Default.IsCaptureSupported)
         {
             FileResult photo = await MediaPicker.Default.CapturePhotoAsync();
@@ -52,8 +35,25 @@ public partial class AddPickupLocation : ContentPage
                 using FileStream localFileStream = File.OpenWrite(localFilePath);
 
                 await sourceStream.CopyToAsync(localFileStream);
+
+                pickupPhoto.Source = localFilePath;
+                pickupPhoto.IsVisible = true;
             }
         }
+
+        Location location = await GetCurrentLocation();
+        var address = await mapRestService.GetAddressAsync(location.Latitude, location.Longitude);
+        pickupLocation.Longitude = location.Longitude;
+        pickupLocation.Latitude = location.Latitude;
+        pickupLocation.City = address.City;
+        pickupLocation.Country = address.Country;
+        pickupLocation.County = address.County;
+        pickupLocation.PostalCode = address.PostalCode;
+        pickupLocation.Region = address.Region;
+        pickupLocation.StreetAddress = address.StreetAddress;
+
+        SetFields(address);
+        photoLocation.IsVisible = true;
     }
 
     public async Task<Location> GetCurrentLocation()
@@ -98,9 +98,9 @@ public partial class AddPickupLocation : ContentPage
 
     private async void SaveButton_Clicked(object sender, EventArgs e)
     {
-        await pickupLocationRestService.AddPickupLocationAsync(pickupLocation);
+        var updatedPickupLocation = await pickupLocationRestService.AddPickupLocationAsync(pickupLocation);
 
-        await pickupLocationRestService.AddPickupLocationImageAsync(pickupLocation.EventId, pickupLocation.Id, localFilePath);
+        await pickupLocationRestService.AddPickupLocationImageAsync(updatedPickupLocation.EventId, updatedPickupLocation.Id, localFilePath);
     }
 
     private void CloseButton_Clicked(object sender, EventArgs e)

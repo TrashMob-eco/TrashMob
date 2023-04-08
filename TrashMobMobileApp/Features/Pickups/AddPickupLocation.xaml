@@ -4,25 +4,31 @@
              x:Class="TrashMobMobileApp.Features.Pickups.AddPickupLocation"
              Title="Add Pickup Location">
     <VerticalStackLayout>
-        <Editor x:Name="Notes" Style="{StaticResource fieldEntry}" MaxLength="1024" />
+        <Image x:Name="pickupPhoto" IsVisible="false" MaximumHeightRequest="200" />
         <Button Text="Take Photo" Clicked="TakePhoto_Clicked" Style="{StaticResource formButton}" />
-        <HorizontalStackLayout>
-            <Label Text="Street Address:" Style="{StaticResource fieldLabel}" />
-            <Entry IsReadOnly="True" x:Name="streetAddress" Style="{StaticResource fieldEntry}" />
-        </HorizontalStackLayout>
-        <HorizontalStackLayout>
-            <Label Text="City:" Style="{StaticResource fieldLabel}" />
-            <Entry IsReadOnly="True" x:Name="city" Style="{StaticResource fieldEntry}" />
-        </HorizontalStackLayout>
-        <HorizontalStackLayout>
-            <Label Text="State:" Style="{StaticResource fieldLabel}" />
-            <Entry IsReadOnly="True" x:Name="state" Style="{StaticResource fieldEntry}" />
-        </HorizontalStackLayout>
-        <HorizontalStackLayout>
-            <Label Text="Postal Code:" Style="{StaticResource fieldLabel}" />
-            <Entry IsReadOnly="True" x:Name="postalCode" Style="{StaticResource fieldEntry}" />
-        </HorizontalStackLayout>
-        <Button Text="Save" Clicked="SaveButton_Clicked" Style="{StaticResource formButton}" />
+        <VerticalStackLayout x:Name="photoLocation" IsVisible="false">
+            <HorizontalStackLayout>
+                <Label Text="Notes:" Style="{StaticResource fieldLabel}" />
+                <Editor x:Name="notes" Style="{StaticResource fieldEntry}" MaxLength="1024" MaximumWidthRequest="200" MinimumWidthRequest="200"/>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout>
+                <Label Text="Street Address:" Style="{StaticResource fieldLabel}" />
+                <Entry IsReadOnly="True" x:Name="streetAddress" Style="{StaticResource fieldEntry}" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout>
+                <Label Text="City:" Style="{StaticResource fieldLabel}" />
+                <Entry IsReadOnly="True" x:Name="city" Style="{StaticResource fieldEntry}" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout>
+                <Label Text="State:" Style="{StaticResource fieldLabel}" />
+                <Entry IsReadOnly="True" x:Name="state" Style="{StaticResource fieldEntry}" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout>
+                <Label Text="Postal Code:" Style="{StaticResource fieldLabel}" />
+                <Entry IsReadOnly="True" x:Name="postalCode" Style="{StaticResource fieldEntry}" />
+            </HorizontalStackLayout>
+            <Button Text="Save" Clicked="SaveButton_Clicked" Style="{StaticResource formButton}" />
+        </VerticalStackLayout>
         <Button Text="Close" Clicked="CloseButton_Clicked" Style="{StaticResource formButton}" />
     </VerticalStackLayout>
 </ContentPage>

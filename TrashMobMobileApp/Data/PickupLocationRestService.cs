@@ -53,9 +53,10 @@
                 using (var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
+                    string responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                    var result = JsonConvert.DeserializeObject<PickupLocation>(responseContent);
+                    return result;
                 }
-
-                return await GetPickupLocationAsync(pickupLocation.Id, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -73,9 +74,10 @@
                 using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
+                    string responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                    var result = JsonConvert.DeserializeObject<PickupLocation>(responseContent);
+                    return result;
                 }
-
-                return await GetPickupLocationAsync(pickupLocation.Id, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -156,6 +158,10 @@
                         ParentId = pickupLocationId,
                         ImageType = ImageTypeEnum.Pickup,
                         FormFile = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(stream.Name))
+                        {
+                            Headers = new HeaderDictionary(),
+                            ContentType = "image/jpeg"
+                        }
                     };
 
                     var content = JsonContent.Create(pickupImage, typeof(ImageUpload), null, SerializerOptions);
