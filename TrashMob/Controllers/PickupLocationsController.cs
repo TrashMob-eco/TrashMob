@@ -7,6 +7,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Poco;
     using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
 
@@ -15,12 +16,14 @@
     {
         private readonly IPickupLocationManager pickupLocationManager;
         private readonly IEventManager eventManager;
+        private readonly IImageManager imageManager;
 
-        public PickupLocationsController(IPickupLocationManager pickupLocationManager, IEventManager eventManager) 
+        public PickupLocationsController(IPickupLocationManager pickupLocationManager, IEventManager eventManager, IImageManager imageManager) 
             : base(pickupLocationManager)
         {
             this.pickupLocationManager = pickupLocationManager;
             this.eventManager = eventManager;
+            this.imageManager = imageManager;
         }
 
         [HttpGet("{pickupLocationId}")]
@@ -113,5 +116,22 @@
 
             return Ok();
         }
+
+        [HttpPost("image/{eventId}")]
+        public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload, Guid eventId, CancellationToken cancellationToken)
+        {
+            var mobEvent = eventManager.GetAsync(eventId, cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            await imageManager.UploadImage(imageUpload);
+
+            return Ok();
+        }
+
     }
 }

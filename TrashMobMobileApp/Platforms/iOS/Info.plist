@@ -34,5 +34,7 @@
 	<string>Can TrashMob.eco use your location at all times?</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Can TrashMob.eco use your location when the TrashMob.eco app is being used?</string>
+	<key>CFBundleVersion</key>
+	<string>3</string>
 </dict>
 </plist>

@@ -243,14 +243,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         }
     }
 
-    function renderStreetAddressToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestStreetAddress}</Tooltip>
-    }
-
-    function renderCityToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestCity}</Tooltip>
-    }
-
     function setPartnerType(val: boolean) {
         if (val) {
             setPartnerTypeId(Constants.PartnerTypeGovernment)
@@ -258,10 +250,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         else {
             setPartnerTypeId(Constants.PartnerTypeBusiness);
         }
-    }
-
-    function renderPostalCodeToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestPostalCode}</Tooltip>
     }
 
     function handleLocationChange(point: data.Position) {
@@ -390,9 +378,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                 <Form.Row>
                                     <Col>
                                         <Form.Group>
-                                            <OverlayTrigger placement="top" overlay={renderStreetAddressToolTip}>
-                                                <Form.Label className="control-label h5" htmlFor="StreetAddress">Street Address</Form.Label>
-                                            </OverlayTrigger >
+                                            <Form.Label className="control-label h5" htmlFor="StreetAddress">Street Address</Form.Label>
                                             <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="streetAddress" value={streetAddress} />
                                         </Form.Group>
                                     </Col>
@@ -401,17 +387,13 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                 <Form.Row>
                                     <Col>
                                         <Form.Group>
-                                            <OverlayTrigger placement="top" overlay={renderCityToolTip}>
-                                                <Form.Label className="control-label h5" htmlFor="City">City</Form.Label>
-                                            </OverlayTrigger >
+                                            <Form.Label className="control-label h5" htmlFor="City">City</Form.Label>
                                             <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="city" value={city} />
                                         </Form.Group>
                                     </Col>
                                     <Col>
                                         <Form.Group>
-                                            <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                                <Form.Label className="control-label h5" htmlFor="PostalCode">Postal Code</Form.Label>
-                                            </OverlayTrigger >
+                                            <Form.Label className="control-label h5" htmlFor="PostalCode">Postal Code</Form.Label>
                                             <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="postalCode" value={postalCode} />
                                         </Form.Group>
                                     </Col>

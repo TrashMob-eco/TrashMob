@@ -61,7 +61,7 @@
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
 		 <CreatePackage>false</CreatePackage>
 		 <CodesignKey>Apple Distribution: TrashMob (367LR8J89Q)</CodesignKey>
-		 <CodesignProvision>eco.trashmob App Store Distribution</CodesignProvision>
+		 <CodesignProvision>Automatic</CodesignProvision>
 		 <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
 		 <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
     </PropertyGroup>

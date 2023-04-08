@@ -1,6 +1,6 @@
-﻿using Foundation;
+﻿namespace TrashMobMobileApp.Platforms.iOS;
 
-namespace TrashMobMobileApp.Platforms.iOS;
+using Foundation;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
