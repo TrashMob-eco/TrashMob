@@ -3,14 +3,16 @@
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Identity.Web.Resource;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Poco;
     using TrashMob.Security;
+    using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
-
+    
     [Route("api/pickuplocations")]
     public class PickupLocationsController : KeyedController<PickupLocation>
     {
@@ -80,6 +82,7 @@
         }
 
         [HttpPost]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public override async Task<IActionResult> Add(PickupLocation instance, CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(instance.EventId, cancellationToken);
@@ -99,6 +102,7 @@
         }
 
         [HttpPost("submit/{eventId}")]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> SubmitPickupLocations(Guid eventId, CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
@@ -118,9 +122,10 @@
         }
 
         [HttpPost("image/{eventId}")]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload, Guid eventId, CancellationToken cancellationToken)
         {
-            var mobEvent = eventManager.GetAsync(eventId, cancellationToken);
+            var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
@@ -132,6 +137,5 @@
 
             return Ok();
         }
-
     }
 }
