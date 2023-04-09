@@ -122,16 +122,16 @@
         }
 
         [HttpPost("image/{eventId}")]
-        [RequiredScope(Constants.TrashMobWriteScope)]
+        //[RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload, Guid eventId, CancellationToken cancellationToken)
         {
-            var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
+            //var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
+            //var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
 
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
-            {
-                return Forbid();
-            }
+            //if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            //{
+            //    return Forbid();
+            //}
 
             await imageManager.UploadImage(imageUpload);
 
