@@ -86,7 +86,10 @@ namespace TrashMob
                 services.AddScoped<IDocusignAuthenticator, DocusignStringAuthenticator>();
                 services.AddAzureClients(azureClientFactoryBuilder =>
                 {
-                    azureClientFactoryBuilder.UseCredential(new DefaultAzureCredential());
+                    azureClientFactoryBuilder.UseCredential(new DefaultAzureCredential(new DefaultAzureCredentialOptions()
+                    {
+                        VisualStudioTenantId = Configuration.GetValue<string>("TrashMobBackendTenantId")
+                    }));
                     azureClientFactoryBuilder.AddBlobServiceClient(Configuration.GetValue<Uri>("StorageAccountUri"));
                 });
             }
@@ -95,6 +98,7 @@ namespace TrashMob
                 services.AddAzureClients(azureClientFactoryBuilder =>
                 {
                     azureClientFactoryBuilder.UseCredential(new DefaultAzureCredential());
+
                     azureClientFactoryBuilder.AddSecretClient(Configuration.GetValue<Uri>("VaultUri"));
                     azureClientFactoryBuilder.AddBlobServiceClient(Configuration.GetValue<Uri>("StorageAccountUri"));
                 });
