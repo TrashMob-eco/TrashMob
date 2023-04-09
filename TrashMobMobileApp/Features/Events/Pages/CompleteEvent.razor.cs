@@ -15,6 +15,7 @@
         private string[] _errors;
         private Event _event;
         private EventSummary _eventSummary = new();
+        private bool isNewSummary = true;
         private bool _isLoading;
 
         [Inject]
@@ -37,7 +38,19 @@
             TitleContainer.Title = IsReadOnly ? "Summary" : "Complete Event";
             _isLoading = true;
             _event = await MobEventManager.GetEventAsync(Guid.Parse(EventId));
-            _eventSummary = (await MobEventManager.GetEventSummaryAsync(Guid.Parse(EventId))) ?? new();
+             
+            var eventSummary = (await MobEventManager.GetEventSummaryAsync(Guid.Parse(EventId)));
+            if (eventSummary != null)
+            {
+                _eventSummary = eventSummary;
+                isNewSummary = false;
+            }
+            else
+            {
+                _eventSummary.EventId = Guid.Parse(EventId);
+                _eventSummary.CreatedByUserId = App.CurrentUser.Id;
+            }
+
             _isLoading = false;
         }
 
@@ -65,14 +78,17 @@
                 await _completeEventForm?.Validate();
                 if (_success)
                 {
-                    _eventSummary.EventId = _event.Id;
-                    _eventSummary.CreatedByUserId = App.CurrentUser.Id;
-                    _eventSummary.CreatedDate = DateTimeOffset.UtcNow;
-                    _eventSummary.LastUpdatedByUserId = App.CurrentUser.Id;
-                    _event.EventStatusId = 4;
-                    _event.EventSummary = _eventSummary;
                     _isLoading = true;
-                    await MobEventManager.UpdateEventAsync(_event);
+
+                    if (isNewSummary)
+                    {
+                        await MobEventManager.AddEventSummaryAsync(_eventSummary);
+                    }
+                    else
+                    {
+                        await MobEventManager.UpdateEventSummaryAsync(_eventSummary);
+                    }
+
                     _isLoading = false;
                 }
             }
