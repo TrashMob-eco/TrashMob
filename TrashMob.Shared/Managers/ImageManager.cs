@@ -3,6 +3,7 @@
     using System;
     using System.Threading.Tasks;
     using Azure.Storage.Blobs;
+    using Azure.Storage.Blobs.Models;
     using TrashMob.Poco;
     using TrashMob.Shared.Managers.Interfaces;
 
@@ -17,12 +18,12 @@
 
         public async Task UploadImage(ImageUpload imageUpload)
         {
-            var blobContainer = blobServiceClient.GetBlobContainerClient(imageUpload.ImageType.ToString());
-            var fileName = string.Format("{0}-{1}-{2}", imageUpload.ParentId, imageUpload.ImageType.ToString(), DateTimeOffset.UtcNow.ToString("ddHHmmss")).ToLower();
+            var blobContainer = blobServiceClient.GetBlobContainerClient(imageUpload.ImageType.ToString().ToLower());
+            var fileName = string.Format("{0}-{1}-{2}{3}", imageUpload.ParentId, imageUpload.ImageType.ToString(), DateTimeOffset.UtcNow.ToString("ddHHmmss"), System.IO.Path.GetExtension(imageUpload.FormFile.FileName)).ToLower();
 
             var blobClient = blobContainer.GetBlobClient(fileName);
 
-            await blobClient.UploadAsync(imageUpload.FormFile.OpenReadStream());
+            await blobClient.UploadAsync(imageUpload.FormFile.OpenReadStream(), new BlobHttpHeaders { ContentType = imageUpload.FormFile.ContentType });
         }
     }
 }
