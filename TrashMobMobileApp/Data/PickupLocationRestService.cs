@@ -7,6 +7,7 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Net.Http;
     using System.Net.Http.Json;
     using System.Threading;
     using System.Threading.Tasks;
@@ -153,19 +154,21 @@
 
                 using (var stream = File.OpenRead(localFileName))
                 {
-                    var pickupImage = new ImageUpload()
+                    using var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
+
+                    var streamContent = new StreamContent(stream);
+                    streamContent.Headers.Add("Content-Type", "image/jpeg");
+
+                    using var content = new MultipartFormDataContent
                     {
-                        ParentId = pickupLocationId,
-                        ImageType = ImageUpload.Pickup,
-                        FormFile = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(localFileName))
-                        {
-                            Headers = new HeaderDictionary(),
-                            ContentType = "image/jpeg",
-                        }
+                        { streamContent, "formFile", Path.GetFileName(localFileName)},
+                        { new StringContent(pickupLocationId.ToString()), "parentId" },
+                        { new StringContent(ImageUploadType.Pickup), "imageType" },
                     };
 
-                    var content = JsonContent.Create(pickupImage, typeof(ImageUpload), null, SerializerOptions);
-                    using (var response = await AuthorizedHttpClient.PostAsync(requestUri, content, cancellationToken))
+                    request.Content = content;
+
+                    using (var response = await AuthorizedHttpClient.SendAsync(request, cancellationToken))
                     {
                         response.EnsureSuccessStatusCode();
                     }
