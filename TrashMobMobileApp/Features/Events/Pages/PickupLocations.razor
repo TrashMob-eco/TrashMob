@@ -1,0 +1,7 @@
+﻿@page "/pickuplocations"
+
+<MudTabs Centered Style="width: 100%" Color="ComponentCommon.PrimaryColor" @bind-ActivePanelIndex="@StateInformation.CurrentlyActiveTab">
+    <MudTabPanel Text="Browse">
+        <PickupLocationList />
+    </MudTabPanel>
+</MudTabs>

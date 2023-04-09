@@ -1,0 +1,66 @@
+﻿@*TODO: move to css style sheets*@
+<style>
+    .tm-pickuplocation-list {
+        height: 100%;
+        width: 100%;
+        padding: 20px;
+        position: relative;
+    }
+
+        .tm-pickuplocation-list .tm-loader {
+            top: 50%;
+            position: fixed;
+        }
+
+        .tm-pickuplocation-list .tm-pickuplocation-card {
+            margin-top: 10px;
+        }
+
+        .tm-pickuplocation-list .tm-create-pickuplocation-btn {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .tm-pickuplocation-list .tm-no-pickuplocation-container {
+            text-align: center;
+        }
+</style>
+
+<ErrorBoundary>
+    <ChildContent>
+        <MudContainer Class="tm-pickuplocation-list">
+            <MudOverlay @bind-Visible="_isLoading" Absolute>
+                <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
+            </MudOverlay>
+            <MudButton Color="@ComponentCommon.PrimaryColor"
+                       Variant="@ComponentCommon.CardButtonVariant"
+                       OnClick="@(async () => await OnAddPickupLocationAsync())">Add Pickup Location</MudButton>
+            @if (_pickupLocations.Any())
+            {
+                <MudVirtualize Context="pickupLocation" Items="_pickupLocations">
+                    <MudCard Class="tm-pickuplocation-card">
+                        <MudCardContent>
+                            <MudText Typo="Typo.body2"><strong>Address: </strong>@pickupLocation.StreetAddress</MudText>
+                            <MudText Typo="Typo.body2"><strong>City: </strong>@pickupLocation.City</MudText>
+                            <MudText Typo="Typo.body2"><strong>State: </strong>@pickupLocation.Region</MudText>
+                            <MudText Typo="Typo.body2"><strong>Postal Code: </strong>@pickupLocation.PostalCode</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudVirtualize>
+            }
+            else
+            {
+                if (!_isLoading)
+                {
+                    <MudContainer Class="tm-no-pickuplocations-container">
+                        <MudText>There are no pickup locations set for this event! Get started by creating one.</MudText>
+                    </MudContainer>
+                }
+            }
+        </MudContainer>
+    </ChildContent>
+    <ErrorContent>
+        @context.Message
+    </ErrorContent>
+</ErrorBoundary>

@@ -51,11 +51,10 @@
                 <MudNumericField FullWidth T="int" Disabled="IsReadOnly" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Value="@_eventSummary.NumberOfBags" Label="Number of bags" />
                 <MudTextField FullWidth T="string" Disabled="IsReadOnly" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Text="@_eventSummary.Notes" Label="Notes" Lines="ComponentCommon.TextAreaLinesSpan" />
                 <MudStack Row Justify="Justify.Center" Class="tm-action-item">
-                    <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@AddPickupLocation">Add Pickup Location</MudButton>
                     <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@(() => Navigator.NavigateTo(Routes.Events, forceLoad: true))">Back</MudButton>
                     @if (!IsReadOnly)
                     {
-                        <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnDoActionAsync">Submit</MudButton>
+                        <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnDoActionAsync">Next</MudButton>
                     }
                 </MudStack>
             </MudForm>
