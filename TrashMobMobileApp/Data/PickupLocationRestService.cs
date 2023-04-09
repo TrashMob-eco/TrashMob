@@ -156,16 +156,15 @@
                     var pickupImage = new ImageUpload()
                     {
                         ParentId = pickupLocationId,
-                        ImageType = ImageTypeEnum.Pickup,
-                        FormFile = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(stream.Name))
+                        ImageType = ImageUpload.Pickup,
+                        FormFile = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(localFileName))
                         {
                             Headers = new HeaderDictionary(),
-                            ContentType = "image/jpeg"
+                            ContentType = "image/jpeg",
                         }
                     };
 
                     var content = JsonContent.Create(pickupImage, typeof(ImageUpload), null, SerializerOptions);
-
                     using (var response = await AuthorizedHttpClient.PostAsync(requestUri, content, cancellationToken))
                     {
                         response.EnsureSuccessStatusCode();
