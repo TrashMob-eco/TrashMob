@@ -11,7 +11,6 @@ namespace TrashMob.Shared.Managers
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Poco;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;

@@ -10,7 +10,9 @@
         private List<PickupLocation> _pickupLocations = new();
 
         [Parameter]
+#pragma warning disable BL0007 // Component parameters should be auto properties
         public string EventId
+#pragma warning restore BL0007 // Component parameters should be auto properties
         {
             get
             {

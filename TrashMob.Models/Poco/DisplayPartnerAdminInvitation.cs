@@ -1,5 +1,5 @@
 ﻿
-namespace TrashMob.Shared.Poco
+namespace TrashMob.Models.Poco
 {
     using System;
 
@@ -7,6 +7,6 @@ namespace TrashMob.Shared.Poco
     {
         public Guid Id { get; set; }
 
-        public string PartnerName { get; set; }
-   }
+        public string PartnerName { get; set; } = string.Empty;
+    }
 }

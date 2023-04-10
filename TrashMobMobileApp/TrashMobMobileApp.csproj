@@ -135,6 +135,11 @@
 	  <Compile Include="..\TrashMob.Models\PartnerStatus.cs" Link="Models\PartnerStatus.cs" />
 	  <Compile Include="..\TrashMob.Models\PartnerType.cs" Link="Models\PartnerType.cs" />
 	  <Compile Include="..\TrashMob.Models\PickupLocation.cs" Link="Models\PickupLocation.cs" />
+	  <Compile Include="..\TrashMob.Models\Poco\DisplayEventPartnerLocation.cs" Link="Models\Poco\DisplayEventPartnerLocation.cs" />
+	  <Compile Include="..\TrashMob.Models\Poco\DisplayEventPartnerLocationService.cs" Link="Models\Poco\DisplayEventPartnerLocationService.cs" />
+	  <Compile Include="..\TrashMob.Models\Poco\DisplayEventSummary.cs" Link="Models\Poco\DisplayEventSummary.cs" />
+	  <Compile Include="..\TrashMob.Models\Poco\DisplayPartnerAdminInvitation.cs" Link="Models\Poco\DisplayPartnerAdminInvitation.cs" />
+	  <Compile Include="..\TrashMob.Models\Poco\DisplayPartnerLocationEvent.cs" Link="Models\Poco\DisplayPartnerLocationEvent.cs" />
 	  <Compile Include="..\TrashMob.Models\ServiceType.cs" Link="Models\ServiceType.cs" />
 	  <Compile Include="..\TrashMob.Models\SiteMetric.cs" Link="Models\SiteMetric.cs" />
 	  <Compile Include="..\TrashMob.Models\SocialMediaAccountType.cs" Link="Models\SocialMediaAccountType.cs" />
@@ -216,6 +221,9 @@
       <MauiXaml Update="Shared\MainView.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Models\Poco\" />
     </ItemGroup>
 
 </Project>

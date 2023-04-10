@@ -6,10 +6,11 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
-    using TrashMob.Poco;
+    using TrashMob.Models.Poco;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
     using Xunit;
 
     public class ActiveDirectoryManagerTest  

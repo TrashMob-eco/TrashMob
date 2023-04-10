@@ -7,9 +7,11 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
-    using TrashMob.Poco;
+    using TrashMob.Models.Poco;
+    using TrashMob.Shared.Extensions;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Poco;
 
     public class EventSummaryManager : BaseManager<EventSummary>,  IEventSummaryManager
     {
