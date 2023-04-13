@@ -1,0 +1,56 @@
+﻿@namespace TrashMobMobileApp.Features.Events.Components
+
+<style>
+    .tm-step7-container {
+        height: 100%;
+        padding: 20px;
+    }
+
+        .tm-step7-container .tm-loader {
+            top: 50%;
+            position: fixed;
+        }
+
+        .tm-step7-container .container-item {
+            margin-top: 10px;
+        }
+
+        .tm-step7-container .next-btn {
+            margin-top: 10%;
+            width: 100%;
+        }
+</style>
+
+<ErrorBoundary>
+    <ChildContent>
+        <MudContainer Class="tm-step7-container">z
+            <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+                @if (displayEventPartnerLocations != null)
+                {
+                    <MudVirtualize Context="displayEventPartnerLocation" Items="displayEventPartnerLocations">
+                        <MudCard Class="tm-pickuplocation-card">
+                            <MudCardContent>
+                                <MudText Typo="Typo.body2"><strong>Address: </strong>@pickupLocation.StreetAddress</MudText>
+                                <MudText Typo="Typo.body2"><strong>City: </strong>@pickupLocation.City</MudText>
+                                <MudText Typo="Typo.body2"><strong>State: </strong>@pickupLocation.Region</MudText>
+                                <MudText Typo="Typo.body2"><strong>Postal Code: </strong>@pickupLocation.PostalCode</MudText>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudVirtualize>
+                }
+                else
+                {
+                    if (!_isLoading)
+                    {
+                        <MudContainer Class="tm-no-pickuplocations-container">
+                            <MudText>We're sorry, there are no partner locations available for this event.</MudText>
+                        </MudContainer>
+                    }
+                }
+            </MudStack>
+        </MudContainer>
+    </ChildContent>
+    <ErrorContent>
+        @context.Message
+    </ErrorContent>
+</ErrorBoundary>
