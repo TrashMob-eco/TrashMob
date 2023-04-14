@@ -22,6 +22,13 @@ public partial class MainView : ContentPage
     {
         base.OnAppearing();
 
+        if (UserState.IsDeleting)
+        {
+            await PublicClientSingleton.Instance.DeleteAccountAsync();
+            UserState.UserContext.IsLoggedOn = false;
+            UserState.IsDeleting = false;
+        }
+
         if (UserState.UserContext.IsLoggedOn) 
         {
             await PublicClientSingleton.Instance.SignOutAsync();
