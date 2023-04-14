@@ -105,6 +105,7 @@ p {
 
   .navbar-nav {
     width: 100%;
+    justify-content: space-evenly;
 
     &::after {
       border-right: 2px solid $primary;

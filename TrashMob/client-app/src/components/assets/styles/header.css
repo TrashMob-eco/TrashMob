@@ -15,7 +15,6 @@
     font-size: 18px;
     line-height: 27px;
     font-style: normal;
-    margin-right: 27px;
 }
 
 .logo {
@@ -40,7 +39,9 @@
     border-top: 0.3em solid #96ba00 !important;
 }
 
-#loginBtn, #registerBtn, #userBtn {
+#loginBtn,
+#registerBtn,
+#userBtn {
     width: 115px;
     height: fit-content;
     border-radius: 5px !important;
@@ -67,7 +68,10 @@
     padding-bottom: 4px;
 }
 
-#loginBtn, #helpBtn, #welcomeBtn, #contactFormCancelBtn {
+#loginBtn,
+#helpBtn,
+#welcomeBtn,
+#contactFormCancelBtn {
     background-color: unset !important;
     color: #96ba00 !important;
     border: 1px solid #96ba00 !important;
@@ -121,7 +125,7 @@
     box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 1);
 }
 
-#userBtn + .dropdown-menu > .dropdown-item {
+#userBtn+.dropdown-menu>.dropdown-item {
     font-weight: 400;
     color: #6B6F74;
 }
@@ -140,7 +144,6 @@
 @media (min-width: 1200px) {
     #navbar a {
         font-size: 18px;
-        margin-right: 27px;
     }
 
     .navbar-expand-lg .navbar-collapse {
