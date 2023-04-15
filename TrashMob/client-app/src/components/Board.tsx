@@ -168,7 +168,7 @@ export const Board: React.FC = () => {
                         </Col>
                         <Col md={7}>
                             <div className='d-flex justify-content-between align-items-center'>
-                                <h2 className='m-0 fw-500 font-size-xl color-primary '>Sandra Mau</h2>
+                                <h2 className='m-0 fw-500 font-size-xl color-primary '>Avi Sharoni</h2>
                                 <a href="https://www.linkedin.com/in/avi-sharoni-a626293/"><Image src={linkedIn} alt="linkedIn icon" className="h-100 mt-0 object-fit-cover" /></a>
                             </div>
                             <h5 className='my-3 fw-500 color-grey'>Member at large</h5>
