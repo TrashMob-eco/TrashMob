@@ -133,7 +133,6 @@
 @media (min-width: 992px) {
     #navbar a {
         font-size: medium;
-        margin-right: 13px;
     }
 
     .navbar-expand-lg .navbar-collapse {
