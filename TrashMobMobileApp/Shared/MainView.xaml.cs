@@ -87,7 +87,6 @@ public partial class MainView : ContentPage
         JObject user = ParseIdToken(ar.IdToken);
 
         newContext.AccessToken = ar.AccessToken;
-        newContext.GivenName = user["given_name"]?.ToString();
         newContext.EmailAddress = user["email"]?.ToString() ?? user["emailAddress"]?.ToString();
 
         newContext.IsLoggedOn = true;

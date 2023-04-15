@@ -23,16 +23,10 @@
 3. Contact Us
     a. Request is saved to database
     b. Request is emailed to Admin
-4. Update User Profile
+4. Update User Location Preference
     a. Future
-        i. UserName is immutable
-        ii. Email is immutable
-        iii. Given Name is immutable
-        iv. Last Name is immutable
         v. Instructions / links provided for how to update these values
     b. User can set preferred location, radius, and metric versus imperial
-    c. User can delete the account successfully
-    d. User can change their password (feature not available yet)
 5. Create Event
     a. If user has not signed current waiver, taken to sign waiver screen first
     b. Name required
