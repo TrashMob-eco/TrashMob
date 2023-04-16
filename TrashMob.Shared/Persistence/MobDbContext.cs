@@ -960,8 +960,6 @@
 
                 entity.Property(e => e.SourceSystemUserName).HasMaxLength(32);
 
-                entity.Property(e => e.GivenName).HasMaxLength(32);
-
                 entity.Property(e => e.Email).HasMaxLength(64);
 
                 entity.Property(e => e.City).HasMaxLength(64);
@@ -971,7 +969,7 @@
                 entity.Property(e => e.TrashMobWaiverVersion).HasMaxLength(50);
 
                 entity.HasData(
-                    new User { Id = Guid.Empty, City = "Anytown", Country = "AnyCountry", Email = "info@trashmob.eco", GivenName = "TrashMob", Region = "AnyState", UserName = "TrashMob" });
+                    new User { Id = Guid.Empty, City = "Anytown", Country = "AnyCountry", Email = "info@trashmob.eco", Region = "AnyState", UserName = "TrashMob" });
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.UsersCreated)

@@ -3,24 +3,29 @@
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Identity.Web.Resource;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Poco;
     using TrashMob.Security;
+    using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
-
+    
     [Route("api/pickuplocations")]
     public class PickupLocationsController : KeyedController<PickupLocation>
     {
         private readonly IPickupLocationManager pickupLocationManager;
         private readonly IEventManager eventManager;
+        private readonly IImageManager imageManager;
 
-        public PickupLocationsController(IPickupLocationManager pickupLocationManager, IEventManager eventManager) 
+        public PickupLocationsController(IPickupLocationManager pickupLocationManager, IEventManager eventManager, IImageManager imageManager) 
             : base(pickupLocationManager)
         {
             this.pickupLocationManager = pickupLocationManager;
             this.eventManager = eventManager;
+            this.imageManager = imageManager;
         }
 
         [HttpGet("{pickupLocationId}")]
@@ -77,6 +82,7 @@
         }
 
         [HttpPost]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public override async Task<IActionResult> Add(PickupLocation instance, CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(instance.EventId, cancellationToken);
@@ -96,6 +102,7 @@
         }
 
         [HttpPost("submit/{eventId}")]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> SubmitPickupLocations(Guid eventId, CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
@@ -110,6 +117,23 @@
             await pickupLocationManager.SubmitPickupLocations(eventId, UserId, cancellationToken).ConfigureAwait(false);
 
             TelemetryClient.TrackEvent("SubmitPickupLocations");
+
+            return Ok();
+        }
+
+        [HttpPost("image/{eventId}")]
+        //[RequiredScope(Constants.TrashMobWriteScope)]
+        public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload, Guid eventId, CancellationToken cancellationToken)
+        {
+            //var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
+            //var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
+
+            //if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            //{
+            //    return Forbid();
+            //}
+
+            await imageManager.UploadImage(imageUpload);
 
             return Ok();
         }

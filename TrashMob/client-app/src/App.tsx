@@ -256,7 +256,6 @@ export const App: FC = () => {
                     if (data) {
                         user.id = data.id;
                         user.userName = data.userName;
-                        user.givenName = data.givenName;
                         user.dateAgreedToTrashMobWaiver = data.dateAgreedToTrashMobWaiver;
                         user.memberSince = data.memberSince;
                         user.trashMobWaiverVersion = data.trashMobWaiverVersion;

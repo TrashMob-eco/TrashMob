@@ -9,7 +9,7 @@
         public IFormFile FormFile { get; set; }
 
         public ImageTypeEnum ImageType { get; set; }
-        
+
         public Guid ParentId { get; set; }
     }
 }

@@ -3,7 +3,6 @@ import { Guid } from "guid-typescript";
 class UserData {
     id: string = Guid.createEmpty().toString();
     userName: string = "";
-    givenName: string = "";
     city: string = "";
     region: string = "";
     country: string = "";

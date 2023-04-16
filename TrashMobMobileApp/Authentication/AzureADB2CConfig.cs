@@ -67,6 +67,14 @@
         /// </value>
         public string EditProfilePolicyId { get; set; }
 
+        /// <summary>
+        /// Gets or sets the delete user profile policy you wish to use for your application
+        /// </summary>
+        /// <value>
+        /// The delete user profile policy to use with this application
+        /// </value>
+        public string DeleteProfilePolicyId { get; set; }
+
         public string KeyChainServiceName { get; set; }
     }
 }

@@ -7,6 +7,7 @@ import DarylBarber from './assets/boardOfDirectors/darylbarber.jpg';
 import JakeDiliberto from './assets/boardOfDirectors/JakeDiliberto.svg';
 import KevinGleason from './assets/boardOfDirectors/KevinGleason.svg';
 import SandraMau from './assets/boardOfDirectors/SandraMau.png';
+import AviSharoni from './assets/boardOfDirectors/AviSharoni.jpg';
 import ValerieWilden from './assets/boardOfDirectors/ValerieWilden.svg';
 
 export const Board: React.FC = () => {
@@ -157,6 +158,23 @@ export const Board: React.FC = () => {
                             <p className='font-size-sm color-grey'>She has over a decade of experience and leadership in productizing research and development. Prior to this startup, Sandra was a Senior Computer Vision Research Engineer at National ICT Australia. Additionally, she consulted for the government in several areas of advanced technologies. Earlier in her career, she also worked as a commercial analyst where she helped researchers protect their IP and commercialise their innovation.</p>
                             <p className='font-size-sm color-grey'>Sandra is very active in supporting tech and startup communities. She was the Founding Chair of IEEE QLD Women in Engineering, and listed as one of Australia's Top 50 Female Programmers by Pollenizer 2014, and one of Australia's Top 100 Most Influential Engineers by Engineer's Australia 2015. She's also a regular participant in hackathons including past GovHacks and International Women's Day. She was recognised in 2018 by Pittsburgh Business Times with the Pittsburgh Innovator Award and by QUT with the Innovation and Entrepreneurship Outstanding Alumni Award.</p>
                             <p className='font-size-sm color-grey'>She holds a Masters in Robotics from Carnegie Mellon University, a Bachelors in Engineering Science (Aerospace) from University of Toronto, and an MBA from Queensland University of Technology (QUT).</p> 
+                        </Col>
+                    </Row>
+                </div>
+                <div className='p-4 directorCard'>
+                    <Row>
+                        <Col md={5}>
+                            <Image src={AviSharoni} alt="Avi Sharoni" className="h-100 mt-0 object-fit-cover rounded" />
+                        </Col>
+                        <Col md={7}>
+                            <div className='d-flex justify-content-between align-items-center'>
+                                <h2 className='m-0 fw-500 font-size-xl color-primary '>Avi Sharoni</h2>
+                                <a href="https://www.linkedin.com/in/avi-sharoni-a626293/"><Image src={linkedIn} alt="linkedIn icon" className="h-100 mt-0 object-fit-cover" /></a>
+                            </div>
+                            <h5 className='my-3 fw-500 color-grey'>Member at large</h5>
+                            <p className='font-size-sm color-grey'>Avi Sharoni is a graduate of Babson College for his B.S. degree and NYU Stern School of Business for his M.B.A., both with concentrations in Finance.</p>
+                            <p className='font-size-sm color-grey'>He began his career in real estate with two REITS: Brixmor Property Group and Gramercy Property Trust. At both organizations he worked on the Investment Management teams, preparing portfolio level analytics. After Gramercy, he worked for a high-net worth family office and in private equity with Wharton Equity Partners.</p>
+                            <p className='font-size-sm color-grey'>More recently, Avi has transitioned to the non-profit industry. At both the Brooklyn Navy Yard Development Co. where he served as AVP Finance and ICSC as Director, he worked directly with the CFO's of both organizations. Mr. Sharoni is currently the CFO of the Miami Children's Museum, which is recognized as a premier children's museum in the nation. Avi is passionate about giving back and helping others and is excited to join the Board of TrashMob.</p>
                         </Col>
                     </Row>
                 </div>

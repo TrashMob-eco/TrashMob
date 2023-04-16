@@ -105,6 +105,11 @@
             await this.MSALClientHelperInstance.SignOutUserAsync().ConfigureAwait(false);
         }
 
+        internal async Task DeleteAccountAsync()
+        {
+            await this.MSALClientHelperInstance.DeleteUserAsync().ConfigureAwait(false);
+        }
+
         /// <summary>
         /// Gets scopes for the application
         /// </summary>
