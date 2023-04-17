@@ -54,7 +54,6 @@ namespace TrashMob.Shared.Managers
             {
                 Email = activeDirectoryNewUserRequest.email,
                 ObjectId = activeDirectoryNewUserRequest.objectId,
-                GivenName = activeDirectoryNewUserRequest.givenName,
                 UserName = activeDirectoryNewUserRequest.userName
             };
 
@@ -213,7 +212,6 @@ namespace TrashMob.Shared.Managers
                 return response;
             }
 
-            originalUser.GivenName = activeDirectoryUpdateUserProfileRequest.givenName;
             originalUser.UserName= activeDirectoryUpdateUserProfileRequest.userName;
 
             await userManager.UpdateAsync(originalUser, cancellationToken).ConfigureAwait(false);

@@ -26,7 +26,6 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     const userId = props.currentUser.id;
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
     const [userName, setUserName] = useState<string>("");
-    const [givenName, setGivenName] = useState<string>("");
     const [email, setEmail] = useState<string>();
     const [city, setCity] = useState<string>();
     const [radiusType, setRadiusType] = useState<string>("");
@@ -83,7 +82,6 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                     .then(response => response.json() as Promise<UserData>)
                     .then(data => {
                         setUserName(data.userName);
-                        setGivenName(data.givenName);
                         setEmail(data.email);
                         setCity(data.city);
                         setCountry(data.country);
@@ -156,7 +154,6 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
 
         userData.id = userId;
         userData.userName = userName ?? "";
-        userData.givenName = givenName ?? "";
         userData.email = email ?? "";
         userData.city = city ?? "";
         userData.region = region ?? "";

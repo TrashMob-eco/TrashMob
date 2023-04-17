@@ -60,24 +60,6 @@
     </ClaimsSchema>
     <ClaimsTransformations>
       <!-- Claim transformations needed for LinkedIn technical profile -->
-      <ClaimsTransformation Id="ExtractGivenNameFromLinkedInResponse" TransformationMethod="GetSingleItemFromJson">
-        <InputClaims>
-          <InputClaim ClaimTypeReferenceId="givenName" TransformationClaimType="inputJson" />
-        </InputClaims>
-        <OutputClaims>
-          <OutputClaim ClaimTypeReferenceId="nullStringClaim" TransformationClaimType="key" />
-          <OutputClaim ClaimTypeReferenceId="givenName" TransformationClaimType="value" />
-        </OutputClaims>
-      </ClaimsTransformation>
-      <ClaimsTransformation Id="ExtractSurNameFromLinkedInResponse" TransformationMethod="GetSingleItemFromJson">
-        <InputClaims>
-          <InputClaim ClaimTypeReferenceId="surname" TransformationClaimType="inputJson" />
-        </InputClaims>
-        <OutputClaims>
-          <OutputClaim ClaimTypeReferenceId="nullStringClaim" TransformationClaimType="key" />
-          <OutputClaim ClaimTypeReferenceId="surname" TransformationClaimType="value" />
-        </OutputClaims>
-      </ClaimsTransformation>
     </ClaimsTransformations>    
     <ContentDefinitions>
       <ContentDefinition Id="api.signuporsignin">
@@ -117,8 +99,6 @@
           </CryptographicKeys>
           <OutputClaims>
             <OutputClaim ClaimTypeReferenceId="issuerUserId" PartnerClaimType="oid" />
-            <OutputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="given_name" />
-            <OutputClaim ClaimTypeReferenceId="surName" PartnerClaimType="family_name" />
             <OutputClaim ClaimTypeReferenceId="displayName" PartnerClaimType="name" />
             <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" />
             <OutputClaim ClaimTypeReferenceId="identityProvider" PartnerClaimType="iss" />
@@ -182,8 +162,6 @@
             <OutputClaims>
               <OutputClaim ClaimTypeReferenceId="issuerUserId" PartnerClaimType="id" />
               <OutputClaim ClaimTypeReferenceId="email" PartnerClaimType="email" />
-              <OutputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="given_name" />
-              <OutputClaim ClaimTypeReferenceId="surname" PartnerClaimType="family_name" />
               <OutputClaim ClaimTypeReferenceId="displayName" PartnerClaimType="name" />
               <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="google.com" />
               <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" />
@@ -274,8 +252,6 @@
             <OutputClaim ClaimTypeReferenceId="issuerUserId" PartnerClaimType="sub" />
             <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="https://appleid.apple.com" AlwaysUseDefaultValue="true" />
             <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" AlwaysUseDefaultValue="true" />
-            <OutputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="user.name.firstName"/>
-            <OutputClaim ClaimTypeReferenceId="surname" PartnerClaimType="user.name.lastName"/>
             <OutputClaim ClaimTypeReferenceId="email" />
           </OutputClaims>
           <OutputClaimsTransformations>
@@ -315,15 +291,11 @@
           <InputClaims />
           <OutputClaims>
             <OutputClaim ClaimTypeReferenceId="issuerUserId" PartnerClaimType="id" />
-            <OutputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="firstName.localized" />
-            <OutputClaim ClaimTypeReferenceId="surname" PartnerClaimType="lastName.localized" />
             <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="linkedin.com" AlwaysUseDefaultValue="true" />
             <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" AlwaysUseDefaultValue="true" />
             <OutputClaim ClaimTypeReferenceId="identityProviderAccessToken" PartnerClaimType="{oauth2:access_token}" />
           </OutputClaims>
           <OutputClaimsTransformations>
-            <OutputClaimsTransformation ReferenceId="ExtractGivenNameFromLinkedInResponse" />
-            <OutputClaimsTransformation ReferenceId="ExtractSurNameFromLinkedInResponse" />
             <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName" />
             <OutputClaimsTransformation ReferenceId="CreateUserPrincipalName" />
             <OutputClaimsTransformation ReferenceId="CreateAlternativeSecurityId" />
@@ -416,9 +388,6 @@
             <OutputClaim ClaimTypeReferenceId="newUser"/>
 
             <!-- Optional claims, to be collected from the user -->
-            <!--OutputClaim ClaimTypeReferenceId="displayName"/-->
-            <OutputClaim ClaimTypeReferenceId="givenName"/>
-            <!-- <OutputClaim ClaimTypeReferenceId="surName"/> -->
             <OutputClaim ClaimTypeReferenceId="extension_PrivacyAccepted" Required="true" />      
             <OutputClaim ClaimTypeReferenceId="extension_TOSAccepted" Required="true" />                   
           </OutputClaims>
@@ -470,8 +439,6 @@
                  In addition, if a claim is not in the InputClaims section, but it is in the OutputClaims section, then its
                  value will not be prefilled, but the user will still be prompted for it (with an empty value). -->
             <InputClaim ClaimTypeReferenceId="displayName" />
-            <InputClaim ClaimTypeReferenceId="givenName" />
-            <InputClaim ClaimTypeReferenceId="surname" />
           </InputClaims>
           <OutputClaims>
             <!-- These claims are not shown to the user because their value is obtained through the "ValidationTechnicalProfiles"
@@ -485,9 +452,6 @@
             <!-- Optional claims. These claims are collected from the user and can be modified. If a claim is to be persisted in the directory after having been 
                  collected from the user, it needs to be added as a PersistedClaim in the ValidationTechnicalProfile referenced below, i.e. 
                  in AAD-UserWriteUsingAlternativeSecurityId. -->
-            <!-- <OutputClaim ClaimTypeReferenceId="displayName" /> -->
-            <OutputClaim ClaimTypeReferenceId="givenName" />
-            <!-- <OutputClaim ClaimTypeReferenceId="surname" /> -->
             <OutputClaim ClaimTypeReferenceId="extension_PrivacyAccepted" Required="true" />      
             <OutputClaim ClaimTypeReferenceId="extension_TOSAccepted" Required="true" />                
           </OutputClaims>
@@ -554,7 +518,6 @@
           <InputClaims>
             <InputClaim ClaimTypeReferenceId="userId" PartnerClaimType="userName"/>
             <InputClaim ClaimTypeReferenceId="email" />
-            <InputClaim ClaimTypeReferenceId="givenName" />
             <InputClaim ClaimTypeReferenceId="objectId" />                        
           </InputClaims>
           <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
@@ -608,8 +571,6 @@
             <PersistedClaim ClaimTypeReferenceId="passwordPolicies" DefaultValue="DisablePasswordExpiration"/>
 
             <!-- Optional claims. -->
-            <PersistedClaim ClaimTypeReferenceId="givenName"/>
-            <PersistedClaim ClaimTypeReferenceId="surname"/>
             <PersistedClaim ClaimTypeReferenceId="extension_PrivacyAccepted" />      
             <PersistedClaim ClaimTypeReferenceId="extension_TOSAccepted" />                   
           </PersistedClaims>
