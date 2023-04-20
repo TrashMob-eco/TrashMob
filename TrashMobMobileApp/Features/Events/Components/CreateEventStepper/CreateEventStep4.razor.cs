@@ -6,7 +6,7 @@
     using TrashMobMobileApp.Extensions;
     using TrashMob.Models.Poco;
 
-    public partial class ManageEventPartners
+    public partial class CreateEventStep4
     {
         private bool _isLoading;
         private bool _isCreated;
@@ -18,17 +18,20 @@
         public Event Event { get; set; }
 
         [Parameter]
+        public EventCallback<Event> EventChanged { get; set; }
+
+        [Parameter]
         public EventCallback OnStepFinished { get; set; }
 
-        private IEnumerable<DisplayEventPartnerLocation> displayEventPartnerLocations;
+        private List<DisplayEventPartnerLocation> displayEventPartnerLocations;
 
         protected override async Task OnInitializedAsync()
         {
             try
             {
-                TitleContainer.Title = "Manage Partners for Event";
+                TitleContainer.Title = "Create Event (3/5)";
                 _isLoading = true;
-                displayEventPartnerLocations = await EventPartnerLocationServiceRestService.GetEventPartnerLocationsAsync(Event.Id);
+                displayEventPartnerLocations = (await EventPartnerLocationServiceRestService.GetEventPartnerLocationsAsync(Event.Id)).ToList();
                 _isLoading = false;
             }
             catch (Exception ex)

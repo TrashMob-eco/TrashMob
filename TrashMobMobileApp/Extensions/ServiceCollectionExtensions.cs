@@ -44,6 +44,7 @@
             services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
             services.AddSingleton<IDocusignRestService, DocusignRestService>();
             services.AddSingleton<IEventAttendeeRestService, EventAttendeeRestService>();
+            services.AddSingleton<IEventPartnerLocationServiceRestService, EventPartnerLocationServiceRestService>();
             services.AddSingleton<IEventSummaryRestService, EventSummaryRestService>();
             services.AddSingleton<IEventTypeRestService, EventTypeRestService>();
             services.AddSingleton<IMapRestService, MapRestService>();
