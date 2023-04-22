@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobileApp.Features.Events.Components
 {
     using Microsoft.AspNetCore.Components;
+    using Microsoft.Extensions.Logging;
     using MudBlazor;
     using TrashMob.Models;
     using TrashMobMobileApp.Data;

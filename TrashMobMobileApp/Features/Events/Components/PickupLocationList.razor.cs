@@ -9,22 +9,7 @@
     {
         private List<PickupLocation> _pickupLocations = new();
 
-        [Parameter]
-#pragma warning disable BL0007 // Component parameters should be auto properties
-        public string EventId
-#pragma warning restore BL0007 // Component parameters should be auto properties
-        {
-            get
-            {
-                return eventId.ToString();
-            }
-            set
-            {
-                eventId = new Guid(value);
-            }
-        }
-
-        private Guid eventId;
+        private string eventId = string.Empty;
 
         private bool _isLoading;
 
@@ -36,13 +21,14 @@
 
         protected override async Task OnInitializedAsync()
         {
+            eventId = EventContainer.EventId;
             await ReInitializeAsync();
         }
 
         private async Task ReInitializeAsync()
         {
             _isLoading = true;
-            _pickupLocations = (await PickupLocationRestService.GetPickupLocationsAsync(eventId)).ToList();
+            _pickupLocations = (await PickupLocationRestService.GetPickupLocationsAsync(new Guid(eventId))).ToList();
             _isLoading = false;
         }
 

@@ -12,12 +12,12 @@ public partial class AddPickupLocation : ContentPage
     private IMapRestService mapRestService;
     private readonly IPickupLocationRestService pickupLocationRestService;
 
-    public AddPickupLocation(IMapRestService mapRestService, IPickupLocationRestService pickupLocationRestService, Guid eventId)
+    public AddPickupLocation(IMapRestService mapRestService, IPickupLocationRestService pickupLocationRestService, string eventId)
     {
         InitializeComponent();
         this.mapRestService = mapRestService;
         this.pickupLocationRestService = pickupLocationRestService;
-        pickupLocation.EventId = eventId;
+        pickupLocation.EventId = new Guid(eventId);
     }
 
     public async void TakePhoto_Clicked(object sender, EventArgs e)

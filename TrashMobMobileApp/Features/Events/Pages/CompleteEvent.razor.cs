@@ -56,7 +56,7 @@
 
         private void AddPickupLocation()
         {
-            App.Current.MainPage.Navigation.PushModalAsync(new AddPickupLocation(MapRestService, PickupLocationRestService, _event.Id));
+            App.Current.MainPage.Navigation.PushModalAsync(new AddPickupLocation(MapRestService, PickupLocationRestService, _event.Id.ToString()));
         }
 
         private async Task OnDoActionAsync()
@@ -102,6 +102,7 @@
             finally
             {
                 _isLoading = false;
+                EventContainer.EventId = EventId;
                 EventContainer.UserEventInteractionAction.Invoke(Enums.UserEventInteraction.SUBMITTED_EVENT);
             }
         }

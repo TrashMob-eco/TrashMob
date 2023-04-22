@@ -34,7 +34,7 @@
         {
             services.AddScoped<PageTitleContainer>();
             services.AddScoped<UserStateInformation>();
-            services.AddScoped<EventStateInformation>();
+            services.AddSingleton<EventStateInformation>();
             return services;
         }
 
