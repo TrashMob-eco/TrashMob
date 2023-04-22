@@ -4,6 +4,7 @@
     using TrashMobMobileApp.Data;
     using TrashMob.Models;
     using TrashMobMobileApp.Extensions;
+    using TrashMob.Models.Poco;
 
     public partial class CreateEventStep6
     {
@@ -11,7 +12,7 @@
         private bool _isCreated;
 
         [Inject]
-        public IMobEventManager MobEventManager { get; set; }
+        public IEventPartnerLocationServiceRestService EventPartnerLocationServiceRestService { get; set; }
 
         [Parameter]
         public Event Event { get; set; }
@@ -22,22 +23,16 @@
         [Parameter]
         public EventCallback OnStepFinished { get; set; }
 
+        private List<DisplayEventPartnerLocation> displayEventPartnerLocations;
+
         protected override async Task OnInitializedAsync()
         {
             try
             {
-                TitleContainer.Title = "Create Event (5/5)";
-                Event.CreatedByUserId = App.CurrentUser.Id;
-                Event.LastUpdatedByUserId = App.CurrentUser.Id;
-                Event.LastUpdatedDate = DateTime.Now;
-                Event.EventStatusId = 1;
+                TitleContainer.Title = "Add Event Partners";
                 _isLoading = true;
-                var result = await MobEventManager.AddEventAsync(Event);
+                displayEventPartnerLocations = (await EventPartnerLocationServiceRestService.GetEventPartnerLocationsAsync(Event.Id)).ToList();
                 _isLoading = false;
-                if (result != null)
-                {
-                    _isCreated = true;
-                }
             }
             catch (Exception ex)
             {
@@ -49,11 +44,6 @@
             finally
             {
                 _isLoading = false;
-
-                if (EventContainer.UserEventInteractionAction != null)
-                {
-                    EventContainer.UserEventInteractionAction.Invoke(Enums.UserEventInteraction.CREATED_EVENT);
-                }
             }
         }
 

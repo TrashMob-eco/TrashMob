@@ -25,7 +25,7 @@
             <Entry IsReadOnly="True" x:Name="postalCode" Style="{StaticResource fieldEntry}" />
         </HorizontalStackLayout>
         <HorizontalStackLayout>
-            <Button x:Name="SaveButton" Text="Save" Clicked="SaveButton_Clicked" Style="{StaticResource formButton}" />
+            <Button x:Name="NextButton" Text="Next" Clicked="NextButton_Clicked" Style="{StaticResource formButton}" />
             <Button x:Name="CancelButton" Text="Cancel" Clicked="CancelButton_Clicked" Style="{StaticResource formButton}" />
         </HorizontalStackLayout>
     </VerticalStackLayout>

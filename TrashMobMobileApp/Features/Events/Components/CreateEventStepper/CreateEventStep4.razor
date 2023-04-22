@@ -11,39 +11,66 @@
             position: fixed;
         }
 
-        .tm-step4-container .container-item {
-            margin-top: 10px;
+        .tm-step4-container .tm-form {
+            margin-top: 10%;
         }
 
-        .tm-step4-container .next-btn {
-            margin-top: 10%;
-            width: 100%;
-        }
+            .tm-step4-container .tm-form-label {
+                margin-top: 25px;
+            }
+
+            .tm-step4-container .tm-form-item {
+                margin-top: 20px;
+            }
+
+            .tm-step4-container .tm-action-item {
+                margin-top: 20px;
+            }
 </style>
 
 <ErrorBoundary>
     <ChildContent>
-        <MudContainer Class="tm-step3-container">z
-            <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
-                @if (displayEventPartnerLocations != null)
-                {
-                    <MudVirtualize Context="displayEventPartnerLocation" Items="displayEventPartnerLocations">
-                        <MudCard Class="tm-step4-card">
-                            <MudCardContent>
-                                <MudText Typo="Typo.body2"><strong>Address: </strong>@displayEventPartnerLocation.PartnerLocationName</MudText>
-                            </MudCardContent>
-                        </MudCard>
-                    </MudVirtualize>
-                }
-                else
-                {
-                    if (!_isLoading)
+        <MudContainer Class="tm-step4-container">
+            <MudText Typo="Typo.subtitle2">Review your event!</MudText>
+            <MudText Typo="Typo.body2">If there's a maximum number of event participants (sometimes determined by amount of supplies and/or area size) note that here, and add in a description of your event.</MudText>
+            <MudForm @ref="_form" Class="form-item" @bind-IsValid="_success" @bind-Errors="_errors">
+                <MudText Typo="Typo.subtitle2" Class="tm-form-label">Basic</MudText>
+                <MudTextField T="string" Class="tm-form-item" Label="Name" @bind-Text="Event.Name" Variant="ComponentCommon.TextFieldVariant" Required RequiredError="Name is required" />
+                <MudSelect FullWidth T="EventType" Variant="ComponentCommon.TextFieldVariant" Class="tm-form-item" Label="Event Type" @bind-Value="@_selectedEventType" AnchorOrigin="Origin.BottomCenter" Required RequiredError="Event type is required">
+                    @foreach (var eventType in _eventTypes)
                     {
-                        <MudContainer Class="tm-no-pickuplocations-container">
-                            <MudText>We're sorry, there are no partner locations available for this event.</MudText>
-                        </MudContainer>
+                                <MudSelectItem T="EventType" Value="@eventType">@eventType.Name</MudSelectItem>
                     }
-                }
+                </MudSelect>
+                <MudText Typo="Typo.subtitle2" Class="tm-form-label">Details</MudText>
+                <MudDatePicker Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Date="_eventDate" Label="Date" Required RequiredError="Date is required" />
+                <MudTimePicker Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Time="_eventTime" Label="Time" Required RequiredError="Time is required" />
+                <MudNumericField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" T="int" @bind-Value="Event.DurationHours" Label="Duration Hours" />
+                <MudNumericField Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" T="int" @bind-Value="Event.DurationMinutes" Label="Duration Minutes" />
+                <MudNumericField T="int" FullWidth Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Value="Event.MaxNumberOfParticipants" Label="Maximum number of participants" />
+                <MudTextField T="string" FullWidth Lines="5" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Text="Event.Description" Label="Description" Required RequiredError="Description is required" />
+
+                <MudText Typo="Typo.subtitle2" Class="tm-form-label">Location</MudText>
+                <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OpenMap">Update Location</MudButton>
+
+                <MudItem xs="12" sm="6" md="4">
+                    <MudField Label="Street Address" Class="tm-form-item" Variant="Variant.Outlined">@Event.StreetAddress</MudField>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudField Label="City" Class="tm-form-item" Variant="Variant.Outlined">@Event.City</MudField>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudField Label="State" Class="tm-form-item" Variant="Variant.Outlined">@Event.Region</MudField>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudField Label="Country" Class="tm-form-item" Variant="Variant.Outlined">@Event.Country</MudField>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudField Label="Postal Code" Class="tm-form-item" Variant="Variant.Outlined">@Event.PostalCode</MudField>
+                </MudItem>
+            </MudForm>
+            <MudStack Row Justify="Justify.Center" Class="tm-action-item">
+                <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnStepFinishedAsync">Next</MudButton>
             </MudStack>
         </MudContainer>
     </ChildContent>

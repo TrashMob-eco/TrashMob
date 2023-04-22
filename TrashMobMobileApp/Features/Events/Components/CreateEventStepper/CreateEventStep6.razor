@@ -25,25 +25,25 @@
     <ChildContent>
         <MudContainer Class="tm-step6-container">
             <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
-                @if (_isLoading)
+                @if (displayEventPartnerLocations != null)
                 {
-                    <MudText Typo="Typo.subtitle2">Creating the event...</MudText>
-                    <MudProgressCircular Indeterminate />
+                    <MudVirtualize Context="displayEventPartnerLocation" Items="displayEventPartnerLocations">
+                        <MudCard Class="tm-step4-card">
+                            <MudCardContent>
+                                <MudText Typo="Typo.body2"><strong>Address: </strong>@displayEventPartnerLocation.PartnerLocationName</MudText>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudVirtualize>
                 }
                 else
                 {
-                    @if (_isCreated)
+                    if (!_isLoading)
                     {
-                        <MudIcon Class="container-item" Size="Size.Large" Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Dark" />
-                        <MudText Class="container-item" Typo="Typo.subtitle2">Event has been created!</MudText>
-                    }
-                    else
-                    {
-                        <MudIcon Class="container-item" Size="Size.Large" Icon="@Icons.Material.Filled.RemoveCircle" Color="Color.Error" />
-                        <MudText Class="container-item" Typo="Typo.subtitle2">Oops! Something went wrong creating your event.</MudText>
+                        <MudContainer Class="tm-no-pickuplocations-container">
+                            <MudText>We're sorry, there are no partner locations available for this event.</MudText>
+                        </MudContainer>
                     }
                 }
-                <MudFab Class="next-btn" Color="ComponentCommon.PrimaryColor" Label="Finish" OnClick="OnStepFinishedAsync" />
             </MudStack>
         </MudContainer>
     </ChildContent>

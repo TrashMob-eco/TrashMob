@@ -42,6 +42,7 @@
             TitleContainer.Title = "Create Event (1/5)";
             await GetEventTypesAsync();
             _selectedEventType = _eventTypes.FirstOrDefault();
+            StateHasChanged();
         }
 
         private async Task GetEventTypesAsync()
