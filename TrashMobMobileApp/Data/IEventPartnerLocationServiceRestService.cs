@@ -10,7 +10,7 @@
 
         Task<IEnumerable<DisplayEventPartnerLocation>> GetEventPartnerLocationsAsync(Guid eventId, CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<DisplayEventPartnerLocationService>> GetEventPartnerLocationsAsync(Guid eventId, Guid partnerId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<DisplayEventPartnerLocationService>> GetEventPartnerLocationServicesAsync(Guid eventId, Guid partnerId, CancellationToken cancellationToken = default);
 
         Task<EventPartnerLocationService> UpdateEventPartnerLocationService(EventPartnerLocationService eventPartnerLocationService, CancellationToken cancellationToken = default);
 

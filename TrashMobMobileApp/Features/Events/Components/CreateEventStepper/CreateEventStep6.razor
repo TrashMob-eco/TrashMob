@@ -23,29 +23,7 @@
 
 <ErrorBoundary>
     <ChildContent>
-        <MudContainer Class="tm-step6-container">
-            <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
-                @if (displayEventPartnerLocations != null)
-                {
-                    <MudVirtualize Context="displayEventPartnerLocation" Items="displayEventPartnerLocations">
-                        <MudCard Class="tm-step4-card">
-                            <MudCardContent>
-                                <MudText Typo="Typo.body2"><strong>Address: </strong>@displayEventPartnerLocation.PartnerLocationName</MudText>
-                            </MudCardContent>
-                        </MudCard>
-                    </MudVirtualize>
-                }
-                else
-                {
-                    if (!_isLoading)
-                    {
-                        <MudContainer Class="tm-no-pickuplocations-container">
-                            <MudText>We're sorry, there are no partner locations available for this event.</MudText>
-                        </MudContainer>
-                    }
-                }
-            </MudStack>
-        </MudContainer>
+        <EditEventPartners Event="@Event" />
     </ChildContent>
     <ErrorContent>
         @context.Message

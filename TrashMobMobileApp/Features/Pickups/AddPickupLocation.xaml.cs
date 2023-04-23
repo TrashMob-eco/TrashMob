@@ -68,19 +68,19 @@ public partial class AddPickupLocation : ContentPage
 
             return location;
         }
-        catch (FeatureNotSupportedException fnsEx)
-        {
-            // Handle not supported on device exception
-        }
-        catch (FeatureNotEnabledException fneEx)
-        {
-            // Handle not enabled on device exception
-        }
-        catch (PermissionException pEx)
-        {
-            // Handle permission exception
-        }
-        catch (Exception ex)
+        //catch (FeatureNotSupportedException fnsEx)
+        //{
+        //    // Handle not supported on device exception
+        //}
+        //catch (FeatureNotEnabledException fneEx)
+        //{
+        //    // Handle not enabled on device exception
+        //}
+        //catch (PermissionException pEx)
+        //{
+        //    // Handle permission exception
+        //}
+        catch
         {
             // Unable to get location
         }

@@ -62,7 +62,7 @@
             }
         }
 
-        public async Task<IEnumerable<DisplayEventPartnerLocationService>> GetEventPartnerLocationsAsync(Guid eventId, Guid partnerId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<DisplayEventPartnerLocationService>> GetEventPartnerLocationServicesAsync(Guid eventId, Guid partnerId, CancellationToken cancellationToken = default)
         {
             try
             {

@@ -11,7 +11,7 @@
 
     public class EventPartnerLocationServiceStatusRestService : RestServiceBase, IEventPartnerLocationServiceStatusRestService
     {
-        protected override string Controller => "eventPartnerlocationservicestatus";
+        protected override string Controller => "eventpartnerlocationservicestatuses";
 
         public EventPartnerLocationServiceStatusRestService(IOptions<Settings> settings)
             : base(settings)

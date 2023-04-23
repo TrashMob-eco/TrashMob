@@ -4,16 +4,9 @@
     using TrashMobMobileApp.Data;
     using TrashMob.Models;
     using TrashMobMobileApp.Extensions;
-    using TrashMob.Models.Poco;
-
+    
     public partial class CreateEventStep6
     {
-        private bool _isLoading;
-        private bool _isCreated;
-
-        [Inject]
-        public IEventPartnerLocationServiceRestService EventPartnerLocationServiceRestService { get; set; }
-
         [Parameter]
         public Event Event { get; set; }
 
@@ -22,30 +15,6 @@
 
         [Parameter]
         public EventCallback OnStepFinished { get; set; }
-
-        private List<DisplayEventPartnerLocation> displayEventPartnerLocations;
-
-        protected override async Task OnInitializedAsync()
-        {
-            try
-            {
-                TitleContainer.Title = "Add Event Partners";
-                _isLoading = true;
-                displayEventPartnerLocations = (await EventPartnerLocationServiceRestService.GetEventPartnerLocationsAsync(Event.Id)).ToList();
-                _isLoading = false;
-            }
-            catch (Exception ex)
-            {
-                if (ex.IsClosedStreamException())
-                {
-                    return;
-                }
-            }
-            finally
-            {
-                _isLoading = false;
-            }
-        }
 
         private async Task OnStepFinishedAsync()
         {
