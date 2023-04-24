@@ -12,8 +12,6 @@
     {
         private bool _isLoading = false;
         private Event _event;
-        private bool _success;
-        private string[] _errors;
 
         [Inject]
         public IMapRestService MapRestService { get; set; }
