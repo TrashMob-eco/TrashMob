@@ -23,6 +23,7 @@
 
         protected override async Task OnInitializedAsync()
         {
+            StateInformation.CurrentlyActiveMainTab = 0;
             Event = await MobEventManager.GetEventAsync(Guid.Parse(EventId));
             await base.OnInitializedAsync();
         }

@@ -1,13 +1,10 @@
 ﻿namespace TrashMobMobileApp.Features.Events.Components
 {
-    using CommunityToolkit.Maui.Views;
     using Microsoft.AspNetCore.Components;
     using MudBlazor;
     using TrashMob.Models;
     using TrashMobMobileApp.Data;
     using TrashMobMobileApp.Extensions;
-    using TrashMobMobileApp.Features.Map;
-    using TrashMobMobileApp.Shared;
 
     public partial class EditMyEvent
     {
@@ -64,17 +61,6 @@
             }
         }
 
-        private async void OpenMap()
-        {
-            var result = await App.Current.MainPage.ShowPopupAsync(new EditMapPopup(MapRestService, _event));
-
-            if (result != null)
-            {
-                _event = result as Event;
-                StateHasChanged();
-            }
-        }
-
         private async Task OnSaveAsync()
         {
             try
@@ -89,7 +75,7 @@
                     _event.LastUpdatedDate = DateTime.Now;
                     _event.EventTypeId = _selectedEventType.Id;
                     _isLoading = true;
-                    var eventAdd = await MobEventManager.UpdateEventAsync(_event);
+                    var eventUpdate = await MobEventManager.UpdateEventAsync(_event);
                     _isLoading = false;
                 }
             }
@@ -103,10 +89,7 @@
             finally
             {
                 _isLoading = false;
-                EventContainer.UserEventInteractionAction.Invoke(Enums.UserEventInteraction.EDITED_EVENT);
             }
         }
-
-        private void OnCancel() => Navigator.NavigateTo(Routes.Events, forceLoad: true);
     }
 }

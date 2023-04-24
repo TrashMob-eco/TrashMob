@@ -1,10 +1,13 @@
 ﻿@page "/events/editevent/{EventId}"
 
-<MudTabs Centered Style="width: 100%" Color="ComponentCommon.PrimaryColor" @bind-ActivePanelIndex="@StateInformation.CurrentlyActiveTab">
-    <MudTabPanel Text="Event Details">
+<MudTabs Centered Style="width: 100%" Color="ComponentCommon.PrimaryColor" @bind-ActivePanelIndex="@StateInformation.CurrentlyActiveEditEventTab">
+    <MudTabPanel Text="Details">
         <EditMyEvent EventId="@EventId" />
     </MudTabPanel>
-    <MudTabPanel Text="Event Partners">
+    <MudTabPanel Text="Location">
+        <EditEventLocation EventId="@EventId" />
+    </MudTabPanel>
+    <MudTabPanel Text="Partners">
         <EditEventPartners Event="@Event"/>
     </MudTabPanel>
 </MudTabs>

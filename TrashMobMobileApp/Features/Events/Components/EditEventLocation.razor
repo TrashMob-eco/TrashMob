@@ -1,0 +1,61 @@
+﻿<style>
+    .tm-edit-event-location-container {
+        height: 100%;
+        padding: 20px;
+    }
+
+        .tm-edit-event-location-container .tm-loader {
+            top: 50%;
+            position: fixed;
+        }
+
+        .tm-edit-event-location-container .tm-form {
+            height: inherit
+        }
+
+            .tm-edit-event-location-container .tm-form .tm-form-item {
+                margin-top: 20px;
+            }
+
+            .tm-edit-event-location-container .tm-form .tm-form-label {
+                margin-top: 25px;
+            }
+
+        .tm-edit-event-location-container .tm-action-btn-container {
+            margin-top: 20px;
+        }
+</style>
+
+<ErrorBoundary>
+    <ChildContent>
+        <MudContainer Class="tm-edit-event-location-container">
+            <MudOverlay @bind-Visible="_isLoading" Absolute>
+                <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
+            </MudOverlay>
+
+            <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OpenMap">Update Location</MudButton>
+
+            <MudItem xs="12" sm="6" md="4">
+                <MudField Label="Street Address" Class="tm-form-item" Variant="Variant.Outlined">@_event?.StreetAddress</MudField>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4">
+                <MudField Label="City" Class="tm-form-item" Variant="Variant.Outlined">@_event?.City</MudField>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4">
+                <MudField Label="State" Class="tm-form-item" Variant="Variant.Outlined">@_event?.Region</MudField>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4">
+                <MudField Label="Country" Class="tm-form-item" Variant="Variant.Outlined">@_event?.Country</MudField>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4">
+                <MudField Label="Postal Code" Class="tm-form-item" Variant="Variant.Outlined">@_event?.PostalCode</MudField>
+            </MudItem>
+            <MudStack Row Class="tm-action-btn-container">
+                <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnSaveAsync">Save</MudButton>
+            </MudStack>
+        </MudContainer>
+    </ChildContent>
+    <ErrorContent>
+        @context.Message
+    </ErrorContent>
+</ErrorBoundary>

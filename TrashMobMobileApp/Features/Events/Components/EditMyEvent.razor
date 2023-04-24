@@ -52,27 +52,9 @@
                 <MudCheckBox T="bool" Label="Public event" @bind-Checked="@_event.IsEventPublic" />
 
                 <MudText Class="tm-form-label" Typo="Typo.subtitle2">Location</MudText>
-                <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OpenMap">Update Location</MudButton>
-
-                <MudItem xs="12" sm="6" md="4">
-                    <MudField Label="Street Address" Class="tm-form-item" Variant="Variant.Outlined">@_event.StreetAddress</MudField>
-                </MudItem>
-                <MudItem xs="12" sm="6" md="4">
-                    <MudField Label="City" Class="tm-form-item" Variant="Variant.Outlined">@_event.City</MudField>
-                </MudItem>
-                <MudItem xs="12" sm="6" md="4">
-                    <MudField Label="State" Class="tm-form-item" Variant="Variant.Outlined">@_event.Region</MudField>
-                </MudItem>
-                <MudItem xs="12" sm="6" md="4">
-                    <MudField Label="Country" Class="tm-form-item" Variant="Variant.Outlined">@_event.Country</MudField>
-                </MudItem>
-                <MudItem xs="12" sm="6" md="4">
-                    <MudField Label="Postal Code" Class="tm-form-item" Variant="Variant.Outlined">@_event.PostalCode</MudField>
-                </MudItem>
                 </MudForm>
                 <MudStack Row Class="tm-action-btn-container">
                 <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnSaveAsync">Save</MudButton>
-                <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@(() => Navigator.NavigateTo(Routes.Events, forceLoad: true))">Back</MudButton>
                 </MudStack>
                 </MudContainer>
             </ChildContent>
