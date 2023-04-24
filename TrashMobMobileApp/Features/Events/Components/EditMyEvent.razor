@@ -50,8 +50,6 @@
                 <MudNumericField FullWidth T="int" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Max Participants" @bind-Value="@_event.MaxNumberOfParticipants" />
                 <MudTextField FullWidth T="string" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" Label="Description" @bind-Text="@_event.Description" Required RequiredError="Description is required" Lines="ComponentCommon.TextAreaLinesSpan" />
                 <MudCheckBox T="bool" Label="Public event" @bind-Checked="@_event.IsEventPublic" />
-
-                <MudText Class="tm-form-label" Typo="Typo.subtitle2">Location</MudText>
                 </MudForm>
                 <MudStack Row Class="tm-action-btn-container">
                 <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnSaveAsync">Save</MudButton>
