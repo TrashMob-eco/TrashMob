@@ -22,6 +22,9 @@
 <ErrorBoundary>
     <ChildContent>
         <MudContainer Class="tm-step6-container">
+            <MudOverlay @bind-Visible="_isLoading" Absolute>
+                <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
+            </MudOverlay>
             <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
                 @if (displayEventPartnerLocations != null)
                 {
@@ -31,48 +34,9 @@
                                 <MudText Typo="Typo.body2"><strong>Partner Name: </strong>@displayEventPartnerLocation.PartnerLocationName</MudText>
                                 <MudText Typo="Typo.body2"><strong>Partner Notes: </strong>@displayEventPartnerLocation.PartnerLocationNotes</MudText>
                                 <MudText Typo="Typo.body2"><strong>Services Engaged: </strong>@displayEventPartnerLocation.PartnerServicesEngaged</MudText>
+                                <EditEventPartnerServices EventPartnerLocation="@displayEventPartnerLocation" />
                             </MudCardContent>
-                            <MudCardActions>
-                                <MudStack Row Justify="Justify.Center" Class="tm-action-item">
-                                <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="() => OnViewLocationServices(displayEventPartnerLocation)">View Services Offered</MudButton>
-                                    </MudStack>
-                                    </MudCardActions>
-                                    </MudCard>
-
-                        @if (displayEventPartnerLocationServices != null && displayEventPartnerLocationServices.Any())
-                        {
-                            <MudContainer Class="tm-step6-container">
-                                <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
-                                    <MudVirtualize Context="displayEventPartnerLocationService" Items="displayEventPartnerLocationServices">
-                                        <MudCard Class="tm-step6-card">
-                                            <MudCardContent>
-                                                <MudText Typo="Typo.body2"><strong>Partner Name: </strong>@displayEventPartnerLocationService.PartnerName</MudText>
-                                                <MudText Typo="Typo.body2"><strong>Partner Location Name: </strong>@displayEventPartnerLocationService.PartnerLocationName</MudText>
-                                                <MudText Typo="Typo.body2"><strong>Service Type: </strong>@serviceTypes.FirstOrDefault(st => st.Id == @displayEventPartnerLocationService.ServiceTypeId).Name</MudText>
-                                                <MudText Typo="Typo.body2"><strong>Request Status: </strong>@eventPartnerLocationServiceStatuses.FirstOrDefault(st => st.Id == @displayEventPartnerLocationService.EventPartnerLocationServiceStatusId).Name</MudText>
-                                            </MudCardContent>
-                                            <MudCardActions>
-                                                @if (displayEventPartnerLocationService.EventPartnerLocationServiceStatusId == EventPartnerLocationServiceStatusRequested || displayEventPartnerLocationService.EventPartnerLocationServiceStatusId == EventPartnerLocationServiceStatusAccepted)
-                                                {
-                                                    <MudStack Row Justify="Justify.Center" Class="tm-action-item">
-                                                        <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="() => OnRemoveService(displayEventPartnerLocationService)">Remove Service Request</MudButton>
-                                                </MudStack>
-                                            }
-                                            else
-                                            {
-                                                @if (displayEventPartnerLocationService.EventPartnerLocationServiceStatusId == EventPartnerLocationServiceStatusNone)
-                                                {
-                                                    <MudStack Row Justify="Justify.Center" Class="tm-action-item">
-                                                        <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="() => OnRequestService(displayEventPartnerLocationService)">Request Service</MudButton>
-                                                    </MudStack>
-                                                }
-                                            }
-                                            </MudCardActions>
-                                        </MudCard>
-                                     </MudVirtualize>
-                                </MudStack>
-                            </MudContainer>
-                        }
+                        </MudCard>
                     </MudVirtualize>
                 }
                 else
