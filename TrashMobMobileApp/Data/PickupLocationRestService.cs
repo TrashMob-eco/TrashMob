@@ -159,7 +159,7 @@
                     var streamContent = new StreamContent(stream);
                     streamContent.Headers.Add("Content-Type", "image/jpeg");
 
-                    using var content = new MultipartFormDataContent
+                    var content = new MultipartFormDataContent
                     {
                         { streamContent, "formFile", Path.GetFileName(localFileName)},
                         { new StringContent(pickupLocationId.ToString()), "parentId" },
