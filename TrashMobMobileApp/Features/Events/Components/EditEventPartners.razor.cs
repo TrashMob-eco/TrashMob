@@ -48,5 +48,11 @@
                 _isLoading = false;
             }
         }
+
+        private async void OnRefresh()
+        {
+            displayEventPartnerLocations = (await EventPartnerLocationServiceRestService.GetEventPartnerLocationsAsync(Event.Id)).ToList();
+            StateHasChanged();
+        }
     }
 }

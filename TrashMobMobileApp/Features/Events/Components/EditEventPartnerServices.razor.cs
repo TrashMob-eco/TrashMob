@@ -9,11 +9,10 @@
     using TrashMob.Models;
     using TrashMobMobileApp.Extensions;
     using TrashMob.Models.Poco;
+    using System.Formats.Asn1;
 
     public partial class EditEventPartnerServices
     {
-        private bool _isLoading;
-
         [Inject]
         public IEventPartnerLocationServiceRestService EventPartnerLocationServiceRestService { get; set; }
 
@@ -25,6 +24,9 @@
 
         [Parameter]
         public DisplayEventPartnerLocation EventPartnerLocation { get; set; }
+
+        [Parameter]
+        public Action Refresh { get; set; }
 
         private List<ServiceType> serviceTypes;
         private List<EventPartnerLocationServiceStatus> eventPartnerLocationServiceStatuses;
@@ -39,11 +41,9 @@
         {
             try
             {
-                _isLoading = true;
                 displayEventPartnerLocationServices = (await EventPartnerLocationServiceRestService.GetEventPartnerLocationServicesAsync(EventPartnerLocation.EventId, EventPartnerLocation.PartnerLocationId)).ToList();
                 serviceTypes = (await ServiceTypeRestService.GetServiceTypesAsync()).ToList();
                 eventPartnerLocationServiceStatuses = (await EventPartnerLocationServiceStatusRestService.GetEventPartnerLocationServiceStatusesAsync()).ToList();
-                _isLoading = false;
             }
             catch (Exception ex)
             {
@@ -51,10 +51,6 @@
                 {
                     return;
                 }
-            }
-            finally
-            {
-                _isLoading = false;
             }
         }
 
@@ -69,6 +65,8 @@
             };
 
             await EventPartnerLocationServiceRestService.AddEventPartnerLocationService(eventPartnerLocationService);
+            displayEventPartnerLocationServices = (await EventPartnerLocationServiceRestService.GetEventPartnerLocationServicesAsync(EventPartnerLocation.EventId, EventPartnerLocation.PartnerLocationId)).ToList();
+            Refresh();
             StateHasChanged();
         }
 
@@ -83,6 +81,8 @@
             };
 
             await EventPartnerLocationServiceRestService.DeleteEventPartnerLocationServiceAsync(eventPartnerLocationService);
+            displayEventPartnerLocationServices = (await EventPartnerLocationServiceRestService.GetEventPartnerLocationServicesAsync(EventPartnerLocation.EventId, EventPartnerLocation.PartnerLocationId)).ToList();
+            Refresh();
             StateHasChanged();
         }
     }

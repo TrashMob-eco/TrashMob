@@ -16,6 +16,12 @@
         [Parameter]
         public EventCallback OnStepFinished { get; set; }
 
+        protected override Task OnInitializedAsync()
+        {
+            TitleContainer.Title = "Add Partners to Event";
+            return Task.CompletedTask;
+        }
+
         private async Task OnStepFinishedAsync()
         {
             if (OnStepFinished.HasDelegate)

@@ -34,7 +34,7 @@
                                 <MudText Typo="Typo.body2"><strong>Partner Name: </strong>@displayEventPartnerLocation.PartnerLocationName</MudText>
                                 <MudText Typo="Typo.body2"><strong>Partner Notes: </strong>@displayEventPartnerLocation.PartnerLocationNotes</MudText>
                                 <MudText Typo="Typo.body2"><strong>Services Engaged: </strong>@displayEventPartnerLocation.PartnerServicesEngaged</MudText>
-                                <EditEventPartnerServices EventPartnerLocation="@displayEventPartnerLocation" />
+                                <EditEventPartnerServices EventPartnerLocation="@displayEventPartnerLocation" Refresh="@OnRefresh" />
                             </MudCardContent>
                         </MudCard>
                     </MudVirtualize>
