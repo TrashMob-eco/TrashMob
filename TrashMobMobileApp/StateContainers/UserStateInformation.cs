@@ -9,7 +9,9 @@
         public int CurrentlyActiveMainTab { get; set; }
         
         public int CurrentlyActiveEditEventTab { get; set; }
-        
+
+        public int CurrentlyActiveCompleteEventTab { get; set; }
+
         public bool ShowFutureEvents { get; set; }
     }
 }

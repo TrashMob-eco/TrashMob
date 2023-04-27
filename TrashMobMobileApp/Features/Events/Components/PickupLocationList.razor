@@ -33,9 +33,12 @@
             <MudOverlay @bind-Visible="_isLoading" Absolute>
                 <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
             </MudOverlay>
-            <MudButton Color="@ComponentCommon.PrimaryColor"
+            @if (!IsReadOnly) 
+            {
+                <MudButton Color="@ComponentCommon.PrimaryColor"
                        Variant="@ComponentCommon.CardButtonVariant"
                        OnClick="@(async () => await OnAddPickupLocationAsync())">Add Pickup Location</MudButton>
+            }
             @if (_pickupLocations.Any())
             {
                 <MudVirtualize Context="pickupLocation" Items="_pickupLocations">
@@ -54,7 +57,7 @@
                 if (!_isLoading)
                 {
                     <MudContainer Class="tm-no-pickuplocations-container">
-                        <MudText>There are no pickup locations set for this event! Get started by creating one.</MudText>
+                        <MudText>There are no pickup locations set for this event!</MudText>
                     </MudContainer>
                 }
             }

@@ -11,13 +11,15 @@ public partial class AddPickupLocation : ContentPage
     private string localFilePath = string.Empty;
     private IMapRestService mapRestService;
     private readonly IPickupLocationRestService pickupLocationRestService;
+    private readonly Action Refresh;
 
-    public AddPickupLocation(IMapRestService mapRestService, IPickupLocationRestService pickupLocationRestService, string eventId)
+    public AddPickupLocation(IMapRestService mapRestService, IPickupLocationRestService pickupLocationRestService, string eventId, Action refresh)
     {
         InitializeComponent();
         this.mapRestService = mapRestService;
         this.pickupLocationRestService = pickupLocationRestService;
         pickupLocation.EventId = new Guid(eventId);
+        Refresh = refresh;
     }
 
     public async void TakePhoto_Clicked(object sender, EventArgs e)
@@ -101,6 +103,10 @@ public partial class AddPickupLocation : ContentPage
         var updatedPickupLocation = await pickupLocationRestService.AddPickupLocationAsync(pickupLocation);
 
         await pickupLocationRestService.AddPickupLocationImageAsync(updatedPickupLocation.EventId, updatedPickupLocation.Id, localFilePath);
+
+        Refresh();
+
+        await Navigation.PopModalAsync();
     }
 
     private void CloseButton_Clicked(object sender, EventArgs e)

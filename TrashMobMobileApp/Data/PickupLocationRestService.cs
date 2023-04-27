@@ -1,7 +1,5 @@
 ﻿namespace TrashMobMobileApp.Data
 {
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Http.Internal;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using System;
