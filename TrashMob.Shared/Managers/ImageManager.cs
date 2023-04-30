@@ -5,8 +5,8 @@
     using Azure.Storage.Blobs;
     using Azure.Storage.Blobs.Models;
     using Microsoft.Extensions.Logging;
-    using TrashMob.Poco;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
 
     internal class ImageManager : IImageManager
     {

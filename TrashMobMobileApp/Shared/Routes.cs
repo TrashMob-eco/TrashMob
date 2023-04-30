@@ -15,5 +15,6 @@
         public const string Map = "/map";
         public const string Waiver = "/waiver";
         public const string DeleteMyData = "/deletemydata";
+        public const string PickupLocations = "/pickuplocations";
     }
 }

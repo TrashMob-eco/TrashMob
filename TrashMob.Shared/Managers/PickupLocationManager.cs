@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers.Partners
+﻿namespace TrashMob.Shared.Managers
 {
     using Microsoft.EntityFrameworkCore;
     using System;
@@ -56,7 +56,7 @@
                 // Get the services offered
                 var services = await eventPartnerLocationServiceManager.GetByPartnerLocationAsync(partnerLocation.Id, cancellationToken);
 
-                foreach (var service in services.Where(s => s.ServiceTypeId == (int)ServiceTypeEnum.Hauling))                    
+                foreach (var service in services.Where(s => s.ServiceTypeId == (int)ServiceTypeEnum.Hauling))
                 {
                     // Get the pickup locations for this event which have not been picked up and have been submitted
                     var eventPickupLocations = await Repository.Get(pl => pl.EventId == service.EventId && !pl.HasBeenPickedUp && pl.HasBeenSubmitted).ToListAsync(cancellationToken);
@@ -71,7 +71,7 @@
         {
             var pickupLocation = await base.GetAsync(pickupLocationId, cancellationToken);
 
-            pickupLocation.HasBeenPickedUp= true;
+            pickupLocation.HasBeenPickedUp = true;
 
             await base.UpdateAsync(pickupLocation, userId, cancellationToken);
         }
@@ -83,8 +83,8 @@
 
             var partnerLocation = await eventPartnerLocationServiceManager.GetHaulingPartnerLocationForEvent(eventId, cancellationToken);
 
-            if (partnerLocation == null) 
-            { 
+            if (partnerLocation == null)
+            {
                 // Todo add error handling for this
                 return;
             }
@@ -110,7 +110,7 @@
             {
                 username = partnerLocation.Name,
                 eventName = mobEvent.Name,
-                emailCopy = emailCopy,
+                emailCopy,
                 subject = emailSubject,
                 eventDetailsUrl = mobEvent.EventDetailsUrl(),
                 eventSummaryUrl = mobEvent.EventSummaryUrl(),

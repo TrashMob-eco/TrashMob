@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers.Partners
+﻿namespace TrashMob.Shared.Managers
 {
     using Microsoft.EntityFrameworkCore;
     using System;

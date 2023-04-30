@@ -34,7 +34,7 @@
         {
             services.AddScoped<PageTitleContainer>();
             services.AddScoped<UserStateInformation>();
-            services.AddScoped<EventStateInformation>();
+            services.AddSingleton<EventStateInformation>();
             return services;
         }
 
@@ -44,11 +44,15 @@
             services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
             services.AddSingleton<IDocusignRestService, DocusignRestService>();
             services.AddSingleton<IEventAttendeeRestService, EventAttendeeRestService>();
+            services.AddSingleton<IEventPartnerLocationServiceRestService, EventPartnerLocationServiceRestService>();
+            services.AddSingleton<IEventPartnerLocationServiceStatusRestService, EventPartnerLocationServiceStatusRestService>();
             services.AddSingleton<IEventSummaryRestService, EventSummaryRestService>();
             services.AddSingleton<IEventTypeRestService, EventTypeRestService>();
             services.AddSingleton<IMapRestService, MapRestService>();
             services.AddSingleton<IMobEventManager, MobEventManager>();
             services.AddSingleton<IMobEventRestService, MobEventRestService>();
+            services.AddSingleton<IPickupLocationRestService, PickupLocationRestService>();
+            services.AddSingleton<IServiceTypeRestService, ServiceTypeRestService>();
             services.AddSingleton<IUserManager, UserManager>();
             services.AddSingleton<IUserRestService, UserRestService>();
             services.AddSingleton<IWaiverManager, WaiverManager>();

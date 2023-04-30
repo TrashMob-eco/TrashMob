@@ -1,0 +1,57 @@
+﻿<style>
+    .tm-step6-container {
+        height: 100%;
+        padding: 20px;
+    }
+
+        .tm-step6-container .tm-loader {
+            top: 50%;
+            position: fixed;
+        }
+
+        .tm-step6-container .container-item {
+            margin-top: 10px;
+        }
+
+        .tm-step6-container .next-btn {
+            margin-top: 10%;
+            width: 100%;
+        }
+</style>
+
+<ErrorBoundary>
+    <ChildContent>
+        <MudContainer Class="tm-step6-container">
+            <MudOverlay @bind-Visible="_isLoading" Absolute>
+                <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
+            </MudOverlay>
+            <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+                @if (displayEventPartnerLocations != null)
+                {
+                    <MudVirtualize Context="displayEventPartnerLocation" Items="displayEventPartnerLocations">
+                        <MudCard Class="tm-step6-card">
+                            <MudCardContent>
+                                <MudText Typo="Typo.body2"><strong>Partner Name: </strong>@displayEventPartnerLocation.PartnerLocationName</MudText>
+                                <MudText Typo="Typo.body2"><strong>Partner Notes: </strong>@displayEventPartnerLocation.PartnerLocationNotes</MudText>
+                                <MudText Typo="Typo.body2"><strong>Services Engaged: </strong>@displayEventPartnerLocation.PartnerServicesEngaged</MudText>
+                                <EditEventPartnerServices EventPartnerLocation="@displayEventPartnerLocation" Refresh="@OnRefresh" />
+                            </MudCardContent>
+                        </MudCard>
+                    </MudVirtualize>
+                }
+                else
+                {
+                    if (!_isLoading)
+                    {
+                        <MudContainer Class="tm-step6-container">
+                            <MudText>We're sorry, there are no partner locations available for this event.</MudText>
+                        </MudContainer>
+                    }
+                }
+            </MudStack>
+        </MudContainer>
+    </ChildContent>
+    <ErrorContent>
+        @context.Message
+    </ErrorContent>
+</ErrorBoundary>

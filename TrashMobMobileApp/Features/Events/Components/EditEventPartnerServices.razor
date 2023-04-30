@@ -1,0 +1,64 @@
+﻿<style>
+    .tm-step6-container {
+        height: 100%;
+        padding: 20px;
+    }
+
+        .tm-step6-container .tm-loader {
+            top: 50%;
+            position: fixed;
+        }
+
+        .tm-step6-container .container-item {
+            margin-top: 10px;
+        }
+
+        .tm-step6-container .next-btn {
+            margin-top: 10%;
+            width: 100%;
+        }
+</style>
+
+<ErrorBoundary>
+    <ChildContent>
+        <MudContainer Class="tm-step6-container">
+            <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+                @if (displayEventPartnerLocationServices != null && displayEventPartnerLocationServices.Any())
+                {
+                    <MudContainer Class="tm-step6-container">
+                        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+                            <MudSimpleTable Style="overflow-x: auto;">
+                                <MudVirtualize Context="displayEventPartnerLocationService" Items="displayEventPartnerLocationServices">
+                                    <MudTr>
+                                        <MudTd>
+                                            <MudStack>
+                                                <MudText Typo="Typo.body2"><strong>ServiceType: </strong>@serviceTypes.FirstOrDefault(st => st.Id == @displayEventPartnerLocationService.ServiceTypeId).Name</MudText>
+                                                <MudText Typo="Typo.body2"><strong>Status: </strong>@eventPartnerLocationServiceStatuses.FirstOrDefault(st => st.Id == @displayEventPartnerLocationService.EventPartnerLocationServiceStatusId).Name</MudText>
+                                            </MudStack>
+                                        </MudTd>
+                                        <MudTd>
+                                            @if (displayEventPartnerLocationService.EventPartnerLocationServiceStatusId == EventPartnerLocationServiceStatusRequested || displayEventPartnerLocationService.EventPartnerLocationServiceStatusId == EventPartnerLocationServiceStatusAccepted)
+                                            {
+                                                <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="() => OnRemoveService(displayEventPartnerLocationService)">Remove Service Request</MudButton>
+                                            }
+                                            else
+                                            {
+                                                @if (displayEventPartnerLocationService.EventPartnerLocationServiceStatusId == EventPartnerLocationServiceStatusNone)
+                                                {
+                                                    <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="() => OnRequestService(displayEventPartnerLocationService)">Request Service</MudButton>
+                                                }
+                                            }
+                                        </MudTd>
+                                    </MudTr>
+                                </MudVirtualize>
+                            </MudSimpleTable>
+                        </MudStack>
+                     </MudContainer>
+                }
+            </MudStack>
+        </MudContainer>
+    </ChildContent>
+    <ErrorContent>
+        @context.Message
+    </ErrorContent>
+</ErrorBoundary>

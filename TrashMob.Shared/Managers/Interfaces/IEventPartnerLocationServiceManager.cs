@@ -5,8 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
-    using TrashMob.Poco;
-    using TrashMob.Shared.Poco;
+    using TrashMob.Models.Poco;
 
     public interface IEventPartnerLocationServiceManager : IBaseManager<EventPartnerLocationService>
     {

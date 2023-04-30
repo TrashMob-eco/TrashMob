@@ -1,65 +1,10 @@
 ﻿@page "/events/completeevent/{EventId}/{IsReadOnly:bool}"
 
-@*TODO: move to styles sheet*@
-<style>
-    .tm-complete-event-container {
-        height: 100%;
-        padding: 20px;
-    }
-
-        .tm-complete-event-container .tm-loader{
-            top: 50%;
-            position: fixed;
-        }
-
-        .tm-complete-event-container .tm-form {
-            margin-top: 10%;
-        }
-
-            .tm-complete-event-container .tm-form .tm-form-item {
-                margin-top: 20px;
-            }
-
-            .tm-complete-event-container .tm-form .tm-action-item {
-                position: fixed;
-                bottom: 5%;
-                width: 90%;
-            }
-</style>
-
-<ErrorBoundary>
-    <ChildContent>
-        <MudContainer Class="tm-complete-event-container">
-            <MudOverlay @bind-Visible="_isLoading" Absolute>
-                <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
-            </MudOverlay>
-            @if (IsReadOnly)
-            {
-                <MudText Typo="Typo.subtitle2">@($"Here is the summary for {_event?.Name}")</MudText>
-            }
-            else
-            {
-                <MudText Typo="Typo.subtitle2">Thanks for using TrashMob!</MudText>
-                <MudText Typo="Typo.body2">We'd love to hear how your event went, as it helps us keep track of TrashMob stats, inspire others, and improve our mobile app and website.</MudText>
-
-            }
-            <MudForm @ref="_completeEventForm" Class="tm-form" @bind-IsValid="@_success" @bind-Errors="@_errors">
-                <MudNumericField FullWidth T="int" Disabled="IsReadOnly" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Value="@_eventSummary.ActualNumberOfAttendees" Label="Number of attendees" Required RequiredError="Attendee count is required" />
-                <MudNumericField FullWidth T="int" Disabled="IsReadOnly" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Value="@_eventSummary.DurationInMinutes" Label="Duration in minutes" Required RequiredError="Duration is required" />
-                <MudNumericField FullWidth T="int" Disabled="IsReadOnly" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Value="@_eventSummary.NumberOfBuckets" Label="Number of buckets" />
-                <MudNumericField FullWidth T="int" Disabled="IsReadOnly" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Value="@_eventSummary.NumberOfBags" Label="Number of bags" />
-                <MudTextField FullWidth T="string" Disabled="IsReadOnly" Class="tm-form-item" Variant="ComponentCommon.TextFieldVariant" @bind-Text="@_eventSummary.Notes" Label="Notes" Lines="ComponentCommon.TextAreaLinesSpan" />
-                <MudStack Row Justify="Justify.Center" Class="tm-action-item">
-                    <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@(() => Navigator.NavigateTo(Routes.Events, forceLoad: true))">Back</MudButton>
-                    @if (!IsReadOnly)
-                    {
-                        <MudButton FullWidth Variant="ComponentCommon.ButtonFilled" Color="ComponentCommon.PrimaryColor" OnClick="@OnDoActionAsync">Submit</MudButton>
-                    }
-                </MudStack>
-            </MudForm>
-        </MudContainer>
-    </ChildContent>
-    <ErrorContent>
-        @context.Message
-    </ErrorContent>
-</ErrorBoundary>
+<MudTabs Centered Style="width: 100%" Color="ComponentCommon.PrimaryColor" @bind-ActivePanelIndex="@StateInformation.CurrentlyActiveCompleteEventTab">
+    <MudTabPanel Text="Summary">
+        <EditEventSummary EventId="@EventId" IsReadOnly="@IsReadOnly" />
+    </MudTabPanel>
+    <MudTabPanel Text="Pickup Locations">
+        <PickupLocationList EventId="@EventId" IsReadOnly="@IsReadOnly" />
+    </MudTabPanel>
+</MudTabs>

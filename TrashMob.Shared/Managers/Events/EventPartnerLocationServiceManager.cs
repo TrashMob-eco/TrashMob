@@ -4,15 +4,14 @@
     using System.Threading.Tasks;
     using System.Threading;
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
     using System;
     using Microsoft.EntityFrameworkCore;
-    using TrashMob.Shared.Poco;
     using System.Linq;
     using EmailAddress = Poco.EmailAddress;
-    using TrashMob.Poco;
 
     public class EventPartnerLocationServiceManager : BaseManager<EventPartnerLocationService>, IEventPartnerLocationServiceManager
     {

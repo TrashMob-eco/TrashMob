@@ -32,6 +32,11 @@
         {
             <CreateEventStep2 @bind-Event="@_event" OnStepFinished="() => OpenMap()" />
         }
+        // Step 3 is a map step. A little different
+        else if (_step == EventStep.STEP_4)
+        {
+            <CreateEventStep4 @bind-Event="@_event" OnStepFinished="() => OnNextStep(EventStep.STEP_5)" />
+        }
         else if (_step == EventStep.STEP_5)
         {
             <CreateEventStep5 @bind-Event="@_event" OnStepFinished="() => OnNextStep(EventStep.STEP_6)" />

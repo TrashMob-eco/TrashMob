@@ -10,8 +10,8 @@ namespace TrashMobJobs
     using Microsoft.Azure.Functions.Worker;
     using Microsoft.Azure.Functions.Worker.Http;
     using Microsoft.Extensions.Logging;
-    using TrashMob.Poco;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
 
     public class UpdateUserProfileValidate
     {
