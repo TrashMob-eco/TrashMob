@@ -30,8 +30,8 @@
                 {
                     response.EnsureSuccessStatusCode();
                     string content = await response.Content.ReadAsStringAsync(cancellationToken);
-                    var result = JsonConvert.DeserializeObject<List<PartnerLocation>>(content);
-                    return result.FirstOrDefault();
+                    var result = JsonConvert.DeserializeObject<PartnerLocation>(content);
+                    return result;
                 }
             }
             catch (Exception ex)

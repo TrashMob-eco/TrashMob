@@ -19,6 +19,10 @@
 
         public Event Event { get; set; }
 
+        public const int EditEventDetailsTab = 0;
+        public const int EditEventLocationTab = 1;
+        public const int EditEventPartnersTab = 2;
+
         protected override void OnInitialized() => TitleContainer.Title = "Edit Event";
 
         protected override async Task OnInitializedAsync()

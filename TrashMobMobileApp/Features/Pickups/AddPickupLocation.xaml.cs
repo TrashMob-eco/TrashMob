@@ -100,6 +100,7 @@ public partial class AddPickupLocation : ContentPage
 
     private async void SaveButton_Clicked(object sender, EventArgs e)
     {
+        pickupLocation.Notes = notes.Text;
         var updatedPickupLocation = await pickupLocationRestService.AddPickupLocationAsync(pickupLocation);
 
         await pickupLocationRestService.AddPickupLocationImageAsync(updatedPickupLocation.EventId, updatedPickupLocation.Id, localFilePath);

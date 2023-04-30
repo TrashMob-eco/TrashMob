@@ -4,6 +4,7 @@
              x:Class="TrashMobMobileApp.Features.Pickups.AddPickupLocation"
              Title="Add Pickup Location">
     <VerticalStackLayout>
+        <Label Text="To add a pickup location, click the Take Photo button. The location will be auto-determined from that." Style="{StaticResource fieldLabel}" />
         <Image x:Name="pickupPhoto" IsVisible="false" MaximumHeightRequest="200" />
         <Button Text="Take Photo" Clicked="TakePhoto_Clicked" Style="{StaticResource formButton}" />
         <VerticalStackLayout x:Name="photoLocation" IsVisible="false">
