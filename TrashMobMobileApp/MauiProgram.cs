@@ -1,8 +1,10 @@
 ﻿namespace TrashMobMobileApp;
 
+#if !IOS
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.AppCenter;
+#endif
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -57,7 +59,9 @@ public class CustomBoundaryLogger : IErrorBoundaryLogger
 {
     public ValueTask LogErrorAsync(Exception exception)
     {
+#if !IOS
         Crashes.TrackError(exception);
+#endif
         return ValueTask.CompletedTask;
     }
 }
