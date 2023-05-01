@@ -53,20 +53,48 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
 		<CreatePackage>false</CreatePackage>
-		<CodesignKey>Apple Development</CodesignKey>
-		<CodesignProvision>VS: eco.trashmobdev.trashmobmobile Development</CodesignProvision>
-		<CodesignEntitlements></CodesignEntitlements>
+
+		<!-- Default Codesignkey for iphone testing -->
+		 <CodesignKey>Apple Development</CodesignKey> 
+		 <!-- Uncomment for AppStore build until Release build bug is resolved
+		<CodesignKey>Apple Distribution: TrashMob (367LR8J89Q)</CodesignKey> -->
+
+		<!-- Below value of Automatic should assign the profile that matches above key -->
+		<CodesignProvision>Automatic</CodesignProvision>
+		<CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+
+		<!-- Architecture needed for github workflow build or iOS Simulator builds -->
 		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+		<!-- For iOS Simulator due to issue https://github.com/dotnet/maui/issues/13077
+		uncomment this line to add iossimulator-x64/arm64 (depending on processor). -->
+		<RuntimeIdentifier>iossimulator-x64</RuntimeIdentifier>
+		<!-- Intel vs M1 processor simulator issue: https://github.com/xamarin/xamarin-macios/issues/17841
+		     Note: This solution didn't work for me, but leaving in case others use different architecture 
+		<OSArchitecture>$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)</OSArchitecture>
+		<RuntimeIdentifier Condition="'$(OSArchitecture)' == 'Arm64'">iossimulator-arm64</RuntimeIdentifier>
+		<RuntimeIdentifier Condition="'$(OSArchitecture)' == 'X64'">iossimulator-x64</RuntimeIdentifier> -->
+
+		<MtouchLink>SdkOnly</MtouchLink>
+		<MtouchUseLlvm>true</MtouchUseLlvm>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
 		 <CreatePackage>false</CreatePackage>
+
+		 <!-- Default Codesignkey for Release testing via Adhoc or Appstore -->
 		 <CodesignKey>Apple Distribution: TrashMob (367LR8J89Q)</CodesignKey>
+		 <!-- Uncomment for iphone testing in Release mode
+		 <CodesignKey>Apple Development</CodesignKey> -->
+		 
+		 <!-- Below value of Automatic should assign either Adhoc or App Store profile -->
 		 <CodesignProvision>Automatic</CodesignProvision>
 		 <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
 		 <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+		 <BuildIpa>true</BuildIpa>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+      <Optimize>true</Optimize>
 		<WarningLevel>4</WarningLevel>
+		<PlatformTarget>anycpu</PlatformTarget>
 	</PropertyGroup>
 
 	<ItemGroup>
