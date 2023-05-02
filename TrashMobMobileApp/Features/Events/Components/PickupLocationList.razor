@@ -86,8 +86,8 @@
                             <MudText Typo="Typo.body2"><strong>State: </strong>@pickupLocation.Region</MudText>
                             <MudText Typo="Typo.body2"><strong>Postal Code: </strong>@pickupLocation.PostalCode</MudText>
                             <MudText Typo="Typo.body2"><strong>Notes: </strong>@pickupLocation.Notes</MudText>
-                            <MudCheckBox Typo="Typo.body2" Checked="@pickupLocation.HasBeenSubmitted" Label="Submitted" />
-                            <MudCheckBox Typo="Typo.body2" Checked="@pickupLocation.HasBeenPickedUp" Label="Picked Up" />
+                            <MudCheckBox Typo="Typo.body2" Checked="@pickupLocation.HasBeenSubmitted" Label="Submitted" Disabled=true />
+                            <MudCheckBox Typo="Typo.body2" Checked="@pickupLocation.HasBeenPickedUp" Label="Picked Up" Disabled=true />
                         </MudCardContent>
                         <MudCardActions>
                             @if (!pickupLocation.HasBeenSubmitted)
