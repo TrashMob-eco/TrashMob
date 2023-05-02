@@ -26,8 +26,9 @@
                 <MudProgressCircular Color="ComponentCommon.DefaultColor" Indeterminate Class="tm-loader" />
             </MudOverlay>
             <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
-                @if (displayEventPartnerLocations != null)
+                @if (displayEventPartnerLocations != null && displayEventPartnerLocations.Any())
                 {
+                    <MudText><strong>Choose which partner services you need for your event.</strong></MudText>
                     <MudVirtualize Context="displayEventPartnerLocation" Items="displayEventPartnerLocations">
                         <MudCard Class="tm-step6-card">
                             <MudCardContent>
@@ -44,7 +45,9 @@
                     if (!_isLoading)
                     {
                         <MudContainer Class="tm-step6-container">
-                            <MudText>We're sorry, there are no partner locations available for this event.</MudText>
+                            <MudText><strong>We're sorry, there are no partners available for this event.</strong></MudText>
+                            <MudText>See our website to learn more about partners and how to recruit them in your area!</MudText>
+                            <MudLink Style="margin: 20px" Href="https://www.trashmob.eco/partnerships" Underline="Underline.Always">TrashMob.eco Partnerships</MudLink>
                         </MudContainer>
                     }
                 }
