@@ -186,7 +186,7 @@
       </TechnicalProfiles>
     </ClaimsProvider>
 
-    <ClaimsProvider>
+    <!-- <ClaimsProvider>
       <Domain>twitter.com</Domain>
       <DisplayName>Twitter</DisplayName>
       <TechnicalProfiles>
@@ -221,7 +221,7 @@
           <UseTechnicalProfileForSessionManagement ReferenceId="SM-SocialLogin" />
         </TechnicalProfile>
       </TechnicalProfiles>
-    </ClaimsProvider>    
+    </ClaimsProvider>     -->
 
     <ClaimsProvider>
       <Domain>apple.com</Domain>
