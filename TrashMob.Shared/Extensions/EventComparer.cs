@@ -1,5 +1,4 @@
-﻿
-namespace TrashMob.Shared
+﻿namespace TrashMob.Shared.Extensions
 {
     using System.Collections.Generic;
     using TrashMob.Models;

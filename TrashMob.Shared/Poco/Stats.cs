@@ -1,5 +1,4 @@
-﻿
-namespace TrashMob.Poco
+﻿namespace TrashMob.Shared.Poco
 {
     public class Stats
     {
