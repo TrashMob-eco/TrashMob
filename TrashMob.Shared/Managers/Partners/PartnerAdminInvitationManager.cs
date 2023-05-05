@@ -4,6 +4,7 @@
     using System.Threading;
     using System;
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
     using Microsoft.EntityFrameworkCore;

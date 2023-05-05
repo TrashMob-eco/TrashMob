@@ -5,7 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
-    using TrashMob.Shared.Poco;
+    using TrashMob.Models.Poco;
 
     public interface IPartnerAdminInvitationManager : IKeyedManager<PartnerAdminInvitation>
     {

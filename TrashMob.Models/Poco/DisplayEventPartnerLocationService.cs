@@ -1,5 +1,5 @@
 ﻿
-namespace TrashMob.Shared.Poco
+namespace TrashMob.Models.Poco
 {
     using System;
 
@@ -13,11 +13,11 @@ namespace TrashMob.Shared.Poco
 
         public bool IsAdvanceNoticeRequired { get; set; }
 
-        public string PartnerLocationServicePublicNotes { get; set; }
+        public string PartnerLocationServicePublicNotes { get; set; } = string.Empty;
 
-        public string PartnerName { get; set; }
+        public string PartnerName { get; set; } = string.Empty;
 
-        public string PartnerLocationName { get; set; }
+        public string PartnerLocationName { get; set; } = string.Empty;
 
         public int EventPartnerLocationServiceStatusId { get; set; }
     }

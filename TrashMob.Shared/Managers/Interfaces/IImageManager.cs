@@ -1,7 +1,7 @@
 ﻿namespace TrashMob.Shared.Managers.Interfaces
 {
     using System.Threading.Tasks;
-    using TrashMob.Poco;
+    using TrashMob.Shared.Poco;
 
     public interface IImageManager
     {

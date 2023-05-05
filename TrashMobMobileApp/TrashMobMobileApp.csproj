@@ -135,6 +135,11 @@
 	  <Compile Include="..\TrashMob.Models\PartnerStatus.cs" Link="Models\PartnerStatus.cs" />
 	  <Compile Include="..\TrashMob.Models\PartnerType.cs" Link="Models\PartnerType.cs" />
 	  <Compile Include="..\TrashMob.Models\PickupLocation.cs" Link="Models\PickupLocation.cs" />
+	  <Compile Include="..\TrashMob.Models\Poco\DisplayEventPartnerLocation.cs" Link="Models\Poco\DisplayEventPartnerLocation.cs" />
+	  <Compile Include="..\TrashMob.Models\Poco\DisplayEventPartnerLocationService.cs" Link="Models\Poco\DisplayEventPartnerLocationService.cs" />
+	  <Compile Include="..\TrashMob.Models\Poco\DisplayEventSummary.cs" Link="Models\Poco\DisplayEventSummary.cs" />
+	  <Compile Include="..\TrashMob.Models\Poco\DisplayPartnerAdminInvitation.cs" Link="Models\Poco\DisplayPartnerAdminInvitation.cs" />
+	  <Compile Include="..\TrashMob.Models\Poco\DisplayPartnerLocationEvent.cs" Link="Models\Poco\DisplayPartnerLocationEvent.cs" />
 	  <Compile Include="..\TrashMob.Models\ServiceType.cs" Link="Models\ServiceType.cs" />
 	  <Compile Include="..\TrashMob.Models\SiteMetric.cs" Link="Models\SiteMetric.cs" />
 	  <Compile Include="..\TrashMob.Models\SocialMediaAccountType.cs" Link="Models\SocialMediaAccountType.cs" />
@@ -153,6 +158,8 @@
       <PackageReference Include="CommunityToolkit.Maui" Version="5.0.0" />
       <PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.1" />
       <PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.1" />
+      <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+      <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.3" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
@@ -175,6 +182,9 @@
       </Compile>
       <Compile Update="AppShell.xaml.cs">
         <DependentUpon>AppShell.xaml</DependentUpon>
+      </Compile>
+      <Compile Update="Features\Pickups\AddPickupLocation.xaml.cs">
+        <DependentUpon>AddPickupLocation.xaml</DependentUpon>
       </Compile>
       <Compile Update="Shared\MainView.xaml.cs">
         <DependentUpon>MainView.xaml</DependentUpon>
@@ -202,12 +212,18 @@
       <MauiXaml Update="Features\Map\UserLocationPreferencePopup.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
+      <MauiXaml Update="Features\Pickups\AddPickupLocation.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
       <MauiXaml Update="Resources\Styles\Styles.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
       <MauiXaml Update="Shared\MainView.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Models\Poco\" />
     </ItemGroup>
 
 </Project>

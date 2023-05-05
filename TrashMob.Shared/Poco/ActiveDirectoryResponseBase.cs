@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Poco
+﻿namespace TrashMob.Shared.Poco
 {
     public abstract class ActiveDirectoryResponseBase
     {

@@ -9,10 +9,11 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
-    using TrashMob.Poco;
+    using TrashMob.Models.Poco;
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
 
     [Route("api/eventsummaries")]
     public class EventSummariesController : SecureController

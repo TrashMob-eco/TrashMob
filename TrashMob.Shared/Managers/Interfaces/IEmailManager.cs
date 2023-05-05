@@ -3,7 +3,6 @@
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Poco;
     using TrashMob.Shared.Poco;
 
     public interface IEmailManager

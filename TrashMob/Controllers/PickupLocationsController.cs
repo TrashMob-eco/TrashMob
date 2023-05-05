@@ -8,11 +8,11 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
-    using TrashMob.Poco;
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
-    
+    using TrashMob.Shared.Poco;
+
     [Route("api/pickuplocations")]
     public class PickupLocationsController : KeyedController<PickupLocation>
     {

@@ -64,7 +64,7 @@ public partial class EditMapPopup
             }
         }
 
-        SaveButton.IsEnabled = false;
+        NextButton.IsEnabled = false;
         mappy.IsShowingUser = true;
         mappy.MapClicked += Map_MapClicked;
     }
@@ -91,7 +91,7 @@ public partial class EditMapPopup
             map.Pins.Add(pin);
 
             SetFields(mobEvent);
-            SaveButton.IsEnabled = true;
+            NextButton.IsEnabled = true;
         }
     }
 
@@ -100,7 +100,7 @@ public partial class EditMapPopup
         Close();
     }
 
-    private void SaveButton_Clicked(object sender, EventArgs e)
+    private void NextButton_Clicked(object sender, EventArgs e)
     {
         Close(mobEvent);
     }

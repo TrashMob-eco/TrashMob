@@ -53,6 +53,10 @@
                     break;
                 case UserEventInteraction.SUBMITTED_EVENT:
                     Snackbar.Add("Event summary submitted!", Severity.Success);
+                    Navigator.NavigateTo(Routes.PickupLocations, forceLoad: true);
+                    break;
+                case UserEventInteraction.ADDPICKUPLOCATIONS_EVENT:
+                    Snackbar.Add("Pickup Location submitted!", Severity.Success);
                     Navigator.NavigateTo(Routes.Events, forceLoad: true);
                     break;
                 case UserEventInteraction.EDITED_EVENT:

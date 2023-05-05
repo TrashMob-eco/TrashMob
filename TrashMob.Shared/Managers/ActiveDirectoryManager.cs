@@ -4,8 +4,8 @@ namespace TrashMob.Shared.Managers
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Poco;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
     using User = Models.User;
 
     public class ActiveDirectoryManager : IActiveDirectoryManager

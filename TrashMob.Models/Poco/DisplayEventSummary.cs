@@ -1,5 +1,5 @@
 ﻿
-namespace TrashMob.Poco
+namespace TrashMob.Models.Poco
 {
     using System;
 
@@ -7,21 +7,20 @@ namespace TrashMob.Poco
     {
         public Guid EventId { get; set; }
 
-        public string Name { get; set; }
-
+        public string Name { get; set; } = string.Empty;
         public DateTimeOffset EventDate { get; set; }
 
         public int EventTypeId { get; set; }
 
-        public string StreetAddress { get; set; }
+        public string StreetAddress { get; set; } = string.Empty;
 
-        public string City { get; set; }
+        public string City { get; set; } = string.Empty;
 
-        public string Region { get; set; }
+        public string Region { get; set; } = string.Empty;
 
-        public string Country { get; set; }
+        public string Country { get; set; } = string.Empty;
 
-        public string PostalCode { get; set; }
+        public string PostalCode { get; set; } = string.Empty;
 
         public double NumberOfBags { get; set; }
 

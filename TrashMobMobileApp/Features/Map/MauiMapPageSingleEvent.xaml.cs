@@ -1,6 +1,5 @@
 namespace TrashMobMobileApp.Features.Map;
 
-using Microsoft.AspNetCore.Components;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 using TrashMob.Models;

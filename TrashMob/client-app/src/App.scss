@@ -105,6 +105,7 @@ p {
 
   .navbar-nav {
     width: 100%;
+    justify-content: space-evenly;
 
     &::after {
       border-right: 2px solid $primary;
@@ -366,7 +367,7 @@ img {
   margin: 2% 0px 0%;
 }
 
-.expandCollapse>div {
+.expandCollapse > div {
   color: #444;
   // cursor: pointer;
   padding: 0px;

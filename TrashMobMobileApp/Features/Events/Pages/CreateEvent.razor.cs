@@ -35,7 +35,7 @@
             if (result != null)
             { 
                 _event = result as Event;
-                _step = EventStep.STEP_5;
+                _step = EventStep.STEP_4;
                 StateHasChanged();
             }
         }

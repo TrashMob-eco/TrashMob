@@ -1,14 +1,10 @@
 ﻿
 namespace TrashMob.Controllers
 {
-    using System.Linq;
     using Microsoft.AspNetCore.Mvc;
-    using TrashMob.Poco;
     using System.Threading;
     using System;
     using System.Threading.Tasks;
-    using TrashMob.Common;
-    using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/stats")]
