@@ -4,7 +4,6 @@ import { Dropdown } from 'react-bootstrap';
 import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import * as Constants from '../Models/Constants';
 import EventPartnerLocationServiceStatusData from '../Models/EventPartnerLocationServiceStatusData';
-import EventPartnerLocationServiceData from '../Models/EventPartnerLocationServiceData';
 import { getEventPartnerLocationServiceStatus } from '../../store/eventPartnerLocationServiceStatusHelper';
 import DisplayPartnerLocationEventData from '../Models/DisplayPartnerLocationEventServiceData';
 import { Guid } from 'guid-typescript';
@@ -94,15 +93,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
     // This will handle the submit form event.  
     function handleRequestPartnerAssistance(eventId: string, partnerLocationId: string, serviceTypeId: number, eventPartnerLocationServiceStatusId: number) {
 
-        var eventData = new EventPartnerLocationServiceData();
-        eventData.eventId = eventId;
-        eventData.partnerLocationId = partnerLocationId;
-        eventData.serviceTypeId = serviceTypeId;
-        eventData.eventPartnerLocationServiceStatusId = eventPartnerLocationServiceStatusId;
-
         var method = "PUT";
-
-        var evtdata = JSON.stringify(eventData);
 
         const account = msalClient.getAllAccounts()[0];
         var apiConfig = getApiConfig();
@@ -111,6 +102,9 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
             scopes: apiConfig.b2cScopes,
             account: account
         };
+
+        var acceptDecline = (eventPartnerLocationServiceStatusId === Constants.EventPartnerLocationServiceStatusAccepted) ? "accept" : "decline";
+        var url = "/api/eventpartnerlocationservices/" + acceptDecline + "/" + eventId + "/" + partnerLocationId + "/" + serviceTypeId;
 
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
 
@@ -121,10 +115,9 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
             const headers = getDefaultHeaders(method);
             headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
 
-            fetch('/api/eventpartnerlocationservices', {
+            fetch(url, {
                 method: method,
                 headers: headers,
-                body: evtdata,
             }).then(() => {
                 fetch('/api/partnerlocationeventservices/' + partnerLocationId, {
                     method: 'GET',

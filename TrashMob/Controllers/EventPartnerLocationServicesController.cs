@@ -2,6 +2,7 @@
 namespace TrashMob.Controllers
 {
     using System;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
@@ -21,17 +22,20 @@ namespace TrashMob.Controllers
         private readonly IKeyedManager<Event> eventManager;
         private readonly IKeyedManager<Partner> partnerManager;
         private readonly IPartnerLocationManager partnerLocationManager;
+        private readonly IPartnerLocationContactManager partnerLocationContactManager;
 
         public EventPartnerLocationServicesController(IKeyedManager<Event> eventManager,
                                                       IKeyedManager<Partner> partnerManager,
                                                       IEventPartnerLocationServiceManager eventPartnerLocationServiceManager,
-                                                      IPartnerLocationManager partnerLocationManager) 
+                                                      IPartnerLocationManager partnerLocationManager,
+                                                      IPartnerLocationContactManager partnerLocationContactManager) 
             : base()
         {
             this.eventPartnerLocationServiceManager = eventPartnerLocationServiceManager;
             this.eventManager = eventManager;
             this.partnerManager = partnerManager;
             this.partnerLocationManager = partnerLocationManager;
+            this.partnerLocationContactManager = partnerLocationContactManager;
         }
 
         [HttpGet("{eventId}")]
@@ -79,6 +83,76 @@ namespace TrashMob.Controllers
             var updatedEventPartnerLocationService = await eventPartnerLocationServiceManager.UpdateAsync(eventPartnerLocationService, UserId, cancellationToken).ConfigureAwait(false);
 
             TelemetryClient.TrackEvent(nameof(UpdateEventPartnerLocationService));
+
+            return Ok(updatedEventPartnerLocationService);
+        }
+
+        [HttpPut("accept/{eventId}/{partnerLocationId}/{serviceId}")]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        public async Task<IActionResult> ApproveEventPartnerLocationService(Guid eventId, Guid partnerLocationId, int serviceId, CancellationToken cancellationToken = default)
+        {
+            var partner = await partnerLocationManager.GetPartnerForLocationAsync(partnerLocationId, cancellationToken);
+
+            if (partner == null)
+            {
+                return NotFound();
+            }
+
+            var eventPartnerLocationServices = await eventPartnerLocationServiceManager.GetCurrentPartnersAsync(eventId, cancellationToken);
+
+            if (eventPartnerLocationServices == null || !eventPartnerLocationServices.Any(epls => epls.ServiceTypeId == serviceId && epls.PartnerLocationId == partnerLocationId))
+            {
+                return NotFound();
+            }
+
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var eventPartnerLocationService = eventPartnerLocationServices.FirstOrDefault(epls => epls.ServiceTypeId == serviceId);
+            eventPartnerLocationService.EventPartnerLocationServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Accepted;
+
+            var updatedEventPartnerLocationService = await eventPartnerLocationServiceManager.UpdateAsync(eventPartnerLocationService, UserId, cancellationToken).ConfigureAwait(false);
+
+            TelemetryClient.TrackEvent(nameof(ApproveEventPartnerLocationService));
+
+            return Ok(updatedEventPartnerLocationService);
+        }
+
+        [HttpPut("decline/{eventId}/{partnerLocationId}/{serviceId}")]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        public async Task<IActionResult> DeclineEventPartnerLocationService(Guid eventId, Guid partnerLocationId, int serviceId, CancellationToken cancellationToken = default)
+        {
+            var partner = await partnerLocationManager.GetPartnerForLocationAsync(partnerLocationId, cancellationToken);
+
+            if (partner == null)
+            {
+                return NotFound();
+            }
+
+            var eventPartnerLocationServices = await eventPartnerLocationServiceManager.GetCurrentPartnersAsync(eventId, cancellationToken);
+
+            if (eventPartnerLocationServices == null || !eventPartnerLocationServices.Any(epls => epls.ServiceTypeId == serviceId && epls.PartnerLocationId == partnerLocationId))
+            {
+                return NotFound();
+            }
+
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var eventPartnerLocationService = eventPartnerLocationServices.FirstOrDefault(epls => epls.ServiceTypeId == serviceId);
+            eventPartnerLocationService.EventPartnerLocationServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Declined;
+
+            var updatedEventPartnerLocationService = await eventPartnerLocationServiceManager.UpdateAsync(eventPartnerLocationService, UserId, cancellationToken).ConfigureAwait(false);
+
+            TelemetryClient.TrackEvent(nameof(ApproveEventPartnerLocationService));
 
             return Ok(updatedEventPartnerLocationService);
         }
