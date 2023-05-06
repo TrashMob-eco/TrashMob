@@ -4,7 +4,6 @@ import { Dropdown } from 'react-bootstrap';
 import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import * as Constants from '../Models/Constants';
 import EventPartnerLocationServiceStatusData from '../Models/EventPartnerLocationServiceStatusData';
-import EventPartnerLocationServiceData from '../Models/EventPartnerLocationServiceData';
 import { getEventPartnerLocationServiceStatus } from '../../store/eventPartnerLocationServiceStatusHelper';
 import DisplayPartnerLocationEventData from '../Models/DisplayPartnerLocationEventServiceData';
 import { Guid } from 'guid-typescript';
@@ -104,7 +103,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
             account: account
         };
 
-        var acceptDecline = (eventPartnerLocationServiceStatusId == Constants.EventPartnerLocationServiceStatusAccepted) ? "accept" : "decline";
+        var acceptDecline = (eventPartnerLocationServiceStatusId === Constants.EventPartnerLocationServiceStatusAccepted) ? "accept" : "decline";
         var url = "/api/eventpartnerlocationservices/" + acceptDecline + "/" + eventId + "/" + partnerLocationId + "/" + serviceTypeId;
 
         return msalClient.acquireTokenSilent(request).then(tokenResponse => {
