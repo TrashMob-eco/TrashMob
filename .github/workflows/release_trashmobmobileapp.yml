@@ -56,6 +56,13 @@ jobs:
         rm ./TrashMobMobileApp/Platforms/Android/AndroidManifest.xml 
         cp ./TrashMobMobileApp/Platforms/Android/AndroidManifest-Release.xml TrashMobMobileApp/Platforms/Android/AndroidManifest.xml 
 
+    - uses: managedcode/MAUIAppVersion@v1
+      with:
+        csproj: 'TrashMobMobileApp/TrashMobMobileApp.csproj'
+        version: ${{ github.run_number }} # to keep value unique
+        displayVersion: '1.0.0'
+        printFile: true # optional
+
     - name: Publish Mobile App
       run: |
         dotnet publish TrashMobMobileApp.sln -c:${{ env.CONFIGURATION }} -f:net7.0-android --no-restore /p:AndroidPackageFormat="aab"
