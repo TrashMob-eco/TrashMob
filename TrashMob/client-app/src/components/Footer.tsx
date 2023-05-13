@@ -34,7 +34,9 @@ export const Footer: React.FC = () => {
                     <hr className="horizontalLine mt-5" />
                     <div className="row" id="copyright">
                         <div className="col-md-8">
-                            <p>Copyright &copy; 2022 TRASHMOB.ECO - All rights reserved.</p>
+                            <p>Copyright &copy; 2023 TRASHMOB.ECO - All rights reserved.</p>
+                            <p>TrashMob is a non-profit, 501(c)(3) organization based in Washington State, USA.</p>
+                            <p>US Federal Employer Id (EIN): 88-1286026</p>
                         </div>
                         <div className="col-md-4">
                             <div className="row" id="iconsOrigWrapper">
