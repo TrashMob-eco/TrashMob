@@ -12,7 +12,6 @@ import UserData from '../Models/UserData';
 import { Button } from 'reactstrap';
 import { Col, Container, Image, Row } from 'react-bootstrap';
 import Drawings from '../assets/home/Drawings.png';
-import Trash from '../assets/home/cleanup.jpg';
 import Globe2 from '../assets/globe2.png';
 import Logo from '../assets/logo.svg';
 import Calendar from '../assets/home/Calendar.svg';
