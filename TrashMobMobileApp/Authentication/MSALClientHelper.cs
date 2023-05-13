@@ -248,10 +248,10 @@
         /// <summary>
         /// Removes the first signed-in user's record from token cache
         /// </summary>
-        public async Task DeleteUserAsync()
+        public async Task DeleteUserAsync(string[] scopes)
         {
             var existingUser = await FetchSignedInUserFromCache().ConfigureAwait(false);
-            DeleteUser();
+            DeleteUser(scopes);
             await SignOutUserAsync(existingUser).ConfigureAwait(false);
         }
 
@@ -272,7 +272,7 @@
         /// <summary>
         /// Deletes a user's account from the system
         /// </summary>
-        public void DeleteUser()
+        public void DeleteUser(string[] scopes)
         {
             InitializePublicClientApplicationDeleteBuilder();
 
@@ -280,7 +280,7 @@
             PublicClientApplicationDelete = PublicClientApplicationDeleteBuilder
                 .Build();
 
-            PublicClientApplicationDelete.AcquireTokenInteractive(new List<string>());
+            PublicClientApplicationDelete.AcquireTokenInteractive(scopes).WithUseEmbeddedWebView(false);
         }
 
         /// <summary>
