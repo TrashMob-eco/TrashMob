@@ -12,7 +12,6 @@ import UserData from '../Models/UserData';
 import { Button } from 'reactstrap';
 import { Col, Container, Image, Row } from 'react-bootstrap';
 import Drawings from '../assets/home/Drawings.png';
-import Trash from '../assets/home/cleanup.jpg';
 import Globe2 from '../assets/globe2.png';
 import Logo from '../assets/logo.svg';
 import Calendar from '../assets/home/Calendar.svg';
@@ -169,7 +168,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
                             <Link className="mt-5 btn btn-primary btn-128" to="/aboutus" role="button">Learn more</Link>
                         </Col>
                         <Col md={6}>
-                            <Image src={Trash} alt="Hands putting trash in trash bag" className='h-100 m-0' />
+                            <iframe width="560" height="315" src="https://www.youtube.com/embed/ylOBeVHRtuM" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>
                         </Col>
                     </Row>
                 </Container>
