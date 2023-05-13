@@ -169,7 +169,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
                             <Link className="mt-5 btn btn-primary btn-128" to="/aboutus" role="button">Learn more</Link>
                         </Col>
                         <Col md={6}>
-                            <iframe width="560" height="315" src="https://www.youtube.com/embed/ylOBeVHRtuM" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                            <iframe width="560" height="315" src="https://www.youtube.com/embed/ylOBeVHRtuM" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>
                         </Col>
                     </Row>
                 </Container>
