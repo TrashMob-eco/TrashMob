@@ -78,6 +78,41 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
                 setTotalParticipants(data.totalParticipants);
             });
 
+        if (isUserLoaded && currentUser) {
+            setMyAttendanceList([]);
+            setIsUserEventDataLoaded(false);
+
+            // If the user is logged in, get the events they are attending
+            const accounts = msalClient.getAllAccounts();
+            var apiConfig = getApiConfig();
+
+            if (accounts !== null && accounts.length > 0) {
+                const request = {
+                    scopes: apiConfig.b2cScopes,
+                    account: accounts[0]
+                };
+
+                msalClient.acquireTokenSilent(request).then(tokenResponse => {
+                    if (!validateToken(tokenResponse.idTokenClaims)) {
+                        return;
+                    }
+
+                    const headers = getDefaultHeaders('GET');
+                    headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                    fetch('/api/events/eventsuserisattending/' + currentUser.id, {
+                        method: 'GET',
+                        headers: headers
+                    })
+                        .then(response => response.json() as Promise<EventData[]>)
+                        .then(data => {
+                            setMyAttendanceList(data);
+                            setIsUserEventDataLoaded(true);
+                        })
+                });
+            }
+        }
+
         MapStore.getOption().then(opts => {
             setMapOptions(opts);
             setIsMapKeyLoaded(true);
@@ -91,7 +126,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
         } else {
             console.log("Not Available");
         }
-    }, [])
+    }, [isUserLoaded, currentUser])
 
     const handleLocationChange = (point: data.Position) => {
         // do nothing

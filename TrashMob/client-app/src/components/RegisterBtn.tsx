@@ -64,8 +64,8 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
                 method: 'POST',
                 body: data,
                 headers: headers,
-            }).then((response) => response.json())
-                .then(onAttendanceChanged(eventId)).then(() => setRegistered(true))
+            }).then(() => onAttendanceChanged(eventId))
+                .then(() => setRegistered(true))
         })
     }
 
@@ -94,7 +94,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
     }
 
     return (
-        <Button className="btn btn-primary action btn-128" hidden={!isUserLoaded || isAttending === "Yes" || registered}
+        <Button id="addAttendee" className="btn btn-primary action btn-128" hidden={!isUserLoaded || isAttending === "Yes" || registered}
             onClick={() => handleAttend(eventId)}>{registered ? 'Registered!' : 'Register'}</Button>
     )
 }
