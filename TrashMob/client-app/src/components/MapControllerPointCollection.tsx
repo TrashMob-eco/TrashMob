@@ -58,7 +58,7 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
                 const position = new data.Position(mobEvent.longitude, mobEvent.latitude)
                 const point = new data.Point(position);
                 let isAtt = 'No';
-                if (props.isUserEventDataLoaded) {
+                if (props.isUserLoaded) {
                     var isAttending = props.myAttendanceList && (props.myAttendanceList.findIndex((e) => e.id === mobEvent.id) >= 0);
                     isAtt = (isAttending ? 'Yes' : 'No');
                 }
@@ -227,7 +227,9 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
         props.isUserLoaded,
         isDataSourceLoaded,
         isMapReady,
-        props.onAttendanceChanged
+        props.onAttendanceChanged,
+        props.myAttendanceList,
+        props.isUserEventDataLoaded
     ]);
 
     function handleLocationChange(e: any) {

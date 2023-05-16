@@ -474,7 +474,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const inactivePartnerActionDropdownList = (partnerId: string) => {
         return (
             <>
-                <Dropdown.Item href={'/partnerDashboard/' + partnerId}><ArrowRightSquare />Reactivate partnership</Dropdown.Item>
+                <Dropdown.Item href={'/partnerDashboard/' + partnerId}><ArrowRightSquare />Activate partnership</Dropdown.Item>
             </>
         )
     }
