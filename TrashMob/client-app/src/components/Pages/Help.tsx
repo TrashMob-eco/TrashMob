@@ -94,7 +94,7 @@ export const Help: React.FC = () => {
                                 Go to the <a href="https://www.trashmob.eco/mydashboard>">My Dashboard</a> page on the TrashMob.eco website.
                             </p>
                             <p>
-                                Under My Partnerships, locate the approved partner, and under the Actions column, select Reactivate Partnership. This will take you to the Partnership Dashboard. There's a ton going on here, but we'll walk through each screen.
+                                Under My Partnerships, locate the approved partner, and under the Actions column, select Activate Partnership. This will take you to the Partnership Dashboard. There's a ton going on here, but we'll walk through each screen.
                             </p>
                             <p>
                                 The Manage Partner page allows you to alter the name and website of your headquarters.
