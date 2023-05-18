@@ -107,7 +107,7 @@
 
         internal async Task DeleteAccountAsync()
         {
-            await this.MSALClientHelperInstance.DeleteUserAsync().ConfigureAwait(false);
+            await this.MSALClientHelperInstance.DeleteUserAsync(this.GetScopes()).ConfigureAwait(false);
         }
 
         /// <summary>
