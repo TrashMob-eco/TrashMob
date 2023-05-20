@@ -174,7 +174,7 @@ export const Board: React.FC = () => {
                             <h5 className='my-3 fw-500 color-grey'>Member at large</h5>
                             <p className='font-size-sm color-grey'>Avi Sharoni is a graduate of Babson College for his B.S. degree and NYU Stern School of Business for his M.B.A., both with concentrations in Finance.</p>
                             <p className='font-size-sm color-grey'>He began his career in real estate with two REITS: Brixmor Property Group and Gramercy Property Trust. At both organizations he worked on the Investment Management teams, preparing portfolio level analytics. After Gramercy, he worked for a high-net worth family office and in private equity with Wharton Equity Partners.</p>
-                            <p className='font-size-sm color-grey'>More recently, Avi has transitioned to the non-profit industry. At both the Brooklyn Navy Yard Development Co. where he served as AVP Finance and ICSC as Director, he worked directly with the CFO's of both organizations. Mr. Sharoni is currently the CFO of the Miami Children's Museum, which is recognized as a premier children's museum in the nation. Avi is passionate about giving back and helping others and is excited to join the Board of TrashMob.</p>
+                            <p className='font-size-sm color-grey'>More recently, Avi has transitioned to the non-profit industry. At both the Brooklyn Navy Yard Development Co. where he served as AVP Finance and ICSC as Director, he worked directly with the CFO's of both organizations. Avi is passionate about giving back and helping others and is excited to join the Board of TrashMob.</p>
                         </Col>
                     </Row>
                 </div>
