@@ -4,7 +4,6 @@ import bucket from '../assets/gettingStarted/bucket.png';
 import highways from '../assets/gettingStarted/highways.png';
 import picker from '../assets/gettingStarted/picker.png';
 import trashcangroup from '../assets/gettingStarted/trashcangroup.png';
-import wear from '../assets/gettingStarted/wear.png';
 import workgloves from '../assets/gettingStarted/workgloves.png';
 import globes from '../assets/gettingStarted/globes.png';
 import { Link } from 'react-router-dom';
