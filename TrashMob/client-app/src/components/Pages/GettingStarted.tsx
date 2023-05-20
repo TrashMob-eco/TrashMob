@@ -120,18 +120,14 @@ export const GettingStarted: React.FC = () => {
                     <Row className='py-5'>
                         <Col md={6}>
                             <div className="">
-                                <h1 className='fw-600'>What do I wear?</h1>
+                                <h1 className='fw-600'>Safety is Essential!</h1>
                                 <h4 className='mt-5'>
-                                    Wear clothes you won’t mind getting dirty or possibly torn. We strongly encourage a reflective vest for clean ups along roadsides.
+                                    All TrashMob.eco event leads and attendees are required to watch our safety video. Please take a few minutes to review it now!
                                 </h4>
-                                <p className="font-weight-light">
-                                    Long sleeves and jeans that keep branches and thorns off are best. Most importantly, wear good footwear that are preferably water resistant and thick.
-                                    Hiking boots work well, as do old tennis shoes. Shorts and t-shirts are sometimes enough for some urban pickups, but remember to dress for safety and for the weather.
-                                </p>
                             </div>
                         </Col>
                         <Col md={6}>
-                            <Image src={wear} alt="people gathering litter" className="m-0 h-100" />
+                            <iframe width="560" height="315" src="https://www.youtube.com/embed/naMY0kfyERc" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>
                         </Col>
                     </Row>
                 </Container>
