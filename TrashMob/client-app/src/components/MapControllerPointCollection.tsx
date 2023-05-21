@@ -11,6 +11,7 @@ import EventAttendeeData from './Models/EventAttendeeData';
 import { getEventType } from '../store/eventTypeHelper';
 import { RegisterBtn } from './RegisterBtn';
 import { RouteComponentProps } from 'react-router-dom';
+import { blue, grey } from '@material-ui/core/colors';
 interface MapControllerProps extends RouteComponentProps {
     mapOptions: IAzureMapOptions | undefined
     center: data.Position;
@@ -27,12 +28,20 @@ interface MapControllerProps extends RouteComponentProps {
     myAttendanceList: EventData[];
     isUserEventDataLoaded: boolean;
     onDetailsSelected: any;
+    forceReload: boolean;
 }
 
 export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     const [isDataSourceLoaded, setIsDataSourceLoaded] = useState(false);
+
+    useEffect(() => {
+        if (props.forceReload && mapRef) {
+            // mapRef?.sources.clear();
+            setIsDataSourceLoaded(false);
+        }
+    }, [props.forceReload]);
 
     useEffect(() => {
         let popup: Popup;
@@ -42,12 +51,20 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
             // Simple Camera options modification
             mapRef.setCamera({ center: props.center, zoom: MapStore.defaultUserLocationZoom });
 
-            const dataSourceRef = new source.DataSource("mainDataSource", {
-                cluster: true,
-                clusterMaxZoom: 15,
-                clusterRadius: 45
-            });
-            mapRef.sources.add(dataSourceRef);
+            var dataSource = mapRef.sources.getById("mainDataSource") as source.DataSource
+
+            if (!dataSource) {
+                dataSource = new source.DataSource("mainDataSource", {
+                    cluster: true,
+                    clusterMaxZoom: 15,
+                    clusterRadius: 45
+                });
+
+                mapRef.sources.add(dataSource);
+            }
+
+            mapRef.markers.clear();
+            dataSource.clear();
 
             popup = new Popup({
                 pixelOffset: [0, -20]
@@ -66,6 +83,12 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
                     isAtt = 'Log in to see your status';
                 }
 
+                var isEventComplete = false;
+                let currentTime = new Date();
+                if (new Date(mobEvent.eventDate) < currentTime) {
+                    isEventComplete = true;
+                }
+
                 const properties = {
                     eventId: mobEvent.id,
                     eventName: mobEvent.name,
@@ -79,7 +102,8 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
                     postalCode: mobEvent.postalCode,
                     isAttending: isAtt,
                     name: mobEvent.name,
-                    creator: mobEvent.createdByUserName
+                    creator: mobEvent.createdByUserName,
+                    isEventComplete: isEventComplete
                 }
 
                 const headers = getDefaultHeaders('GET');
@@ -92,12 +116,13 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
                         properties.eventTypeList = type;
                     });
 
-                dataSourceRef.add(new data.Feature(point, properties));
+                dataSource.add(new data.Feature(point, properties));
 
                 const marker = new HtmlMarker({
                     position: position,
                     draggable: false,
-                    properties: properties
+                    properties: properties,
+                    color: (!isEventComplete ? "#96ba00" : "grey")
                 })
 
                 mapRef.events.add('mouseover', marker, function (e) {
