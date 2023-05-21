@@ -81,6 +81,7 @@
                 <MudVirtualize Context="pickupLocation" Items="_pickupLocations">
                     <MudCard Class="tm-pickuplocation-card">
                         <MudCardContent>
+                            <MudImage Src="@pickupLocation.ImageUrl" Height="80" Width="80"></MudImage>
                             <MudText Typo="Typo.body2"><strong>Address: </strong>@pickupLocation.StreetAddress</MudText>
                             <MudText Typo="Typo.body2"><strong>City: </strong>@pickupLocation.City</MudText>
                             <MudText Typo="Typo.body2"><strong>State: </strong>@pickupLocation.Region</MudText>

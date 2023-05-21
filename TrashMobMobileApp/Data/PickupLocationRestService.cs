@@ -144,6 +144,26 @@
             }
         }
 
+        public async Task<string> GetPickupLocationImageAsync(Guid pickupLocationId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var requestUri = Controller + "/image/" + pickupLocationId;
+
+                using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
+                {
+                    response.EnsureSuccessStatusCode();
+                    string content = await response.Content.ReadAsStringAsync(cancellationToken);
+                    return content;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(@"\tERROR {0}", ex.Message);
+                throw;
+            }
+        }
+
         public async Task AddPickupLocationImageAsync(Guid eventId, Guid pickupLocationId, string localFileName, CancellationToken cancellationToken = default)
         {
             try
