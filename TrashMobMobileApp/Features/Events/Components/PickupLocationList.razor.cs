@@ -10,7 +10,7 @@
 
     public partial class PickupLocationList
     {
-        private List<PickupLocation> _pickupLocations = new();
+        private List<PickupLocationImage> _pickupLocations = new();
         private PartnerLocation _haulingPartnerLocation = null;
         
         [Parameter]
@@ -28,7 +28,7 @@
         public bool IsReadOnly { get; set; }
 
         [Inject]
-        public IPickupLocationRestService PickupLocationRestService { get; set; }
+        public IPickupLocationManager PickupLocationManager { get; set; }
 
         [Inject]
         public IEventPartnerLocationServiceRestService EventPartnerLocationServiceRestService { get; set; }
@@ -42,19 +42,19 @@
         {
             _isLoading = true;
             _haulingPartnerLocation = await EventPartnerLocationServiceRestService.GetHaulingPartnerLocationAsync(new Guid(EventId));
-            _pickupLocations = (await PickupLocationRestService.GetPickupLocationsAsync(new Guid(EventId))).ToList();
+            _pickupLocations = (await PickupLocationManager.GetPickupLocationsAsync(new Guid(EventId))).ToList();
             _isLoading = false;
         }
 
         private async Task OnAddPickupLocationAsync()
         {
-            await App.Current.MainPage.Navigation.PushModalAsync(new AddPickupLocation(MapRestService, PickupLocationRestService, EventId, Refresh));
+            await App.Current.MainPage.Navigation.PushModalAsync(new AddPickupLocation(MapRestService, PickupLocationManager, EventId, Refresh));
             await ReInitializeAsync();
         }
 
         private async Task OnRemovePickupLocationAsync(PickupLocation pickupLocation)
         {
-            await PickupLocationRestService.DeletePickupLocationAsync(pickupLocation);
+            await PickupLocationManager.DeletePickupLocationAsync(pickupLocation);
             await ReInitializeAsync();
         }
 
@@ -67,13 +67,13 @@
 
         private async Task OnSubmitPickupLocationsAsync()
         {
-            await PickupLocationRestService.SubmitLocationsAsync(new Guid(EventId));
+            await PickupLocationManager.SubmitLocationsAsync(new Guid(EventId));
             await ReInitializeAsync();
         }
 
         private async void Refresh()
         {
-            _pickupLocations = (await PickupLocationRestService.GetPickupLocationsAsync(new Guid(EventId))).ToList();
+            _pickupLocations = (await PickupLocationManager.GetPickupLocationsAsync(new Guid(EventId))).ToList();
             StateHasChanged();
         }
     }
