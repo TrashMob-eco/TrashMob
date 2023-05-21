@@ -11,7 +11,6 @@ import EventAttendeeData from './Models/EventAttendeeData';
 import { getEventType } from '../store/eventTypeHelper';
 import { RegisterBtn } from './RegisterBtn';
 import { RouteComponentProps } from 'react-router-dom';
-import { blue, grey } from '@material-ui/core/colors';
 interface MapControllerProps extends RouteComponentProps {
     mapOptions: IAzureMapOptions | undefined
     center: data.Position;
@@ -37,7 +36,7 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
     const [isDataSourceLoaded, setIsDataSourceLoaded] = useState(false);
 
     useEffect(() => {
-        if (props.forceReload && mapRef) {
+        if (props.forceReload) {
             // mapRef?.sources.clear();
             setIsDataSourceLoaded(false);
         }
