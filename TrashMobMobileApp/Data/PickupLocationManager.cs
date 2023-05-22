@@ -38,15 +38,47 @@
         public async Task<IEnumerable<PickupLocationImage>> GetPickupLocationsAsync(Guid eventId, CancellationToken cancellationToken = default)
         {
             var pickupLocations = await pickupLocationRestService.GetPickupLocationsAsync(eventId, cancellationToken);
-            var pickupLocationImages = new List<PickupLocationImage>(pickupLocations as IEnumerable<PickupLocationImage>);
 
-            foreach (var pickupLocationImage in pickupLocationImages)
+            if (pickupLocations != null && pickupLocations.Any())
             {
-                var url = await pickupLocationRestService.GetPickupLocationImageAsync(pickupLocationImage.Id, cancellationToken);
-                pickupLocationImage.ImageUrl = string.IsNullOrEmpty(url) ? "https://www.trashmob.eco/TrashMobEco_CircleLogo.png" : url;
+                var pickupLocationImages = new List<PickupLocationImage>();
+
+                foreach (var pickupLocation in pickupLocations)
+                {
+                    var url = await pickupLocationRestService.GetPickupLocationImageAsync(pickupLocation.Id, cancellationToken);
+
+                    var pickupLocationImage = new PickupLocationImage
+                    {
+                        City = pickupLocation.City,
+                        Country = pickupLocation.Country,
+                        County = pickupLocation.County,
+                        CreatedByUser = pickupLocation.CreatedByUser,
+                        CreatedByUserId = pickupLocation.CreatedByUserId,
+                        CreatedDate = pickupLocation.CreatedDate,
+                        Event = pickupLocation.Event,
+                        EventId = pickupLocation.EventId,
+                        HasBeenPickedUp = pickupLocation.HasBeenPickedUp,
+                        HasBeenSubmitted = pickupLocation.HasBeenSubmitted,
+                        Id = pickupLocation.Id,
+                        ImageUrl = string.IsNullOrEmpty(url) ? "https://www.trashmob.eco/TrashMobEco_CircleLogo.png" : url,
+                        LastUpdatedByUser = pickupLocation.LastUpdatedByUser,
+                        LastUpdatedByUserId = pickupLocation.LastUpdatedByUserId,
+                        LastUpdatedDate = pickupLocation.LastUpdatedDate,
+                        Latitude = pickupLocation.Latitude,
+                        Longitude = pickupLocation.Longitude,
+                        Notes = pickupLocation.Notes,
+                        PostalCode = pickupLocation.PostalCode,
+                        Region = pickupLocation.Region,
+                        StreetAddress = pickupLocation.StreetAddress
+                    };
+
+                    pickupLocationImages.Add(pickupLocationImage);
+                }
+
+                return pickupLocationImages;
             }
 
-            return pickupLocationImages;
+            return new List<PickupLocationImage>();
         }
 
         public Task SubmitLocationsAsync(Guid eventId, CancellationToken cancellationToken = default)
