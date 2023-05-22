@@ -51,6 +51,7 @@
             services.AddSingleton<IMapRestService, MapRestService>();
             services.AddSingleton<IMobEventManager, MobEventManager>();
             services.AddSingleton<IMobEventRestService, MobEventRestService>();
+            services.AddSingleton<IPickupLocationManager, PickupLocationManager>();
             services.AddSingleton<IPickupLocationRestService, PickupLocationRestService>();
             services.AddSingleton<IServiceTypeRestService, ServiceTypeRestService>();
             services.AddSingleton<IUserManager, UserManager>();
