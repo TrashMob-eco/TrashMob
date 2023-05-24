@@ -147,7 +147,7 @@
                 return NoContent();
             }
 
-            return Ok();
+            return Ok(url);
         }
     }
 }
