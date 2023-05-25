@@ -60,7 +60,7 @@
                         HasBeenPickedUp = pickupLocation.HasBeenPickedUp,
                         HasBeenSubmitted = pickupLocation.HasBeenSubmitted,
                         Id = pickupLocation.Id,
-                        ImageUrl = string.IsNullOrEmpty(url) ? "https://www.trashmob.eco/TrashMobEco_CircleLogo.png" : url,
+                        ImageUrl = string.IsNullOrEmpty(url) ? "https://www.trashmob.eco/TrashMobEco_CircleLogo.png" : url.TrimStart('"').TrimEnd('"'),
                         LastUpdatedByUser = pickupLocation.LastUpdatedByUser,
                         LastUpdatedByUserId = pickupLocation.LastUpdatedByUserId,
                         LastUpdatedDate = pickupLocation.LastUpdatedDate,
