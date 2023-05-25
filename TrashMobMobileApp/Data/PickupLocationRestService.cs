@@ -154,7 +154,7 @@
                 {
                     response.EnsureSuccessStatusCode();
                     string content = await response.Content.ReadAsStringAsync(cancellationToken);
-                    return content;
+                    return content.TrimStart('"').TrimEnd('"');
                 }
             }
             catch (Exception ex)
