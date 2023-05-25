@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import { RouteComponentProps } from 'react-router';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
@@ -184,7 +184,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
             .then(data => {
                 setUserList(data);
             });
-    }, [eventId])
+    }, [eventId, myAttendanceList])
 
     const handleAttendanceChanged = () => {
         if (!isUserLoaded || !currentUser) {
