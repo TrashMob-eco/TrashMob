@@ -226,7 +226,7 @@ hr.rounded {
   background-color: unset !important;
 }
 
-.btn-outline:hover {
+.btn-outline:hover:enabled {
   background-color: #96ba00 !important;
   color: #fff !important;
   border: none;
