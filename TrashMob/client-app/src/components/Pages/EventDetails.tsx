@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { RouteComponentProps } from 'react-router';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
