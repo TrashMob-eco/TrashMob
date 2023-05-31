@@ -66,6 +66,10 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
                 headers: headers,
             }).then(() => onAttendanceChanged(eventId))
                 .then(() => setRegistered(true))
+                    .then(() => {
+                        // re-direct user to event details page once they are registered
+                        history.push(`/eventdetails/${eventId}`)
+                    })
         })
     }
 
