@@ -402,7 +402,7 @@ button,
 }
 
 .dropdown>a:hover,
-button:hover {
+button:hover:enabled {
   background-color: #546900 !important;
 }
 
