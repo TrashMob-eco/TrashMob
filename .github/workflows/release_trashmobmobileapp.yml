@@ -91,7 +91,7 @@ jobs:
           TrashMobMobileApp\bin\${{ env.CONFIGURATION }}\net7.0-android\publish\*.aab
 
   buildiOSApp:
-    runs-on: macos-12
+    runs-on: macos-13
     environment: production
     name: iOS Build
 

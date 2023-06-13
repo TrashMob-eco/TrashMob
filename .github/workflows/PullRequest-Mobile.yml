@@ -78,7 +78,7 @@ jobs:
           TrashMobMobileApp\bin\${{ env.CONFIGURATION }}\net7.0-android\publish\*.aab
 
   buildiOSApp:
-    runs-on: macos-12
+    runs-on: macos-13
     environment: test
     name: iOS Build
 
@@ -114,12 +114,12 @@ jobs:
         dotnet workload install maui --ignore-failed-sources
         dotnet workload install ios maui wasm-tools --source https://api.nuget.org/v3/index.json --ignore-failed-sources
 
-    #- name: Set XCode Version
-    #  if: runner.os == 'macOS'
-    #  shell: bash
-    #  run: |
-    #    sudo xcode-select -s "/Applications/Xcode_14.1.app"
-    #    echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_14.1.app" >> $GITHUB_ENV
+    - name: Set XCode Version
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        sudo xcode-select -s "/Applications/Xcode_14.3.app"
+        echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_14.3.app" >> $GITHUB_ENV
 
     - name: Restore Dependencies
       run: | 
@@ -141,7 +141,7 @@ jobs:
         api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
 
     - name: Build MAUI iOS
-      run: dotnet publish TrashMobMobileApp.sln -c ${{ env.CONFIGURATION }} -f net7.0-ios -r ios-arm64 --self-contained --no-restore /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=true /p:PublishTrimmed=false
+      run: dotnet publish TrashMobMobileApp.sln -c ${{ env.CONFIGURATION }} -f net7.0-ios -r ios-arm64 --self-contained --no-restore /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=true /p:PublishTrimmed=true
 
     - name: Check Artifact paths
       shell: bash
