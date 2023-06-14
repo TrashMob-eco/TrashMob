@@ -64,7 +64,8 @@ export const MapControllerSinglePointNoEvent: React.FC<MapControllerProps> = (pr
 
                     // Create an HtmlMarker.
                     const marker = new HtmlMarker({
-                        draggable: props.isDraggable
+                        draggable: props.isDraggable,
+                        color: "#96ba00"
                     });
 
                     marker.setOptions({

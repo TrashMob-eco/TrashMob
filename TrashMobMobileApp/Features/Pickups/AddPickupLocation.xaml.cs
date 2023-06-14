@@ -10,14 +10,14 @@ public partial class AddPickupLocation : ContentPage
     private PickupLocation pickupLocation = new PickupLocation();
     private string localFilePath = string.Empty;
     private IMapRestService mapRestService;
-    private readonly IPickupLocationRestService pickupLocationRestService;
+    private readonly IPickupLocationManager pickupLocationManager;
     private readonly Action Refresh;
 
-    public AddPickupLocation(IMapRestService mapRestService, IPickupLocationRestService pickupLocationRestService, string eventId, Action refresh)
+    public AddPickupLocation(IMapRestService mapRestService, IPickupLocationManager pickupLocationManager, string eventId, Action refresh)
     {
         InitializeComponent();
         this.mapRestService = mapRestService;
-        this.pickupLocationRestService = pickupLocationRestService;
+        this.pickupLocationManager = pickupLocationManager;
         pickupLocation.EventId = new Guid(eventId);
         Refresh = refresh;
     }
@@ -101,9 +101,9 @@ public partial class AddPickupLocation : ContentPage
     private async void SaveButton_Clicked(object sender, EventArgs e)
     {
         pickupLocation.Notes = notes.Text;
-        var updatedPickupLocation = await pickupLocationRestService.AddPickupLocationAsync(pickupLocation);
+        var updatedPickupLocation = await pickupLocationManager.AddPickupLocationAsync(pickupLocation);
 
-        await pickupLocationRestService.AddPickupLocationImageAsync(updatedPickupLocation.EventId, updatedPickupLocation.Id, localFilePath);
+        await pickupLocationManager.AddPickupLocationImageAsync(updatedPickupLocation.EventId, updatedPickupLocation.Id, localFilePath);
 
         Refresh();
 

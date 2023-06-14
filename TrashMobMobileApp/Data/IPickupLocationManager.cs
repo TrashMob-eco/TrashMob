@@ -4,9 +4,9 @@
     using System.Threading.Tasks;
     using TrashMob.Models;
 
-    public interface IPickupLocationRestService
+    public interface IPickupLocationManager
     {
-        Task<IEnumerable<PickupLocation>> GetPickupLocationsAsync(Guid eventId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<PickupLocationImage>> GetPickupLocationsAsync(Guid eventId, CancellationToken cancellationToken = default);
 
         Task<PickupLocation> GetPickupLocationAsync(Guid pickupLocationId, CancellationToken cancellationToken = default);
 
@@ -19,7 +19,5 @@
         Task<IEnumerable<PickupLocation>> DeletePickupLocationAsync(PickupLocation pickupLocation, CancellationToken cancellationToken = default);
 
         Task AddPickupLocationImageAsync(Guid eventId, Guid pickupLocationId, string localFileName, CancellationToken cancellationToken = default);
-        
-        Task<string> GetPickupLocationImageAsync(Guid pickupLocationId, CancellationToken cancellationToken = default);
     }
 }

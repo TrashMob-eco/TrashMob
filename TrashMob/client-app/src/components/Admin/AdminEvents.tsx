@@ -17,6 +17,13 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
     const [eventList, setEventList] = React.useState<EventData[]>([]);
     const [isEventDataLoaded, setIsEventDataLoaded] = React.useState<boolean>(false);
 
+    const eventStatus = {
+        1 : "Active",
+        2 : "Full",
+        3 : "Canceled",
+        4 : "Complete"
+    }
+
     React.useEffect(() => {
 
         if (props.isUserLoaded) {
@@ -69,6 +76,7 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Status</th>
                             <th>Date</th>
                             <th>City</th>
                             <th>Region</th>
@@ -82,6 +90,7 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
                             return (
                                 <tr key={mobEvent.id.toString()}>
                                     <td>{mobEvent.name}</td>
+                                    <td>{eventStatus[mobEvent.eventStatusId]}</td>
                                     <td>{new Date(mobEvent.eventDate).toLocaleString()}</td>
                                     <td>{mobEvent.city}</td>
                                     <td>{mobEvent.region}</td>

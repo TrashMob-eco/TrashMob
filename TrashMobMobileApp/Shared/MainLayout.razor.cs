@@ -5,7 +5,6 @@
     using Microsoft.AspNetCore.Components.Routing;
     using Microsoft.Extensions.Logging;
     using MudBlazor;
-    using TrashMobMobileApp.Authentication;
     using TrashMobMobileApp.Data;
     using TrashMobMobileApp.Features.Map;
     using TrashMobMobileApp.StateContainers;

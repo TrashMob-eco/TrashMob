@@ -60,6 +60,26 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
+        [Route("notcanceled")]
+        public async Task<IActionResult> GetNotCanceledEvents(CancellationToken cancellationToken)
+        {
+            var results = await eventManager.GetAsync(cancellationToken).ConfigureAwait(false);
+
+            var displayResults = new List<DisplayEvent>();
+
+            foreach (var mobEvent in results)
+            {
+                if (mobEvent.EventStatusId != (int)EventStatusEnum.Canceled)
+                {
+                    var user = await userManager.GetAsync(mobEvent.CreatedByUserId, cancellationToken);
+                    displayResults.Add(mobEvent.ToDisplayEvent(user.UserName));
+                }
+            }
+
+            return Ok(displayResults);
+        }
+
+        [HttpGet]
         [Route("eventsuserisattending/{userId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
