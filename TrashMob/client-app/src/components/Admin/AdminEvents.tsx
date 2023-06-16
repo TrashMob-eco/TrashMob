@@ -73,7 +73,7 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
         var eventListCopy = [...eventList]
 
         // remove leading whitespace if sorting by name
-        if (sortField == 'name') {
+        if (sortField === 'name') {
             eventListCopy = eventListCopy.map(function (el) {
                 return { ...el, name: el.name.trim() }
             })
