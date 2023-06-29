@@ -60,7 +60,8 @@
 		<CodesignKey>Apple Distribution: TrashMob (367LR8J89Q)</CodesignKey> -->
 
 		<!-- Below value of Automatic should assign the profile that matches above key -->
-		<CodesignProvision>Automatic</CodesignProvision>
+		<!-- <CodesignProvision>Automatic</CodesignProvision> -->
+		<CodesignProvision>VS: eco.trashmobdev.trashmobmobile Development</CodesignProvision>
 		<CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
 
 		<!-- For github workflow, only include ios-arm64 Architecture -->
