@@ -11,6 +11,8 @@ public partial class MauiMapPageSingleEvent : ContentPage
     private readonly Event mobEvent;
     private const double DefaultLatitudeDegrees = 0.02;
     private const double DefaultLongitudeDegrees = 0.02;
+    private const double DefaultLatitude = 39.8283;
+    private const double DefaultLongitude = 98.5795;
 
     public IMapRestService MapRestService { get; set; }
 
@@ -26,9 +28,19 @@ public partial class MauiMapPageSingleEvent : ContentPage
         this.mobEvent = mobEvent;
 
         var location = new Location(mobEvent.Latitude.Value, mobEvent.Longitude.Value);
-        var mapSpan = new MapSpan(location, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
 
-        mappy.MoveToRegion(mapSpan);
+        if (location != null)
+        {
+            var mapSpan = new MapSpan(location, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
+            mappy.MoveToRegion(mapSpan);
+        }
+        else
+        {
+            var defaultLocation = new Location(DefaultLatitude, DefaultLongitude);
+            var mapSpan = new MapSpan(defaultLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
+            mappy.MoveToRegion(mapSpan);
+        }
+
         mappy.IsShowingUser = true;
 
         var pin = MapHelper.GetPinForEvent(mobEvent);
