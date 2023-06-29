@@ -60,14 +60,14 @@
 		<CodesignKey>Apple Distribution: TrashMob (367LR8J89Q)</CodesignKey> -->
 
 		<!-- Below value of Automatic should assign the profile that matches above key -->
-		<!-- <CodesignProvision>Automatic</CodesignProvision> -->
-		<CodesignProvision>VS: eco.trashmobdev.trashmobmobile Development</CodesignProvision>
+		<CodesignProvision>Automatic</CodesignProvision>
+		<!-- <CodesignProvision>VS: eco.trashmobdev.trashmobmobile Development</CodesignProvision> -->
 		<CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
 
 		<!-- For github workflow, only include ios-arm64 Architecture -->
 		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
 		<!-- For iOS Simulator builds, uncomment the line below (-x64/arm64 depending on processor) https://github.com/dotnet/maui/issues/13077 -->
-		<!--<RuntimeIdentifier>iossimulator-x64</RuntimeIdentifier>-->
+		<RuntimeIdentifier>iossimulator-x64</RuntimeIdentifier>
 		<!-- Intel vs M1 processor simulator issue: https://github.com/xamarin/xamarin-macios/issues/17841
 		     Note: This solution didn't work for me, but leaving in case others use different architecture 
 		<OSArchitecture>$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)</OSArchitecture>
