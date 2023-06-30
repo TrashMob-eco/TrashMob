@@ -1,8 +1,10 @@
 ﻿namespace TrashMobMobileApp;
 
+#if !IOS
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.AppCenter;
+#endif
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,9 +46,11 @@ public static class MauiProgram
         builder.Services.AddScoped<IErrorBoundaryLogger, CustomBoundaryLogger>();
         builder.UseMauiMaps();
 
+#if !IOS
         AppCenter.Start("android=d044d1b4-6fbc-4547-8fae-d0286d9ccbaa;" +
               "ios=0f9bed29-14d0-4e38-a396-64e5cd185d10;",
               typeof(Analytics), typeof(Crashes));
+#endif
         return builder.Build();
     }
 }
