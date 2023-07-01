@@ -144,8 +144,8 @@ namespace TrashMob.Shared.Managers
                 AnchorUnits = "pixels",
                 AnchorYOffset = "0",
                 AnchorXOffset = "0",
-                Font = "Tahoma",
-                FontSize = "Size16",
+                Font = "Poppins",
+                FontSize = "Size12",
             };
 
             DateSigned dateSigned = new DateSigned
@@ -154,8 +154,8 @@ namespace TrashMob.Shared.Managers
                 AnchorUnits = "pixels",
                 AnchorYOffset = "0",
                 AnchorXOffset = "0",
-                Font = "Tahoma",
-                FontSize = "Size16",
+                Font = "Poppins",
+                FontSize = "Size12",
             };
 
             Tabs signerTabs = new Tabs
