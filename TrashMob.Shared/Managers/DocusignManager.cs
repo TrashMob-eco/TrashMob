@@ -71,7 +71,7 @@ namespace TrashMob.Shared.Managers
             var apiClient = new DocuSignClient(basePath);
             apiClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + accessToken.access_token);
 
-            string docxDocument = "Docusign\\TrashMob_Volunteer_Waiver_V1.docx";
+            string docxDocument = "Docusign\\TrashMob_Volunteer_Waiver_V2.docx";
 
             EnvelopesApi envelopesApi = new EnvelopesApi(apiClient);
 
