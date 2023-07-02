@@ -64,7 +64,6 @@ public partial class MainView : ContentPage
 
     private static async Task VerifyAccount(IUserManager userManager, UserContext userContext)
     {
-        SentrySdk.CaptureEvent(new SentryEvent { Message = "Verify Account" });
         App.CurrentUser = await userManager.GetUserByEmailAsync(userContext.EmailAddress, userContext);
     }
 
