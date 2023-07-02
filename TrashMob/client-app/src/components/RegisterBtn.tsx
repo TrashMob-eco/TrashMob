@@ -76,7 +76,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
     const handleAttend = (eventId: string) => {
 
         // Have user sign waiver if needed
-        const isTrashMobWaiverOutOfDate = currentUser.dateAgreedToTrashMobWaiver < CurrentTrashMobWaiverVersion.versionDate;
+        const isTrashMobWaiverOutOfDate = new Date(currentUser.dateAgreedToTrashMobWaiver) < CurrentTrashMobWaiverVersion.versionDate;
         if (waiver?.isWaiverEnabled && (isTrashMobWaiverOutOfDate || (currentUser.trashMobWaiverVersion === ""))) {
             sessionStorage.setItem('targetUrl', window.location.pathname);
             history.push("/waivers");
