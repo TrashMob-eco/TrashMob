@@ -1,8 +1,8 @@
 ﻿namespace TrashMobMobileApp;
 
-using Microsoft.AppCenter.Analytics;
 using Microsoft.Identity.Client;
 using Newtonsoft.Json.Linq;
+using Sentry;
 using System.Text;
 using TrashMobMobileApp.Authentication;
 using TrashMobMobileApp.Data;
@@ -64,7 +64,6 @@ public partial class MainView : ContentPage
 
     private static async Task VerifyAccount(IUserManager userManager, UserContext userContext)
     {
-        Analytics.TrackEvent("VerifyAccount");
         App.CurrentUser = await userManager.GetUserByEmailAsync(userContext.EmailAddress, userContext);
     }
 
