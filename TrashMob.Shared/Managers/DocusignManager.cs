@@ -144,7 +144,7 @@ namespace TrashMob.Shared.Managers
                 AnchorUnits = "pixels",
                 AnchorYOffset = "0",
                 AnchorXOffset = "0",
-                Font = "Poppins",
+                Font = "Verdana",
                 FontSize = "Size12",
             };
 
@@ -154,7 +154,7 @@ namespace TrashMob.Shared.Managers
                 AnchorUnits = "pixels",
                 AnchorYOffset = "0",
                 AnchorXOffset = "0",
-                Font = "Poppins",
+                Font = "Verdana",
                 FontSize = "Size12",
             };
 
