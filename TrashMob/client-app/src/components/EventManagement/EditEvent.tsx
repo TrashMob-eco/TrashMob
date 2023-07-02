@@ -118,7 +118,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                 .then(data => {
 
                     // Have user sign waiver if needed
-                    const isTrashMobWaiverOutOfDate = props.currentUser.dateAgreedToTrashMobWaiver < CurrentTrashMobWaiverVersion.versionDate;
+                    const isTrashMobWaiverOutOfDate = new Date(props.currentUser.dateAgreedToTrashMobWaiver) < CurrentTrashMobWaiverVersion.versionDate;
                     if (data.isWaiverEnabled && (isTrashMobWaiverOutOfDate || (props.currentUser.trashMobWaiverVersion === ""))) {
                         sessionStorage.setItem('targetUrl', window.location.pathname);
                         props.history.push("/waivers");
