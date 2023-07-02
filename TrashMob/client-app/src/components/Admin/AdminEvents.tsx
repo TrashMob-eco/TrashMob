@@ -5,7 +5,7 @@ import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
 import { Col, Container, Dropdown, Row } from 'react-bootstrap';
 import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
-import { Eye, Pencil, XSquare } from 'react-bootstrap-icons';
+import { Eye, Pencil, XSquare, SortDown } from 'react-bootstrap-icons';
 
 interface AdminEventsPropsType extends RouteComponentProps {
     isUserLoaded: boolean;
@@ -18,10 +18,10 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
     const [isEventDataLoaded, setIsEventDataLoaded] = React.useState<boolean>(false);
 
     const eventStatus = {
-        1 : "Active",
-        2 : "Full",
-        3 : "Canceled",
-        4 : "Complete"
+        1: "Active",
+        2: "Full",
+        3: "Canceled",
+        4: "Complete"
     }
 
     React.useEffect(() => {
@@ -68,10 +68,55 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
         )
     }
 
+    const sortEvents = (sortField: string) => {
+
+        var eventListCopy = [...eventList]
+
+        // remove leading whitespace if sorting by name
+        if (sortField === 'name') {
+            eventListCopy = eventListCopy.map(function (el) {
+                return { ...el, name: el.name.trim() }
+            })
+        }
+
+        const sortedList = eventListCopy.sort(sortObjsList(sortField))
+        setEventList(sortedList)
+    }
+
+    const sortObjsList = (sortBy: string) => (a: object, b: object) => {
+        if (a[sortBy] > b[sortBy]) {
+            return 1;
+        } else if (a[sortBy] < b[sortBy]) {
+            return -1;
+        }
+        return 0;
+    }
+
+    const SortDropdown = () => {
+        return (
+            <Dropdown>
+                <Dropdown.Toggle id="userBtn" className="mt-4 mb-5" variant="light">
+                    <SortDown className="mr-3" size={32} color="#96ba00" aria-labelledby="sort-icon" />
+                    Sort
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="shadow border-0">
+                    <Dropdown.Item eventKey="1" onClick={() => sortEvents("name")}>Alphabetical</Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item eventKey="2" onClick={() => sortEvents("eventDate")}>Date</Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item eventKey="3" onClick={() => sortEvents("eventStatusId")}>Status</Dropdown.Item>
+                </Dropdown.Menu>
+            </Dropdown>
+        )
+    }
+
     function renderEventsTable(events: EventData[]) {
         return (
             <div>
-                <h2 className="color-primary mt-4 mb-5">Events</h2>
+                <div className="d-flex flex-row align-items-center justify-content-between">
+                    <h2 className="color-primary mt-4 mb-5">Events</h2>
+                    <SortDropdown />
+                </div>
                 <table className='table table-striped' aria-labelledby="tableLabel">
                     <thead>
                         <tr>

@@ -71,7 +71,7 @@ namespace TrashMob.Shared.Managers
             var apiClient = new DocuSignClient(basePath);
             apiClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + accessToken.access_token);
 
-            string docxDocument = "Docusign\\TrashMob_Volunteer_Waiver_V1.docx";
+            string docxDocument = "Docusign\\TrashMob_Volunteer_Waiver_V2.docx";
 
             EnvelopesApi envelopesApi = new EnvelopesApi(apiClient);
 
@@ -144,8 +144,8 @@ namespace TrashMob.Shared.Managers
                 AnchorUnits = "pixels",
                 AnchorYOffset = "0",
                 AnchorXOffset = "0",
-                Font = "Tahoma",
-                FontSize = "Size16",
+                Font = "Verdana",
+                FontSize = "Size12",
             };
 
             DateSigned dateSigned = new DateSigned
@@ -154,8 +154,8 @@ namespace TrashMob.Shared.Managers
                 AnchorUnits = "pixels",
                 AnchorYOffset = "0",
                 AnchorXOffset = "0",
-                Font = "Tahoma",
-                FontSize = "Size16",
+                Font = "Verdana",
+                FontSize = "Size12",
             };
 
             Tabs signerTabs = new Tabs
