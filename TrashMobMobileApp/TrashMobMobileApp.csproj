@@ -190,11 +190,11 @@
       <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="7.0.5" />
       <PackageReference Include="Microsoft.Identity.Client" Version="4.50.0" />
       <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="2.26.0" />
-      <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="7.0.86" />
       <PackageReference Include="MudBlazor" Version="6.6.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
       <PackageReference Include="Polly.Extensions.Http" Version="3.0.0" />
       <PackageReference Include="Sentry.Maui" Version="3.33.1" />
+      <PackageReference Include="Onion.Maui.GoogleMaps" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' == 'net7.0-android'">
@@ -250,5 +250,4 @@
     <ItemGroup>
       <Folder Include="Models\Poco\" />
     </ItemGroup>
-
 </Project>

@@ -7,7 +7,7 @@
     <Grid RowDefinitions="Auto,*,Auto" Padding="10" VerticalOptions="StartAndExpand">
         <VerticalStackLayout Grid.Row="0">
             <Label Text="Set your preferred location" Style="{StaticResource headerLabel}" Margin="0"/>
-            <Label Text="Click on the map to set your preferred home location, thn set the distance you are willing to travel for events, and where or not you prefer to use miles or kilometers" Style="{StaticResource instructionsLabel}" Margin="0"/>
+            <Label Text="Click on the map to set your preferred home location, then set the distance you are willing to travel for events, and where or not you prefer to use miles or kilometers" Style="{StaticResource instructionsLabel}" Margin="0"/>
         </VerticalStackLayout>
         <Grid x:Name="mapGrid" Grid.Row="1" Margin="10" BackgroundColor="Red" MinimumHeightRequest="200"/>
         <VerticalStackLayout Grid.Row="2">
