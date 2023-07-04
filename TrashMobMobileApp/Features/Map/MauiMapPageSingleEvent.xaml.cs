@@ -1,7 +1,6 @@
 namespace TrashMobMobileApp.Features.Map;
 
-using Microsoft.Maui.Controls.Maps;
-using Microsoft.Maui.Maps;
+using Maui.GoogleMaps;
 using TrashMob.Models;
 using TrashMobMobileApp.Data;
 using TrashMobMobileApp.Extensions;
@@ -27,7 +26,7 @@ public partial class MauiMapPageSingleEvent : ContentPage
         MapRestService = mapRestService;
         this.mobEvent = mobEvent;
 
-        var location = new Location(mobEvent.Latitude.Value, mobEvent.Longitude.Value);
+        var location = new Position(mobEvent.Latitude.Value, mobEvent.Longitude.Value);
 
         if (location != null)
         {
@@ -36,15 +35,15 @@ public partial class MauiMapPageSingleEvent : ContentPage
         }
         else
         {
-            var defaultLocation = new Location(DefaultLatitude, DefaultLongitude);
+            var defaultLocation = new Position(DefaultLatitude, DefaultLongitude);
             var mapSpan = new MapSpan(defaultLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
             mappy.MoveToRegion(mapSpan);
         }
 
-        mappy.IsShowingUser = true;
+        mappy.MyLocationEnabled = true;
 
         var pin = MapHelper.GetPinForEvent(mobEvent);
-        pin.Location = location;
+        pin.Position = location;
 
         SetFields(mobEvent);
 
@@ -72,11 +71,11 @@ public partial class MauiMapPageSingleEvent : ContentPage
         var map = (Map)sender;
         if (map != null)
         {
-            mobEvent.Longitude = e.Location.Longitude; 
-            mobEvent.Latitude = e.Location.Latitude;
+            mobEvent.Longitude = e.Point.Longitude; 
+            mobEvent.Latitude = e.Point.Latitude;
 
             // Get the actual address for this point
-            var address = await MapRestService.GetAddressAsync(e.Location.Latitude, e.Location.Longitude);
+            var address = await MapRestService.GetAddressAsync(e.Point.Latitude, e.Point.Longitude);
             mobEvent.StreetAddress = address.StreetAddress;
             mobEvent.City = address.City; 
             mobEvent.Region = address.Region; 
@@ -85,7 +84,7 @@ public partial class MauiMapPageSingleEvent : ContentPage
             
             map.Pins.Clear();
             var pin = MapHelper.GetPinForEvent(mobEvent);
-            pin.Location = e.Location;
+            pin.Position = e.Point;
             map.Pins.Add(pin);
 
             SetFields(mobEvent);

@@ -1,19 +1,13 @@
 namespace TrashMobMobileApp.Features.Map;
 
 using Microsoft.AspNetCore.Components;
-using Microsoft.Maui.Controls.Maps;
-using Microsoft.Maui.Maps;
+using Maui.GoogleMaps;
 using TrashMob.Models;
 using TrashMobMobileApp.Data;
 using TrashMobMobileApp.Extensions;
 
 public partial class MauiMapPageMultipleEvent : ContentPage
 {
-    private const double DefaultLatitudeDegrees = 1.0;
-    private const double DefaultLongitudeDegrees = 1.0;
-
-    private const double DefaultLatitude = 39.8283;
-    private const double DefaultLongitude = 98.5795;
     private readonly IEnumerable<Event> mobEvents;
     private List<Guid> userAttendingEventIds = new();
     private User user;
@@ -30,13 +24,13 @@ public partial class MauiMapPageMultipleEvent : ContentPage
 
         foreach (var mobEvent in mobEvents)
         {
-            var location = new Location(mobEvent.Latitude.Value, mobEvent.Longitude.Value);
+            var location = new Position(mobEvent.Latitude.Value, mobEvent.Longitude.Value);
 
-            mappy.IsShowingUser = true;
+            mappy.MyLocationEnabled = true;
 
             var pin = MapHelper.GetPinForEvent(mobEvent);
-            pin.MarkerClicked += Pin_MarkerClicked;
-            pin.Location = location;
+            mappy.PinClicked += Pin_Clicked;
+            pin.Position = location;
 
             mappy.Pins.Add(pin);
         }
@@ -45,7 +39,7 @@ public partial class MauiMapPageMultipleEvent : ContentPage
         this.mobEvents = mobEvents;
     }
 
-    private void Pin_MarkerClicked(object sender, PinClickedEventArgs e)
+    private void Pin_Clicked(object sender, PinClickedEventArgs e)
     {
         var pin = sender as TrashMobPin;
 
@@ -68,13 +62,13 @@ public partial class MauiMapPageMultipleEvent : ContentPage
 
         if (userLocation != null)
         {
-            var mapSpan = new MapSpan(userLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
+            var mapSpan = new MapSpan(userLocation, LocationHelper.DefaultLatitudeDegreesMultipleEvents, LocationHelper.DefaultLongitudeDegreesMultipleEvents);
             mappy.MoveToRegion(mapSpan);
         }
         else
         {
-            var defaultLocation = new Location(DefaultLatitude, DefaultLongitude);
-            var mapSpan = new MapSpan(defaultLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
+            var defaultLocation = new Position(LocationHelper.DefaultLatitude, LocationHelper.DefaultLongitude);
+            var mapSpan = new MapSpan(defaultLocation, LocationHelper.DefaultLatitudeDegreesMultipleEvents, LocationHelper.DefaultLongitudeDegreesMultipleEvents);
             mappy.MoveToRegion(mapSpan);
         }
     }
