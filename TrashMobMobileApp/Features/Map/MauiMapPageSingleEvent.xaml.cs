@@ -49,7 +49,7 @@ public partial class MauiMapPageSingleEvent : ContentPage
 
         mappy.Pins.Add(pin);
 
-        if (mobEvent.IsEventLead() && !isViewOnly)
+        if (mobEvent.IsEventLead() && !isViewOnly && mobEvent.EventDate >= DateTimeOffset.UtcNow)
         {
             mappy.MapClicked += Map_MapClicked;
         }
