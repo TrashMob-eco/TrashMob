@@ -7,7 +7,7 @@
     <VerticalStackLayout>
         <Label Text="Set your event location" Style="{StaticResource headerLabel}" />
         <Label Text="Click on the map to set your event location." Style="{StaticResource instructionsLabel}" />
-        <maps:Map x:Name="mappy" HeightRequest="400" Loaded="mappy_Loaded" />
+        <maps:Map x:Name="mappy" HeightRequest="400" Loaded="mappy_Loaded" MapClicked="Map_MapClicked" />
         <HorizontalStackLayout>
             <Label Text="Street Address" Style="{StaticResource fieldLabel}" />
             <Entry IsReadOnly="True" x:Name="streetAddress" Style="{StaticResource fieldEntry}" />

@@ -61,10 +61,9 @@ public partial class EditMapPopup
 
         NextButton.IsEnabled = false;
         mappy.MyLocationEnabled = true;
-        mappy.MapClicked += Map_MapClicked;
     }
 
-    private async void Map_MapClicked(object sender, Maui.GoogleMaps.MapClickedEventArgs e)
+    private async void Map_MapClicked(object sender, MapClickedEventArgs e)
     {
         var map = (Map)sender;
         if (map != null)
