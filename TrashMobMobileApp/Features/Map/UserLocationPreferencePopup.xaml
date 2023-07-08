@@ -2,14 +2,14 @@
 <mct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
-             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
+             xmlns:maps="clr-namespace:Maui.GoogleMaps;assembly=Maui.GoogleMaps"
              x:Class="TrashMobMobileApp.Features.Map.UserLocationPreferencePopup">
     <Grid RowDefinitions="Auto,*,Auto" Padding="10" VerticalOptions="StartAndExpand">
         <VerticalStackLayout Grid.Row="0">
             <Label Text="Set your preferred location" Style="{StaticResource headerLabel}" Margin="0"/>
-            <Label Text="Click on the map to set your preferred home location, thn set the distance you are willing to travel for events, and where or not you prefer to use miles or kilometers" Style="{StaticResource instructionsLabel}" Margin="0"/>
+            <Label Text="Click on the map to set your preferred home location, then set the distance you are willing to travel for events, and where or not you prefer to use miles or kilometers" Style="{StaticResource instructionsLabel}" Margin="0"/>
         </VerticalStackLayout>
-        <Grid x:Name="mapGrid" Grid.Row="1" Margin="10" BackgroundColor="Red" MinimumHeightRequest="200"/>
+        <maps:Map x:Name="mappy" HeightRequest="400" Loaded="mappy_Loaded" MapClicked="Map_MapClicked" />
         <VerticalStackLayout Grid.Row="2">
             <Grid RowDefinitions="*,*,*,*" ColumnDefinitions="Auto,*,*">
                 <Label Grid.Row="0" Grid.Column="0" Text="Event range:" Style="{StaticResource fieldLabel}" MaximumWidthRequest="150" />

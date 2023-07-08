@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Maui.GoogleMaps.Hosting;
 using System.Reflection;
 using TrashMobMobileApp.Extensions;
 using TrashMobMobileApp.Config;
@@ -34,6 +35,12 @@ public static class MauiProgram
               // Other Sentry options can be set here.
           });
 
+#if ANDROID
+        builder.UseGoogleMaps();
+#elif IOS
+        builder.UseGoogleMaps(Variables.GOOGLE_MAPS_IOS_API_KEY);
+#endif
+
         string strAppConfigStreamName = string.Empty;
 
         builder.Services.AddMauiBlazorWebView();
@@ -58,7 +65,6 @@ public static class MauiProgram
 
         builder.Services.AddLogging();
         builder.Services.AddScoped<IErrorBoundaryLogger, CustomBoundaryLogger>();
-        builder.UseMauiMaps();
 
         return builder.Build();
     }

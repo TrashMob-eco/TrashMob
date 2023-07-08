@@ -1,20 +1,13 @@
 namespace TrashMobMobileApp.Features.Map;
 
-using Microsoft.AspNetCore.Components;
-using Microsoft.Maui.Controls.Maps;
-using Microsoft.Maui.Maps;
+using Maui.GoogleMaps;
 using TrashMob.Models;
 using TrashMobMobileApp.Data;
 
 public partial class UserLocationPreferencePopup
 {
     private User user;
-    private const double DefaultLatitudeDegrees = 1.00;
-    private const double DefaultLongitudeDegrees = 1.00;
-    private const double DefaultLatitude = 39.8283;
-    private const double DefaultLongitude = 98.5795;
     private const int DefaultTravelDistance = 5;
-    private Map mappy;
 
     public IMapRestService MapRestService { get; set; }
 
@@ -23,15 +16,6 @@ public partial class UserLocationPreferencePopup
     public UserLocationPreferencePopup(IUserManager userManager, IMapRestService mapRestService)
     {
         InitializeComponent();
-#if !WINDOWS
-        mappy = new Microsoft.Maui.Controls.Maps.Map();
-        mappy.Loaded += mappy_Loaded;
-        mapGrid.Add(mappy);
-#else
-        // Add label with text to mapGrid view
-        mapGrid.Add(new Label { Text = "Map not supported on Windows" });
-#endif
-
         UserManager = userManager;
         MapRestService = mapRestService;
         units.Items.Add("miles");
@@ -70,7 +54,7 @@ public partial class UserLocationPreferencePopup
 
         var locationHelper = new LocationHelper();
 
-        var userLocation = new Location(user.Latitude ?? 0, user.Longitude ?? 0);
+        var userLocation = new Position(user.Latitude ?? 0, user.Longitude ?? 0);
         if (user.Latitude == null || user.Longitude == null || user.Latitude == 0 && user.Longitude == 0)
         {
             userLocation = await locationHelper.GetCurrentLocation();
@@ -85,23 +69,22 @@ public partial class UserLocationPreferencePopup
 
         if (userLocation != null)
         {
-            var mapSpan = new MapSpan(userLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
+            var mapSpan = new MapSpan(userLocation, LocationHelper.DefaultLatitudeDegreesMultipleEvents, LocationHelper.DefaultLongitudeDegreesMultipleEvents);
             mappy.MoveToRegion(mapSpan);
         }
         else
         {
-            userLocation = new Location(DefaultLatitude, DefaultLongitude);
-            var mapSpan = new MapSpan(userLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
+            userLocation = new Position(LocationHelper.DefaultLatitude, LocationHelper.DefaultLongitude);
+            var mapSpan = new MapSpan(userLocation, LocationHelper.DefaultLatitudeDegreesMultipleEvents, LocationHelper.DefaultLongitudeDegreesMultipleEvents);
             mappy.MoveToRegion(mapSpan);
         }
 
         mappy.Pins.Clear();
         var pin = MapHelper.GetPinForUser(user);
-        pin.Location = userLocation;
+        pin.Position = userLocation;
         mappy.Pins.Add(pin);
 
-        mappy.IsShowingUser = true;
-        mappy.MapClicked += Map_MapClicked;
+        mappy.MyLocationEnabled = true;
     }
 
     private async void Map_MapClicked(object sender, MapClickedEventArgs e)
@@ -109,11 +92,11 @@ public partial class UserLocationPreferencePopup
         var map = (Map)sender;
         if (map != null)
         {
-            user.Longitude = e.Location.Longitude;
-            user.Latitude = e.Location.Latitude;
+            user.Longitude = e.Point.Longitude;
+            user.Latitude = e.Point.Latitude;
 
             // Get the actual address for this point
-            var address = await MapRestService.GetAddressAsync(e.Location.Latitude, e.Location.Longitude);
+            var address = await MapRestService.GetAddressAsync(e.Point.Latitude, e.Point.Longitude);
             user.City = address.City;
             user.Region = address.Region;
             user.Country = address.Country;
@@ -121,7 +104,7 @@ public partial class UserLocationPreferencePopup
 
             map.Pins.Clear();
             var pin = MapHelper.GetPinForUser(user);
-            pin.Location = e.Location;
+            pin.Position = e.Point;
             map.Pins.Add(pin);
 
             SetFields(user);

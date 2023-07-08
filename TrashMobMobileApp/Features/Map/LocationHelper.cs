@@ -1,14 +1,21 @@
 ﻿namespace TrashMobMobileApp.Features.Map
 {
+    using Maui.GoogleMaps;
     using System;
     using System.Threading.Tasks;
-
+    
     internal class LocationHelper
     {
         private CancellationTokenSource _cancelTokenSource;
         private bool _isCheckingLocation;
+        public const double DefaultLatitude = 39.8283;
+        public const double DefaultLongitude = 98.5795;
+        public const double DefaultLatitudeDegreesSingleEvent = 0.02;
+        public const double DefaultLongitudeDegreesSingleEvent = 0.02;
+        public const double DefaultLatitudeDegreesMultipleEvents = 1.0;
+        public const double DefaultLongitudeDegreesMultipleEvents = 1.0;
 
-        public async Task<Location> GetCurrentLocation()
+        public async Task<Position> GetCurrentLocation()
         {
             try
             {
@@ -18,9 +25,11 @@
 
                 _cancelTokenSource = new CancellationTokenSource();
 
-                Location location = await Geolocation.Default.GetLocationAsync(request, _cancelTokenSource.Token);
+                var location = await Geolocation.Default.GetLocationAsync(request, _cancelTokenSource.Token);
 
-                return location;
+                var position = new Position(location.Latitude, location.Longitude);
+
+                return position;
             }
             // Catch one of the following exceptions:
             //   FeatureNotSupportedException
@@ -35,7 +44,7 @@
                 _isCheckingLocation = false;
             }
 
-            return null;
+            return new Position(DefaultLatitude,DefaultLongitude);
         }
 
         public void CancelRequest()
