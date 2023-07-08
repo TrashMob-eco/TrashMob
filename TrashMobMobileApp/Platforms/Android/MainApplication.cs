@@ -1,7 +1,7 @@
-﻿using Android.App;
-using Android.Runtime;
+﻿namespace TrashMobMobileApp.Platforms.Android;
 
-namespace TrashMobMobileApp.Platforms.Android;
+using global::Android.App;
+using global::Android.Runtime;
 
 [Application]
 public class MainApplication : MauiApplication

@@ -8,7 +8,6 @@ public partial class UserLocationPreferencePopup
 {
     private User user;
     private const int DefaultTravelDistance = 5;
-    private Map mappy;
 
     public IMapRestService MapRestService { get; set; }
 
@@ -17,16 +16,6 @@ public partial class UserLocationPreferencePopup
     public UserLocationPreferencePopup(IUserManager userManager, IMapRestService mapRestService)
     {
         InitializeComponent();
-#if !WINDOWS
-        mappy = new Map();
-        mappy.Loaded += mappy_Loaded;
-        mappy.MapClicked += Map_MapClicked;
-        mapGrid.Add(mappy);
-#else
-        // Add label with text to mapGrid view
-        mapGrid.Add(new Label { Text = "Map not supported on Windows" });
-#endif
-
         UserManager = userManager;
         MapRestService = mapRestService;
         units.Items.Add("miles");
