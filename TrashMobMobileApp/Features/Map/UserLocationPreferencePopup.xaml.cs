@@ -20,6 +20,7 @@ public partial class UserLocationPreferencePopup
 #if !WINDOWS
         mappy = new Map();
         mappy.Loaded += mappy_Loaded;
+        mappy.MapClicked += Map_MapClicked;
         mapGrid.Add(mappy);
 #else
         // Add label with text to mapGrid view
@@ -95,7 +96,6 @@ public partial class UserLocationPreferencePopup
         mappy.Pins.Add(pin);
 
         mappy.MyLocationEnabled = true;
-        mappy.MapClicked += Map_MapClicked;
     }
 
     private async void Map_MapClicked(object sender, MapClickedEventArgs e)
