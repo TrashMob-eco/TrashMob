@@ -1,7 +1,6 @@
 namespace TrashMobMobileApp.Features.Map;
 
-using Microsoft.Maui.Controls.Maps;
-using Microsoft.Maui.Maps;
+using Maui.GoogleMaps;
 using TrashMob.Models;
 using TrashMobMobileApp.Data;
 
@@ -10,10 +9,6 @@ public partial class EditMapPopup
     public IMapRestService MapRestService { get; set; }
 
     private readonly Event mobEvent;
-    private const double DefaultLatitudeDegrees = 0.02;
-    private const double DefaultLongitudeDegrees = 0.02;
-    private const double DefaultLatitude = 39.8283;
-    private const double DefaultLongitude = 98.5795;
 
     public EditMapPopup(IMapRestService mapRestService, Event mobEvent)
     {
@@ -30,19 +25,19 @@ public partial class EditMapPopup
         postalCode.Text = mobEvent.PostalCode;
     }
 
-    private async void mappy_Loaded(object sender, EventArgs e)
+    private async void Popup_Opened(object sender, CommunityToolkit.Maui.Core.PopupOpenedEventArgs e)
     {
         var locationHelper = new LocationHelper();
 
         if (mobEvent.Latitude != null && mobEvent.Longitude != null)
         {
-            var eventLocation = new Location(mobEvent.Latitude.Value, mobEvent.Longitude.Value);
-            var mapSpan = new MapSpan(eventLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
+            var eventLocation = new Position(mobEvent.Latitude.Value, mobEvent.Longitude.Value);
+            var mapSpan = new MapSpan(eventLocation, LocationHelper.DefaultLatitudeDegreesSingleEvent, LocationHelper.DefaultLongitudeDegreesSingleEvent);
             mappy.MoveToRegion(mapSpan);
 
             mappy.Pins.Clear();
             var pin = MapHelper.GetPinForEvent(mobEvent);
-            pin.Location = eventLocation;
+            pin.Position = eventLocation;
             mappy.Pins.Add(pin);
             SetFields(mobEvent);
         }
@@ -53,20 +48,19 @@ public partial class EditMapPopup
 
             if (userLocation != null)
             {
-                var mapSpan = new MapSpan(userLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
+                var mapSpan = new MapSpan(userLocation, LocationHelper.DefaultLatitudeDegreesSingleEvent, LocationHelper.DefaultLongitudeDegreesSingleEvent);
                 mappy.MoveToRegion(mapSpan);
             }
             else
             {
-                var defaultLocation = new Location(DefaultLatitude, DefaultLongitude);
-                var mapSpan = new MapSpan(defaultLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
+                var defaultLocation = new Position(LocationHelper.DefaultLatitude, LocationHelper.DefaultLongitude);
+                var mapSpan = new MapSpan(defaultLocation, LocationHelper.DefaultLatitudeDegreesSingleEvent, LocationHelper.DefaultLongitudeDegreesSingleEvent);
                 mappy.MoveToRegion(mapSpan);
             }
         }
 
         NextButton.IsEnabled = false;
-        mappy.IsShowingUser = true;
-        mappy.MapClicked += Map_MapClicked;
+        mappy.MyLocationEnabled = true;
     }
 
     private async void Map_MapClicked(object sender, MapClickedEventArgs e)
@@ -74,11 +68,11 @@ public partial class EditMapPopup
         var map = (Map)sender;
         if (map != null)
         {
-            mobEvent.Longitude = e.Location.Longitude;
-            mobEvent.Latitude = e.Location.Latitude;
+            mobEvent.Longitude = e.Point.Longitude;
+            mobEvent.Latitude = e.Point.Latitude;
 
             // Get the actual address for this point
-            var address = await MapRestService.GetAddressAsync(e.Location.Latitude, e.Location.Longitude);
+            var address = await MapRestService.GetAddressAsync(e.Point.Latitude, e.Point.Longitude);
             mobEvent.StreetAddress = address.StreetAddress;
             mobEvent.City = address.City;
             mobEvent.Region = address.Region;
@@ -87,7 +81,7 @@ public partial class EditMapPopup
 
             map.Pins.Clear();
             var pin = MapHelper.GetPinForEvent(mobEvent);
-            pin.Location = e.Location;
+            pin.Position = e.Point;
             map.Pins.Add(pin);
 
             SetFields(mobEvent);

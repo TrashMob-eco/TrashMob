@@ -5,7 +5,6 @@
     using Microsoft.AspNetCore.Components.Routing;
     using Microsoft.Extensions.Logging;
     using MudBlazor;
-    using TrashMobMobileApp.Authentication;
     using TrashMobMobileApp.Data;
     using TrashMobMobileApp.Features.Map;
     using TrashMobMobileApp.StateContainers;
@@ -63,14 +62,14 @@
         {
             _theme = new MudTheme()
             {
-                Palette = new Palette()
+                Palette = new PaletteLight()
                 {
                     Primary = Colors.Green.Default,
                     Secondary = Colors.Green.Lighten1,
                     Dark = Colors.Green.Darken1,
                     AppbarBackground = Colors.Green.Default,
                 },
-                PaletteDark = new Palette()
+                PaletteDark = new PaletteDark()
                 {
                     Primary = Colors.Green.Darken1
                 }

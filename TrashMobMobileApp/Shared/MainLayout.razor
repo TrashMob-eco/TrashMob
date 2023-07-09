@@ -2,10 +2,18 @@
 
 <MudLayout>
     <MudAppBar Style="padding-left: 16px; padding-right: 16px">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudContainer Style="width: 100%; text-align: center;">
-            @_pageTitle
-        </MudContainer>
+        <MudGrid>
+            <MudItem xs="1">
+                    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+            </MudItem>
+            <MudItem xs="10">
+                <MudContainer Style="width: 100%; text-align:center">
+                    <h2>@_pageTitle</h2>
+                </MudContainer>
+            </MudItem>
+            <MudItem xs="1">
+            </MudItem>
+        </MudGrid>
     </MudAppBar>
     <MudDrawer @bind-Open="@_drawerOpen">
         <MudDrawerHeader>

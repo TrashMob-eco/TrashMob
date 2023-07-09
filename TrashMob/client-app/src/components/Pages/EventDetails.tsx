@@ -184,7 +184,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
             .then(data => {
                 setUserList(data);
             });
-    }, [eventId])
+    }, [eventId, myAttendanceList])
 
     const handleAttendanceChanged = () => {
         if (!isUserLoaded || !currentUser) {

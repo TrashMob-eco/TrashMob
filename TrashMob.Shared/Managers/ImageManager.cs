@@ -19,6 +19,24 @@
             this.blobServiceClient = blobServiceClient;
         }
 
+        public async Task<string> GetImageUrlAsync(Guid parentId, ImageTypeEnum imageType)
+        {
+            var blobContainer = blobServiceClient.GetBlobContainerClient(imageType.ToString().ToLower());
+
+            var fileNameFilter = string.Format("{0}-{1}", parentId, imageType.ToString()).ToLower();
+
+            var imageUrl = string.Empty;
+
+            // For now, only show the first image, since there should only be one for Pickups.
+            await foreach (BlobItem blob in blobContainer.GetBlobsAsync(prefix: fileNameFilter))
+            {
+                imageUrl = $"{blobContainer.Uri}/{blob.Name}";
+                break;
+            }
+
+            return imageUrl;
+        }
+
         public async Task UploadImage(ImageUpload imageUpload)
         {
             var blobContainer = blobServiceClient.GetBlobContainerClient(imageUpload.ImageType.ToString().ToLower());

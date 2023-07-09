@@ -20,13 +20,15 @@
         private readonly IPartnerLocationContactManager partnerLocationContactManager;
         private readonly IPartnerAdminManager partnerAdminManager;
         private readonly IEmailManager emailManager;
+        private readonly IImageManager imageManager;
 
         public PickupLocationManager(IKeyedRepository<PickupLocation> pickupLocationRepository,
                                      IEventManager eventManager,
                                      IEventPartnerLocationServiceManager eventPartnerLocationServiceManager,
                                      IPartnerLocationContactManager partnerLocationContactManager,
                                      IPartnerAdminManager partnerAdminManager,
-                                     IEmailManager emailManager)
+                                     IEmailManager emailManager,
+                                     IImageManager imageManager)
             : base(pickupLocationRepository)
         {
             this.eventManager = eventManager;
@@ -34,6 +36,7 @@
             this.partnerLocationContactManager = partnerLocationContactManager;
             this.partnerAdminManager = partnerAdminManager;
             this.emailManager = emailManager;
+            this.imageManager = imageManager;
         }
 
         public override async Task<IEnumerable<PickupLocation>> GetByParentIdAsync(Guid parentId, CancellationToken cancellationToken)
@@ -94,7 +97,6 @@
             // Get all pickup locations for the event that haven't been submitted or picked up
             var pickupLocations = await Repository.Get(p => p.EventId == eventId && !p.HasBeenSubmitted && !p.HasBeenPickedUp).ToListAsync(cancellationToken);
 
-            // Todo: Create email
             var emailCopy = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventPartnerPickupRequest.ToString());
 
             var emailSubject = "A Trashmob.eco Event has pickups ready!";
@@ -119,11 +121,14 @@
 
             foreach (var pickupLocation in pickupLocations)
             {
+                var imageUrl = await imageManager.GetImageUrlAsync(eventId, ImageTypeEnum.Pickup);
+
                 var pickSpot = new PickupSpot
                 {
                     StreetAddress = pickupLocation.StreetAddress,
                     GoogleMapsUrl = pickupLocation.GoogleMapsUrl(),
-                    Notes = pickupLocation.Notes
+                    Notes = pickupLocation.Notes,
+                    ImageUrl = imageUrl
                 };
 
                 dynamicTemplateData.pickupSpots.Add(pickSpot);

@@ -1,6 +1,6 @@
 ﻿namespace TrashMobMobileApp.Features.Map
 {
-    using Microsoft.Maui.Controls.Maps;
+    using Maui.GoogleMaps;
     using TrashMob.Models;
     using TrashMobMobileApp.Extensions;
 

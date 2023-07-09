@@ -64,15 +64,19 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
                 method: 'POST',
                 body: data,
                 headers: headers,
-            }).then((response) => response.json())
-                .then(onAttendanceChanged(eventId)).then(() => setRegistered(true))
+            }).then(() => onAttendanceChanged(eventId))
+                .then(() => setRegistered(true))
+                    .then(() => {
+                        // re-direct user to event details page once they are registered
+                        history.push(`/eventdetails/${eventId}`)
+                    })
         })
     }
 
     const handleAttend = (eventId: string) => {
 
         // Have user sign waiver if needed
-        const isTrashMobWaiverOutOfDate = currentUser.dateAgreedToTrashMobWaiver < CurrentTrashMobWaiverVersion.versionDate;
+        const isTrashMobWaiverOutOfDate = (new Date(currentUser.dateAgreedToTrashMobWaiver)).toISOString() < CurrentTrashMobWaiverVersion.versionDate.toISOString();
         if (waiver?.isWaiverEnabled && (isTrashMobWaiverOutOfDate || (currentUser.trashMobWaiverVersion === ""))) {
             sessionStorage.setItem('targetUrl', window.location.pathname);
             history.push("/waivers");
@@ -94,7 +98,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
     }
 
     return (
-        <Button className="btn btn-primary action btn-128" hidden={!isUserLoaded || isAttending === "Yes" || registered}
+        <Button id="addAttendee" className="btn btn-primary action btn-128" hidden={!isUserLoaded || isAttending === "Yes" || registered}
             onClick={() => handleAttend(eventId)}>{registered ? 'Registered!' : 'Register'}</Button>
     )
 }

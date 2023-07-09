@@ -77,7 +77,7 @@ jobs:
           TrashMobMobileApp\bin\${{ env.CONFIGURATION }}\net7.0-android\publish\*.aab
 
   buildiOSApp:
-    runs-on: macos-12
+    runs-on: macos-13
     environment: test
     name: iOS Build
 
@@ -110,6 +110,13 @@ jobs:
         dotnet nuget locals all --clear
         dotnet workload install maui --ignore-failed-sources
         dotnet workload install ios macos maui wasm-tools --source https://api.nuget.org/v3/index.json --ignore-failed-sources
+
+    - name: Set XCode Version
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        sudo xcode-select -s "/Applications/Xcode_14.3.app"
+        echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_14.3.app" >> $GITHUB_ENV
 
     - name: Restore Dependencies
       run: | 

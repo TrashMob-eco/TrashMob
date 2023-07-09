@@ -1,20 +1,13 @@
 namespace TrashMobMobileApp.Features.Map;
 
-using Microsoft.AspNetCore.Components;
-using Microsoft.Maui.Controls.Maps;
-using Microsoft.Maui.Maps;
+using Maui.GoogleMaps;
 using TrashMob.Models;
 using TrashMobMobileApp.Data;
 
 public partial class UserLocationPreferencePopup
 {
     private User user;
-    private const double DefaultLatitudeDegrees = 1.00;
-    private const double DefaultLongitudeDegrees = 1.00;
-    private const double DefaultLatitude = 39.8283;
-    private const double DefaultLongitude = 98.5795;
     private const int DefaultTravelDistance = 5;
-    private Map mappy;
 
     public IMapRestService MapRestService { get; set; }
 
@@ -23,19 +16,24 @@ public partial class UserLocationPreferencePopup
     public UserLocationPreferencePopup(IUserManager userManager, IMapRestService mapRestService)
     {
         InitializeComponent();
-#if !WINDOWS
-        mappy = new Microsoft.Maui.Controls.Maps.Map();
-        mappy.Loaded += mappy_Loaded;
-        mapGrid.Add(mappy);
-#else
-        // Add label with text to mapGrid view
-        mapGrid.Add(new Label { Text = "Map not supported on Windows" });
-#endif
-
         UserManager = userManager;
         MapRestService = mapRestService;
+
+        InitializeFields();
+    }
+
+    private void InitializeFields()
+    {
+        units.Items.Clear();
+
         units.Items.Add("miles");
         units.Items.Add("kilometers");
+
+        city.Text = string.Empty;
+        state.Text = string.Empty;
+        postalCode.Text = string.Empty;
+        travelLimitForLocalEvents.Text = DefaultTravelDistance.ToString();
+        units.SelectedItem = "miles";
     }
 
     private void SetFields(User user)
@@ -55,7 +53,7 @@ public partial class UserLocationPreferencePopup
         }
     }
 
-    private async void mappy_Loaded(object sender, EventArgs e)
+    private async void Popup_Opened(object sender, CommunityToolkit.Maui.Core.PopupOpenedEventArgs e)
     {
         try
         {
@@ -64,16 +62,9 @@ public partial class UserLocationPreferencePopup
         catch (Exception)
         {
             // log exception somewhere
-            // try user service one more time
+            // try user service one more time after short delay
+            await Task.Delay(4000);
             user = await UserManager.GetUserAsync(App.CurrentUser.Id.ToString());
-        }
-
-        var locationHelper = new LocationHelper();
-
-        var userLocation = new Location(user.Latitude ?? 0, user.Longitude ?? 0);
-        if (user.Latitude == null || user.Longitude == null || user.Latitude == 0 && user.Longitude == 0)
-        {
-            userLocation = await locationHelper.GetCurrentLocation();
         }
 
         if (user.TravelLimitForLocalEvents == 0)
@@ -83,37 +74,44 @@ public partial class UserLocationPreferencePopup
 
         SetFields(user);
 
+        var locationHelper = new LocationHelper();
+
+        var userLocation = new Position(user.Latitude ?? 0, user.Longitude ?? 0);
+        if (user.Latitude == null || user.Longitude == null || user.Latitude == 0 && user.Longitude == 0)
+        {
+            userLocation = await locationHelper.GetCurrentLocation();
+        }
+
         if (userLocation != null)
         {
-            var mapSpan = new MapSpan(userLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
+            var mapSpan = new MapSpan(userLocation, LocationHelper.DefaultLatitudeDegreesMultipleEvents, LocationHelper.DefaultLongitudeDegreesMultipleEvents);
             mappy.MoveToRegion(mapSpan);
         }
         else
         {
-            userLocation = new Location(DefaultLatitude, DefaultLongitude);
-            var mapSpan = new MapSpan(userLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
+            userLocation = new Position(LocationHelper.DefaultLatitude, LocationHelper.DefaultLongitude);
+            var mapSpan = new MapSpan(userLocation, LocationHelper.DefaultLatitudeDegreesMultipleEvents, LocationHelper.DefaultLongitudeDegreesMultipleEvents);
             mappy.MoveToRegion(mapSpan);
         }
 
         mappy.Pins.Clear();
         var pin = MapHelper.GetPinForUser(user);
-        pin.Location = userLocation;
+        pin.Position = userLocation;
         mappy.Pins.Add(pin);
 
-        mappy.IsShowingUser = true;
-        mappy.MapClicked += Map_MapClicked;
+        mappy.MyLocationEnabled = true;
     }
 
     private async void Map_MapClicked(object sender, MapClickedEventArgs e)
     {
         var map = (Map)sender;
-        if (map != null)
+        if (map != null && e?.Point != null)
         {
-            user.Longitude = e.Location.Longitude;
-            user.Latitude = e.Location.Latitude;
+            user.Longitude = e.Point.Longitude;
+            user.Latitude = e.Point.Latitude;
 
             // Get the actual address for this point
-            var address = await MapRestService.GetAddressAsync(e.Location.Latitude, e.Location.Longitude);
+            var address = await MapRestService.GetAddressAsync(e.Point.Latitude, e.Point.Longitude);
             user.City = address.City;
             user.Region = address.Region;
             user.Country = address.Country;
@@ -121,7 +119,7 @@ public partial class UserLocationPreferencePopup
 
             map.Pins.Clear();
             var pin = MapHelper.GetPinForUser(user);
-            pin.Location = e.Location;
+            pin.Position = e.Point;
             map.Pins.Add(pin);
 
             SetFields(user);
