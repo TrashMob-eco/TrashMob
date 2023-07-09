@@ -53,7 +53,7 @@ public partial class UserLocationPreferencePopup
         }
     }
 
-    private async void Map_Loaded(object sender, EventArgs e)
+    private async void Popup_Opened(object sender, CommunityToolkit.Maui.Core.PopupOpenedEventArgs e)
     {
         try
         {
@@ -67,6 +67,13 @@ public partial class UserLocationPreferencePopup
             user = await UserManager.GetUserAsync(App.CurrentUser.Id.ToString());
         }
 
+        if (user.TravelLimitForLocalEvents == 0)
+        {
+            user.TravelLimitForLocalEvents = DefaultTravelDistance;
+        }
+
+        SetFields(user);
+
         var locationHelper = new LocationHelper();
 
         var userLocation = new Position(user.Latitude ?? 0, user.Longitude ?? 0);
@@ -74,13 +81,6 @@ public partial class UserLocationPreferencePopup
         {
             userLocation = await locationHelper.GetCurrentLocation();
         }
-
-        if (user.TravelLimitForLocalEvents == 0)
-        {
-            user.TravelLimitForLocalEvents = DefaultTravelDistance;
-        }
-
-        SetFields(user);
 
         if (userLocation != null)
         {
