@@ -3,13 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
              xmlns:maps="clr-namespace:Maui.GoogleMaps;assembly=Maui.GoogleMaps"
-             x:Class="TrashMobMobileApp.Features.Map.UserLocationPreferencePopup">
+             x:Class="TrashMobMobileApp.Features.Map.UserLocationPreferencePopup"
+           Opened="Popup_Opened">
     <Grid RowDefinitions="Auto,*,Auto" Padding="10" VerticalOptions="StartAndExpand">
         <VerticalStackLayout Grid.Row="0">
             <Label Text="Set your preferred location" Style="{StaticResource headerLabel}" Margin="0"/>
             <Label Text="Click on the map to set your preferred home location, then set the distance you are willing to travel for events, and where or not you prefer to use miles or kilometers" Style="{StaticResource instructionsLabel}" Margin="0"/>
         </VerticalStackLayout>
-        <maps:Map x:Name="mappy" HeightRequest="400" Loaded="mappy_Loaded" MapClicked="Map_MapClicked" />
+        <maps:Map x:Name="mappy" HeightRequest="400" MapClicked="Map_MapClicked" />
         <VerticalStackLayout Grid.Row="2">
             <Grid RowDefinitions="*,*,*,*" ColumnDefinitions="Auto,*,*">
                 <Label Grid.Row="0" Grid.Column="0" Text="Event range:" Style="{StaticResource fieldLabel}" MaximumWidthRequest="150" />

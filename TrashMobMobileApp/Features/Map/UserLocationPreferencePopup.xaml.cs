@@ -18,8 +18,22 @@ public partial class UserLocationPreferencePopup
         InitializeComponent();
         UserManager = userManager;
         MapRestService = mapRestService;
+
+        InitializeFields();
+    }
+
+    private void InitializeFields()
+    {
+        units.Items.Clear();
+
         units.Items.Add("miles");
         units.Items.Add("kilometers");
+
+        city.Text = string.Empty;
+        state.Text = string.Empty;
+        postalCode.Text = string.Empty;
+        travelLimitForLocalEvents.Text = DefaultTravelDistance.ToString();
+        units.SelectedItem = "miles";
     }
 
     private void SetFields(User user)
@@ -39,7 +53,7 @@ public partial class UserLocationPreferencePopup
         }
     }
 
-    private async void mappy_Loaded(object sender, EventArgs e)
+    private async void Popup_Opened(object sender, CommunityToolkit.Maui.Core.PopupOpenedEventArgs e)
     {
         try
         {
@@ -48,16 +62,9 @@ public partial class UserLocationPreferencePopup
         catch (Exception)
         {
             // log exception somewhere
-            // try user service one more time
+            // try user service one more time after short delay
+            await Task.Delay(4000);
             user = await UserManager.GetUserAsync(App.CurrentUser.Id.ToString());
-        }
-
-        var locationHelper = new LocationHelper();
-
-        var userLocation = new Position(user.Latitude ?? 0, user.Longitude ?? 0);
-        if (user.Latitude == null || user.Longitude == null || user.Latitude == 0 && user.Longitude == 0)
-        {
-            userLocation = await locationHelper.GetCurrentLocation();
         }
 
         if (user.TravelLimitForLocalEvents == 0)
@@ -66,6 +73,14 @@ public partial class UserLocationPreferencePopup
         }
 
         SetFields(user);
+
+        var locationHelper = new LocationHelper();
+
+        var userLocation = new Position(user.Latitude ?? 0, user.Longitude ?? 0);
+        if (user.Latitude == null || user.Longitude == null || user.Latitude == 0 && user.Longitude == 0)
+        {
+            userLocation = await locationHelper.GetCurrentLocation();
+        }
 
         if (userLocation != null)
         {
@@ -90,7 +105,7 @@ public partial class UserLocationPreferencePopup
     private async void Map_MapClicked(object sender, MapClickedEventArgs e)
     {
         var map = (Map)sender;
-        if (map != null)
+        if (map != null && e?.Point != null)
         {
             user.Longitude = e.Point.Longitude;
             user.Latitude = e.Point.Latitude;
