@@ -25,7 +25,7 @@ public partial class EditMapPopup
         postalCode.Text = mobEvent.PostalCode;
     }
 
-    private async void mappy_Loaded(object sender, EventArgs e)
+    private async void Popup_Opened(object sender, CommunityToolkit.Maui.Core.PopupOpenedEventArgs e)
     {
         var locationHelper = new LocationHelper();
 

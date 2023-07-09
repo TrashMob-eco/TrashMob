@@ -39,22 +39,10 @@ public partial class MauiMapPageMultipleEvent : ContentPage
         this.mobEvents = mobEvents;
     }
 
-    private void Pin_Clicked(object sender, PinClickedEventArgs e)
+    protected override async void OnAppearing()
     {
-        var pin = sender as TrashMobPin;
+        base.OnAppearing();
 
-        if (pin != null)
-        {
-            var selectedEvent = mobEvents.FirstOrDefault(x => x.Id == pin.EventId);
-
-            SetFields(selectedEvent);
-            selectedEventId = selectedEvent.Id;
-            addressDisplay.IsVisible = true;
-        }
-    }
-
-    private async void mappy_Loaded(object sender, EventArgs e)
-    {
         var locationHelper = new LocationHelper();
         var userLocation = await locationHelper.GetCurrentLocation();
 
@@ -70,6 +58,20 @@ public partial class MauiMapPageMultipleEvent : ContentPage
             var defaultLocation = new Position(LocationHelper.DefaultLatitude, LocationHelper.DefaultLongitude);
             var mapSpan = new MapSpan(defaultLocation, LocationHelper.DefaultLatitudeDegreesMultipleEvents, LocationHelper.DefaultLongitudeDegreesMultipleEvents);
             mappy.MoveToRegion(mapSpan);
+        }
+    }
+
+    private void Pin_Clicked(object sender, PinClickedEventArgs e)
+    {
+        var pin = sender as TrashMobPin;
+
+        if (pin != null)
+        {
+            var selectedEvent = mobEvents.FirstOrDefault(x => x.Id == pin.EventId);
+
+            SetFields(selectedEvent);
+            selectedEventId = selectedEvent.Id;
+            addressDisplay.IsVisible = true;
         }
     }
 
