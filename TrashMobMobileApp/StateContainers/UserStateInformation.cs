@@ -13,5 +13,7 @@
         public int CurrentlyActiveCompleteEventTab { get; set; }
 
         public bool ShowFutureEvents { get; set; }
+
+        public bool HasToSignWaiver { get; set; } = false;
     }
 }

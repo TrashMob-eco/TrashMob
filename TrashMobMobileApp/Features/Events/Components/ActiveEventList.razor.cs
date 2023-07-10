@@ -3,10 +3,12 @@
     using Microsoft.AspNetCore.Components;
     using MudBlazor;
     using TrashMob.Models;
+    using TrashMobMobileApp.Authentication;
     using TrashMobMobileApp.Data;
     using TrashMobMobileApp.Extensions;
     using TrashMobMobileApp.Features.Map;
     using TrashMobMobileApp.Shared;
+    using TrashMobMobileApp.StateContainers;
 
     public partial class ActiveEventList
     {
@@ -25,6 +27,9 @@
 
         [Inject]
         public IWaiverManager WaiverManager { get; set; }
+
+        [Inject]
+        public UserStateInformation StateInformation { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -48,7 +53,13 @@
 
         private async void OnViewMapAllEvents(IEnumerable<Event> mobEvents)
         {
-            await App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageMultipleEvent(MobEventManager, mobEvents));
+            await App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageMultipleEvent(MobEventManager, WaiverManager, StateInformation, mobEvents));
+
+            if (StateInformation.HasToSignWaiver)
+            {
+                Navigator.NavigateTo(Routes.Waiver);
+            }
+
             await ReInitializeAsync();
         }
 

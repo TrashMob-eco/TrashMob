@@ -19,7 +19,7 @@
 		<ApplicationIdGuid>788A46C9-E67B-45C1-AF56-EE14F93B7DD1</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>0.1.1</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
 		<ApplicationVersion>2</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.3</SupportedOSPlatformVersion>
@@ -38,6 +38,7 @@
 		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
 		<AndroidPackageFormat>apk</AndroidPackageFormat>
 		<EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+		<ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-android|AnyCPU'">
@@ -49,6 +50,7 @@
 		<AndroidPackageFormat>aab</AndroidPackageFormat>
 		<AndroidUseAapt2>True</AndroidUseAapt2>
 		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+		<ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
@@ -76,6 +78,7 @@
 
 		<MtouchLink>SdkOnly</MtouchLink>
 		<MtouchUseLlvm>true</MtouchUseLlvm>
+		<ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
 		 <CreatePackage>false</CreatePackage>
@@ -90,12 +93,19 @@
 		 <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
 		 <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
 		 <BuildIpa>true</BuildIpa>
+		 <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
       <Optimize>true</Optimize>
 		<WarningLevel>4</WarningLevel>
 		<PlatformTarget>anycpu</PlatformTarget>
 	</PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-maccatalyst|AnyCPU'">
+      <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-maccatalyst|AnyCPU'">
+      <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
+    </PropertyGroup>
 
 	<ItemGroup>
 		<None Include="Info.plist" Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">

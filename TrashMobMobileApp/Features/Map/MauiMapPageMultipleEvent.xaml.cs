@@ -5,6 +5,7 @@ using Maui.GoogleMaps;
 using TrashMob.Models;
 using TrashMobMobileApp.Data;
 using TrashMobMobileApp.Extensions;
+using TrashMobMobileApp.StateContainers;
 
 public partial class MauiMapPageMultipleEvent : ContentPage
 {
@@ -16,27 +17,47 @@ public partial class MauiMapPageMultipleEvent : ContentPage
     [Inject]
     public IMobEventManager MobEventManager { get; set; }
 
-    public MauiMapPageMultipleEvent(IMobEventManager mobEventManager, IEnumerable<Event> mobEvents)
+    [Inject]
+    public IWaiverManager WaiverManager { get; set; }
+
+    [Inject]
+    public UserStateInformation StateInformation { get; set; }
+
+    public MauiMapPageMultipleEvent(IMobEventManager mobEventManager, IWaiverManager waiverManager, UserStateInformation stateInformation, IEnumerable<Event> mobEvents)
     {
         InitializeComponent();
 
         user = App.CurrentUser;
 
+        mappy.MyLocationEnabled = true;
+
         foreach (var mobEvent in mobEvents)
         {
             var location = new Position(mobEvent.Latitude.Value, mobEvent.Longitude.Value);
 
-            mappy.MyLocationEnabled = true;
-
             var pin = MapHelper.GetPinForEvent(mobEvent);
-            mappy.PinClicked += Pin_Clicked;
             pin.Position = location;
-
             mappy.Pins.Add(pin);
         }
 
         MobEventManager = mobEventManager;
+        WaiverManager = waiverManager;
+        StateInformation = stateInformation;
         this.mobEvents = mobEvents;
+    }
+
+    private void Mappy_PinClicked(object sender, PinClickedEventArgs e)
+    {
+        var pin = e.Pin as TrashMobPin;
+
+        if (pin != null)
+        {
+            var selectedEvent = mobEvents.FirstOrDefault(x => x.Id == pin.EventId);
+
+            SetFields(selectedEvent);
+            selectedEventId = selectedEvent.Id;
+            addressDisplay.IsVisible = true;
+        }
     }
 
     protected override async void OnAppearing()
@@ -61,20 +82,6 @@ public partial class MauiMapPageMultipleEvent : ContentPage
         }
     }
 
-    private void Pin_Clicked(object sender, PinClickedEventArgs e)
-    {
-        var pin = sender as TrashMobPin;
-
-        if (pin != null)
-        {
-            var selectedEvent = mobEvents.FirstOrDefault(x => x.Id == pin.EventId);
-
-            SetFields(selectedEvent);
-            selectedEventId = selectedEvent.Id;
-            addressDisplay.IsVisible = true;
-        }
-    }
-
     private void CloseButton_Clicked(object sender, EventArgs e)
     {
         Navigation.PopModalAsync();
@@ -82,6 +89,14 @@ public partial class MauiMapPageMultipleEvent : ContentPage
 
     private async void RegisterButton_Clicked(object sender, EventArgs e)
     {
+        var hasSignedWaiver = await WaiverManager.HasUserSignedTrashMobWaiverAsync();
+
+        if (!hasSignedWaiver)
+        {
+            StateInformation.HasToSignWaiver = true;
+            await Navigation.PopModalAsync();
+        }
+
         var attendee = new EventAttendee
         {
             UserId = user.Id,
