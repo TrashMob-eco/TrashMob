@@ -13,7 +13,7 @@ import { Table } from '../Table';
 import twofigure from '../assets/card/twofigure.svg';
 import calendarclock from '../assets/card/calendarclock.svg';
 import bucketplus from '../assets/card/bucketplus.svg';
-import { Eye, PersonX, Link as LinkIcon, Pencil, FileEarmarkCheck, CheckSquare, XSquare, ArrowRightSquare } from 'react-bootstrap-icons';
+import { Eye, PersonX, Link as LinkIcon, Pencil, FileEarmarkCheck, CheckSquare, XSquare, ArrowRightSquare, Facebook, Twitter } from 'react-bootstrap-icons';
 import StatsData from '../Models/StatsData';
 import { PartnerStatusActive } from '../Models/Constants';
 import DisplayPartnershipData from '../Models/DisplayPartnershipData';
@@ -24,6 +24,7 @@ import DisplayPartnerAdminInvitationData from '../Models/DisplayPartnerAdminInvi
 import { PartnerLocationEventRequests } from '../Partners/PartnerLocationEventRequests';
 import { Guid } from 'guid-typescript';
 import PickupLocationData from '../Models/PickupLocationData';
+import { getTwitterUrl, getFacebookUrl } from '../../store/ShareUrl';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -405,28 +406,41 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         });
     }
 
-    const attendeeActionDropdownList = (eventId: string) => {
+    const attendeeActionDropdownList = (event: EventData) => {
+        return (
+            <>
+                <Dropdown.Item href={'/eventdetails/' + event.id}><Eye />View event</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleUnregisterEvent(event.id, props.currentUser.userName)}><PersonX />Unregister for event</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleCopyLink(event.id)}><LinkIcon />{copied ? 'Copied!' : 'Copy event link'}</Dropdown.Item>
+                <Dropdown.Item href={getFacebookUrl(event.id)}><Facebook />Share to Facebook</Dropdown.Item>
+                <Dropdown.Item href={getTwitterUrl(event)}><Twitter />Share to Twitter</Dropdown.Item>
+            </>
+        )
+    }
+
+    const eventOwnerActionDropdownList = (event: EventData) => {
+        return (
+            <>
+                <Dropdown.Item href={'/manageeventdashboard/' + event.id}><Pencil />Manage event</Dropdown.Item>
+                <Dropdown.Item href={'/eventdetails/' + event.id}><Eye />View event</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleCopyLink(event.id)}><LinkIcon />{copied ? 'Copied!' : 'Copy event link'}</Dropdown.Item>
+                <Dropdown.Item href={getFacebookUrl(event.id)}><Facebook />Share to Facebook</Dropdown.Item>
+                <Dropdown.Item href={getTwitterUrl(event)}><Twitter />Share to Twitter</Dropdown.Item>
+                <Dropdown.Item href={'/cancelevent/' + event.id}><XSquare />Cancel event</Dropdown.Item>
+            </>
+        )
+    }
+
+    const completedAttendeeActionDropdownList = (eventId: string) => {
         return (
             <>
                 <Dropdown.Item href={'/eventdetails/' + eventId}><Eye />View event</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleUnregisterEvent(eventId, props.currentUser.userName)}><PersonX />Unregister for event</Dropdown.Item>
                 <Dropdown.Item onClick={() => handleCopyLink(eventId)}><LinkIcon />{copied ? 'Copied!' : 'Copy event link'}</Dropdown.Item>
             </>
         )
     }
 
-    const eventOwnerActionDropdownList = (eventId: string) => {
-        return (
-            <>
-                <Dropdown.Item href={'/manageeventdashboard/' + eventId}><Pencil />Manage event</Dropdown.Item>
-                <Dropdown.Item href={'/eventdetails/' + eventId}><Eye />View event</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleCopyLink(eventId)}><LinkIcon />{copied ? 'Copied!' : 'Copy event link'}</Dropdown.Item>
-                <Dropdown.Item href={'/cancelevent/' + eventId}><XSquare />Cancel event</Dropdown.Item>
-            </>
-        )
-    }
-
-    const eventCompletedOwnerActionDropdownList = (eventId: string) => {
+    const completedEventOwnerActionDropdownList = (eventId: string) => {
         return (
             <>
                 <Dropdown.Item href={'/eventsummary/' + eventId}><FileEarmarkCheck />Event Summary</Dropdown.Item>
@@ -501,7 +515,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                         <Dropdown role="menuitem">
                                             <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
                                             <Dropdown.Menu id="share-menu">
-                                                {event.createdByUserId === props.currentUser.id ? eventOwnerActionDropdownList(event.id) : attendeeActionDropdownList(event.id)}
+                                                {event.createdByUserId === props.currentUser.id ? eventOwnerActionDropdownList(event) : attendeeActionDropdownList(event)}
                                             </Dropdown.Menu>
                                         </Dropdown>
                                     </td>
@@ -543,7 +557,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                             <Dropdown role="menuitem">
                                                 <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
                                                 <Dropdown.Menu id="share-menu">
-                                                    {event.createdByUserId === props.currentUser.id ? eventCompletedOwnerActionDropdownList(event.id) : attendeeActionDropdownList(event.id)}
+                                                    {event.createdByUserId === props.currentUser.id ? completedEventOwnerActionDropdownList(event.id) : completedAttendeeActionDropdownList(event.id)}
                                                 </Dropdown.Menu>
                                             </Dropdown>
                                         </td>
