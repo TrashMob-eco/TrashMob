@@ -6,7 +6,7 @@
 TrashMob is a website dedicated to organizing groups of people to clean up the world we live in. Users create cleanup events, publicize them, and recruit people to join up, as well as ask for assistance from communities and partners to help haul away the garbage once it is gathered. The idea is to turn what can be an intimidating process for event organizers into a few mouse clicks and simple forms. And once the process is simple, events will spring up all over the world, and the cleanup of the world can begin.
 
 # Where did this idea come from?
-Years ago, Scott Hanselman (and others at Microsoft) built out the NerdDinner.com site as a demo of the capabilities of ASP.NET MVC. I actually went to a bunch of the nerd dinners which were fantastic and had a huge roll in my career, including eventually leading me to join Microsoft. This site is based on both that code and the idea that getting people together to do small good things results in larger good things in the long term.
+Years ago, Scott Hanselman (and others at Microsoft) built out the NerdDinner.com site as a demo of the capabilities of ASP.NET MVC. I actually went to a bunch of the nerd dinners. They were fantastic and had a huge roll in my career, including eventually leading me to join Microsoft. This site is based on both that code and the idea that getting people together to do small good things results in larger good things in the long term.
 
 My passion is fixing problems we have on the planet with pollution and climate change. I've been thinking about what technology can do to help in these areas, without creating more problems. And I keep coming back to the thought that a lot of this is a human problem. People want to help and they want to fix things, but they don't know where to start. Other people have ideas on where to start, but not enough help to get started.
  
@@ -29,7 +29,7 @@ As of 5/15/2022, we are now in full production launch. The site is up and runnin
 
 ## Are you looking for contributors?
 
-ABSOLUTELY! Ping [Joe Beernink](https://www.twitter.com/joebeernink) or [info@trashmob.eco](mailto:info@trashmob.eco) if you want to get involved. All kinds of skills needed, from reactjs to website design, to aspnet core, to .NET MAUI, to PowerBI, to deployment / github skills. If you have a couple of hours a week, and want to contribute, let us know!
+ABSOLUTELY! Ping [info@trashmob.eco](mailto:info@trashmob.eco) if you want to get involved. All kinds of skills needed, from reactjs to website design, to aspnet core, to .NET MAUI, to PowerBI, to deployment / github skills. If you have a couple of hours a week, and want to contribute, let us know!
  
 ## I have an idea for a TrashMob feature!
 
@@ -60,7 +60,7 @@ If you are not doing any database changes (i.e. design work, error handling, etc
 ```
 
 ### To set up your own environment to test in:
-You must use this if you are making database changes to ensure you do not break the back end for everyone else:
+You must use this if you are making database changes to ensure you do not break the backend for everyone else:
 
 1. Follow the Infrastructure Deployment Steps (here)[.\Deploy\readme.md].
 1. Run the following script on your machine from the TrashMob folder in the project to set up your dev machine to run the project locally. You must be logged into Azure in your PowerShell window in the correct subscription
@@ -284,4 +284,8 @@ We currently use Microsoft App Center for building and distributing the Mobile a
 5. You can either download the latest package at that point, or wait for the next build to be completed. You will be notified when a new version is available.
 
 ## How do I get a production distribution of the Mobile App?
-The mobile app is not yet in production, but when it is, it will be available in Google Play and the Apple Store.
+The production mobile app can be downloaded here:
+
+[Android](https://play.google.com/store/apps/details?id=eco.trashmob.trashmobmobileapp)
+
+[iOS](https://apps.apple.com/us/app/trashmob/id1599996743) 

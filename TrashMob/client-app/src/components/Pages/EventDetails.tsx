@@ -15,6 +15,7 @@ import moment from 'moment';
 import { Calendar, Facebook, GeoAlt, Link, Share, Stopwatch, Twitter } from 'react-bootstrap-icons';
 import { RegisterBtn } from '../RegisterBtn';
 import globes from '../assets/gettingStarted/globes.png';
+import { getTwitterUrl, getFacebookUrl } from '../../store/ShareUrl';
 
 export interface DetailsMatchParams {
     eventId: string;
@@ -54,6 +55,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
     const [isAttending, setIsAttending] = useState<string>("No");
     const [myAttendanceList, setMyAttendanceList] = useState<EventData[]>([]);
     const [isUserEventDataLoaded, setIsUserEventDataLoaded] = useState(false);
+    const [isEventCompleted, setIsEventCompleted] = useState<boolean>();
 
     const startDateTime = moment(eventDate);
     const endDateTime = moment(startDateTime).add(durationHours, 'hours').add(durationMinutes, 'minutes');
@@ -81,9 +83,6 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
             });
 
         if (eventId != null) {
-            var host = window.location.host;
-            var eventUrl = "https://" + host + "/eventdetails/" + eventId;
-
             fetch('/api/eventattendees/' + eventId, {
                 method: 'GET',
                 headers: headers,
@@ -114,12 +113,12 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                     setLatitude(eventData.latitude);
                     setLongitude(eventData.longitude);
                     setCreatedById(eventData.createdByUserId);
-                    const shareMessage = "Help clean up Planet Earth! Sign up for this TrashMob.eco event in " + eventData.city + ", " + eventData.region + " on " + (new Date(eventData.eventDate)).toLocaleDateString() + "! via @TrashMobEco " + eventUrl;
-                    setTwitterUrl("https://twitter.com/intent/tweet?text=" + encodeURI(shareMessage) + "&ref_src=twsrc%5Etfw");
-                    setFacebookUrl("https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.trashmob.eco%2Feventdetails%2" + eventId + "&amp;src=sdkpreparse");
+                    setTwitterUrl(getTwitterUrl(eventData));
+                    setFacebookUrl(getFacebookUrl(eventData.id));
                     setMaxNumberOfParticipants(eventData.maxNumberOfParticipants);
                     setCenter(new data.Position(eventData.longitude, eventData.latitude));
                     setIsDataLoaded(true);
+                    setIsEventCompleted(new Date(eventData.eventDate) < new Date());
                 })
                 .then(() => {
                     if (!isUserLoaded || !currentUser) {
@@ -282,8 +281,8 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                                 <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 p-18"><Share className="mr-2" aria-hidden="true" />Share</Dropdown.Toggle>
                                 <Dropdown.Menu id="share-menu">
                                     <Dropdown.Item className="share-link" onClick={handleCopyLink}><Link className="mr-2 p-18" aria-hidden="true" />{!copied ? "Copy link" : "Copied!"}</Dropdown.Item>
-                                    <Dropdown.Item className="share-link" href={facebookUrl}><Facebook className="mr-2 p-18" aria-hidden="true" />Share to Facebook</Dropdown.Item>
-                                    <Dropdown.Item className="share-link" href={twitterUrl}><Twitter className="mr-2 p-18" aria-hidden="true" />Share to Twitter</Dropdown.Item>
+                                    <Dropdown.Item className="share-link" href={facebookUrl} hidden={isEventCompleted}><Facebook className="mr-2 p-18" aria-hidden="true" />Share to Facebook</Dropdown.Item>
+                                    <Dropdown.Item className="share-link" href={twitterUrl} hidden={isEventCompleted}><Twitter className="mr-2 p-18" aria-hidden="true" />Share to Twitter</Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
                             <RegisterBtn eventId={eventId} isAttending={isAttending} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} isUserLoaded={isUserLoaded} history={history} location={location} match={match}></RegisterBtn>

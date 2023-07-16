@@ -98,11 +98,16 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - uses: managedcode/MAUIAppVersion@v1
+      with:
+        csproj: 'TrashMobMobileApp/TrashMobMobileApp.csproj'
+        version: ${{ github.run_number }} # to keep value unique
+        displayVersion: '1.0.0'
+        printFile: false # optional
+
     - name: Update Build Number
       run: |
-        buildNumber=`/bin/date +%Y%m%d%H%M%S`
-        echo $buildNumber
-        /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" "TrashMobMobileApp/Platforms/iOS/Info.plist"
+        /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ github.run_number }}" "TrashMobMobileApp/Platforms/iOS/Info.plist"
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v3

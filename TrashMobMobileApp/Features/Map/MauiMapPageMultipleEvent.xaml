@@ -8,7 +8,7 @@
     </ContentPage.Resources>
     
     <VerticalStackLayout>
-        <maps:Map x:Name="mappy" HeightRequest="400" MapClicked="mappy_MapClicked" />
+        <maps:Map x:Name="mappy" HeightRequest="400" MapClicked="mappy_MapClicked" PinClicked="Mappy_PinClicked" />
 
         <VerticalStackLayout x:Name="addressDisplay" Loaded="addressDisplay_Loaded">
             <HorizontalStackLayout>
