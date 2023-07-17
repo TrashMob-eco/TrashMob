@@ -160,6 +160,25 @@ hr.rounded {
   height: 50px;
 }
 
+.socials-modal-icon {
+  color: black;
+  font-size: 25px;
+  align-self: center;
+  margin-top: 3px;
+  width: 17.5px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+#iconsModalWrapper {
+  justify-content: start;
+  align-items: center;
+  margin-right: 1px;
+  padding-left: 12px;
+  height: 50px;
+}
+
 @media only screen and (max-width: 414px) {
   #iconsOrigWrapper {
     justify-content: unset;
