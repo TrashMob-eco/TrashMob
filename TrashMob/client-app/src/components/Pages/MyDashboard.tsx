@@ -24,7 +24,6 @@ import DisplayPartnerAdminInvitationData from '../Models/DisplayPartnerAdminInvi
 import { PartnerLocationEventRequests } from '../Partners/PartnerLocationEventRequests';
 import { Guid } from 'guid-typescript';
 import PickupLocationData from '../Models/PickupLocationData';
-import { SocialsModal } from '../EventManagement/SocialsModal';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -54,7 +53,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [totalBags, setTotalBags] = useState<number>(0);
     const [totalHours, setTotalHours] = useState<number>(0);
     const [totalEvents, setTotalEvents] = useState<number>(0);
-    const [showSocialsModal, setShowModal] = useState<boolean>(true);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -716,9 +714,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     return (
         <>
             <Container fluid className='bg-grass'>
-                {showSocialsModal &&
-                    <SocialsModal />
-                }
                 <Row className="text-center pt-0">
                     <Col md={7} className="d-flex flex-column justify-content-center pr-5">
                         <h1 className="font-weight-bold">Dashboard</h1>

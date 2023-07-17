@@ -4,10 +4,19 @@ import { Clipboard, GeoAltFill, Clock } from "react-bootstrap-icons";
 import Card from 'react-bootstrap/Card';
 
 
-export const SocialsModal = () => {
+interface ModalProps {
+  createdEventId: string;
+  history: any;
+}
+
+export const SocialsModal: React.FC<ModalProps> = (props) => {
   const [show, setShow] = useState(true);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+
+  const handleClose = () => {
+
+    setShow(false);
+    props.history.push("/mydashboard");
+  }
 
   const EventLink = () => {
     return (
@@ -38,7 +47,7 @@ export const SocialsModal = () => {
           <Modal.Body className="p-4">
             <div className="d-flex flex-column mb-4">
               <h6> Event Title </h6>
-              
+
               <div className="d-flex flex-row align-items-center">
                 <GeoAltFill className="mr-2" />
                 location
@@ -48,7 +57,7 @@ export const SocialsModal = () => {
                 <Clock className="mr-2" style={{ fontSize: '14px' }} />
                 date / time
               </div>
-              
+
             </div>
             <hr />
 
