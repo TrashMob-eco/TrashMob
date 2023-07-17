@@ -29,16 +29,22 @@
         public IWaiverManager WaiverManager { get; set; }
 
         [Inject]
+        public IUserManager UserManager { get; set; }
+
+        [Inject]
         public UserStateInformation StateInformation { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            _user = App.CurrentUser;
             await ReInitializeAsync();
         }
 
         private async Task ReInitializeAsync()
         {
+            var user = await UserManager.GetUserAsync(App.CurrentUser.Id.ToString());
+            App.CurrentUser = user;
+            _user = user;
+
             _isLoading = true;
             _mobEventsStatic = (await MobEventManager.GetActiveEventsAsync()).OrderByDescending(x => x.EventDate).ToList();
             _userAttendingEventIds = (await MobEventManager.GetEventsUserIsAttending(_user.Id)).Select(x => x.Id).ToList();
