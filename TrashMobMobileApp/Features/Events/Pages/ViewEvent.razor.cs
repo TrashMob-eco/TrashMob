@@ -25,13 +25,18 @@
         public IWaiverManager WaiverManager { get; set; }
 
         [Inject]
+        public IUserManager UserManager { get; set; }
+
+        [Inject]
         public IEventTypeRestService EventTypeManager { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
-            _user = App.CurrentUser;
             _isLoading = true;
+            var user = await UserManager.GetUserAsync(App.CurrentUser.Id.ToString());
+            App.CurrentUser = user;
+            _user = user;
             _userAttendingEventIds = (await MobEventManager.GetEventsUserIsAttending(_user.Id)).Select(x => x.Id).ToList();
             await GetEventDetails();
             _isLoading = false;
