@@ -276,7 +276,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                     <div className="d-flex justify-content-between align-items-end">
                         <h1 className="font-weight-bold m-0">{eventName}</h1>
                         <div className="d-flex">
-                            <div id="addToCalendarBtn" className='p-18' ><AddToCalendar event={event} /></div>
+                            <div id="addToCalendarBtn" className='p-18' hidden={isEventCompleted}><AddToCalendar event={event} /></div>
                             <Dropdown role="menuitem">
                                 <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 p-18"><Share className="mr-2" aria-hidden="true" />Share</Dropdown.Toggle>
                                 <Dropdown.Menu id="share-menu">
@@ -285,7 +285,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                                     <Dropdown.Item className="share-link" href={twitterUrl} hidden={isEventCompleted}><Twitter className="mr-2 p-18" aria-hidden="true" />Share to Twitter</Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
-                            <RegisterBtn eventId={eventId} isAttending={isAttending} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} isUserLoaded={isUserLoaded} history={history} location={location} match={match}></RegisterBtn>
+                            <RegisterBtn eventId={eventId} isAttending={isAttending} isEventCompleted={isEventCompleted!} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} isUserLoaded={isUserLoaded} history={history} location={location} match={match}></RegisterBtn>
                         </div>
                     </div>
                     <span className="my-2 event-list-event-type p-2 rounded d-block p-15">{getEventType(eventTypeList, eventTypeId)}</span>
