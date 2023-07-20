@@ -235,7 +235,7 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
                             <button className="btn btn-outline">
                                 <a id="viewDetails" type="button" href={'/eventdetails/' + eventId}>View Details</a>
                             </button>
-                            <RegisterBtn eventId={eventId} isAttending={isAttending} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onAttendanceChanged={props.onAttendanceChanged} history={props.history} location={props.location} match={props.match}></RegisterBtn>
+                            <RegisterBtn eventId={eventId} isAttending={isAttending} isEventCompleted={new Date(eventDate) < new Date()} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onAttendanceChanged={props.onAttendanceChanged} history={props.history} location={props.location} match={props.match}></RegisterBtn>
                         </div>
                     </>
                 );
