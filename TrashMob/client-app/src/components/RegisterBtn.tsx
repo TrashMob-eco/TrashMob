@@ -15,10 +15,11 @@ interface RegisterBtnProps extends RouteComponentProps {
     eventId: DisplayEvent["id"];
     isAttending: DisplayEvent["isAttending"];
     isUserLoaded: boolean;
+    isEventCompleted: boolean;
     onAttendanceChanged: any;
 };
 
-export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAttending, isUserLoaded, onAttendanceChanged, history }) => {
+export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAttending, isUserLoaded, isEventCompleted, onAttendanceChanged, history }) => {
     const [registered, setRegistered] = useState<boolean>(false);
     const [waiver, setWaiver] = useState<WaiverData>();
 
@@ -98,7 +99,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
     }
 
     return (
-        <Button id="addAttendee" className="btn btn-primary action btn-128" hidden={!isUserLoaded || isAttending === "Yes" || registered}
+        <Button id="addAttendee" className="btn btn-primary action btn-128" hidden={!isUserLoaded || isAttending === "Yes" || registered || isEventCompleted}
             onClick={() => handleAttend(eventId)}>{registered ? 'Registered!' : 'Register'}</Button>
     )
 }
