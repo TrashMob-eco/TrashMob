@@ -8,5 +8,6 @@ export function getTwitterUrl(eventData: EventData): string {
 }
 
 export function getFacebookUrl(eventId: string): string {
-    return "https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.trashmob.eco%2Feventdetails%2" + eventId + "&amp;src=sdkpreparse";
+    const eventUrl = "https://www.trashmob.eco/eventdetails/" + eventId;
+    return "https://www.facebook.com/sharer/sharer.php?u=" + encodeURI(eventUrl) + "&amp;src=sdkpreparse";
 }
