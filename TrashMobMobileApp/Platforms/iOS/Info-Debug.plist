@@ -31,10 +31,10 @@
 	<key>CFBundleIdentifier</key>
 	<string>eco.trashmobdev.trashmobmobile</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Can TrashMob.eco use your location at all times?</string>
+	<string>Your location is used for showing the map nearest you to find and create local events</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Can TrashMob.eco use your location when the TrashMob.eco app is being used?</string>
+	<string>Your location is used for showing the map nearest you to find and create local events</string>
 	<key>CFBundleVersion</key>
-	<string>20230428234030</string>
+	<string>20230724091058</string>
 </dict>
 </plist>
