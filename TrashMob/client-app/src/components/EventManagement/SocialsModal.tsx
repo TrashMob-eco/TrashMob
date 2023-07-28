@@ -1,24 +1,37 @@
 import { useState } from "react";
-import { Modal, Button } from 'react-bootstrap';
+import { Modal, Button, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { Clipboard, GeoAltFill, Clock } from "react-bootstrap-icons";
 import Card from 'react-bootstrap/Card';
 
 
 interface ModalProps {
-  createdEventId: string;
-  history: any;
+  createdEvent: any;
 }
 
 export const SocialsModal: React.FC<ModalProps> = (props) => {
   const [show, setShow] = useState(true);
+  const [copiedLink, setCopied] = useState(false);
+
+  const tooltip = (
+    <Tooltip id="tooltip">
+      Copied to clipboard!
+    </Tooltip>
+  );
 
   const handleClose = () => {
-
     setShow(false);
-    props.history.push("/mydashboard");
+  }
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.origin + '/eventdetails/' + props.createdEvent.id);
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000)
   }
 
   const EventLink = () => {
+    const eventLink = `${window.location.origin}/eventdetails/${props.createdEvent.id}`
     return (
       <Card className="pr-2">
         <Card.Body style={{ padding: '0px', backgroundColor: '#f0f0f1' }}>
@@ -27,8 +40,10 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
               Event link
             </Card.Text>
             <div className="d-flex align-items-center justify-content-between">
-              <Card.Link href="#" style={{ fontSize: '14px' }}>Card Link</Card.Link>
-              <Button className="btn mb-2" href="/" id="helpBtn"><Clipboard /></Button>
+              <Card.Link className="text-truncate" href={eventLink} style={{ fontSize: '14px', width:'75%' }}>{eventLink}</Card.Link>
+              <OverlayTrigger placement="top" overlay={tooltip} trigger={['click']} show={copiedLink}>
+                <Button className="btn mb-2" id="helpBtn" onClick={handleCopyLink}><Clipboard /></Button>
+              </OverlayTrigger>
             </div>
           </div>
         </Card.Body>
@@ -46,16 +61,20 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
           </Modal.Header>
           <Modal.Body className="p-4">
             <div className="d-flex flex-column mb-4">
-              <h6> Event Title </h6>
+              <h6> {props.createdEvent.name} </h6>
 
-              <div className="d-flex flex-row align-items-center">
+              <div className="d-flex flex-row align-items-center mb-2">
                 <GeoAltFill className="mr-2" />
-                location
+                {`${props.createdEvent.streetAddress}, ${props.createdEvent.city}, ${props.createdEvent.region}`}
               </div>
 
               <div className="d-flex flex-row align-items-center">
                 <Clock className="mr-2" style={{ fontSize: '14px' }} />
-                date / time
+                {new Date(props.createdEvent.eventDate).toLocaleDateString("en-us", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit"
+                })} {new Date(props.createdEvent.eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })}
               </div>
 
             </div>

@@ -10,7 +10,6 @@ import { Guid } from 'guid-typescript';
 import globes from '../assets/gettingStarted/globes.png';
 import { getDefaultHeaders } from '../../store/AuthStore';
 import EventData from '../Models/EventData';
-import { SocialsModal } from './SocialsModal';
 
 export interface ManageEventDashboardMatchParams {
     eventId?: string;
@@ -26,7 +25,6 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
     const [isEventIdReady, setIsEventIdReady] = React.useState<boolean>();
     const [loadedEventId, setLoadedEventId] = React.useState<string | undefined>(props.match?.params["eventId"]);
     const [isEventComplete, setIsEventComplete] = React.useState<boolean>(false);
-    const [showSocialsModal, setShowModal] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         var evId = loadedEventId;
@@ -60,15 +58,17 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
     }
 
     function handleEditSave() {
-        setShowModal(true);
+        props.history.push({
+            pathname: '/mydashboard',
+            state: {
+                newEventCreated: true
+            }
+        });
     }
 
     function renderEventDashboard() {
         return (
             <>
-                {showSocialsModal &&
-                    <SocialsModal history={props.history} createdEventId={eventId} />
-                }
                 <EditEvent eventId={eventId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onEditCancel={handleEditCancel} onEditSave={handleEditSave} history={props.history} location={props.location} match={props.match} />
                 <ManageEventAttendees eventId={eventId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
                 <ManageEventPartners eventId={eventId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isEventComplete={isEventComplete} />
