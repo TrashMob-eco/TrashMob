@@ -208,6 +208,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     useEffect(() => {
         if (state?.newEventCreated && isEventDataLoaded) {
             var myFilteredList = myEventList.filter(event => event.createdByUserId === props.currentUser.id)
+            .sort((a, b) => (a.createdDate < b.createdDate) ? 1 : -1)
             setCreatedEvent(myFilteredList[0])
             setShowSocialsModal(true)
 
