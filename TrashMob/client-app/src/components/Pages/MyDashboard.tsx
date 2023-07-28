@@ -217,7 +217,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             state.newEventCreated = false;
             props.history.replace({...props.history.location, state})
         }
-    }, [state, isEventDataLoaded])
+    }, [state, isEventDataLoaded, props.currentUser.id, props.history, myEventList])
 
     const handleLocationChange = (point: data.Position) => {
         // do nothing
