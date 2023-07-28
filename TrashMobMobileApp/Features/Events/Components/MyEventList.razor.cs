@@ -25,6 +25,9 @@
         public IMobEventManager MobEventManager { get; set; }
 
         [Inject]
+        public IWaiverManager WaiverManager { get; set; }
+
+        [Inject]
         public UserStateInformation StateInformation { get; set; }
 
         protected override async Task OnInitializedAsync()
@@ -112,7 +115,7 @@
 
         private async void OnViewMapAllEvents(IEnumerable<Event> mobEvents)
         {
-            await App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageMultipleEvent(MobEventManager, mobEvents));
+            await App.Current.MainPage.Navigation.PushModalAsync(new MauiMapPageMultipleEvent(MobEventManager, WaiverManager, StateInformation, mobEvents));
         }
 
         private async void OnViewMap(Event mobEvent)

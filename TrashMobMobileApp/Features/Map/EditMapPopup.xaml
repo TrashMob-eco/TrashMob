@@ -1,13 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <mct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
-             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
-             x:Class="TrashMobMobileApp.Features.Map.EditMapPopup">
-    <VerticalStackLayout WidthRequest="400">
+             xmlns:maps="clr-namespace:Maui.GoogleMaps;assembly=Maui.GoogleMaps"
+             x:Class="TrashMobMobileApp.Features.Map.EditMapPopup"
+             Opened="Popup_Opened">
+    <VerticalStackLayout>
         <Label Text="Set your event location" Style="{StaticResource headerLabel}" />
         <Label Text="Click on the map to set your event location." Style="{StaticResource instructionsLabel}" />
-        <maps:Map x:Name="mappy" HeightRequest="400" Loaded="mappy_Loaded" />
+        <maps:Map x:Name="mappy" HeightRequest="400" MapClicked="Map_MapClicked" />
         <HorizontalStackLayout>
             <Label Text="Street Address" Style="{StaticResource fieldLabel}" />
             <Entry IsReadOnly="True" x:Name="streetAddress" Style="{StaticResource fieldEntry}" />

@@ -16,13 +16,13 @@ export interface WaiversProps {
 };
 
 export const CurrentTrashMobWaiverVersion = {
-    versionId: "0.1",
-    versionDate: new Date(2022, 5, 28, 0, 0, 0, 0)
+    versionId: "1.0",
+    versionDate: new Date(2023, 6, 1, 0, 0, 0, 0)
 }
 
 export class TrashMobWaiverVersion {
-    versionId: string = "0.1";
-    versionDate: Date = new Date(2022, 5, 28, 0, 0, 0, 0);
+    versionId: string = "1.0";
+    versionDate: Date = new Date(2023, 6, 1, 0, 0, 0, 0);
 }
 
 const Waivers: React.FC<WaiversProps> = (props) => {

@@ -30,13 +30,11 @@
 	<string>Assets.xcassets/appicon.appiconset</string>
 	<key>CFBundleIdentifier</key>
 	<string>eco.trashmobdev.trashmobmobile</string>
-	<key>Bundle identifier</key>
-	<string>eco.trashmobdev.trashmobmobile</string>
-	<key>Privacy - Location Always and When In Use Usage Description</key>
-	<string>Can TrashMob.eco use your location at all times?</string>
-	<key>Privacy - Location When In Use Usage Description</key>
-	<string>Can TrashMob.eco use your location when the TrashMob.eco app is being used?</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Your location is used for showing the map nearest you to find and create local events</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Your location is used for showing the map nearest you to find and create local events</string>
 	<key>CFBundleVersion</key>
-	<string>3</string>
+	<string>20230724091058</string>
 </dict>
 </plist>

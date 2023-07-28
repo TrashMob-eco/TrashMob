@@ -1,19 +1,14 @@
 namespace TrashMobMobileApp.Features.Map;
 
 using Microsoft.AspNetCore.Components;
-using Microsoft.Maui.Controls.Maps;
-using Microsoft.Maui.Maps;
+using Maui.GoogleMaps;
 using TrashMob.Models;
 using TrashMobMobileApp.Data;
 using TrashMobMobileApp.Extensions;
+using TrashMobMobileApp.StateContainers;
 
 public partial class MauiMapPageMultipleEvent : ContentPage
 {
-    private const double DefaultLatitudeDegrees = 1.0;
-    private const double DefaultLongitudeDegrees = 1.0;
-
-    private const double DefaultLatitude = 39.8283;
-    private const double DefaultLongitude = 98.5795;
     private readonly IEnumerable<Event> mobEvents;
     private List<Guid> userAttendingEventIds = new();
     private User user;
@@ -22,32 +17,38 @@ public partial class MauiMapPageMultipleEvent : ContentPage
     [Inject]
     public IMobEventManager MobEventManager { get; set; }
 
-    public MauiMapPageMultipleEvent(IMobEventManager mobEventManager, IEnumerable<Event> mobEvents)
+    [Inject]
+    public IWaiverManager WaiverManager { get; set; }
+
+    [Inject]
+    public UserStateInformation StateInformation { get; set; }
+
+    public MauiMapPageMultipleEvent(IMobEventManager mobEventManager, IWaiverManager waiverManager, UserStateInformation stateInformation, IEnumerable<Event> mobEvents)
     {
         InitializeComponent();
 
         user = App.CurrentUser;
 
+        mappy.MyLocationEnabled = true;
+
         foreach (var mobEvent in mobEvents)
         {
-            var location = new Location(mobEvent.Latitude.Value, mobEvent.Longitude.Value);
-
-            mappy.IsShowingUser = true;
+            var location = new Position(mobEvent.Latitude.Value, mobEvent.Longitude.Value);
 
             var pin = MapHelper.GetPinForEvent(mobEvent);
-            pin.MarkerClicked += Pin_MarkerClicked;
-            pin.Location = location;
-
+            pin.Position = location;
             mappy.Pins.Add(pin);
         }
 
         MobEventManager = mobEventManager;
+        WaiverManager = waiverManager;
+        StateInformation = stateInformation;
         this.mobEvents = mobEvents;
     }
 
-    private void Pin_MarkerClicked(object sender, PinClickedEventArgs e)
+    private void Mappy_PinClicked(object sender, PinClickedEventArgs e)
     {
-        var pin = sender as TrashMobPin;
+        var pin = e.Pin as TrashMobPin;
 
         if (pin != null)
         {
@@ -59,8 +60,10 @@ public partial class MauiMapPageMultipleEvent : ContentPage
         }
     }
 
-    private async void mappy_Loaded(object sender, EventArgs e)
+    protected override async void OnAppearing()
     {
+        base.OnAppearing();
+
         var locationHelper = new LocationHelper();
         var userLocation = await locationHelper.GetCurrentLocation();
 
@@ -68,13 +71,13 @@ public partial class MauiMapPageMultipleEvent : ContentPage
 
         if (userLocation != null)
         {
-            var mapSpan = new MapSpan(userLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
+            var mapSpan = new MapSpan(userLocation, LocationHelper.DefaultLatitudeDegreesMultipleEvents, LocationHelper.DefaultLongitudeDegreesMultipleEvents);
             mappy.MoveToRegion(mapSpan);
         }
         else
         {
-            var defaultLocation = new Location(DefaultLatitude, DefaultLongitude);
-            var mapSpan = new MapSpan(defaultLocation, DefaultLatitudeDegrees, DefaultLongitudeDegrees);
+            var defaultLocation = new Position(LocationHelper.DefaultLatitude, LocationHelper.DefaultLongitude);
+            var mapSpan = new MapSpan(defaultLocation, LocationHelper.DefaultLatitudeDegreesMultipleEvents, LocationHelper.DefaultLongitudeDegreesMultipleEvents);
             mappy.MoveToRegion(mapSpan);
         }
     }
@@ -86,6 +89,14 @@ public partial class MauiMapPageMultipleEvent : ContentPage
 
     private async void RegisterButton_Clicked(object sender, EventArgs e)
     {
+        var hasSignedWaiver = await WaiverManager.HasUserSignedTrashMobWaiverAsync();
+
+        if (!hasSignedWaiver)
+        {
+            StateInformation.HasToSignWaiver = true;
+            await Navigation.PopModalAsync();
+        }
+
         var attendee = new EventAttendee
         {
             UserId = user.Id,

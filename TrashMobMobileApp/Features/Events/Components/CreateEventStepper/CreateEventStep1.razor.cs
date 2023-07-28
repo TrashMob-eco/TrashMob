@@ -21,6 +21,9 @@
         [Inject]
         public IWaiverManager WaiverManager { get; set; }
 
+        [Inject]
+        public IUserManager UserManager { get; set; }
+
         [Parameter]
         public Event Event { get; set; }
 
@@ -32,6 +35,9 @@
 
         protected override async Task OnInitializedAsync()
         {
+            var user = await UserManager.GetUserAsync(App.CurrentUser.Id.ToString());
+            App.CurrentUser = user;
+
             var hasSignedWaiver = await WaiverManager.HasUserSignedTrashMobWaiverAsync();
 
             if (!hasSignedWaiver)

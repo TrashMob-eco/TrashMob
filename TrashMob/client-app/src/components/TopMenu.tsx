@@ -25,10 +25,10 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
     }, [props.currentUser, props.isUserLoaded])
 
     const mainNavItems = [
-        { name: "Home", url: '/' },
         { name: "Getting Started", url: "/gettingstarted" },
         ...isUserLoaded ? [{ name: "My Dashboard", url: "/mydashboard" }] : [],
         { name: "Events", url: "/#events" },
+        { name: "Donate", url: "https://donate.stripe.com/14k9DN2EnfAog9O3cc" },
         { name: "Shop", url: "/shop" }
     ];
 
