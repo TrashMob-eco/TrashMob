@@ -24,7 +24,7 @@ import DisplayPartnerAdminInvitationData from '../Models/DisplayPartnerAdminInvi
 import { PartnerLocationEventRequests } from '../Partners/PartnerLocationEventRequests';
 import { Guid } from 'guid-typescript';
 import PickupLocationData from '../Models/PickupLocationData';
-import { SocialsModal } from '../EventManagement/SocialsModal';
+import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
