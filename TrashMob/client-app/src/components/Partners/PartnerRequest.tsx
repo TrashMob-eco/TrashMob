@@ -422,7 +422,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     var contents = renderCreateForm();
 
     return <div>
-        <hr />
         {contents}
     </div>;
 }
