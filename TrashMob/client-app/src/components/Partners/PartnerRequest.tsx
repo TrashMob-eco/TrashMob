@@ -4,7 +4,7 @@ import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../.
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
-import { Button, Col, Container, Form, Row } from 'react-bootstrap';
+import { Button, Col, Container, Form } from 'react-bootstrap';
 import PartnerRequestData from '../Models/PartnerRequestData';
 import UserData from '../Models/UserData';
 import * as Constants from '../Models/Constants';
@@ -14,7 +14,6 @@ import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import AddressData from '../Models/AddressData';
 import MapControllerSinglePointNoEvents from '../MapControllerSinglePointNoEvent';
 import PhoneInput from 'react-phone-input-2'
-import { CollapseAllVisibility } from '@fluentui/react';
 
 interface PartnerRequestProps extends RouteComponentProps<any> {
     mode: string;
@@ -46,8 +45,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
     const [title, setTitle] = React.useState<string>("Apply to become a partner");
-    const [subTitle, setSubTitle] = React.useState<string>("Apply now");
-    const [blurb, setBlurb] = React.useState<string>("");
     const [mode, setMode] = React.useState<string>("");
 
     React.useEffect(() => {
@@ -57,7 +54,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         if (props.mode && props.mode === "send") {
             setMode("send");
             setTitle("Send invite to join TrashMob as a partner");
-            setSubTitle("Invite partner");
         }
         else {
             setMode("request");
