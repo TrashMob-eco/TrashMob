@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Modal, Button, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { Clipboard, GeoAltFill, Clock } from "react-bootstrap-icons";
+import { FacebookShareButton, FacebookIcon, TwitterShareButton, TwitterIcon, LinkedinShareButton, LinkedinIcon } from 'react-share';
 import Card from 'react-bootstrap/Card';
 
 
@@ -11,6 +12,7 @@ interface ModalProps {
 export const SocialsModal: React.FC<ModalProps> = (props) => {
   const [show, setShow] = useState(true);
   const [copiedLink, setCopied] = useState(false);
+  const eventLink = `${window.location.origin}/eventdetails/${props.createdEvent.id}`
 
   const tooltip = (
     <Tooltip id="tooltip">
@@ -31,7 +33,6 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
   }
 
   const EventLink = () => {
-    const eventLink = `${window.location.origin}/eventdetails/${props.createdEvent.id}`
     return (
       <Card className="pr-2">
         <Card.Body style={{ padding: '0px', backgroundColor: '#f0f0f1' }}>
@@ -40,7 +41,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
               Event link
             </Card.Text>
             <div className="d-flex align-items-center justify-content-between">
-              <Card.Link className="text-truncate" href={eventLink} style={{ fontSize: '14px', width:'75%' }}>{eventLink}</Card.Link>
+              <Card.Link className="text-truncate" href={eventLink} style={{ fontSize: '14px', width: '75%' }}>{eventLink}</Card.Link>
               <OverlayTrigger placement="top" overlay={tooltip} trigger={['click']} show={copiedLink}>
                 <Button className="btn mb-2" id="helpBtn" onClick={handleCopyLink}><Clipboard /></Button>
               </OverlayTrigger>
@@ -85,24 +86,36 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
             <div className="row" id="iconsModalWrapper">
               <div className="d-flex justify-content-between">
                 <div className="iconWrapper" id="firstWrapper">
-                  <a href={"https://www.facebook.com/trashmob.eco/"} target="_blank" rel="noreferrer noopener">
-                    <i className="fab fa-facebook socials-modal-icon"></i>
-                  </a>
+                  <FacebookShareButton
+                    className={"socials-modal-icon"}
+                    url={eventLink}
+                    quote={'test!'}
+                    hashtag="#cleanup"
+                  >
+                    <FacebookIcon size={32} round />
+                  </FacebookShareButton>
                 </div>
                 <div className="iconWrapper">
-                  <a href={"https://twitter.com/TrashMobEco"} target="_blank" rel="noreferrer noopener">
-                    <i className="fab fa-twitter socials-modal-icon"></i>
-                  </a>
+                  <TwitterShareButton
+                    className={"socials-modal-icon"}
+                    url={eventLink}
+                    title={props.createdEvent.name}
+                    hashtags={["#cleanup"]}
+                  >
+                    <TwitterIcon size={32} round />
+                  </TwitterShareButton>
                 </div>
+                {/* missing: instagram integration */}
                 <div className="iconWrapper">
-                  <a href={"https://www.instagram.com/trashmobinfo"} target="_blank" rel="noreferrer noopener">
-                    <i className="fa-brands fa-instagram socials-modal-icon"></i>
-                  </a>
-                </div>
-                <div className="iconWrapper">
-                  <a href={"https://www.linkedin.com/company/76188984"} target="_blank" rel="noreferrer noopener">
-                    <i className="fa-brands fa-linkedin socials-modal-icon"></i>
-                  </a>
+                  <LinkedinShareButton
+                    className={"socials-modal-icon"}
+                    url={eventLink}
+                    summary='test!'
+                    title={props.createdEvent.name}
+                    source='TrashMob.eco'
+                  >
+                    <LinkedinIcon size={32} round />
+                  </LinkedinShareButton>
                 </div>
               </div>
             </div>

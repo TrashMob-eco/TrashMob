@@ -129,7 +129,6 @@ hr.rounded {
   border-radius: 8px;
   display: flex;
   justify-content: center;
-  width: 25px;
   height: 25px;
   margin-inline-end: 8px;
 }
@@ -161,22 +160,20 @@ hr.rounded {
 }
 
 .socials-modal-icon {
-  color: black;
-  font-size: 25px;
-  align-self: center;
-  margin-top: 3px;
-  width: 17.5px;
-  height: 20px;
-  display: flex;
-  justify-content: center;
+  background-color: transparent !important;
+}
+
+.socials-modal-icon:hover:enabled {
+  background-color: transparent !important;
 }
 
 #iconsModalWrapper {
   justify-content: start;
   align-items: center;
   margin-right: 1px;
-  padding-left: 12px;
+  padding-left: 15px;
   height: 50px;
+  background-color: transparent !important;
 }
 
 @media only screen and (max-width: 414px) {
