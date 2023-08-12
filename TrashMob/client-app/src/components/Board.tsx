@@ -8,6 +8,7 @@ import JakeDiliberto from './assets/boardOfDirectors/JakeDiliberto.svg';
 import KevinGleason from './assets/boardOfDirectors/KevinGleason.svg';
 import SandraMau from './assets/boardOfDirectors/SandraMau.png';
 import ValerieWilden from './assets/boardOfDirectors/ValerieWilden.svg';
+import SofiaSamuels from './assets/boardOfDirectors/SofiaSamuels.png';
 
 export const Board: React.FC = () => {
 
@@ -45,7 +46,7 @@ export const Board: React.FC = () => {
                             <p className='font-size-sm color-grey'>Joe Beernink is a software developer with over 25 years of industry experience developing mission-critical software.</p>
                             <p className='font-size-sm color-grey'>Joe grew up on a small farm in Southern Ontario, Canada, working and playing in the great outdoors, graduated with a degree in Space Science from York University in Toronto in 1994, and moved to the US in 1996. He previously lived in Michigan and Colorado before making Washington State his home in 1999.</p>
                             <p className='font-size-sm color-grey'>In 2021, Joe was inspired by Edgar McGregor, a climate activist in California, to get out and start cleaning up his community. After seeing just how much work needed to be done, Joe envisioned a website that enabled like-minded people to get out and start cleaning the environment together, and the idea for TrashMob.eco was born.</p>
-                            <p className='font-size-sm color-grey'>Joe currently works for Microsoft in Redmond, WA and resides in Issaquah, WA with his 2 kids.</p>
+                            <p className='font-size-sm color-grey'>Joe resides in Issaquah, WA with his 2 kids.</p>
                         </Col>
                     </Row>
                 </div>
@@ -66,24 +67,13 @@ export const Board: React.FC = () => {
                                 in treasury, investor relations, M&A, financial planning & analysis, audit, and corporate and
                                 business controllership. Daryl provides consulting services, currently acting as interim Chief
                                 Financial Officer and interim Controller and Treasurer for two technology driven companies. </p>
-                            <p className='font-size-sm color-grey'>
-                                As a collaborative leader, Daryl brings with him the proven ability to analyze decisions
-                                intelligently, manage resources effectively, and produce high quality work, partnering finance with
-                                business to effectively improve profitable revenue growth, enhance free cashflow generation, and
-                                decrease earnings volatility.
-                            </p>
                             <p className='font-size-sm color-grey'>In addition to this finance background, Daryl has experience with several 501(c)(3) organizations,
                                 all of which provide assistance to the needy and disadvantaged through education, health, and
                                 other human services.
                             </p>
-                            <p className='font-size-sm color-grey'>trong believer in the power of positive thinking in the workplace, Daryl is able to develop highperforming teams, enabling success through mentoring and coaching, identifying, hiring, and
-                                training top talent.
-                            </p>
                             <p className='font-size-sm color-grey'>Having completed his undergraduate studies at the University of Hartford and his graduate studies
                                 at Fairleigh Dickinson University, Daryl now resides, with his wife, three children, and a beagle,
                                 in Malvern, Pennsylvania.
-                            </p>
-                            <p className='font-size-sm color-grey'>He is an avid outdoorsman, enjoying biking, hiking, fishing, kayaking, and golf.
                             </p>
                         </Col>
                     </Row>
@@ -99,11 +89,11 @@ export const Board: React.FC = () => {
                                 <Image src={linkedIn} alt="linkedIn icon" className="h-100 mt-0 object-fit-cover" />
                             </div>
                             <h5 className='my-3 fw-500 color-grey'>Board Secretary</h5>
-                            <p className='font-size-sm color-grey'>Valerie Wilden is principal consultant for Vivid Communication, the public relations and marketing agency she founded after 35+ years of media and pr, operations, government affairs, crisis management and fundraising for Pennsylvania’s largest nonprofit healthcare organization of its kind. Its uniquely diverse nature also required  Mrs. Wilden to spearhead growth-related communication, planning and volunteer relations for entities that supported its core medical and charitable mission:  a performing arts center, a multitude of outreach programs, special events including renowned VIPS, an auto-repair service, resale shops and the award winning five-state PRESENTS FOR PATIENTS® program, of which Valerie was a television spokesperson. She partnered with major corporations and local businesses to support fundraising, expansion and exposure while maintaining corporate communication from the president’s office and with the boards of trustees.</p>
+                            <p className='font-size-sm color-grey'>Valerie Wilden is principal consultant for Vivid Communication, the public relations and marketing agency she founded after 35+ years of media and pr, operations, government affairs, crisis management and fundraising for Pennsylvania’s largest nonprofit healthcare organization of its kind. Its uniquely diverse nature also required  Mrs. Wilden to spearhead growth-related communication, planning and volunteer relations for entities that supported its core medical and charitable mission:  a performing arts center, a multitude of outreach programs, special events including renowned VIPS, an auto-repair service, resale shops and the award winning five-state PRESENTS FOR PATIENTS® program, of which Valerie was a television spokesperson.</p>
                             <p className='font-size-sm color-grey'>
-                                Now at Vivid Communication, she consults with charity and for-profit organizations by writing marketing plans, boosting social media, creating promotions and guiding efforts toward highest net revenue potential. Wilden lends her talent to the Pittsburgh Film Office, a metropolitan chapter of the Daughters of the American Revolution and a local EMS agency.  She founded, and for four years ran, a fundraising association for a Division II collegiate men’s lacrosse program. She is a three-term trustee of Westminster College, where she earned her Bachelor of Arts in English. Upon graduating with a Master of Arts in Journalism and Mass Communication from Point Park University, she taught corporate writing there.
+                                Now at Vivid Communication, she consults with charity and for-profit organizations by writing marketing plans, boosting social media, creating promotions and guiding efforts toward highest net revenue potential. She is a three-term trustee of Westminster College, where she earned her Bachelor of Arts in English. Upon graduating with a Master of Arts in Journalism and Mass Communication from Point Park University, she taught corporate writing there.
                             </p>
-                            <p className='font-size-sm color-grey'>She and her husband, Greg, live in Wexford, a northern suburb of Pittsburgh, Pennsylvania and are parents of Alyssa Wilden-Encinas in Los Angeles, Scott Wilden in Philadelphia and Dayne, a high school sophomore. Her hobbies and interests include recycling, litter free neighborhoods and parks, travel, running, landscaping, photography.</p>
+                            <p className='font-size-sm color-grey'>She and her husband, Greg, live in Wexford, a northern suburb of Pittsburgh, Pennsylvania and are parents of Alyssa, Scott, and Dayne.</p>
                         </Col>
                     </Row>
                 </div>
@@ -154,9 +144,25 @@ export const Board: React.FC = () => {
                             </div>
                             <h5 className='my-3 fw-500 color-grey'>Member at large</h5>
                             <p className='font-size-sm color-grey'>Sandra is VP of Product for Cloud Solutions at Clarivate (NYSE:CLVT). Prior to joining Clarivate via acquisition, she was the CEO and Founder of TrademarkVision, an award-winning AI/Computer Vision startup doing visual brand protection.</p>
-                            <p className='font-size-sm color-grey'>She has over a decade of experience and leadership in productizing research and development. Prior to this startup, Sandra was a Senior Computer Vision Research Engineer at National ICT Australia. Additionally, she consulted for the government in several areas of advanced technologies. Earlier in her career, she also worked as a commercial analyst where she helped researchers protect their IP and commercialise their innovation.</p>
                             <p className='font-size-sm color-grey'>Sandra is very active in supporting tech and startup communities. She was the Founding Chair of IEEE QLD Women in Engineering, and listed as one of Australia's Top 50 Female Programmers by Pollenizer 2014, and one of Australia's Top 100 Most Influential Engineers by Engineer's Australia 2015. She's also a regular participant in hackathons including past GovHacks and International Women's Day. She was recognised in 2018 by Pittsburgh Business Times with the Pittsburgh Innovator Award and by QUT with the Innovation and Entrepreneurship Outstanding Alumni Award.</p>
-                            <p className='font-size-sm color-grey'>She holds a Masters in Robotics from Carnegie Mellon University, a Bachelors in Engineering Science (Aerospace) from University of Toronto, and an MBA from Queensland University of Technology (QUT).</p> 
+                            <p className='font-size-sm color-grey'>She holds a Masters in Robotics from Carnegie Mellon University, a Bachelors in Engineering Science (Aerospace) from University of Toronto, and an MBA from Queensland University of Technology (QUT).</p>
+                        </Col>
+                    </Row>
+                </div>
+                <div className='p-4 directorCard'>
+                    <Row>
+                        <Col md={5}>
+                            <Image src={SofiaSamuels} alt="Sofia Samuels" className="h-100 mt-0 object-fit-cover rounded" />
+                        </Col>
+                        <Col md={7}>
+                            <div className='d-flex justify-content-between align-items-center'>
+                                <h2 className='m-0 fw-500 font-size-xl color-primary '>Sofia Samuels</h2>
+                                <a href="https://www.linkedin.com/in/sofiasamuels/"><Image src={linkedIn} alt="linkedIn icon" className="h-100 mt-0 object-fit-cover" /></a>
+                            </div>
+                            <h5 className='my-3 fw-500 color-grey'>Member at large</h5>
+                            <p className='font-size-sm color-grey'>Sofia Samuels is Co-Founder and Chief Strategist at Innovista Partners.</p>
+                            <p className='font-size-sm color-grey'>Prior to co-founding Innovista Partners, Ms. Samuels served as Vice President, Marketing & Communications for Ruan Transportation Management Systems, Vice President, Marketing Services for Sachs Horace Janson, Chief Marketing Officer for the American Welding Society (AWS) and held a variety of marketing and business development roles at Ryder System Inc., United Parcel Service, Carnival Cruise Lines and DHL.   Her professional experience spans a broad blend of B2B and B2C expertise with specialties including integrated marketing, sales and customer service leadership, eCommerce, and publishing/editorial.</p>
+                            <p className='font-size-sm color-grey'>Sofia has been recognized as one of South Florida’s Top Black Corporate Executives and was honored by Legacy Magazine as one of South Florida’s Top 25 Most Influential and Prominent Black Women in Business. Ms. Samuels received her M.B.A. from the University of Connecticut and currently resides in Miami Beach, Florida.</p>
                         </Col>
                     </Row>
                 </div>
