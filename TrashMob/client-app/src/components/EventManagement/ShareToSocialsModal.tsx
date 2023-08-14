@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Modal, Button, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { Clipboard, GeoAltFill, Clock } from "react-bootstrap-icons";
-import { FacebookShareButton, FacebookIcon, TwitterShareButton, TwitterIcon, LinkedinShareButton, LinkedinIcon, WhatsappShareButton, WhatsappIcon } from 'react-share';
+import { FacebookShareButton, FacebookIcon, TwitterShareButton, TwitterIcon, LinkedinShareButton, LinkedinIcon, WhatsappShareButton, WhatsappIcon, EmailShareButton, EmailIcon } from 'react-share';
 import Card from 'react-bootstrap/Card';
 
 
@@ -122,6 +122,16 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                   >
                     <WhatsappIcon size={32} round />
                   </WhatsappShareButton>
+                </div>
+                <div className="iconWrapper">
+                  <EmailShareButton
+                    className={"socials-modal-icon"}
+                    url={eventLink}
+                    subject="Join my TrashMob event!"
+                    body="Join my next TrashMob event:"
+                  >
+                    <EmailIcon size={32} round />
+                  </EmailShareButton>
                 </div>
               </div>
             </div>
