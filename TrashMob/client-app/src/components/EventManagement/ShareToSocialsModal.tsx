@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Modal, Button, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { Clipboard, GeoAltFill, Clock } from "react-bootstrap-icons";
-import { FacebookShareButton, FacebookIcon, TwitterShareButton, TwitterIcon, LinkedinShareButton, LinkedinIcon } from 'react-share';
+import { FacebookShareButton, FacebookIcon, TwitterShareButton, TwitterIcon, LinkedinShareButton, LinkedinIcon, WhatsappShareButton, WhatsappIcon } from 'react-share';
 import Card from 'react-bootstrap/Card';
 
 
@@ -12,7 +12,7 @@ interface ModalProps {
 export const SocialsModal: React.FC<ModalProps> = (props) => {
   const [show, setShow] = useState(true);
   const [copiedLink, setCopied] = useState(false);
-  const eventLink = `${window.location.origin}/eventdetails/${props.createdEvent.id}`
+  const eventLink = `https://as-tm-dev-westus2.azurewebsites.net/eventdetails/${props.createdEvent.id}`
 
   const tooltip = (
     <Tooltip id="tooltip">
@@ -25,7 +25,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
   }
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.origin + '/eventdetails/' + props.createdEvent.id);
+    navigator.clipboard.writeText(eventLink);
     setCopied(true);
     setTimeout(() => {
       setCopied(false);
@@ -89,7 +89,6 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                   <FacebookShareButton
                     className={"socials-modal-icon"}
                     url={eventLink}
-                    quote={'test!'}
                     hashtag="#cleanup"
                   >
                     <FacebookIcon size={32} round />
@@ -98,9 +97,10 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                 <div className="iconWrapper">
                   <TwitterShareButton
                     className={"socials-modal-icon"}
+                    title="Join my next @TrashMobEco event!"
+                    hashtags={["cleanup"]}
                     url={eventLink}
-                    title={props.createdEvent.name}
-                    hashtags={["#cleanup"]}
+                    via="TrashMobEco"
                   >
                     <TwitterIcon size={32} round />
                   </TwitterShareButton>
@@ -110,12 +110,18 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                   <LinkedinShareButton
                     className={"socials-modal-icon"}
                     url={eventLink}
-                    summary='test!'
-                    title={props.createdEvent.name}
-                    source='TrashMob.eco'
                   >
                     <LinkedinIcon size={32} round />
                   </LinkedinShareButton>
+                </div>
+                <div className="iconWrapper">
+                  <WhatsappShareButton
+                    className={"socials-modal-icon"}
+                    url={eventLink}
+                    title="Join my next TrashMob event:"
+                  >
+                    <WhatsappIcon size={32} round />
+                  </WhatsappShareButton>
                 </div>
               </div>
             </div>
