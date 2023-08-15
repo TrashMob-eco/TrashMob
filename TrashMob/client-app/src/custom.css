@@ -129,8 +129,13 @@ hr.rounded {
   border-radius: 8px;
   display: flex;
   justify-content: center;
+  width: 25px;
   height: 25px;
   margin-inline-end: 8px;
+}
+
+.modalIcon {
+  width: 32px !important;
 }
 
 .fa-facebook-f,

@@ -12,7 +12,7 @@ interface ModalProps {
 export const SocialsModal: React.FC<ModalProps> = (props) => {
   const [show, setShow] = useState(true);
   const [copiedLink, setCopied] = useState(false);
-  const eventLink = `https://as-tm-dev-westus2.azurewebsites.net/eventdetails/${props.createdEvent.id}`
+  const eventLink = `${window.location.origin}/eventdetails/${props.createdEvent.id}`
   const eventDate = new Date(props.createdEvent.eventDate).toLocaleDateString("en-us", { year: "numeric", month: "2-digit", day: "2-digit" })
   const eventTime = new Date(props.createdEvent.eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })
 
@@ -88,7 +88,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
 
             <div className="row" id="iconsModalWrapper">
               <div className="d-flex justify-content-between">
-                <div className="iconWrapper" id="firstWrapper">
+                <div className="iconWrapper modalIcon" id="firstWrapper">
                   <FacebookShareButton
                     className={"socials-modal-icon"}
                     url={eventLink}
@@ -97,7 +97,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                     <FacebookIcon size={32} round />
                   </FacebookShareButton>
                 </div>
-                <div className="iconWrapper">
+                <div className="iconWrapper modalIcon">
                   <TwitterShareButton
                     className={"socials-modal-icon"}
                     title={getShareMsgContent("twitter")}
@@ -109,7 +109,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                   </TwitterShareButton>
                 </div>
                 {/* missing: instagram integration */}
-                <div className="iconWrapper">
+                <div className="iconWrapper modalIcon">
                   <LinkedinShareButton
                     className={"socials-modal-icon"}
                     url={eventLink}
@@ -117,7 +117,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                     <LinkedinIcon size={32} round />
                   </LinkedinShareButton>
                 </div>
-                <div className="iconWrapper">
+                <div className="iconWrapper modalIcon">
                   <WhatsappShareButton
                     className={"socials-modal-icon"}
                     url={eventLink}
@@ -126,7 +126,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                     <WhatsappIcon size={32} round />
                   </WhatsappShareButton>
                 </div>
-                <div className="iconWrapper">
+                <div className="iconWrapper modalIcon">
                   <EmailShareButton
                     className={"socials-modal-icon"}
                     url={eventLink}
