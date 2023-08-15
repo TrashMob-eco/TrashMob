@@ -13,6 +13,8 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
   const [show, setShow] = useState(true);
   const [copiedLink, setCopied] = useState(false);
   const eventLink = `https://as-tm-dev-westus2.azurewebsites.net/eventdetails/${props.createdEvent.id}`
+  const eventDate = new Date(props.createdEvent.eventDate).toLocaleDateString("en-us", { year: "numeric", month: "2-digit", day: "2-digit" })
+  const eventTime = new Date(props.createdEvent.eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })
 
   const tooltip = (
     <Tooltip id="tooltip">
@@ -30,6 +32,11 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
     setTimeout(() => {
       setCopied(false);
     }, 2000)
+  }
+
+  const getShareMsgContent = (provider: string) => {
+    return `Join my next ${provider == 'twitter' ? "@TrashMobEco" : "TrashMob.eco"} event on ${eventDate} at ${eventTime} in ${props.createdEvent.city}.\n` +
+      `Sign up using the link for more details. Help me clean up ${props.createdEvent.city}!\n`
   }
 
   const EventLink = () => {
@@ -70,12 +77,8 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
               </div>
 
               <div className="d-flex flex-row align-items-center">
-                <Clock className="mr-2" style={{ fontSize: '14px' }} />
-                {new Date(props.createdEvent.eventDate).toLocaleDateString("en-us", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit"
-                })} {new Date(props.createdEvent.eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })}
+                <Clock className="mr-2" style={{ fontSize: '14px', marginLeft: '2px' }} />
+                {eventDate} at {eventTime}
               </div>
 
             </div>
@@ -89,7 +92,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                   <FacebookShareButton
                     className={"socials-modal-icon"}
                     url={eventLink}
-                    hashtag="#cleanup"
+                    hashtag="#litter"
                   >
                     <FacebookIcon size={32} round />
                   </FacebookShareButton>
@@ -97,8 +100,8 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                 <div className="iconWrapper">
                   <TwitterShareButton
                     className={"socials-modal-icon"}
-                    title="Join my next @TrashMobEco event!"
-                    hashtags={["cleanup"]}
+                    title={getShareMsgContent("twitter")}
+                    hashtags={["litter"]}
                     url={eventLink}
                     via="TrashMobEco"
                   >
@@ -118,7 +121,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                   <WhatsappShareButton
                     className={"socials-modal-icon"}
                     url={eventLink}
-                    title="Join my next TrashMob event:"
+                    title={getShareMsgContent("whatsapp")}
                   >
                     <WhatsappIcon size={32} round />
                   </WhatsappShareButton>
@@ -127,8 +130,8 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                   <EmailShareButton
                     className={"socials-modal-icon"}
                     url={eventLink}
-                    subject="Join my TrashMob event!"
-                    body="Join my next TrashMob event:"
+                    subject={`Join my next TrashMob.eco event on ${eventDate} in ${props.createdEvent.city}!`}
+                    body={getShareMsgContent("email")}
                   >
                     <EmailIcon size={32} round />
                   </EmailShareButton>
