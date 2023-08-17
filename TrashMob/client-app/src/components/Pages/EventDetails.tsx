@@ -13,9 +13,9 @@ import MapControllerSinglePoint from '../MapControllerSinglePoint';
 import AddToCalendar from '@culturehq/add-to-calendar';
 import moment from 'moment';
 import { Calendar, Facebook, GeoAlt, Link, Share, Stopwatch, Twitter } from 'react-bootstrap-icons';
-import { RegisterBtn } from '../RegisterBtn';
-import globes from '../assets/gettingStarted/globes.png';
+import { RegisterBtn } from '../Customization/RegisterBtn';
 import { getTwitterUrl, getFacebookUrl } from '../../store/ShareUrl';
+import { HeroSection } from '../Customization/HeroSection';
 
 export interface DetailsMatchParams {
     eventId: string;
@@ -318,17 +318,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
         : <p><em>Loading...</em></p>;
 
     return <div>
-        <Container fluid className='bg-grass'>
-            <Row className="text-center pt-0">
-                <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                    <h1 className='font-weight-bold'>View Events</h1>
-                    <p className="font-weight-bold">Learn, join, and inspire.</p>
-                </Col>
-                <Col md={5}>
-                    <Image src={globes} alt="globes" className="h-100 mt-0" />
-                </Col>
-            </Row>
-        </Container>
+        <HeroSection Title="View Events" Description="Learn, join, and inspire." />
         {contents}
     </div>;
 }

@@ -8,8 +8,7 @@ import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
 import MapControllerPointCollection from '../MapControllerPointCollection';
 import UserData from '../Models/UserData';
-import globes from '../assets/gettingStarted/globes.png';
-import { Table } from '../Table';
+import { Table } from '../Customization/Table';
 import twofigure from '../assets/card/twofigure.svg';
 import calendarclock from '../assets/card/calendarclock.svg';
 import bucketplus from '../assets/card/bucketplus.svg';
@@ -25,6 +24,7 @@ import { PartnerLocationEventRequests } from '../Partners/PartnerLocationEventRe
 import { Guid } from 'guid-typescript';
 import PickupLocationData from '../Models/PickupLocationData';
 import { getTwitterUrl, getFacebookUrl } from '../../store/ShareUrl';
+import { HeroSection } from '../Customization/HeroSection';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -727,17 +727,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 
     return (
         <>
-            <Container fluid className='bg-grass'>
-                <Row className="text-center pt-0">
-                    <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                        <h1 className="font-weight-bold">Dashboard</h1>
-                        <p className="font-weight-bold">See how much you've done!</p>
-                    </Col>
-                    <Col md={5}>
-                        <Image src={globes} alt="globes" className="h-100 mt-0" />
-                    </Col>
-                </Row>
-            </Container>
+            <HeroSection Title="Dashboard" Description="See how much you've done!" />
             <Container className="mt-5 pb-5" >
                 <Row className="pt-5">
                     <Col>

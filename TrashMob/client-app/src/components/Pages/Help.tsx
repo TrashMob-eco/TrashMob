@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Col, Container, Row, Image } from 'react-bootstrap';
-import globes from '../assets/gettingStarted/globes.png';
+import { HeroSection } from '../Customization/HeroSection';
 
 export const Help: React.FC = () => {
 
@@ -10,19 +10,7 @@ export const Help: React.FC = () => {
 
     return (
         <>
-            <Container fluid className='bg-grass'>
-                <Row className="text-center pt-0">
-                    <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                        <h1 className='font-weight-bold'>Site Help</h1>
-                        <h4 className="font-weight-bold">
-                            Answering your questions!
-                        </h4>
-                    </Col>
-                    <Col md={5}>
-                        <Image src={globes} alt="globes" className="h-100 mt-0" />
-                    </Col>
-                </Row>
-            </Container>
+            <HeroSection Title="Site Help" Description="Answering your questions!" />
 
             <Container fluid className="mt-1 bg-white p-5">
                 <Row className="mb-4 px-md-5" xs={1} lg={2}>

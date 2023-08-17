@@ -7,8 +7,8 @@ import { Col, Form, Image, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
 import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import EnvelopeResponse from '../Models/EnvelopeResponse';
 import logo from "../assets/logo.svg";
-import globes from '../assets/gettingStarted/globes.png';
 import * as ToolTips from "../../store/ToolTips";
+import { HeroSection } from '../Customization/HeroSection';
 
 export interface WaiversProps {
     isUserLoaded: boolean;
@@ -108,19 +108,7 @@ const Waivers: React.FC<WaiversProps> = (props) => {
 
     return (
         <>
-            <Container fluid className='bg-grass'>
-                <Row className="text-center pt-0">
-                    <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                        <h1 className='font-weight-bold'>Waiver</h1>
-                        <h4 className="font-weight-bold">
-                            Safety first!
-                        </h4>
-                    </Col>
-                    <Col md={5}>
-                        <Image src={globes} alt="globes" className="h-100 mt-0" />
-                    </Col>
-                </Row>
-            </Container>
+            <HeroSection Title="Waiver" Description="Safety first!"/>
 
             <Container className='bodyMargin'>
                 <h2 className='fw-500 font-size-xl'>TrashMob.eco Waiver</h2>

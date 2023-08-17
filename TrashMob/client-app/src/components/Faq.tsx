@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { Col, Container, Image, Row } from 'react-bootstrap';
-import globes from './assets/gettingStarted/globes.png';
 import events from './assets/faq/Event.svg';
 import attendees from './assets/faq/Attendees.svg';
 import volunteer from './assets/faq/volunteer.svg';
 import { Link } from 'react-router-dom';
+import { HeroSection } from './Customization/HeroSection';
 
 const tabs = [
     {
@@ -116,19 +116,7 @@ export const Faq: React.FC = () => {
 
     return (
         <>
-            <Container fluid className='bg-grass'>
-                <Row className="text-center pt-0">
-                    <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                        <h1 className='font-weight-bold'>FAQ</h1>
-                        <p className="fw-600">
-                            We’ve got you covered.
-                        </p>
-                    </Col>
-                    <Col md={5}>
-                        <Image src={globes} alt="globes" className="h-100 mt-0" />
-                    </Col>
-                </Row>
-            </Container>
+            <HeroSection Title="FAQ" Description="We’ve got you covered."/>
             <Container className='my-5 pt-5'>
                 <div className='faq-tabs-wrapper'>
                     {

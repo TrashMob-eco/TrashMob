@@ -5,9 +5,9 @@ import highways from '../assets/gettingStarted/highways.png';
 import picker from '../assets/gettingStarted/picker.png';
 import trashcangroup from '../assets/gettingStarted/trashcangroup.png';
 import workgloves from '../assets/gettingStarted/workgloves.png';
-import globes from '../assets/gettingStarted/globes.png';
 import { Link } from 'react-router-dom';
 import { Col, Container, Row, Image } from 'react-bootstrap';
+import { HeroSection } from '../Customization/HeroSection';
 
 export const GettingStarted: React.FC = () => {
 
@@ -17,19 +17,7 @@ export const GettingStarted: React.FC = () => {
 
     return (
         <>
-            <Container fluid className='bg-grass'>
-                <Row className="text-center pt-0">
-                    <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                        <h1 className='font-weight-bold'>Getting Started</h1>
-                        <p className="font-weight-bold">
-                            Tips and tricks to get you out there.
-                        </p>
-                    </Col>
-                    <Col md={5}>
-                        <Image src={globes} alt="globes" className="h-100 mt-0" />
-                    </Col>
-                </Row>
-            </Container>
+            <HeroSection Title="Getting Started" Description="Tips and tricks to get you out there." />
             <Container fluid className="bg-white mt-5">
                 <Row className="text-center py-5 ">
                     <Col md>
