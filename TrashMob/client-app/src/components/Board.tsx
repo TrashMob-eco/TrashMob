@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Col, Container, Image, Row } from 'react-bootstrap';
-import globes from './assets/gettingStarted/globes.png';
 import linkedIn from './assets/card/linkedin.svg';
 import JoeBeernink from './assets/boardOfDirectors/JoeBeernink.jpg';
 import DarylBarber from './assets/boardOfDirectors/darylbarber.jpg';
@@ -9,6 +8,7 @@ import KevinGleason from './assets/boardOfDirectors/KevinGleason.svg';
 import SandraMau from './assets/boardOfDirectors/SandraMau.png';
 import ValerieWilden from './assets/boardOfDirectors/ValerieWilden.svg';
 import SofiaSamuels from './assets/boardOfDirectors/SofiaSamuels.png';
+import { HeroSection } from './Customization/HeroSection'
 
 export const Board: React.FC = () => {
 
@@ -18,19 +18,7 @@ export const Board: React.FC = () => {
 
     return (
         <>
-            <Container fluid className='bg-grass'>
-                <Row className="text-center pt-0">
-                    <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                        <h1 className='font-weight-bold'>Board of Directors</h1>
-                        <h4 className="font-weight-bold">
-                            Meet our team!
-                        </h4>
-                    </Col>
-                    <Col md={5}>
-                        <Image src={globes} alt="globes" className="h-100 mt-0" />
-                    </Col>
-                </Row>
-            </Container>
+            <HeroSection Title='Board of Directors' Description='Meet our team!'></HeroSection>
             <Container className='my-5 pb-5'>
                 <div className='p-4 directorCard'>
                     <Row>
