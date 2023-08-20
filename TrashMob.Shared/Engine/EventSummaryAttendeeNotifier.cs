@@ -13,7 +13,9 @@ namespace TrashMob.Shared.Engine
     {
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.EventSummaryAttendee;
 
-        protected override int NumberOfHoursInWindow => -24;
+        protected override int MaxNumberOfHoursInWindow => -24;
+
+        protected override int MinNumberOfHoursInWindow => -5;
 
         protected override string EmailSubject => "Thank you for attending a TrashMob.eco event!";
 
