@@ -35,7 +35,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
   }
 
   const getShareMsgContent = (provider: string) => {
-    return `Join my next ${provider == 'twitter' ? "@TrashMobEco" : "TrashMob.eco"} event on ${eventDate} at ${eventTime} in ${props.createdEvent.city}.\n` +
+    return `Join my next ${provider === 'twitter' ? "@TrashMobEco" : "TrashMob.eco"} event on ${eventDate} at ${eventTime} in ${props.createdEvent.city}.\n` +
       `Sign up using the link for more details. Help me clean up ${props.createdEvent.city}!`
   }
 
