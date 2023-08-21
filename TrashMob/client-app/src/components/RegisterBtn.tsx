@@ -100,6 +100,6 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
 
     return (
         <Button id="addAttendee" className="btn btn-primary action btn-128" hidden={!isUserLoaded || isAttending === "Yes" || registered || isEventCompleted}
-            onClick={() => handleAttend(eventId)}>{registered ? 'Registered!' : 'Register'}</Button>
+            onClick={() => handleAttend(eventId)}>{registered ? 'Attended!' : 'Attend'}</Button>
     )
 }
