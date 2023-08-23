@@ -4,7 +4,7 @@ import { getEventType } from '../store/eventTypeHelper';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
 import UserData from './Models/UserData';
-import { RegisterBtn } from './RegisterBtn';
+import { RegisterBtn } from './Customization/RegisterBtn';
 
 export interface DisplayEvent {
     id: string;

@@ -62,6 +62,7 @@
     <None Remove="client-app\src\components\assets\manny-becerra-7FkFJqJ2fmw-unsplash.jpg" />
     <None Remove="client-app\src\components\assets\muhammad-numan-ZVgxiKJlMk0-unsplash.jpg" />
     <None Remove="client-app\src\components\assets\paige-cody-G8VOA-BrnHo-unsplash.jpg" />
+    <None Remove="client-app\src\components\Customization\HeroSection.tsx" />
     <None Remove="Docusign\TrashMob_Volunteer_Waiver_V1.docx" />
     <None Remove="Docusign\TrashMob_Volunteer_Waiver_V2.docx" />
     <None Remove="README.md" />
@@ -153,6 +154,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TrashMob.Shared\TrashMob.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="client-app\src\components\Customization\HeroSection.tsx" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
