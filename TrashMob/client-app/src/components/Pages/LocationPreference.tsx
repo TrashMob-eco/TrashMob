@@ -5,16 +5,16 @@ import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
 import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { Button, Col, Container, Form, Image, Row } from 'react-bootstrap';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import * as MapStore from '../../store/MapStore';
 import { getKey } from '../../store/MapStore';
 import AddressData from '../Models/AddressData';
 import { data } from 'azure-maps-control';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapControllerSinglePoint from '../MapControllerSinglePoint';
-import globes from '../assets/gettingStarted/globes.png';
 import infoCycle from '../assets/info-circle.svg';
 import React from 'react';
+import { HeroSection } from '../Customization/HeroSection';
 
 interface LocationPreferenceProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -277,17 +277,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     return (
         !isDataLoaded ? <div>Loading</div> :
             <div>
-                <Container fluid className='bg-grass shadow'>
-                    <Row className="text-center pt-0">
-                        <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                            <h1 className='font-weight-bold'>Set your location</h1>
-                            <p className="font-weight-bold">Get notified for events near you!</p>
-                        </Col>
-                        <Col md={5}>
-                            <Image src={globes} alt="globes" className="h-100 mt-0" />
-                        </Col>
-                    </Row>
-                </Container>
+                <HeroSection Title='Set your location' Description='Get notified for events near you!'></HeroSection>
                 <Container className='p-4 bg-white mt-5 rounded'>
                     <h4 className='fw-600 color-primary my-3 main-header'>Location preferences</h4>
                     <Form onSubmit={handleSave}>
