@@ -71,7 +71,7 @@ namespace TrashMob.Shared.Engine
                     var eventSummary = await eventSummaryManager.GetAsync(es => es.EventId == mobEvent.Id, cancellationToken).ConfigureAwait(false);
 
                     // Only send an email if the summary has not been completed.
-                    if (eventSummary == null)
+                    if (eventSummary?.FirstOrDefault() == null)
                     {
                         // Add to the event list to be sent
                         eventsToNotifyUserFor.Add(mobEvent);
