@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Col, Container, Row, } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import { HeroSection } from '../Customization/HeroSection'
 
 export const Help: React.FC = () => {
