@@ -2,10 +2,10 @@
 namespace TrashMob.Controllers
 {
     using System;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
@@ -31,7 +31,7 @@ namespace TrashMob.Controllers
         [HttpGet("{eventId}")]
         public async Task<IActionResult> GetEventSummary(Guid eventId, CancellationToken cancellationToken = default)
         {
-            var eventSummary = await eventSummaryManager.GetAsync(es => es.EventId == eventId, cancellationToken).ConfigureAwait(false);
+            var eventSummary = (await eventSummaryManager.GetAsync(es => es.EventId == eventId, cancellationToken).ConfigureAwait(false)).FirstOrDefault();
 
             if (eventSummary != null)
             {
