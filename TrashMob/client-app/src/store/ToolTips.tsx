@@ -109,3 +109,4 @@ export const PickupLocationHasBeenPickedUp = "Indicates whether or not the garba
 export const PickupLocationCreatedDate = "Date this record was created."
 export const PickupLocationLastUpdatedDate = "Date this record was last updated."
 export const WaiverFullName = "Enter your full legal name."
+export const CopyToClipboard = "Copied to clipboard!"

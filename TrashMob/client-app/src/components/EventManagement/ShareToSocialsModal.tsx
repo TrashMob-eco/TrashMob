@@ -3,7 +3,7 @@ import { Modal, Button, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { Clipboard, GeoAltFill, Clock } from "react-bootstrap-icons";
 import { FacebookShareButton, FacebookIcon, TwitterShareButton, TwitterIcon, LinkedinShareButton, LinkedinIcon, WhatsappShareButton, WhatsappIcon, EmailShareButton, EmailIcon } from 'react-share';
 import Card from 'react-bootstrap/Card';
-
+import * as ToolTips from '../../store/ToolTips';
 
 interface ModalProps {
   createdEvent: any;
@@ -16,9 +16,9 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
   const eventDate = new Date(props.createdEvent.eventDate).toLocaleDateString("en-us", { year: "numeric", month: "2-digit", day: "2-digit" })
   const eventTime = new Date(props.createdEvent.eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })
 
-  const tooltip = (
+  const renderCopyToClipboardToolTip = (
     <Tooltip id="tooltip">
-      Copied to clipboard!
+      {ToolTips.CopyToClipboard}
     </Tooltip>
   );
 
@@ -49,7 +49,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
             </Card.Text>
             <div className="d-flex align-items-center justify-content-between">
               <Card.Link className="text-truncate" href={eventLink} style={{ fontSize: '14px', width: '75%' }}>{eventLink}</Card.Link>
-              <OverlayTrigger placement="top" overlay={tooltip} trigger={['click']} show={copiedLink}>
+              <OverlayTrigger placement="top" overlay={renderCopyToClipboardToolTip} trigger={['click']} show={copiedLink}>
                 <Button className="btn mb-2" id="helpBtn" onClick={handleCopyLink}><Clipboard /></Button>
               </OverlayTrigger>
             </div>
