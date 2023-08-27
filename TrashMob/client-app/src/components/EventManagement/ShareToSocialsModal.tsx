@@ -24,9 +24,14 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
 
   const handleClose = () => {
     setShow(false);
+    setCopied(false);
   }
 
   const handleCopyLink = () => {
+    if (copiedLink) {
+      return
+    }
+
     navigator.clipboard.writeText(eventLink);
     setCopied(true);
     setTimeout(() => {
