@@ -19,7 +19,7 @@ export const AboutUs: React.FC = () => {
                         <div className="px-lg-5">
                             <h2>What is a TrashMob?</h2>
                             <p className="font-weight-bold">
-                                A TrashMob is a group of citizens who are willing to take a hour or two out of their lives to get together and clean up their communities.
+                                A TrashMob is a group of citizens who are willing to take an hour or two out of their lives to get together and clean up their communities.
                             </p>
                             <p>
                                 Whether the motivation is to better your local community, connect with like-minded individuals, or improve your own mental health and wellbeing, TrashMob provides an avenue for accomplishing these goals.
