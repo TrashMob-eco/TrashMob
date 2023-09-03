@@ -10,15 +10,17 @@ interface HeroSectionProps {
 export const HeroSection: FC<HeroSectionProps> = ({ Title, Description }) => {
     return (
         <Container fluid className='bg-grass'>
-            <Row className="text-center pt-0">
-                <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                    <h1 className="font-weight-bold">{Title}</h1>
-                    <p className="font-weight-bold">{Description}</p>
-                </Col>
-                <Col md={5}>
-                    <Image src={globes} alt="globes" className="h-100 mt-0" />
-                </Col>
-            </Row>
+            <div className='container mx-auto'>
+                <Row className="text-left pt-0">
+                    <Col className="d-flex flex-column justify-content-center pr-5">
+                        <h1 className="font-weight-bold">{Title}</h1>
+                        <p className="font-weight-bold">{Description}</p>
+                    </Col>
+                    <Col>
+                        <Image src={globes} alt="globes" className="h-100 mt-0" />
+                    </Col>
+                </Row>
+            </div>
         </Container>
     )
 }
