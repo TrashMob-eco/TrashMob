@@ -7,7 +7,7 @@ import JakeDiliberto from './assets/boardOfDirectors/JakeDiliberto.svg';
 import KevinGleason from './assets/boardOfDirectors/KevinGleason.svg';
 import SandraMau from './assets/boardOfDirectors/SandraMau.png';
 import CynthiaMitchell from './assets/boardOfDirectors/CynthiaMitchell.png';
-import RobertRund from './assets/boardOfDirectors/RobertRund.png';
+import RobertRund from './assets/boardOfDirectors/RobertRund.jpg';
 import SofiaSamuels from './assets/boardOfDirectors/SofiaSamuels.png';
 import ValerieWilden from './assets/boardOfDirectors/ValerieWilden.svg';
 import { HeroSection } from './Customization/HeroSection'
