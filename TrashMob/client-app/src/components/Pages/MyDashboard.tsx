@@ -250,6 +250,10 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         }
     }
 
+    const handleShowModal = (showModal: boolean) => {
+        setShowSocialsModal(showModal)
+    }
+
     const handleCopyLink = (eventId: string) => {
         navigator.clipboard.writeText(window.location.origin + '/eventdetails/' + eventId);
         setCopied(true);
@@ -745,8 +749,8 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     return (
         <>
             <Container fluid className='bg-grass'>
-                {showModal && createdEvent &&
-                    <SocialsModal createdEvent={createdEvent} />
+                {createdEvent &&
+                    <SocialsModal eventToShare={createdEvent} show={showModal} handleShow={handleShowModal} />
                 }
                 <Row className="text-center pt-0">
                     <Col md={7} className="d-flex flex-column justify-content-center pr-5">

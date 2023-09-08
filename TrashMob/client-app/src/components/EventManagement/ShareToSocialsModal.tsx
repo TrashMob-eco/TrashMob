@@ -6,15 +6,16 @@ import Card from 'react-bootstrap/Card';
 import * as ToolTips from '../../store/ToolTips';
 
 interface ModalProps {
-  createdEvent: any;
+  eventToShare: any;
+  show: boolean;
+  handleShow: (value: boolean) => void;
 }
 
 export const SocialsModal: React.FC<ModalProps> = (props) => {
-  const [show, setShow] = useState(true);
   const [copiedLink, setCopied] = useState(false);
-  const eventLink = `${window.location.origin}/eventdetails/${props.createdEvent.id}`
-  const eventDate = new Date(props.createdEvent.eventDate).toLocaleDateString("en-us", { year: "numeric", month: "2-digit", day: "2-digit" })
-  const eventTime = new Date(props.createdEvent.eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })
+  const eventLink = `${window.location.origin}/eventdetails/${props.eventToShare.id}`
+  const eventDate = new Date(props.eventToShare.eventDate).toLocaleDateString("en-us", { year: "numeric", month: "2-digit", day: "2-digit" })
+  const eventTime = new Date(props.eventToShare.eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })
 
   const renderCopyToClipboardToolTip = (
     <Tooltip id="tooltip">
@@ -23,7 +24,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
   );
 
   const handleClose = () => {
-    setShow(false);
+    props.handleShow(false);
     setCopied(false);
   }
 
@@ -40,8 +41,8 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
   }
 
   const getShareMsgContent = (provider: string) => {
-    return `Join my next ${provider === 'twitter' ? "@TrashMobEco" : "TrashMob.eco"} event on ${eventDate} at ${eventTime} in ${props.createdEvent.city}.\n` +
-      `Sign up using the link for more details. Help me clean up ${props.createdEvent.city}!`
+    return `Join my next ${provider === 'twitter' ? "@TrashMobEco" : "TrashMob.eco"} event on ${eventDate} at ${eventTime} in ${props.eventToShare.city}.\n` +
+      `Sign up using the link for more details. Help me clean up ${props.eventToShare.city}!`
   }
 
   const EventLink = () => {
@@ -67,18 +68,18 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
   return (
     <>
       <div className="modal-header border-0">
-        <Modal show={show} onHide={handleClose} centered>
+        <Modal show={props.show} onHide={handleClose} centered>
 
           <Modal.Header>
             <Modal.Title>Event created</Modal.Title>
           </Modal.Header>
           <Modal.Body className="p-4">
             <div className="d-flex flex-column mb-4">
-              <h6> {props.createdEvent.name} </h6>
+              <h6> {props.eventToShare.name} </h6>
 
               <div className="d-flex flex-row align-items-center mb-2">
                 <GeoAltFill className="mr-2" />
-                {`${props.createdEvent.streetAddress}, ${props.createdEvent.city}, ${props.createdEvent.region}`}
+                {`${props.eventToShare.streetAddress}, ${props.eventToShare.city}, ${props.eventToShare.region}`}
               </div>
 
               <div className="d-flex flex-row align-items-center">
@@ -135,7 +136,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                   <EmailShareButton
                     className={"socials-modal-icon"}
                     url={eventLink}
-                    subject={`Join my next TrashMob.eco event on ${eventDate} in ${props.createdEvent.city}!`}
+                    subject={`Join my next TrashMob.eco event on ${eventDate} in ${props.eventToShare.city}!`}
                     body={getShareMsgContent("email")}
                   >
                     <EmailIcon size={32} round />
