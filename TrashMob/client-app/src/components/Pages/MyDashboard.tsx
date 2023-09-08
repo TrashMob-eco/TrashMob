@@ -750,7 +750,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         <>
             <Container fluid className='bg-grass'>
                 {createdEvent &&
-                    <SocialsModal eventToShare={createdEvent} show={showModal} handleShow={handleShowModal} />
+                    <SocialsModal eventToShare={createdEvent} show={showModal} handleShow={handleShowModal} currentUserID={props.currentUser.id}/>
                 }
                 <Row className="text-center pt-0">
                     <Col md={7} className="d-flex flex-column justify-content-center pr-5">

@@ -267,7 +267,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                     <MapControllerSinglePoint center={center} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} eventDate={eventDate} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} isDraggable={false} />
                 </AzureMapsProvider>
                 { isDataLoaded &&
-                    <SocialsModal eventToShare={eventToShare} show={showModal} handleShow={handleShowModal} />
+                    <SocialsModal eventToShare={eventToShare} show={showModal} handleShow={handleShowModal} currentUserID={currentUser.id}/>
                 }
                 <Container className="my-5">
                     <div className="d-flex justify-content-between align-items-end">

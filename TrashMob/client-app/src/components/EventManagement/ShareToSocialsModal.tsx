@@ -9,6 +9,7 @@ interface ModalProps {
   eventToShare: any;
   show: boolean;
   handleShow: (value: boolean) => void;
+  currentUserID: string;
 }
 
 export const SocialsModal: React.FC<ModalProps> = (props) => {
@@ -41,8 +42,16 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
   }
 
   const getShareMsgContent = (provider: string) => {
-    return `Join my next ${provider === 'twitter' ? "@TrashMobEco" : "TrashMob.eco"} event on ${eventDate} at ${eventTime} in ${props.eventToShare.city}.\n` +
-      `Sign up using the link for more details. Help me clean up ${props.eventToShare.city}!`
+
+    if (props.eventToShare.createdByUserId === props.currentUserID) {
+      return `Join my next ${provider === 'twitter' ? "@TrashMobEco" : "TrashMob.eco"} event on ${eventDate} at ${eventTime} in ${props.eventToShare.city}.\n` +
+        `Sign up using the link for more details! Help me clean up ${props.eventToShare.city}!`
+    }
+    else {
+      return `Join me at this ${provider === 'twitter' ? "@TrashMobEco" : "TrashMob.eco"} event on ${eventDate} at ${eventTime} in ${props.eventToShare.city}.\n` +
+        `Sign up using the link for more details! Help me clean up ${props.eventToShare.city}!`
+    }
+
   }
 
   const EventLink = () => {
@@ -136,7 +145,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                   <EmailShareButton
                     className={"socials-modal-icon"}
                     url={eventLink}
-                    subject={`Join my next TrashMob.eco event on ${eventDate} in ${props.eventToShare.city}!`}
+                    subject={`Join ${(props.eventToShare.createdByUserId === props.currentUserID ? "my next" : "me at this")} TrashMob.eco event on ${eventDate} in ${props.eventToShare.city}!`}
                     body={getShareMsgContent("email")}
                   >
                     <EmailIcon size={32} round />
