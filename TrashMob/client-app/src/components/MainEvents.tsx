@@ -6,6 +6,7 @@ import EventTypeData from './Models/EventTypeData';
 import UserData from './Models/UserData';
 import { RegisterBtn } from './Customization/RegisterBtn';
 import { Pagination } from './Customization/Pagination';
+import { Button} from 'reactstrap';
 
 export interface DisplayEvent {
     id: string;
@@ -30,11 +31,17 @@ export interface MainEventsDataProps extends RouteComponentProps {
     onAttendanceChanged: any;
 };
 
+enum SortingOrder{
+    Ascending,
+    Descending,
+}
+
 export const MainEvents: FC<MainEventsDataProps> = ({ isEventDataLoaded, eventList, isUserEventDataLoaded,
     myAttendanceList, isUserLoaded, eventTypeList, currentUser, onAttendanceChanged, history, location, match }) => {
     const [displayEvents, setDisplayEvents] = useState<DisplayEvent[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [currentTableData, setCurrentTableData] = useState<DisplayEvent[]>([]);
+    const [sortingOrder, setSortingOrder] = useState<number>(SortingOrder.Ascending);
     const eventPerPage = 10;
     const divRef = useRef<HTMLDivElement>(null);
 
@@ -78,20 +85,42 @@ export const MainEvents: FC<MainEventsDataProps> = ({ isEventDataLoaded, eventLi
                 return dispEvent;
             });
 
-            setDisplayEvents(list.sort((a,b) =>(a.eventDate > b.eventDate) ? 1 :-1));
+            if(sortingOrder === SortingOrder.Ascending)
+            {
+                setDisplayEvents(list.sort((a,b) =>(a.eventDate > b.eventDate) ? 1 :-1));
+            }
+            else
+            {
+                setDisplayEvents(list.sort((a,b) =>(a.eventDate < b.eventDate) ? 1 :-1));
+            }
+
             setCurrentPage(1);
         }
-    }, [isEventDataLoaded, eventList, myAttendanceList, isUserLoaded, isUserEventDataLoaded])
+    }, [isEventDataLoaded, eventList, myAttendanceList, isUserLoaded, isUserEventDataLoaded, sortingOrder])
 
     const onPageChange = ((pageNumber:number)=>{
         setCurrentPage(pageNumber);
-
     })
+
+    const sortEventsByDate = ()=>{
+        if(sortingOrder === SortingOrder.Ascending)
+        {
+            setSortingOrder(SortingOrder.Descending);
+        }
+        else
+        {
+            setSortingOrder(SortingOrder.Ascending);
+        }
+    }
 
     const renderEventsList = (events: DisplayEvent[]) => {
         return (
             <>
             <div ref={divRef} >
+                <div className='d-flex justify-content-between'>
+                    <Button color='primary' className='mb-2' onClick={() => history.push("/manageeventdashboard")}>Create a New Event</Button>
+                    <Button color='primary' className='mb-2 align-self-right' onClick={sortEventsByDate} >Sort By Date {sortingOrder === SortingOrder.Ascending ? String.fromCharCode(8593) : String.fromCharCode(8595)}</Button>
+                </div>
                 <ol className="px-1 px-md-5" >
                         {events.map((mobEvent, i) =>
                             <li className={`d-flex flex-column justify-content-center mb-2 ${i !== events.length - 1 ? "border-bottom" : ""}`} key={`event-${i}`}>
