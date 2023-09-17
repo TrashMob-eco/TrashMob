@@ -4,13 +4,14 @@ namespace TrashMob.Shared.Engine
     using Microsoft.Extensions.Logging;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Persistence.Interfaces;
 
     public class UpcomingEventHostingSoonNotifier : UpcomingEventHostingBaseNotifier, INotificationEngine
     {
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UpcomingEventHostingSoon;
 
-        protected override int NumberOfHoursInWindow => 24;
+        protected override int MaxNumberOfHoursInWindow => 24;
+
+        protected override int MinNumberOfHoursInWindow => 1;
 
         protected override string EmailSubject => "You're hosting a TrashMob.eco event soon!";
 

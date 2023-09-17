@@ -9,7 +9,7 @@ import ReactDOMServer from "react-dom/server"
 import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../store/AuthStore';
 import EventAttendeeData from './Models/EventAttendeeData';
 import { getEventType } from '../store/eventTypeHelper';
-import { RegisterBtn } from './RegisterBtn';
+import { RegisterBtn } from './Customization/RegisterBtn';
 import { RouteComponentProps } from 'react-router-dom';
 interface MapControllerProps extends RouteComponentProps {
     mapOptions: IAzureMapOptions | undefined

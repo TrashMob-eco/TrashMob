@@ -9,6 +9,8 @@ namespace TrashMob.Shared.Tests
 
         protected override INotificationEngine Engine => new UpcomingEventAttendingSoonNotifier(EventManager.Object, UserManager.Object, EventAttendeeManager.Object, UserNotificationManager.Object, NonEventUserNotificationManager.Object, EmailSender.Object, EmailManager.Object, MapRepository.Object, Logger.Object);
 
-        protected override int NumberOfDaysToAddForEventOutOfWindow => 2;
+        protected override int NumberOfDaysToAddForEventMaxOutOfWindow => 2;
+
+        protected override int NumberOfHoursToAddForEventMinOutOfWindow => 2;
     }
 }

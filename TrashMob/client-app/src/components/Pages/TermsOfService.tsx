@@ -1,8 +1,8 @@
 import React from 'react';
 import { FC } from 'react'
-import { Col, Container, Image, Row } from 'react-bootstrap';
-import globes from '../assets/gettingStarted/globes.png';
+import { Col, Container, Row } from 'react-bootstrap';
 import logo from '../assets/logo.svg';
+import { HeroSection } from '../Customization/HeroSection';
 
 export const CurrentTermsOfServiceVersion: TermsOfServiceVersion = {
     versionId: "0.3",
@@ -22,17 +22,7 @@ export const TermsOfService: FC = () => {
 
     return (
         <>
-            <Container fluid className='bg-grass mb-5'>
-                <Row className="text-center pt-0">
-                    <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                        <h1 className="font-weight-bold">Terms of Service</h1>
-                        <p className="font-weight-bold">Transparency matters to us.</p>
-                    </Col>
-                    <Col md={5}>
-                        <Image src={globes} alt="globes" className="h-100 mt-0" />
-                    </Col>
-                </Row>
-            </Container>
+            <HeroSection Title='Terms of Service' Description='Transparency matters to us.'></HeroSection>
             <Container className="py-5">
                 <h5 className="font-weight-bold mt-5">1. Terms</h5>
 

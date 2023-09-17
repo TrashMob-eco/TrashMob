@@ -9,13 +9,14 @@ namespace TrashMob.Shared.Engine
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Persistence.Interfaces;
 
     public class EventSummaryHostReminderNotifier : NotificationEngineBase, INotificationEngine
     {
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.EventSummaryHostReminder;
 
-        protected override int NumberOfHoursInWindow => -4;
+        protected override int MaxNumberOfHoursInWindow => -5;
+
+        protected override int MinNumberOfHoursInWindow => -2;
 
         protected override string EmailSubject => "Your TrashMob.eco event has completed. We'd love to know how it went!";
 

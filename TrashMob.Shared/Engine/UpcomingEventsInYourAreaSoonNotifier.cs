@@ -4,7 +4,6 @@ namespace TrashMob.Shared.Engine
     using Microsoft.Extensions.Logging;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Persistence.Interfaces;
 
     public class UpcomingEventsInYourAreaSoonNotifier : UpcomingEventsInYourAreaBaseNotifier, INotificationEngine
     {
@@ -12,7 +11,9 @@ namespace TrashMob.Shared.Engine
 
         protected override string EmailSubject => "Upcoming TrashMob.eco events in your area soon!";
 
-        protected override int NumberOfHoursInWindow => 24;
+        protected override int MaxNumberOfHoursInWindow => 24;
+
+        protected override int MinNumberOfHoursInWindow => 1;
 
         public UpcomingEventsInYourAreaSoonNotifier(IEventManager eventManager, 
                                                     IKeyedManager<User> userManager, 
