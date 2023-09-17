@@ -1,6 +1,5 @@
 import { FC } from 'react'
 import { Col, Container, Image, Row } from 'react-bootstrap';
-import globes from '../assets/gettingStarted/globes.png';
 import heroImg from '../assets/partnerships/whatIsPartnerships.png';
 import Safetykits from '../assets/partnerships/Safetykits.svg';
 import Supplies from '../assets/partnerships/Supplies.svg';
@@ -9,6 +8,7 @@ import Dollarsign from '../assets/partnerships/dollarsign.svg';
 import Garbage from '../assets/partnerships/garbage.png';
 import { Link } from 'react-router-dom';
 import React from 'react';
+import { HeroSection } from '../Customization/HeroSection';
 
 export const Partnerships: FC<any> = () => {
 
@@ -18,17 +18,7 @@ export const Partnerships: FC<any> = () => {
 
     return (
         <>
-            <Container fluid className='bg-grass mb-5'>
-                <Row className="text-center pt-0">
-                    <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                        <h1 className="font-weight-bold">Partnerships</h1>
-                        <p className="font-weight-bold">Connecting you with volunteers.</p>
-                    </Col>
-                    <Col md={5}>
-                        <Image src={globes} alt="globes" className="h-100 mt-0" />
-                    </Col>
-                </Row>
-            </Container>
+            <HeroSection Title='Partnerships' Description='Connecting you with volunteers.'></HeroSection>
             <Container className='py-5'>
                 <Row>
                     <Col sm={7}>

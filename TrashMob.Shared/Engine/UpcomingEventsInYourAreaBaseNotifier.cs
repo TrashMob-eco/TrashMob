@@ -54,7 +54,7 @@ namespace TrashMob.Shared.Engine
                 var eventsUserIsAttending = await EventAttendeeManager.GetEventsUserIsAttendingAsync(user.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 // Limit the list of events to process to those in the next window UTC
-                foreach (var mobEvent in events.Where(e => e.EventDate <= DateTimeOffset.UtcNow.AddHours(NumberOfHoursInWindow)))
+                foreach (var mobEvent in events.Where(e => e.EventDate <= DateTimeOffset.UtcNow.AddHours(MaxNumberOfHoursInWindow) && e.EventDate > DateTimeOffset.UtcNow.AddHours(MinNumberOfHoursInWindow)))
                 {
                     // Skip private events
                     if (!mobEvent.IsEventPublic)

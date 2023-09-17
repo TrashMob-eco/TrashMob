@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Button, Col, Container, Image, Row } from 'react-bootstrap';
+import { Button, Col, Container, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import globes from './assets/gettingStarted/globes.png';
+import { HeroSection } from './Customization/HeroSection';
 
 const ReadMore = ({ children }: any) => {
     const text = children;
@@ -30,17 +30,7 @@ export const VolunteerOpportunities: React.FC = () => {
 
     return (
         <>
-            <Container fluid className='bg-grass mb-5'>
-                <Row className="text-center pt-0">
-                    <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                        <h1 className="font-weight-bold">Recruiting</h1>
-                        <p className="font-weight-bold">We’d love to have you join us.</p>
-                    </Col>
-                    <Col md={5}>
-                        <Image src={globes} alt="globes" className="h-100 mt-0" />
-                    </Col>
-                </Row>
-            </Container>
+            <HeroSection Title='Recruiting' Description='We’d love to have you join us.'></HeroSection>
             <Container>
                 <Row>
                     <Col md={8} className="mb-2"><h1 className='m-0'>Open volunteer positions (4)</h1></Col>

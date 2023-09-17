@@ -2,8 +2,8 @@ import { FC, FormEvent, useEffect } from 'react';
 import UserData from '../Models/UserData';
 import { getApiConfig, getB2CPolicies, msalClient } from '../../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { Button, Col, Container, Image, Row } from 'react-bootstrap';
-import globes from '../assets/gettingStarted/globes.png';
+import { Button, Container} from 'react-bootstrap';
+import { HeroSection } from '../Customization/HeroSection';
 
 interface DeleteMyDataProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -62,17 +62,7 @@ const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
 
     return (
         <div>
-            <Container fluid className='bg-grass shadow'>
-                <Row className="text-center pt-0">
-                    <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                        <h1 className='font-weight-bold'>Delete your account?</h1>
-                        <p className="font-weight-bold">TrashMob members are making the world a better place!</p>
-                    </Col>
-                    <Col md={5}>
-                        <Image src={globes} alt="globes" className="h-100 mt-0" />
-                    </Col>
-                </Row>
-            </Container>
+            <HeroSection Title='Delete your account?' Description='TrashMob members are making the world a better place!'></HeroSection>
             {contents}
         </div>
     );

@@ -34,7 +34,9 @@
 
         protected abstract NotificationTypeEnum NotificationType { get; }
 
-        protected abstract int NumberOfHoursInWindow { get; }
+        protected abstract int MinNumberOfHoursInWindow { get; }
+
+        protected abstract int MaxNumberOfHoursInWindow { get; }
 
         protected abstract string EmailSubject { get; }
 

@@ -45,7 +45,7 @@ namespace TrashMob.Shared.Engine
                 var events = await EventManager.GetActiveEventsAsync(cancellationToken).ConfigureAwait(false);
 
                 // Limit the list of events to process to those in the next window UTC
-                foreach (var mobEvent in events.Where(e => e.CreatedByUserId == user.Id && e.EventDate >= DateTimeOffset.UtcNow && e.EventDate <= DateTimeOffset.UtcNow.AddHours(NumberOfHoursInWindow)))
+                foreach (var mobEvent in events.Where(e => e.CreatedByUserId == user.Id && e.EventDate >= DateTimeOffset.UtcNow.AddHours(MinNumberOfHoursInWindow) && e.EventDate <= DateTimeOffset.UtcNow.AddHours(MaxNumberOfHoursInWindow)))
                 {
                     if (await UserHasAlreadyReceivedNotification(user, mobEvent, cancellationToken).ConfigureAwait(false))
                     { 

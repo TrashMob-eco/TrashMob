@@ -5,7 +5,6 @@ namespace TrashMob.Shared.Engine
     using System.Threading;
     using System.Threading.Tasks;
     using System.Linq;
-    using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
@@ -13,7 +12,9 @@ namespace TrashMob.Shared.Engine
     {
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UserProfileUpdateLocation;
 
-        protected override int NumberOfHoursInWindow => 24;
+        protected override int MaxNumberOfHoursInWindow => 24;
+
+        protected override int MinNumberOfHoursInWindow => 2;
 
         protected override string EmailSubject => "Set your User Location in TrashMob to get Upcoming Event Notifications!";
 

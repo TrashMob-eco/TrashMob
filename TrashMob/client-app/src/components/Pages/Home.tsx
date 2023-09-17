@@ -239,7 +239,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
                     <Row className='py-5'>
                         <Col md={6}>
                             <h1 className="mt-0 font-weight-bold">What is a TrashMob?</h1>
-                            <h4 className='my-5'>A TrashMob is a group of citizens who are willing to take a hour or two out of their lives to get together and clean up their communities. Start your impact today.</h4>
+                            <h4 className='my-5'>A TrashMob is a group of citizens who are willing to take an hour or two out of their lives to get together and clean up their communities. Start your impact today.</h4>
                             <Link className="mt-5 btn btn-primary btn-128" to="/aboutus" role="button">Learn more</Link>
                         </Col>
                         <Col md={6}>
