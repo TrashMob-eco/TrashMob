@@ -7,7 +7,7 @@ import EventSummaryData from './Models/EventSummaryData';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import EventData from './Models/EventData';
 import { PickupLocations } from './PickupLocations';
-
+import { SocialsModal } from './EventManagement/ShareToSocialsModal';
 export interface EventSummaryMatchParams {
     eventId: string;
 }
@@ -36,6 +36,9 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
     const [isOwner, setIsOwner] = React.useState<boolean>(false);
     const [eventName, setEventName] = React.useState<string>("New Event");
     const [eventDate, setEventDate] = React.useState<Date>(new Date());
+    const [showModal, setShowSocialsModal] = React.useState<boolean>(false);
+    const [eventToShare, setEventToShare] = React.useState<EventData>();
+    const [shareMessage, setShareMessage] = React.useState<string>(""); 
 
     React.useEffect(() => {
 
@@ -51,6 +54,7 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
             .then(eventData => {
                 setEventName(eventData.name);
                 setEventDate(new Date(eventData.eventDate));
+                setEventToShare(eventData)
                 if (eventData.createdByUserId === props.currentUser.id) {
                     setIsOwner(true);
                 }
@@ -120,6 +124,11 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
         eventSummaryData.createdByUserId = createdByUserId ?? props.currentUser.id;
         eventSummaryData.createdDate = createdDate;
 
+        if (eventToShare) {
+            setShareMessage(`We just finished a @TrashMob.eco event in ${eventToShare.city}. ${actualNumberOfAttendees} picked up ${numberOfBags} of #litter. Would love to see you out at our next event! ` +
+            `Sign up using the following link to get notified the next time we are having an event. Help us clean up the planet!`)
+        }
+
         var data = JSON.stringify(eventSummaryData);
 
         const account = msalClient.getAllAccounts()[0];
@@ -143,7 +152,9 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
                 method: method,
                 body: data,
                 headers: headers,
-            })
+            }).then(() => {
+                handleShowModal(true)
+            });
         });
     }
 
@@ -342,8 +353,15 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
         );
     }
 
+    const handleShowModal = (showModal: boolean) => {
+        setShowSocialsModal(showModal)
+    }
+
     return (
         <Container>
+            { eventToShare &&
+                <SocialsModal eventToShare={eventToShare} show={showModal} handleShow={handleShowModal} currentUserID={props.currentUser.id} modalTitle="Event Summary Saved" eventLink='https://www.trashmob.eco' shareMessage={shareMessage} />
+            }
             <Row className="gx-2 py-5" lg={2}>
                 <Col lg={4} className="d-flex">
                     <div className="bg-white py-2 px-5 shadow-sm rounded">

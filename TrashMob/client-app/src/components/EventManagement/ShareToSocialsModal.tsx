@@ -10,11 +10,14 @@ interface ModalProps {
   show: boolean;
   handleShow: (value: boolean) => void;
   currentUserID: string;
+  modalTitle?: string;
+  eventLink?: string;
+  shareMessage?: string;
 }
 
 export const SocialsModal: React.FC<ModalProps> = (props) => {
   const [copiedLink, setCopied] = useState(false);
-  const eventLink = `${window.location.origin}/eventdetails/${props.eventToShare.id}`
+  const eventLink = props.eventLink ?? `${window.location.origin}/eventdetails/${props.eventToShare.id}`
   const eventDate = new Date(props.eventToShare.eventDate).toLocaleDateString("en-us", { year: "numeric", month: "2-digit", day: "2-digit" })
   const eventTime = new Date(props.eventToShare.eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })
 
@@ -80,7 +83,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
         <Modal show={props.show} onHide={handleClose} centered>
 
           <Modal.Header>
-            <Modal.Title>Event created</Modal.Title>
+            <Modal.Title>{props.modalTitle ?? "Share Event"}</Modal.Title>
           </Modal.Header>
           <Modal.Body className="p-4">
             <div className="d-flex flex-column mb-4">
@@ -115,7 +118,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                 <div className="iconWrapper modalIcon">
                   <TwitterShareButton
                     className={"socials-modal-icon"}
-                    title={getShareMsgContent("twitter")}
+                    title={props.shareMessage ?? getShareMsgContent("twitter")}
                     hashtags={["litter"]}
                     url={eventLink}
                     via="TrashMobEco"
@@ -136,7 +139,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                   <WhatsappShareButton
                     className={"socials-modal-icon"}
                     url={eventLink}
-                    title={getShareMsgContent("whatsapp")}
+                    title={props.shareMessage ?? getShareMsgContent("whatsapp")}
                   >
                     <WhatsappIcon size={32} round />
                   </WhatsappShareButton>
@@ -146,7 +149,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                     className={"socials-modal-icon"}
                     url={eventLink}
                     subject={`Join ${(props.eventToShare.createdByUserId === props.currentUserID ? "my next" : "me at this")} TrashMob.eco event on ${eventDate} in ${props.eventToShare.city}!`}
-                    body={getShareMsgContent("email")}
+                    body={props.shareMessage ?? getShareMsgContent("email")}
                   >
                     <EmailIcon size={32} round />
                   </EmailShareButton>
