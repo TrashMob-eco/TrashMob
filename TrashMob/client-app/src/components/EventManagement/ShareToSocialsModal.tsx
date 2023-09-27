@@ -9,10 +9,10 @@ interface ModalProps {
   eventToShare: any;
   show: boolean;
   handleShow: (value: boolean) => void;
-  currentUserID: string;
-  modalTitle?: string;
+  modalTitle: string;
   eventLink?: string;
-  shareMessage?: string;
+  message: string;
+  emailSubject?: string;
 }
 
 export const SocialsModal: React.FC<ModalProps> = (props) => {
@@ -44,16 +44,10 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
     }, 2000)
   }
 
-  const getShareMsgContent = (provider: string) => {
+  const parseShareMessage = (provider: string) => {
 
-    if (props.eventToShare.createdByUserId === props.currentUserID) {
-      return `Join my next ${provider === 'twitter' ? "@TrashMobEco" : "TrashMob.eco"} event on ${eventDate} at ${eventTime} in ${props.eventToShare.city}.\n` +
-        `Sign up using the link for more details! Help me clean up ${props.eventToShare.city}!`
-    }
-    else {
-      return `Join me at this ${provider === 'twitter' ? "@TrashMobEco" : "TrashMob.eco"} event on ${eventDate} at ${eventTime} in ${props.eventToShare.city}.\n` +
-        `Sign up using the link for more details! Help me clean up ${props.eventToShare.city}!`
-    }
+    var TrashMobTag = provider === 'twitter' ? "@TrashMobEco" : "TrashMob.eco"
+    return props.message.replace('{{TrashMob}}', TrashMobTag)
 
   }
 
@@ -118,7 +112,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                 <div className="iconWrapper modalIcon">
                   <TwitterShareButton
                     className={"socials-modal-icon"}
-                    title={props.shareMessage ?? getShareMsgContent("twitter")}
+                    title={parseShareMessage("twitter")}
                     hashtags={["litter"]}
                     url={eventLink}
                     via="TrashMobEco"
@@ -139,7 +133,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                   <WhatsappShareButton
                     className={"socials-modal-icon"}
                     url={eventLink}
-                    title={props.shareMessage ?? getShareMsgContent("whatsapp")}
+                    title={parseShareMessage("whatsapp")}
                   >
                     <WhatsappIcon size={32} round />
                   </WhatsappShareButton>
@@ -148,8 +142,8 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                   <EmailShareButton
                     className={"socials-modal-icon"}
                     url={eventLink}
-                    subject={`Join ${(props.eventToShare.createdByUserId === props.currentUserID ? "my next" : "me at this")} TrashMob.eco event on ${eventDate} in ${props.eventToShare.city}!`}
-                    body={props.shareMessage ?? getShareMsgContent("email")}
+                    subject={props.emailSubject ?? `Join me at this TrashMob.eco event in ${props.eventToShare.city}!`}
+                    body={parseShareMessage("email")}
                   >
                     <EmailIcon size={32} round />
                   </EmailShareButton>

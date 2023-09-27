@@ -360,7 +360,7 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
     return (
         <Container>
             { eventToShare &&
-                <SocialsModal eventToShare={eventToShare} show={showModal} handleShow={handleShowModal} currentUserID={props.currentUser.id} modalTitle="Event Summary Saved" eventLink='https://www.trashmob.eco' shareMessage={shareMessage} />
+                <SocialsModal eventToShare={eventToShare} show={showModal} handleShow={handleShowModal} modalTitle="Event Summary Saved" eventLink='https://www.trashmob.eco' message={shareMessage} emailSubject='TrashMob Event Summary' />
             }
             <Row className="gx-2 py-5" lg={2}>
                 <Col lg={4} className="d-flex">

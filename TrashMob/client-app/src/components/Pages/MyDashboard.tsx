@@ -58,6 +58,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const state = props.history.location.state as { newEventCreated: boolean }
     const [createdEvent, setCreatedEvent] = useState<EventData>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
+    const [shareMessage, setShareMessage] = useState<string>("")
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -209,13 +210,22 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     useEffect(() => {
         if (state?.newEventCreated && isEventDataLoaded) {
             var myFilteredList = myEventList.filter(event => event.createdByUserId === props.currentUser.id)
-            .sort((a, b) => (a.createdDate < b.createdDate) ? 1 : -1)
+                .sort((a, b) => (a.createdDate < b.createdDate) ? 1 : -1)
             setCreatedEvent(myFilteredList[0])
-            setShowSocialsModal(true)
+            handleShowModal(true)
+
+            // set sharing message
+            const eventDate = new Date(myFilteredList[0].eventDate).toLocaleDateString("en-us", { year: "numeric", month: "2-digit", day: "2-digit" })
+            const eventTime = new Date(myFilteredList[0].eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })
+
+            var message = `Join my next {{TrashMob}} event on ${eventDate} at ${eventTime} in ${myFilteredList[0].city}.\n` +
+                `Sign up using the link for more details! Help me clean up ${myFilteredList[0].city}!`
+
+            setShareMessage(message);
 
             // replace state
             state.newEventCreated = false;
-            props.history.replace({...props.history.location, state})
+            props.history.replace({ ...props.history.location, state })
         }
     }, [state, isEventDataLoaded, props.currentUser.id, props.history, myEventList])
 
@@ -750,7 +760,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         <>
             <Container fluid className='bg-grass'>
                 {createdEvent &&
-                    <SocialsModal eventToShare={createdEvent} show={showModal} handleShow={handleShowModal} currentUserID={props.currentUser.id}/>
+                    <SocialsModal eventToShare={createdEvent} show={showModal} handleShow={handleShowModal} modalTitle='Share Event' message={shareMessage} emailSubject={`Join my next TrashMob.eco event in ${createdEvent.city}!`}/>
                 }
                 <Row className="text-center pt-0">
                     <Col md={7} className="d-flex flex-column justify-content-center pr-5">
