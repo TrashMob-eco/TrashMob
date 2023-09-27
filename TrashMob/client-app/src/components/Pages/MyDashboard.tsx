@@ -13,7 +13,7 @@ import { Table } from '../Table';
 import twofigure from '../assets/card/twofigure.svg';
 import calendarclock from '../assets/card/calendarclock.svg';
 import bucketplus from '../assets/card/bucketplus.svg';
-import { Eye, PersonX, Link as LinkIcon, Pencil, FileEarmarkCheck, CheckSquare, XSquare, ArrowRightSquare, Facebook, Twitter } from 'react-bootstrap-icons';
+import { Eye, PersonX, Link as LinkIcon, Pencil, FileEarmarkCheck, CheckSquare, XSquare, ArrowRightSquare, Share } from 'react-bootstrap-icons';
 import StatsData from '../Models/StatsData';
 import { PartnerStatusActive } from '../Models/Constants';
 import DisplayPartnershipData from '../Models/DisplayPartnershipData';
@@ -25,7 +25,6 @@ import { PartnerLocationEventRequests } from '../Partners/PartnerLocationEventRe
 import { Guid } from 'guid-typescript';
 import PickupLocationData from '../Models/PickupLocationData';
 import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
-import { getTwitterUrl, getFacebookUrl } from '../../store/ShareUrl';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -56,7 +55,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [totalHours, setTotalHours] = useState<number>(0);
     const [totalEvents, setTotalEvents] = useState<number>(0);
     const state = props.history.location.state as { newEventCreated: boolean }
-    const [createdEvent, setCreatedEvent] = useState<EventData>();
+    const [eventToShare, setEventToShare] = useState<EventData>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
     const [shareMessage, setShareMessage] = useState<string>("")
 
@@ -211,17 +210,9 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         if (state?.newEventCreated && isEventDataLoaded) {
             var myFilteredList = myEventList.filter(event => event.createdByUserId === props.currentUser.id)
                 .sort((a, b) => (a.createdDate < b.createdDate) ? 1 : -1)
-            setCreatedEvent(myFilteredList[0])
+
+            setSharingEvent(myFilteredList[0])
             handleShowModal(true)
-
-            // set sharing message
-            const eventDate = new Date(myFilteredList[0].eventDate).toLocaleDateString("en-us", { year: "numeric", month: "2-digit", day: "2-digit" })
-            const eventTime = new Date(myFilteredList[0].eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })
-
-            var message = `Join my next {{TrashMob}} event on ${eventDate} at ${eventTime} in ${myFilteredList[0].city}.\n` +
-                `Sign up using the link for more details! Help me clean up ${myFilteredList[0].city}!`
-
-            setShareMessage(message);
 
             // replace state
             state.newEventCreated = false;
@@ -259,6 +250,31 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             return setPastEventsMapView(true);
         }
     }
+
+    const setSharingEvent = (newEventToShare: EventData, updateShowModal?: boolean) => {
+
+        setEventToShare(newEventToShare)
+
+        // set sharing message
+        const eventDate = new Date(newEventToShare.eventDate).toLocaleDateString("en-us", { year: "numeric", month: "2-digit", day: "2-digit" })
+        const eventTime = new Date(newEventToShare.eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })
+
+        if (props.currentUser.id == newEventToShare.createdByUserId) {
+            var message = `Join my next {{TrashMob}} event on ${eventDate} at ${eventTime} in ${newEventToShare.city}.\n` +
+                            `Sign up using the link for more details! Help me clean up ${newEventToShare.city}!`
+        }
+        else {
+            var message = `Join me at this {{TrashMob}} event on ${eventDate} at ${eventTime} in ${newEventToShare.city}.\n` +
+            `Sign up using the link for more details! Help me clean up ${newEventToShare.city}!`
+        }
+
+        setShareMessage(message);
+
+        if (updateShowModal) {
+            handleShowModal(updateShowModal)
+        }
+
+    } 
 
     const handleShowModal = (showModal: boolean) => {
         setShowSocialsModal(showModal)
@@ -443,8 +459,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                 <Dropdown.Item href={'/eventdetails/' + event.id}><Eye />View event</Dropdown.Item>
                 <Dropdown.Item onClick={() => handleUnregisterEvent(event.id, props.currentUser.userName)}><PersonX />Unregister for event</Dropdown.Item>
                 <Dropdown.Item onClick={() => handleCopyLink(event.id)}><LinkIcon />{copied ? 'Copied!' : 'Copy event link'}</Dropdown.Item>
-                <Dropdown.Item href={getFacebookUrl(event.id)}><Facebook />Share to Facebook</Dropdown.Item>
-                <Dropdown.Item href={getTwitterUrl(event)}><Twitter />Share to Twitter</Dropdown.Item>
+                <Dropdown.Item onClick={() => setSharingEvent(event, true)}><Share />Share Event</Dropdown.Item>
             </>
         )
     }
@@ -455,8 +470,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                 <Dropdown.Item href={'/manageeventdashboard/' + event.id}><Pencil />Manage event</Dropdown.Item>
                 <Dropdown.Item href={'/eventdetails/' + event.id}><Eye />View event</Dropdown.Item>
                 <Dropdown.Item onClick={() => handleCopyLink(event.id)}><LinkIcon />{copied ? 'Copied!' : 'Copy event link'}</Dropdown.Item>
-                <Dropdown.Item href={getFacebookUrl(event.id)}><Facebook />Share to Facebook</Dropdown.Item>
-                <Dropdown.Item href={getTwitterUrl(event)}><Twitter />Share to Twitter</Dropdown.Item>
+                <Dropdown.Item onClick={() => setSharingEvent(event, true)}><Share />Share Event</Dropdown.Item>
                 <Dropdown.Item href={'/cancelevent/' + event.id}><XSquare />Cancel event</Dropdown.Item>
             </>
         )
@@ -759,8 +773,8 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     return (
         <>
             <Container fluid className='bg-grass'>
-                {createdEvent &&
-                    <SocialsModal eventToShare={createdEvent} show={showModal} handleShow={handleShowModal} modalTitle='Share Event' message={shareMessage} emailSubject={`Join my next TrashMob.eco event in ${createdEvent.city}!`}/>
+                {eventToShare &&
+                    <SocialsModal eventToShare={eventToShare} show={showModal} handleShow={handleShowModal} modalTitle='Share Event' message={shareMessage} />
                 }
                 <Row className="text-center pt-0">
                     <Col md={7} className="d-flex flex-column justify-content-center pr-5">
