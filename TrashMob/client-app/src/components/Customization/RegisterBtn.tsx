@@ -1,14 +1,14 @@
 
 import { FC, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../store/AuthStore';
-import EventAttendeeData from './Models/EventAttendeeData';
-import UserData from './Models/UserData';
-import { DisplayEvent } from './MainEvents';
+import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
+import EventAttendeeData from '../Models/EventAttendeeData';
+import UserData from '../Models/UserData';
+import { DisplayEvent } from '../MainEvents';
 import { RouteComponentProps } from 'react-router-dom';
-import { CurrentTrashMobWaiverVersion } from './Waivers/Waivers';
+import { CurrentTrashMobWaiverVersion } from '../Waivers/Waivers';
 import React from 'react';
-import WaiverData from './Models/WaiverData';
+import WaiverData from '../Models/WaiverData';
 
 interface RegisterBtnProps extends RouteComponentProps {
     currentUser: UserData;

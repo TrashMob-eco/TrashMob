@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { Col, Container, Image, Row } from 'react-bootstrap';
-import globes from './assets/gettingStarted/globes.png';
 import linkedIn from './assets/card/linkedin.svg';
 import JoeBeernink from './assets/boardOfDirectors/JoeBeernink.jpg';
 import DarylBarber from './assets/boardOfDirectors/darylbarber.jpg';
 import JakeDiliberto from './assets/boardOfDirectors/JakeDiliberto.svg';
 import KevinGleason from './assets/boardOfDirectors/KevinGleason.svg';
 import SandraMau from './assets/boardOfDirectors/SandraMau.png';
-import ValerieWilden from './assets/boardOfDirectors/ValerieWilden.svg';
+import RobertRund from './assets/boardOfDirectors/RobertRund.jpg';
 import SofiaSamuels from './assets/boardOfDirectors/SofiaSamuels.png';
+import ValerieWilden from './assets/boardOfDirectors/ValerieWilden.svg';
+import { HeroSection } from './Customization/HeroSection'
 
 export const Board: React.FC = () => {
 
@@ -18,19 +19,7 @@ export const Board: React.FC = () => {
 
     return (
         <>
-            <Container fluid className='bg-grass'>
-                <Row className="text-center pt-0">
-                    <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                        <h1 className='font-weight-bold'>Board of Directors</h1>
-                        <h4 className="font-weight-bold">
-                            Meet our team!
-                        </h4>
-                    </Col>
-                    <Col md={5}>
-                        <Image src={globes} alt="globes" className="h-100 mt-0" />
-                    </Col>
-                </Row>
-            </Container>
+            <HeroSection Title='Board of Directors' Description='Meet our team!'></HeroSection>
             <Container className='my-5 pb-5'>
                 <div className='p-4 directorCard'>
                     <Row>
@@ -146,6 +135,23 @@ export const Board: React.FC = () => {
                             <p className='font-size-sm color-grey'>Sandra is VP of Product for Cloud Solutions at Clarivate (NYSE:CLVT). Prior to joining Clarivate via acquisition, she was the CEO and Founder of TrademarkVision, an award-winning AI/Computer Vision startup doing visual brand protection.</p>
                             <p className='font-size-sm color-grey'>Sandra is very active in supporting tech and startup communities. She was the Founding Chair of IEEE QLD Women in Engineering, and listed as one of Australia's Top 50 Female Programmers by Pollenizer 2014, and one of Australia's Top 100 Most Influential Engineers by Engineer's Australia 2015. She's also a regular participant in hackathons including past GovHacks and International Women's Day. She was recognised in 2018 by Pittsburgh Business Times with the Pittsburgh Innovator Award and by QUT with the Innovation and Entrepreneurship Outstanding Alumni Award.</p>
                             <p className='font-size-sm color-grey'>She holds a Masters in Robotics from Carnegie Mellon University, a Bachelors in Engineering Science (Aerospace) from University of Toronto, and an MBA from Queensland University of Technology (QUT).</p>
+                        </Col>
+                    </Row>
+                </div>
+                <div className='p-4 directorCard'>
+                    <Row>
+                        <Col md={5}>
+                            <Image src={RobertRund} alt="Robert Rund" className="h-100 mt-0 object-fit-cover rounded" />
+                        </Col>
+                        <Col md={7}>
+                            <div className='d-flex justify-content-between align-items-center'>
+                                <h2 className='m-0 fw-500 font-size-xl color-primary '>Robert Rund</h2>
+                                <a href="https://www.linkedin.com/in/robert-rund-mba-cfre-463994163/"><Image src={linkedIn} alt="linkedIn icon" className="h-100 mt-0 object-fit-cover" /></a>
+                            </div>
+                            <h5 className='my-3 fw-500 color-grey'>Member at large</h5>
+                            <p className='font-size-sm color-grey'>Robert Rund is Executive Director of CelloBello, the world’s largest online educational resource for cellists and cello teachers. Prior to joining CelloBello, Rund has led both for-profit and nonprofit organizations in the arts and education sectors. Throughout the past thirty years, he has served as President and Head of School of the American Boychoir School; Associate Publisher of Musical America Worldwide; Executive Director of The Savannah Philharmonic Orchestra; Regional Director of Development for Harmony Foundation International; and Founding Executive Director of Community Arts Partnership at Peddie School (CAPPS).</p>
+                            <p className='font-size-sm color-grey'>Rund also serves as Founder and CEO of R2C2, a firm specializing in helping organizations accomplish mission and manifest vision through aligning structure with strategic goals and objectives; navigate organizational crisis; adapt to significant organizational change; and both identify and recognize internal and external stakeholders in order to maximize engagement and optimize communications. </p>
+                            <p className='font-size-sm color-grey'>Rund holds an MBA (University of North Carolina – Pembroke), an M.A. in Nonprofit Administration (Goucher College), and a B.M. in Music Education (Westminster Choir College of Rider University). In 2004, Rund was selected as one of fifty non-profit arts leaders worldwide for a joint fellowship from Stanford Graduate School of Business and National Arts Strategies. Robert also completed the two-year Authentic Leader program through Contemplative Leadership Development. Finally, Robert is a Certified Fund Raising Executive (CFRE), the world’s only certified accreditation in the field of philanthropy.</p>
                         </Col>
                     </Row>
                 </div>

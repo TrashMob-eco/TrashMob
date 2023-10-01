@@ -7,6 +7,7 @@ import EventSummaryData from './Models/EventSummaryData';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import EventData from './Models/EventData';
 import { PickupLocations } from './PickupLocations';
+import { Guid } from 'guid-typescript';
 
 export interface EventSummaryMatchParams {
     eventId: string;
@@ -104,10 +105,10 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
 
         setIsSaveEnabled(false);
 
-        var method = 'PUT';
+        var method = 'POST';
 
-        if (!createdByUserId) {
-            method = 'POST';
+        if (createdByUserId && createdByUserId !== Guid.EMPTY) {
+            method = 'PUT';
         }
 
         var eventSummaryData = new EventSummaryData();
