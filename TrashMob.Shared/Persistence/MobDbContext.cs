@@ -32,6 +32,8 @@
 
         public virtual DbSet<EventType> EventTypes { get; set; }
 
+        public virtual DbSet<IftttTrigger> IftttTriggers { get; set; }
+
         public virtual DbSet<InvitationStatus> InvitationStatuses { get; set; }
 
         public virtual DbSet<MessageRequest> MessageRequests { get; set; }
@@ -388,6 +390,23 @@
                     new EventStatus { Id = (int)EventStatusEnum.Full, Name = "Full", Description = "Event is full", DisplayOrder = 2, IsActive = true },
                     new EventStatus { Id = (int)EventStatusEnum.Canceled, Name = "Canceled", Description = "Event has been canceled", DisplayOrder = 3, IsActive = true },
                     new EventStatus { Id = (int)EventStatusEnum.Complete, Name = "Completed", Description = "Event has completed", DisplayOrder = 4, IsActive = true });
+            });
+
+            modelBuilder.Entity<IftttTrigger>(entity =>
+            {
+                entity.HasKey(e => new { e.TriggerId });
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.IftttTriggersCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IftttTriggers_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.IftttTriggersUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IffttTriggers_LastUpdatedByUser_Id");
             });
 
             modelBuilder.Entity<InvitationStatus>(entity =>
