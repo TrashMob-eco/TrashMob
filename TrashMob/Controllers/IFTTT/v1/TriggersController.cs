@@ -5,22 +5,32 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Security;
+    using TrashMob.Shared.Poco.IFTTT;
+    using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/ifttt/v1/[controller]")]
     [ApiController]
     public class TriggersController : SecureController
     {
-        public TriggersController() 
+        private readonly ITriggersManager triggersManager;
+
+        public TriggersController(ITriggersManager triggersManager) 
         {
+            this.triggersManager = triggersManager;
         }
 
-        [HttpPost("NewEvents")]
+        [HttpPost("new_event_created")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<ActionResult> Get(TriggersRequest triggersRequest, CancellationToken cancellationToken)
         {
-            var dataResponse = new DataResponse();
+            var events = await triggersManager.GetEventsTriggerDataAsync(triggersRequest, UserId, cancellationToken);
 
-            return Ok(dataResponse);
+            var response = new DataResponse()
+            {
+                Data = events,
+            };
+
+            return Ok(response);
         }
     }
 }

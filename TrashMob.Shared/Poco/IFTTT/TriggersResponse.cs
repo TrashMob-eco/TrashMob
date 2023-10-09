@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers.IFTTT
+﻿namespace TrashMob.Shared.Poco.IFTTT
 {
     public class TriggersResponse
     {

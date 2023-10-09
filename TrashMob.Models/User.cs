@@ -90,6 +90,10 @@ namespace TrashMob.Models
 
         public virtual ICollection<EventSummary> EventSummariesUpdated { get; set; }
 
+        public virtual ICollection<IftttTrigger> IftttTriggersCreated { get; set; }
+
+        public virtual ICollection<IftttTrigger> IftttTriggersUpdated { get; set; }
+
         public virtual ICollection<PartnerDocument> PartnerDocumentsCreated { get; set; }
 
         public virtual ICollection<PartnerDocument> PartnerDocumentsUpdated { get; set; }
