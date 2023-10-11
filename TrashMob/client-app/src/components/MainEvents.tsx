@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { getEventType } from '../store/eventTypeHelper';
 import EventData from './Models/EventData';
@@ -29,6 +29,7 @@ export interface MainEventsDataProps extends RouteComponentProps {
     isUserLoaded: boolean;
     currentUser: UserData;
     onAttendanceChanged: any;
+    backToTop:any;
 };
 
 enum SortingOrder{
@@ -37,27 +38,19 @@ enum SortingOrder{
 }
 
 export const MainEvents: FC<MainEventsDataProps> = ({ isEventDataLoaded, eventList, isUserEventDataLoaded,
-    myAttendanceList, isUserLoaded, eventTypeList, currentUser, onAttendanceChanged, history, location, match }) => {
+    myAttendanceList, isUserLoaded, eventTypeList, currentUser, onAttendanceChanged, backToTop, history, location, match }) => {
     const [displayEvents, setDisplayEvents] = useState<DisplayEvent[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [currentTableData, setCurrentTableData] = useState<DisplayEvent[]>([]);
     const [sortingOrder, setSortingOrder] = useState<number>(SortingOrder.Ascending);
     const eventPerPage = 10;
-    const divRef = useRef<HTMLDivElement>(null);
 
     useEffect(()=>{
-        if(isEventDataLoaded && eventList)
-        {
-            const firstPageIndex = (currentPage-1)* eventPerPage;
-            const lastPageIndex = firstPageIndex + eventPerPage < displayEvents.length ? firstPageIndex + eventPerPage : displayEvents.length;
-            setCurrentTableData(displayEvents.slice(firstPageIndex, lastPageIndex));
-            if(divRef.current)
-            {
-                divRef.current.scrollIntoView();
-            }
-        }
-
-    }, [currentPage, isEventDataLoaded, eventList, displayEvents])
+        const firstPageIndex = (currentPage-1)* eventPerPage;
+        const lastPageIndex = firstPageIndex + eventPerPage < displayEvents.length ? firstPageIndex + eventPerPage : displayEvents.length;
+        setCurrentTableData(displayEvents.slice(firstPageIndex, lastPageIndex));
+        backToTop();
+    }, [currentPage, displayEvents])
 
     useEffect(() => {
         if (isEventDataLoaded && eventList) {
@@ -116,7 +109,7 @@ export const MainEvents: FC<MainEventsDataProps> = ({ isEventDataLoaded, eventLi
     const renderEventsList = (events: DisplayEvent[]) => {
         return (
             <>
-            <div ref={divRef} >
+            <div >
                 <div className='d-flex justify-content-between'>
                     <Button color='primary' className='mb-2' onClick={() => history.push("/manageeventdashboard")}>Create a New Event</Button>
                     <Button color='primary' className='mb-2 align-self-right' onClick={sortEventsByDate} >Sort By Date {sortingOrder === SortingOrder.Ascending ? String.fromCharCode(8593) : String.fromCharCode(8595)}</Button>

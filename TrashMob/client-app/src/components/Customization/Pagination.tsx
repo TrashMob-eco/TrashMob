@@ -1,5 +1,4 @@
 import {FC} from 'react';
-import { Button } from 'react-bootstrap';
 
 interface PaginationProps{
     totalCount: number;

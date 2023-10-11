@@ -37,7 +37,7 @@ export const FilterDropDown:FC<FilterDropDownProps> = ({name, menuItems, selecte
         return () => {
             document.removeEventListener('click', handleClickOutside);
         };
-    }, [isOpen])
+    }, [isOpen, selectedItem])
 
     useEffect(() => {
         if(isFiltering && resetFilter)
@@ -47,7 +47,7 @@ export const FilterDropDown:FC<FilterDropDownProps> = ({name, menuItems, selecte
             setIsFiltering(false);
             onIsFilteringChange(false);
         }
-    },[resetFilter])
+    },[isFiltering, resetFilter, defaultSelection, onShowResult, onIsFilteringChange])
 
     useEffect(()=>{
         if(selectedItem === "")

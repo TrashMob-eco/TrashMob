@@ -8,7 +8,7 @@ import { getEventType } from '../../store/eventTypeHelper';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import { Button, Container, Dropdown } from 'react-bootstrap';
+import { Container, Dropdown } from 'react-bootstrap';
 import MapControllerSinglePoint from '../MapControllerSinglePoint';
 import AddToCalendar from '@culturehq/add-to-calendar';
 import moment from 'moment';

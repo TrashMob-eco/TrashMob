@@ -16,7 +16,6 @@ export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownP
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isFiltering, setIsFiltering] = useState<boolean>(false);
     const [selectNumber, setSelectNumber] = useState<number>(0);
-
     const dropdownRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
@@ -36,7 +35,7 @@ export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownP
         return () => {
             document.removeEventListener('click', handleClickOutside);
         };
-    }, [isOpen]);
+    }, [isOpen, selectedItems]);
       
     useEffect(() => {
         if(isFiltering && resetFilter)
@@ -46,7 +45,7 @@ export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownP
             setIsFiltering(false);
             onIsFilteringChange(false);
         }
-    },[resetFilter])
+    },[resetFilter, isFiltering, onShowResult, onIsFilteringChange])
 
     useEffect(()=>{
         if(selectedItems.length === 0)
@@ -84,7 +83,7 @@ export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownP
         }
         else
         {
-            setSelectedOptions(selectedOptions.filter((item => item != menuItem)));
+            setSelectedOptions(selectedOptions.filter((item => item !== menuItem)));
         }
     }
 
@@ -96,7 +95,7 @@ export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownP
     return (
         <Dropdown show={isOpen} className={className} ref={dropdownRef} hidden={menuItems.length === 0}>
             <Dropdown.Toggle variant={isFiltering ? 'primary' : 'outline'} onClick={()=>setIsOpen(!isOpen)}>
-                {selectedItems.length == 1 ? selectedItems[0] : name}
+                {selectedItems.length === 1 ? selectedItems[0] : name}
                 <span className='circle mx-1' hidden={!isFiltering}>{selectNumber}</span>
             </Dropdown.Toggle>
             <Dropdown.Menu>

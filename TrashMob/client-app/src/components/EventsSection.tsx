@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useState, useCallback, useRef} from 'react'
 import { MainEvents } from './MainEvents';
 import { RouteComponentProps, } from 'react-router-dom';
 import EventData from './Models/EventData';
@@ -35,6 +35,7 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
     const [presentEventList, setPresentEventList] = useState<EventData[]>([]);
     const [locationMap, setLocationMap] = useState(new Map<string, Map<string, Set<string>>>());
     const [isResetFilters, setIsResetFilters] = useState(false);
+    const divRef = useRef<HTMLDivElement>(null);
 
     useEffect(()=>{
         setForceReload(false);
@@ -266,13 +267,13 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
             });
         }
     }
-
-    const updateEventsByFilters = (selectedCountry:string, selectedState:string, selectedCities:string[], selectedCleanTypes:string[], selectedTimeFrame:EventTimeFrame)=>{
+    
+    const updateEventsByFilters = useCallback((selectedCountry:string, selectedState:string, selectedCities:string[], selectedCleanTypes:string[], selectedTimeFrame:EventTimeFrame)=>{
         setIsEventDataLoaded(false);
         setForceReload(true);
         updateFilterEvents(selectedCountry, selectedState, selectedCities, selectedCleanTypes, selectedTimeFrame);
         setIsEventDataLoaded(true);
-    }
+    },[eventList]);
     
     const updateFilterEvents=(selectedCountry:string, selectedState:string, selectedCities:string[], selectedCleanTypes:string[], selectedTimeFrame:EventTimeFrame)=>{
         var filterEvents = eventList;
@@ -299,7 +300,7 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
 
         if(selectedTimeFrame !== EventTimeFrame.AnyTime)
         {
-            filterEvents = filterEvents.filter((event) => {   
+            filterEvents = filterEvents.filter((event) => {
                 var now = new Date();
                 switch(selectedTimeFrame){
                     case EventTimeFrame.Next24Hours:{
@@ -320,6 +321,8 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
                     case EventTimeFrame.PastMonth:{
                         return new Date(event.eventDate) < now && new Date(event.eventDate) > new Date(now.setMonth(now.getMonth()-1));
                     }
+                    default:
+                        return true;
                 }
             })
         }
@@ -327,9 +330,16 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
         setPresentEventList(filterEvents);
     }
 
+    const backToTop = () =>{
+        if(divRef.current)
+        {
+            divRef.current.scrollIntoView();
+        }
+    }
+
     return (
         <>
-            <Container fluid className="bg-white p-md-5">
+            <Container fluid className="bg-white p-md-5"  id="events" ref={divRef} >
                 <div className="max-width-container mx-auto">
                     <div className="d-flex align-items-center mt-4">
                         <label className="mb-0">
@@ -347,7 +357,7 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
                     </div>
                     <EventFilterSection updateEventsByFilters={updateEventsByFilters} locationMap={locationMap} eventTypeList={eventTypeList} isResetFilters= {isResetFilters} eventTimeLine={whichEvents} ></EventFilterSection>
                     <div className="d-flex justify-content-between mb-4 flex-wrap flex-md-nowrap">
-                        <h3 id="events" className="font-weight-bold flex-grow-1">{eventHeader}</h3>
+                        <h3 className="font-weight-bold flex-grow-1">{eventHeader}</h3>
                         <div className="d-flex align-items-center mt-4">
                             <label className="pr-3 mb-0">
                                 <input type="radio" className="mb-0 radio" name="Event view" value="map" onChange={e => handleEventView(e.target.value)} checked={eventView === "map"}></input>
@@ -373,7 +383,7 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
                     ) : (
                         <>
                             <div className="container-lg">
-                                <MainEvents eventList={presentEventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} history={history} location={location} match={match} />
+                                <MainEvents eventList={presentEventList} eventTypeList={eventTypeList} myAttendanceList={myAttendanceList} isEventDataLoaded={isEventDataLoaded} isUserEventDataLoaded={isUserEventDataLoaded} isUserLoaded={isUserLoaded} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} history={history} location={location} match={match} backToTop={backToTop}/>
                             </div>
                         </>
                     )}

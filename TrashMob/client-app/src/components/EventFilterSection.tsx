@@ -1,4 +1,4 @@
-import {FC, useState, useEffect} from 'react';
+import {FC, useState, useEffect, useCallback} from 'react';
 import {FilterDropDown} from './Customization/FilterDropDown';
 import {MultipleSelectionFilterDropDown} from './Customization/MultipleSelectionFilterDropDown';
 import EventTypeData from './Models/EventTypeData';
@@ -54,7 +54,7 @@ export const EventFilterSection:FC<EventFilterSectionProps> = ({locationMap, eve
     
     useEffect(()=>{
         updateEventsByFilters(selectedCountry, selectedState, selectedCities, selectedCleanTypes, selectedTimeFrame);
-    }, [selectedCountry, selectedState, selectedCities, selectedCleanTypes, selectedTimeFrame])
+    }, [selectedCountry, selectedState, selectedCities, selectedCleanTypes, selectedTimeFrame, updateEventsByFilters])
     
     useEffect(()=>{
         if(resetCountry)
@@ -99,7 +99,7 @@ export const EventFilterSection:FC<EventFilterSectionProps> = ({locationMap, eve
         {
             setTimeFrame(allTimeFrame);
         }
-    }, [eventTimeLine])
+    }, [eventTimeLine, allTimeFrame, futureTimeFrame, passTimeFrame])
 
     useEffect(()=>{
         setCountries(Array.from(locationMap.keys()));
@@ -113,7 +113,7 @@ export const EventFilterSection:FC<EventFilterSectionProps> = ({locationMap, eve
 
     },[isResetFilters])
     
-    const handleCountryChange = (selectedCountry:string) => {
+    const handleCountryChange = useCallback((selectedCountry:string) => {
         if(selectedCountry === "" || !locationMap.has(selectedCountry))
         {
             setSelectedCountry("");
@@ -130,9 +130,9 @@ export const EventFilterSection:FC<EventFilterSectionProps> = ({locationMap, eve
 
         setSelectedState("");
         setSelectedCities([]);
-    }
+    },[locationMap])
 
-    const handleStateChange=(selectedState:string)=>{
+    const handleStateChange=useCallback((selectedState:string)=>{
         var stateMap = locationMap.get(selectedCountry);
         if(stateMap)
         {
@@ -153,39 +153,39 @@ export const EventFilterSection:FC<EventFilterSectionProps> = ({locationMap, eve
         }
         
         setSelectedCities([]);
-    }
+    },[locationMap, selectedCountry])
 
-    const handleCityChange = (selectedItems:string[])=>{
+    const handleCityChange = useCallback((selectedItems:string[])=>{
         setSelectedCities(selectedItems);
-    }
+    },[])
 
-    const handleCleanTypeChange = (selectedItems:string[]) => {
+    const handleCleanTypeChange = useCallback((selectedItems:string[]) => {
         setSelectedCleanTypes(selectedItems);
-    }
+    },[]);
 
-    const handleTimeFrameChange = (selectedItem: string)=>{
+    const handleTimeFrameChange = useCallback((selectedItem: string)=>{
         setSelectedTimeFrame(selectedItem);
-    }
+    },[])
 
-    const handleIsCountryFilteringChange = (isFiltering: boolean)=>{
+    const handleIsCountryFilteringChange = useCallback((isFiltering: boolean)=>{
         setIsCountryFiltering(isFiltering);
-    }
+    }, [])
 
-    const handleIsStateFilteringChange = (isFiltering: boolean)=>{
+    const handleIsStateFilteringChange = useCallback((isFiltering: boolean)=>{
         setIsStateFiltering(isFiltering);
-    }
+    },[])
 
-    const handleIsCityFilteringChange = (isFiltering: boolean)=>{
+    const handleIsCityFilteringChange = useCallback((isFiltering: boolean)=>{
         setIsCityFiltering(isFiltering);
-    }
+    },[])
 
-    const handleIsCleanupTypeFilteringChange = (isFiltering: boolean)=>{
+    const handleIsCleanupTypeFilteringChange = useCallback((isFiltering: boolean)=>{
         setIsCleanupTypeFiltering(isFiltering);
-    }
+    },[])
 
-    const handleIsTimeFrameFilteringChange = (isFiltering: boolean)=>{
+    const handleIsTimeFrameFilteringChange = useCallback((isFiltering: boolean)=>{
         setIsTimeFrameFiltering(isFiltering);
-    }
+    },[])
 
     const resetFilters = ()=>{
         setResetCountry(true);
