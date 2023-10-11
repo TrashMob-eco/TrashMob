@@ -50,7 +50,7 @@ export const MainEvents: FC<MainEventsDataProps> = ({ isEventDataLoaded, eventLi
         const lastPageIndex = firstPageIndex + eventPerPage < displayEvents.length ? firstPageIndex + eventPerPage : displayEvents.length;
         setCurrentTableData(displayEvents.slice(firstPageIndex, lastPageIndex));
         backToTop();
-    }, [currentPage, displayEvents])
+    }, [currentPage, displayEvents, backToTop])
 
     useEffect(() => {
         if (isEventDataLoaded && eventList) {

@@ -267,15 +267,8 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
             });
         }
     }
-    
-    const updateEventsByFilters = useCallback((selectedCountry:string, selectedState:string, selectedCities:string[], selectedCleanTypes:string[], selectedTimeFrame:EventTimeFrame)=>{
-        setIsEventDataLoaded(false);
-        setForceReload(true);
-        updateFilterEvents(selectedCountry, selectedState, selectedCities, selectedCleanTypes, selectedTimeFrame);
-        setIsEventDataLoaded(true);
-    },[eventList]);
-    
-    const updateFilterEvents=(selectedCountry:string, selectedState:string, selectedCities:string[], selectedCleanTypes:string[], selectedTimeFrame:EventTimeFrame)=>{
+        
+    const updateFilterEvents= useCallback((selectedCountry:string, selectedState:string, selectedCities:string[], selectedCleanTypes:string[], selectedTimeFrame:EventTimeFrame)=>{
         var filterEvents = eventList;
 
         if(selectedCountry !== "")
@@ -328,7 +321,14 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
         }
 
         setPresentEventList(filterEvents);
-    }
+    },[eventList, eventTypeList])
+
+    const updateEventsByFilters = useCallback((selectedCountry:string, selectedState:string, selectedCities:string[], selectedCleanTypes:string[], selectedTimeFrame:EventTimeFrame)=>{
+        setIsEventDataLoaded(false);
+        setForceReload(true);
+        updateFilterEvents(selectedCountry, selectedState, selectedCities, selectedCleanTypes, selectedTimeFrame);
+        setIsEventDataLoaded(true);
+    },[updateFilterEvents]);
 
     const backToTop = () =>{
         if(divRef.current)
