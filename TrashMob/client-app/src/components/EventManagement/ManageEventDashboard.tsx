@@ -2,14 +2,14 @@ import * as React from 'react'
 
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import UserData from '../Models/UserData';
-import { Col, Container, Image, Row } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import { EditEvent } from './EditEvent';
 import { ManageEventPartners } from './ManageEventPartners';
 import { ManageEventAttendees } from './ManageEventAttendees';
 import { Guid } from 'guid-typescript';
-import globes from '../assets/gettingStarted/globes.png';
 import { getDefaultHeaders } from '../../store/AuthStore';
 import EventData from '../Models/EventData';
+import { HeroSection } from '../Customization/HeroSection'
 
 export interface ManageEventDashboardMatchParams {
     eventId?: string;
@@ -81,17 +81,7 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
         : <p><em>Loading...</em></p>;
 
     return <div>
-        <Container fluid className='bg-grass'>
-            <Row className="text-center pt-0">
-                <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                    <h1 className='font-weight-bold'>Manage Event</h1>
-                    <p className="font-weight-bold">We can’t wait to see the results.</p>
-                </Col>
-                <Col md={5}>
-                    <Image src={globes} alt="globes" className="h-100 mt-0" />
-                </Col>
-            </Row>
-        </Container>
+        <HeroSection Title='Manage Event' Description='We can’t wait to see the results.'></HeroSection>
         <Container>
             <Row className="gx-2 py-5" lg={2}>
                 <Col lg={4} className="d-flex">

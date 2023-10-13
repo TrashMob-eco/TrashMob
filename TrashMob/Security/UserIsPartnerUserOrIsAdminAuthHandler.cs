@@ -66,7 +66,6 @@
             {
                 logger.LogError(ex, "Error occured while authenticating user.");
             }
-
         }
     }
 }

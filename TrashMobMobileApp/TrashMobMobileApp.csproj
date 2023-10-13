@@ -154,6 +154,7 @@
 	  <Compile Include="..\TrashMob.Models\EventStatus.cs" Link="Models\EventStatus.cs" />
 	  <Compile Include="..\TrashMob.Models\EventSummary.cs" Link="Models\EventSummary.cs" />
 	  <Compile Include="..\TrashMob.Models\EventType.cs" Link="Models\EventType.cs" />
+	  <Compile Include="..\TrashMob.Models\IftttTrigger.cs" Link="Models\IftttTrigger.cs" />
 	  <Compile Include="..\TrashMob.Models\InvitationStatus.cs" Link="Models\InvitationStatus.cs" />
 	  <Compile Include="..\TrashMob.Models\KeyedModel.cs" Link="Models\KeyedModel.cs" />
 	  <Compile Include="..\TrashMob.Models\LookupModel.cs" Link="Models\LookupModel.cs" />

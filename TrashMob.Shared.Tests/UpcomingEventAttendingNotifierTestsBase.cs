@@ -14,7 +14,7 @@ namespace TrashMob.Shared.Tests
     {
         protected abstract INotificationEngine Engine { get; }
 
-        protected abstract int NumberOfDaysToAddForEventOutOfWindow { get; }
+        protected abstract int NumberOfDaysToAddForEventMaxOutOfWindow { get; }
 
         [Fact]
         public async Task GenerateNotificationsAsync_WithNoDataAvailable_Succeeds()
@@ -218,7 +218,7 @@ namespace TrashMob.Shared.Tests
             // The user is attending all available events
             EventAttendeeManager.Setup(ea => ea.GetEventsUserIsAttendingAsync(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(events);
 
-            events[0].EventDate = DateTimeOffset.UtcNow.AddDays(NumberOfDaysToAddForEventOutOfWindow);
+            events[0].EventDate = DateTimeOffset.UtcNow.AddDays(NumberOfDaysToAddForEventMaxOutOfWindow);
 
             EventManager.Setup(e => e.GetActiveEventsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(events);
             UserManager.Setup(u => u.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(users);

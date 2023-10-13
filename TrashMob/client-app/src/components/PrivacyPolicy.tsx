@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { Col, Container, Image, Row } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
 import logo from "./assets/logo.svg";
-import globes from './assets/gettingStarted/globes.png';
+import { HeroSection } from './Customization/HeroSection'
 
 export const CurrentPrivacyPolicyVersion: PrivacyPolicyVersion = {
     versionId: "0.3",
@@ -22,19 +22,7 @@ export const PrivacyPolicy: React.FC = () => {
 
     return (
         <>
-            <Container fluid className='bg-grass'>
-                <Row className="text-center pt-0">
-                    <Col md={7} className="d-flex flex-column justify-content-center pr-5">
-                        <h1 className='font-weight-bold'>Privacy policy</h1>
-                        <h4 className="font-weight-bold">
-                            Making your privacy a priority.
-                        </h4>
-                    </Col>
-                    <Col md={5}>
-                        <Image src={globes} alt="globes" className="h-100 mt-0" />
-                    </Col>
-                </Row>
-            </Container>
+            <HeroSection Title='Privacy policy' Description='Making your privacy a priority.'></HeroSection>
             <div className='container my-5'>
                 <h2 className='fw-500 font-size-xl'>Privacy Policy for TrashMob</h2>
 

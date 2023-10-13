@@ -241,7 +241,7 @@ This is a pay-per-use feature, so, for the most part, we're going to try to limi
   dotnet user-secrets set "sendGridApiKey" "x"
 ```
 
-To test sending email, copy the "sendGridApiKey" fron the dev keyvault to your machine and repeat the above, sustituting in the real key. 
+To test sending email, copy the "sendGridApiKey" from the dev keyvault to your machine and repeat the above, substituting in the real key. 
 
 ## A note on Azure Maps usage
 The call to find the distance between two points in Azure Maps is only available in S1 (Gen 1) or Gen2 Maps. This is significantly more expensive than the S0 maps, so for now, we default to S0 for all dev deployments, and have manually set Prod to Gen2. It is not recommended to rerun the infrastructure deployments to Prod, as this will overwrite this setting.
@@ -256,10 +256,10 @@ The Production site is manually deployed via a GitHub action from the release br
 ## How do I deploy the Azure Web App from my PC?
 Use Visual Studio Publish to publish the site to the dev server.
 
-If setting up a new environment, you will need to add the IP Address of the App Service to the list of IP Addresses accessible in the SQL Server. This needs to me automated in the future to make sure that a change to an IP address doesn't break the site.
+If setting up a new environment, you will need to add the IP Address of the App Service to the list of IP Addresses accessible in the SQL Server. This needs to be automated in the future to make sure that a change to an IP address doesn't break the site.
 
 ## The site is asking me to login
-If you try to access a secure page, you will need a user id on the site. When you hit a secured page, the site will redirect you to a sign in page. Click the Sign up now link on the bottom of the login box. Multiple identity providers are now available, including Facebook, Twitter, Google, and Microsoft, along with the TrashMob tenant itself if you prefer not to use an integrated signup.
+If you try to access a secure page, you will need a user id on the site. When you hit a secured page, the site will redirect you to a sign in page. Click the Sign up now link at the bottom of the login box. Multiple identity providers are now available, including Facebook, Twitter, Google, and Microsoft, along with the TrashMob tenant itself if you prefer not to use an integrated signup.
 
 ## How to Change Mobile App from Test to Prod
 It is currently hard-coded in the Mobile app that if you run a Debug build, you will point to the test environment, and if you run the release build, you will point to the production environment. 

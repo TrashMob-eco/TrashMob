@@ -8,7 +8,6 @@ namespace TrashMob.Shared.Tests
     using TrashMob.Models;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Persistence.Interfaces;
 
     public abstract class NotifierTestsBase
     {
@@ -17,6 +16,8 @@ namespace TrashMob.Shared.Tests
         private readonly Guid userId2;
 
         protected abstract NotificationTypeEnum NotificationType { get; }
+
+        protected abstract int NumberOfHoursToAddForEventMinOutOfWindow { get; }
 
         protected Mock<IEventManager> EventManager { get; }
         
@@ -142,7 +143,7 @@ namespace TrashMob.Shared.Tests
                 CreatedByUserId = createdById,
                 CreatedDate = DateTimeOffset.UtcNow.AddDays(-14),
                 Description = "This is a test event",
-                EventDate = DateTimeOffset.UtcNow.AddMinutes(10),
+                EventDate = DateTimeOffset.UtcNow.AddHours(NumberOfHoursToAddForEventMinOutOfWindow),
                 EventStatusId = (int)EventStatusEnum.Active,
                 EventTypeId = 3,
                 Id = Guid.NewGuid(),
@@ -175,7 +176,7 @@ namespace TrashMob.Shared.Tests
                 CreatedByUserId = createdById,
                 CreatedDate = DateTimeOffset.UtcNow.AddDays(-14),
                 Description = "This is a test event",
-                EventDate = DateTimeOffset.UtcNow.AddMinutes(10),
+                EventDate = DateTimeOffset.UtcNow.AddHours(NumberOfHoursToAddForEventMinOutOfWindow),
                 EventStatusId = (int)EventStatusEnum.Active,
                 EventTypeId = 3,
                 Id = Guid.NewGuid(),
@@ -198,7 +199,7 @@ namespace TrashMob.Shared.Tests
                 CreatedByUserId = createdById,
                 CreatedDate = DateTimeOffset.UtcNow.AddDays(-14),
                 Description = "This is a test event",
-                EventDate = DateTimeOffset.UtcNow.AddMinutes(20),
+                EventDate = DateTimeOffset.UtcNow.AddHours(NumberOfHoursToAddForEventMinOutOfWindow),
                 EventStatusId = (int)EventStatusEnum.Active,
                 EventTypeId = 3,
                 Id = Guid.NewGuid(),

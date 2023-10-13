@@ -2,7 +2,7 @@
 
 ## Prerequisites
 1. Install PowerShell
-1. Install the latest verison of Azure CLI
+1. Install the latest version of Azure CLI
 1. Download the TrashMob repo from GitHub
 
 ## To deploy the Infrastructure needed to run TrashMob locally on your box, you will need to run the following steps:

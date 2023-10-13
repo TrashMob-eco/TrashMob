@@ -505,3 +505,44 @@ input:disabled {
 .remove-drop-icon::after {
   display: none !important;
 }
+
+.pagination-container{
+  display:flex;
+  justify-content: center; /*space-between;*/
+  width: 100%;
+}
+
+.btn-withoutline {
+  position: relative;
+  display: block;
+  padding: 0.75rem 1.25rem;  
+  background-color: unset !important;
+  color: #96ba00;
+  border: 1px solid transparent !important;
+}
+
+.btn-withoutline:hover:enabled {
+  background-color: unset !important;
+  border: 1px solid #96ba00 !important;
+  border-radius: 0.25rem;
+}
+
+.btn-withoutline-selected{  
+  position: relative;
+  display: block;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.25rem;
+  color: #fff;
+  background-color: #96ba00;
+  border-color: #96ba00;
+}
+
+.btn-withoutline-disabled{  
+  position: relative;
+  display: block;
+  padding: 0.75rem 1.25rem;  
+  background-color: unset !important;
+  border: 1px solid transparent !important;
+  color: #6c757d;
+  pointer-events: none;
+}

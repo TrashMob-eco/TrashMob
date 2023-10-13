@@ -12,6 +12,8 @@ namespace TrashMob.Shared.Tests
     {
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.EventSummaryAttendee;
 
+        protected override int NumberOfHoursToAddForEventMinOutOfWindow => 4 * 24;
+
         [Fact]
         public async Task GenerateNotificationsAsync_WithNoDataAvailable_Succeeds()
         {

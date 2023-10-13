@@ -552,6 +552,44 @@ namespace TrashMob.Migrations
                         });
                 });
 
+            modelBuilder.Entity("TrashMob.Models.IftttTrigger", b =>
+                {
+                    b.Property<string>("TriggerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("IftttSource")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Limit")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TriggerFields")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("TriggerId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.ToTable("IftttTriggers");
+                });
+
             modelBuilder.Entity("TrashMob.Models.InvitationStatus", b =>
                 {
                     b.Property<int>("Id")
@@ -2031,6 +2069,25 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
+            modelBuilder.Entity("TrashMob.Models.IftttTrigger", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("IftttTriggersCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_IftttTriggers_CreatedByUser_Id");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("IftttTriggersUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_IffttTriggers_LastUpdatedByUser_Id");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+                });
+
             modelBuilder.Entity("TrashMob.Models.MessageRequest", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
@@ -2635,6 +2692,10 @@ namespace TrashMob.Migrations
                     b.Navigation("EventsCreated");
 
                     b.Navigation("EventsUpdated");
+
+                    b.Navigation("IftttTriggersCreated");
+
+                    b.Navigation("IftttTriggersUpdated");
 
                     b.Navigation("MessageRequestsCreated");
 
