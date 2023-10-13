@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import { Col, Container, Dropdown, Image, Row } from 'react-bootstrap';
@@ -206,7 +206,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         }
     }, [reloadEvents, props.currentUser, props.currentUser.id, props.isUserLoaded]);
 
-    const setSharingEvent = (newEventToShare: EventData, updateShowModal?: boolean) => {
+    const setSharingEvent = useCallback((newEventToShare: EventData, updateShowModal?: boolean) => {
 
         setEventToShare(newEventToShare)
 
@@ -229,7 +229,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             handleShowModal(updateShowModal)
         }
 
-    } 
+    }, []) 
 
     useEffect(() => {
         if (state?.newEventCreated && isEventDataLoaded) {
