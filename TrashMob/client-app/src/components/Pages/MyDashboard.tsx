@@ -206,6 +206,31 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         }
     }, [reloadEvents, props.currentUser, props.currentUser.id, props.isUserLoaded]);
 
+    const setSharingEvent = (newEventToShare: EventData, updateShowModal?: boolean) => {
+
+        setEventToShare(newEventToShare)
+
+        // set sharing message
+        const eventDate = new Date(newEventToShare.eventDate).toLocaleDateString("en-us", { year: "numeric", month: "2-digit", day: "2-digit" })
+        const eventTime = new Date(newEventToShare.eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })
+
+        if (props.currentUser.id === newEventToShare.createdByUserId) {
+            var message = `Join my next {{TrashMob}} event on ${eventDate} at ${eventTime} in ${newEventToShare.city}.\n` +
+                            `Sign up using the link for more details! Help me clean up ${newEventToShare.city}!`
+        }
+        else {
+            message = `Join me at this {{TrashMob}} event on ${eventDate} at ${eventTime} in ${newEventToShare.city}.\n` +
+            `Sign up using the link for more details! Help me clean up ${newEventToShare.city}!`
+        }
+
+        setShareMessage(message);
+
+        if (updateShowModal) {
+            handleShowModal(updateShowModal)
+        }
+
+    } 
+
     useEffect(() => {
         if (state?.newEventCreated && isEventDataLoaded) {
             var myFilteredList = myEventList.filter(event => event.createdByUserId === props.currentUser.id)
@@ -218,7 +243,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             state.newEventCreated = false;
             props.history.replace({ ...props.history.location, state })
         }
-    }, [state, isEventDataLoaded, props.currentUser.id, props.history, myEventList])
+    }, [state, isEventDataLoaded, props.currentUser.id, props.history, myEventList, setSharingEvent])
 
     const handleLocationChange = (point: data.Position) => {
         // do nothing
@@ -250,31 +275,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             return setPastEventsMapView(true);
         }
     }
-
-    const setSharingEvent = (newEventToShare: EventData, updateShowModal?: boolean) => {
-
-        setEventToShare(newEventToShare)
-
-        // set sharing message
-        const eventDate = new Date(newEventToShare.eventDate).toLocaleDateString("en-us", { year: "numeric", month: "2-digit", day: "2-digit" })
-        const eventTime = new Date(newEventToShare.eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })
-
-        if (props.currentUser.id == newEventToShare.createdByUserId) {
-            var message = `Join my next {{TrashMob}} event on ${eventDate} at ${eventTime} in ${newEventToShare.city}.\n` +
-                            `Sign up using the link for more details! Help me clean up ${newEventToShare.city}!`
-        }
-        else {
-            var message = `Join me at this {{TrashMob}} event on ${eventDate} at ${eventTime} in ${newEventToShare.city}.\n` +
-            `Sign up using the link for more details! Help me clean up ${newEventToShare.city}!`
-        }
-
-        setShareMessage(message);
-
-        if (updateShowModal) {
-            handleShowModal(updateShowModal)
-        }
-
-    } 
 
     const handleShowModal = (showModal: boolean) => {
         setShowSocialsModal(showModal)

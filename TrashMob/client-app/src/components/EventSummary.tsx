@@ -127,8 +127,8 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
         eventSummaryData.createdDate = createdDate;
 
         if (eventToShare) {
-            setShareMessage(`We just finished a @TrashMob.eco event in ${eventToShare.city}. ${actualNumberOfAttendees} picked up ${numberOfBags} of #litter. Would love to see you out at our next event! ` +
-            `Sign up using the following link to get notified the next time we are having an event. Help us clean up the planet!`)
+            setShareMessage(`We just finished a {{TrashMob}} event in ${eventToShare.city}. ${actualNumberOfAttendees} attendees picked up ${numberOfBags} bags of #litter. Would love to see you out at our next event! ` +
+            `Sign up using the link to get notified the next time we are having an event. Help us clean up the planet!`)
         }
 
         var data = JSON.stringify(eventSummaryData);

@@ -8,7 +8,7 @@ import { getEventType } from '../../store/eventTypeHelper';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import { Button, Col, Container, Image, Row } from 'react-bootstrap';
+import { Button, Container } from 'react-bootstrap';
 import { Calendar, GeoAlt, Share, Stopwatch } from 'react-bootstrap-icons';
 import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
 import MapControllerSinglePoint from '../MapControllerSinglePoint';

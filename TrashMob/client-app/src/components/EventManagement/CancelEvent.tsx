@@ -110,7 +110,7 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
 
                     var eventDate = new Date(eventToShare.eventDate).toLocaleDateString("en-us", { year: "numeric", month: "2-digit", day: "2-digit" })
                     var message = `Sorry everyone, we had to cancel our {{TrashMob}} event ${eventToShare.name} in #${eventToShare.city} on ${eventDate}. ${cancellationReason}.\n` + 
-                    `Sign up using the following link to get notified the next time we are having an event. Help us clean up the planet!`
+                    `Sign up using the link to get notified the next time we are having an event. Help us clean up the planet!`
 
                     setShareMessage(message)
                     handleShowModal(true)

@@ -20,6 +20,8 @@ import Person from '../assets/home/Person.svg';
 import Clock from '../assets/home/Clock.svg';
 import { GettingStartedSection } from '../GettingStartedSection';
 import StatsData from '../Models/StatsData';
+import { Share } from 'react-bootstrap-icons';
+import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
 
 export interface HomeProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -44,6 +46,10 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
     const [isUserEventDataLoaded, setIsUserEventDataLoaded] = useState(false);
     const [forceReload, setForceReload] = useState(false);
     const [eventHeader, setEventHeader] = useState("Upcoming Events");
+    const [showModal, setShowSocialsModal] = useState<boolean>(false);
+
+    const invitationMsg = 'Interested in cleaning up the planet? Willing to get your hands a little dirty to make the world a better place? Check out {{TrashMob}}! ' +
+        'It\'s completely free, and helps individuals and local organizations to connect with like-minded people and groups to clean up their communities. Get started today by signing up using the link!'
 
     useEffect(() => {
 
@@ -143,6 +149,10 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
         setEventView(view);
     }
 
+    const handleShowModal = (showModal: boolean) => {
+        setShowSocialsModal(showModal)
+    }
+
     const handleWhichEvents = (events: string) => {
         setWhichEvents(events);
 
@@ -222,12 +232,17 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
     return (
         <>
             <Container fluid>
+                <SocialsModal show={showModal} handleShow={handleShowModal} modalTitle='Invite a friend to join TrashMob.eco' eventLink='https://www.trashmob.eco' emailSubject='Join TrashMob.eco to help clean up the planet!' message={invitationMsg} />
                 <Row className="shadow position-relative" >
                     <Col className="d-flex flex-column px-0 py-4 pl-lg-5" sm={6} style={{ zIndex: 1 }}>
                         <div className="ml-sm-2 ml-lg-5 pl-sm-3 pl-md-5 mt-md-5 mb-md-2">
                             <img src={Logo} alt="TrashMob.eco logo" className="banner-logo"></img>
                             <h3 className="ml-md-4 mt-4 mb-4 mb-md-5 font-weight-bold font-size-xl banner-heading pl-3">Meet up. Clean up. Feel good.</h3>
                             <Link className="btn btn-primary ml-5 py-md-3 banner-button" to="/gettingstarted">Join us today</Link>
+                            <Button className="btn btn-primary ml-5 py-md-3 banner-button" onClick={() => { handleShowModal(true) }}>
+                                <Share className="mr-2" />
+                                Invite a friend
+                            </Button>
                         </div>
                     </Col>
                     <img src={Globe2} className="position-absolute p-0 m-0 h-100 banner-globe" alt="Globe" ></img>
