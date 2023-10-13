@@ -48,8 +48,8 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
     const [eventHeader, setEventHeader] = useState("Upcoming Events");
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
 
-    const invitationMsg = 'Interested in cleaning up the planet? Willing to get your hands a little dirty to make the world a better place? Check out {{TrashMob}}! ' +
-        'It\'s completely free, and helps individuals and local organizations to connect with like-minded people and groups to clean up their communities. Get started today by signing up using the link!'
+    const invitationMsg = 'Interested in cleaning up the planet? Check out {{TrashMob}}! ' +
+        'It\'s free and helps individuals and local orgs to connect with like-minded people to clean up their communities. Get started today by signing up using the link! '
 
     useEffect(() => {
 
