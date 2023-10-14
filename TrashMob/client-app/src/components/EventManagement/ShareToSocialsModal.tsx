@@ -54,7 +54,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
 	const EventLink = () => {
 		return (
 			<Card className="pr-2">
-				<Card.Body style={{ padding: '0px', backgroundColor: '#f0f0f1' }}>
+				<Card.Body className= 'p-0' style={{ backgroundColor: '#f0f0f1' }}>
 					<div className="ml-2 px-2 py-1">
 						<Card.Text className="mb-0 text-muted" style={{ fontSize: '12px' }}>
 							Event link

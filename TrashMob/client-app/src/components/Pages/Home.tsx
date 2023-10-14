@@ -22,6 +22,7 @@ import { GettingStartedSection } from '../GettingStartedSection';
 import StatsData from '../Models/StatsData';
 import { Share } from 'react-bootstrap-icons';
 import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
+import * as SharingMessages from '../../store/SharingMessages';
 
 export interface HomeProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -47,9 +48,6 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
     const [forceReload, setForceReload] = useState(false);
     const [eventHeader, setEventHeader] = useState("Upcoming Events");
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
-
-    const invitationMsg = 'Interested in cleaning up the planet? Check out {{TrashMob}}! ' +
-        'It\'s free and helps individuals and local orgs to connect with like-minded people to clean up their communities. Get started today by signing up using the link! '
 
     useEffect(() => {
 
@@ -232,7 +230,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
     return (
         <>
             <Container fluid>
-                <SocialsModal show={showModal} handleShow={handleShowModal} modalTitle='Invite a friend to join TrashMob.eco' eventLink='https://www.trashmob.eco' emailSubject='Join TrashMob.eco to help clean up the planet!' message={invitationMsg} />
+                <SocialsModal show={showModal} handleShow={handleShowModal} modalTitle='Invite a friend to join TrashMob.eco' eventLink='https://www.trashmob.eco' emailSubject='Join TrashMob.eco to help clean up the planet!' message={SharingMessages.InvitationMessage} />
                 <Row className="shadow position-relative" >
                     <Col className="d-flex flex-column px-0 py-4 pl-lg-5" sm={6} style={{ zIndex: 1 }}>
                         <div className="ml-sm-2 ml-lg-5 pl-sm-3 pl-md-5 mt-md-5 mb-md-2">

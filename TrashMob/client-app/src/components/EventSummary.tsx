@@ -9,6 +9,7 @@ import EventData from './Models/EventData';
 import { PickupLocations } from './PickupLocations';
 import { SocialsModal } from './EventManagement/ShareToSocialsModal';
 import { Guid } from 'guid-typescript';
+import * as SharingMessages from "./../store/SharingMessages";
 
 export interface EventSummaryMatchParams {
     eventId: string;
@@ -40,7 +41,6 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
     const [eventDate, setEventDate] = React.useState<Date>(new Date());
     const [showModal, setShowSocialsModal] = React.useState<boolean>(false);
     const [eventToShare, setEventToShare] = React.useState<EventData>();
-    const [shareMessage, setShareMessage] = React.useState<string>(""); 
 
     React.useEffect(() => {
 
@@ -125,11 +125,6 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
         eventSummaryData.notes = notes ?? "";
         eventSummaryData.createdByUserId = createdByUserId ?? props.currentUser.id;
         eventSummaryData.createdDate = createdDate;
-
-        if (eventToShare) {
-            setShareMessage(`We just finished a {{TrashMob}} event in ${eventToShare.city}. ${actualNumberOfAttendees} attendees picked up ${numberOfBags} bags of #litter. ` +
-            `Sign up using the link to get notified the next time we are having an event. Help us clean up the planet!`)
-        }
 
         var data = JSON.stringify(eventSummaryData);
 
@@ -362,7 +357,7 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
     return (
         <Container>
             { eventToShare &&
-                <SocialsModal eventToShare={eventToShare} show={showModal} handleShow={handleShowModal} modalTitle="Event Summary Saved" eventLink='https://www.trashmob.eco' message={shareMessage} emailSubject='TrashMob Event Summary' />
+                <SocialsModal eventToShare={eventToShare} show={showModal} handleShow={handleShowModal} modalTitle="Event Summary Saved" eventLink='https://www.trashmob.eco' message={SharingMessages.getEventSummaryMessage(eventToShare.city, actualNumberOfAttendees, numberOfBags)} emailSubject='TrashMob Event Summary' />
             }
             <Row className="gx-2 py-5" lg={2}>
                 <Col lg={4} className="d-flex">

@@ -16,6 +16,7 @@ import AddToCalendar from '@culturehq/add-to-calendar';
 import moment from 'moment';
 import { RegisterBtn } from '../Customization/RegisterBtn';
 import { HeroSection } from '../Customization/HeroSection'
+import * as SharingMessages from '../../store/SharingMessages';
 
 export interface DetailsMatchParams {
     eventId: string;
@@ -226,24 +227,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
     const handleShowModal = (showModal: boolean) => {
         setShowSocialsModal(showModal)
     }
-
-    const getShareMsgContent = () => {
-
-        const eventDateFormatted = eventDate.toLocaleDateString("en-us", { year: "numeric", month: "2-digit", day: "2-digit" })
-        const eventTime = eventDate.toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })
-
-        if (createdById === currentUser.id) {
-          return `Join my next {{TrashMob}} event on ${eventDateFormatted} at ${eventTime} in ${city}.\n` +
-            `Sign up using the link for more details! Help me clean up ${city}!`
-        }
-        else {
-          return `Join me at this {{TrashMob}} event on ${eventDateFormatted} at ${eventTime} in ${city}.\n` +
-            `Sign up using the link for more details! Help me clean up ${city}!`
-        }
     
-    }
-    
-
     const UsersTable = () => {
         return (
             <table className='table table-striped' aria-labelledby="tableLabel">
@@ -282,7 +266,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
             <>
                 <Container className="my-5">
                     { isDataLoaded &&
-                        <SocialsModal eventToShare={eventToShare} show={showModal} handleShow={handleShowModal} modalTitle='Share Event' message={getShareMsgContent()}/>
+                        <SocialsModal eventToShare={eventToShare} show={showModal} handleShow={handleShowModal} modalTitle='Share Event' message={SharingMessages.getEventDetailsMessage(eventDate, city, createdById, currentUser.id)}/>
                     }
                     <div className="d-flex justify-content-between align-items-end">
                         <h2 className="font-weight-bold m-0">{eventName}</h2>

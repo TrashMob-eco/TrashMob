@@ -25,6 +25,7 @@ import { Guid } from 'guid-typescript';
 import PickupLocationData from '../Models/PickupLocationData';
 import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
 import { HeroSection } from '../Customization/HeroSection'
+import * as SharingMessages from '../../store/SharingMessages';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -57,7 +58,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const state = props.history.location.state as { newEventCreated: boolean }
     const [eventToShare, setEventToShare] = useState<EventData>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
-    const [shareMessage, setShareMessage] = useState<string>("")
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -206,38 +206,20 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         }
     }, [reloadEvents, props.currentUser, props.currentUser.id, props.isUserLoaded]);
 
-    const setSharingEvent = useCallback((newEventToShare: EventData, updateShowModal?: boolean) => {
+    const setSharingEvent = useCallback((newEventToShare: EventData, updateShowModal: boolean) => {
 
         setEventToShare(newEventToShare)
 
-        // set sharing message
-        const eventDate = new Date(newEventToShare.eventDate).toLocaleDateString("en-us", { year: "numeric", month: "2-digit", day: "2-digit" })
-        const eventTime = new Date(newEventToShare.eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })
-
-        if (props.currentUser.id === newEventToShare.createdByUserId) {
-            var message = `Join my next {{TrashMob}} event on ${eventDate} at ${eventTime} in ${newEventToShare.city}.\n` +
-                            `Sign up using the link for more details! Help me clean up ${newEventToShare.city}!`
-        }
-        else {
-            message = `Join me at this {{TrashMob}} event on ${eventDate} at ${eventTime} in ${newEventToShare.city}.\n` +
-            `Sign up using the link for more details! Help me clean up ${newEventToShare.city}!`
-        }
-
-        setShareMessage(message);
-
-        if (updateShowModal) {
-            handleShowModal(updateShowModal)
-        }
+        handleShowModal(updateShowModal)
 
     }, [props.currentUser.id]) 
 
     useEffect(() => {
         if (state?.newEventCreated && isEventDataLoaded) {
-            var myFilteredList = myEventList.filter(event => event.createdByUserId === props.currentUser.id)
+            const myFilteredList = myEventList.filter(event => event.createdByUserId === props.currentUser.id)
                 .sort((a, b) => (a.createdDate < b.createdDate) ? 1 : -1)
 
-            setSharingEvent(myFilteredList[0])
-            handleShowModal(true)
+            setSharingEvent(myFilteredList[0], true)
 
             // replace state
             state.newEventCreated = false;
@@ -771,7 +753,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             <HeroSection Title='Dashboard' Description="See how much you've done!"></HeroSection>
             <Container className="mt-5 pb-5" >
                 {eventToShare &&
-                    <SocialsModal eventToShare={eventToShare} show={showModal} handleShow={handleShowModal} modalTitle='Share Event' message={shareMessage} />
+                    <SocialsModal eventToShare={eventToShare} show={showModal} handleShow={handleShowModal} modalTitle='Share Event' message={SharingMessages.getEventShareMessage(eventToShare, props.currentUser.id)} />
                 }
                 <Row className="pt-5">
                     <Col>
