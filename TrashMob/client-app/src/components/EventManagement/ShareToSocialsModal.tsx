@@ -17,7 +17,7 @@ interface ModalProps {
 
 export const SocialsModal: React.FC<ModalProps> = (props) => {
 	const [copiedLink, setCopied] = useState(false);
-	const eventLink = props.eventLink ?? `https://as-tm-dev-westus2.azurewebsites.net/eventdetails/${props.eventToShare.id}`
+	const eventLink = props.eventLink ?? `${window.location.origin}/eventdetails/${props.eventToShare.id}`
 	const eventDate = props.eventToShare ? new Date(props.eventToShare.eventDate).toLocaleDateString("en-us", { year: "numeric", month: "2-digit", day: "2-digit" }) : ""
 	const eventTime = props.eventToShare ? new Date(props.eventToShare.eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' }) : ""
 
