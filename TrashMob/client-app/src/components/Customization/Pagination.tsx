@@ -74,17 +74,16 @@ export const Pagination:FC<PaginationProps> =({totalCount, pageSize, currentPage
     return (
         <>
         <div className='pagination-container'>
-            <button className={currentPage ===1 ? 'btn-withoutline-disabled':'btn-withoutline'} onClick={()=>onPageChange(currentPage-1)}>Prev</button>
+            <button className={currentPage ===1 ? 'btn-withoutline-disabled btn-withoutline--extra-padding':'btn-withoutline btn-withoutline--extra-padding'} onClick={()=>onPageChange(currentPage-1)}>Prev</button>
             <ul className='list-group list-group-horizontal justify-content-center'>
                 {pageRange.map((pageNumber, index) =>{
-                    return isNaN(pageNumber) ? <button className='btn-withoutline-disabled' key={index}>...</button> : 
-                    <button className={currentPage === pageNumber ? 'btn-withoutline-selected' : 'btn-withoutline'} key={index}
+                    return isNaN(pageNumber) ? <button className='btn-withoutline-disabled btn-withoutline--extra-padding' key={index}>...</button> : 
+                    <button className={currentPage === pageNumber ? 'btn-withoutline-selected btn-withoutline--extra-padding' : 'btn-withoutline btn-withoutline--extra-padding'} key={index}
                     onClick={()=>onPageChange(pageNumber)}>{pageNumber}</button>;}
                 )}
             </ul>
-            <button className={currentPage === totalPages ? 'btn-withoutline-disabled':'btn-withoutline'} onClick={()=>onPageChange(currentPage+1)}>Next</button>
+            <button className={currentPage === totalPages ? 'btn-withoutline-disabled btn-withoutline--extra-padding':'btn-withoutline btn-withoutline--extra-padding'} onClick={()=>onPageChange(currentPage+1)}>Next</button>
         </div>
         </>
     )
-
 }

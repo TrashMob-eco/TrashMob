@@ -58,6 +58,26 @@ namespace TrashMob.Controllers
 
             return Ok(displayResults);
         }
+        
+        [HttpGet]
+        [Route("completed")]
+        public async Task<IActionResult> GetCompletedEvents(CancellationToken cancellationToken)
+        {
+            var results = await eventManager.GetCompletedEventsAsync(cancellationToken).ConfigureAwait(false);
+
+            var displayResults = new List<DisplayEvent>();
+
+            foreach (var mobEvent in results)
+            {
+                if (mobEvent.EventStatusId != (int)EventStatusEnum.Canceled)
+                {
+                    var user = await userManager.GetAsync(mobEvent.CreatedByUserId, cancellationToken);
+                    displayResults.Add(mobEvent.ToDisplayEvent(user.UserName));
+                }
+            }
+
+            return Ok(displayResults);
+        }
 
         [HttpGet]
         [Route("notcanceled")]
