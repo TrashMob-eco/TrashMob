@@ -212,7 +212,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 
         handleShowModal(updateShowModal)
 
-    }, [props.currentUser.id]) 
+    }, []) 
 
     useEffect(() => {
         if (state?.newEventCreated && isEventDataLoaded) {
