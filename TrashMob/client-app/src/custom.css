@@ -240,11 +240,10 @@ hr.rounded {
 
 .btn-outline {
   background-color: unset !important;
-  color: #96ba00 !important;
+  color: #96ba00!important;
   border: 1px solid #96ba00 !important;
   transition: all ease .5s;
   margin-right: 9px;
-  background-color: unset !important;
 }
 
 .btn-outline:hover:enabled {
@@ -282,6 +281,24 @@ input[type="radio"]:checked {
   background-color: #96ba00;
   border: 1px solid #6b6f74;
   border-radius: 99999px;
+  padding: 3px;
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  /* background, border etc to customize */
+  width: 18px;
+  height: 18px;
+  border: 1px solid #6b6f74;
+  background-clip: content-box;
+  padding: 2px;
+}
+
+input[type="checkbox"]:checked {
+  width: 18px;
+  height: 18px;
+  background-color: #96ba00;
+  border: 1px solid #6b6f74;
   padding: 3px;
 }
 
@@ -515,10 +532,13 @@ input:disabled {
 .btn-withoutline {
   position: relative;
   display: block;
-  padding: 0.75rem 1.25rem;  
   background-color: unset !important;
   color: #96ba00;
   border: 1px solid transparent !important;
+}
+
+.btn-withoutline--extra-padding {
+  padding: 0.75rem 1.25rem;
 }
 
 .btn-withoutline:hover:enabled {
@@ -530,7 +550,6 @@ input:disabled {
 .btn-withoutline-selected{  
   position: relative;
   display: block;
-  padding: 0.75rem 1.25rem;
   border-radius: 0.25rem;
   color: #fff;
   background-color: #96ba00;
@@ -540,9 +559,21 @@ input:disabled {
 .btn-withoutline-disabled{  
   position: relative;
   display: block;
-  padding: 0.75rem 1.25rem;  
   background-color: unset !important;
   border: 1px solid transparent !important;
   color: #6c757d;
   pointer-events: none;
 }
+
+.circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px; /* Adjust as needed for circle size */
+  height: 16px; /* Adjust as needed for circle size */
+  border-radius: 50%;
+  background: #fff;
+  color:#000;
+  font-size: 12px; /* Adjust font size as needed */
+}
+

@@ -33,6 +33,7 @@
                 StreetAddress = mobEvent.StreetAddress,
                 City = mobEvent.City,
                 Region = mobEvent.Region,
+                Country = mobEvent.Country,
                 PostalCode = mobEvent.PostalCode,
                 Latitude = mobEvent.Latitude,
                 Longitude = mobEvent.Longitude,

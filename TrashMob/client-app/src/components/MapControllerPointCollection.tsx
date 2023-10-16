@@ -44,7 +44,7 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
 
     useEffect(() => {
         let popup: Popup;
-
+        
         if (mapRef && props.isEventDataLoaded && props.isMapKeyLoaded && !isDataSourceLoaded && isMapReady) {
 
             // Simple Camera options modification
