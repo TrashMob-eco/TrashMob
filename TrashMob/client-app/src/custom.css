@@ -134,6 +134,10 @@ hr.rounded {
   margin-inline-end: 8px;
 }
 
+.modalIcon {
+  width: 32px !important;
+}
+
 .fa-facebook-f,
 .fa-twitter,
 .fa-instagram,
@@ -158,6 +162,23 @@ hr.rounded {
   align-items: center;
   margin-right: 1px;
   height: 50px;
+}
+
+.socials-modal-icon {
+  background-color: transparent !important;
+}
+
+.socials-modal-icon:hover:enabled {
+  background-color: transparent !important;
+}
+
+#iconsModalWrapper {
+  justify-content: start;
+  align-items: center;
+  margin-right: 1px;
+  padding-left: 15px;
+  height: 50px;
+  background-color: transparent !important;
 }
 
 @media only screen and (max-width: 414px) {

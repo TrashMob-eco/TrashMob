@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import { Col, Container, Dropdown, Image, Row } from 'react-bootstrap';
@@ -12,7 +12,7 @@ import { Table } from '../Customization/Table';
 import twofigure from '../assets/card/twofigure.svg';
 import calendarclock from '../assets/card/calendarclock.svg';
 import bucketplus from '../assets/card/bucketplus.svg';
-import { Eye, PersonX, Link as LinkIcon, Pencil, FileEarmarkCheck, CheckSquare, XSquare, ArrowRightSquare, Facebook, Twitter } from 'react-bootstrap-icons';
+import { Eye, PersonX, Link as LinkIcon, Pencil, FileEarmarkCheck, CheckSquare, XSquare, ArrowRightSquare, Share } from 'react-bootstrap-icons';
 import StatsData from '../Models/StatsData';
 import { PartnerStatusActive } from '../Models/Constants';
 import DisplayPartnershipData from '../Models/DisplayPartnershipData';
@@ -23,8 +23,9 @@ import DisplayPartnerAdminInvitationData from '../Models/DisplayPartnerAdminInvi
 import { PartnerLocationEventRequests } from '../Partners/PartnerLocationEventRequests';
 import { Guid } from 'guid-typescript';
 import PickupLocationData from '../Models/PickupLocationData';
-import { getTwitterUrl, getFacebookUrl } from '../../store/ShareUrl';
+import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
 import { HeroSection } from '../Customization/HeroSection'
+import * as SharingMessages from '../../store/SharingMessages';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -54,6 +55,9 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [totalBags, setTotalBags] = useState<number>(0);
     const [totalHours, setTotalHours] = useState<number>(0);
     const [totalEvents, setTotalEvents] = useState<number>(0);
+    const state = props.history.location.state as { newEventCreated: boolean }
+    const [eventToShare, setEventToShare] = useState<EventData>();
+    const [showModal, setShowSocialsModal] = useState<boolean>(false);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -202,6 +206,27 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         }
     }, [reloadEvents, props.currentUser, props.currentUser.id, props.isUserLoaded]);
 
+    const setSharingEvent = useCallback((newEventToShare: EventData, updateShowModal: boolean) => {
+
+        setEventToShare(newEventToShare)
+
+        handleShowModal(updateShowModal)
+
+    }, []) 
+
+    useEffect(() => {
+        if (state?.newEventCreated && isEventDataLoaded) {
+            const myFilteredList = myEventList.filter(event => event.createdByUserId === props.currentUser.id)
+                .sort((a, b) => (a.createdDate < b.createdDate) ? 1 : -1)
+
+            setSharingEvent(myFilteredList[0], true)
+
+            // replace state
+            state.newEventCreated = false;
+            props.history.replace({ ...props.history.location, state })
+        }
+    }, [state, isEventDataLoaded, props.currentUser.id, props.history, myEventList, setSharingEvent])
+
     const handleLocationChange = (point: data.Position) => {
         // do nothing
     }
@@ -231,6 +256,10 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             }
             return setPastEventsMapView(true);
         }
+    }
+
+    const handleShowModal = (showModal: boolean) => {
+        setShowSocialsModal(showModal)
     }
 
     const handleCopyLink = (eventId: string) => {
@@ -412,8 +441,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                 <Dropdown.Item href={'/eventdetails/' + event.id}><Eye />View event</Dropdown.Item>
                 <Dropdown.Item onClick={() => handleUnregisterEvent(event.id, props.currentUser.userName)}><PersonX />Unregister for event</Dropdown.Item>
                 <Dropdown.Item onClick={() => handleCopyLink(event.id)}><LinkIcon />{copied ? 'Copied!' : 'Copy event link'}</Dropdown.Item>
-                <Dropdown.Item href={getFacebookUrl(event.id)}><Facebook />Share to Facebook</Dropdown.Item>
-                <Dropdown.Item href={getTwitterUrl(event)}><Twitter />Share to Twitter</Dropdown.Item>
+                <Dropdown.Item onClick={() => setSharingEvent(event, true)}><Share />Share Event</Dropdown.Item>
             </>
         )
     }
@@ -424,8 +452,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                 <Dropdown.Item href={'/manageeventdashboard/' + event.id}><Pencil />Manage event</Dropdown.Item>
                 <Dropdown.Item href={'/eventdetails/' + event.id}><Eye />View event</Dropdown.Item>
                 <Dropdown.Item onClick={() => handleCopyLink(event.id)}><LinkIcon />{copied ? 'Copied!' : 'Copy event link'}</Dropdown.Item>
-                <Dropdown.Item href={getFacebookUrl(event.id)}><Facebook />Share to Facebook</Dropdown.Item>
-                <Dropdown.Item href={getTwitterUrl(event)}><Twitter />Share to Twitter</Dropdown.Item>
+                <Dropdown.Item onClick={() => setSharingEvent(event, true)}><Share />Share Event</Dropdown.Item>
                 <Dropdown.Item href={'/cancelevent/' + event.id}><XSquare />Cancel event</Dropdown.Item>
             </>
         )
@@ -725,6 +752,9 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         <>
             <HeroSection Title='Dashboard' Description="See how much you've done!"></HeroSection>
             <Container className="mt-5 pb-5" >
+                {eventToShare &&
+                    <SocialsModal eventToShare={eventToShare} show={showModal} handleShow={handleShowModal} modalTitle='Share Event' message={SharingMessages.getEventShareMessage(eventToShare, props.currentUser.id)} />
+                }
                 <Row className="pt-5">
                     <Col>
                         <div className="d-flex bg-white">

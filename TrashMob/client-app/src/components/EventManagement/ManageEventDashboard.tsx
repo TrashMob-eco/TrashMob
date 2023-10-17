@@ -58,7 +58,12 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
     }
 
     function handleEditSave() {
-        props.history.push("/mydashboard");
+        props.history.push({
+            pathname: '/mydashboard',
+            state: {
+                newEventCreated: true
+            }
+        });
     }
 
     function renderEventDashboard() {

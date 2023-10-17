@@ -7,6 +7,8 @@ import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
 import { Button, Col, Container, Form } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
+import { SocialsModal } from './ShareToSocialsModal';
+import * as SharingMessages from "../../store/SharingMessages";
 
 export interface CancelEventMatchParams {
     eventId: string;
@@ -23,6 +25,8 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
     const [eventName, setEventName] = React.useState<string>("New Event");
     const [cancellationReason, setCancellationReason] = React.useState<string>("");
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
+    const [showModal, setShowSocialsModal] = React.useState<boolean>(false);
+    const [eventToShare, setEventToShare] = React.useState<EventData>();
 
     React.useEffect(() => {
         const headers = getDefaultHeaders('GET');
@@ -35,6 +39,7 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
             .then(eventData => {
                 setEventId(eventData.id);
                 setEventName(eventData.name);
+                setEventToShare(eventData)
                 setIsDataLoaded(true);
             });
     }, [eventId])
@@ -100,7 +105,10 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
                 headers: headers,
                 body: JSON.stringify(content),
             }).then(() => {
-                props.history.goBack();
+
+                if (eventToShare) {
+                    handleShowModal(true)
+                }
             });
         })
     }
@@ -137,12 +145,23 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
         )
     }
 
+    const handleShowModal = (showModal: boolean) => {
+        // if modal is being dismissed, route user back to previous page
+        if (!showModal)
+            props.history.goBack();
+        else
+            setShowSocialsModal(showModal);
+    }
+
     var contents = isDataLoaded && eventId
         ? renderCancelForm()
         : <p><em>Loading...</em></p>;
 
     return <div>
         <Container className='p-4 bg-white rounded my-5'>
+            { isDataLoaded &&
+                <SocialsModal eventToShare={eventToShare} show={showModal} handleShow={handleShowModal} modalTitle='Share Event Cancellation' message={SharingMessages.getCancellationMessage(eventToShare, cancellationReason)} eventLink='https://www.trashmob.eco' emailSubject='TrashMob Event Cancellation' />
+            }
             <h2>Cancel Event</h2>
             <hr />
             {contents}

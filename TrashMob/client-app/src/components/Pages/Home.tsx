@@ -12,7 +12,11 @@ import Person from '../assets/home/Person.svg';
 import Clock from '../assets/home/Clock.svg';
 import { GettingStartedSection } from '../GettingStartedSection';
 import StatsData from '../Models/StatsData';
+import { Share } from 'react-bootstrap-icons';
+import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
+import * as SharingMessages from '../../store/SharingMessages';
 import {EventsSection} from '../EventsSection';
+import { Button } from 'reactstrap';
 
 export interface HomeProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -25,6 +29,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
     const [totalHours, setTotalHours] = useState<number>(0);
     const [totalEvents, setTotalEvents] = useState<number>(0);
     const [totalParticipants, setTotalParticipants] = useState<number>(0);
+    const [showModal, setShowSocialsModal] = useState<boolean>(false);
 
     useEffect(() => {
 
@@ -45,15 +50,24 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
             });
     }, [isUserLoaded, currentUser])
 
+    const handleShowModal = (showModal: boolean) => {
+        setShowSocialsModal(showModal)
+    }
+
     return (
         <>
             <Container fluid>
+                <SocialsModal show={showModal} handleShow={handleShowModal} modalTitle='Invite a friend to join TrashMob.eco' eventLink='https://www.trashmob.eco' emailSubject='Join TrashMob.eco to help clean up the planet!' message={SharingMessages.InvitationMessage} />
                 <Row className="shadow position-relative" >
                     <Col className="d-flex flex-column px-0 py-4 pl-lg-5" sm={6} style={{ zIndex: 1 }}>
                         <div className="ml-sm-2 ml-lg-5 pl-sm-3 pl-md-5 mt-md-5 mb-md-2">
                             <img src={Logo} alt="TrashMob.eco logo" className="banner-logo"></img>
                             <h3 className="ml-md-4 mt-4 mb-4 mb-md-5 font-weight-bold font-size-xl banner-heading pl-3">Meet up. Clean up. Feel good.</h3>
                             <Link className="btn btn-primary ml-5 py-md-3 banner-button" to="/gettingstarted">Join us today</Link>
+                            <Button className="btn btn-primary ml-5 py-md-3 banner-button" onClick={() => { handleShowModal(true) }}>
+                                <Share className="mr-2" />
+                                Invite a friend
+                            </Button>
                         </div>
                     </Col>
                     <img src={Globe2} className="position-absolute p-0 m-0 h-100 banner-globe" alt="Globe" ></img>
