@@ -114,7 +114,7 @@ export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownP
                         <div className='d-flex'>
                             <Button className='mx-2 btn' hidden={selectedItems.length === 0} onClick={onResetClick}>Reset</Button>
                             <Button className='mx-2' hidden={selectedItems.length > 0} onClick={onCancelClick}>Cancel</Button>
-                            <Button className='text-nowrap mr-2' onClick={()=>{onShowResultClick()}}>Show Result</Button>
+                            <Button className='text-nowrap mr-2' onClick={()=>{onShowResultClick()}}>Show Results</Button>
                         </div>
                     </div>
                 }
