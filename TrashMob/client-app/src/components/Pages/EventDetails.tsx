@@ -8,14 +8,15 @@ import { getEventType } from '../../store/eventTypeHelper';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import { Container, Dropdown } from 'react-bootstrap';
+import { Button, Container } from 'react-bootstrap';
+import { Calendar, GeoAlt, Share, Stopwatch } from 'react-bootstrap-icons';
+import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
 import MapControllerSinglePoint from '../MapControllerSinglePoint';
 import AddToCalendar from '@culturehq/add-to-calendar';
 import moment from 'moment';
-import { Calendar, Facebook, GeoAlt, Link, Share, Stopwatch, Twitter } from 'react-bootstrap-icons';
 import { RegisterBtn } from '../Customization/RegisterBtn';
-import { getTwitterUrl, getFacebookUrl } from '../../store/ShareUrl';
 import { HeroSection } from '../Customization/HeroSection'
+import * as SharingMessages from '../../store/SharingMessages';
 
 export interface DetailsMatchParams {
     eventId: string;
@@ -48,14 +49,13 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
     const [isMapKeyLoaded, setIsMapKeyLoaded] = useState<boolean>(false);
     const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
     const [userList, setUserList] = useState<UserData[]>([]);
-    const [twitterUrl, setTwitterUrl] = useState<string>();
-    const [facebookUrl, setFacebookUrl] = useState<string>();
     const [createdById, setCreatedById] = useState<string>("");
-    const [copied, setCopied] = useState(false);
     const [isAttending, setIsAttending] = useState<string>("No");
     const [myAttendanceList, setMyAttendanceList] = useState<EventData[]>([]);
     const [isUserEventDataLoaded, setIsUserEventDataLoaded] = useState(false);
     const [isEventCompleted, setIsEventCompleted] = useState<boolean>();
+    const [showModal, setShowSocialsModal] = useState<boolean>(false);
+    const [eventToShare, setEventToShare] = useState<EventData>();
 
     const startDateTime = moment(eventDate);
     const endDateTime = moment(startDateTime).add(durationHours, 'hours').add(durationMinutes, 'minutes');
@@ -113,10 +113,9 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                     setLatitude(eventData.latitude);
                     setLongitude(eventData.longitude);
                     setCreatedById(eventData.createdByUserId);
-                    setTwitterUrl(getTwitterUrl(eventData));
-                    setFacebookUrl(getFacebookUrl(eventData.id));
                     setMaxNumberOfParticipants(eventData.maxNumberOfParticipants);
                     setCenter(new data.Position(eventData.longitude, eventData.latitude));
+                    setEventToShare(eventData)
                     setIsDataLoaded(true);
                     setIsEventCompleted(new Date(eventData.eventDate) < new Date());
                 })
@@ -225,14 +224,10 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
         // do nothing
     }
 
-    const handleCopyLink = () => {
-        navigator.clipboard.writeText(window.location.href);
-        setCopied(true);
-        setTimeout(() => {
-            setCopied(false);
-        }, 5000)
+    const handleShowModal = (showModal: boolean) => {
+        setShowSocialsModal(showModal)
     }
-
+    
     const UsersTable = () => {
         return (
             <table className='table table-striped' aria-labelledby="tableLabel">
@@ -270,19 +265,18 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
         return (
             <>
                 <Container className="my-5">
+                    { isDataLoaded &&
+                        <SocialsModal eventToShare={eventToShare} show={showModal} handleShow={handleShowModal} modalTitle='Share Event' message={SharingMessages.getEventDetailsMessage(eventDate, city, createdById, currentUser.id)}/>
+                    }
                     <div className="d-flex justify-content-between align-items-end">
                         <h2 className="font-weight-bold m-0">{eventName}</h2>
                         <div className="d-flex">
+                            <Button variant="outline" className="h-100 p-18" onClick={() => {handleShowModal(true)}}>
+                                <Share className="mr-2" />
+                                Share 
+                            </Button>
                             <RegisterBtn eventId={eventId} isAttending={isAttending} isEventCompleted={isEventCompleted!} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} isUserLoaded={isUserLoaded} history={history} location={location} match={match}></RegisterBtn>
                             <div id="addToCalendarBtn" className='ml-2 p-18' hidden={isEventCompleted}><AddToCalendar event={event} /></div>
-                            <Dropdown role="menuitem">
-                                <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 p-18"><Share className="mr-2" aria-hidden="true" />Share</Dropdown.Toggle>
-                                <Dropdown.Menu id="share-menu">
-                                    <Dropdown.Item className="share-link" onClick={handleCopyLink}><Link className="mr-2 p-18" aria-hidden="true" />{!copied ? "Copy link" : "Copied!"}</Dropdown.Item>
-                                    <Dropdown.Item className="share-link" href={facebookUrl} hidden={isEventCompleted}><Facebook className="mr-2 p-18" aria-hidden="true" />Share to Facebook</Dropdown.Item>
-                                    <Dropdown.Item className="share-link" href={twitterUrl} hidden={isEventCompleted}><Twitter className="mr-2 p-18" aria-hidden="true" />Share to Twitter</Dropdown.Item>
-                                </Dropdown.Menu>
-                            </Dropdown>
                         </div>
                     </div>
                     <p className='mt-2 color-grey'>{getEventType(eventTypeList, eventTypeId)}</p>
