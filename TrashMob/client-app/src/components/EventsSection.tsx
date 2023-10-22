@@ -201,7 +201,7 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
                 setEventList(data);
                 updateLocationMap(data);
                 setPresentEventList(data);
-                setEventHeader("completed Events");
+                setEventHeader("Completed Events");
                 setIsEventDataLoaded(true);
                 setForceReload(false);
             });

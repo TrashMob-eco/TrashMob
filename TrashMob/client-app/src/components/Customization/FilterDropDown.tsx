@@ -103,7 +103,7 @@ export const FilterDropDown:FC<FilterDropDownProps> = ({name, menuItems, selecte
                     <div className='d-flex'>
                         <Button className='mx-2' hidden={!(selectedItem === selectedOption && selectedItem !== defaultSelection)} onClick={onResetClick}>Reset</Button>
                         <Button className='mx-2' hidden={selectedItem === selectedOption && selectedItem !== defaultSelection} onClick={onCancelClick}>Cancel</Button>
-                        <Button className='text-nowrap mr-2' onClick={()=>{onShowResultClick()}}>Show Result</Button>
+                        <Button className='text-nowrap mr-2' onClick={()=>{onShowResultClick()}}>Show Results</Button>
                     </div>
                 </div>
                 }
