@@ -23,6 +23,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    "suppressImplicitAnyIndexErrors": true,
     "typeRoots": [
       "./node_modules/@types/",
       "./types",
