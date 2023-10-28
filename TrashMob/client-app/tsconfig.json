@@ -23,6 +23,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    "ignoreDeprecations": "5.0",
     "suppressImplicitAnyIndexErrors": true,
     "typeRoots": [
       "./node_modules/@types/",

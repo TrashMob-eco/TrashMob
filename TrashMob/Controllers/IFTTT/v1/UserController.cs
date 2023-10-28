@@ -9,6 +9,7 @@
 
     [Route("api/ifttt/v1/[controller]")]
     [ApiController]
+
     public class UserController : SecureController
     {
         private readonly IUserManager userManager;
@@ -20,6 +21,7 @@
 
         [HttpGet("info")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [Authorize(Policy = AuthorizationPolicyConstants.IftttServiceKey)]
         public async Task<ActionResult> GetInfo(CancellationToken cancellationToken)
         {
             var user = await userManager.GetAsync(UserId, cancellationToken).ConfigureAwait(false);

@@ -11,5 +11,7 @@
         public const string UserOwnsEntityOrIsAdmin = "UserOwnsEntityOrIsAdmin";
 
         public const string ValidUser = "ValidUser";
+
+        public const string IftttServiceKey = "IftttServiceKey";
     }
 }
