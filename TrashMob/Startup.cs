@@ -50,6 +50,7 @@ namespace TrashMob
 
             services.AddAuthorization(options =>
             {
+                options.AddPolicy(AuthorizationPolicyConstants.IftttServiceKey, policy => policy.AddRequirements(new IftttChannelKeyRequirement()));
                 options.AddPolicy(AuthorizationPolicyConstants.ValidUser, policy => policy.AddRequirements(new UserIsValidUserRequirement()));
                 options.AddPolicy(AuthorizationPolicyConstants.UserOwnsEntity, policy => policy.AddRequirements(new UserOwnsEntityRequirement()));
                 options.AddPolicy(AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin, policy => policy.AddRequirements(new UserOwnsEntityOrIsAdminRequirement()));
