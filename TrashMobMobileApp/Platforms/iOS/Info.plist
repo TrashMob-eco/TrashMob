@@ -28,13 +28,5 @@
 	</array>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
-	<key>CFBundleIdentifier</key>
-	<string>eco.trashmob</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Your location is used for showing the map nearest you to find and create local events</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Your location is used for showing the map nearest you to find and create local events</string>
-	<key>CFBundleVersion</key>
-	<string>20230724091058</string>
 </dict>
 </plist>

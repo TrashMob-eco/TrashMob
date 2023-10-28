@@ -1,9 +1,18 @@
-﻿namespace TrashMobMobileApp.Platforms.iOS;
+﻿using Foundation;
+using Microsoft.Identity.Client;
+using UIKit;
 
-using Foundation;
+namespace TrashMobMobileApp;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
 {
-    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+	protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+	
+	public override bool OpenUrl(UIApplication app, NSUrl url, NSDictionary options)
+	{
+		AuthenticationContinuationHelper.SetAuthenticationContinuationEventArgs(url);
+		return base.OpenUrl(app, url, options);
+	}
+
 }

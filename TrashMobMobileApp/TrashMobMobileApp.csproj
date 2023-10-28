@@ -1,129 +1,55 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net7.0-ios;net7.0-android;net7.0-maccatalyst</TargetFrameworks>
-    <!-- Uncomment to run in Windows -->
-		<!--<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.19041.0</TargetFrameworks>-->
+		<TargetFrameworks>net8.0-android;net8.0-ios</TargetFrameworks>
+<!--		<TargetFrameworks>net8.0-android;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>-->
+<!--		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>-->
+		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
+		<!-- <TargetFrameworks>$(TargetFrameworks);net8.0-tizen</TargetFrameworks> -->
+
+		<!-- Note for MacCatalyst:
+		The default runtime is maccatalyst-x64, except in Release config, in which case the default is maccatalyst-x64;maccatalyst-arm64.
+		When specifying both architectures, use the plural <RuntimeIdentifiers> instead of the singular <RuntimeIdentifer>.
+		The Mac App Store will NOT accept apps with ONLY maccatalyst-arm64 indicated;
+		either BOTH runtimes must be indicated or ONLY macatalyst-x64. -->
+		<!-- ex. <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers> -->
+
 		<OutputType>Exe</OutputType>
 		<RootNamespace>TrashMobMobileApp</RootNamespace>
 		<UseMaui>true</UseMaui>
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<EnableDefaultCssItems>false</EnableDefaultCssItems>
 
 		<!-- Display name -->
-		<ApplicationTitle>TrashMob.eco</ApplicationTitle>
+		<ApplicationTitle>TrashMobMobileApp</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>eco.trashmob.trashmobmobileapp</ApplicationId>
-		<ApplicationIdGuid>788A46C9-E67B-45C1-AF56-EE14F93B7DD1</ApplicationIdGuid>
+		<ApplicationId>com.companyname.trashmobmobileapp</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
-		<ApplicationVersion>2</ApplicationVersion>
+		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>1</ApplicationVersion>
 
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.3</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">13.1</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-android|AnyCPU'">
-		<AndroidKeyStore>False</AndroidKeyStore>
-		<AndroidSigningKeyStore>trashmobmobileapp.keystore</AndroidSigningKeyStore>
-		<AndroidSigningKeyAlias>key</AndroidSigningKeyAlias>
-		<RunAOTCompilation>False</RunAOTCompilation>
-		<AndroidUseAapt2>True</AndroidUseAapt2>
-		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-		<AndroidPackageFormat>apk</AndroidPackageFormat>
-		<EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
-		<ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-android|AnyCPU'">
-		<AndroidKeyStore>False</AndroidKeyStore>
-		<AndroidSigningKeyStore>trashmobmobileapp.keystore</AndroidSigningKeyStore>
-		<AndroidSigningKeyAlias>key</AndroidSigningKeyAlias>
-		<RunAOTCompilation>False</RunAOTCompilation>
-		<EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
-		<AndroidPackageFormat>aab</AndroidPackageFormat>
-		<AndroidUseAapt2>True</AndroidUseAapt2>
-		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-		<ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
-		<CreatePackage>false</CreatePackage>
-
-		<!-- Default Codesignkey for iphone testing -->
-		 <CodesignKey>Apple Development</CodesignKey> 
-		 <!-- Uncomment for AppStore build until Release build bug is resolved
-		<CodesignKey>Apple Distribution: TrashMob (367LR8J89Q)</CodesignKey> -->
-
-		<!-- Below value of Automatic should assign the profile that matches above key -->
-		<CodesignProvision>Automatic</CodesignProvision>
-		<!-- <CodesignProvision>VS: eco.trashmobdev.trashmobmobile Development</CodesignProvision> -->
-		<CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-
-		<!-- For github workflow, only include ios-arm64 Architecture -->
-		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
-		<!-- For iOS Simulator builds, uncomment the line below (-x64/arm64 depending on processor) https://github.com/dotnet/maui/issues/13077 -->
-		<!-- <RuntimeIdentifier>iossimulator-x64</RuntimeIdentifier> -->
-		<!-- Intel vs M1 processor simulator issue: https://github.com/xamarin/xamarin-macios/issues/17841
-		     Note: This solution didn't work for me, but leaving in case others use different architecture 
-		<OSArchitecture>$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)</OSArchitecture>
-		<RuntimeIdentifier Condition="'$(OSArchitecture)' == 'Arm64'">iossimulator-arm64</RuntimeIdentifier>
-		<RuntimeIdentifier Condition="'$(OSArchitecture)' == 'X64'">iossimulator-x64</RuntimeIdentifier> -->
-
-		<MtouchLink>SdkOnly</MtouchLink>
-		<MtouchUseLlvm>true</MtouchUseLlvm>
-		<ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
-		 <CreatePackage>false</CreatePackage>
-
-		 <!-- Default Codesignkey for Release testing via Adhoc or Appstore -->
-		 <CodesignKey>Apple Distribution: TrashMob (367LR8J89Q)</CodesignKey>
-		 <!-- Uncomment for iphone testing in Release mode
-		 <CodesignKey>Apple Development</CodesignKey> -->
-		 
-		 <!-- Below value of Automatic should assign either Adhoc or App Store profile -->
-		 <CodesignProvision>Automatic</CodesignProvision>
-		 <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-		 <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
-		 <BuildIpa>true</BuildIpa>
-		 <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-      <Optimize>true</Optimize>
-		<WarningLevel>4</WarningLevel>
-		<PlatformTarget>anycpu</PlatformTarget>
-	</PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-maccatalyst|AnyCPU'">
-      <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-maccatalyst|AnyCPU'">
-      <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
-    </PropertyGroup>
-
-	<ItemGroup>
-		<None Include="Info.plist" Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
-			<LogicalName>Info.plist</LogicalName>
-		</None>
-		<None Include="Info-Debug.plist" Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
-			<LogicalName>Info.plist</LogicalName>
-		</None>
-	</ItemGroup>
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appicon.svg" Color="#512BD4" />
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
 
 		<!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\Splash\meetup.png" Color="#512BD4" BaseSize="128,128" />
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
 
 		<!-- Images -->
+		<MauiImage Include="Resources\Images\*" />
+		<MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
+
+		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
@@ -131,134 +57,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Resources\Images\**" />
-	  <Content Remove="Resources\Images\**" />
-	  <EmbeddedResource Remove="Resources\Images\**" />
-	  <MauiXaml Remove="Resources\Images\**" />
-	  <None Remove="Resources\Images\**" />
+		<PackageReference Include="Microsoft.Identity.Client" Version="4.57.0" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0-rc.1.23419.4" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Content Remove="appSettings.Development.json" />
-	  <Content Remove="appSettings.json" />
-	</ItemGroup>
+	<!-- Build Properties must be defined within these property groups to ensure successful publishing
+       to the Mac App Store. See: https://aka.ms/maui-publish-app-store#define-build-properties-in-your-project-file -->
+  <PropertyGroup Condition="$(TargetFramework.Contains('-maccatalyst')) and '$(Configuration)' == 'Debug'">
+    <CodesignEntitlements>Platforms/MacCatalyst/Entitlements.Debug.plist</CodesignEntitlements>
+  </PropertyGroup>
 
-	<ItemGroup>
-	  <Compile Include="..\TrashMob.Models\Address.cs" Link="Models\Address.cs" />
-	  <Compile Include="..\TrashMob.Models\BaseModel.cs" Link="Models\BaseModel.cs" />
-	  <Compile Include="..\TrashMob.Models\ContactRequest.cs" Link="Models\ContactRequest.cs" />
-	  <Compile Include="..\TrashMob.Models\Event.cs" Link="Models\Event.cs" />
-	  <Compile Include="..\TrashMob.Models\EventAttendee.cs" Link="Models\EventAttendee.cs" />
-	  <Compile Include="..\TrashMob.Models\EventPartnerLocationService.cs" Link="Models\EventPartnerLocationService.cs" />
-	  <Compile Include="..\TrashMob.Models\EventPartnerLocationServiceStatus.cs" Link="Models\EventPartnerLocationServiceStatus.cs" />
-	  <Compile Include="..\TrashMob.Models\EventStatus.cs" Link="Models\EventStatus.cs" />
-	  <Compile Include="..\TrashMob.Models\EventSummary.cs" Link="Models\EventSummary.cs" />
-	  <Compile Include="..\TrashMob.Models\EventType.cs" Link="Models\EventType.cs" />
-	  <Compile Include="..\TrashMob.Models\IftttTrigger.cs" Link="Models\IftttTrigger.cs" />
-	  <Compile Include="..\TrashMob.Models\InvitationStatus.cs" Link="Models\InvitationStatus.cs" />
-	  <Compile Include="..\TrashMob.Models\KeyedModel.cs" Link="Models\KeyedModel.cs" />
-	  <Compile Include="..\TrashMob.Models\LookupModel.cs" Link="Models\LookupModel.cs" />
-	  <Compile Include="..\TrashMob.Models\MessageRequest.cs" Link="Models\MessageRequest.cs" />
-	  <Compile Include="..\TrashMob.Models\NonEventUserNotification.cs" Link="Models\NonEventUserNotification.cs" />
-	  <Compile Include="..\TrashMob.Models\Partner.cs" Link="Models\Partner.cs" />
-	  <Compile Include="..\TrashMob.Models\PartnerAdmin.cs" Link="Models\PartnerAdmin.cs" />
-	  <Compile Include="..\TrashMob.Models\PartnerAdminInvitation.cs" Link="Models\PartnerAdminInvitation.cs" />
-	  <Compile Include="..\TrashMob.Models\PartnerContact.cs" Link="Models\PartnerContact.cs" />
-	  <Compile Include="..\TrashMob.Models\PartnerDocument.cs" Link="Models\PartnerDocument.cs" />
-	  <Compile Include="..\TrashMob.Models\PartnerLocation.cs" Link="Models\PartnerLocation.cs" />
-	  <Compile Include="..\TrashMob.Models\PartnerLocationContact.cs" Link="Models\PartnerLocationContact.cs" />
-	  <Compile Include="..\TrashMob.Models\PartnerLocationService.cs" Link="Models\PartnerLocationService.cs" />
-	  <Compile Include="..\TrashMob.Models\PartnerRequest.cs" Link="Models\PartnerRequest.cs" />
-	  <Compile Include="..\TrashMob.Models\PartnerRequestStatus.cs" Link="Models\PartnerRequestStatus.cs" />
-	  <Compile Include="..\TrashMob.Models\PartnerSocialMediaAccount.cs" Link="Models\PartnerSocialMediaAccount.cs" />
-	  <Compile Include="..\TrashMob.Models\PartnerStatus.cs" Link="Models\PartnerStatus.cs" />
-	  <Compile Include="..\TrashMob.Models\PartnerType.cs" Link="Models\PartnerType.cs" />
-	  <Compile Include="..\TrashMob.Models\PickupLocation.cs" Link="Models\PickupLocation.cs" />
-	  <Compile Include="..\TrashMob.Models\Poco\DisplayEventPartnerLocation.cs" Link="Models\Poco\DisplayEventPartnerLocation.cs" />
-	  <Compile Include="..\TrashMob.Models\Poco\DisplayEventPartnerLocationService.cs" Link="Models\Poco\DisplayEventPartnerLocationService.cs" />
-	  <Compile Include="..\TrashMob.Models\Poco\DisplayEventSummary.cs" Link="Models\Poco\DisplayEventSummary.cs" />
-	  <Compile Include="..\TrashMob.Models\Poco\DisplayPartnerAdminInvitation.cs" Link="Models\Poco\DisplayPartnerAdminInvitation.cs" />
-	  <Compile Include="..\TrashMob.Models\Poco\DisplayPartnerLocationEvent.cs" Link="Models\Poco\DisplayPartnerLocationEvent.cs" />
-	  <Compile Include="..\TrashMob.Models\ServiceType.cs" Link="Models\ServiceType.cs" />
-	  <Compile Include="..\TrashMob.Models\SiteMetric.cs" Link="Models\SiteMetric.cs" />
-	  <Compile Include="..\TrashMob.Models\SocialMediaAccountType.cs" Link="Models\SocialMediaAccountType.cs" />
-	  <Compile Include="..\TrashMob.Models\User.cs" Link="Models\User.cs" />
-	  <Compile Include="..\TrashMob.Models\UserNotification.cs" Link="Models\UserNotification.cs" />
-	  <Compile Include="..\TrashMob.Models\UserNotificationType.cs" Link="Models\UserNotificationType.cs" />
-	  <Compile Include="..\TrashMob.Models\Waiver.cs" Link="Models\Waiver.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Include="appSettings.Development.json" />
-	  <EmbeddedResource Include="appSettings.json" />
-	</ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="CommunityToolkit.Maui" Version="5.2.0" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="7.0.5" />
-      <PackageReference Include="Microsoft.Identity.Client" Version="4.50.0" />
-      <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="2.26.0" />
-      <PackageReference Include="MudBlazor" Version="6.6.0" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-      <PackageReference Include="Polly.Extensions.Http" Version="3.0.0" />
-      <PackageReference Include="Sentry.Maui" Version="3.33.1" />
-      <PackageReference Include="Onion.Maui.GoogleMaps" Version="5.0.0" />
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)' == 'net7.0-android'">
-      <PackageReference Include="Plugin.CurrentActivity" Version="2.1.0.4">
-      </PackageReference>
-    </ItemGroup>
-    <ItemGroup>
-      <Compile Update="Features\Map\MauiMapPageMultipleEvent.xaml.cs">
-        <DependentUpon>MauiMapPageMultipleEvent.xaml</DependentUpon>
-      </Compile>
-      <Compile Update="AppShell.xaml.cs">
-        <DependentUpon>AppShell.xaml</DependentUpon>
-      </Compile>
-      <Compile Update="Features\Pickups\AddPickupLocation.xaml.cs">
-        <DependentUpon>AddPickupLocation.xaml</DependentUpon>
-      </Compile>
-      <Compile Update="Shared\MainView.xaml.cs">
-        <DependentUpon>MainView.xaml</DependentUpon>
-      </Compile>
-    </ItemGroup>
-    <ItemGroup>
-      <Content Update="wwwroot\images\meetup.png">
-        <Color>#512BD4</Color>
-        <BaseSize>128,128</BaseSize>
-      </Content>
-    </ItemGroup>
-    <ItemGroup>
-      <MauiXaml Update="AppHost.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </MauiXaml>
-      <MauiXaml Update="Features\Map\EditMapPopup.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </MauiXaml>
-      <MauiXaml Update="Features\Map\MauiMapPageSingleEvent.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </MauiXaml>
-      <MauiXaml Update="Features\Map\MauiMapPageMultipleEvent.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </MauiXaml>
-      <MauiXaml Update="Features\Map\UserLocationPreferencePopup.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </MauiXaml>
-      <MauiXaml Update="Features\Pickups\AddPickupLocation.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </MauiXaml>
-      <MauiXaml Update="Resources\Styles\Styles.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </MauiXaml>
-      <MauiXaml Update="Shared\MainView.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </MauiXaml>
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Models\Poco\" />
-    </ItemGroup>
+  <PropertyGroup Condition="$(TargetFramework.Contains('-maccatalyst')) and '$(Configuration)' == 'Release'">
+    <CodesignEntitlements>Platforms/MacCatalyst/Entitlements.Release.plist</CodesignEntitlements>
+    <UseHardenedRuntime>true</UseHardenedRuntime>
+  </PropertyGroup>
 </Project>
