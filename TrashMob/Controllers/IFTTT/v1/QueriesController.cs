@@ -13,21 +13,21 @@
     [Route("api/ifttt/v1/[controller]")]
     [RequiredScope(Constants.TrashMobIFTTTScope)]
     [ApiController]
-    public class TriggersController : SecureController
+    public class QueriesController : SecureController
     {
-        private readonly ITriggersManager triggersManager;
+        private readonly IQueriesManager queriesManager;
 
-        public TriggersController(ITriggersManager triggersManager) 
+        public QueriesController(IQueriesManager queriesManager) 
         {
-            this.triggersManager = triggersManager;
+            this.queriesManager = queriesManager;
         }
 
-        [HttpPost("new_event_created")]
+        [HttpPost("list_all_events")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [Authorize(Policy = AuthorizationPolicyConstants.IftttServiceKey)]
-        public async Task<ActionResult> Get(TriggersRequest triggersRequest, CancellationToken cancellationToken)
+        public async Task<ActionResult> Get(QueriesRequest queriesRequest, CancellationToken cancellationToken)
         {
-            var events = await triggersManager.GetEventsTriggerDataAsync(triggersRequest, UserId, cancellationToken);
+            var events = await queriesManager.GetEventsQueryDataAsync(queriesRequest, UserId, cancellationToken);
 
             var response = new DataResponse()
             {
