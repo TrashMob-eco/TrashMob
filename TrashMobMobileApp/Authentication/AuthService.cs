@@ -7,6 +7,12 @@ public class AuthService : IAuthService
 {
     private IPublicClientApplication _pca;
 
+    private string _accessToken;
+
+    private DateTimeOffset _expiresOn;
+    
+    private string _userEmail;
+
     private void InitializeClient()
     {
         var pcaBuilder = PublicClientApplicationBuilder
@@ -80,7 +86,7 @@ public class AuthService : IAuthService
 
         if (result != null && !string.IsNullOrWhiteSpace(result.AccessToken))
         {
-            // TODO: handle set logged in state
+            SetAuthenticated(result);
 
             return new SignInResult
             {
@@ -109,7 +115,7 @@ public class AuthService : IAuthService
 
         if (result != null && !string.IsNullOrWhiteSpace(result.AccessToken))
         {
-            // TODO: handle set logged in state
+            SetAuthenticated(result);
 
             return new SignInResult
             {
@@ -121,5 +127,54 @@ public class AuthService : IAuthService
         {
             Succeeded = false
         };
+    }
+
+    private void SetAuthenticated(AuthenticationResult result)
+    {
+        _accessToken = result.AccessToken;
+        _expiresOn = result.ExpiresOn;
+        _userEmail = result.Account.Username;
+    }
+
+    private bool IsTokenExpired()
+    {
+        var bufferTime = TimeSpan.FromMinutes(5);
+        return DateTimeOffset.UtcNow > _expiresOn - bufferTime;
+    }
+    
+    public async Task<string> GetAccessTokenAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(_accessToken) && !IsTokenExpired())
+        {
+            return _accessToken;
+        }
+        
+        var accounts = await _pca.GetAccountsAsync();
+        
+        try
+        {
+            var result = await _pca
+                    .AcquireTokenSilent(AuthConstants.Scopes, accounts.FirstOrDefault())
+                    .ExecuteAsync();
+            
+            SetAuthenticated(result);
+
+            return result.AccessToken;
+        }
+        catch (MsalUiRequiredException)
+        {
+            // TODO: retry policies
+            return string.Empty;
+        }
+    }
+
+    public string GetUserEmail()
+    {
+        if (string.IsNullOrWhiteSpace(_userEmail))
+        {
+            throw new Exception("User is not authenticated");
+        }
+
+        return _userEmail;
     }
 }

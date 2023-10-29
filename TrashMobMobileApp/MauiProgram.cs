@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using TrashMobMobileApp.Authentication;
+using TrashMobMobileApp.Services;
 
 namespace TrashMobMobileApp;
 
@@ -19,7 +20,15 @@ public static class MauiProgram
 			});
 		
 		// Services
+		builder.Services.AddSingleton<AuthHandler>();
+		
+		builder.Services.AddHttpClient(AuthConstants.AUTHENTICATED_CLIENT, client =>
+		{
+			client.BaseAddress = new Uri(AuthConstants.ApiBaseUri);
+		}).AddHttpMessageHandler<AuthHandler>();
+		
 		builder.Services.AddSingleton<IAuthService, AuthService>();
+		builder.Services.AddSingleton<IUserService, UserService>();
 
 		// Pages
 		builder.Services.AddTransient<MainPage>();

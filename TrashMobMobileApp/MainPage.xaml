@@ -36,6 +36,12 @@
                 SemanticProperties.Hint="Counts the number of times you click"
                 Clicked="OnCounterClicked"
                 HorizontalOptions="Center" />
+            
+            <ActivityIndicator IsVisible="{Binding IsBusy}"
+                               IsRunning="True"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               WidthRequest="50"/>
 
         </VerticalStackLayout>
     </ScrollView>
