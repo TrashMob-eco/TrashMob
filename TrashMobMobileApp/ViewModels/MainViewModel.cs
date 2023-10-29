@@ -18,7 +18,7 @@ public partial class MainViewModel : ObservableObject
 
     public async Task Init()
     {
-        var signedIn = await _authService.SignInSilentAsync();
+        var signedIn = await _authService.SignInSilentAsync(false);
 
         if (signedIn.Succeeded)
         {
