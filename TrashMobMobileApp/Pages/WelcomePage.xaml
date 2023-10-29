@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TrashMobMobileApp.ViewModels"
+             x:DataType="vm:WelcomeViewModel"
+             x:Class="TrashMobMobileApp.Pages.WelcomePage">
+    <FlexLayout Direction="Column"
+                JustifyContent="SpaceAround">
+        <Label 
+            Text="Welcome to TrashMob!"
+            FontSize="Large"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+        <Button Text="Login"
+                MaximumWidthRequest="150"
+                Command="{Binding SignInCommand}"/>
+
+        <Label Text="Something went wrong logging you in."
+               HorizontalOptions="Center"
+               HorizontalTextAlignment="Center"
+               IsVisible="{Binding IsError}"/>
+    </FlexLayout>
+</ContentPage>

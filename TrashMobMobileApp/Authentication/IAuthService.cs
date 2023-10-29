@@ -2,7 +2,9 @@ namespace TrashMobMobileApp.Authentication;
 
 public interface IAuthService
 {
-    Task SignInAsync();
+    Task<SignInResult> SignInAsync();
+
+    Task<SignInResult> SignInSilentAsync();
     
     // TODO: Add other methods
 }

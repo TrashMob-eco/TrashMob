@@ -4,12 +4,16 @@ public partial class MainPage : ContentPage
 {
 	int count = 0;
 
-	public MainPage()
+	public MainPage(MainViewModel viewModel)
 	{
 		InitializeComponent();
-	}
+        _viewModel = viewModel;
+		BindingContext = _viewModel;
+    }
 
-	private void OnCounterClicked(object sender, EventArgs e)
+    public MainViewModel _viewModel { get; }
+
+    private void OnCounterClicked(object sender, EventArgs e)
 	{
 		count++;
 
@@ -20,5 +24,11 @@ public partial class MainPage : ContentPage
 
 		SemanticScreenReader.Announce(CounterBtn.Text);
 	}
+
+    protected override async void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+		await _viewModel.Init();
+    }
 }
 
