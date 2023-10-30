@@ -21,7 +21,6 @@
 
         [HttpGet("info")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
-        [Authorize(Policy = AuthorizationPolicyConstants.IftttServiceKey)]
         public async Task<ActionResult> GetInfo(CancellationToken cancellationToken)
         {
             var user = await userManager.GetAsync(UserId, cancellationToken).ConfigureAwait(false);
