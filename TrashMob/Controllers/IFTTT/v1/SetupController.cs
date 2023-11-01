@@ -9,9 +9,8 @@
 
     public class SetupController : SecureController
     {
-        [HttpGet]
+        [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
-        [Authorize(Policy = AuthorizationPolicyConstants.IftttServiceKey)]
         public ActionResult GetInfo()
         {
             var dataResponse = new DataResponse();
