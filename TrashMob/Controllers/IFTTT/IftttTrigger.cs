@@ -4,12 +4,18 @@
 
     public class IftttTrigger
     {
-        public Dictionary<string, string> new_event_created { get; set; } = new Dictionary<string, string>()
+        public Dictionary<string, string> new_event_created { get; set; }
+
+        public IftttTrigger()
         {
-            { "city", "Issaquah" },
-            { "region", "Washington" },
-            { "country", "United States" },
-            { "postalCode", "98029" }
-        };
+
+            new_event_created = new Dictionary<string, string>()
+                {
+                    { "city", "Issaquah" },
+                    { "region", "Washington" },
+                    { "country", "United States" },
+                    { "postalCode", "98029" }
+                };
+        }
     }
 }

@@ -12,7 +12,7 @@
         {
             var dataResponse = new DataResponse();
 
-            var accessToken = HttpContext.Request.Headers.Authorization;
+            var accessToken = string.IsNullOrWhiteSpace(HttpContext.Request.Headers.Authorization.ToString()) ? "XXXX" : HttpContext.Request.Headers.Authorization.ToString();
 
             var sampleResponse = new SampleResponse
             {

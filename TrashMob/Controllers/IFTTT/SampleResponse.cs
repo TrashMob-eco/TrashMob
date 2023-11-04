@@ -6,6 +6,12 @@
     {
         public string accessToken { get; set; } = "XXX";
 
-        public List<Sample> samples = new() { new Sample() };
+        public List<Sample> samples = new List<Sample>();
+
+        public SampleResponse()
+        {
+            accessToken = "XXX";
+            samples.Add(new Sample());
+        }
     }
 }

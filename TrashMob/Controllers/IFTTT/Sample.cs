@@ -2,12 +2,20 @@
 {
     public class Sample
     {
-        public IftttTrigger triggers { get; set; } = new IftttTrigger();
+        public IftttTrigger triggers { get; set; }
         
-        public IftttTriggerFieldValidation triggerFieldValidations { get; set; } = new IftttTriggerFieldValidation();
+        public IftttTriggerFieldValidation triggerFieldValidations { get; set; }
 
-        public IftttAction actions { get; set; } = new IftttAction();
+        public IftttAction actions { get; set; }
 
-        public IftttActionRecordSkipping actionRecordSkipping { get; set; } = new IftttActionRecordSkipping();
+        public IftttActionRecordSkipping actionRecordSkipping { get; set; }
+
+        public Sample()
+        {
+            triggers = new IftttTrigger();
+            actions = new IftttAction();
+            actionRecordSkipping = new IftttActionRecordSkipping();
+            triggerFieldValidations = new IftttTriggerFieldValidation();
+        }
     }
 }
