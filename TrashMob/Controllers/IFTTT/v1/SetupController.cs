@@ -17,7 +17,10 @@
             var sampleResponse = new SampleResponse
             {
                 accessToken = accessToken,
+                samples = new System.Collections.Generic.List<Sample>()
             };
+
+            sampleResponse.samples.Add(new Sample());
 
             dataResponse.Data = sampleResponse;
 
