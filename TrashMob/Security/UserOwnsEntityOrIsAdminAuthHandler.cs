@@ -3,8 +3,10 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
     using System;
     using System.Security.Claims;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
@@ -36,6 +38,12 @@
 
                 if (user == null)
                 {
+                    var securityErrors = new SecurityErrors();
+                    securityErrors.AddError("User not found.");
+                    var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(securityErrors));
+                    httpContext.HttpContext.Response.StatusCode = 403;
+                    httpContext.HttpContext.Response.ContentType = "application/json";
+                    await httpContext.HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
                     return;
                 }
 
@@ -48,10 +56,19 @@
                 {
                     context.Succeed(requirement);
                 }
+                else
+                {
+                    var securityErrors = new SecurityErrors();
+                    securityErrors.AddError("User does not own entity and is not an admin.");
+                    var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(securityErrors));
+                    httpContext.HttpContext.Response.StatusCode = 403;
+                    httpContext.HttpContext.Response.ContentType = "application/json";
+                    await httpContext.HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
+                }
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error occured while authenticating user.");
+                logger.LogError(ex, "Error occurred while authenticating user.");
             }
         }
     }
