@@ -24,7 +24,6 @@
 
         [HttpPost("new_event_created")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
-        [Authorize(Policy = AuthorizationPolicyConstants.IftttServiceKey)]
         public async Task<ActionResult> Get(TriggersRequest triggersRequest, CancellationToken cancellationToken)
         {
             var events = await triggersManager.GetEventsTriggerDataAsync(triggersRequest, UserId, cancellationToken);

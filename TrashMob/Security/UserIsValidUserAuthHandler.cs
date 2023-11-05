@@ -1,5 +1,6 @@
 ﻿namespace TrashMob.Security
 {
+    using EllipticCurve.Utils;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
@@ -37,6 +38,13 @@
 
                 if (user == null)
                 {
+                    var securityErrors = new SecurityErrors();
+                    securityErrors.AddError("User not found.");
+                    var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(securityErrors));
+                    httpContext.HttpContext.Response.StatusCode = 403;
+                    httpContext.HttpContext.Response.ContentType = "application/json";
+                    await httpContext.HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
+
                     return;
                 }
 
@@ -49,7 +57,7 @@
             }
             catch(Exception ex)
             {
-                logger.LogError(ex, "Error occured while authenticating user. {0}", JsonConvert.SerializeObject(context.User));
+                logger.LogError(ex, "Error occurred while authenticating user. {0}", JsonConvert.SerializeObject(context.User));
             }
         }
     }
