@@ -44,6 +44,7 @@
                     var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(securityErrors));
                     httpContext.HttpContext.Response.ContentType = "application/json";
                     await httpContext.HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
+                    context.Fail();
                     return;
                 }
 
@@ -63,6 +64,7 @@
                     var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(securityErrors));
                     httpContext.HttpContext.Response.ContentType = "application/json";
                     await httpContext.HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
+                    context.Fail();
                 }
             }
             catch (Exception ex)
