@@ -14,7 +14,7 @@
                     { "city", "Issaquah" },
                     { "region", "Washington" },
                     { "country", "United States" },
-                    { "postalCode", "98029" }
+                    { "postal_code", "98029" }
                 };
         }
     }
