@@ -1,18 +1,26 @@
 ﻿namespace TrashMob.Controllers.IFTTT
 {
     using Microsoft.AspNetCore.Mvc;
-    
+    using TrashMob.Shared.Managers.Interfaces;
+
     [Route("api/ifttt/v1/test/[controller]")]
     [ApiController]
 
     public class SetupController : Controller
     {
+        private readonly IKeyVaultManager keyVaultManager;
+
+        public SetupController(IKeyVaultManager keyVaultManager)
+        {
+            this.keyVaultManager = keyVaultManager;
+        }
+
         [HttpPost]
         public ActionResult GetInfo()
         {
             var dataResponse = new DataResponse();
 
-            var accessToken = string.IsNullOrWhiteSpace(HttpContext.Request.Headers.Authorization.ToString()) ? "XXXX" : HttpContext.Request.Headers.Authorization.ToString();
+            var accessToken = keyVaultManager.GetSecret("IFTTTAuthToken");
 
             var sampleResponse = new SampleResponse
             {
