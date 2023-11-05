@@ -40,7 +40,6 @@
                     var securityErrors = new SecurityErrors();
                     securityErrors.AddError("User is not found.");
                     var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(securityErrors));
-                    httpContext.HttpContext.Response.StatusCode = 403;
                     httpContext.HttpContext.Response.ContentType = "application/json";
                     await httpContext.HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
                     return;
@@ -60,7 +59,6 @@
                     var securityErrors = new SecurityErrors();
                     securityErrors.AddError("User is not an admin.");
                     var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(securityErrors));
-                    httpContext.HttpContext.Response.StatusCode = 403;
                     httpContext.HttpContext.Response.ContentType = "application/json";
                     await httpContext.HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
                 }
