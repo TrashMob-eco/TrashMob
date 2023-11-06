@@ -71,23 +71,24 @@
             var triggersResponses = new List<IftttEventResponse>();
 
             // Get all the public events in the future
-            foreach (var mobEvent in events.Where(e => e.IsEventPublic && e.EventDate >= DateTimeOffset.UtcNow).ToList())
+            foreach (var mobEvent in events.Where(e => e.IsEventPublic && e.EventDate >= DateTimeOffset.UtcNow).ToList().OrderByDescending(e => e.CreatedDate).Take(triggerRequest.limit))
             {
                 var triggersResponse = new IftttEventResponse();
                 triggersResponse.meta = new MetaResponse()
                 {
                     id = mobEvent.Id.ToString(),
-                    timestamp = mobEvent.EventDate.Ticks
+                    timestamp = mobEvent.CreatedDate.Value.Ticks
                 };
 
-                triggersResponse.Event_Name = mobEvent.Name;
-                triggersResponse.EventDate = mobEvent.EventDate;
-                triggersResponse.Street_Address = mobEvent.StreetAddress;
-                triggersResponse.City = mobEvent.City;
-                triggersResponse.Region = mobEvent.Region;
-                triggersResponse.Country = mobEvent.Country;
-                triggersResponse.Postal_Code = mobEvent.PostalCode;
-                triggersResponse.Event_Details_Url = mobEvent.EventDetailsUrl();
+                triggersResponse.event_id = mobEvent.Id.ToString();
+                triggersResponse.event_name = mobEvent.Name;
+                triggersResponse.event_date = mobEvent.EventDate;
+                triggersResponse.street_address = mobEvent.StreetAddress;
+                triggersResponse.city = mobEvent.City;
+                triggersResponse.region = mobEvent.Region;
+                triggersResponse.country = mobEvent.Country;
+                triggersResponse.postal_code = mobEvent.PostalCode;
+                triggersResponse.event_details_url = mobEvent.EventDetailsUrl();
 
                 triggersResponses.Add(triggersResponse);
             }

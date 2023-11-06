@@ -80,14 +80,14 @@
                     timestamp = mobEvent.EventDate.Ticks
                 };
 
-                triggersResponse.Event_Name = mobEvent.Name;
-                triggersResponse.EventDate = mobEvent.EventDate;
-                triggersResponse.Street_Address = mobEvent.StreetAddress;
-                triggersResponse.City = mobEvent.City;
-                triggersResponse.Region = mobEvent.Region;
-                triggersResponse.Country = mobEvent.Country;
-                triggersResponse.Postal_Code = mobEvent.PostalCode;
-                triggersResponse.Event_Details_Url = mobEvent.EventDetailsUrl();
+                triggersResponse.event_name = mobEvent.Name;
+                triggersResponse.event_date = mobEvent.EventDate;
+                triggersResponse.street_address = mobEvent.StreetAddress;
+                triggersResponse.city = mobEvent.City;
+                triggersResponse.region = mobEvent.Region;
+                triggersResponse.country = mobEvent.Country;
+                triggersResponse.postal_code = mobEvent.PostalCode;
+                triggersResponse.event_details_url = mobEvent.EventDetailsUrl();
 
                 triggersResponses.Add(triggersResponse);
             }

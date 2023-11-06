@@ -44,13 +44,14 @@ namespace TrashMob
                     Configuration.Bind("AzureAdB2C", options);
 
                     options.TokenValidationParameters.NameClaimType = "name";
+                    options.TokenValidationParameters.ValidateLifetime = true;
+                    options.TokenValidationParameters.ValidateAudience = false;
                 },
 
             options => { Configuration.Bind("AzureAdB2C", options); });
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(AuthorizationPolicyConstants.IftttServiceKey, policy => policy.AddRequirements(new IftttChannelKeyRequirement()));
                 options.AddPolicy(AuthorizationPolicyConstants.ValidUser, policy => policy.AddRequirements(new UserIsValidUserRequirement()));
                 options.AddPolicy(AuthorizationPolicyConstants.UserOwnsEntity, policy => policy.AddRequirements(new UserOwnsEntityRequirement()));
                 options.AddPolicy(AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin, policy => policy.AddRequirements(new UserOwnsEntityOrIsAdminRequirement()));
