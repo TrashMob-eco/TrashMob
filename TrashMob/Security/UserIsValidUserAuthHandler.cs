@@ -1,11 +1,13 @@
 ﻿namespace TrashMob.Security
 {
     using EllipticCurve.Utils;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using System;
+    using System.Collections.Generic;
     using System.Security.Claims;
     using System.Text;
     using System.Threading;
@@ -38,12 +40,7 @@
 
                 if (user == null)
                 {
-                    var securityErrors = new SecurityErrors();
-                    securityErrors.AddError($"User with email '{email}' not found.");
-                    var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(securityErrors));
-                    httpContext.HttpContext.Response.ContentType = "application/json";
-                    await httpContext.HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
-                    context.Fail();
+                    AuthorizationFailure.Failed(new List<AuthorizationFailureReason>() { new AuthorizationFailureReason(this, $"User with email '{email}' not found.") });
                     return;
                 }
 

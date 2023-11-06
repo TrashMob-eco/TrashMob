@@ -3,9 +3,8 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
     using System;
-    using System.Text;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using TrashMob.Shared.Managers.Interfaces;
 
@@ -28,24 +27,13 @@
             {
                 if (httpContext.HttpContext.Request.Headers.TryGetValue("IFTTT-Channel-Key", out var iftttChannelKeyRequest))
                 {
-                    var securityErrors = new SecurityErrors();
-                    securityErrors.AddError("IFTTT Channel Key Header not found.");
-                    var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(securityErrors));
-                    httpContext.HttpContext.Response.StatusCode = 401;
-                    httpContext.HttpContext.Response.ContentType = "application/json";
-                    await httpContext.HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
-                    context.Fail();
+                    AuthorizationFailure.Failed(new List<AuthorizationFailureReason>() { new AuthorizationFailureReason(this, "IFTTT Channel Key Header not found.") });
                     return;
                 }
 
                 if (httpContext.HttpContext.Request.Headers.TryGetValue("IFTTT-Service-Key", out var iftttServiceKeyRequest))
                 {
-                    var securityErrors = new SecurityErrors();
-                    securityErrors.AddError("IFTTT Service Key Header not found.");
-                    var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(securityErrors));
-                    httpContext.HttpContext.Response.ContentType = "application/json";
-                    await httpContext.HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
-                    context.Fail();
+                    AuthorizationFailure.Failed(new List<AuthorizationFailureReason>() { new AuthorizationFailureReason(this, "IFTTT Service Key Header not found.") });
                     return;
                 }
 
@@ -55,12 +43,7 @@
                 if (iftttChannelKeyRequest != iftttChannelKeySecret ||
                     iftttServiceKeyRequest != iftttServiceKeySecret)
                 {
-                    var securityErrors = new SecurityErrors();
-                    securityErrors.AddError("IFTTT Key Mismatch. Access Denied.");
-                    var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(securityErrors));
-                    httpContext.HttpContext.Response.ContentType = "application/json";
-                    await httpContext.HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
-                    context.Fail();
+                    AuthorizationFailure.Failed(new List<AuthorizationFailureReason>() { new AuthorizationFailureReason(this, "IFTTT Key Mismatch. Access Denied.") });
                     return;
                 }
 
