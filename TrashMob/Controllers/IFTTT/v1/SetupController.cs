@@ -1,6 +1,7 @@
 ﻿namespace TrashMob.Controllers.IFTTT
 {
     using Microsoft.AspNetCore.Mvc;
+    using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/ifttt/v1/test/[controller]")]
@@ -16,6 +17,7 @@
         }
 
         [HttpPost]
+        [TypeFilter(typeof(ChannelKeyAuthenticationFilter))]
         public ActionResult GetInfo()
         {
             var dataResponse = new DataResponse();
