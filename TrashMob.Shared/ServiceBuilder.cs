@@ -86,6 +86,7 @@
             services.AddScoped<ILookupRepository<EventStatus>, LookupRepository<EventStatus>>();
             services.AddScoped<IBaseRepository<EventSummary>, BaseRepository<EventSummary>>();
             services.AddScoped<ILookupRepository<EventType>, LookupRepository<EventType>>();
+            services.AddScoped<IBaseRepository<IftttTrigger>, BaseRepository<IftttTrigger>>();
             services.AddScoped<ILookupRepository<InvitationStatus>, LookupRepository<InvitationStatus>>();
             services.AddScoped<IKeyedRepository<MessageRequest>, KeyedRepository<MessageRequest>>();
             services.AddScoped<IKeyedRepository<NonEventUserNotification>, KeyedRepository<NonEventUserNotification>>();
