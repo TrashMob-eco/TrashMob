@@ -6,7 +6,7 @@
 
         public object triggerFields { get; set; }
 
-        public int limit { get; set; }
+        public int limit { get; set; } = 50;
 
         public object user { get; set; }
 
