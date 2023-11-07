@@ -9,6 +9,7 @@
     using TrashMob.Shared.Managers.Interfaces;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Shared;
+    using System.Text.Json.Nodes;
 
     [Route("api/ifttt/v1/[controller]")]
     [RequiredScope(Constants.TrashMobIFTTTScope)]
@@ -17,7 +18,7 @@
     {
         private readonly ITriggersManager triggersManager;
 
-        public TriggersController(ITriggersManager triggersManager) 
+        public TriggersController(ITriggersManager triggersManager)
         {
             this.triggersManager = triggersManager;
         }
@@ -26,6 +27,40 @@
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<ActionResult> Get(TriggersRequest triggersRequest, CancellationToken cancellationToken)
         {
+            var reqFields = triggersRequest.triggerFields as IftttEventRequest;
+
+            if (triggersRequest?.triggerFields == null)
+            {
+                var error = new JsonResult(new
+                {
+                    errors = new JsonArray
+                    {
+                        new
+                        {
+                            error = "triggerFields missing from request body."
+                        }
+                    }
+                });
+
+                return BadRequest(error);
+            }
+
+            if (reqFields.Country == null || reqFields.City == null || reqFields.Postal_Code == null || reqFields.Region == null)
+            {
+                var error = new JsonResult(new
+                {
+                    errors = new JsonArray
+                    {
+                        new
+                        {
+                            error = "triggerFields must have city, region, country and postal_code."
+                        }
+                    }
+                });
+
+                return BadRequest(error);
+            }
+
             var events = await triggersManager.GetEventsTriggerDataAsync(triggersRequest, UserId, cancellationToken);
 
             var response = new DataResponse()
