@@ -16,6 +16,7 @@ namespace TrashMob
     using Microsoft.Identity.Web;
     using Microsoft.OpenApi.Models;
     using System;
+    using System.Text;
     using System.Text.Json;
     using System.Text.Json.Nodes;
     using System.Text.Json.Serialization;
@@ -54,10 +55,13 @@ namespace TrashMob
                     {
                         OnChallenge = async context =>
                         {
-                            // context.HandleResponse();
+                            context.HandleResponse();
 
                             if (context.AuthenticateFailure != null)
                             {
+                                context.Response.StatusCode = 401;
+                                context.Response.ContentType = "application/json";
+
                                 var error = new JsonResult(new
                                 {
                                     errors = new JsonArray
@@ -69,7 +73,8 @@ namespace TrashMob
                                     }
                                 });
 
-                                await context.HttpContext.Response.WriteAsync(JsonSerializer.Serialize(error));
+                                var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(error));
+                                await context.Response.Body.WriteAsync(bytes);
                             }
                         }
                     };
