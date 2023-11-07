@@ -73,8 +73,8 @@
                     return Task.CompletedTask;
                 }
 
-                var iftttChannelKeySecret = keyVaultManager.GetSecret("IftttChannelKey");
-                var iftttServiceKeySecret = keyVaultManager.GetSecret("IftttServiceKey");
+                var iftttChannelKeySecret = keyVaultManager.GetSecret("IFTTT-Channel-Key");
+                var iftttServiceKeySecret = keyVaultManager.GetSecret("IFTTT-Service-Key");
 
                 if (iftttChannelKeyRequest != iftttChannelKeySecret ||
                     iftttServiceKeyRequest != iftttServiceKeySecret)
