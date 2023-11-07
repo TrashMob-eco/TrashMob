@@ -33,7 +33,7 @@
 
             try
             {
-                if (context.HttpContext.Request.Headers.TryGetValue("IFTTT-Channel-Key", out var iftttChannelKeyRequest))
+                if (!context.HttpContext.Request.Headers.TryGetValue("IFTTT-Channel-Key", out var iftttChannelKeyRequest))
                 {
                     // Return custom 401 result
                     context.Result = new JsonResult(new
@@ -53,7 +53,7 @@
                     return Task.CompletedTask;
                 }
 
-                if (context.HttpContext.Request.Headers.TryGetValue("IFTTT-Service-Key", out var iftttServiceKeyRequest))
+                if (!context.HttpContext.Request.Headers.TryGetValue("IFTTT-Service-Key", out var iftttServiceKeyRequest))
                 {
                     // Return custom 401 result
                     context.Result = new JsonResult(new
