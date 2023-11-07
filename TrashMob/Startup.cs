@@ -1,6 +1,5 @@
 namespace TrashMob
 {
-    using Azure.Core.Extensions;
     using Azure.Identity;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
