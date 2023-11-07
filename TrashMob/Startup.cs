@@ -62,7 +62,7 @@ namespace TrashMob
                                 context.Response.StatusCode = 401;
                                 context.Response.ContentType = "application/json";
 
-                                var error = new JsonResult(new
+                                var error = new
                                 {
                                     errors = new JsonArray
                                     {
@@ -71,7 +71,7 @@ namespace TrashMob
                                             error = "Invalid authorization token."
                                         }
                                     }
-                                });
+                                };
 
                                 var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(error));
                                 await context.Response.Body.WriteAsync(bytes);

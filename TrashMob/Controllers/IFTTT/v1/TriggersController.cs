@@ -31,7 +31,7 @@
 
             if (reqFields == null)
             {
-                var error = new JsonResult(new
+                var error = new
                 {
                     errors = new JsonArray
                     {
@@ -40,14 +40,14 @@
                             error = "triggerFields missing from request body."
                         }
                     }
-                });
+                };
 
                 return BadRequest(error);
             }
 
-            if (reqFields.Country == null || reqFields.City == null || reqFields.Postal_Code == null || reqFields.Region == null)
+            if (reqFields.country == null || reqFields.city == null || reqFields.postal_code == null || reqFields.region == null)
             {
-                var error = new JsonResult(new
+                var error = new 
                 {
                     errors = new JsonArray
                     {
@@ -56,7 +56,7 @@
                             error = "triggerFields must have city, region, country and postal_code."
                         }
                     }
-                });
+                };
 
                 return BadRequest(error);
             }
