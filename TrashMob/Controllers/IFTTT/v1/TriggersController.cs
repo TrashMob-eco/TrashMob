@@ -27,9 +27,9 @@
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<ActionResult> Get(TriggersRequest triggersRequest, CancellationToken cancellationToken)
         {
-            var reqFields = triggersRequest.triggerFields as IftttEventRequest;
+            var reqFields = triggersRequest?.triggerFields as IftttEventRequest;
 
-            if (triggersRequest?.triggerFields == null)
+            if (reqFields == null)
             {
                 var error = new JsonResult(new
                 {
