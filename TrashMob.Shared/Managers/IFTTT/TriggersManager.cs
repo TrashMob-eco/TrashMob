@@ -77,7 +77,7 @@
                 triggersResponse.meta = new MetaResponse()
                 {
                     id = mobEvent.Id.ToString(),
-                    timestamp = mobEvent.CreatedDate.Value.Ticks
+                    timestamp = mobEvent.CreatedDate.Value.ToUnixTimeSeconds()
                 };
 
                 triggersResponse.event_id = mobEvent.Id.ToString();
