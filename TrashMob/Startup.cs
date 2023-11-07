@@ -6,6 +6,8 @@ namespace TrashMob
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Azure;
@@ -15,6 +17,8 @@ namespace TrashMob
     using Microsoft.Identity.Web;
     using Microsoft.OpenApi.Models;
     using System;
+    using System.Text.Json;
+    using System.Text.Json.Nodes;
     using System.Text.Json.Serialization;
     using TrashMob.Security;
     using TrashMob.Shared;
@@ -46,6 +50,27 @@ namespace TrashMob
                     options.TokenValidationParameters.NameClaimType = "name";
                     options.TokenValidationParameters.ValidateLifetime = true;
                     options.TokenValidationParameters.ValidateAudience = false;
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnChallenge = async context =>
+                        {
+                            context.HandleResponse();
+
+                            var error = new JsonResult(new
+                            {
+                                errors = new JsonArray
+                                {
+                                    new
+                                    {
+                                        error = "Invalid authorization token."
+                                    }
+                                }
+                            });
+
+                            await context.HttpContext.Response.WriteAsync(JsonSerializer.Serialize(error));
+                        }
+                    };
                 },
 
             options => { Configuration.Bind("AzureAdB2C", options); });
