@@ -57,18 +57,24 @@ namespace TrashMob
                         {
                             context.HandleResponse();
 
-                            var error = new JsonResult(new
+                            if (context.AuthenticateFailure != null)
                             {
-                                errors = new JsonArray
-                                {
-                                    new
-                                    {
-                                        error = "Invalid authorization token."
-                                    }
-                                }
-                            });
+                                context.Response.StatusCode = 401;
+                                context.Response.ContentType = "application/json";
 
-                            await context.HttpContext.Response.WriteAsync(JsonSerializer.Serialize(error));
+                                var error = new JsonResult(new
+                                {
+                                    errors = new JsonArray
+                                    {
+                                        new
+                                        {
+                                            error = "Invalid authorization token."
+                                        }
+                                    }
+                                });
+
+                                await context.HttpContext.Response.WriteAsync(JsonSerializer.Serialize(error));
+                            }
                         }
                     };
                 },
