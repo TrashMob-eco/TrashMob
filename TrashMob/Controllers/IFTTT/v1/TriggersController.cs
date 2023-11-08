@@ -27,9 +27,7 @@
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<ActionResult> Get(TriggersRequest triggersRequest, CancellationToken cancellationToken)
         {
-            var reqFields = triggersRequest?.triggerFields as IftttEventRequest;
-
-            if (reqFields == null)
+            if (triggersRequest?.triggerFields == null)
             {
                 var error = new
                 {
@@ -44,6 +42,8 @@
 
                 return BadRequest(error);
             }
+
+            var reqFields = triggersRequest?.triggerFields as IftttEventRequest;
 
             if (reqFields.country == null || reqFields.city == null || reqFields.postal_code == null || reqFields.region == null)
             {
