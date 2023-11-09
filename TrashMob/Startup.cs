@@ -68,7 +68,7 @@ namespace TrashMob
                                     {
                                         new
                                         {
-                                            error = "Invalid access token."
+                                            message = "Invalid access token."
                                         }
                                     }
                                 };

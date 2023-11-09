@@ -108,7 +108,7 @@
                     {
                         new
                         {
-                            error = "triggerFields missing from request body."
+                            message = "triggerFields missing from request body."
                         }
                     }
                 };
@@ -126,7 +126,7 @@
                     {
                         new
                         {
-                            error = "triggerFields must have city, region, country and postal_code."
+                            message = "triggerFields must have city, region, country and postal_code."
                         }
                     }
                 };
