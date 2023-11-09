@@ -3,6 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.Json;
+    using System.Text.Json.Nodes;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
@@ -20,29 +22,29 @@
             this.eventRepository = eventRepository;
         }
 
-        public async Task<List<IftttEventResponse>> GetEventsTriggerDataAsync(TriggersRequest triggerRequest, Guid userId, CancellationToken cancellationToken)
+        public async Task<List<IftttEventResponse>> GetEventsTriggerDataAsync(TriggersRequest triggersRequest, Guid userId, CancellationToken cancellationToken)
         {
-            if (triggerRequest == null)
+            if (triggersRequest == null)
             {
-                throw new ArgumentNullException(nameof(triggerRequest));
+                throw new ArgumentNullException(nameof(triggersRequest));
             }
 
             // See if the trigger already exists
-            var trigger = Repository.Get(t => t.TriggerId == triggerRequest.trigger_identity).FirstOrDefault();
+            var trigger = Repository.Get(t => t.TriggerId == triggersRequest.trigger_identity).FirstOrDefault();
 
             // Store Trigger in database if it does not exist
             if (trigger == null)       
             {
                 trigger = new IftttTrigger()
                 {
-                    TriggerId = triggerRequest.trigger_identity,
+                    TriggerId = triggersRequest.trigger_identity,
                     CreatedByUserId = userId,
                     LastUpdatedByUserId = userId,
                     CreatedDate = DateTime.UtcNow,
                     LastUpdatedDate = DateTime.UtcNow,
-                    TriggerFields = triggerRequest.triggerFields.ToString(),
-                    IftttSource = triggerRequest.ifttt_source.ToString(),
-                    Limit = triggerRequest.limit,
+                    TriggerFields = triggersRequest.triggerFields.ToString(),
+                    IftttSource = triggersRequest.ifttt_source.ToString(),
+                    Limit = triggersRequest.limit,
                     UserId = userId,
                 };
 
@@ -50,7 +52,7 @@
             }
 
             // Get the Slugs
-            var eventFields = triggerRequest.triggerFields as IftttEventRequest;
+            var eventFields = JsonSerializer.Deserialize<IftttEventRequest>(triggersRequest.triggerFields.ToString());
 
             IQueryable<Event> events;
 
@@ -71,7 +73,7 @@
             var triggersResponses = new List<IftttEventResponse>();
 
             // Get all the public events in the future
-            foreach (var mobEvent in events.Where(e => e.IsEventPublic && e.EventDate >= DateTimeOffset.UtcNow).ToList().OrderByDescending(e => e.CreatedDate).Take(triggerRequest.limit))
+            foreach (var mobEvent in events.Where(e => e.IsEventPublic && e.EventDate >= DateTimeOffset.UtcNow).ToList().OrderByDescending(e => e.CreatedDate).Take(triggersRequest.limit))
             {
                 var triggersResponse = new IftttEventResponse();
                 triggersResponse.meta = new MetaResponse()
@@ -95,5 +97,45 @@
 
             return triggersResponses;
         }
+
+        public object ValidateRequest(TriggersRequest triggersRequest)
+        {
+            if (triggersRequest?.triggerFields == null)
+            {
+                var error = new
+                {
+                    errors = new JsonArray
+                    {
+                        new
+                        {
+                            error = "triggerFields missing from request body."
+                        }
+                    }
+                };
+
+                return error;
+            }
+
+            var eventFields = JsonSerializer.Deserialize<IftttEventRequest>(triggersRequest.triggerFields.ToString());
+
+            if (eventFields.country == null || eventFields.city == null || eventFields.postal_code == null || eventFields.region == null)
+            {
+                var error = new
+                {
+                    errors = new JsonArray
+                    {
+                        new
+                        {
+                            error = "triggerFields must have city, region, country and postal_code."
+                        }
+                    }
+                };
+
+                return error;
+            }
+
+            return null;
+        }
+
     }
 }
