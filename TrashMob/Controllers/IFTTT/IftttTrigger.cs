@@ -8,13 +8,12 @@
 
         public IftttTrigger()
         {
-
             new_event_created = new Dictionary<string, string>()
                 {
-                    { "city", "Issaquah" },
+                    { "city", "" },
                     { "region", "Washington" },
                     { "country", "United States" },
-                    { "postal_code", "98029" }
+                    { "postal_code", "" }
                 };
         }
     }
