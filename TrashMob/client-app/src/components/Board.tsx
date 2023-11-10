@@ -6,6 +6,7 @@ import DarylBarber from './assets/boardOfDirectors/darylbarber.jpg';
 import JakeDiliberto from './assets/boardOfDirectors/JakeDiliberto.svg';
 import KevinGleason from './assets/boardOfDirectors/KevinGleason.svg';
 import SandraMau from './assets/boardOfDirectors/SandraMau.png';
+import CynthiaMitchell from './assets/boardOfDirectors/CynthiaMitchell.png';
 import RobertRund from './assets/boardOfDirectors/RobertRund.jpg';
 import SofiaSamuels from './assets/boardOfDirectors/SofiaSamuels.png';
 import ValerieWilden from './assets/boardOfDirectors/ValerieWilden.svg';
@@ -135,6 +136,32 @@ export const Board: React.FC = () => {
                             <p className='font-size-sm color-grey'>Sandra is VP of Product for Cloud Solutions at Clarivate (NYSE:CLVT). Prior to joining Clarivate via acquisition, she was the CEO and Founder of TrademarkVision, an award-winning AI/Computer Vision startup doing visual brand protection.</p>
                             <p className='font-size-sm color-grey'>Sandra is very active in supporting tech and startup communities. She was the Founding Chair of IEEE QLD Women in Engineering, and listed as one of Australia's Top 50 Female Programmers by Pollenizer 2014, and one of Australia's Top 100 Most Influential Engineers by Engineer's Australia 2015. She's also a regular participant in hackathons including past GovHacks and International Women's Day. She was recognised in 2018 by Pittsburgh Business Times with the Pittsburgh Innovator Award and by QUT with the Innovation and Entrepreneurship Outstanding Alumni Award.</p>
                             <p className='font-size-sm color-grey'>She holds a Masters in Robotics from Carnegie Mellon University, a Bachelors in Engineering Science (Aerospace) from University of Toronto, and an MBA from Queensland University of Technology (QUT).</p>
+                        </Col>
+                    </Row>
+                </div>
+                <div className='p-4 directorCard'>
+                    <Row>
+                        <Col md={5}>
+                            <Image src={CynthiaMitchell} alt="Cynthia Mitchell" className="h-100 mt-0 object-fit-cover rounded" />
+                        </Col>
+                        <Col md={7}>
+                            <div className='d-flex justify-content-between align-items-center'>
+                                <h2 className='m-0 fw-500 font-size-xl color-primary '>Cynthia Mitchell</h2>
+                                <a href="https://www.linkedin.com/in/cynthia-mitchell/"><Image src={linkedIn} alt="linkedIn icon" className="h-100 mt-0 object-fit-cover" /></a>
+                            </div>
+                            <h5 className='my-3 fw-500 color-grey'>Member at large</h5>
+                            <p className='font-size-sm color-grey'>Cynthia Mitchell is a serial tech and media entrepreneur, C-Suite advisor to startups and
+                                board member. Mitchell has worked for more than 50 different companies across an array of
+                                industries including technology, environmental, energy, construction, health, media, fashion
+                                and entertainment. Brands include American Broadcasting Company, Time Warner, Meredith
+                                Corporation, Maclean Hunter, Times Mirror, Kaiser Permanente, Mutual of Omaha, and The
+                                Summer Olympic Games among others. As a strategist, she has created programs for leading
+                                global brands such as Toyota, Nissan, Honda, Coors, Nike, Rolex, and American Express.
+                                Over the past several years, she has worked with the Government of India in partnership with
+                                The Netherlands to develop biomass plants that recycle agricultural waste into green energy
+                                and biofertilizers. She has also led private enterprise initiatives to develop biomass
+                                innovation for construction, packaging, displays and other applications.</p>
+                            <p className='font-size-sm color-grey'>Mitchell lives in Southern California. She is the mother of two daughters – both also entrepreneurs. She is a lifelong equestrian and breeder, a passionate gardener and believes in the collective power of personal service and stewardship to make the world a better, healthier place for all its inhabitants.</p>
                         </Col>
                     </Row>
                 </div>
