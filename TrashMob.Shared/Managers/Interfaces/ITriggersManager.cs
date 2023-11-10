@@ -9,5 +9,7 @@
     public interface ITriggersManager
     {
         public Task<List<IftttEventResponse>> GetEventsTriggerDataAsync(TriggersRequest triggerRequest, Guid userId, CancellationToken cancellationToken);
+
+        public object ValidateRequest(TriggersRequest triggersRequest);
     }
 }

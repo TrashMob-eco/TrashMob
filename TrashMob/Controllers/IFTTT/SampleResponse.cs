@@ -1,11 +1,9 @@
 ﻿namespace TrashMob.Controllers.IFTTT
 {
-    using System.Collections.Generic;
-
     public class SampleResponse
     {
-        public string accessToken { get; set; } = "XXX";
+        public string accessToken { get; set; }
 
-        public List<Sample> samples = new() { new Sample() };
+        public Sample samples { get; set; }
     }
 }

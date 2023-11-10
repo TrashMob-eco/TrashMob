@@ -289,3 +289,26 @@ The production mobile app can be downloaded here:
 [Android](https://play.google.com/store/apps/details?id=eco.trashmob.trashmobmobileapp)
 
 [iOS](https://apps.apple.com/us/app/trashmob/id1599996743) 
+
+## IFTTT Testing
+
+IFTTT.com testing is currently in progress. There are a couple of steps needed to get this working.
+
+  1. Log in to the TrashMob.eco Dev site, with the User ID you wish to use for testing.
+  1. Hit F-12 to open the developer tools
+  1. Go to the Network tab
+  1. Click on the 'My Dashboard' link in the top of the TrashMob.eco web page
+  1. In the network tab, look for a call to the TrashMob.eco api.
+  1. Click on the call, and look for the Authorization header in the Request Headers section.
+  1. Copy the value of the Authorization header
+  1. Log in to the Azure Portal, and go to the Sandbox subscription
+  1. Go to the Dev KeyVault
+  1. Create a new version of the 'IFTTTAuthToken' secret with the AuthHeader value as the value of the secret
+  1. Go to IFTTT.com and log in with an ID which has access to the TrashMobDev_Eco service
+  1. Run the Endpoint Tests
+
+## IFTTT Test User ID
+
+The test user id needed for submitting the IFTTT tests is stored in the Dev KeyVault as IFTTTTestUserId. 
+The test user password needed for submitting the IFTTT tests is stored in the Dev KeyVault as IFTTTPasswordWebsite.
+The password needed for logging in to the Email account for the test user id is stored in the Dev KeyVault as IFTTTTestPassword.

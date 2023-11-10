@@ -3,9 +3,12 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
@@ -40,6 +43,7 @@
 
                 if (user == null)
                 {
+                    AuthorizationFailure.Failed(new List<AuthorizationFailureReason>() { new AuthorizationFailureReason(this, $"User with email '{email}' not found.") });
                     return;
                 }
 
@@ -60,11 +64,15 @@
                     {
                         context.Succeed(requirement);
                     }
+                    else
+                    {
+                        AuthorizationFailure.Failed(new List<AuthorizationFailureReason>() { new AuthorizationFailureReason(this, "User is not a partner user and is not a site admin.") });
+                    }
                 }
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error occured while authenticating user.");
+                logger.LogError(ex, "Error occurred while authenticating user.");
             }
         }
     }
