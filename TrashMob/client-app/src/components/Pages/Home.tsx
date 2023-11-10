@@ -73,7 +73,6 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
                     <img src={Globe2} className="position-absolute p-0 m-0 h-100 banner-globe" alt="Globe" ></img>
                 </Row>
             </Container>
-            <div className="bg-white pb-4"><Image src={Drawings} alt="Drawings of trash" className="w-100" /></div>
             <div className='bg-white'>
                 <Container className='py-5'>
                     <Row className='py-5'>
