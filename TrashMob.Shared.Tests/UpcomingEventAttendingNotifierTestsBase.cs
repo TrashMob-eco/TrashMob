@@ -22,7 +22,7 @@ namespace TrashMob.Shared.Tests
             // Arrange
 
             // Act
-            await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
+            await Engine.GenerateNotificationsAsync();
 
             // Assert
             UserNotificationManager.Verify(_ => _.AddAsync(It.IsAny<UserNotification>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -42,7 +42,7 @@ namespace TrashMob.Shared.Tests
             UserManager.Setup(u => u.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // Act
-            await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
+            await Engine.GenerateNotificationsAsync();
 
             // Assert
             EventManager.Verify(_ => _.GetActiveEventsAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -65,7 +65,7 @@ namespace TrashMob.Shared.Tests
             UserManager.Setup(u => u.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // Act
-            await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
+            await Engine.GenerateNotificationsAsync();
 
             // Assert
             EventManager.Verify(_ => _.GetActiveEventsAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -88,7 +88,7 @@ namespace TrashMob.Shared.Tests
             UserManager.Setup(u => u.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // Act
-            await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
+            await Engine.GenerateNotificationsAsync();
 
             // Assert
             UserManager.Verify(_ => _.GetAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -109,7 +109,7 @@ namespace TrashMob.Shared.Tests
             UserManager.Setup(u => u.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // Act
-            await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
+            await Engine.GenerateNotificationsAsync();
 
             // Assert
             UserManager.Verify(_ => _.GetAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -135,7 +135,7 @@ namespace TrashMob.Shared.Tests
             EventAttendeeManager.Setup(ea => ea.GetEventsUserIsAttendingAsync(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(events);
 
             // Act
-            await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
+            await Engine.GenerateNotificationsAsync();
 
             // Assert
             UserManager.Verify(_ => _.GetAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -171,7 +171,7 @@ namespace TrashMob.Shared.Tests
             UserNotificationManager.Setup(u => u.GetCollectionAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(userNotifications);
 
             // Act
-            await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
+            await Engine.GenerateNotificationsAsync();
 
             // Assert
             UserManager.Verify(_ => _.GetAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -199,7 +199,7 @@ namespace TrashMob.Shared.Tests
             // UserNotificationManager.Setup(ea => ea.GetAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(userNotifications);
 
             // Act
-            await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
+            await Engine.GenerateNotificationsAsync();
 
             // Assert
             UserManager.Verify(_ => _.GetAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -224,7 +224,7 @@ namespace TrashMob.Shared.Tests
             UserManager.Setup(u => u.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // Act
-            await Engine.GenerateNotificationsAsync().ConfigureAwait(false);
+            await Engine.GenerateNotificationsAsync();
 
             // Assert
             UserManager.Verify(_ => _.GetAsync(It.IsAny<CancellationToken>()), Times.Once);
