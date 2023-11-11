@@ -480,8 +480,9 @@
                     new EventType { Id = 13, Name = "Social Event", Description = "Social Event", DisplayOrder = 13, IsActive = true },
                     new EventType { Id = 14, Name = "Other", Description = "Other", DisplayOrder = 16, IsActive = true },
                     new EventType { Id = 15, Name = "Snow Removal", Description = "Snow Removal", DisplayOrder = 15, IsActive = true },
-                    new EventType { Id = 16, Name = "Streetside Cleanup", Description = "Streetside Cleanup", DisplayOrder = 2, IsActive = true });
-            });
+                    new EventType { Id = 16, Name = "Streetside Cleanup", Description = "Streetside Cleanup", DisplayOrder = 2, IsActive = true },
+                    new EventType { Id = 17, Name = "Habitat Restoration", Description = "Habitat Restoration", DisplayOrder = 17, IsActive = true });
+        });
 
             modelBuilder.Entity<MessageRequest>(entity =>
             {
