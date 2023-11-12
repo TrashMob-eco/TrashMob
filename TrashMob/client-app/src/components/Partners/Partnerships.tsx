@@ -30,8 +30,11 @@ export const Partnerships: FC<any> = () => {
                     </Col>
                     <Col sm={5}>
                         <Row>
-                            <Image src={Ihca} alt="Issaquah Highlands Community Association" className="graphic-large mx-auto" />
-                            <Image src={TroutUnlimited} alt="Trout Unlimited" className="graphic-large mx-auto" />
+                            <h1 className='fw-600'>Our Partners</h1>
+                        </Row>
+                        <Row>
+                            <a href="https://issaquahhighlands.com/" target="_blank" rel="noreferrer"><Image src={Ihca} alt="Issaquah Highlands Community Association" className="graphic-large mx-auto" /></a>
+                            <a href="https://troutunlimited.org" target="_blank" rel="noreferrer"><Image src={TroutUnlimited} alt="Trout Unlimited" className="graphic-large mx-auto" /></a> 
                         </Row>
                     </Col>
                 </Row>
