@@ -21,7 +21,7 @@ namespace TrashMob.Shared.Tests
             var engine = new EventSummaryHostReminderNotifier(EventManager.Object, UserManager.Object, EventAttendeeManager.Object, UserNotificationManager.Object, NonEventUserNotificationManager.Object, EmailSender.Object, EmailManager.Object, MapRepository.Object, Logger.Object);
 
             // Act
-            await engine.GenerateNotificationsAsync().ConfigureAwait(false);
+            await engine.GenerateNotificationsAsync();
 
             // Assert
             EmailManager.Verify(_ => _.SendTemplatedEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<object>(), It.IsAny<List<EmailAddress>>(), It.IsAny<CancellationToken>()), Times.Never);

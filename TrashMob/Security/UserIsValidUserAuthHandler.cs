@@ -1,10 +1,13 @@
 ﻿namespace TrashMob.Security
 {
+    using EllipticCurve.Utils;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using System;
+    using System.Collections.Generic;
     using System.Security.Claims;
     using System.Text;
     using System.Threading;
@@ -37,6 +40,7 @@
 
                 if (user == null)
                 {
+                    AuthorizationFailure.Failed(new List<AuthorizationFailureReason>() { new AuthorizationFailureReason(this, $"User with email '{email}' not found.") });
                     return;
                 }
 
@@ -49,7 +53,7 @@
             }
             catch(Exception ex)
             {
-                logger.LogError(ex, "Error occured while authenticating user. {0}", JsonConvert.SerializeObject(context.User));
+                logger.LogError(ex, "Error occurred while authenticating user. {0}", JsonConvert.SerializeObject(context.User));
             }
         }
     }

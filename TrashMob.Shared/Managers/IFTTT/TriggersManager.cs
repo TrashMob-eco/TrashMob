@@ -3,6 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.Json;
+    using System.Text.Json.Nodes;
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
@@ -20,29 +22,29 @@
             this.eventRepository = eventRepository;
         }
 
-        public async Task<List<IftttEventResponse>> GetEventsTriggerDataAsync(TriggersRequest triggerRequest, Guid userId, CancellationToken cancellationToken)
+        public async Task<List<IftttEventResponse>> GetEventsTriggerDataAsync(TriggersRequest triggersRequest, Guid userId, CancellationToken cancellationToken)
         {
-            if (triggerRequest == null)
+            if (triggersRequest == null)
             {
-                throw new ArgumentNullException(nameof(triggerRequest));
+                throw new ArgumentNullException(nameof(triggersRequest));
             }
 
             // See if the trigger already exists
-            var trigger = Repository.Get(t => t.TriggerId == triggerRequest.trigger_identity).FirstOrDefault();
+            var trigger = Repository.Get(t => t.TriggerId == triggersRequest.trigger_identity).FirstOrDefault();
 
             // Store Trigger in database if it does not exist
             if (trigger == null)       
             {
                 trigger = new IftttTrigger()
                 {
-                    TriggerId = triggerRequest.trigger_identity,
+                    TriggerId = triggersRequest.trigger_identity,
                     CreatedByUserId = userId,
                     LastUpdatedByUserId = userId,
                     CreatedDate = DateTime.UtcNow,
                     LastUpdatedDate = DateTime.UtcNow,
-                    TriggerFields = triggerRequest.triggerFields.ToString(),
-                    IftttSource = triggerRequest.ifttt_source.ToString(),
-                    Limit = triggerRequest.limit,
+                    TriggerFields = triggersRequest.triggerFields.ToString(),
+                    IftttSource = triggersRequest.ifttt_source.ToString(),
+                    Limit = triggersRequest.limit,
                     UserId = userId,
                 };
 
@@ -50,7 +52,7 @@
             }
 
             // Get the Slugs
-            var eventFields = triggerRequest.triggerFields as IftttEventRequest;
+            var eventFields = JsonSerializer.Deserialize<IftttEventRequest>(triggersRequest.triggerFields.ToString());
 
             IQueryable<Event> events;
 
@@ -61,38 +63,78 @@
             }
             else
             {
-                events = eventRepository.Get(e => (e.City == eventFields.City || string.IsNullOrWhiteSpace(eventFields.City)) &&
-                                                      (e.Region == eventFields.Region || string.IsNullOrWhiteSpace(eventFields.Region)) &&
-                                                      (e.Country == eventFields.Country || string.IsNullOrWhiteSpace(eventFields.Country)) &&
-                                                      (e.PostalCode == eventFields.Postal_Code || string.IsNullOrWhiteSpace(eventFields.Postal_Code)));
+                events = eventRepository.Get(e => (e.City == eventFields.city || string.IsNullOrWhiteSpace(eventFields.city)) &&
+                                                      (e.Region == eventFields.region || string.IsNullOrWhiteSpace(eventFields.region)) &&
+                                                      (e.Country == eventFields.country || string.IsNullOrWhiteSpace(eventFields.country)) &&
+                                                      (e.PostalCode == eventFields.postal_code || string.IsNullOrWhiteSpace(eventFields.postal_code)));
             }
 
             
             var triggersResponses = new List<IftttEventResponse>();
 
             // Get all the public events in the future
-            foreach (var mobEvent in events.Where(e => e.IsEventPublic && e.EventDate >= DateTimeOffset.UtcNow).ToList())
+            foreach (var mobEvent in events.Where(e => e.IsEventPublic && e.EventDate >= DateTimeOffset.UtcNow).ToList().OrderByDescending(e => e.CreatedDate).Take(triggersRequest.limit))
             {
                 var triggersResponse = new IftttEventResponse();
                 triggersResponse.meta = new MetaResponse()
                 {
                     id = mobEvent.Id.ToString(),
-                    timestamp = mobEvent.EventDate.Ticks
+                    timestamp = mobEvent.CreatedDate.Value.ToUnixTimeSeconds()
                 };
 
-                triggersResponse.Event_Name = mobEvent.Name;
-                triggersResponse.EventDate = mobEvent.EventDate;
-                triggersResponse.Street_Address = mobEvent.StreetAddress;
-                triggersResponse.City = mobEvent.City;
-                triggersResponse.Region = mobEvent.Region;
-                triggersResponse.Country = mobEvent.Country;
-                triggersResponse.Postal_Code = mobEvent.PostalCode;
-                triggersResponse.Event_Details_Url = mobEvent.EventDetailsUrl();
+                triggersResponse.event_id = mobEvent.Id.ToString();
+                triggersResponse.event_name = mobEvent.Name;
+                triggersResponse.event_date = mobEvent.EventDate;
+                triggersResponse.street_address = mobEvent.StreetAddress;
+                triggersResponse.city = mobEvent.City;
+                triggersResponse.region = mobEvent.Region;
+                triggersResponse.country = mobEvent.Country;
+                triggersResponse.postal_code = mobEvent.PostalCode;
+                triggersResponse.event_details_url = mobEvent.EventDetailsUrl();
 
                 triggersResponses.Add(triggersResponse);
             }
 
             return triggersResponses;
+        }
+
+        public object ValidateRequest(TriggersRequest triggersRequest)
+        {
+            if (triggersRequest?.triggerFields == null)
+            {
+                var error = new
+                {
+                    errors = new JsonArray
+                    {
+                        new
+                        {
+                            message = "triggerFields missing from request body."
+                        }
+                    }
+                };
+
+                return error;
+            }
+
+            var eventFields = JsonSerializer.Deserialize<IftttEventRequest>(triggersRequest.triggerFields.ToString());
+
+            if (eventFields.country == null || eventFields.city == null || eventFields.postal_code == null || eventFields.region == null)
+            {
+                var error = new
+                {
+                    errors = new JsonArray
+                    {
+                        new
+                        {
+                            message = "triggerFields must have city, region, country and postal_code."
+                        }
+                    }
+                };
+
+                return error;
+            }
+
+            return null;
         }
     }
 }

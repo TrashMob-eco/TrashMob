@@ -2,8 +2,7 @@ import { FC, useEffect, useState } from 'react'
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { getDefaultHeaders } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
-import { Col, Container, Image, Row } from 'react-bootstrap';
-import Drawings from '../assets/home/Drawings.png';
+import { Col, Container, Row } from 'react-bootstrap';
 import Globe2 from '../assets/globe2.png';
 import Logo from '../assets/logo.svg';
 import Calendar from '../assets/home/Calendar.svg';
@@ -73,7 +72,6 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
                     <img src={Globe2} className="position-absolute p-0 m-0 h-100 banner-globe" alt="Globe" ></img>
                 </Row>
             </Container>
-            <div className="bg-white pb-4"><Image src={Drawings} alt="Drawings of trash" className="w-100" /></div>
             <div className='bg-white'>
                 <Container className='py-5'>
                     <Row className='py-5'>

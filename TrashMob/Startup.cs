@@ -1,11 +1,12 @@
 namespace TrashMob
 {
-    using Azure.Core.Extensions;
     using Azure.Identity;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Azure;
@@ -15,6 +16,9 @@ namespace TrashMob
     using Microsoft.Identity.Web;
     using Microsoft.OpenApi.Models;
     using System;
+    using System.Text;
+    using System.Text.Json;
+    using System.Text.Json.Nodes;
     using System.Text.Json.Serialization;
     using TrashMob.Security;
     using TrashMob.Shared;
@@ -44,13 +48,42 @@ namespace TrashMob
                     Configuration.Bind("AzureAdB2C", options);
 
                     options.TokenValidationParameters.NameClaimType = "name";
+                    options.TokenValidationParameters.ValidateLifetime = true;
+                    options.TokenValidationParameters.ValidateAudience = false;
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnChallenge = async context =>
+                        {
+                            context.HandleResponse();
+
+                            if (context.AuthenticateFailure != null)
+                            {
+                                context.Response.StatusCode = 401;
+                                context.Response.ContentType = "application/json";
+
+                                var error = new
+                                {
+                                    errors = new JsonArray
+                                    {
+                                        new
+                                        {
+                                            message = "Invalid access token."
+                                        }
+                                    }
+                                };
+
+                                var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(error));
+                                await context.Response.Body.WriteAsync(bytes);
+                            }
+                        }
+                    };
                 },
 
             options => { Configuration.Bind("AzureAdB2C", options); });
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(AuthorizationPolicyConstants.IftttServiceKey, policy => policy.AddRequirements(new IftttChannelKeyRequirement()));
                 options.AddPolicy(AuthorizationPolicyConstants.ValidUser, policy => policy.AddRequirements(new UserIsValidUserRequirement()));
                 options.AddPolicy(AuthorizationPolicyConstants.UserOwnsEntity, policy => policy.AddRequirements(new UserOwnsEntityRequirement()));
                 options.AddPolicy(AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin, policy => policy.AddRequirements(new UserOwnsEntityOrIsAdminRequirement()));
@@ -65,7 +98,10 @@ namespace TrashMob
             });
 
             services.AddControllers().AddJsonOptions(x =>
-                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+            {
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            });
 
             services.AddDbContext<MobDbContext>(c => c.UseLazyLoadingProxies());
 

@@ -18,7 +18,7 @@ namespace TrashMob.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .UseCollation("SQL_Latin1_General_CP1_CI_AS")
-                .HasAnnotation("ProductVersion", "7.0.4")
+                .HasAnnotation("ProductVersion", "7.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -549,6 +549,14 @@ namespace TrashMob.Migrations
                             DisplayOrder = 2,
                             IsActive = true,
                             Name = "Streetside Cleanup"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Description = "Habitat Restoration",
+                            DisplayOrder = 17,
+                            IsActive = true,
+                            Name = "Habitat Restoration"
                         });
                 });
 

@@ -8,6 +8,7 @@
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Managers.Partners;
     using TrashMob.Shared.Managers;
+    using TrashMob.Shared.Managers.IFTTT;
 
     public static class ServiceBuilder
     {
@@ -70,6 +71,8 @@
             services.AddScoped<IMapManager, MapManager>();
             services.AddScoped<ISecretRepository, SecretRepository>();
             services.AddScoped<INotificationManager, NotificationManager>();
+            services.AddScoped<IQueriesManager, QueriesManager>();
+            services.AddScoped<ITriggersManager, TriggersManager>();
         }
 
         public static void AddRepositories(IServiceCollection services)
@@ -83,6 +86,7 @@
             services.AddScoped<ILookupRepository<EventStatus>, LookupRepository<EventStatus>>();
             services.AddScoped<IBaseRepository<EventSummary>, BaseRepository<EventSummary>>();
             services.AddScoped<ILookupRepository<EventType>, LookupRepository<EventType>>();
+            services.AddScoped<IBaseRepository<IftttTrigger>, BaseRepository<IftttTrigger>>();
             services.AddScoped<ILookupRepository<InvitationStatus>, LookupRepository<InvitationStatus>>();
             services.AddScoped<IKeyedRepository<MessageRequest>, KeyedRepository<MessageRequest>>();
             services.AddScoped<IKeyedRepository<NonEventUserNotification>, KeyedRepository<NonEventUserNotification>>();
