@@ -1,6 +1,7 @@
 import { FC } from 'react'
 import { Col, Container, Image, Row } from 'react-bootstrap';
-import heroImg from '../assets/partnerships/whatIsPartnerships.png';
+import Ihca from '../assets/partnerships/logos/IHCA.png';
+import TroutUnlimited from '../assets/partnerships/logos/TROUTUNLIMITEDLogo.png';
 import Safetykits from '../assets/partnerships/Safetykits.svg';
 import Supplies from '../assets/partnerships/Supplies.svg';
 import TrashDisposal from '../assets/partnerships/TrashDisposal.svg';
@@ -28,7 +29,10 @@ export const Partnerships: FC<any> = () => {
                             Looking for supplies and services for your next event? Invite a partnership from your city! Have supplies and services to offer? Become a partner!</p>
                     </Col>
                     <Col sm={5}>
-                        <Image src={heroImg} alt="garbage being loaded into garbage truck" className="mt-0 h-100" />
+                        <Row>
+                            <Image src={Ihca} alt="Issaquah Highlands Community Association" className="graphic-large mx-auto" />
+                            <Image src={TroutUnlimited} alt="Trout Unlimited" className="graphic-large mx-auto" />
+                        </Row>
                     </Col>
                 </Row>
             </Container>
