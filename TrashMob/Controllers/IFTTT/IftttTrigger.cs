@@ -19,15 +19,15 @@
             new_event_created = new Dictionary<string, string>()
                 {
                     { "city", "" },
-                    { "region", "Washington" },
-                    { "country", "United States" },
+                    { "region", "" },
+                    { "country", "" },
                     { "postal_code", "" }
                 };
 
             new_event_created_by_country = new Dictionary<string, string>()
                 {
                     { "city", "" },
-                    { "region", "Washington" },
+                    { "region", "" },
                     { "country", "United States" },
                     { "postal_code", "" }
                 };
@@ -42,7 +42,7 @@
 
             new_event_created_by_city = new Dictionary<string, string>()
                 {
-                    { "city", "" },
+                    { "city", "Issaquah" },
                     { "region", "Washington" },
                     { "country", "United States" },
                     { "postal_code", "" }
@@ -50,10 +50,10 @@
 
             new_event_created_by_postal_code = new Dictionary<string, string>()
                 {
-                    { "city", "" },
+                    { "city", "Issaquah" },
                     { "region", "Washington" },
                     { "country", "United States" },
-                    { "postal_code", "" }
+                    { "postal_code", "98027" }
                 };
         }
     }
