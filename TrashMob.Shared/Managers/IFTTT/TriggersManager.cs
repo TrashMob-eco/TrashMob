@@ -98,7 +98,7 @@
             return triggersResponses;
         }
 
-        public object ValidateRequest(TriggersRequest triggersRequest)
+        public object ValidateRequest(TriggersRequest triggersRequest, EventRequestType eventRequestType)
         {
             if (triggersRequest?.triggerFields == null)
             {
@@ -118,7 +118,7 @@
 
             var eventFields = JsonSerializer.Deserialize<IftttEventRequest>(triggersRequest.triggerFields.ToString());
 
-            if (eventFields.country == null || eventFields.city == null || eventFields.postal_code == null || eventFields.region == null)
+            if (eventRequestType >= EventRequestType.ByCountry && eventFields.country == null)
             {
                 var error = new
                 {
@@ -126,7 +126,55 @@
                     {
                         new
                         {
-                            message = "triggerFields must have city, region, country and postal_code."
+                            message = "triggerFields must have country."
+                        }
+                    }
+                };
+
+                return error;
+            }
+
+            if (eventRequestType >= EventRequestType.ByRegion && eventFields.region == null)
+            {
+                var error = new
+                {
+                    errors = new JsonArray
+                    {
+                        new
+                        {
+                            message = "triggerFields must have region."
+                        }
+                    }
+                };
+
+                return error;
+            }
+
+            if (eventRequestType >= EventRequestType.ByCity && eventFields.city == null)
+            {
+                var error = new
+                {
+                    errors = new JsonArray
+                    {
+                        new
+                        {
+                            message = "triggerFields must have city."
+                        }
+                    }
+                };
+
+                return error;
+            }
+
+            if (eventRequestType >= EventRequestType.ByPostalCode && eventFields.postal_code == null)
+            {
+                var error = new
+                {
+                    errors = new JsonArray
+                    {
+                        new
+                        {
+                            message = "triggerFields must have postal_code."
                         }
                     }
                 };

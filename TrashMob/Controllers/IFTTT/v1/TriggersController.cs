@@ -22,11 +22,95 @@
             this.triggersManager = triggersManager;
         }
 
-        [HttpPost("new_event_created")]
+        [HttpPost("any_new_event_created")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<ActionResult> Get(TriggersRequest triggersRequest, CancellationToken cancellationToken)
         {
-            var error = triggersManager.ValidateRequest(triggersRequest);
+            var error = triggersManager.ValidateRequest(triggersRequest, EventRequestType.All);
+
+            if (error != null)
+            {
+                return BadRequest(error);
+            }
+
+            var events = await triggersManager.GetEventsTriggerDataAsync(triggersRequest, UserId, cancellationToken);
+
+            var response = new DataResponse()
+            {
+                Data = events,
+            };
+
+            return Ok(response);
+        }
+
+        [HttpPost("new_event_created_by_country")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        public async Task<ActionResult> GetByCountry(TriggersRequest triggersRequest, CancellationToken cancellationToken)
+        {
+            var error = triggersManager.ValidateRequest(triggersRequest, EventRequestType.ByCountry);
+
+            if (error != null)
+            {
+                return BadRequest(error);
+            }
+
+            var events = await triggersManager.GetEventsTriggerDataAsync(triggersRequest, UserId, cancellationToken);
+
+            var response = new DataResponse()
+            {
+                Data = events,
+            };
+
+            return Ok(response);
+        }
+
+        [HttpPost("new_event_created_by_region")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        public async Task<ActionResult> GetByRegion(TriggersRequest triggersRequest, CancellationToken cancellationToken)
+        {
+            var error = triggersManager.ValidateRequest(triggersRequest, EventRequestType.ByRegion);
+
+            if (error != null)
+            {
+                return BadRequest(error);
+            }
+
+            var events = await triggersManager.GetEventsTriggerDataAsync(triggersRequest, UserId, cancellationToken);
+
+            var response = new DataResponse()
+            {
+                Data = events,
+            };
+
+            return Ok(response);
+        }
+
+        [HttpPost("new_event_created_by_city")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        public async Task<ActionResult> GetByCity(TriggersRequest triggersRequest, CancellationToken cancellationToken)
+        {
+            var error = triggersManager.ValidateRequest(triggersRequest, EventRequestType.ByCity);
+
+            if (error != null)
+            {
+                return BadRequest(error);
+            }
+
+            var events = await triggersManager.GetEventsTriggerDataAsync(triggersRequest, UserId, cancellationToken);
+
+            var response = new DataResponse()
+            {
+                Data = events,
+            };
+
+            return Ok(response);
+        }
+
+        [HttpPost("new_event_created_by_postal_code")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        public async Task<ActionResult> GetByPostalCode(TriggersRequest triggersRequest, CancellationToken cancellationToken)
+        {
+            var error = triggersManager.ValidateRequest(triggersRequest, EventRequestType.ByPostalCode);
 
             if (error != null)
             {
