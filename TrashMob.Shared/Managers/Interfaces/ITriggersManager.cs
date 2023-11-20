@@ -10,6 +10,6 @@
     {
         public Task<List<IftttEventResponse>> GetEventsTriggerDataAsync(TriggersRequest triggerRequest, Guid userId, CancellationToken cancellationToken);
 
-        public object ValidateRequest(TriggersRequest triggersRequest);
+        public object ValidateRequest(TriggersRequest triggersRequest, EventRequestType eventRequestType);
     }
 }
