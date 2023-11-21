@@ -1,7 +1,7 @@
+namespace TrashMobMobileApp.Authentication;
+
 using System.Diagnostics;
 using Microsoft.Identity.Client;
-
-namespace TrashMobMobileApp.Authentication;
 
 public class AuthService : IAuthService
 {

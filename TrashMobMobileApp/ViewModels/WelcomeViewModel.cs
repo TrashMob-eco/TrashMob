@@ -1,8 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿namespace TrashMobMobileApp.ViewModels;
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMobMobileApp.Authentication;
-
-namespace TrashMobMobileApp.ViewModels;
 
 public partial class WelcomeViewModel : ObservableObject
 {

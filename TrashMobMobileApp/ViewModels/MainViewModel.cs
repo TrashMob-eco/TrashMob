@@ -1,9 +1,11 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿#nullable enable
+
+namespace TrashMobMobileApp.ViewModels;
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Diagnostics;
 using TrashMobMobileApp.Authentication;
 using TrashMobMobileApp.Services;
-
-namespace TrashMobMobileApp.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {

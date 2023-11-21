@@ -67,6 +67,42 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Pages\SetUserLocationPreference.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\SearchLitterReportsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\SearchEventsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\MyDashboardPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\ViewLitterReportPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\SubmitLitterReportPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\HomePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\EventSummaryPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\EventDetailsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\EditEventPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\CreateEventPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\ContactUsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\WelcomePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -74,6 +110,45 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\TrashMob.Models\TrashMob.Models.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Pages\SetUserLocationPreference.xaml.cs">
+	    <DependentUpon>SetUserLocationPreference.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\SearchLitterReportsPage.xaml.cs">
+	    <DependentUpon>SearchLitterReportsPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\SearchEventsPage.xaml.cs">
+	    <DependentUpon>SearchEventsPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\MyDashboardPage.xaml.cs">
+	    <DependentUpon>MyDashboardPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\ViewLitterReportPage.xaml.cs">
+	    <DependentUpon>ViewLitterReportPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\SubmitLitterReportPage.xaml.cs">
+	    <DependentUpon>SubmitLitterReportPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\HomePage.xaml.cs">
+	    <DependentUpon>HomePage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\EventSummaryPage.xaml.cs">
+	    <DependentUpon>EventSummaryPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\EventDetailsPage.xaml.cs">
+	    <DependentUpon>EventDetailsPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\EditEventPage.xaml.cs">
+	    <DependentUpon>EditEventPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\CreateEventPage.xaml.cs">
+	    <DependentUpon>CreateEventPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\ContactUsPage.xaml.cs">
+	    <DependentUpon>ContactUsPage.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 	<!-- Build Properties must be defined within these property groups to ensure successful publishing
