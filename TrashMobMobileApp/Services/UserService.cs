@@ -1,8 +1,8 @@
+namespace TrashMobMobileApp.Services;
+
 using System.Net.Http.Json;
 using TrashMob.Models;
 using TrashMobMobileApp.Authentication;
-
-namespace TrashMobMobileApp.Services;
 
 public interface IUserService
 {

@@ -1,8 +1,12 @@
 ﻿namespace TrashMobMobileApp;
 
+using TrashMob.Models;
+
 public partial class App : Application
 {
-	public App()
+    public static User CurrentUser { get; set; }
+
+    public App()
 	{
 		InitializeComponent();
 

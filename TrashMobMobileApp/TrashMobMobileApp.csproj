@@ -60,10 +60,15 @@
 		<PackageReference Include="CommunityToolkit.Maui" Version="7.0.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Http.Polly" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Identity.Client" Version="4.57.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Polly.Extensions.Http" Version="3.0.0" />
+		<PackageReference Include="Sentry" Version="3.41.1" />
+		<PackageReference Include="Sentry.Maui" Version="3.41.1" />
 	</ItemGroup>
 
 	<ItemGroup>
