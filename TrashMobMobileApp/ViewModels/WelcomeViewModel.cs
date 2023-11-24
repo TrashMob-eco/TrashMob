@@ -19,6 +19,8 @@ public partial class WelcomeViewModel : ObservableObject
     [ObservableProperty]
     bool isError = false;
 
+    public StatisticsViewModel StatisticsViewModel { get; set; }
+
     [RelayCommand]
     private async Task SignIn()
     {
