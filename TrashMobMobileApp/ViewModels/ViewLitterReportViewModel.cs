@@ -2,9 +2,9 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-public partial class SubmitLitterReportViewModel : ObservableObject
+public partial class ViewLitterReportViewModel : ObservableObject
 {
-    public SubmitLitterReportViewModel()
+    public ViewLitterReportViewModel()
     {
     }
 

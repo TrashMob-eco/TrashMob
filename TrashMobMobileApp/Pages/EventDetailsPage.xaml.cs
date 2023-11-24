@@ -2,9 +2,9 @@ namespace TrashMobMobileApp.Pages;
 
 public partial class EventDetailsPage : ContentPage
 {
-    private readonly EventDetailsViewModel _viewModel;
+    private readonly ViewEventViewModel _viewModel;
 
-    public EventDetailsPage(EventDetailsViewModel viewModel)
+    public EventDetailsPage(ViewEventViewModel viewModel)
 	{
 		InitializeComponent();
         _viewModel = viewModel;

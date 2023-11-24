@@ -2,9 +2,9 @@ namespace TrashMobMobileApp.Pages;
 
 public partial class ViewLitterReportPage : ContentPage
 {
-    private readonly LitterReportViewModel _viewModel;
+    private readonly ViewLitterReportViewModel _viewModel;
 
-    public ViewLitterReportPage(LitterReportViewModel viewModel)
+    public ViewLitterReportPage(ViewLitterReportViewModel viewModel)
 	{
 		InitializeComponent();
         _viewModel = viewModel;

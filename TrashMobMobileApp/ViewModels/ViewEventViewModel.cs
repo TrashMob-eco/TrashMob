@@ -2,11 +2,13 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-public partial class EventDetailsViewModel : ObservableObject
+public partial class ViewEventViewModel : ObservableObject
 {
-    public EventDetailsViewModel()
+    public ViewEventViewModel()
     {
     }
+
+    public EventViewModel EventViewModel { get; set; }
 
     [ObservableProperty]
     bool isBusy = false;
