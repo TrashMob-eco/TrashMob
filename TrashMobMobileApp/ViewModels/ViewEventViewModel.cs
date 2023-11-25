@@ -8,7 +8,8 @@ public partial class ViewEventViewModel : ObservableObject
     {
     }
 
-    public EventViewModel EventViewModel { get; set; }
+    [ObservableProperty]
+    public EventViewModel eventViewModel;
 
     [ObservableProperty]
     bool isBusy = false;

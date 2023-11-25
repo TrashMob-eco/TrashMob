@@ -8,7 +8,8 @@ public partial class ViewLitterReportViewModel : ObservableObject
     {
     }
 
-    public LitterReportViewModel LitterReportViewModel { get; set; }
+    [ObservableProperty]
+    public LitterReportViewModel litterReportViewModel;
 
     [ObservableProperty]
     bool isBusy = false;

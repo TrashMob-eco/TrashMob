@@ -9,7 +9,7 @@ public partial class SearchLitterReportsViewModel : ObservableObject
     {
     }
 
-    public ObservableCollection<LitterReportViewModel> LitterReportViewModels { get; set; }
+    public ObservableCollection<LitterReportViewModel> LitterReportViewModels { get; set; } = new ObservableCollection<LitterReportViewModel>();
 
     [ObservableProperty]
     bool isBusy = false;

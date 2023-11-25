@@ -9,6 +9,9 @@ public partial class EditEventViewModel : ObservableObject
     }
 
     [ObservableProperty]
+    EventViewModel eventViewModel;
+
+    [ObservableProperty]
     bool isBusy = false;
 
     [ObservableProperty]

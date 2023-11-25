@@ -9,6 +9,24 @@ public partial class EventSummaryViewModel : ObservableObject
     }
 
     [ObservableProperty]
+    Guid eventId;
+
+    [ObservableProperty]
+    int numberOfBuckets;
+
+    [ObservableProperty]
+    int numberOfBags;
+
+    [ObservableProperty]
+    int durationInMinutes;
+
+    [ObservableProperty]
+    int actualNumberOfAttendees;
+
+    [ObservableProperty]
+    string notes;
+
+    [ObservableProperty]
     bool isBusy = false;
 
     [ObservableProperty]

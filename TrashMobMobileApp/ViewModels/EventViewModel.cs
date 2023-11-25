@@ -1,232 +1,46 @@
 ﻿namespace TrashMobMobileApp.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using TrashMob.Models;
 
 public partial class EventViewModel : ObservableObject
 {
-    private string name;
-
-    private string description;
-
-    private DateTimeOffset eventDate;
-
-    private int durationHours;
-
-    private int durationMinutes;
-
-    private int eventTypeId;
-
-    private int eventStatusId;
-
-    private string streetAddress;
-
-    private string city;
-
-    private string region;
-
-    private string country;
-
-    private string postalCode;
-
-    private double? latitude;
-
-    private double? longitude;
-
-    private int maxNumberOfParticipants;
-
-    private bool isEventPublic;
-
-    private string cancellationReason;
-
     public EventViewModel()
     {
     }
 
-    public string Name
-    {
-        get => name;
+    [ObservableProperty]
+    Guid id;
 
-        set
-        {
-            name = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty]
+    string name;
 
-    public string Description
-    {
-        get => description;
+    [ObservableProperty]
+    string description;
 
-        set
-        {
-            description = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty]
+    DateTimeOffset eventDate;
 
-    public DateTimeOffset EventDate
-    {
-        get => eventDate;
+    [ObservableProperty]
+    int durationHours;
 
-        set
-        {
-            eventDate = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty]
+    int durationMinutes;
 
-    public int DurationHours
-    {
-        get => durationHours;
+    [ObservableProperty]
+    int eventTypeId;
 
-        set
-        {
-            durationHours = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty]
+    int eventStatusId;
 
-    public int DurationMinutes
-    {
-        get => durationMinutes;
+    [ObservableProperty]
+    AddressViewModel addressViewModel;
 
-        set
-        {
-            durationMinutes = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty]
+    int maxNumberOfParticipants;
 
-    public int EventTypeId
-    {
-        get => eventTypeId;
+    [ObservableProperty]
+    bool isEventPublic;
 
-        set
-        {
-            eventTypeId = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public int EventStatusId
-    {
-        get => eventStatusId;
-
-        set
-        {
-            eventStatusId = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string StreetAddress
-    {
-        get => streetAddress;
-
-        set
-        {
-            streetAddress = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string City
-    {
-        get => city;
-
-        set
-        {
-            city = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string Region
-    {
-        get => region;
-
-        set
-        {
-            region = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string Country
-    {
-        get => country;
-
-        set
-        {
-            country = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string PostalCode
-    {
-        get => postalCode;
-
-        set
-        {
-            postalCode = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public double? Latitude
-    {
-        get => latitude;
-
-        set
-        {
-            latitude = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public double? Longitude
-    {
-        get => longitude;
-
-        set
-        {
-            longitude = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public int MaxNumberOfParticipants
-    {
-        get => maxNumberOfParticipants;
-
-        set
-        {
-            maxNumberOfParticipants = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsEventPublic
-    {
-        get => isEventPublic;
-
-        set
-        {
-            isEventPublic = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string CancellationReason
-    {
-        get => cancellationReason;
-
-        set
-        {
-            cancellationReason = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty]
+    string cancellationReason;
 }

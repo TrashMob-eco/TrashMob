@@ -3,6 +3,7 @@
 namespace TrashMobMobileApp.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using TrashMobMobileApp.Authentication;
 using TrashMobMobileApp.Services;
@@ -23,6 +24,8 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     private bool isBusy = false;
+
+    ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = new ObservableCollection<EventViewModel>();
 
     public async Task Init()
     {

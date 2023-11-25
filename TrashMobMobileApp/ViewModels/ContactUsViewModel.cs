@@ -4,48 +4,18 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 public partial class ContactUsViewModel : ObservableObject
 {
-    private string name;
-
-    private string email;
-
-    private string message;
-
     public ContactUsViewModel()
     {
     }
 
-    public string Name
-    {
-        get => name;
+    [ObservableProperty]
+    string name;
 
-        set
-        {
-            name = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty]
+    string email;
 
-    public string Email
-    {
-        get => email;
-
-        set
-        {
-            email = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string Message
-    {
-        get => message;
-
-        set
-        {
-            message = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty]
+    string message;
 
     [ObservableProperty]
     bool isBusy = false;

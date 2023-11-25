@@ -14,5 +14,6 @@ public partial class HomeViewModel : ObservableObject
     [ObservableProperty]
     bool isError = false;
 
-    public StatisticsViewModel StatisticsViewModel { get; set; }
+    [ObservableProperty]
+    StatisticsViewModel statisticsViewModel;
 }

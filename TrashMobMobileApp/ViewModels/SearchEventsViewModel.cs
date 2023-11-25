@@ -9,7 +9,7 @@ public partial class SearchEventsViewModel : ObservableObject
     {
     }
 
-    public ObservableCollection<EventViewModel> EventViewModels { get; set; }
+    public ObservableCollection<EventViewModel> EventViewModels { get; set; } = new ObservableCollection<EventViewModel>();
 
     [ObservableProperty]
     bool isBusy = false;

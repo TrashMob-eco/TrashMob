@@ -9,6 +9,9 @@ public partial class UserLocationPreferenceViewModel : ObservableObject
     }
 
     [ObservableProperty]
+    AddressViewModel addressViewModel;
+
+    [ObservableProperty]
     bool isBusy = false;
 
     [ObservableProperty]
