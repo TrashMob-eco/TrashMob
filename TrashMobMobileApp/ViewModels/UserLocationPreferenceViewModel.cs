@@ -2,7 +2,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-public partial class UserLocationPreferenceViewModel : ObservableObject
+public partial class UserLocationPreferenceViewModel : BaseViewModel
 {
     public UserLocationPreferenceViewModel()
     {
@@ -10,10 +10,4 @@ public partial class UserLocationPreferenceViewModel : ObservableObject
 
     [ObservableProperty]
     AddressViewModel addressViewModel;
-
-    [ObservableProperty]
-    bool isBusy = false;
-
-    [ObservableProperty]
-    bool isError = false;
 }

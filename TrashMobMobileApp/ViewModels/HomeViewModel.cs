@@ -2,17 +2,11 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-public partial class HomeViewModel : ObservableObject
+public partial class HomeViewModel : BaseViewModel
 {
     public HomeViewModel()
     {
     }
-
-    [ObservableProperty]
-    bool isBusy = false;
-
-    [ObservableProperty]
-    bool isError = false;
 
     [ObservableProperty]
     StatisticsViewModel statisticsViewModel;

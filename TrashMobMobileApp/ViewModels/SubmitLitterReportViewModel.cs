@@ -2,7 +2,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-public partial class SubmitLitterReportViewModel : ObservableObject
+public partial class SubmitLitterReportViewModel : BaseViewModel
 {
     public SubmitLitterReportViewModel()
     {
@@ -10,10 +10,4 @@ public partial class SubmitLitterReportViewModel : ObservableObject
 
     [ObservableProperty]
     public LitterReportViewModel litterReportViewModel;
-
-    [ObservableProperty]
-    bool isBusy = false;
-
-    [ObservableProperty]
-    bool isError = false;
 }

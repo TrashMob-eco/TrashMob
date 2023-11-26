@@ -2,7 +2,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-public partial class ContactUsViewModel : ObservableObject
+public partial class ContactUsViewModel : BaseViewModel
 {
     public ContactUsViewModel()
     {
@@ -16,10 +16,4 @@ public partial class ContactUsViewModel : ObservableObject
 
     [ObservableProperty]
     string message;
-
-    [ObservableProperty]
-    bool isBusy = false;
-
-    [ObservableProperty]
-    bool isError = false;
 }

@@ -107,9 +107,7 @@ public class AuthService : IAuthService
             InitializeClient();
         }
 
-        AuthenticationResult result = null;
-
-        result = await _pca
+        AuthenticationResult result = await _pca
                 .AcquireTokenInteractive(AuthConstants.Scopes)
                 .ExecuteAsync();
 

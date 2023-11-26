@@ -2,7 +2,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-public partial class CreateEventViewModel : ObservableObject
+public partial class CreateEventViewModel : BaseViewModel
 {
     public CreateEventViewModel()
     {
@@ -10,10 +10,4 @@ public partial class CreateEventViewModel : ObservableObject
 
     [ObservableProperty]
     EventViewModel eventViewModel;
-
-    [ObservableProperty]
-    bool isBusy = false;
-
-    [ObservableProperty]
-    bool isError = false;
 }

@@ -2,15 +2,9 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-public partial class SocialMediaShareViewModel : ObservableObject
+public partial class SocialMediaShareViewModel : BaseViewModel
 {
     public SocialMediaShareViewModel()
     {
     }
-
-    [ObservableProperty]
-    bool isBusy = false;
-
-    [ObservableProperty]
-    bool isError = false;
 }

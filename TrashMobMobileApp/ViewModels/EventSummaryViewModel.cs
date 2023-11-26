@@ -2,7 +2,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-public partial class EventSummaryViewModel : ObservableObject
+public partial class EventSummaryViewModel : BaseViewModel
 {
     public EventSummaryViewModel()
     {
@@ -25,10 +25,4 @@ public partial class EventSummaryViewModel : ObservableObject
 
     [ObservableProperty]
     string notes;
-
-    [ObservableProperty]
-    bool isBusy = false;
-
-    [ObservableProperty]
-    bool isError = false;
 }

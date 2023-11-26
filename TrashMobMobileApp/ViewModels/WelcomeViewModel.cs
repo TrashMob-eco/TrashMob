@@ -3,31 +3,41 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMobMobileApp.Authentication;
+using TrashMobMobileApp.Data;
 
-public partial class WelcomeViewModel : ObservableObject
+public partial class WelcomeViewModel : BaseViewModel
 {
-    private readonly IAuthService _authService;
+    private readonly IAuthService authService;
+    private readonly IStatsRestService statsRestService;
 
-    public WelcomeViewModel(IAuthService authService)
+    public WelcomeViewModel(IAuthService authService, IStatsRestService statsRestService)
     {
-        _authService = authService;
+        this.authService = authService;
+        this.statsRestService = statsRestService;        
     }
 
     [ObservableProperty]
-    bool isBusy = false;
-
-    [ObservableProperty]
-    bool isError = false;
-
-    [ObservableProperty]
     StatisticsViewModel statisticsViewModel;
+
+    public async Task Init()
+    {
+        var stats = await statsRestService.GetStatsAsync();
+
+        StatisticsViewModel = new StatisticsViewModel
+        {
+            TotalAttendees = stats.TotalParticipants,
+            TotalBags = stats.TotalBags,
+            TotalEvents = stats.TotalEvents,
+            TotalHours = stats.TotalHours,
+        };
+    }
 
     [RelayCommand]
     private async Task SignIn()
     {
         IsBusy = true;
 
-        var signedIn = await _authService.SignInAsync();
+        var signedIn = await authService.SignInAsync();
 
         IsBusy = false;
 

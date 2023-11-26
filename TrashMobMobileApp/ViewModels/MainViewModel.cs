@@ -8,7 +8,7 @@ using System.Diagnostics;
 using TrashMobMobileApp.Authentication;
 using TrashMobMobileApp.Services;
 
-public partial class MainViewModel : ObservableObject
+public partial class MainViewModel : BaseViewModel
 {
     private readonly IAuthService _authService;
     private readonly IUserService _userService;
@@ -22,16 +22,13 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string? welcomeMessage;
 
-    [ObservableProperty]
-    private bool isBusy = false;
-
     ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = new ObservableCollection<EventViewModel>();
 
     public async Task Init()
     {
         IsBusy = true;
         
-        var signedIn = await _authService.SignInSilentAsync(false);
+        var signedIn = await _authService.SignInSilentAsync(true);
 
         if (signedIn.Succeeded)
         {

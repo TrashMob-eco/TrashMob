@@ -25,10 +25,4 @@ public partial class StatisticsViewModel : ObservableObject
 
     [ObservableProperty]
     private int totalLitterReportClosed = 0;
-
-    [ObservableProperty]
-    bool isBusy = false;
-
-    [ObservableProperty]
-    bool isError = false;
 }

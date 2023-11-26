@@ -32,6 +32,7 @@
             services.AddSingleton<IPickupLocationManager, PickupLocationManager>();
             services.AddSingleton<IPickupLocationRestService, PickupLocationRestService>();
             services.AddSingleton<IServiceTypeRestService, ServiceTypeRestService>();
+            services.AddSingleton<IStatsRestService, StatsRestService>();
             services.AddSingleton<IUserManager, UserManager>();
             services.AddSingleton<IUserRestService, UserRestService>();
             services.AddSingleton<IWaiverManager, WaiverManager>();

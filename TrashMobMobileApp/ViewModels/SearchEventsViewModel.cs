@@ -3,17 +3,11 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 
-public partial class SearchEventsViewModel : ObservableObject
+public partial class SearchEventsViewModel : BaseViewModel
 {
     public SearchEventsViewModel()
     {
     }
 
     public ObservableCollection<EventViewModel> EventViewModels { get; set; } = new ObservableCollection<EventViewModel>();
-
-    [ObservableProperty]
-    bool isBusy = false;
-
-    [ObservableProperty]
-    bool isError = false;
 }
