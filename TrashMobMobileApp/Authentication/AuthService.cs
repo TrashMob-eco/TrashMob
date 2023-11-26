@@ -131,7 +131,13 @@ public class AuthService : IAuthService
     {
         _accessToken = result.AccessToken;
         _expiresOn = result.ExpiresOn;
-        _userEmail = result.Account.Username;
+
+        var emailClaim = result.ClaimsPrincipal.Claims.FirstOrDefault(c => c.Type == "email");
+
+        if (emailClaim != null)
+        {
+            _userEmail = emailClaim.Value;
+        }
     }
 
     private bool IsTokenExpired()
