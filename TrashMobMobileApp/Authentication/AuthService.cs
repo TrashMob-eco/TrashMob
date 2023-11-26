@@ -1,7 +1,9 @@
 namespace TrashMobMobileApp.Authentication;
 
 using System.Diagnostics;
+using System.Text;
 using Microsoft.Identity.Client;
+using Newtonsoft.Json.Linq;
 
 public class AuthService : IAuthService
 {
@@ -138,6 +140,8 @@ public class AuthService : IAuthService
         {
             _userEmail = emailClaim.Value;
         }
+
+        UserState.UserContext = GetUserContext(result);
     }
 
     private bool IsTokenExpired()
@@ -180,5 +184,39 @@ public class AuthService : IAuthService
         }
 
         return _userEmail;
+    }
+
+    private UserContext GetUserContext(AuthenticationResult ar)
+    {
+        var newContext = new UserContext
+        {
+            IsLoggedOn = false
+        };
+
+        JObject user = ParseIdToken(ar.IdToken);
+
+        newContext.AccessToken = ar.AccessToken;
+        newContext.EmailAddress = user["email"]?.ToString() ?? user["emailAddress"]?.ToString();
+
+        newContext.IsLoggedOn = true;
+
+        return newContext;
+    }
+
+    private JObject ParseIdToken(string idToken)
+    {
+        // Get the piece with actual user info
+        idToken = idToken.Split('.')[1];
+        idToken = Base64UrlDecode(idToken);
+        return JObject.Parse(idToken);
+    }
+
+    private string Base64UrlDecode(string s)
+    {
+        s = s.Replace('-', '+').Replace('_', '/');
+        s = s.PadRight(s.Length + (4 - s.Length % 4) % 4, '=');
+        var byteArray = Convert.FromBase64String(s);
+        var decoded = Encoding.UTF8.GetString(byteArray, 0, byteArray.Count());
+        return decoded;
     }
 }

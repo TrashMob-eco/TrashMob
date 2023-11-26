@@ -1,8 +1,12 @@
 ﻿namespace TrashMobMobileApp;
 
+using System.Reflection;
 using CommunityToolkit.Maui;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TrashMobMobileApp.Authentication;
+using TrashMobMobileApp.Config;
 using TrashMobMobileApp.Extensions;
 using Sentry;
 
@@ -40,25 +44,49 @@ public static class MauiProgram
 
         // Services
         builder.Services.AddSingleton<AuthHandler>();
-		
-		builder.Services.AddHttpClient(AuthConstants.AUTHENTICATED_CLIENT, client =>
+
+        string strAppConfigStreamName;
+#if DEBUG
+        strAppConfigStreamName = "TrashMobMobileApp.appSettings.Development.json";
+#else
+        strAppConfigStreamName = "TrashMobMobileApp.appSettings.json"; 
+#endif
+
+        var assembly = IntrospectionExtensions.GetTypeInfo(typeof(MauiProgram)).Assembly;
+        var stream = assembly.GetManifestResourceStream(strAppConfigStreamName);
+        builder.Configuration.AddJsonStream(stream);
+
+        builder.Services.AddHttpClient(AuthConstants.AUTHENTICATED_CLIENT, client =>
 		{
 			client.BaseAddress = new Uri(AuthConstants.ApiBaseUri);
 		}).AddHttpMessageHandler<AuthHandler>();
-		
-		builder.Services.AddTrashMobServices();
-        // builder.Services.AddRestClientServices(builder.Configuration);
+
+        builder.Services.Configure<Settings>(options => builder.Configuration.GetSection("Settings").Bind(options));
+        builder.Services.AddTrashMobServices();
+        builder.Services.AddRestClientServices(builder.Configuration);
         
 		// Pages
         builder.Services.AddTransient<MainPage>();
 		builder.Services.AddTransient<WelcomePage>();
 
-		// ViewModels
-		builder.Services.AddTransient<MainViewModel>();
-		builder.Services.AddTransient<WelcomeViewModel>();
+        // ViewModels
+        builder.Services.AddTransient<ContactUsViewModel>();
+        builder.Services.AddTransient<CreateEventViewModel>();
+        builder.Services.AddTransient<EditEventViewModel>();
+        builder.Services.AddTransient<EventSummaryViewModel>();
+        builder.Services.AddTransient<HomeViewModel>();
+        builder.Services.AddTransient<MainViewModel>();
+        builder.Services.AddTransient<MyDashboardViewModel>();
+        builder.Services.AddTransient<SearchEventsViewModel>();
+        builder.Services.AddTransient<SearchLitterReportsViewModel>();
+        builder.Services.AddTransient<SocialMediaShareViewModel>();
+        builder.Services.AddTransient<UserLocationPreferenceViewModel>();
+        builder.Services.AddTransient<ViewEventViewModel>();
+        builder.Services.AddTransient<ViewLitterReportViewModel>();
+        builder.Services.AddTransient<WelcomeViewModel>();
 
 #if DEBUG
-		builder.Logging.AddDebug();
+        builder.Logging.AddDebug();
 #endif
 
 		return builder.Build();

@@ -6,17 +6,17 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using TrashMobMobileApp.Authentication;
-using TrashMobMobileApp.Services;
+using TrashMobMobileApp.Data;
 
 public partial class MainViewModel : BaseViewModel
 {
-    private readonly IAuthService _authService;
-    private readonly IUserService _userService;
+    private readonly IAuthService authService;
+    private readonly IUserRestService userRestService;
 
-    public MainViewModel(IAuthService authService, IUserService userService)
+    public MainViewModel(IAuthService authService, IUserRestService userRestService)
     {
-        _authService = authService;
-        _userService = userService;
+        this.authService = authService;
+        this.userRestService = userRestService;
     }
 
     [ObservableProperty]
@@ -28,12 +28,12 @@ public partial class MainViewModel : BaseViewModel
     {
         IsBusy = true;
         
-        var signedIn = await _authService.SignInSilentAsync(true);
+        var signedIn = await authService.SignInSilentAsync(true);
 
         if (signedIn.Succeeded)
         {
-            var email = _authService.GetUserEmail();
-            var user = await _userService.GetUserByEmailAsync(email);
+            var email = authService.GetUserEmail();
+            var user = await userRestService.GetUserByEmailAsync(email, UserState.UserContext);
             WelcomeMessage = $"Welcome, {user.UserName}!";
             
             IsBusy = false;
