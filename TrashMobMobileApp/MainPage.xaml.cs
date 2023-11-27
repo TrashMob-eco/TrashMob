@@ -1,4 +1,4 @@
-namespace TrashMobMobileApp.Pages;
+namespace TrashMobMobileApp;
 
 public partial class MainPage : ContentPage
 {

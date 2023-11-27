@@ -1,4 +1,6 @@
-﻿namespace TrashMobMobileApp.ViewModels;
+﻿#nullable enable
+
+namespace TrashMobMobileApp.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
@@ -20,7 +22,7 @@ public partial class MainViewModel : BaseViewModel
     }
 
     [ObservableProperty]
-    StatisticsViewModel statisticsViewModel;
+    StatisticsViewModel statisticsViewModel = new StatisticsViewModel();
 
     public async Task Init()
     {
