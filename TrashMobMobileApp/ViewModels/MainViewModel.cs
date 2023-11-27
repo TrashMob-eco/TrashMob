@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-namespace TrashMobMobileApp.ViewModels;
+﻿namespace TrashMobMobileApp.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
@@ -12,22 +10,22 @@ public partial class MainViewModel : BaseViewModel
 {
     private readonly IAuthService authService;
     private readonly IUserRestService userRestService;
+    private readonly IStatsRestService statsRestService;
 
-    public MainViewModel(IAuthService authService, IUserRestService userRestService)
+    public MainViewModel(IAuthService authService, IUserRestService userRestService, IStatsRestService statsRestService)
     {
         this.authService = authService;
         this.userRestService = userRestService;
+        this.statsRestService = statsRestService;
     }
 
     [ObservableProperty]
-    private string? welcomeMessage;
-
-    ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = new ObservableCollection<EventViewModel>();
+    StatisticsViewModel statisticsViewModel;
 
     public async Task Init()
     {
         IsBusy = true;
-        
+
         var signedIn = await authService.SignInSilentAsync(true);
 
         if (signedIn.Succeeded)
@@ -35,7 +33,7 @@ public partial class MainViewModel : BaseViewModel
             var email = authService.GetUserEmail();
             var user = await userRestService.GetUserByEmailAsync(email, UserState.UserContext);
             WelcomeMessage = $"Welcome, {user.UserName}!";
-            
+
             IsBusy = false;
         }
         else
@@ -49,5 +47,22 @@ public partial class MainViewModel : BaseViewModel
                 Debug.WriteLine($"Error: {ex.Message}");
             }
         }
+
+        await RefreshStatistics();
     }
+
+    private async Task RefreshStatistics()
+    {
+        var stats = await statsRestService.GetStatsAsync();
+
+        StatisticsViewModel.TotalAttendees = stats.TotalParticipants;
+        StatisticsViewModel.TotalBags = stats.TotalBags;
+        StatisticsViewModel.TotalEvents = stats.TotalEvents;
+        StatisticsViewModel.TotalHours = stats.TotalHours;
+    }
+
+    [ObservableProperty]
+    private string? welcomeMessage;
+
+    ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = new ObservableCollection<EventViewModel>();
 }

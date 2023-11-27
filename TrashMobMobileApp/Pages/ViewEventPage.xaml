@@ -2,12 +2,12 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TrashMobMobileApp.ViewModels"
-             x:DataType="vm:EventSummaryViewModel"
-             x:Class="TrashMobMobileApp.Pages.EventSummaryPage">
+             x:DataType="vm:ViewEventViewModel"
+             x:Class="TrashMobMobileApp.Pages.ViewEventPage">
     <FlexLayout Direction="Column"
                 JustifyContent="SpaceAround">
         <Label 
-            Text="Event Summary!"
+            Text="View Event!"
             FontSize="Large"
             VerticalOptions="Center" 
             HorizontalOptions="Center"

@@ -43,7 +43,7 @@
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
 
 		<!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#FFFFFF" BaseSize="128,128" />
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
@@ -88,7 +88,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Pages\SetUserLocationPreference.xaml">
+	  <MauiXaml Update="Pages\SetUserLocationPreferencePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\SearchLitterReportsPage.xaml">
@@ -106,13 +106,13 @@
 	  <MauiXaml Update="Pages\SubmitLitterReportPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\HomePage.xaml">
+	  <MauiXaml Update="MainPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\EventSummaryPage.xaml">
+	  <MauiXaml Update="Pages\ViewEventSummaryPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\EventDetailsPage.xaml">
+	  <MauiXaml Update="Pages\ViewEventPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\EditEventPage.xaml">
@@ -134,8 +134,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Pages\SetUserLocationPreference.xaml.cs">
-	    <DependentUpon>SetUserLocationPreference.xaml</DependentUpon>
+	  <Compile Update="Pages\SetUserLocationPreferencePage.xaml.cs">
+	    <DependentUpon>SetUserLocationPreferencePage.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Pages\SearchLitterReportsPage.xaml.cs">
 	    <DependentUpon>SearchLitterReportsPage.xaml</DependentUpon>
@@ -152,14 +152,14 @@
 	  <Compile Update="Pages\SubmitLitterReportPage.xaml.cs">
 	    <DependentUpon>SubmitLitterReportPage.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Pages\HomePage.xaml.cs">
-	    <DependentUpon>HomePage.xaml</DependentUpon>
+	  <Compile Update="MainPage.xaml.cs">
+	    <DependentUpon>MainPage.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Pages\EventSummaryPage.xaml.cs">
-	    <DependentUpon>EventSummaryPage.xaml</DependentUpon>
+	  <Compile Update="Pages\ViewEventSummaryPage.xaml.cs">
+	    <DependentUpon>ViewEventSummaryPage.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Pages\EventDetailsPage.xaml.cs">
-	    <DependentUpon>EventDetailsPage.xaml</DependentUpon>
+	  <Compile Update="Pages\ViewEventPage.xaml.cs">
+	    <DependentUpon>ViewEventPage.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Pages\EditEventPage.xaml.cs">
 	    <DependentUpon>EditEventPage.xaml</DependentUpon>

@@ -2,7 +2,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-public partial class EventSummaryViewModel : BaseViewModel
+public partial class EventSummaryViewModel : ObservableObject
 {
     public EventSummaryViewModel()
     {

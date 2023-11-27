@@ -17,19 +17,16 @@ public partial class WelcomeViewModel : BaseViewModel
     }
 
     [ObservableProperty]
-    StatisticsViewModel statisticsViewModel;
+    StatisticsViewModel statisticsViewModel = new StatisticsViewModel();
 
     public async Task Init()
     {
         var stats = await statsRestService.GetStatsAsync();
 
-        StatisticsViewModel = new StatisticsViewModel
-        {
-            TotalAttendees = stats.TotalParticipants,
-            TotalBags = stats.TotalBags,
-            TotalEvents = stats.TotalEvents,
-            TotalHours = stats.TotalHours,
-        };
+        StatisticsViewModel.TotalAttendees = stats.TotalParticipants;
+        StatisticsViewModel.TotalBags = stats.TotalBags;
+        StatisticsViewModel.TotalEvents = stats.TotalEvents;
+        StatisticsViewModel.TotalHours = stats.TotalHours;        
     }
 
     [RelayCommand]

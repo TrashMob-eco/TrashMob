@@ -1,34 +1,58 @@
-﻿namespace TrashMobMobileApp;
+namespace TrashMobMobileApp.Pages;
 
 public partial class MainPage : ContentPage
 {
-	int count = 0;
+    private readonly MainViewModel _viewModel;
 
-	public MainPage(MainViewModel viewModel)
+    public MainPage(MainViewModel viewModel)
 	{
 		InitializeComponent();
         _viewModel = viewModel;
-		BindingContext = _viewModel;
+        BindingContext = _viewModel;
     }
 
-    public MainViewModel _viewModel { get; }
+    private void ContactUs_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new ContactUsPage(new ContactUsViewModel()));
+    }
 
-    private void OnCounterClicked(object sender, EventArgs e)
-	{
-		count++;
+    private void MyDashboard_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new MyDashboardPage(new MyDashboardViewModel()));
+    }
 
-		if (count == 1)
-			CounterBtn.Text = $"Clicked {count} time";
-		else
-			CounterBtn.Text = $"Clicked {count} times";
+    private void SearchEvents_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new SearchEventsPage(new SearchEventsViewModel()));
+    }
 
-		SemanticScreenReader.Announce(CounterBtn.Text);
-	}
+    private void CreateEvent_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new CreateEventPage(new CreateEventViewModel()));
+    }
+
+    private void SubmitLitterReport_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new SubmitLitterReportPage(new SubmitLitterReportViewModel()));
+    }
+
+    private void SearchLitterReports_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new SearchLitterReportsPage(new SearchLitterReportsViewModel()));
+    }
+
+    private void SetMyLocationPreference_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new SetUserLocationPreferencePage(new UserLocationPreferenceViewModel()));
+    }
+
+    private void Logout_Clicked(object sender, EventArgs e)
+    {
+    }
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-		await _viewModel.Init();
+        await _viewModel.Init();
     }
 }
-

@@ -64,17 +64,25 @@ public static class MauiProgram
         builder.Services.Configure<Settings>(options => builder.Configuration.GetSection("Settings").Bind(options));
         builder.Services.AddTrashMobServices();
         builder.Services.AddRestClientServices(builder.Configuration);
-        
-		// Pages
-        builder.Services.AddTransient<MainPage>();
-		builder.Services.AddTransient<WelcomePage>();
+
+        // Pages
+        builder.Services.AddTransient<ContactUsPage>();
+        builder.Services.AddTransient<CreateEventPage>();
+        builder.Services.AddTransient<EditEventPage>();
+        builder.Services.AddTransient<MyDashboardPage>();
+        builder.Services.AddTransient<ContactUsPage>();
+        builder.Services.AddTransient<SearchEventsPage>();
+        builder.Services.AddTransient<SearchLitterReportsPage>();
+        builder.Services.AddTransient<ViewEventPage>();
+        builder.Services.AddTransient<ViewEventSummaryPage>();
+        builder.Services.AddTransient<ViewLitterReportPage>();
+        builder.Services.AddTransient<WelcomePage>();
 
         // ViewModels
         builder.Services.AddTransient<ContactUsViewModel>();
         builder.Services.AddTransient<CreateEventViewModel>();
         builder.Services.AddTransient<EditEventViewModel>();
         builder.Services.AddTransient<EventSummaryViewModel>();
-        builder.Services.AddTransient<HomeViewModel>();
         builder.Services.AddTransient<MainViewModel>();
         builder.Services.AddTransient<MyDashboardViewModel>();
         builder.Services.AddTransient<SearchEventsViewModel>();
