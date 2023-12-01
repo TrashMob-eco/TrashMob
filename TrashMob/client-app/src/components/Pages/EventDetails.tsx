@@ -227,37 +227,39 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
     const handleShowModal = (showModal: boolean) => {
         setShowSocialsModal(showModal)
     }
-    
+
     const UsersTable = () => {
         return (
-            <table className='table table-striped' aria-labelledby="tableLabel">
-                <thead>
-                    <tr className="bg-ice">
-                        <th>User Name</th>
-                        <th>City</th>
-                        <th>Country</th>
-                        <th>Member Since</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {userList.map(user => {
-                        let uName = user.userName;
-                        if (user.id === createdById) {
-                            uName += " (Lead)";
-                        }
+            <div className="overflow-auto">
+                <table className='table table-striped' aria-labelledby="tableLabel">
+                    <thead>
+                        <tr className="bg-ice">
+                            <th>User Name</th>
+                            <th>City</th>
+                            <th>Country</th>
+                            <th>Member Since</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {userList.map(user => {
+                            let uName = user.userName;
+                            if (user.id === createdById) {
+                                uName += " (Lead)";
+                            }
 
-                        return (
-                            <tr key={user.id.toString()}>
-                                <td>{uName}</td>
-                                <td>{user.city}</td>
-                                <td>{user.country}</td>
-                                <td>{new Date(user.memberSince).toLocaleDateString()}</td>
-                            </tr>
-                        )
-                    }
-                    )}
-                </tbody>
-            </table>
+                            return (
+                                <tr key={user.id.toString()}>
+                                    <td>{uName}</td>
+                                    <td>{user.city}</td>
+                                    <td>{user.country}</td>
+                                    <td>{new Date(user.memberSince).toLocaleDateString()}</td>
+                                </tr>
+                            )
+                        }
+                        )}
+                    </tbody>
+                </table>
+            </div>
         );
     };
 
@@ -265,15 +267,15 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
         return (
             <>
                 <Container className="my-5">
-                    { isDataLoaded &&
-                        <SocialsModal eventToShare={eventToShare} show={showModal} handleShow={handleShowModal} modalTitle='Share Event' message={SharingMessages.getEventDetailsMessage(eventDate, city, createdById, currentUser.id)}/>
+                    {isDataLoaded &&
+                        <SocialsModal eventToShare={eventToShare} show={showModal} handleShow={handleShowModal} modalTitle='Share Event' message={SharingMessages.getEventDetailsMessage(eventDate, city, createdById, currentUser.id)} />
                     }
-                    <div className="d-flex justify-content-between align-items-end">
+                    <div className="d-flex justify-content-between align-items-md-end flex-column flex-md-row">
                         <h2 className="font-weight-bold m-0">{eventName}</h2>
-                        <div className="d-flex">
-                            <Button variant="outline" className="h-100 p-18" onClick={() => {handleShowModal(true)}}>
+                        <div className="d-flex my-3">
+                            <Button variant="outline" className="p-18" onClick={() => { handleShowModal(true) }}>
                                 <Share className="mr-2" />
-                                Share 
+                                Share
                             </Button>
                             <RegisterBtn eventId={eventId} isAttending={isAttending} isEventCompleted={isEventCompleted!} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} isUserLoaded={isUserLoaded} history={history} location={location} match={match}></RegisterBtn>
                             <div id="addToCalendarBtn" className='ml-2 p-18' hidden={isEventCompleted}><AddToCalendar event={event} /></div>
@@ -293,7 +295,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                 <Container>
                     <hr></hr>
                     <h2 className="font-weight-bold font-size-xl mr-2 mt-5 mb-4"><span>Attendees ({userList.length})</span></h2>
-                    <p className="font-weight-bold m-0 mr-2 my-4">Max Number of Participants:<span className="ml-2 color-grey">{maxNumberOfParticipants}</span></p>   
+                    <p className="font-weight-bold m-0 mr-2 my-4">Max Number of Participants:<span className="ml-2 color-grey">{maxNumberOfParticipants}</span></p>
                     <UsersTable />
                 </Container>
             </>
