@@ -9,5 +9,6 @@ public partial class ContactUsPage : ContentPage
 		InitializeComponent();
         _viewModel = viewModel;
         BindingContext = _viewModel;
+
     }
 }
