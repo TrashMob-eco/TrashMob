@@ -24,7 +24,7 @@
 		<ApplicationTitle>TrashMobMobile</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.trashmobmobile</ApplicationId>
+		<ApplicationId>eco.trashmob.trashmobmobile</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -54,6 +54,16 @@
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="appSettings.Development.json" />
+	  <None Remove="appSettings.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="appSettings.json" />
+	  <EmbeddedResource Include="appSettings.Development.json" />
 	</ItemGroup>
 
 	<ItemGroup>

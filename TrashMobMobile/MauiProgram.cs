@@ -70,7 +70,7 @@ public static class MauiProgram
         builder.Services.AddTransient<CreateEventPage>();
         builder.Services.AddTransient<EditEventPage>();
         builder.Services.AddTransient<MyDashboardPage>();
-        builder.Services.AddTransient<ContactUsPage>();
+        builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<SearchEventsPage>();
         builder.Services.AddTransient<SearchLitterReportsPage>();
         builder.Services.AddTransient<ViewEventPage>();
