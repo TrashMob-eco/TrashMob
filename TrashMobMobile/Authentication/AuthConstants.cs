@@ -32,7 +32,7 @@ public static class AuthConstants
     public const string AuthoritySignIn = $"{AuthorityBase}{SignInPolicy}";
 
     public const string IosKeychainSecurityGroup = "com.microsoft.adalcache";
-    public const string RedirectUri = "eco.trashmob.TrashMobMobile://auth";
+    public const string RedirectUri = "eco.trashmob.trashmobmobile://auth";
     
     public const string AUTHENTICATED_CLIENT = "AuthenticatedClient";
 }
