@@ -13,4 +13,6 @@ public abstract partial class BaseViewModel : ObservableObject
 
     [ObservableProperty]
     bool isError = false;
+
+    public INavigation Navigation { get; set; }
 }

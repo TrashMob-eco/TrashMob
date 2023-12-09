@@ -13,5 +13,7 @@
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center"/>
 
+        <Label Text="{Binding EventViewModel.Name}" />
+
     </FlexLayout>
 </ContentPage>

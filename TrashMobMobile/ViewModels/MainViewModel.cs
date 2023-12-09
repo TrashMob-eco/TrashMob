@@ -5,24 +5,55 @@ namespace TrashMobMobile.ViewModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using TrashMob.Models;
 using TrashMobMobile.Authentication;
 using TrashMobMobile.Data;
+using TrashMobMobile.Extensions;
 
 public partial class MainViewModel : BaseViewModel
 {
     private readonly IAuthService authService;
     private readonly IUserRestService userRestService;
     private readonly IStatsRestService statsRestService;
+    private readonly IMobEventManager mobEventManager;
 
-    public MainViewModel(IAuthService authService, IUserRestService userRestService, IStatsRestService statsRestService)
+    public MainViewModel(IAuthService authService, 
+                         IUserRestService userRestService, 
+                         IStatsRestService statsRestService,
+                         IMobEventManager mobEventManager)
     {
         this.authService = authService;
         this.userRestService = userRestService;
         this.statsRestService = statsRestService;
+        this.mobEventManager = mobEventManager;
     }
 
     [ObservableProperty]
     StatisticsViewModel statisticsViewModel = new StatisticsViewModel();
+
+    private EventViewModel selectedEvent;
+    public EventViewModel SelectedEvent
+    {
+        get { return selectedEvent; }
+        set
+        {
+            if (selectedEvent != value)
+            {
+                selectedEvent = value;
+                OnPropertyChanged(nameof(selectedEvent));
+
+                if (selectedEvent != null)
+                {
+                    PerformNavigation(selectedEvent);
+                }
+            }
+        }
+    }
+
+    private async void PerformNavigation(EventViewModel eventViewModel)
+    {
+        await Navigation.PushAsync(new ViewEventPage(new ViewEventViewModel { EventViewModel = eventViewModel }));
+    }
 
     public async Task Init()
     {
@@ -50,7 +81,8 @@ public partial class MainViewModel : BaseViewModel
             }
         }
 
-        await RefreshStatistics();
+        RefreshStatistics();
+        await RefreshEvents();
     }
 
     private async Task RefreshStatistics()
@@ -63,8 +95,20 @@ public partial class MainViewModel : BaseViewModel
         StatisticsViewModel.TotalHours = stats.TotalHours;
     }
 
+    private async Task RefreshEvents()
+    {
+        UpcomingEvents.Clear();
+        var events = await mobEventManager.GetActiveEventsAsync();
+
+        foreach (var mobEvent in events)
+        {
+            var vm = mobEvent.ToEventViewModel();
+            UpcomingEvents.Add(vm);
+        }
+    }
+
     [ObservableProperty]
     private string? welcomeMessage;
 
-    ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = new ObservableCollection<EventViewModel>();
+    public ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = [];
 }

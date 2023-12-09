@@ -73,5 +73,40 @@
         {
             return mobEvent.EventDate.ToUniversalTime() > DateTimeOffset.UtcNow;
         }
+
+        public static EventViewModel ToEventViewModel(this Event mobEvent)
+        {
+            var eventViewModel = new EventViewModel()
+            {
+                Address = mobEvent.ToAddressViewModel(),
+                Id = mobEvent.Id,
+                CancellationReason = mobEvent.CancellationReason,
+                Description = mobEvent.Description,
+                DurationHours = mobEvent.DurationHours,
+                DurationMinutes = mobEvent.DurationMinutes,
+                EventDate = mobEvent.EventDate,
+                EventStatusId = mobEvent.EventStatusId,
+                EventTypeId = mobEvent.EventTypeId,
+                IsEventPublic = mobEvent.IsEventPublic,
+                MaxNumberOfParticipants = mobEvent.MaxNumberOfParticipants,
+                Name = mobEvent.Name,
+            };
+
+            return eventViewModel;
+        }
+
+        internal static AddressViewModel ToAddressViewModel(this Event mobEvent)
+        {
+            return new AddressViewModel
+            {
+                City = mobEvent.City,
+                Country = mobEvent.Country,
+                Latitude = mobEvent.Latitude,
+                Longitude = mobEvent.Longitude,
+                PostalCode = mobEvent.PostalCode,
+                Region = mobEvent.Region,
+                StreetAddress = mobEvent.StreetAddress
+            };
+        }
     }
 }

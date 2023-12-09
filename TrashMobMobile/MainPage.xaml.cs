@@ -8,6 +8,7 @@
         {
             InitializeComponent();
             _viewModel = viewModel;
+            _viewModel.Navigation = Navigation;
             BindingContext = _viewModel;
         }
 

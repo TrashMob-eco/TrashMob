@@ -33,7 +33,7 @@ public partial class EventViewModel : ObservableObject
     int eventStatusId;
 
     [ObservableProperty]
-    AddressViewModel addressViewModel;
+    AddressViewModel address;
 
     [ObservableProperty]
     int maxNumberOfParticipants;

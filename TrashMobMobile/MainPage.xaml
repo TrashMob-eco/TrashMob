@@ -19,6 +19,30 @@
                 <Label Grid.Row="3" Grid.Column="1" Text="{ Binding StatisticsViewModel.TotalHours }" />
             </Grid>
 
+            <CollectionView x:Name="EventsCollection" 
+                            ItemsSource="{Binding UpcomingEvents}" 
+                            SelectedItem="{Binding SelectedEvent}" 
+                            SelectionMode="Single" 
+                            Margin="20,0" >
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid WidthRequest = "350"
+                              Padding = "10"
+                              Margin = "0,20"
+                              ColumnDefinitions="1*, 2*, 2*, 2*"
+                              RowDefinitions="Auto"
+                              x:Name="EventItem">
+
+                            <Label Text="{Binding Name}" Grid.Column="0" />
+                            <Label Text="{Binding EventDate}" Grid.Column="1" />
+                            <Label Text="{Binding Address.City}" Grid.Column="2" />
+                            <Label Text="{Binding Address.Region}" Grid.Column="3" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+
             <Button Text="Contact Us" Clicked="ContactUs_Clicked" />
             <Button Text="My Dashboard" Clicked="MyDashboard_Clicked" />
             <Button Text="Search Events" Clicked="SearchEvents_Clicked" />
