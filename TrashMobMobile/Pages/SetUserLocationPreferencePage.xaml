@@ -2,8 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
-             x:DataType="vm:UserLocationPreferenceViewModel"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             x:DataType="vm:UserLocationPreferenceViewModel"
              x:Class="TrashMobMobile.Pages.SetUserLocationPreferencePage">
     <FlexLayout Direction="Column"
                 JustifyContent="SpaceAround">
