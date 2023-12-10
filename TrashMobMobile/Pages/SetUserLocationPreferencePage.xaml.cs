@@ -10,4 +10,10 @@ public partial class SetUserLocationPreferencePage : ContentPage
         _viewModel = viewModel;
         BindingContext = _viewModel;
     }
+
+    protected override void OnAppearing()
+    {
+        _viewModel.Init();
+        base.OnAppearing();
+    }
 }

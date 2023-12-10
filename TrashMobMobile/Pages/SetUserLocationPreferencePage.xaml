@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="vm:UserLocationPreferenceViewModel"
+             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              x:Class="TrashMobMobile.Pages.SetUserLocationPreferencePage">
     <FlexLayout Direction="Column"
                 JustifyContent="SpaceAround">
@@ -13,5 +14,47 @@
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center"/>
 
+        <maps:Map x:Name="userLocationMap" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True">
+            <maps:Map.ItemTemplate>
+                <DataTemplate>
+                    <maps:Pin Location="{Binding Address.Location}"
+                                  Address="{Binding Address.StreetAddress}"
+                                  Label="Your Preferred Location" />
+                </DataTemplate>
+            </maps:Map.ItemTemplate>
+        </maps:Map>
+
+        <Label 
+            Text="Max Travel Distance"
+            FontSize="Small"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+        <Entry Text="{Binding TravelDistance}"
+               Keyboard="Numeric"
+            FontSize="Small"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+        <Label 
+            Text="Units"
+            FontSize="Small"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+        <Picker SelectedItem="{Binding Units}">
+            <Picker.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Kilometers</x:String>
+                    <x:String>Miles</x:String>
+                </x:Array>
+            </Picker.ItemsSource>
+        </Picker>
+
+        <Button Text="Submit" Command="{Binding UpdateLocationCommand}" />
+        
     </FlexLayout>
 </ContentPage>

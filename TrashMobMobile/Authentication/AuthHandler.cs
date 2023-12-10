@@ -1,6 +1,6 @@
-using System.Net.Http.Headers;
-
 namespace TrashMobMobile.Authentication;
+
+using System.Net.Http.Headers;
 
 public class AuthHandler : DelegatingHandler
 {

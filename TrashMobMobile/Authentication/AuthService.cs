@@ -4,16 +4,24 @@ using System.Diagnostics;
 using System.Text;
 using Microsoft.Identity.Client;
 using Newtonsoft.Json.Linq;
+using TrashMobMobile.Data;
 
 public class AuthService : IAuthService
 {
     private IPublicClientApplication _pca;
 
-    private string _accessToken;
+    private string _accessToken = string.Empty;
 
     private DateTimeOffset _expiresOn;
     
-    private string _userEmail;
+    private string _userEmail = string.Empty;
+    private readonly IUserManager userManager;
+
+    public AuthService(IUserManager userManager)
+    {
+        this.userManager = userManager;
+        InitializeClient();
+    }
 
     private void InitializeClient()
     {
@@ -37,8 +45,7 @@ public class AuthService : IAuthService
             InitializeClient();
         }
 
-        var accounts = await _pca.GetAccountsAsync();
-        AuthenticationResult result = null;
+        _ = await _pca.GetAccountsAsync();
 
         try
         {
@@ -63,7 +70,7 @@ public class AuthService : IAuthService
         }
 
         var accounts = await _pca.GetAccountsAsync();
-        AuthenticationResult result = null;
+        AuthenticationResult result;
 
         try
         {
@@ -88,7 +95,7 @@ public class AuthService : IAuthService
 
         if (result != null && !string.IsNullOrWhiteSpace(result.AccessToken))
         {
-            SetAuthenticated(result);
+            await SetAuthenticated(result);
 
             return new SignInResult
             {
@@ -115,7 +122,7 @@ public class AuthService : IAuthService
 
         if (result != null && !string.IsNullOrWhiteSpace(result.AccessToken))
         {
-            SetAuthenticated(result);
+            await SetAuthenticated(result);
 
             return new SignInResult
             {
@@ -129,19 +136,24 @@ public class AuthService : IAuthService
         };
     }
 
-    private void SetAuthenticated(AuthenticationResult result)
+    private async Task SetAuthenticated(AuthenticationResult result)
     {
         _accessToken = result.AccessToken;
         _expiresOn = result.ExpiresOn;
 
         var emailClaim = result.ClaimsPrincipal.Claims.FirstOrDefault(c => c.Type == "email");
-
+        var context = GetUserContext(result);
+        
         if (emailClaim != null)
         {
             _userEmail = emailClaim.Value;
+            var user = await userManager.GetUserByEmailAsync(context.EmailAddress, context);
+
+            App.CurrentUser = user;
         }
 
-        UserState.UserContext = GetUserContext(result);
+        UserState.UserContext = context;
+
     }
 
     private bool IsTokenExpired()
@@ -165,7 +177,7 @@ public class AuthService : IAuthService
                     .AcquireTokenSilent(AuthConstants.Scopes, accounts.FirstOrDefault())
                     .ExecuteAsync();
             
-            SetAuthenticated(result);
+            await SetAuthenticated(result);
 
             return result.AccessToken;
         }
@@ -196,7 +208,11 @@ public class AuthService : IAuthService
         JObject user = ParseIdToken(ar.IdToken);
 
         newContext.AccessToken = ar.AccessToken;
-        newContext.EmailAddress = user["email"]?.ToString() ?? user["emailAddress"]?.ToString();
+
+        if (user != null)
+        {
+            newContext.EmailAddress = user["email"]?.ToString() ?? user["emailAddress"]?.ToString() ?? string.Empty;
+        }
 
         newContext.IsLoggedOn = true;
 
