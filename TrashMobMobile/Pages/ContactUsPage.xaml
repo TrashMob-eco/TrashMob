@@ -13,5 +13,47 @@
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center"/>
 
+        <Label 
+            Text="Name"
+            FontSize="Small"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+        <Entry Text="{Binding Name}"             
+            FontSize="Small"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+        <Label 
+            Text="Email"
+            FontSize="Small"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+        <Entry Text="{Binding Email}"
+               Keyboard="Email"
+            FontSize="Small"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+        <Label 
+            Text="Message"
+            FontSize="Small"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+        <Editor Text="{Binding Message}"
+            FontSize="Small"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center" />
+
+        <Button Text="Submit" Command="{Binding SubmitMessageCommand}" />
+
     </FlexLayout>
 </ContentPage>

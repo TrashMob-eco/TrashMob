@@ -5,6 +5,7 @@ namespace TrashMobMobile.ViewModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Windows.Input;
 using TrashMob.Models;
 using TrashMobMobile.Authentication;
 using TrashMobMobile.Data;
@@ -16,6 +17,7 @@ public partial class MainViewModel : BaseViewModel
     private readonly IUserRestService userRestService;
     private readonly IStatsRestService statsRestService;
     private readonly IMobEventManager mobEventManager;
+    private EventViewModel selectedEvent;
 
     public MainViewModel(IAuthService authService, 
                          IUserRestService userRestService, 
@@ -26,12 +28,34 @@ public partial class MainViewModel : BaseViewModel
         this.userRestService = userRestService;
         this.statsRestService = statsRestService;
         this.mobEventManager = mobEventManager;
+
+        ContactUsCommand = new Command(async () => await ContactUs());
+        MyDashboardCommand = new Command(async () => await MyDashboard());
+        SearchEventsCommand = new Command(async () => await SearchEvents());
+        CreateEventCommand = new Command(async () => await CreateEvent());
+        SubmitLitterReportCommand = new Command(async () => await SubmitLitterReport());
+        SearchLitterReportsCommand = new Command(async () => await SearchLitterReports());
+        SetLocationPreferenceCommand = new Command(async () => await SetLocationPreference());
+        LogoutCommand = new Command(async () => await Logout());
     }
+
+    [ObservableProperty]
+    private string? welcomeMessage;
+
+    public ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = [];
+
+    public ICommand ContactUsCommand { get; set; }
+    public ICommand MyDashboardCommand { get; set; }
+    public ICommand SearchEventsCommand { get; set; }
+    public ICommand CreateEventCommand { get; set; }
+    public ICommand SubmitLitterReportCommand { get; set; }
+    public ICommand SearchLitterReportsCommand { get; set; }
+    public ICommand SetLocationPreferenceCommand { get; set; }
+    public ICommand LogoutCommand { get; set; }
 
     [ObservableProperty]
     StatisticsViewModel statisticsViewModel = new StatisticsViewModel();
 
-    private EventViewModel selectedEvent;
     public EventViewModel SelectedEvent
     {
         get { return selectedEvent; }
@@ -81,7 +105,7 @@ public partial class MainViewModel : BaseViewModel
             }
         }
 
-        RefreshStatistics();
+        await RefreshStatistics();
         await RefreshEvents();
     }
 
@@ -107,8 +131,42 @@ public partial class MainViewModel : BaseViewModel
         }
     }
 
-    [ObservableProperty]
-    private string? welcomeMessage;
+    private async Task ContactUs()
+    {
+        await Shell.Current.GoToAsync(nameof(ContactUsPage));
+    }
 
-    public ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = [];
+    private async Task MyDashboard()
+    {
+        await Shell.Current.GoToAsync(nameof(MyDashboardPage));
+    }
+
+    private async Task SubmitLitterReport()
+    {
+        await Shell.Current.GoToAsync(nameof(SubmitLitterReportPage));
+    }
+
+    private async Task SearchLitterReports()
+    {
+        await Shell.Current.GoToAsync(nameof(SearchLitterReportsPage));
+    }
+
+    private async Task CreateEvent()
+    {
+        await Shell.Current.GoToAsync(nameof(CreateEventPage));
+    }
+
+    private async Task SetLocationPreference()
+    {
+        await Shell.Current.GoToAsync(nameof(SetUserLocationPreferencePage));
+    }
+
+    private async Task SearchEvents()
+    {
+        await Shell.Current.GoToAsync(nameof(SearchEventsPage));
+    }
+
+    private async Task Logout()
+    {
+    }
 }

@@ -54,14 +54,14 @@
 
             </CollectionView>
 
-            <Button Text="Contact Us" Clicked="ContactUs_Clicked" />
-            <Button Text="My Dashboard" Clicked="MyDashboard_Clicked" />
-            <Button Text="Search Events" Clicked="SearchEvents_Clicked" />
-            <Button Text="Create an Event" Clicked="CreateEvent_Clicked" />
-            <Button Text="Submit a Litter Report"  Clicked="SubmitLitterReport_Clicked"/>
-            <Button Text="Search Litter Reports" Clicked="SearchLitterReports_Clicked" />
-            <Button Text="Set My Location Preference"  Clicked="SetMyLocationPreference_Clicked"/>
-            <Button Text="Log Out"  Clicked="Logout_Clicked"/>
+            <Button Text="Contact Us" Command="{Binding ContactUsCommand}" />
+            <Button Text="My Dashboard" Command="{Binding MyDashboardCommand}" />
+            <Button Text="Search Events" Command="{Binding SearchEventsCommand}" />
+            <Button Text="Create an Event" Command="{Binding CreateEventCommand}" />
+            <Button Text="Submit a Litter Report" Command="{Binding SubmitLitterReportCommand}" />
+            <Button Text="Search Litter Reports" Command="{Binding SearchLitterReportsCommand}" />
+            <Button Text="Set My Location Preference" Command="{Binding SetLocationPreferenceCommand}" />
+            <Button Text="Log Out" Command="{Binding LogoutCommand}" />
 
         </VerticalStackLayout>
     </ScrollView>

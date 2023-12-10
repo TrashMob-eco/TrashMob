@@ -1,11 +1,18 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using System.Windows.Input;
+using TrashMob.Models;
+using TrashMobMobile.Data;
 
 public partial class ContactUsViewModel : BaseViewModel
 {
-    public ContactUsViewModel()
+    private readonly IContactRequestManager contactRequestManager;
+
+    public ContactUsViewModel(IContactRequestManager contactRequestManager)
     {
+        SubmitMessageCommand = new Command(async () => await SubmitMessage());
+        this.contactRequestManager = contactRequestManager;
     }
 
     [ObservableProperty]
@@ -16,4 +23,18 @@ public partial class ContactUsViewModel : BaseViewModel
 
     [ObservableProperty]
     string message;
+
+    public ICommand SubmitMessageCommand { get; set; }
+
+    private async Task SubmitMessage()
+    {
+        var contactRequest = new ContactRequest
+        {
+            Name = Name,
+            Email = Email,
+            Message = Message
+        };
+
+        await contactRequestManager.AddContactRequestAsync(contactRequest);
+    }
 }
