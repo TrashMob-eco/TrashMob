@@ -1,17 +1,49 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
-             x:DataType="vm:MyDashboardViewModel"
+             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              x:Class="TrashMobMobile.Pages.MyDashboardPage">
-    <FlexLayout Direction="Column"
+    <ScrollView>
+        <FlexLayout Direction="Column"
                 JustifyContent="SpaceAround">
-        <Label 
+            <Label 
             Text="My Dashboard!"
             FontSize="Large"
             VerticalOptions="Center" 
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center"/>
 
-    </FlexLayout>
+            <maps:Map x:Name="eventsMap" IsShowingUser="True" ItemsSource="{Binding Events}" HeightRequest="300" IsScrollEnabled="True"  >
+                <maps:Map.ItemTemplate>
+                    <DataTemplate>
+                        <maps:Pin Location="{Binding Address.Location}"
+                       Address="{Binding Address.StreetAddress}"
+                       Label="{Binding Name}" />
+                    </DataTemplate>
+                </maps:Map.ItemTemplate>
+            </maps:Map>
+
+            <CollectionView x:Name="UpcomingEventsCollection" 
+                 ItemsSource="{Binding UpcomingEvents}" 
+                 SelectedItem="{Binding SelectedEvent}" 
+                 SelectionMode="Single" >
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border StrokeThickness="1">
+                            <Grid WidthRequest = "400"
+                       ColumnDefinitions="2*, 2*, 2*"
+                       RowDefinitions="Auto"
+                       x:Name="EventItem">
+
+                                <Label Text="{Binding Name}" Grid.Column="0" />
+                                <Label Text="{Binding DisplayDate}" Grid.Column="1" />
+                                <Label Text="{Binding Address.City}" Grid.Column="2" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+        </FlexLayout>
+    </ScrollView>
 </ContentPage>

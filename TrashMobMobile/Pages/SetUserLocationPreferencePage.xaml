@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
-             x:DataType="vm:UserLocationPreferenceViewModel"
              x:Class="TrashMobMobile.Pages.SetUserLocationPreferencePage">
     <FlexLayout Direction="Column"
                 JustifyContent="SpaceAround">
@@ -14,11 +12,11 @@
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center"/>
 
-        <maps:Map x:Name="userLocationMap" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True">
+        <maps:Map x:Name="userLocationMap" ItemsSource="{Binding Addresses}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True">
             <maps:Map.ItemTemplate>
                 <DataTemplate>
-                    <maps:Pin Location="{Binding Address.Location}"
-                                  Address="{Binding Address.StreetAddress}"
+                    <maps:Pin Location="{Binding Location}"
+                                  Address="{Binding StreetAddress}"
                                   Label="Your Preferred Location" />
                 </DataTemplate>
             </maps:Map.ItemTemplate>

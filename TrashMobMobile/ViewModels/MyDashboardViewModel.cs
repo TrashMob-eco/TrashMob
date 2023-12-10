@@ -1,17 +1,62 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+using TrashMobMobile.Data;
+using TrashMobMobile.Extensions;
 
 public partial class MyDashboardViewModel : BaseViewModel
 {
-    public MyDashboardViewModel()
+    private EventViewModel selectedEvent;
+    private readonly IMobEventManager mobEventManager;
+
+    public MyDashboardViewModel(IMobEventManager mobEventManager)
     {
+        this.mobEventManager = mobEventManager;
     }
 
-    ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = new ObservableCollection<EventViewModel>();
+    public ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = [];
     
-    ObservableCollection<EventViewModel> PastEvents { get; set; } = new ObservableCollection<EventViewModel>();
+    public ObservableCollection<EventViewModel> PastEvents { get; set; } = [];
 
-    ObservableCollection<LitterReportViewModel> LitterReports { get; set; } = new ObservableCollection<LitterReportViewModel>();
+    public ObservableCollection<LitterReportViewModel> LitterReports { get; set; } = [];
+
+    public EventViewModel SelectedEvent
+    {
+        get { return selectedEvent; }
+        set
+        {
+            if (selectedEvent != value)
+            {
+                selectedEvent = value;
+                OnPropertyChanged(nameof(selectedEvent));
+
+                if (selectedEvent != null)
+                {
+                    PerformNavigation(selectedEvent);
+                }
+            }
+        }
+    }
+
+    public async Task Init()
+    {
+        await RefreshUpcomingEvents();
+    }
+
+    private async void PerformNavigation(EventViewModel eventViewModel)
+    {
+        await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventViewModel.Id}");
+    }
+
+    private async Task RefreshUpcomingEvents()
+    {
+        UpcomingEvents.Clear();
+        var events = await mobEventManager.GetActiveEventsAsync();
+
+        foreach (var mobEvent in events)
+        {
+            var vm = mobEvent.ToEventViewModel();
+            UpcomingEvents.Add(vm);
+        }
+    }
 }
