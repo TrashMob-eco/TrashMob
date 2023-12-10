@@ -82,7 +82,7 @@ public partial class MainViewModel : BaseViewModel
 
     private async void PerformNavigation(EventViewModel eventViewModel)
     {
-        await Navigation.PushAsync(new ViewEventPage(new ViewEventViewModel { EventViewModel = eventViewModel }));
+        await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventViewModel.Id}");
     }
 
     public async Task Init()

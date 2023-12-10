@@ -2,18 +2,55 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
+             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              x:DataType="vm:ViewEventViewModel"
              x:Class="TrashMobMobile.Pages.ViewEventPage">
-    <FlexLayout Direction="Column"
-                JustifyContent="SpaceAround">
+    <VerticalStackLayout>
         <Label 
-            Text="View Event!"
+            Text="{Binding EventViewModel.Name}"
             FontSize="Large"
             VerticalOptions="Center" 
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center"/>
 
-        <Label Text="{Binding EventViewModel.Name}" />
+        <Label Text="Event Date" />
+        <Label Text="{Binding EventViewModel.DisplayDate}" />
+        <Label Text="Event Time" />
+        <Label Text="{Binding EventViewModel.DisplayTime}" />
+        <Label Text="Address" />
+        <Label Text="{Binding EventViewModel.Address.StreetAddress }" />
+        <Label Text="City" />
+        <Label Text="{Binding EventViewModel.Address.City }" />
+        <Label Text="Region" />
+        <Label Text="{Binding EventViewModel.Address.Region }" />
+        <Label Text="Country" />
+        <Label Text="{Binding EventViewModel.Address.Country }" />
+        <Label Text="Description" />
+        <Label Text="{Binding EventViewModel.Description}" />
+        <Label Text="Maximum Number of Participants" />
+        <Label Text="{Binding EventViewModel.MaxNumberOfParticipants}" />
+        <Label Text="Duration Hours" />
+        <Label Text="{Binding EventViewModel.DurationHours}" />
+        <Label Text="Duration Minutes" />
+        <Label Text="{Binding EventViewModel.DurationMinutes}" />
+        <Label Text="Event Status" />
+        <Label Text="{Binding EventViewModel.EventStatusId}" />
+        <Label Text="Event Type" />
+        <Label Text="{Binding EventViewModel.EventTypeId}" />
+        <Label Text="Is Event Public?" />
+        <Label Text="{Binding EventViewModel.IsEventPublic}" />
 
-    </FlexLayout>
+        <Button Text="Refresh" Command="{Binding RefreshCommand}" />
+
+        <!--<maps:Map x:Name="eventLocationMap" ItemsSource="{Binding Events}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True">
+            <maps:Map.ItemTemplate>
+                <DataTemplate>
+                    <maps:Pin Location="{Binding Address.Location}"
+                              Address="{Binding Address.StreetAddress}"
+                              Label="{Binding Name}" />
+                </DataTemplate>
+            </maps:Map.ItemTemplate>
+        </maps:Map>-->
+
+    </VerticalStackLayout>
 </ContentPage>
