@@ -9,18 +9,18 @@
             Padding="30,0"
             Spacing="25">
 
-            <Grid RowDefinitions = "1*, 1*, 1*, 1*" ColumnDefinitions="4*, 1*" MaximumWidthRequest="400">
-                <Label Grid.Row="0" Grid.Column="0" Text="Total Events" />
-                <Label Grid.Row="0" Grid.Column="1" Text="{ Binding StatisticsViewModel.TotalEvents }" />
-                <Label Grid.Row="1" Grid.Column="0" Text="Total Attendees" />
+            <Grid RowDefinitions = "1*, 1*" ColumnDefinitions="1*, 1*, 1*, 1*" MaximumWidthRequest="400" >
+                <Label Grid.Row="0" Grid.Column="0" Text="Events" />
+                <Label Grid.Row="1" Grid.Column="0" Text="{ Binding StatisticsViewModel.TotalEvents }" />
+                <Label Grid.Row="0" Grid.Column="1" Text="Attendees" />
                 <Label Grid.Row="1" Grid.Column="1" Text="{ Binding StatisticsViewModel.TotalAttendees }" />
-                <Label Grid.Row="2" Grid.Column="0" Text="Total Bags" />
-                <Label Grid.Row="2" Grid.Column="1" Text="{ Binding StatisticsViewModel.TotalBags }" />
-                <Label Grid.Row="3" Grid.Column="0" Text="Total Hours" />
-                <Label Grid.Row="3" Grid.Column="1" Text="{ Binding StatisticsViewModel.TotalHours }" />
+                <Label Grid.Row="0" Grid.Column="2" Text="Bags" />
+                <Label Grid.Row="1" Grid.Column="2" Text="{ Binding StatisticsViewModel.TotalBags }" />
+                <Label Grid.Row="0" Grid.Column="3" Text="Hours" />
+                <Label Grid.Row="1" Grid.Column="3" Text="{ Binding StatisticsViewModel.TotalHours }" />
             </Grid>
 
-            <maps:Map x:Name="upcomingEventsMap" IsShowingUser="True" ItemsSource="{Binding UpcomingEvents}" HeightRequest="300" IsScrollEnabled="True">
+            <maps:Map x:Name="upcomingEventsMap" IsShowingUser="True" ItemsSource="{Binding UpcomingEvents}" HeightRequest="300" IsScrollEnabled="True"  >
                 <maps:Map.ItemTemplate>
                     <DataTemplate>
                         <maps:Pin Location="{Binding Address.Location}"
@@ -33,22 +33,20 @@
             <CollectionView x:Name="EventsCollection" 
                             ItemsSource="{Binding UpcomingEvents}" 
                             SelectedItem="{Binding SelectedEvent}" 
-                            SelectionMode="Single" 
-                            Margin="20,0" >
+                            SelectionMode="Single" >
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Grid WidthRequest = "350"
-                              Padding = "10"
-                              Margin = "0,20"
-                              ColumnDefinitions="1*, 2*, 2*, 2*"
-                              RowDefinitions="Auto"
-                              x:Name="EventItem">
+                        <Border StrokeThickness="1">
+                            <Grid WidthRequest = "400"
+                                  ColumnDefinitions="2*, 2*, 2*"
+                                  RowDefinitions="Auto"
+                                  x:Name="EventItem">
 
-                            <Label Text="{Binding Name}" Grid.Column="0" />
-                            <Label Text="{Binding EventDate}" Grid.Column="1" />
-                            <Label Text="{Binding Address.City}" Grid.Column="2" />
-                            <Label Text="{Binding Address.Region}" Grid.Column="3" />
+                                <Label Text="{Binding Name}" Grid.Column="0" />
+                                <Label Text="{Binding DisplayDate}" Grid.Column="1" />
+                                <Label Text="{Binding Address.City}" Grid.Column="2" />
                         </Grid>
+                        </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
 

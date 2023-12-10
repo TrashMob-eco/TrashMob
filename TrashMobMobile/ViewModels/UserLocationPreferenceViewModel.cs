@@ -3,6 +3,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Windows.Input;
 using TrashMobMobile.Data;
+using TrashMobMobile.Extensions;
 
 public partial class UserLocationPreferenceViewModel : BaseViewModel
 {
@@ -25,15 +26,7 @@ public partial class UserLocationPreferenceViewModel : BaseViewModel
 
     public void Init()
     {
-        var addr = new AddressViewModel();
-        addr.City = App.CurrentUser.City;
-        addr.Country = App.CurrentUser.Country;
-        addr.Latitude = App.CurrentUser.Latitude;
-        addr.Longitude = App.CurrentUser.Longitude;
-        addr.PostalCode = App.CurrentUser.PostalCode;
-        addr.Region = App.CurrentUser.Region;
-
-        Address = addr;
+        Address = App.CurrentUser.GetAddress();
         TravelDistance = App.CurrentUser.TravelLimitForLocalEvents;
     }
 

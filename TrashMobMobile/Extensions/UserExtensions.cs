@@ -20,5 +20,18 @@
 
             return true;
         }
+
+        public static AddressViewModel GetAddress(this User user)
+        {
+            return new AddressViewModel
+            {
+                City = user.City,
+                Country = user.Country,
+                Latitude = user.Latitude,
+                Longitude = user.Longitude,
+                PostalCode = user.PostalCode,
+                Region = user.Region
+            };
+        }
     }
 }

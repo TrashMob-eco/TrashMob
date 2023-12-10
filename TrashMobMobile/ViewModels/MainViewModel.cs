@@ -6,7 +6,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Input;
-using TrashMob.Models;
 using TrashMobMobile.Authentication;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -18,6 +17,7 @@ public partial class MainViewModel : BaseViewModel
     private readonly IStatsRestService statsRestService;
     private readonly IMobEventManager mobEventManager;
     private EventViewModel selectedEvent;
+    
 
     public MainViewModel(IAuthService authService, 
                          IUserRestService userRestService, 
@@ -56,6 +56,12 @@ public partial class MainViewModel : BaseViewModel
     [ObservableProperty]
     StatisticsViewModel statisticsViewModel = new StatisticsViewModel();
 
+    [ObservableProperty]
+    AddressViewModel userLocation;
+
+    [ObservableProperty]
+    int travelDistance;
+
     public EventViewModel SelectedEvent
     {
         get { return selectedEvent; }
@@ -89,7 +95,12 @@ public partial class MainViewModel : BaseViewModel
         {
             var email = authService.GetUserEmail();
             var user = await userRestService.GetUserByEmailAsync(email, UserState.UserContext);
-            WelcomeMessage = $"Welcome, {user.UserName}!";
+            if (user != null)
+            {
+                WelcomeMessage = $"Welcome, {user.UserName}!";
+                UserLocation = App.CurrentUser.GetAddress();
+                TravelDistance = App.CurrentUser.TravelLimitForLocalEvents;
+            }
 
             IsBusy = false;
         }
