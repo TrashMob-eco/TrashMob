@@ -105,7 +105,8 @@
                 Longitude = mobEvent.Longitude,
                 PostalCode = mobEvent.PostalCode,
                 Region = mobEvent.Region,
-                StreetAddress = mobEvent.StreetAddress
+                StreetAddress = mobEvent.StreetAddress,
+                Location = new Location(mobEvent.Latitude.Value, mobEvent.Longitude.Value)
             };
         }
     }

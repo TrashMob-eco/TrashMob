@@ -9,6 +9,7 @@ using TrashMobMobile.Authentication;
 using TrashMobMobile.Config;
 using TrashMobMobile.Extensions;
 using Sentry;
+using Microsoft.Maui.Controls.Hosting;
 
 public static class MauiProgram
 {
@@ -17,6 +18,7 @@ public static class MauiProgram
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
+            .UseMauiMaps()
 			.UseMauiCommunityToolkit()
 			.ConfigureFonts(fonts =>
 			{
@@ -96,7 +98,6 @@ public static class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
-
-		return builder.Build();
+        return builder.Build();
 	}
 }

@@ -28,4 +28,7 @@ public partial class AddressViewModel : ObservableObject
 
     [ObservableProperty]
     double? longitude;
+
+    [ObservableProperty]
+    Location location;
 }

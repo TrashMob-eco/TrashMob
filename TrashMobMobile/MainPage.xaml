@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              x:Class="TrashMobMobile.MainPage">
 
     <ScrollView>
@@ -18,6 +19,16 @@
                 <Label Grid.Row="3" Grid.Column="0" Text="Total Hours" />
                 <Label Grid.Row="3" Grid.Column="1" Text="{ Binding StatisticsViewModel.TotalHours }" />
             </Grid>
+
+            <maps:Map x:Name="upcomingEventsMap" IsShowingUser="True" ItemsSource="{Binding UpcomingEvents}" HeightRequest="300" IsScrollEnabled="True">
+                <maps:Map.ItemTemplate>
+                    <DataTemplate>
+                        <maps:Pin Location="{Binding Address.Location}"
+                                  Address="{Binding Address.StreetAddress}"
+                                  Label="{Binding Name}" />
+                    </DataTemplate>
+                </maps:Map.ItemTemplate>
+            </maps:Map>
 
             <CollectionView x:Name="EventsCollection" 
                             ItemsSource="{Binding UpcomingEvents}" 

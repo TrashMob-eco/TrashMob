@@ -46,6 +46,9 @@
       <string>msauthv2</string>
       <string>msauthv3</string>
     </array>
-
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Can we use your location at all times?</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Can we use your location when your app is being used?</string>
   </dict>
 </plist>
