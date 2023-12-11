@@ -74,6 +74,16 @@
             return mobEvent.EventDate.ToUniversalTime() > DateTimeOffset.UtcNow;
         }
 
+        public static bool AreNewRegistrationsAllowed(this Event mobEvent)
+        {
+            return mobEvent.EventDate.ToUniversalTime() > DateTimeOffset.UtcNow;
+        }
+
+        public static bool AreUnregistrationsAllowed(this Event mobEvent)
+        {
+            return mobEvent.EventDate.ToUniversalTime() > DateTimeOffset.UtcNow;
+        }
+
         public static EventViewModel ToEventViewModel(this Event mobEvent)
         {
             var eventViewModel = new EventViewModel()

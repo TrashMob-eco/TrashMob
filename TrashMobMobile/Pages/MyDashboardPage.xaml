@@ -42,7 +42,6 @@
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
-
             </CollectionView>
         </FlexLayout>
     </ScrollView>

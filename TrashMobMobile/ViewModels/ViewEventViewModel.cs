@@ -3,6 +3,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
@@ -10,7 +11,8 @@ public partial class ViewEventViewModel : BaseViewModel
 {   
     public ViewEventViewModel(IMobEventManager mobEventManager)
     {
-        RefreshCommand = new Command(async () => await Refresh());
+        RegisterCommand = new Command(async () => await Register());
+        UnregisterCommand = new Command(async () => await Unregister());
         this.mobEventManager = mobEventManager;
     }
 
@@ -20,6 +22,12 @@ public partial class ViewEventViewModel : BaseViewModel
 
     [ObservableProperty]
     EventViewModel eventViewModel;
+
+    [ObservableProperty]
+    bool enableRegister;
+
+    [ObservableProperty]
+    bool enableUnregister;
 
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
 
@@ -45,7 +53,8 @@ public partial class ViewEventViewModel : BaseViewModel
         }
     }
 
-    public ICommand RefreshCommand { get; set; }
+    public ICommand RegisterCommand { get; set; }
+    public ICommand UnregisterCommand { get; set; }
 
     private async Task Refresh()
     {
@@ -54,5 +63,35 @@ public partial class ViewEventViewModel : BaseViewModel
         EventViewModel = mobEvent.ToEventViewModel();
         Events.Clear();
         Events.Add(EventViewModel);
+        var isAttending = await mobEventManager.IsUserAttendingAsync(eventId, App.CurrentUser.Id);
+
+        EnableRegister = !mobEvent.IsEventLead() && !isAttending && mobEvent.AreNewRegistrationsAllowed();
+        EnableUnregister = !mobEvent.IsEventLead() && isAttending && mobEvent.AreUnregistrationsAllowed();
+    }
+
+    private async Task Register()
+    {
+        var eventAttendee = new EventAttendee()
+        {
+            EventId = EventViewModel.Id,
+            UserId = App.CurrentUser.Id
+        };
+
+        await mobEventManager.AddEventAttendeeAsync(eventAttendee);
+
+        await Refresh();
+    }
+
+    private async Task Unregister()
+    {
+        var eventAttendee = new EventAttendee()
+        {
+            EventId = EventViewModel.Id,
+            UserId = App.CurrentUser.Id
+        };
+
+        await mobEventManager.RemoveEventAttendeeAsync(eventAttendee);
+
+        await Refresh();
     }
 }

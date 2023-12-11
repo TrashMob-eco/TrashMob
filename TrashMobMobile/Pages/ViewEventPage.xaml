@@ -41,7 +41,8 @@
             <Label Text="Is Event Public?" />
             <Label Text="{Binding EventViewModel.IsEventPublic}" />
 
-            <Button Text="Refresh" Command="{Binding RefreshCommand}" />
+            <Button Text="Register" Command="{Binding RegisterCommand}" IsVisible="{Binding EnableRegister}" />
+            <Button Text="Unregister" Command="{Binding UnregisterCommand}" IsVisible="{Binding EnableUnregister}"/>
 
             <maps:Map x:Name="eventLocationMap" ItemsSource="{Binding Events}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True">
                 <maps:Map.ItemTemplate>
