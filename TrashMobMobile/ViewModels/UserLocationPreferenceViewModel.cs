@@ -9,6 +9,7 @@ using TrashMobMobile.Extensions;
 public partial class UserLocationPreferenceViewModel : BaseViewModel
 {
     private readonly IUserManager userManager;
+    private readonly IMapRestService mapRestService;
 
     public ObservableCollection<AddressViewModel> Addresses { get; set; } = [];
 
@@ -18,52 +19,56 @@ public partial class UserLocationPreferenceViewModel : BaseViewModel
     [ObservableProperty]
     int travelDistance;
 
-    public UserLocationPreferenceViewModel(IUserManager userManager)
+    [ObservableProperty]
+    AddressViewModel address;
+
+    public UserLocationPreferenceViewModel(IUserManager userManager, IMapRestService mapRestService)
     {
         UpdateLocationCommand = new Command(async () => await UpdateLocation());
-        ClickNewLocationCommand = new Command(async () => await CaptureLocation());
         this.userManager = userManager;
+        this.mapRestService = mapRestService;
+        address = new AddressViewModel();
     }
 
     public void Init()
     {
         Addresses.Clear();
-        var address = App.CurrentUser.GetAddress();
-        Addresses.Add(address);
+        Address = App.CurrentUser.GetAddress();
+        Addresses.Add(Address);
         TravelDistance = App.CurrentUser.TravelLimitForLocalEvents;
+        Units = App.CurrentUser.PrefersMetric ? "Kilometers" : "Miles";
     }
 
     public ICommand UpdateLocationCommand { get; set; }
 
-    public ICommand ClickNewLocationCommand { get; set; }
-
-    private async Task CaptureLocation()
+    public async Task ChangeLocation(Location location)
     {
+        var addr = await mapRestService.GetAddressAsync(location.Latitude, location.Longitude);
 
+        Address.City = addr.City;
+        Address.Country = addr.Country;
+        Address.Latitude = location.Latitude;
+        Address.Longitude = location.Longitude;
+        Address.Location = location;
+        Address.PostalCode = addr.PostalCode;
+        Address.Region = addr.Region;
+        Address.StreetAddress = addr.StreetAddress;
+
+        Addresses.Clear();
+        Addresses.Add(Address);
     }
 
     private async Task UpdateLocation()
     {
-        var address = Addresses[0];
-        if (address != null)
-        {
-            var location = address.Location;
+        App.CurrentUser.City = Address.City;
+        App.CurrentUser.Country = Address.Country;
+        App.CurrentUser.Latitude = Address.Latitude;
+        App.CurrentUser.Longitude = Address.Longitude;
+        App.CurrentUser.Country = Address.Country;
+        App.CurrentUser.PostalCode = Address.PostalCode;
+        App.CurrentUser.TravelLimitForLocalEvents = TravelDistance;
+        App.CurrentUser.PrefersMetric = Units == "Kilometers";
 
-            if (location != null)
-            {
-                address.Longitude = location.Longitude;
-                address.Latitude = location.Latitude;
-            }
-
-            App.CurrentUser.City = address.City;
-            App.CurrentUser.Country = address.Country;
-            App.CurrentUser.Latitude = address.Latitude;
-            App.CurrentUser.Longitude = address.Longitude;
-            App.CurrentUser.Country = address.Country;
-            App.CurrentUser.PostalCode = address.PostalCode;
-            App.CurrentUser.TravelLimitForLocalEvents = TravelDistance;
-
-            await userManager.UpdateUserAsync(App.CurrentUser);
-        }
+        await userManager.UpdateUserAsync(App.CurrentUser);
     }
 }

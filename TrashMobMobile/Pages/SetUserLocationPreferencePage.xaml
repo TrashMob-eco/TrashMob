@@ -12,7 +12,19 @@
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center"/>
 
-        <maps:Map x:Name="userLocationMap" ItemsSource="{Binding Addresses}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True">
+        <Label 
+            Text="Click on the map to set your location."
+            FontSize="Micro"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+        <maps:Map x:Name="userLocationMap" 
+                  ItemsSource="{Binding Addresses}" 
+                  IsShowingUser="True" 
+                  HeightRequest="300" 
+                  IsScrollEnabled="True"
+                  MapClicked="OnMapClicked">
             <maps:Map.ItemTemplate>
                 <DataTemplate>
                     <maps:Pin Location="{Binding Location}"
@@ -51,6 +63,14 @@
                 </x:Array>
             </Picker.ItemsSource>
         </Picker>
+        <Label Text="City" />
+        <Label Text="{Binding Address.City }" />
+        <Label Text="Region" />
+        <Label Text="{Binding Address.Region }" />
+        <Label Text="Country" />
+        <Label Text="{Binding Address.Country }" />
+        <Label Text="Postal Code" />
+        <Label Text="{Binding Address.PostalCode }" />
 
         <Button Text="Submit" Command="{Binding UpdateLocationCommand}" />
         

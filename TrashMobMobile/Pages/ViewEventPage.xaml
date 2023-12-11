@@ -24,6 +24,8 @@
             <Label Text="{Binding EventViewModel.Address.Region }" />
             <Label Text="Country" />
             <Label Text="{Binding EventViewModel.Address.Country }" />
+            <Label Text="Postal Code" />
+            <Label Text="{Binding EventViewModel.Address.PostalCode }" />
             <Label Text="Description" />
             <Label Text="{Binding EventViewModel.Description}" />
             <Label Text="Maximum Number of Participants" />
