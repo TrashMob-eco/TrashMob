@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using TrashMob.Models;
 using TrashMobMobile.Extensions;
 
 public partial class EventViewModel : ObservableObject
@@ -76,5 +77,29 @@ public partial class EventViewModel : ObservableObject
         {
             return EventDate.GetFormattedLocalTime();
         }
+    }
+
+    public Event ToEvent()
+    {
+        return new Event()
+        {
+            Id = Id,
+            EventDate = EventDate,
+            Name = Name,
+            Description = Description,
+            CancellationReason = CancellationReason,
+            City = Address.City,
+            Country = Address.Country,
+            DurationHours = DurationHours,
+            DurationMinutes = DurationMinutes,
+            EventTypeId = EventTypeId,
+            IsEventPublic = IsEventPublic,
+            Latitude = Address.Latitude,
+            Longitude = Address.Longitude,
+            MaxNumberOfParticipants = MaxNumberOfParticipants,
+            PostalCode = Address.PostalCode,
+            Region = Address.Region,
+            StreetAddress = Address.StreetAddress,
+        };
     }
 }

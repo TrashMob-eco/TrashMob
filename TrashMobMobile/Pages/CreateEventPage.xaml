@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
-             x:DataType="vm:CreateEventViewModel"
+             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              x:Class="TrashMobMobile.Pages.CreateEventPage">
     <FlexLayout Direction="Column"
                 JustifyContent="SpaceAround">
@@ -12,6 +11,47 @@
             VerticalOptions="Center" 
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center"/>
+
+        <Label Text="Event Date" />
+        <DatePicker Date="{Binding EventViewModel.DisplayDate}" />
+        <Label Text="Event Time" />
+        <TimePicker Time="{Binding EventViewModel.DisplayTime}" />
+        <Label Text="Description" />
+        <Editor Text="{Binding EventViewModel.Description}" />
+        <Label Text="Maximum Number of Participants" />
+        <Entry Keyboard="Numeric" Text="{Binding EventViewModel.MaxNumberOfParticipants}" />
+        <Label Text="Duration Hours" />
+        <Entry Keyboard="Numeric" Text="{Binding EventViewModel.DurationHours}" />
+        <Label Text="Duration Minutes" />
+        <Entry Keyboard="Numeric" Text="{Binding EventViewModel.DurationMinutes}" />
+        <Label Text="Event Type" />
+        <Picker Title="Event Type" ItemsSource="{Binding ETypes}" SelectedItem="{Binding SelectedEventType}" />
+        <Label Text="Is Event Public?" />
+        <CheckBox IsChecked="{Binding EventViewModel.IsEventPublic}" />
+
+        <Label Text="Address" />
+        <Label Text="{Binding EventViewModel.Address.StreetAddress }" />
+        <Label Text="City" />
+        <Label Text="{Binding EventViewModel.Address.City }" />
+        <Label Text="Region" />
+        <Label Text="{Binding EventViewModel.Address.Region }" />
+        <Label Text="Country" />
+        <Label Text="{Binding EventViewModel.Address.Country }" />
+        <Label Text="Postal Code" />
+        <Label Text="{Binding EventViewModel.Address.PostalCode }" />
+
+        <Button Text="Register" Command="{Binding RegisterCommand}" IsVisible="{Binding EnableRegister}" />
+        <Button Text="Unregister" Command="{Binding UnregisterCommand}" IsVisible="{Binding EnableUnregister}"/>
+
+        <maps:Map x:Name="eventLocationMap" ItemsSource="{Binding Events}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True">
+            <maps:Map.ItemTemplate>
+                <DataTemplate>
+                    <maps:Pin Location="{Binding Address.Location}"
+                              Address="{Binding Address.StreetAddress}"
+                              Label="{Binding Name}" />
+                </DataTemplate>
+            </maps:Map.ItemTemplate>
+        </maps:Map>
 
     </FlexLayout>
 </ContentPage>

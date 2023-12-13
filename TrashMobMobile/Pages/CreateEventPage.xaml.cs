@@ -10,4 +10,10 @@ public partial class CreateEventPage : ContentPage
         _viewModel = viewModel;
         BindingContext = _viewModel;
     }
+
+    protected override async void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+        await _viewModel.Init();
+    }
 }
