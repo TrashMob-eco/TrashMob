@@ -7,7 +7,6 @@ import JakeDiliberto from './assets/boardOfDirectors/JakeDiliberto.svg';
 import KevinGleason from './assets/boardOfDirectors/KevinGleason.svg';
 import SandraMau from './assets/boardOfDirectors/SandraMau.png';
 import CynthiaMitchell from './assets/boardOfDirectors/CynthiaMitchell.jpg';
-import RobertRund from './assets/boardOfDirectors/RobertRund.jpg';
 import SofiaSamuels from './assets/boardOfDirectors/SofiaSamuels.png';
 import ValerieWilden from './assets/boardOfDirectors/ValerieWilden.svg';
 import { HeroSection } from './Customization/HeroSection'
@@ -162,23 +161,6 @@ export const Board: React.FC = () => {
                                 and biofertilizers. She has also led private enterprise initiatives to develop biomass
                                 innovation for construction, packaging, displays and other applications.</p>
                             <p className='font-size-sm color-grey'>Mitchell lives in Southern California. She is the mother of two daughters – both also entrepreneurs. She is a lifelong equestrian and breeder, a passionate gardener and believes in the collective power of personal service and stewardship to make the world a better, healthier place for all its inhabitants.</p>
-                        </Col>
-                    </Row>
-                </div>
-                <div className='p-4 directorCard'>
-                    <Row>
-                        <Col md={5}>
-                            <Image src={RobertRund} alt="Robert Rund" className="h-100 mt-0 object-fit-cover rounded" />
-                        </Col>
-                        <Col md={7}>
-                            <div className='d-flex justify-content-between align-items-center'>
-                                <h2 className='m-0 fw-500 font-size-xl color-primary '>Robert Rund</h2>
-                                <a href="https://www.linkedin.com/in/robert-rund-mba-cfre-463994163/"><Image src={linkedIn} alt="linkedIn icon" className="h-100 mt-0 object-fit-cover" /></a>
-                            </div>
-                            <h5 className='my-3 fw-500 color-grey'>Member at large</h5>
-                            <p className='font-size-sm color-grey'>Robert Rund is Executive Director of CelloBello, the world’s largest online educational resource for cellists and cello teachers. Prior to joining CelloBello, Rund has led both for-profit and nonprofit organizations in the arts and education sectors. Throughout the past thirty years, he has served as President and Head of School of the American Boychoir School; Associate Publisher of Musical America Worldwide; Executive Director of The Savannah Philharmonic Orchestra; Regional Director of Development for Harmony Foundation International; and Founding Executive Director of Community Arts Partnership at Peddie School (CAPPS).</p>
-                            <p className='font-size-sm color-grey'>Rund also serves as Founder and CEO of R2C2, a firm specializing in helping organizations accomplish mission and manifest vision through aligning structure with strategic goals and objectives; navigate organizational crisis; adapt to significant organizational change; and both identify and recognize internal and external stakeholders in order to maximize engagement and optimize communications. </p>
-                            <p className='font-size-sm color-grey'>Rund holds an MBA (University of North Carolina – Pembroke), an M.A. in Nonprofit Administration (Goucher College), and a B.M. in Music Education (Westminster Choir College of Rider University). In 2004, Rund was selected as one of fifty non-profit arts leaders worldwide for a joint fellowship from Stanford Graduate School of Business and National Arts Strategies. Robert also completed the two-year Authentic Leader program through Contemplative Leadership Development. Finally, Robert is a Certified Fund Raising Executive (CFRE), the world’s only certified accreditation in the field of philanthropy.</p>
                         </Col>
                     </Row>
                 </div>
