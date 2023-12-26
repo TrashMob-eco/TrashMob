@@ -23,13 +23,13 @@
 
         public static string GetFormattedLocalDate(this DateTimeOffset dateTime)
         {
-            var localDateTime = TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.FindSystemTimeZoneById(TimeZoneInfo.Local.StandardName)).DateTime;
+            var localDateTime = TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.Local).DateTime;
             return String.Format("{0:dddd, MMMM d, yyyy}", localDateTime);
         }
 
         public static string GetFormattedLocalTime(this DateTimeOffset dateTime)
         {
-            var localDateTime = TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.FindSystemTimeZoneById(TimeZoneInfo.Local.StandardName)).DateTime;
+            var localDateTime = TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.Local).DateTime;
             return localDateTime.ToShortTimeString();
         }
 

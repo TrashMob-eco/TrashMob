@@ -1,6 +1,6 @@
 ﻿namespace TrashMobMobile
 {
-    using System.Windows.Input;
+    using Microsoft.Maui.Maps;
 
     public partial class MainPage : ContentPage
     {
@@ -18,6 +18,8 @@
         {
             base.OnNavigatedTo(args);
             await _viewModel.Init();
+            var mapSpan = new MapSpan(new Location(_viewModel.UserLocation.Location.Latitude, _viewModel.UserLocation.Location.Longitude), 0.01, 0.01);
+            upcomingEventsMap.MoveToRegion(mapSpan);
         }
     }
 }

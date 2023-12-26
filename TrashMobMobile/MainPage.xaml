@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:sensors="clr-namespace:Microsoft.Maui.Devices.Sensors;assembly=Microsoft.Maui.Essentials"
              x:Class="TrashMobMobile.MainPage">
 
     <ScrollView>
@@ -20,7 +21,11 @@
                 <Label Grid.Row="1" Grid.Column="3" Text="{ Binding StatisticsViewModel.TotalHours }" />
             </Grid>
 
-            <maps:Map x:Name="upcomingEventsMap" IsShowingUser="True" ItemsSource="{Binding UpcomingEvents}" HeightRequest="300" IsScrollEnabled="True"  >
+            <maps:Map x:Name="upcomingEventsMap"
+                      IsShowingUser="True"
+                      ItemsSource="{Binding UpcomingEvents}"
+                      HeightRequest="300"
+                      IsScrollEnabled="True">
                 <maps:Map.ItemTemplate>
                     <DataTemplate>
                         <maps:Pin Location="{Binding Address.Location}"
