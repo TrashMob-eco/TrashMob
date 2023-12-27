@@ -79,6 +79,19 @@ public partial class EventViewModel : ObservableObject
         }
     }
 
+    public bool IsValid()
+    {
+        if (EventDate == DateTimeOffset.MinValue)
+        {
+            ErrorMessage = "Event Date and Time must be specified.";
+            return false;
+        }
+
+        return true;
+    }
+
+    public string ErrorMessage { get; set; }
+
     public Event ToEvent()
     {
         return new Event()

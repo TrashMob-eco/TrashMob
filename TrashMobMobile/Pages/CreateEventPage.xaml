@@ -40,9 +40,6 @@
         <Label Text="Postal Code" />
         <Label Text="{Binding EventViewModel.Address.PostalCode }" />
 
-        <Button Text="Register" Command="{Binding RegisterCommand}" IsVisible="{Binding EnableRegister}" />
-        <Button Text="Unregister" Command="{Binding UnregisterCommand}" IsVisible="{Binding EnableUnregister}"/>
-
         <maps:Map x:Name="eventLocationMap" ItemsSource="{Binding Events}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True">
             <maps:Map.ItemTemplate>
                 <DataTemplate>
@@ -53,5 +50,6 @@
             </maps:Map.ItemTemplate>
         </maps:Map>
 
+        <Button Text="Save Event" Command="{Binding SaveEvent}" />
     </FlexLayout>
 </ContentPage>
