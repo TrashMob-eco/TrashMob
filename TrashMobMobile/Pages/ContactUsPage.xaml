@@ -53,7 +53,16 @@
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center" />
 
-        <Button Text="Submit" Command="{Binding SubmitMessageCommand}" />
+        <Button Text="Submit" Command="{Binding SubmitMessageCommand}" IsEnabled="{Binding IsValid}" />
+
+        <Label 
+            Text="{Binding ErrorMessage}"
+            FontSize="Micro"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center" 
+            IsVisible="{Binding IsErrorMessageVisible}"
+            TextColor="Red" />
 
     </FlexLayout>
 </ContentPage>
