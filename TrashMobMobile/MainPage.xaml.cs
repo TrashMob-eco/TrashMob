@@ -24,7 +24,7 @@
 
             if (_viewModel?.UserLocation?.Location != null)
             {
-                var mapSpan = new MapSpan(new Location(_viewModel.UserLocation.Location.Latitude, _viewModel.UserLocation.Location.Longitude), 0.01, 0.01);
+                var mapSpan = new MapSpan(new Location(_viewModel.UserLocation.Location.Latitude, _viewModel.UserLocation.Location.Longitude), 0.05, 0.05);
                 upcomingEventsMap.MoveToRegion(mapSpan);
             }
         }

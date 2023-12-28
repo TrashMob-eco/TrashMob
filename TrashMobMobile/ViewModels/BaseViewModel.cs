@@ -17,4 +17,6 @@ public abstract partial class BaseViewModel : ObservableObject
     public INavigation Navigation { get; set; }
 
     public Func<string, Task> Notify { get; set; }
+
+    public Func<string, Task> NotifyError { get; set; }
 }

@@ -114,13 +114,5 @@
                 </DataTrigger>
             </Label.Triggers>
         </Label>
-        <Label 
-            FontSize="Micro"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center" 
-            TextColor="Green" 
-            Text="{Binding Confirmation}">
-        </Label>
     </FlexLayout>
 </ContentPage>
