@@ -71,11 +71,12 @@ public static class MauiProgram
         builder.Services.AddTransient<ContactUsPage>();
         builder.Services.AddTransient<CreateEventPage>();
         builder.Services.AddTransient<EditEventPage>();
-        builder.Services.AddTransient<MyDashboardPage>();
         builder.Services.AddTransient<MainPage>();
+        builder.Services.AddTransient<MyDashboardPage>();
         builder.Services.AddTransient<SearchEventsPage>();
         builder.Services.AddTransient<SearchLitterReportsPage>();
         builder.Services.AddTransient<SetUserLocationPreferencePage>();
+        builder.Services.AddTransient<SubmitLitterReportPage>();
         builder.Services.AddTransient<ViewEventPage>();
         builder.Services.AddTransient<ViewEventSummaryPage>();
         builder.Services.AddTransient<ViewLitterReportPage>();
@@ -91,6 +92,7 @@ public static class MauiProgram
         builder.Services.AddTransient<SearchEventsViewModel>();
         builder.Services.AddTransient<SearchLitterReportsViewModel>();
         builder.Services.AddTransient<SocialMediaShareViewModel>();
+        builder.Services.AddTransient<SubmitLitterReportViewModel>();
         builder.Services.AddTransient<UserLocationPreferenceViewModel>();
         builder.Services.AddTransient<ViewEventViewModel>();
         builder.Services.AddTransient<ViewLitterReportViewModel>();

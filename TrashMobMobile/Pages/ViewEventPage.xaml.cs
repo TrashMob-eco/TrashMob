@@ -1,5 +1,8 @@
 namespace TrashMobMobile.Pages;
 
+using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+
 [QueryProperty(nameof(EventId), nameof(EventId))]
 public partial class ViewEventPage : ContentPage
 {
@@ -25,6 +28,7 @@ public partial class ViewEventPage : ContentPage
 	{
 		InitializeComponent();
         _viewModel = viewModel;
+        _viewModel.Notify = Notify;
 
         if (!string.IsNullOrEmpty(EventId))
         {
@@ -32,5 +36,16 @@ public partial class ViewEventPage : ContentPage
         }
 
         BindingContext = _viewModel;
+    }
+
+    private async Task Notify(string message)
+    {
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+        ToastDuration duration = ToastDuration.Short;
+        double fontSize = 14;
+
+        var toast = Toast.Make(message, duration, fontSize);
+        await toast.Show(cancellationTokenSource.Token);
     }
 }

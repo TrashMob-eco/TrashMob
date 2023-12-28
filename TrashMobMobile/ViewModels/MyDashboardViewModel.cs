@@ -58,5 +58,7 @@ public partial class MyDashboardViewModel : BaseViewModel
             var vm = mobEvent.ToEventViewModel();
             UpcomingEvents.Add(vm);
         }
+
+        await Notify("Upcoming event list has been refreshed.");
     }
 }

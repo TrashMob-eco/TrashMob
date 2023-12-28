@@ -70,5 +70,9 @@ public partial class UserLocationPreferenceViewModel : BaseViewModel
         App.CurrentUser.PrefersMetric = Units == "Kilometers";
 
         await userManager.UpdateUserAsync(App.CurrentUser);
+
+        await Notify("User location preference has been updated.");
+
+        await Navigation.PopToRootAsync();
     }
 }

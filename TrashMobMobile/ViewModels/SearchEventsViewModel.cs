@@ -54,5 +54,7 @@ public partial class SearchEventsViewModel : BaseViewModel
             var vm = mobEvent.ToEventViewModel();
             Events.Add(vm);
         }
+
+        await Notify("Event list has been refreshed.");
     }
 }

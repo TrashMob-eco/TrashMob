@@ -62,5 +62,7 @@ public partial class CreateEventViewModel : BaseViewModel
         EventViewModel = updatedEvent.ToEventViewModel();
         Events.Clear();
         Events.Add(EventViewModel);
+
+        await Notify("Event has been saved.");
     }
 }

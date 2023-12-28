@@ -79,6 +79,8 @@ public partial class ViewEventViewModel : BaseViewModel
 
         await mobEventManager.AddEventAttendeeAsync(eventAttendee);
 
+        await Notify("You have been registered for this event.");
+
         await Refresh();
     }
 
@@ -91,6 +93,8 @@ public partial class ViewEventViewModel : BaseViewModel
         };
 
         await mobEventManager.RemoveEventAttendeeAsync(eventAttendee);
+
+        await Notify("You have been unregistered for this event.");
 
         await Refresh();
     }
