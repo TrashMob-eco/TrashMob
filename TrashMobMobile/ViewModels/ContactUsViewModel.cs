@@ -40,8 +40,8 @@ public partial class ContactUsViewModel : BaseViewModel
 
         await contactRequestManager.AddContactRequestAsync(contactRequest);
 
-        Message = string.Empty;
+        await Notify("Message sent successfully!");
 
-        Confirmation = "Message sent successfully!";
+        await Navigation.PopToRootAsync();
     }
 }
