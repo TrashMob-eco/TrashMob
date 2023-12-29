@@ -14,6 +14,8 @@
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center"/>
 
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
         <Label 
             Text="Name"
             FontSize="Small"
