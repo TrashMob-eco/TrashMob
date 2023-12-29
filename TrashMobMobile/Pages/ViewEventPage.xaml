@@ -36,6 +36,7 @@
             <Button Text="Register" Command="{Binding RegisterCommand}" IsVisible="{Binding EnableRegister}" />
             <Button Text="Unregister" Command="{Binding UnregisterCommand}" IsVisible="{Binding EnableUnregister}"/>
             <Button Text="Edit Event" Command="{Binding EditEventCommand}" IsVisible="{Binding EnableEditEvent}"/>
+            <Button Text="View Event Summary" Command="{Binding ViewEventSummaryCommand}" IsVisible="{Binding EnableViewEventSummary}"/>
 
             <maps:Map x:Name="eventLocationMap" ItemsSource="{Binding Events}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True">
                 <maps:Map.ItemTemplate>

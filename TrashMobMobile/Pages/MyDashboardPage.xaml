@@ -15,15 +15,28 @@
 
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-            <maps:Map x:Name="eventsMap" IsShowingUser="True" ItemsSource="{Binding Events}" HeightRequest="300" IsScrollEnabled="True"  >
-                <maps:Map.ItemTemplate>
-                    <DataTemplate>
-                        <maps:Pin Location="{Binding Address.Location}"
-                       Address="{Binding Address.StreetAddress}"
-                       Label="{Binding Name}" />
-                    </DataTemplate>
-                </maps:Map.ItemTemplate>
-            </maps:Map>
+            <Label 
+            Text="Your Stats"
+                FontSize="Medium"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center"
+                HorizontalTextAlignment="Center" />
+
+            <Grid RowDefinitions = "1*, 1*" ColumnDefinitions="1*, 1*, 1*, 1*" MaximumWidthRequest="400" >
+                <Label Grid.Row="0" Grid.Column="0" Text="Events" />
+                <Label Grid.Row="1" Grid.Column="0" Text="{ Binding StatisticsViewModel.TotalEvents }" />
+                <Label Grid.Row="0" Grid.Column="1" Text="Bags" />
+                <Label Grid.Row="1" Grid.Column="1" Text="{ Binding StatisticsViewModel.TotalBags }" />
+                <Label Grid.Row="0" Grid.Column="2" Text="Hours" />
+                <Label Grid.Row="1" Grid.Column="2" Text="{ Binding StatisticsViewModel.TotalHours }" />
+            </Grid>
+
+            <Label 
+            Text="Upcoming Events"
+                FontSize="Medium"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center"
+                HorizontalTextAlignment="Center" />
 
             <CollectionView x:Name="UpcomingEventsCollection" 
                  ItemsSource="{Binding UpcomingEvents}" 
@@ -45,6 +58,34 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+
+            <Label 
+            Text="Completed Events"
+                FontSize="Medium"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center"
+                HorizontalTextAlignment="Center" />
+
+            <CollectionView x:Name="CompletedEventsCollection" 
+                 ItemsSource="{Binding CompletedEvents}" 
+                 SelectedItem="{Binding SelectedEvent}" 
+                 SelectionMode="Single" >
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border StrokeThickness="1">
+                            <Grid WidthRequest = "400"
+                       ColumnDefinitions="2*, 2*, 2*"
+                       RowDefinitions="Auto"
+                       x:Name="EventItem">
+                                <Label Text="{Binding Name}" Grid.Column="0" />
+                                <Label Text="{Binding DisplayDate}" Grid.Column="1" />
+                                <Label Text="{Binding Address.City}" Grid.Column="2" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
         </FlexLayout>
     </ScrollView>
 </ContentPage>

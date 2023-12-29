@@ -1,5 +1,6 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -8,17 +9,22 @@ public partial class MyDashboardViewModel : BaseViewModel
 {
     private EventViewModel selectedEvent;
     private readonly IMobEventManager mobEventManager;
+    private readonly IStatsRestService statsRestService;
 
-    public MyDashboardViewModel(IMobEventManager mobEventManager)
+    public MyDashboardViewModel(IMobEventManager mobEventManager, IStatsRestService statsRestService)
     {
         this.mobEventManager = mobEventManager;
+        this.statsRestService = statsRestService;
     }
 
     public ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = [];
-    
-    public ObservableCollection<EventViewModel> PastEvents { get; set; } = [];
+
+    public ObservableCollection<EventViewModel> CompletedEvents { get; set; } = [];
 
     public ObservableCollection<LitterReportViewModel> LitterReports { get; set; } = [];
+
+    [ObservableProperty]
+    public StatisticsViewModel statisticsViewModel;
 
     public EventViewModel SelectedEvent
     {
@@ -40,7 +46,8 @@ public partial class MyDashboardViewModel : BaseViewModel
 
     public async Task Init()
     {
-        await RefreshUpcomingEvents();
+        await RefreshEvents();
+        await RefreshStatistics();
     }
 
     private async void PerformNavigation(EventViewModel eventViewModel)
@@ -48,21 +55,47 @@ public partial class MyDashboardViewModel : BaseViewModel
         await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventViewModel.Id}");
     }
 
-    private async Task RefreshUpcomingEvents()
+    private async Task RefreshStatistics()
     {
         IsBusy = true;
 
-        UpcomingEvents.Clear();
-        var events = await mobEventManager.GetActiveEventsAsync();
+        var stats = await statsRestService.GetUserStatsAsync(App.CurrentUser.Id);
 
-        foreach (var mobEvent in events)
+        StatisticsViewModel = new StatisticsViewModel
+        {
+            TotalBags = stats.TotalBags,
+            TotalEvents = stats.TotalEvents,
+            TotalHours = stats.TotalHours,
+        };
+
+        IsBusy = false;
+    }
+
+    private async Task RefreshEvents()
+    {
+        IsBusy = true;
+
+        CompletedEvents.Clear();
+        UpcomingEvents.Clear();
+
+        var events = await mobEventManager.GetUserEventsAsync(App.CurrentUser.Id, false);
+
+        foreach (var mobEvent in events.OrderByDescending(e => e.EventDate))
         {
             var vm = mobEvent.ToEventViewModel();
-            UpcomingEvents.Add(vm);
+
+            if (mobEvent.EventDate < DateTime.UtcNow)
+            {
+                CompletedEvents.Add(vm);
+            }
+            else
+            {
+                UpcomingEvents.Add(vm);
+            }
         }
 
         IsBusy = false;
 
-        await Notify("Upcoming event list has been refreshed.");
+        await Notify("Event list has been refreshed.");
     }
 }

@@ -17,6 +17,7 @@ public partial class ViewEventViewModel : BaseViewModel
         RegisterCommand = new Command(async () => await Register());
         UnregisterCommand = new Command(async () => await Unregister());
         EditEventCommand = new Command(async () => await EditEvent());
+        ViewEventSummaryCommand = new Command(async () => await ViewEventSummary());
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
     }
@@ -34,6 +35,9 @@ public partial class ViewEventViewModel : BaseViewModel
     bool enableEditEvent;
 
     [ObservableProperty]
+    bool enableViewEventSummary;
+
+    [ObservableProperty]
     string selectedEventType;
 
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
@@ -43,6 +47,8 @@ public partial class ViewEventViewModel : BaseViewModel
     public ICommand UnregisterCommand { get; set; }
 
     public ICommand EditEventCommand { get; set; }
+
+    public ICommand ViewEventSummaryCommand { get; set; }
 
     public async Task Init(Guid eventId)
     {
@@ -62,6 +68,7 @@ public partial class ViewEventViewModel : BaseViewModel
         EnableRegister = !mobEvent.IsEventLead() && !isAttending && mobEvent.AreNewRegistrationsAllowed();
         EnableUnregister = !mobEvent.IsEventLead() && isAttending && mobEvent.AreUnregistrationsAllowed();
         EnableEditEvent = mobEvent.IsEventLead();
+        EnableViewEventSummary = mobEvent.EventDate < DateTime.Now;
 
         IsBusy = false;
     }
@@ -69,6 +76,11 @@ public partial class ViewEventViewModel : BaseViewModel
     private async Task EditEvent()
     {
         await Shell.Current.GoToAsync($"{nameof(EditEventPage)}?EventId={eventViewModel.Id}");
+    }
+
+    private async Task ViewEventSummary()
+    {
+        await Shell.Current.GoToAsync($"{nameof(ViewEventSummaryPage)}?EventId={eventViewModel.Id}");
     }
 
     private async Task Register()
