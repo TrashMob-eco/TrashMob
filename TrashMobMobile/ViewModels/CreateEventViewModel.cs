@@ -18,7 +18,8 @@ public partial class CreateEventViewModel : BaseViewModel
     private readonly IMobEventManager mobEventManager;
     private readonly IEventTypeRestService eventTypeRestService;
     private readonly IMapRestService mapRestService;
-    
+    private const int ActiveEventStatus = 1;
+
     public string DefaultEventName { get; } = "New Event";
 
     public CreateEventViewModel(IMobEventManager mobEventManager, 
@@ -46,7 +47,8 @@ public partial class CreateEventViewModel : BaseViewModel
             DurationHours = 2,
             DurationMinutes = 0,
             Address = UserLocation,
-            EventTypeId = EventTypes.OrderBy(e => e.DisplayOrder).First().Id
+            EventTypeId = EventTypes.OrderBy(e => e.DisplayOrder).First().Id,
+            EventStatusId = ActiveEventStatus
         };
 
         SelectedEventType = EventTypes.OrderBy(e => e.DisplayOrder).First().Name;

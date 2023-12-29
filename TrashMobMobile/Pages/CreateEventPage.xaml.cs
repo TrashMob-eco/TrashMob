@@ -55,17 +55,14 @@ public partial class CreateEventPage : ContentPage
         {
             BackgroundColor = Colors.Red,
             TextColor = Colors.White,
-            ActionButtonTextColor = Colors.Yellow,
             CornerRadius = new CornerRadius(10),
-            Font = Microsoft.Maui.Font.SystemFontOfSize(14),
-            ActionButtonFont = Microsoft.Maui.Font.SystemFontOfSize(14),
-            CharacterSpacing = 0.5
+            Font = Microsoft.Maui.Font.SystemFontOfSize(14),            
         };
 
         string text = message;
         TimeSpan duration = TimeSpan.FromSeconds(3);
 
-        var snackbar = Snackbar.Make(text, null, null, duration, snackbarOptions);
+        var snackbar = Snackbar.Make(text, duration: duration, visualOptions: snackbarOptions);
 
         await snackbar.Show(cancellationTokenSource.Token);
     }

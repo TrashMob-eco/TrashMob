@@ -23,10 +23,10 @@
                 </Entry>
 
                 <Label Grid.Row="1" Grid.Column="0" Text="Event Date"  />
-                <DatePicker Grid.Row="1" Grid.Column="1" Date="{Binding EventViewModel.DisplayDate}" />
+                <DatePicker Grid.Row="1" Grid.Column="1" Date="{Binding EventViewModel.EventDateOnly}" />
 
                 <Label Grid.Row="2" Grid.Column="0" Text="Event Time" />
-                <TimePicker Grid.Row="2" Grid.Column="1" Time="{Binding EventViewModel.DisplayTime}" />
+                <TimePicker Grid.Row="2" Grid.Column="1" Time="{Binding EventViewModel.EventTime}" />
 
                 <Label Grid.Row="3" Grid.Column="0" Text="Description" />
                 <Editor Grid.Row="3" Grid.Column="1" Text="{Binding EventViewModel.Description}">

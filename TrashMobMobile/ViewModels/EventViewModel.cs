@@ -35,6 +35,8 @@ public partial class EventViewModel : ObservableObject
                 OnPropertyChanged(nameof(EventDate));
                 OnPropertyChanged(nameof(DisplayDate));
                 OnPropertyChanged(nameof(DisplayTime));
+                OnPropertyChanged(nameof(EventTime));
+                OnPropertyChanged(nameof(EventDateOnly));
             }
         }
     }
@@ -79,6 +81,32 @@ public partial class EventViewModel : ObservableObject
         }
     }
 
+    public TimeSpan EventTime
+    {
+        get
+        {
+            return EventDate.TimeOfDay;
+        }
+        set
+        {
+            var fullDateTime = EventDateOnly.Add(EventTime);
+            EventDate = fullDateTime;
+        }
+    }
+
+    public DateTime EventDateOnly
+    {
+        get
+        {
+            return EventDate.Date;
+        }
+        set
+        {
+            var fullDateTime = value.Add(EventTime);
+            EventDate = fullDateTime;
+        }
+    }
+
     public bool IsValid()
     {
         if (EventDate == DateTimeOffset.MinValue)
@@ -113,6 +141,7 @@ public partial class EventViewModel : ObservableObject
             PostalCode = Address.PostalCode,
             Region = Address.Region,
             StreetAddress = Address.StreetAddress,
+            EventStatusId = EventStatusId,
         };
     }
 }
