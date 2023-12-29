@@ -34,6 +34,8 @@ public partial class CreateEventViewModel : BaseViewModel
 
     public async Task Init()
     {
+        IsBusy = true;
+
         UserLocation = App.CurrentUser.GetAddress();
         EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
 
@@ -59,6 +61,8 @@ public partial class CreateEventViewModel : BaseViewModel
         {
             ETypes.Add(eventType.Name);
         }
+
+        IsBusy = false;
     }
 
     // This is only for the map point
@@ -75,8 +79,11 @@ public partial class CreateEventViewModel : BaseViewModel
 
     private async Task SaveEvent()
     {
+        IsBusy = true;
+
         if (!await Validate())
         {
+            IsBusy = false;
             return;
         }
 
@@ -96,6 +103,8 @@ public partial class CreateEventViewModel : BaseViewModel
         EventViewModel = updatedEvent.ToEventViewModel();
         Events.Clear();
         Events.Add(EventViewModel);
+
+        IsBusy = false;
 
         await Notify("Event has been saved.");
     }

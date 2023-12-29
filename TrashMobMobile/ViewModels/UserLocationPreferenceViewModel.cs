@@ -32,17 +32,23 @@ public partial class UserLocationPreferenceViewModel : BaseViewModel
 
     public void Init()
     {
+        IsBusy = true;
+
         Addresses.Clear();
         Address = App.CurrentUser.GetAddress();
         Addresses.Add(Address);
         TravelDistance = App.CurrentUser.TravelLimitForLocalEvents;
         Units = App.CurrentUser.PrefersMetric ? "Kilometers" : "Miles";
+
+        IsBusy = false;
     }
 
     public ICommand UpdateLocationCommand { get; set; }
 
     public async Task ChangeLocation(Location location)
     {
+        IsBusy = true;
+
         var addr = await mapRestService.GetAddressAsync(location.Latitude, location.Longitude);
 
         Address.City = addr.City;
@@ -56,10 +62,14 @@ public partial class UserLocationPreferenceViewModel : BaseViewModel
 
         Addresses.Clear();
         Addresses.Add(Address);
+
+        IsBusy = false;
     }
 
     private async Task UpdateLocation()
     {
+        IsBusy = true;
+
         App.CurrentUser.City = Address.City;
         App.CurrentUser.Country = Address.Country;
         App.CurrentUser.Latitude = Address.Latitude;
@@ -70,6 +80,8 @@ public partial class UserLocationPreferenceViewModel : BaseViewModel
         App.CurrentUser.PrefersMetric = Units == "Kilometers";
 
         await userManager.UpdateUserAsync(App.CurrentUser);
+
+        IsBusy = false;
 
         await Notify("User location preference has been updated.");
 

@@ -31,6 +31,8 @@ public partial class ContactUsViewModel : BaseViewModel
 
     private async Task SubmitMessage()
     {
+        IsBusy = true;
+
         var contactRequest = new ContactRequest
         {
             Name = Name,
@@ -39,6 +41,8 @@ public partial class ContactUsViewModel : BaseViewModel
         };
 
         await contactRequestManager.AddContactRequestAsync(contactRequest);
+
+        IsBusy = false;
 
         await Notify("Message sent successfully!");
 

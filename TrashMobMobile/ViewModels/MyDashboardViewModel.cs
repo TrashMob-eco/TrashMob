@@ -50,6 +50,8 @@ public partial class MyDashboardViewModel : BaseViewModel
 
     private async Task RefreshUpcomingEvents()
     {
+        IsBusy = true;
+
         UpcomingEvents.Clear();
         var events = await mobEventManager.GetActiveEventsAsync();
 
@@ -58,6 +60,8 @@ public partial class MyDashboardViewModel : BaseViewModel
             var vm = mobEvent.ToEventViewModel();
             UpcomingEvents.Add(vm);
         }
+
+        IsBusy = false;
 
         await Notify("Upcoming event list has been refreshed.");
     }

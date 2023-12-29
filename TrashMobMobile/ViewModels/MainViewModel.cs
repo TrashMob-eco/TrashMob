@@ -122,16 +122,22 @@ public partial class MainViewModel : BaseViewModel
 
     private async Task RefreshStatistics()
     {
+        IsBusy = true;
+
         var stats = await statsRestService.GetStatsAsync();
 
         StatisticsViewModel.TotalAttendees = stats.TotalParticipants;
         StatisticsViewModel.TotalBags = stats.TotalBags;
         StatisticsViewModel.TotalEvents = stats.TotalEvents;
         StatisticsViewModel.TotalHours = stats.TotalHours;
+
+        IsBusy = false;
     }
 
     private async Task RefreshEvents()
     {
+        IsBusy = true;
+
         UpcomingEvents.Clear();
         var events = await mobEventManager.GetActiveEventsAsync();
 
@@ -140,6 +146,8 @@ public partial class MainViewModel : BaseViewModel
             var vm = mobEvent.ToEventViewModel();
             UpcomingEvents.Add(vm);
         }
+
+        IsBusy = false;
     }
 
     private async Task ContactUs()

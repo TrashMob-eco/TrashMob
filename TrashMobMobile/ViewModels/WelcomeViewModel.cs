@@ -21,12 +21,16 @@ public partial class WelcomeViewModel : BaseViewModel
 
     public async Task Init()
     {
+        IsBusy = true;
+
         var stats = await statsRestService.GetStatsAsync();
 
         StatisticsViewModel.TotalAttendees = stats.TotalParticipants;
         StatisticsViewModel.TotalBags = stats.TotalBags;
         StatisticsViewModel.TotalEvents = stats.TotalEvents;
-        StatisticsViewModel.TotalHours = stats.TotalHours;        
+        StatisticsViewModel.TotalHours = stats.TotalHours;
+
+        IsBusy = false;
     }
 
     [RelayCommand]

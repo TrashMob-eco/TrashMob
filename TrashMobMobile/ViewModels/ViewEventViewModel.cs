@@ -46,6 +46,8 @@ public partial class ViewEventViewModel : BaseViewModel
 
     public async Task Init(Guid eventId)
     {
+        IsBusy = true;
+
         var mobEvent = await mobEventManager.GetEventAsync(eventId);
 
         EventViewModel = mobEvent.ToEventViewModel();
@@ -60,6 +62,8 @@ public partial class ViewEventViewModel : BaseViewModel
         EnableRegister = !mobEvent.IsEventLead() && !isAttending && mobEvent.AreNewRegistrationsAllowed();
         EnableUnregister = !mobEvent.IsEventLead() && isAttending && mobEvent.AreUnregistrationsAllowed();
         EnableEditEvent = mobEvent.IsEventLead();
+
+        IsBusy = false;
     }
 
     private async Task EditEvent()
@@ -69,6 +73,8 @@ public partial class ViewEventViewModel : BaseViewModel
 
     private async Task Register()
     {
+        IsBusy = true;
+
         var eventAttendee = new EventAttendee()
         {
             EventId = EventViewModel.Id,
@@ -77,11 +83,15 @@ public partial class ViewEventViewModel : BaseViewModel
 
         await mobEventManager.AddEventAttendeeAsync(eventAttendee);
 
+        IsBusy = false;
+
         await Notify("You have been registered for this event.");
     }
 
     private async Task Unregister()
     {
+        IsBusy = true;
+
         var eventAttendee = new EventAttendee()
         {
             EventId = EventViewModel.Id,
@@ -89,6 +99,8 @@ public partial class ViewEventViewModel : BaseViewModel
         };
 
         await mobEventManager.RemoveEventAttendeeAsync(eventAttendee);
+
+        IsBusy = false;
 
         await Notify("You have been unregistered for this event.");
     }

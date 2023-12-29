@@ -46,6 +46,8 @@ public partial class SearchEventsViewModel : BaseViewModel
 
     private async Task RefreshEvents()
     {
+        IsBusy = true;
+
         Events.Clear();
         var events = await mobEventManager.GetActiveEventsAsync();
 
@@ -54,6 +56,8 @@ public partial class SearchEventsViewModel : BaseViewModel
             var vm = mobEvent.ToEventViewModel();
             Events.Add(vm);
         }
+
+        IsBusy = false;
 
         await Notify("Event list has been refreshed.");
     }
