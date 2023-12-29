@@ -12,37 +12,29 @@
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center"/>
 
-            <Label Text="Event Date" />
-            <Label Text="{Binding EventViewModel.DisplayDate}" />
-            <Label Text="Event Time" />
-            <Label Text="{Binding EventViewModel.DisplayTime}" />
-            <Label Text="Address" />
-            <Label Text="{Binding EventViewModel.Address.StreetAddress }" />
-            <Label Text="City" />
-            <Label Text="{Binding EventViewModel.Address.City }" />
-            <Label Text="Region" />
-            <Label Text="{Binding EventViewModel.Address.Region }" />
-            <Label Text="Country" />
-            <Label Text="{Binding EventViewModel.Address.Country }" />
-            <Label Text="Postal Code" />
-            <Label Text="{Binding EventViewModel.Address.PostalCode }" />
-            <Label Text="Description" />
-            <Label Text="{Binding EventViewModel.Description}" />
-            <Label Text="Maximum Number of Participants" />
-            <Label Text="{Binding EventViewModel.MaxNumberOfParticipants}" />
-            <Label Text="Duration Hours" />
-            <Label Text="{Binding EventViewModel.DurationHours}" />
-            <Label Text="Duration Minutes" />
-            <Label Text="{Binding EventViewModel.DurationMinutes}" />
-            <Label Text="Event Status" />
-            <Label Text="{Binding EventViewModel.EventStatusId}" />
-            <Label Text="Event Type" />
-            <Label Text="{Binding EventViewModel.EventTypeId}" />
-            <Label Text="Is Event Public?" />
-            <Label Text="{Binding EventViewModel.IsEventPublic}" />
+
+            <Grid RowDefinitions = "1*, 1*, 4*, 1*, 1*, 1*, 1*, 1*" ColumnDefinitions="1*, 1*" MaximumWidthRequest="400" >
+                <Label Grid.Row="0" Grid.Column="0" Text="Event Date" />
+                <Label Grid.Row="0" Grid.Column="1" Text="{Binding EventViewModel.DisplayDate}" />
+                <Label Grid.Row="1" Grid.Column="0" Text="Event Time" />
+                <Label Grid.Row="1" Grid.Column="1" Text="{Binding EventViewModel.DisplayTime}" />
+                <Label Grid.Row="2" Grid.Column="0" Text="Description" />
+                <Label Grid.Row="2" Grid.Column="1" Text="{Binding EventViewModel.Description}" />
+                <Label Grid.Row="3" Grid.Column="0" Text="Maximum Number of Participants" />
+                <Label Grid.Row="3" Grid.Column="1" Text="{Binding EventViewModel.MaxNumberOfParticipants}" />
+                <Label Grid.Row="4" Grid.Column="0" Text="Duration Hours" />
+                <Label Grid.Row="4" Grid.Column="1" Text="{Binding EventViewModel.DurationHours}" />
+                <Label Grid.Row="5" Grid.Column="0" Text="Duration Minutes" />
+                <Label Grid.Row="5" Grid.Column="1" Text="{Binding EventViewModel.DurationMinutes}" />
+                <Label Grid.Row="6" Grid.Column="0" Text="Event Type" />
+                <Label Grid.Row="6" Grid.Column="1" Text="{Binding SelectedEventType}" />
+                <Label Grid.Row="7" Grid.Column="0" Text="Is Event Public?" />
+                <Label Grid.Row="7" Grid.Column="1" Text="{Binding EventViewModel.IsEventPublic}" />
+            </Grid>
 
             <Button Text="Register" Command="{Binding RegisterCommand}" IsVisible="{Binding EnableRegister}" />
             <Button Text="Unregister" Command="{Binding UnregisterCommand}" IsVisible="{Binding EnableUnregister}"/>
+            <Button Text="Edit Event" Command="{Binding EditEventCommand}" IsVisible="{Binding EnableEditEvent}"/>
 
             <maps:Map x:Name="eventLocationMap" ItemsSource="{Binding Events}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True">
                 <maps:Map.ItemTemplate>
@@ -53,6 +45,19 @@
                     </DataTemplate>
                 </maps:Map.ItemTemplate>
             </maps:Map>
+
+            <Grid RowDefinitions = "1*, 1*, 1*, 1*, 1*" ColumnDefinitions="1*, 1*" MaximumWidthRequest="400" >
+                <Label Grid.Row="0" Grid.Column="0" Text="Address" />
+                <Label Grid.Row="0" Grid.Column="1" Text="{Binding EventViewModel.Address.StreetAddress }" />
+                <Label Grid.Row="1" Grid.Column="0" Text="City" />
+                <Label Grid.Row="1" Grid.Column="1" Text="{Binding EventViewModel.Address.City }" />
+                <Label Grid.Row="2" Grid.Column="0" Text="Region" />
+                <Label Grid.Row="2" Grid.Column="1" Text="{Binding EventViewModel.Address.Region }" />
+                <Label Grid.Row="3" Grid.Column="0" Text="Country" />
+                <Label Grid.Row="3" Grid.Column="1" Text="{Binding EventViewModel.Address.Country }" />
+                <Label Grid.Row="4" Grid.Column="0" Text="Postal Code" />
+                <Label Grid.Row="4" Grid.Column="1" Text="{Binding EventViewModel.Address.PostalCode }" />
+            </Grid>
 
         </VerticalStackLayout>
     </ScrollView>

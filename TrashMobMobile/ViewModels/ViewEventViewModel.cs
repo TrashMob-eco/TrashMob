@@ -8,17 +8,18 @@ using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
 public partial class ViewEventViewModel : BaseViewModel
-{   
-    public ViewEventViewModel(IMobEventManager mobEventManager)
+{
+    private readonly IMobEventManager mobEventManager;
+    private readonly IEventTypeRestService eventTypeRestService;
+
+    public ViewEventViewModel(IMobEventManager mobEventManager, IEventTypeRestService eventTypeRestService)
     {
         RegisterCommand = new Command(async () => await Register());
         UnregisterCommand = new Command(async () => await Unregister());
+        EditEventCommand = new Command(async () => await EditEvent());
         this.mobEventManager = mobEventManager;
+        this.eventTypeRestService = eventTypeRestService;
     }
-
-    private readonly IMobEventManager mobEventManager;
-
-    private Guid eventId;
 
     [ObservableProperty]
     EventViewModel eventViewModel;
@@ -29,44 +30,41 @@ public partial class ViewEventViewModel : BaseViewModel
     [ObservableProperty]
     bool enableUnregister;
 
+    [ObservableProperty]
+    bool enableEditEvent;
+
+    [ObservableProperty]
+    string selectedEventType;
+
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
 
-    public string EventId
-    {
-        get
-        {
-            return eventId.ToString();
-        }
-
-        set
-        {
-            if (eventId.ToString() != value)
-            {
-                if (value != null)
-                {
-                    eventId = new Guid(value);
-                }
-
-                OnPropertyChanged(nameof(eventId));
-                Refresh();
-            }
-        }
-    }
-
     public ICommand RegisterCommand { get; set; }
+
     public ICommand UnregisterCommand { get; set; }
 
-    private async Task Refresh()
+    public ICommand EditEventCommand { get; set; }
+
+    public async Task Init(Guid eventId)
     {
         var mobEvent = await mobEventManager.GetEventAsync(eventId);
 
         EventViewModel = mobEvent.ToEventViewModel();
+
+        var eventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
+        SelectedEventType = eventTypes.First(et => et.Id == mobEvent.EventTypeId).Name;
+        
         Events.Clear();
         Events.Add(EventViewModel);
         var isAttending = await mobEventManager.IsUserAttendingAsync(eventId, App.CurrentUser.Id);
 
         EnableRegister = !mobEvent.IsEventLead() && !isAttending && mobEvent.AreNewRegistrationsAllowed();
         EnableUnregister = !mobEvent.IsEventLead() && isAttending && mobEvent.AreUnregistrationsAllowed();
+        EnableEditEvent = mobEvent.IsEventLead();
+    }
+
+    private async Task EditEvent()
+    {
+        await Shell.Current.GoToAsync($"{nameof(EditEventPage)}?EventId={eventViewModel.Id}");
     }
 
     private async Task Register()
@@ -80,8 +78,6 @@ public partial class ViewEventViewModel : BaseViewModel
         await mobEventManager.AddEventAttendeeAsync(eventAttendee);
 
         await Notify("You have been registered for this event.");
-
-        await Refresh();
     }
 
     private async Task Unregister()
@@ -95,7 +91,5 @@ public partial class ViewEventViewModel : BaseViewModel
         await mobEventManager.RemoveEventAttendeeAsync(eventAttendee);
 
         await Notify("You have been unregistered for this event.");
-
-        await Refresh();
     }
 }
