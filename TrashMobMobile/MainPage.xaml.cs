@@ -2,6 +2,7 @@
 {
     using CommunityToolkit.Maui.Alerts;
     using CommunityToolkit.Maui.Core;
+    using Microsoft.Maui.Controls.Maps;
     using Microsoft.Maui.Maps;
 
     public partial class MainPage : ContentPage
@@ -38,6 +39,14 @@
 
             var toast = Toast.Make(message, duration, fontSize);
             await toast.Show(cancellationTokenSource.Token);
+        }
+
+        private async void Pin_InfoWindowClicked(object sender, PinClickedEventArgs e)
+        {
+            Pin p = (Pin)sender;
+
+            var eventId = p.AutomationId;
+            await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventId}");
         }
     }
 }

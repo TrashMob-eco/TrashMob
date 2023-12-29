@@ -32,7 +32,9 @@
                     <DataTemplate>
                         <maps:Pin Location="{Binding Address.Location}"
                                   Address="{Binding Address.StreetAddress}"
-                                  Label="{Binding Name}" />
+                                  Label="{Binding Name}" 
+                                  AutomationId="{Binding Id}"
+                                  InfoWindowClicked="Pin_InfoWindowClicked" />
                     </DataTemplate>
                 </maps:Map.ItemTemplate>
             </maps:Map>
