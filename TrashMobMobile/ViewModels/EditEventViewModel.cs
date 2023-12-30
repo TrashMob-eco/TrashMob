@@ -2,6 +2,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
@@ -29,6 +30,8 @@ public partial class EditEventViewModel :  BaseViewModel
     [ObservableProperty]
     AddressViewModel userLocation;
 
+    private Event MobEvent { get; set; }
+
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
@@ -36,11 +39,11 @@ public partial class EditEventViewModel :  BaseViewModel
         UserLocation = App.CurrentUser.GetAddress();
         EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
 
-        var mobEvent = await mobEventManager.GetEventAsync(eventId);
+        MobEvent = await mobEventManager.GetEventAsync(eventId);
 
-        SelectedEventType = EventTypes.First(et => et.Id == mobEvent.EventTypeId).Name;
+        SelectedEventType = EventTypes.First(et => et.Id == MobEvent.EventTypeId).Name;
 
-        EventViewModel = mobEvent.ToEventViewModel();
+        EventViewModel = MobEvent.ToEventViewModel();
         Events.Add(EventViewModel);
 
         foreach (var eventType in EventTypes)
@@ -81,11 +84,27 @@ public partial class EditEventViewModel :  BaseViewModel
             }
         }
 
-        var mobEvent = EventViewModel.ToEvent();
+        // We need to copy back the property values that could have changed back to the event to be updated
+        // (there are other values that cannot be updated) via the form that must be preserved on edit.
+        MobEvent.City = EventViewModel.Address.City;
+        MobEvent.Country = EventViewModel.Address.Country;
+        MobEvent.Description = EventViewModel.Description;
+        MobEvent.DurationHours = EventViewModel.DurationHours;
+        MobEvent.DurationMinutes = EventViewModel.DurationMinutes;
+        MobEvent.EventDate = EventViewModel.EventDate;
+        MobEvent.EventTypeId = EventViewModel.EventTypeId;
+        MobEvent.IsEventPublic = EventViewModel.IsEventPublic;
+        MobEvent.Latitude = EventViewModel.Address.Latitude;
+        MobEvent.Longitude = EventViewModel.Address.Longitude;
+        MobEvent.MaxNumberOfParticipants = EventViewModel.MaxNumberOfParticipants;
+        MobEvent.Name = EventViewModel.Name;
+        MobEvent.PostalCode = EventViewModel.Address.PostalCode;
+        MobEvent.Region = EventViewModel.Address.Region;
+        MobEvent.StreetAddress = EventViewModel.Address.StreetAddress;
 
-        var updatedEvent = await mobEventManager.AddEventAsync(mobEvent);
+        MobEvent = await mobEventManager.AddEventAsync(MobEvent);
 
-        EventViewModel = updatedEvent.ToEventViewModel();
+        EventViewModel = MobEvent.ToEventViewModel();
         Events.Clear();
         Events.Add(EventViewModel);
 

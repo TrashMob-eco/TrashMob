@@ -2,14 +2,15 @@ namespace TrashMobMobile.Pages;
 
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using Microsoft.Extensions.Logging;
 
 [QueryProperty(nameof(EventId), nameof(EventId))]
-public partial class ViewEventSummaryPage : ContentPage
+public partial class EditEventSummaryPage : ContentPage
 {
-    private readonly ViewEventSummaryViewModel _viewModel;
+    private readonly EditEventSummaryViewModel _viewModel;
     public string EventId { get; set; }
 
-    public ViewEventSummaryPage(ViewEventSummaryViewModel viewModel)
+    public EditEventSummaryPage(EditEventSummaryViewModel viewModel)
 	{
 		InitializeComponent();
         _viewModel = viewModel;

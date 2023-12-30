@@ -2,11 +2,11 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
-             x:Class="TrashMobMobile.Pages.ViewEventSummaryPage">
+             x:Class="TrashMobMobile.Pages.EditEventSummaryPage">
     <FlexLayout Direction="Column"
                 JustifyContent="SpaceAround">
         <Label 
-            Text="Event Summary"
+            Text="Edit Event Summary!"
             FontSize="Large"
             VerticalOptions="Center" 
             HorizontalOptions="Center"
@@ -16,16 +16,17 @@
 
         <Grid RowDefinitions = "1*, 1*" ColumnDefinitions="1*, 1*, 1*, 1*" MaximumWidthRequest="400" >
             <Label Grid.Row="0" Grid.Column="0" Text="Attendees" />
-            <Label Grid.Row="1" Grid.Column="0" Text="{ Binding EventSummaryViewModel.ActualNumberOfAttendees }" />
+            <Entry Grid.Row="1" Grid.Column="0" Text="{ Binding EventSummaryViewModel.ActualNumberOfAttendees }" Keyboard="Numeric" />
             <Label Grid.Row="0" Grid.Column="1" Text="Bags" />
-            <Label Grid.Row="1" Grid.Column="1" Text="{ Binding EventSummaryViewModel.NumberOfBags }" />
+            <Entry Grid.Row="1" Grid.Column="1" Text="{ Binding EventSummaryViewModel.NumberOfBags }" Keyboard="Numeric" />
             <Label Grid.Row="0" Grid.Column="2" Text="Duration In Minutes" />
-            <Label Grid.Row="1" Grid.Column="2" Text="{ Binding EventSummaryViewModel.DurationInMinutes }" />
+            <Entry Grid.Row="1" Grid.Column="2" Text="{ Binding EventSummaryViewModel.DurationInMinutes }" Keyboard="Numeric" />
         </Grid>
+        
         <Label Text="Notes" />
-        <Label Text="{ Binding EventSummaryViewModel.Notes }" />
+        <Editor Text="{ Binding EventSummaryViewModel.Notes }" />
 
-        <Button Text="Edit Event Summary" Command="{Binding EditEventSummaryCommand}" IsVisible="{Binding EnableEditEventSummary}"/>
+        <Button Text="Save Event Summary" Command="{Binding SaveEventSummaryCommand}" IsVisible="{Binding EnableSaveEventSummary}"/>
 
     </FlexLayout>
 </ContentPage>

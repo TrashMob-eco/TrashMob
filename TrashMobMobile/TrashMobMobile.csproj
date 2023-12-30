@@ -124,6 +124,9 @@
 	  <Compile Update="Pages\ViewEventPage.xaml.cs">
 	    <DependentUpon>%(Filename)</DependentUpon>
 	  </Compile>
+	  <Compile Update="Pages\EditEventSummaryPage.xaml.cs">
+	    <DependentUpon>EditEventSummaryPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\ViewEventSummaryPage.xaml.cs">
 	    <DependentUpon>%(Filename)</DependentUpon>
 	  </Compile>
@@ -161,6 +164,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\ViewEventPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\EditEventSummaryPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\ViewEventSummaryPage.xaml">
