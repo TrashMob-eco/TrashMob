@@ -54,11 +54,10 @@
                                 <Label Text="{Binding Name}" Grid.Column="0" />
                                 <Label Text="{Binding DisplayDate}" Grid.Column="1" />
                                 <Label Text="{Binding Address.City}" Grid.Column="2" />
-                        </Grid>
+                            </Grid>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
-
             </CollectionView>
 
             <Button Text="Contact Us" Command="{Binding ContactUsCommand}" />

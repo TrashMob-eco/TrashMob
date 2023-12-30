@@ -27,6 +27,7 @@ public partial class CreateEventViewModel : BaseViewModel
                                 IMapRestService mapRestService)
     {
         SaveEventCommand = new Command(async () => await SaveEvent());
+        ManageEventPartnersCommand = new Command(async () => await ManageEventPartners());
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
         this.mapRestService = mapRestService;
@@ -35,6 +36,7 @@ public partial class CreateEventViewModel : BaseViewModel
     public async Task Init()
     {
         IsBusy = true;
+        IsManageEventPartnersEnabled = false;
 
         UserLocation = App.CurrentUser.GetAddress();
         EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
@@ -77,6 +79,11 @@ public partial class CreateEventViewModel : BaseViewModel
 
     public ICommand SaveEventCommand { get; set; }
 
+    public ICommand ManageEventPartnersCommand { get; set; }
+
+    [ObservableProperty]
+    bool isManageEventPartnersEnabled;
+
     private async Task SaveEvent()
     {
         IsBusy = true;
@@ -104,9 +111,15 @@ public partial class CreateEventViewModel : BaseViewModel
         Events.Clear();
         Events.Add(EventViewModel);
 
+        IsManageEventPartnersEnabled = true;
         IsBusy = false;
 
         await Notify("Event has been saved.");
+    }
+
+    private async Task ManageEventPartners()
+    {
+        await Shell.Current.GoToAsync($"{nameof(ManageEventPartnersPage)}?EventId={eventViewModel.Id}");
     }
 
     public async Task ChangeLocation(Location location)

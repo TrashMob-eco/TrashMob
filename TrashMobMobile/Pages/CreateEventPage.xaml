@@ -101,6 +101,8 @@
                     </MultiTrigger>
                 </Button.Triggers>
             </Button>
+            
+            <Button Text="Manage Event Partners" Command="{Binding ManageEventPartnersCommand}" IsEnabled="{Binding IsManageEventPartersEnabled}"  />
 
             <Label 
             FontSize="Micro"
