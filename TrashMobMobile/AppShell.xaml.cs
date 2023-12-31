@@ -6,7 +6,8 @@ public partial class AppShell : Shell
 	{
 		InitializeComponent();
 
-		Routing.RegisterRoute(nameof(ContactUsPage), typeof(ContactUsPage));
+        Routing.RegisterRoute(nameof(AddPickupLocationPage), typeof(AddPickupLocationPage));
+        Routing.RegisterRoute(nameof(ContactUsPage), typeof(ContactUsPage));
         Routing.RegisterRoute(nameof(CreateEventPage), typeof(CreateEventPage));
         Routing.RegisterRoute(nameof(EditEventPage), typeof(EditEventPage));
         Routing.RegisterRoute(nameof(EditEventPartnerLocationServicesPage), typeof(EditEventPartnerLocationServicesPage));

@@ -68,6 +68,7 @@ public static class MauiProgram
         builder.Services.AddRestClientServices(builder.Configuration);
 
         // Pages
+        builder.Services.AddTransient<AddPickupLocationPage>();
         builder.Services.AddTransient<ContactUsPage>();
         builder.Services.AddTransient<CreateEventPage>();
         builder.Services.AddTransient<EditEventPage>();
@@ -86,6 +87,7 @@ public static class MauiProgram
         builder.Services.AddTransient<WelcomePage>();
 
         // ViewModels
+        builder.Services.AddTransient<AddPickupLocationViewModel>();
         builder.Services.AddTransient<ContactUsViewModel>();
         builder.Services.AddTransient<CreateEventViewModel>();
         builder.Services.AddTransient<EditEventViewModel>();

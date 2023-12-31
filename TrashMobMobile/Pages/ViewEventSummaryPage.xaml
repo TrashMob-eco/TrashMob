@@ -25,7 +25,28 @@
         <Label Text="Notes" />
         <Label Text="{ Binding EventSummaryViewModel.Notes }" />
 
+        <CollectionView x:Name="PickupLocationCollection" 
+                 ItemsSource="{Binding PickupLocations}" 
+                 SelectedItem="{Binding SelectedPickupLocation}" 
+                 SelectionMode="Single" >
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border StrokeThickness="1">
+                        <Grid WidthRequest = "400"
+                       ColumnDefinitions="2*, 2*, 2*"
+                       RowDefinitions="Auto">
+                            <Label Text="{Binding Name}" Grid.Column="0" />
+                            <Label Text="{Binding Address.StreetAddress}" Grid.Column="1" />
+                            <Label Text="{Binding Address.City}" Grid.Column="2" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+
         <Button Text="Edit Event Summary" Command="{Binding EditEventSummaryCommand}" IsVisible="{Binding EnableEditEventSummary}"/>
+        <Button Text="Add Pickup Location" Command="{Binding AddPickupLocationCommand}" IsVisible="{Binding EnableAddPickupLocation}"/>
 
     </FlexLayout>
 </ContentPage>

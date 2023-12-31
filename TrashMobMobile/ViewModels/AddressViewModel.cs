@@ -15,6 +15,9 @@ public partial class AddressViewModel : ObservableObject
     string city;
 
     [ObservableProperty]
+    string county;
+
+    [ObservableProperty]
     string region;
 
     [ObservableProperty]
