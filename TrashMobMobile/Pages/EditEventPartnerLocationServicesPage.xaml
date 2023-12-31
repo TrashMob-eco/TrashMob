@@ -26,13 +26,12 @@
 
             <CollectionView x:Name="PartnerLocationServices" 
                             ItemsSource="{Binding EventPartnerLocationServices}" 
-                            SelectedItem="{Binding SelectedEventPartnerLocationServiceViewModel}" 
-                            SelectionMode="Single" >
+                            SelectionMode="None" >
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Border StrokeThickness="1">
                             <Grid WidthRequest = "400"
-                                  ColumnDefinitions="1*, 1*, 1*, 1*"
+                                  ColumnDefinitions="1*, 1*, 1*, 1*, 1*"
                                   RowDefinitions="Auto"
                                   x:Name="EventItem">
 
@@ -40,6 +39,8 @@
                                 <Label Text="{Binding ServiceName}" Grid.Column="1" />
                                 <Label Text="{Binding ServiceStatus}" Grid.Column="2" />
                                 <Label Text="{Binding Notes}" Grid.Column="3" />
+                                <Button Text="Request Service" Command="{Binding RequestServiceCommand}" IsEnabled="{Binding CanRequestService}" IsVisible="{Binding CanRequestService}"  Grid.Column="4" />
+                                <Button Text="Cancel Service Request" Command="{Binding UnrequestServiceCommand}" IsEnabled="{Binding CanUnrequestService}" IsVisible="{Binding CanUnrequestService}" Grid.Column="4" />
                             </Grid>
                         </Border>
                     </DataTemplate>
