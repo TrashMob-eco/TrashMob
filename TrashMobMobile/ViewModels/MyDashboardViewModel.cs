@@ -83,6 +83,7 @@ public partial class MyDashboardViewModel : BaseViewModel
         foreach (var mobEvent in events.OrderByDescending(e => e.EventDate))
         {
             var vm = mobEvent.ToEventViewModel();
+            vm.IsUserAttending = true;
 
             if (mobEvent.EventDate < DateTime.UtcNow)
             {

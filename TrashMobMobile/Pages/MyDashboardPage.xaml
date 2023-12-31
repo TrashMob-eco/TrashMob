@@ -46,13 +46,14 @@
                     <DataTemplate>
                         <Border StrokeThickness="1">
                             <Grid WidthRequest = "400"
-                       ColumnDefinitions="2*, 2*, 2*"
+                       ColumnDefinitions="1*, 1*, 1*, 1*"
                        RowDefinitions="Auto"
                        x:Name="EventItem">
 
                                 <Label Text="{Binding Name}" Grid.Column="0" />
                                 <Label Text="{Binding DisplayDate}" Grid.Column="1" />
                                 <Label Text="{Binding Address.City}" Grid.Column="2" />
+                                <Label Text="{Binding UserRoleForEvent}" Grid.Column="3" />
                             </Grid>
                         </Border>
                     </DataTemplate>
@@ -74,12 +75,13 @@
                     <DataTemplate>
                         <Border StrokeThickness="1">
                             <Grid WidthRequest = "400"
-                       ColumnDefinitions="2*, 2*, 2*"
+                       ColumnDefinitions="1*, 1*, 1*"
                        RowDefinitions="Auto"
                        x:Name="EventItem">
                                 <Label Text="{Binding Name}" Grid.Column="0" />
                                 <Label Text="{Binding DisplayDate}" Grid.Column="1" />
                                 <Label Text="{Binding Address.City}" Grid.Column="2" />
+                                <Label Text="{Binding UserRoleForEvent}" Grid.Column="3" />
                             </Grid>
                         </Border>
                     </DataTemplate>

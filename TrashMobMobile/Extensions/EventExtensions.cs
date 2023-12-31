@@ -100,6 +100,7 @@
                 IsEventPublic = mobEvent.IsEventPublic,
                 MaxNumberOfParticipants = mobEvent.MaxNumberOfParticipants,
                 Name = mobEvent.Name,
+                UserRoleForEvent = mobEvent.IsEventLead() ? "Lead" : "Attendee"
             };
 
             return eventViewModel;

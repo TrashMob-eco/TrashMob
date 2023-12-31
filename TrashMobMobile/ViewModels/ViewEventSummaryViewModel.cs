@@ -3,6 +3,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Windows.Input;
 using TrashMobMobile.Data;
+using TrashMobMobile.Extensions;
 
 public partial class ViewEventSummaryViewModel : BaseViewModel
 {
@@ -16,16 +17,22 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
     EventSummaryViewModel eventSummaryViewModel;
     private readonly IMobEventManager mobEventManager;
 
+    [ObservableProperty]
+    bool enableEditEventSummary;
+
     public ICommand EditEventSummaryCommand { get; set; }
 
     public async Task Init(string eventId)
     {
         IsBusy = true;
 
+        var mobEvent = await mobEventManager.GetEventAsync(new Guid(eventId));
+
         var eventSummary = await mobEventManager.GetEventSummaryAsync(new Guid(eventId));
 
         if (eventSummary != null)
         {
+
             EventSummaryViewModel = new EventSummaryViewModel
             {
                 ActualNumberOfAttendees = eventSummary.ActualNumberOfAttendees,
@@ -35,6 +42,8 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
                 NumberOfBags = eventSummary.NumberOfBags,
             };
         }
+
+        EnableEditEventSummary = mobEvent.IsEventLead();
 
         IsBusy = false;
     }

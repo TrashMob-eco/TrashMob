@@ -65,6 +65,37 @@ public partial class EventViewModel : ObservableObject
     [ObservableProperty]
     string cancellationReason;
 
+    public string GetUserRole(Event mobEvent)
+    {
+        if (mobEvent.IsEventLead())
+        {
+            return "Lead";
+        }
+
+        if (IsUserAttending)
+        {
+            return "Attendee";
+        }
+
+        return string.Empty;
+    }
+
+    private bool isUserAttending;
+
+    public bool IsUserAttending
+    {
+        get { return isUserAttending; }
+        set
+        {
+            if ( isUserAttending != value )
+            {
+                isUserAttending = value;
+                OnPropertyChanged(nameof(IsUserAttending));
+                OnPropertyChanged(nameof(UserRoleForEvent));
+            }
+        }
+    }
+
     public string DisplayDate
     {
         get
@@ -117,6 +148,9 @@ public partial class EventViewModel : ObservableObject
 
         return true;
     }
+
+    [ObservableProperty]
+    string userRoleForEvent;
 
     public string ErrorMessage { get; set; }
 
