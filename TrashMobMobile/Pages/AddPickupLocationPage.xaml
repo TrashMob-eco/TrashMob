@@ -21,7 +21,7 @@
             <Button Text="Take Photo" Clicked="TakePhoto_Clicked" />
             <Image x:Name="pickupPhoto" IsVisible="false" MaximumHeightRequest="200" />
             
-            <Grid RowDefinitions = "1*, 1*, 1*, 4*, 1*, 1*, 1*, 1*, 1*" ColumnDefinitions="1*, 1*" MaximumWidthRequest="400" >
+            <Grid RowDefinitions = "1*, 1*" ColumnDefinitions="1*, 1*" MaximumWidthRequest="400" >
                 <Label Grid.Row="0" Grid.Column="0" Text="Name"  />
                 <Entry Grid.Row="0" Grid.Column="1" Text="{Binding PickupLocationViewModel.Name}">
                     <Entry.Behaviors>
@@ -49,18 +49,18 @@
 
             <Grid RowDefinitions = "1*, 1*, 1*, 1*, 1*" ColumnDefinitions="1*, 1*" MaximumWidthRequest="400" >
                 <Label Grid.Row="0" Grid.Column="0" Text="Address" />
-                <Label Grid.Row="0" Grid.Column="1" Text="{Binding EventViewModel.Address.StreetAddress }" />
+                <Label Grid.Row="0" Grid.Column="1" Text="{Binding PickupLocationViewModel.Address.StreetAddress }" />
                 <Label Grid.Row="1" Grid.Column="0" Text="City" />
-                <Label Grid.Row="1" Grid.Column="1" Text="{Binding EventViewModel.Address.City }" />
+                <Label Grid.Row="1" Grid.Column="1" Text="{Binding PickupLocationViewModel.Address.City }" />
                 <Label Grid.Row="2" Grid.Column="0" Text="Region" />
-                <Label Grid.Row="2" Grid.Column="1" Text="{Binding EventViewModel.Address.Region }" />
+                <Label Grid.Row="2" Grid.Column="1" Text="{Binding PickupLocationViewModel.Address.Region }" />
                 <Label Grid.Row="3" Grid.Column="0" Text="Country" />
-                <Label Grid.Row="3" Grid.Column="1" Text="{Binding EventViewModel.Address.Country }" />
+                <Label Grid.Row="3" Grid.Column="1" Text="{Binding PickupLocationViewModel.Address.Country }" />
                 <Label Grid.Row="4" Grid.Column="0" Text="Postal Code" />
-                <Label Grid.Row="4" Grid.Column="1" Text="{Binding EventViewModel.Address.PostalCode }" />
+                <Label Grid.Row="4" Grid.Column="1" Text="{Binding PickupLocationViewModel.Address.PostalCode }" />
             </Grid>
 
-            <Button Text="Save Pickup Location" Command="{Binding SaveEventCommand}">
+            <Button Text="Save Pickup Location" Command="{Binding SavePickupLocationCommand}">
                 <Button.Triggers>
                     <MultiTrigger TargetType="Button">
                         <MultiTrigger.Conditions>

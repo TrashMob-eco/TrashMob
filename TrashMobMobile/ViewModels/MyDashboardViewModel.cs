@@ -46,8 +46,14 @@ public partial class MyDashboardViewModel : BaseViewModel
 
     public async Task Init()
     {
-        await RefreshEvents();
-        await RefreshStatistics();
+        IsBusy = true;
+
+        var task1 = RefreshEvents();
+        var task2 = RefreshStatistics();
+
+        await Task.WhenAll(task1, task2);
+        
+        IsBusy = false;
     }
 
     private async void PerformNavigation(EventViewModel eventViewModel)
@@ -57,7 +63,6 @@ public partial class MyDashboardViewModel : BaseViewModel
 
     private async Task RefreshStatistics()
     {
-        IsBusy = true;
 
         var stats = await statsRestService.GetUserStatsAsync(App.CurrentUser.Id);
 
@@ -67,14 +72,10 @@ public partial class MyDashboardViewModel : BaseViewModel
             TotalEvents = stats.TotalEvents,
             TotalHours = stats.TotalHours,
         };
-
-        IsBusy = false;
     }
 
     private async Task RefreshEvents()
     {
-        IsBusy = true;
-
         CompletedEvents.Clear();
         UpcomingEvents.Clear();
 
@@ -94,9 +95,5 @@ public partial class MyDashboardViewModel : BaseViewModel
                 UpcomingEvents.Add(vm);
             }
         }
-
-        IsBusy = false;
-
-        await Notify("Event list has been refreshed.");
     }
 }

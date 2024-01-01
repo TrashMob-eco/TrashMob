@@ -16,4 +16,9 @@
       <action android:name="android.support.customtabs.action.CustomTabsService" />
     </intent>
   </queries>
+  <queries>
+    <intent>
+      <action android:name="android.media.action.IMAGE_CAPTURE" />
+    </intent>
+  </queries>
 </manifest>

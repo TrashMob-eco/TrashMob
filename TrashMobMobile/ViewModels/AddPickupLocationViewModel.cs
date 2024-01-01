@@ -5,17 +5,22 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
+using TrashMobMobile.Extensions;
 
 public partial class AddPickupLocationViewModel : BaseViewModel
 {
     [ObservableProperty]
     PickupLocationViewModel pickupLocationViewModel;
 
-    public AddPickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMapRestService mapRestService)
+    [ObservableProperty]
+    EventViewModel eventViewModel;
+
+    public AddPickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMapRestService mapRestService, IMobEventManager mobEventManager)
     {
         SavePickupLocationCommand = new Command(async () => await SavePickupLocation());
         this.pickupLocationManager = pickupLocationManager;
         this.mapRestService = mapRestService;
+        this.mobEventManager = mobEventManager;
     }
 
     private Guid eventId;
@@ -24,7 +29,15 @@ public partial class AddPickupLocationViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        this.eventId = eventId;
+        var mobEvent = await mobEventManager.GetEventAsync(eventId);
+
+        EventViewModel = mobEvent.ToEventViewModel();
+
+        PickupLocationViewModel = new PickupLocationViewModel()
+        {
+            Name = "Pickup",
+            Address = new AddressViewModel()
+        };
 
         IsBusy = false;
     }
@@ -36,32 +49,45 @@ public partial class AddPickupLocationViewModel : BaseViewModel
 
     private readonly IPickupLocationManager pickupLocationManager;
     private readonly IMapRestService mapRestService;
+    private readonly IMobEventManager mobEventManager;
+
+    public string LocalFilePath { get; set; }
 
     public async Task UpdateLocation()
     {
-        Location location = await GetCurrentLocation();
-        var address = await mapRestService.GetAddressAsync(location.Latitude, location.Longitude);
-        PickupLocationViewModel.Address.Longitude = location.Longitude;
-        PickupLocationViewModel.Address.Latitude = location.Latitude;
-        PickupLocationViewModel.Address.City = address.City;
-        PickupLocationViewModel.Address.Country = address.Country;
-        PickupLocationViewModel.Address.County = address.County;
-        PickupLocationViewModel.Address.PostalCode = address.PostalCode;
-        PickupLocationViewModel.Address.Region = address.Region;
-        PickupLocationViewModel.Address.StreetAddress = address.StreetAddress;
+        Location? location = await GetCurrentLocation();
+
+        if (location != null)
+        {
+            var address = await mapRestService.GetAddressAsync(location.Latitude, location.Longitude);
+            PickupLocationViewModel.Address.Longitude = location.Longitude;
+            PickupLocationViewModel.Address.Latitude = location.Latitude;
+            PickupLocationViewModel.Address.City = address.City;
+            PickupLocationViewModel.Address.Country = address.Country;
+            PickupLocationViewModel.Address.County = address.County;
+            PickupLocationViewModel.Address.PostalCode = address.PostalCode;
+            PickupLocationViewModel.Address.Region = address.Region;
+            PickupLocationViewModel.Address.StreetAddress = address.StreetAddress;
+            PickupLocationViewModel.Address.Location = new Location(PickupLocationViewModel.Address.Latitude.Value, PickupLocationViewModel.Address.Longitude.Value);
+
+            PickupLocations.Clear();
+            PickupLocations.Add(PickupLocationViewModel);
+        }
+        else
+        {
+            await NotifyError("Could not get location for image");
+        }
     }
 
-    public async Task<Location> GetCurrentLocation()
+    public static async Task<Location?> GetCurrentLocation()
     {
         try
         {
-            GeolocationRequest request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(10));
+            GeolocationRequest request = new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(10));
 
             var cancelTokenSource = new CancellationTokenSource();
 
-            Location location = await Geolocation.Default.GetLocationAsync(request, cancelTokenSource.Token);
-
-            return location;
+            return await Geolocation.Default.GetLocationAsync(request, cancelTokenSource.Token);
         }
         //catch (FeatureNotSupportedException fnsEx)
         //{
@@ -102,7 +128,8 @@ public partial class AddPickupLocationViewModel : BaseViewModel
             StreetAddress = PickupLocationViewModel.Address.StreetAddress
         };
 
-        await pickupLocationManager.AddPickupLocationAsync(pickupLocation);
+        var updatedPickupLocation = await pickupLocationManager.AddPickupLocationAsync(pickupLocation);
+        await pickupLocationManager.AddPickupLocationImageAsync(updatedPickupLocation.EventId, updatedPickupLocation.Id, LocalFilePath);
 
         IsBusy = false;
 

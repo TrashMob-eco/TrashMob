@@ -20,7 +20,7 @@ public partial class ViewEventSummaryPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await _viewModel.Init(EventId);
+        await _viewModel.Init(new Guid(EventId));
     }
 
     private async Task Notify(string message)

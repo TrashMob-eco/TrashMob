@@ -2,6 +2,7 @@ namespace TrashMobMobile.Pages;
 
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using Microsoft.Maui.Maps;
 
 [QueryProperty(nameof(EventId), nameof(EventId))]
 public partial class AddPickupLocationPage : ContentPage
@@ -18,12 +19,18 @@ public partial class AddPickupLocationPage : ContentPage
         BindingContext = _viewModel;
     }
     public string EventId { get; set; }
-    private string localFilePath = string.Empty;
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
         await _viewModel.Init(new Guid(EventId));
+
+        // Default the map zoom to the location of the event
+        if (_viewModel?.EventViewModel?.Address != null)
+        {
+            var mapSpan = new MapSpan(_viewModel.EventViewModel.Address.Location, 0.05, 0.05);
+            pickupLocationMap.MoveToRegion(mapSpan);
+        }
     }
 
     private async Task Notify(string message)
@@ -66,14 +73,14 @@ public partial class AddPickupLocationPage : ContentPage
             if (photo != null)
             {
                 // save the file into local storage
-                localFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
+                _viewModel.LocalFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
 
                 using Stream sourceStream = await photo.OpenReadAsync();
-                using FileStream localFileStream = File.OpenWrite(localFilePath);
+                using FileStream localFileStream = File.OpenWrite(_viewModel.LocalFilePath);
 
                 await sourceStream.CopyToAsync(localFileStream);
 
-                pickupPhoto.Source = localFilePath;
+                pickupPhoto.Source = _viewModel.LocalFilePath;
                 pickupPhoto.IsVisible = true;
             }
         }

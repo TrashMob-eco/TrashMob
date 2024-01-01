@@ -24,16 +24,19 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
     [ObservableProperty]
     bool enableEditEventSummary;
 
+    [ObservableProperty]
+    bool enableAddPickupLocation;
+
     public ICommand EditEventSummaryCommand { get; set; }
     public ICommand AddPickupLocationCommand { get; set; }
 
-    public async Task Init(string eventId)
+    public async Task Init(Guid eventId)
     {
         IsBusy = true;
 
-        var mobEvent = await mobEventManager.GetEventAsync(new Guid(eventId));
+        var mobEvent = await mobEventManager.GetEventAsync(eventId);
 
-        var eventSummary = await mobEventManager.GetEventSummaryAsync(new Guid(eventId));
+        var eventSummary = await mobEventManager.GetEventSummaryAsync(eventId);
 
         if (eventSummary != null)
         {
@@ -42,24 +45,25 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
             {
                 ActualNumberOfAttendees = eventSummary.ActualNumberOfAttendees,
                 DurationInMinutes = eventSummary.DurationInMinutes,
-                EventId = eventSummary.EventId,
+                EventId = eventId,
                 Notes = eventSummary.Notes,
                 NumberOfBags = eventSummary.NumberOfBags,
             };
         }
 
         EnableEditEventSummary = mobEvent.IsEventLead();
+        EnableAddPickupLocation = mobEvent.IsEventLead();
 
         IsBusy = false;
     }
 
     private async Task AddPickupLocation()
     {
-        await Shell.Current.GoToAsync($"{nameof(AddPickupLocationPage)}?EventId={eventSummaryViewModel.EventId}");
+        await Shell.Current.GoToAsync($"{nameof(AddPickupLocationPage)}?EventId={EventSummaryViewModel.EventId}");
     }
 
     private async Task EditEventSummary()
     {
-        await Shell.Current.GoToAsync($"{nameof(EditEventSummaryPage)}?EventId={eventSummaryViewModel.EventId}");
+        await Shell.Current.GoToAsync($"{nameof(EditEventSummaryPage)}?EventId={EventSummaryViewModel.EventId}");
     }
 }
