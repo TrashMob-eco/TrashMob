@@ -9,12 +9,12 @@ on:
     paths:
       - '.github/**'
       - 'TrashMob.Models/**'
-      - 'TrashMobMobileApp/**'
+      - 'TrashMobMobile/**'
       - 'TrashMobMobileApp.sln'
 
 env:
-  DOTNET_VERSION: '7.0.x'   # set this to the dotnet version to use
-  DOTNET_VERSION2: '7.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION: '8.0.x'   # set this to the dotnet version to use
+  DOTNET_VERSION2: '8.0.x'  # set this to the dotnet version to use
   CONFIGURATION: Debug      # Values: Debug, Release
   ENVIRONMENT: test         # Values: test, production
   IOS_BUNDLE_ID: 'eco.trashmobdev.trashmobmobile'   # Values: 'eco.trashmobdev.trashmobmobile', 'eco.trashmob'
@@ -47,13 +47,13 @@ jobs:
         dotnet workload install android maui wasm-tools --source https://api.nuget.org/v3/index.json
 
     - name: Restore Dependencies
-      run: | 
+      run: |
         dotnet restore TrashMobMobileApp.sln
 
     - name: Publish Android Mobile App
       run: |
-        dotnet publish TrashMobMobileApp.sln -c:${{ env.CONFIGURATION }} -f:net7.0-android --no-restore /p:AndroidPackageFormat="aab"
-      
+        dotnet publish TrashMobMobileApp.sln -c:${{ env.CONFIGURATION }} -f:net8.0-android --no-restore /p:AndroidPackageFormat="aab"
+
     # Store Android Signing Keystore and password in Secrets using base64 encoding
     # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil
     # command line util to encode to base64 on windows
@@ -69,34 +69,34 @@ jobs:
       shell: bash
       run: |
         cd TrashMobMobileApp
-        jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -signedjar bin/${{ env.CONFIGURATION }}/net7.0-android/publish/eco.trashmob.trashmobmobileapp-Signed.aab bin/${{ env.CONFIGURATION }}/net7.0-android/publish/eco.trashmob.trashmobmobileapp.aab key
+        jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -signedjar bin/${{ env.CONFIGURATION }}/net8.0-android/publish/eco.trashmob.trashmobmobileapp-Signed.aab bin/${{ env.CONFIGURATION }}/net8.0-android/publish/eco.trashmob.trashmobmobileapp.aab key
 
     - uses: actions/upload-artifact@v3.1.2
       with:
         name: artifacts-android
         path: |
-          TrashMobMobileApp\bin\${{ env.CONFIGURATION }}\net7.0-android\publish\*.aab
+          TrashMobMobileApp\bin\${{ env.CONFIGURATION }}\net8.0-android\publish\*.aab
 
   buildiOSApp:
-    runs-on: macos-13
+    runs-on: macos-latest
     environment: test
     name: iOS Build
 
     steps:
     - uses: actions/checkout@v3
 
-    - name: Rename info.plist for Debug
-      run: |
-        rm ./TrashMobMobileApp/Platforms/iOS/Info.plist 
-        cp ./TrashMobMobileApp/Platforms/iOS/Info-Debug.plist TrashMobMobileApp/Platforms/iOS/Info.plist
+    # - name: Rename info.plist for Debug
+    #   run: |
+    #     rm ./TrashMobMobile/Platforms/iOS/Info.plist
+    #     cp ./TrashMobMobile/Platforms/iOS/Info-Debug.plist TrashMobMobile/Platforms/iOS/Info.plist
 
     - name: Update Build Number
       run: |
         buildNumber=`/bin/date +%Y%m%d%H%M%S`
         echo $buildNumber
-        /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" "TrashMobMobileApp/Platforms/iOS/Info.plist"
+        /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" "TrashMobMobile/Platforms/iOS/Info.plist"
         echo "checking Version number updated:"
-        cat TrashMobMobileApp/Platforms/iOS/Info.plist
+        cat TrashMobMobile/Platforms/iOS/Info.plist
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v3
@@ -118,11 +118,11 @@ jobs:
       if: runner.os == 'macOS'
       shell: bash
       run: |
-        sudo xcode-select -s "/Applications/Xcode_14.3.app"
-        echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_14.3.app" >> $GITHUB_ENV
+        sudo xcode-select -s "/Applications/Xcode_15.1.app"
+        echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_15.1.app" >> $GITHUB_ENV
 
     - name: Restore Dependencies
-      run: | 
+      run: |
         dotnet restore TrashMobMobileApp.sln
 
     - name: Import Code-Signing Certificates
@@ -141,20 +141,20 @@ jobs:
         api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
 
     - name: Build MAUI iOS
-      run: dotnet publish TrashMobMobileApp.sln -c ${{ env.CONFIGURATION }} -f net7.0-ios -r ios-arm64 --self-contained --no-restore /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=true /p:PublishTrimmed=true
+      run: dotnet publish TrashMobMobileApp.sln -c ${{ env.CONFIGURATION }} -f net8.0-ios -r ios-arm64 --self-contained --no-restore /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=true /p:PublishTrimmed=true
 
     - name: Check Artifact paths
       shell: bash
       run: |
         pwd
-        #ls TrashMobMobileApp/bin/Debug/net7.0-ios/ios-arm64/publish//TrashMobMobileApp.ipa
-        #ls /Users/runner/work/TrashMob/TrashMob/TrashMobMobileApp/bin/Debug/net7.0-ios/ios-arm64/publish//TrashMobMobileApp.ipa
-        #ls /Users/runner/work/TrashMob/TrashMob/TrashMobMobileApp/bin/Debug/net7.0-ios/ios-arm64/*
-        #ls /Users/runner/work/TrashMob/TrashMob/TrashMobMobileApp/bin/Debug/net7.0-ios/ios-arm64/publish/*
+        #ls TrashMobMobile/bin/Debug/net8.0-ios/ios-arm64/publish//TrashMobMobileApp.ipa
+        #ls /Users/runner/work/TrashMob/TrashMob/TrashMobMobile/bin/Debug/net8.0-ios/ios-arm64/publish//TrashMobMobileApp.ipa
+        #ls /Users/runner/work/TrashMob/TrashMob/TrashMobMobile/bin/Debug/net8.0-ios/ios-arm64/*
+        #ls /Users/runner/work/TrashMob/TrashMob/TrashMobMobile/bin/Debug/net8.0-ios/ios-arm64/publish/*
         #ls **/*.ipa
-    
+
     - name: Upload iOS Artifact
       uses: actions/upload-artifact@v3.1.2
       with:
         name: trashmobmobileapp-ios-pr-build
-        path: TrashMobMobileApp/bin/${{ env.CONFIGURATION }}/net7.0-ios/ios-arm64/publish//*.ipa
+        path: TrashMobMobile/bin/${{ env.CONFIGURATION }}/net8.0-ios/ios-arm64/publish//*.ipa
