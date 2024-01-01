@@ -86,12 +86,14 @@ public partial class MyDashboardViewModel : BaseViewModel
             var vm = mobEvent.ToEventViewModel();
             vm.IsUserAttending = true;
 
-            if (mobEvent.EventDate < DateTime.UtcNow)
+            if (mobEvent.IsCompleted())
             {
+                vm.CanCancelEvent = false;
                 CompletedEvents.Add(vm);
             }
             else
             {
+                vm.CanCancelEvent = mobEvent.IsCancellable() && mobEvent.IsEventLead();
                 UpcomingEvents.Add(vm);
             }
         }

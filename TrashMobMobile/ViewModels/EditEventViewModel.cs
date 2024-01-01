@@ -45,6 +45,7 @@ public partial class EditEventViewModel :  BaseViewModel
         SelectedEventType = EventTypes.First(et => et.Id == MobEvent.EventTypeId).Name;
 
         EventViewModel = MobEvent.ToEventViewModel();
+
         Events.Add(EventViewModel);
 
         foreach (var eventType in EventTypes)

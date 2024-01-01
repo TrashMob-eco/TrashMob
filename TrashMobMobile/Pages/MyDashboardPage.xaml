@@ -54,6 +54,7 @@
                                 <Label Text="{Binding DisplayDate}" Grid.Column="1" />
                                 <Label Text="{Binding Address.City}" Grid.Column="2" />
                                 <Label Text="{Binding UserRoleForEvent}" Grid.Column="3" />
+                                <Button Text="Cancel Event" Grid.Column="4" Command="{Binding CancelEventCommand}" IsEnabled="{Binding CanCancelEvent}" IsVisible="{Binding CanCancelEvent}" />
                             </Grid>
                         </Border>
                     </DataTemplate>

@@ -68,7 +68,7 @@ public partial class ViewEventViewModel : BaseViewModel
         EnableRegister = !mobEvent.IsEventLead() && !isAttending && mobEvent.AreNewRegistrationsAllowed();
         EnableUnregister = !mobEvent.IsEventLead() && isAttending && mobEvent.AreUnregistrationsAllowed();
         EnableEditEvent = mobEvent.IsEventLead();
-        EnableViewEventSummary = mobEvent.EventDate < DateTime.Now;
+        EnableViewEventSummary = mobEvent.IsCompleted();
 
         IsBusy = false;
     }
