@@ -2,7 +2,6 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -14,7 +13,6 @@ public partial class ManageEventPartnersViewModel :  BaseViewModel
 
     public ManageEventPartnersViewModel(IMobEventManager mobEventManager, IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService)
     {
-        SaveEventPartnersCommand = new Command(async () => await SaveEventPartners());
         this.mobEventManager = mobEventManager;
         this.eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
     }
@@ -78,16 +76,5 @@ public partial class ManageEventPartnersViewModel :  BaseViewModel
         EventViewModel = MobEvent.ToEventViewModel();
 
         IsBusy = false;
-    }
-
-    public ICommand SaveEventPartnersCommand { get; set; }
-
-    private async Task SaveEventPartners()
-    {
-        IsBusy = true;
-
-        IsBusy = false;
-
-        await Notify("Event Partners have been saved.");
     }
 }

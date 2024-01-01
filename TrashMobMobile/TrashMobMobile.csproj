@@ -106,6 +106,9 @@
 	  <Compile Update="Pages\CreateEventPage.xaml.cs">
 	    <DependentUpon>%(Filename)</DependentUpon>
 	  </Compile>
+	  <Compile Update="Pages\EditPickupLocationPage.xaml.cs">
+	    <DependentUpon>EditPickupLocationPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\EditEventPartnerLocationServicesPage.xaml.cs">
 	    <DependentUpon>EditEventPartnerLocationServicesPage.xaml</DependentUpon>
 	  </Compile>
@@ -155,6 +158,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\CreateEventPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\EditPickupLocationPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\EditEventPartnerLocationServicesPage.xaml">

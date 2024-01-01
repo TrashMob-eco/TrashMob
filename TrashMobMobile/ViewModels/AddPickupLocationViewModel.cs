@@ -23,8 +23,6 @@ public partial class AddPickupLocationViewModel : BaseViewModel
         this.mobEventManager = mobEventManager;
     }
 
-    private Guid eventId;
-
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
@@ -33,11 +31,16 @@ public partial class AddPickupLocationViewModel : BaseViewModel
 
         EventViewModel = mobEvent.ToEventViewModel();
 
-        PickupLocationViewModel = new PickupLocationViewModel()
+        PickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager)
         {
             Name = "Pickup",
-            Address = new AddressViewModel()
+            Address = new AddressViewModel(),
+            Notify = Notify,
+            NotifyError = NotifyError,
+            Navigation = Navigation,
         };
+
+        await PickupLocationViewModel.Init(eventId);
 
         IsBusy = false;
     }
@@ -117,7 +120,7 @@ public partial class AddPickupLocationViewModel : BaseViewModel
         {
             City = PickupLocationViewModel.Address.City,
             Country = PickupLocationViewModel.Address.Country,
-            EventId = eventId,
+            EventId = EventViewModel.Id,
             HasBeenPickedUp = false,
             HasBeenSubmitted = false,
             Latitude = PickupLocationViewModel.Address.Latitude,
@@ -125,7 +128,8 @@ public partial class AddPickupLocationViewModel : BaseViewModel
             Notes = PickupLocationViewModel.Notes,
             PostalCode = PickupLocationViewModel.Address.PostalCode,
             Region = PickupLocationViewModel.Address.Region,
-            StreetAddress = PickupLocationViewModel.Address.StreetAddress
+            StreetAddress = PickupLocationViewModel.Address.StreetAddress,
+            County = PickupLocationViewModel.Address.County,            
         };
 
         var updatedPickupLocation = await pickupLocationManager.AddPickupLocationAsync(pickupLocation);

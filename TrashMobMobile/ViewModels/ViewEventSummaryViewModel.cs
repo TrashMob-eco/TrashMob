@@ -8,16 +8,22 @@ using TrashMobMobile.Extensions;
 
 public partial class ViewEventSummaryViewModel : BaseViewModel
 {
-    public ViewEventSummaryViewModel(IMobEventManager mobEventManager)
+    private readonly IMobEventManager mobEventManager;
+    private readonly IPickupLocationManager pickupLocationManager;
+
+    public ViewEventSummaryViewModel(IMobEventManager mobEventManager, IPickupLocationManager pickupLocationManager)
     {
         EditEventSummaryCommand = new Command(async () => await EditEventSummary());
         AddPickupLocationCommand = new Command(async () => await AddPickupLocation());
         this.mobEventManager = mobEventManager;
+        this.pickupLocationManager = pickupLocationManager;
     }
 
     [ObservableProperty]
     EventSummaryViewModel eventSummaryViewModel;
-    private readonly IMobEventManager mobEventManager;
+
+    [ObservableProperty]
+    EventViewModel eventViewModel;
 
     public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = new ObservableCollection<PickupLocationViewModel>();
 
@@ -35,6 +41,7 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
         IsBusy = true;
 
         var mobEvent = await mobEventManager.GetEventAsync(eventId);
+        EventViewModel = mobEvent.ToEventViewModel();
 
         var eventSummary = await mobEventManager.GetEventSummaryAsync(eventId);
 
@@ -53,6 +60,39 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
 
         EnableEditEventSummary = mobEvent.IsEventLead();
         EnableAddPickupLocation = mobEvent.IsEventLead();
+
+        var pickupLocations = await pickupLocationManager.GetPickupLocationsAsync(eventId);
+
+        PickupLocations.Clear();
+        foreach (var pickupLocation in pickupLocations)
+        {
+            var pickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager)
+            {
+                Address = new AddressViewModel
+                {
+                    City = pickupLocation.City,
+                    Country = pickupLocation.Country,
+                    County = pickupLocation.County,
+                    Location = new Location(pickupLocation.Latitude.Value, pickupLocation.Longitude.Value),
+                    Latitude = pickupLocation.Latitude.Value,
+                    Longitude = pickupLocation.Longitude.Value,
+                    PostalCode = pickupLocation.PostalCode,
+                    Region = pickupLocation.Region,
+                    StreetAddress = pickupLocation.StreetAddress,
+                },
+                Id = pickupLocation.Id,
+                Notes = pickupLocation.Notes,
+                Name = "Pickup",
+                Notify = Notify,
+                NotifyError = NotifyError,
+                Navigation = Navigation,
+                PickupLocation = pickupLocation
+            };
+
+            await pickupLocationViewModel.Init(eventId);
+
+            PickupLocations.Add(pickupLocationViewModel);
+        }
 
         IsBusy = false;
     }

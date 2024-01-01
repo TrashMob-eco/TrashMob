@@ -2,6 +2,7 @@ namespace TrashMobMobile.Pages;
 
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using Microsoft.Maui.Maps;
 
 [QueryProperty(nameof(EventId), nameof(EventId))]
 public partial class ViewEventSummaryPage : ContentPage
@@ -21,6 +22,12 @@ public partial class ViewEventSummaryPage : ContentPage
     {
         base.OnNavigatedTo(args);
         await _viewModel.Init(new Guid(EventId));
+
+        if (_viewModel?.EventViewModel?.Address?.Location != null)
+        {
+            var mapSpan = new MapSpan(_viewModel.EventViewModel.Address.Location, 0.01, 0.01);
+            pickupLocationsMap.MoveToRegion(mapSpan);
+        }
     }
 
     private async Task Notify(string message)

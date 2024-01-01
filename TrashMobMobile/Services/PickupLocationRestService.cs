@@ -32,8 +32,7 @@
                 {
                     response.EnsureSuccessStatusCode();
                     string content = await response.Content.ReadAsStringAsync(cancellationToken);
-                    var result = JsonConvert.DeserializeObject<List<PickupLocation>>(content);
-                    return result.FirstOrDefault();
+                    return JsonConvert.DeserializeObject<PickupLocation>(content);                    
                 }
             }
             catch (Exception ex)

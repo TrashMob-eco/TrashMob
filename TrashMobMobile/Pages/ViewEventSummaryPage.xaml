@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
+             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              x:Class="TrashMobMobile.Pages.ViewEventSummaryPage">
     <FlexLayout Direction="Column"
                 JustifyContent="SpaceAround">
@@ -33,17 +34,33 @@
                 <DataTemplate>
                     <Border StrokeThickness="1">
                         <Grid WidthRequest = "400"
-                       ColumnDefinitions="1*, 1*, 1*"
+                       ColumnDefinitions="1*, 1*, 1*, 1*, 1*"
                        RowDefinitions="Auto">
                             <Label Text="{Binding Name}" Grid.Column="0" />
                             <Label Text="{Binding Address.StreetAddress}" Grid.Column="1" />
                             <Label Text="{Binding Address.City}" Grid.Column="2" />
+                            <Button Text="Edit Location" Grid.Column="3" Command="{Binding EditPickupLocationCommand}" IsEnabled="{Binding CanEditPickupLocation}" IsVisible="{Binding CanEditPickupLocation}" />
+                            <Button Text="Delete Location" Grid.Column="4" Command="{Binding DeletePickupLocationCommand}" IsEnabled="{Binding CanDeletePickupLocation}" IsVisible="{Binding CanDeletePickupLocation}" />
                         </Grid>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
 
+        <maps:Map x:Name="pickupLocationsMap"
+                      IsShowingUser="True"
+                      ItemsSource="{Binding PickupLocations}"
+                      HeightRequest="300"
+                      IsScrollEnabled="True">
+            <maps:Map.ItemTemplate>
+                <DataTemplate>
+                    <maps:Pin Location="{Binding Address.Location}"
+                                  Address="{Binding Address.StreetAddress}"
+                                  Label="{Binding Id}" 
+                                  AutomationId="{Binding Id}" />
+                </DataTemplate>
+            </maps:Map.ItemTemplate>
+        </maps:Map>
 
         <Button Text="Edit Event Summary" Command="{Binding EditEventSummaryCommand}" IsVisible="{Binding EnableEditEventSummary}"/>
         <Button Text="Add Pickup Location" Command="{Binding AddPickupLocationCommand}" IsVisible="{Binding EnableAddPickupLocation}"/>
