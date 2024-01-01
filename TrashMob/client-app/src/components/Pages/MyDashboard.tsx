@@ -645,6 +645,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         {myPickupRequests.map(displayPickup => {
                             return (
                                 <tr key={displayPickup.id.toString()}>
+                                    <td>{displayPickup.name}</td>
                                     <td>{displayPickup.streetAddress}</td>
                                     <td>{displayPickup.city}</td>
                                     <td>{displayPickup.notes}</td>

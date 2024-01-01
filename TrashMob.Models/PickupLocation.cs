@@ -28,6 +28,8 @@ namespace TrashMob.Models
 
         public string Notes { get; set; } = "";
 
+        public string Name { get; set; } = "";
+
         public virtual Event Event { get; set; }
     }
 }

@@ -11,6 +11,7 @@ class PickupLocationData {
     longitude: number = 0;
     postalCode: string = "";
     notes: string = "";
+    name: string = "";
     hasBeenSubmitted: boolean = false;
     hasBeenPickedUp: boolean = true;
     createdByUserId: string = Guid.EMPTY;

@@ -5,6 +5,7 @@
     using Azure.Storage.Blobs;
     using Azure.Storage.Blobs.Models;
     using Microsoft.Extensions.Logging;
+    using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
 
