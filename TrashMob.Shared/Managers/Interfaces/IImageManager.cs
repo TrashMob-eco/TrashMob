@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using TrashMob.Models;
     using TrashMob.Shared.Poco;
 
     public interface IImageManager

@@ -128,6 +128,7 @@
                     StreetAddress = pickupLocation.StreetAddress,
                     GoogleMapsUrl = pickupLocation.GoogleMapsUrl(),
                     Notes = pickupLocation.Notes,
+                    Name = pickupLocation.Name,
                     ImageUrl = imageUrl
                 };
 

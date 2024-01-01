@@ -2,7 +2,7 @@
 {
     using Microsoft.AspNetCore.Http;
     using System;
-    using TrashMob.Shared;
+    using TrashMob.Models;
 
     public class ImageUpload
     {
