@@ -104,6 +104,7 @@ export const PickupLocationRegion = "The Region will auto-populate when clicking
 export const PickupLocationPostalCode = "The Postal Code will auto-populate when clicking a location on the map if there is a Postal Code for that location."
 export const PickupLocationLatitude = "The Latitude will auto-populate when clicking a location on the map. It must be between -90.0 and 90.0"
 export const PickupLocationLongitude = "The Longitude will auto-populate when clicking a location on the map. It must be between -180.0 and 180.0"
+export const PickupLocationName = "Enter a name for the Pickup Location. Does not need to be unique."
 export const PickupLocationNotes = "Enter any special information regarding what is to be picked up at this location."
 export const PickupLocationHasBeenPickedUp = "Indicates whether or not the garbage at this location has been picked up."
 export const PickupLocationCreatedDate = "Date this record was created."

@@ -25,6 +25,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
 
     const [pickupLocationId, setPickupLocationId] = React.useState<string>(Guid.EMPTY)
     const [haulingPartnerLocation, setHaulingPartnerLocation] = React.useState<PartnerLocationData>();
+    const [name, setName] = React.useState<string>("");
     const [notes, setNotes] = React.useState<string>("");
     const [hasBeenPickedUp, setHasBeenPickedUp] = React.useState<boolean>(true);
     const [hasBeenSubmitted, setHasBeenSubmitted] = React.useState<boolean>(false);
@@ -122,6 +123,10 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         }
     }, [props.currentUser, props.eventId, props.isUserLoaded]);
 
+    function handleNameChanged(val: string) {
+        setName(val);
+    }
+
     function handleNotesChanged(val: string) {
         setNotes(val);
     }
@@ -148,6 +153,10 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
 
     function renderPostalCodeToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PickupLocationPostalCode}</Tooltip>
+    }
+
+    function renderNameToolTip(props: any) {
+        return <Tooltip {...props}>{ToolTips.PickupLocationName}</Tooltip>
     }
 
     function renderNotesToolTip(props: any) {
@@ -289,6 +298,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         partnerLocationData.longitude = longitude ?? 0;
         partnerLocationData.hasBeenSubmitted = hasBeenSubmitted;
         partnerLocationData.hasBeenPickedUp = hasBeenPickedUp;
+        partnerLocationData.name = name ?? "Pickup";
         partnerLocationData.notes = notes ?? "";
         partnerLocationData.createdByUserId = createdByUserId ?? props.currentUser.id;
         partnerLocationData.createdDate = createdDate;
@@ -404,6 +414,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                     setLongitude(data.longitude);
                     setHasBeenPickedUp(data.hasBeenPickedUp);
                     setHasBeenSubmitted(data.hasBeenSubmitted);
+                    setName(data.name);
                     setNotes(data.notes);
                     setCreatedByUserId(data.createdByUserId);
                     setCreatedDate(new Date(data.createdDate));
@@ -432,6 +443,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         setPostalCode("");
         setLatitude(0);
         setLongitude(0);
+        setName("Pickup");
         setNotes("");
         setHasBeenPickedUp(false);
         setCreatedByUserId(Guid.EMPTY);
@@ -484,6 +496,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                 <table className='table table-striped' aria-labelledby="tableLabel" width='100%'>
                     <thead>
                         <tr>
+                            <th>Name</th>
                             <th>Street Address</th>
                             <th>City</th>
                             <th>Submitted?</th>
@@ -495,6 +508,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                     <tbody>
                         {locations.map(location =>
                             <tr key={location.id}>
+                                <td>{location.name}</td>
                                 <td>{location.streetAddress}</td>
                                 <td>{location.city}</td>
                                 <td>{location.hasBeenSubmitted ? 'Yes' : 'No'}</td>
@@ -551,6 +565,12 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                         </Form.Group>
                     </Col>
                 </Form.Row>
+                <Form.Group>
+                    <OverlayTrigger placement="top" overlay={renderNameToolTip}>
+                        <Form.Label className="control-label font-weight-bold h5">Name:</Form.Label>
+                    </OverlayTrigger>
+                    <Form.Control type="text" className='border-0 bg-light h-60 p-18' defaultValue={name} maxLength={parseInt('50')} onChange={(val) => handleNameChanged(val.target.value)} />
+                </Form.Group >
                 <Form.Row>
                     <Col>
                         <Form.Group>
