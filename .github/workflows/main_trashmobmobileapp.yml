@@ -84,10 +84,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Rename info.plist for Debug
-      run: |
-        rm ./TrashMobMobile/Platforms/iOS/Info.plist
-        cp ./TrashMobMobile/Platforms/iOS/Info-Debug.plist TrashMobMobile/Platforms/iOS/Info.plist
+    # - name: Rename info.plist for Debug
+    #   run: |
+    #     rm ./TrashMobMobile/Platforms/iOS/Info.plist
+    #     cp ./TrashMobMobile/Platforms/iOS/Info-Debug.plist TrashMobMobile/Platforms/iOS/Info.plist
 
     - name: Update Build Number
       run: |
