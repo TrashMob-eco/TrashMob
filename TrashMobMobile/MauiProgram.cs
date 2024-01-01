@@ -86,6 +86,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ViewEventPage>();
         builder.Services.AddTransient<ViewEventSummaryPage>();
         builder.Services.AddTransient<ViewLitterReportPage>();
+        builder.Services.AddTransient<WaiverPage>();
         builder.Services.AddTransient<WelcomePage>();
 
         // ViewModels
@@ -109,6 +110,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ViewEventViewModel>();
         builder.Services.AddTransient<ViewEventSummaryViewModel>();
         builder.Services.AddTransient<ViewLitterReportViewModel>();
+        builder.Services.AddTransient<WaiverViewModel>();
         builder.Services.AddTransient<WelcomeViewModel>();
 
 #if DEBUG

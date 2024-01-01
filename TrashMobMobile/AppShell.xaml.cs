@@ -23,6 +23,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(ViewEventPage), typeof(ViewEventPage));
         Routing.RegisterRoute(nameof(ViewEventSummaryPage), typeof(ViewEventSummaryPage));
         Routing.RegisterRoute(nameof(ViewLitterReportPage), typeof(ViewLitterReportPage));
+        Routing.RegisterRoute(nameof(WaiverPage), typeof(WaiverPage));
         Routing.RegisterRoute(nameof(WelcomePage), typeof(WelcomePage));
     }
 }

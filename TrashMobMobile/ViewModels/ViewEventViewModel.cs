@@ -11,8 +11,9 @@ public partial class ViewEventViewModel : BaseViewModel
 {
     private readonly IMobEventManager mobEventManager;
     private readonly IEventTypeRestService eventTypeRestService;
+    private readonly IWaiverManager waiverManager;
 
-    public ViewEventViewModel(IMobEventManager mobEventManager, IEventTypeRestService eventTypeRestService)
+    public ViewEventViewModel(IMobEventManager mobEventManager, IEventTypeRestService eventTypeRestService, IWaiverManager waiverManager)
     {
         RegisterCommand = new Command(async () => await Register());
         UnregisterCommand = new Command(async () => await Unregister());
@@ -20,6 +21,7 @@ public partial class ViewEventViewModel : BaseViewModel
         ViewEventSummaryCommand = new Command(async () => await ViewEventSummary());
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
+        this.waiverManager = waiverManager;
     }
 
     [ObservableProperty]
@@ -86,6 +88,11 @@ public partial class ViewEventViewModel : BaseViewModel
     private async Task Register()
     {
         IsBusy = true;
+
+        if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
+        {
+            await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
+        }
 
         var eventAttendee = new EventAttendee()
         {

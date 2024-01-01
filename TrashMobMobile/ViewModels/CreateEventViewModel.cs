@@ -18,24 +18,33 @@ public partial class CreateEventViewModel : BaseViewModel
     private readonly IMobEventManager mobEventManager;
     private readonly IEventTypeRestService eventTypeRestService;
     private readonly IMapRestService mapRestService;
+    private readonly IWaiverManager waiverManager;
     private const int ActiveEventStatus = 1;
 
     public string DefaultEventName { get; } = "New Event";
 
     public CreateEventViewModel(IMobEventManager mobEventManager, 
                                 IEventTypeRestService eventTypeRestService,
-                                IMapRestService mapRestService)
+                                IMapRestService mapRestService,
+                                IWaiverManager waiverManager)
     {
         SaveEventCommand = new Command(async () => await SaveEvent());
         ManageEventPartnersCommand = new Command(async () => await ManageEventPartners());
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
         this.mapRestService = mapRestService;
+        this.waiverManager = waiverManager;
     }
 
     public async Task Init()
     {
         IsBusy = true;
+
+        if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
+        {
+            await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
+        }
+
         IsManageEventPartnersEnabled = false;
 
         UserLocation = App.CurrentUser.GetAddress();
