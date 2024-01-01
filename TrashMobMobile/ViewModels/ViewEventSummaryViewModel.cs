@@ -82,7 +82,7 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
                 },
                 Id = pickupLocation.Id,
                 Notes = pickupLocation.Notes,
-                Name = "Pickup",
+                Name = pickupLocation.Name,
                 Notify = Notify,
                 NotifyError = NotifyError,
                 Navigation = Navigation,

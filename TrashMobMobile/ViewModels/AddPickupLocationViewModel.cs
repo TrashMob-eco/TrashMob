@@ -126,6 +126,7 @@ public partial class AddPickupLocationViewModel : BaseViewModel
             Latitude = PickupLocationViewModel.Address.Latitude,
             Longitude = PickupLocationViewModel.Address.Longitude,
             Notes = PickupLocationViewModel.Notes,
+            Name = PickupLocationViewModel.Name,
             PostalCode = PickupLocationViewModel.Address.PostalCode,
             Region = PickupLocationViewModel.Address.Region,
             StreetAddress = PickupLocationViewModel.Address.StreetAddress,

@@ -33,10 +33,9 @@ public partial class EditPickupLocationViewModel : BaseViewModel
 
         pickupLocation = await pickupLocationManager.GetPickupLocationAsync(pickupLocationId);
 
-        // Currently can only edit the notes on an existing pickup location
         PickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager)
         {
-            Name = "Pickup",
+            Name = pickupLocation.Name,
             Notes = pickupLocation.Notes
         };
 
@@ -55,6 +54,7 @@ public partial class EditPickupLocationViewModel : BaseViewModel
         IsBusy = true;
 
         pickupLocation.Notes = PickupLocationViewModel.Notes;
+        pickupLocation.Name = PickupLocationViewModel.Name;
 
         var updatedPickupLocation = await pickupLocationManager.UpdatePickupLocationAsync(pickupLocation);
 
