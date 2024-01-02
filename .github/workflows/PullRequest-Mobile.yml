@@ -37,6 +37,7 @@ jobs:
           echo "buildNumber=$buildNumber" >> $GITHUB_OUTPUT
 
   buildAndroidApp:
+    needs: generate-build-number
     runs-on: windows-latest
     environment: test
     name: Android Build
@@ -100,6 +101,7 @@ jobs:
           TrashMobMobile\bin\${{ env.CONFIGURATION }}\net8.0-android\publish\*.aab
 
   buildiOSApp:
+    needs: generate-build-number
     runs-on: macos-latest
     environment: test
     name: iOS Build
