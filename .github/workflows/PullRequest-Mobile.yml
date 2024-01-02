@@ -61,14 +61,11 @@ jobs:
 
     - name: Update Build Number
       run: |
-        # Read the contents of the .csproj file into a variable
-        $content = Get-Content path\to\your.csproj -Raw
+        $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
         
-        # Use -replace to modify the content
         $newContent = $content -replace '<ApplicationVersion>.*</ApplicationVersion>', "<ApplicationVersion>$buildNumber</ApplicationVersion>"
         
-        # Write the updated content back to the .csproj file
-        Set-Content path\to\your.csproj -Value $newContent
+        Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
       
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v3
