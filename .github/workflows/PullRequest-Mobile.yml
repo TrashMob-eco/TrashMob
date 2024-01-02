@@ -56,12 +56,20 @@ jobs:
 
     - name: Use build number
       run: |
-        buildNumber=${{ needs.generate-build-number.outputs.buildNumber }}
+        $buildNumber=${{ needs.generate-build-number.outputs.buildNumber }}
         echo "Build Number: $buildNumber"
 
     - name: Update Build Number
-      run: sed -i "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>$buildNumber</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
-
+      run: |
+        # Read the contents of the .csproj file into a variable
+        $content = Get-Content path\to\your.csproj -Raw
+        
+        # Use -replace to modify the content
+        $newContent = $content -replace '<ApplicationVersion>.*</ApplicationVersion>', "<ApplicationVersion>$buildNumber</ApplicationVersion>"
+        
+        # Write the updated content back to the .csproj file
+        Set-Content path\to\your.csproj -Value $newContent
+      
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v3
       with:
@@ -137,7 +145,7 @@ jobs:
         echo "Build Number: $buildNumber"
 
     - name: Update Build Number
-      run: sed -i "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>$buildNumber</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
+      run: sed -i '' "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>$buildNumber</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v3
