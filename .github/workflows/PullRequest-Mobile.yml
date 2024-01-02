@@ -22,6 +22,20 @@ env:
 
 
 jobs:
+  generate-build-number:
+    runs-on: ubuntu-latest
+    outputs:
+      buildNumber: ${{ steps.set_build_number.outputs.buildNumber }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Generate build number
+        id: set_build_number
+        run: |
+          buildNumber=$(git rev-parse --short HEAD)
+          echo "buildNumber=$buildNumber" >> $GITHUB_ENV
+          echo "buildNumber=$buildNumber" >> $GITHUB_OUTPUT
+
   buildAndroidApp:
     runs-on: windows-latest
     environment: test
@@ -29,6 +43,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Use build number
+      run: |
+        buildNumber=${{ needs.generate-build-number.outputs.buildNumber }}
+        echo "Build Number: $buildNumber"
+
+    - name: Update Build Number
+      run: sed -i "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>$buildNumber</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v3
@@ -90,13 +112,21 @@ jobs:
     #     rm ./TrashMobMobile/Platforms/iOS/Info.plist
     #     cp ./TrashMobMobile/Platforms/iOS/Info-Debug.plist TrashMobMobile/Platforms/iOS/Info.plist
 
-    - name: Update Build Number
+    # - name: Update Build Number
+    #   run: |
+    #     buildNumber=`/bin/date +%Y%m%d%H%M%S`
+    #     echo $buildNumber
+    #     /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" "TrashMobMobile/Platforms/iOS/Info.plist"
+    #     echo "checking Version number updated:"
+    #     cat TrashMobMobile/Platforms/iOS/Info.plist
+
+    - name: Use build number
       run: |
-        buildNumber=`/bin/date +%Y%m%d%H%M%S`
-        echo $buildNumber
-        /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" "TrashMobMobile/Platforms/iOS/Info.plist"
-        echo "checking Version number updated:"
-        cat TrashMobMobile/Platforms/iOS/Info.plist
+        buildNumber=${{ needs.generate-build-number.outputs.buildNumber }}
+        echo "Build Number: $buildNumber"
+
+    - name: Update Build Number
+      run: sed -i "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>$buildNumber</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v3
