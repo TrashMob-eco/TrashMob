@@ -1429,6 +1429,10 @@ namespace TrashMob.Migrations
                     b.Property<double?>("Longitude")
                         .HasColumnType("float");
 
+                    b.Property<string>("Name")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("Notes")
                         .HasMaxLength(2048)
                         .HasColumnType("nvarchar(2048)");

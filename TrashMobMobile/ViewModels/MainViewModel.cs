@@ -122,24 +122,37 @@ public partial class MainViewModel : BaseViewModel
 
     private async Task RefreshStatistics()
     {
+        IsBusy = true;
+
         var stats = await statsRestService.GetStatsAsync();
 
         StatisticsViewModel.TotalAttendees = stats.TotalParticipants;
         StatisticsViewModel.TotalBags = stats.TotalBags;
         StatisticsViewModel.TotalEvents = stats.TotalEvents;
         StatisticsViewModel.TotalHours = stats.TotalHours;
+
+        IsBusy = false;
     }
 
     private async Task RefreshEvents()
     {
+        IsBusy = true;
+
         UpcomingEvents.Clear();
         var events = await mobEventManager.GetActiveEventsAsync();
+
+        var eventsUserIsAttending = await mobEventManager.GetEventsUserIsAttending(App.CurrentUser.Id);
 
         foreach (var mobEvent in events)
         {
             var vm = mobEvent.ToEventViewModel();
+
+            vm.IsUserAttending = eventsUserIsAttending.Any(e => e.Id == mobEvent.Id);
+
             UpcomingEvents.Add(vm);
         }
+
+        IsBusy = false;
     }
 
     private async Task ContactUs()
@@ -179,5 +192,7 @@ public partial class MainViewModel : BaseViewModel
 
     private async Task Logout()
     {
+        await authService.SignOutAsync();
+        await Shell.Current.GoToAsync($"{nameof(WelcomePage)}");
     }
 }

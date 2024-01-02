@@ -68,6 +68,8 @@
             services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>()
                 .CreateClient($"{ASSEMBLY_NAME}.ServerAPI.Anonymous"));
 
+            App.CurrentSettings = settings;
+
             return services;
         }
 

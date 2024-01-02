@@ -13,6 +13,8 @@
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center"/>
 
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
             <maps:Map x:Name="eventsMap" IsShowingUser="True" ItemsSource="{Binding Events}" HeightRequest="300" IsScrollEnabled="True"  >
                 <maps:Map.ItemTemplate>
                     <DataTemplate>

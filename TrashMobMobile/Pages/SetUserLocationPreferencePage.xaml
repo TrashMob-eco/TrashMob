@@ -12,6 +12,8 @@
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center"/>
 
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
         <Label 
             Text="Click on the map to set your location."
             FontSize="Micro"

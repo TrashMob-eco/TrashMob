@@ -68,32 +68,49 @@ public static class MauiProgram
         builder.Services.AddRestClientServices(builder.Configuration);
 
         // Pages
+        builder.Services.AddTransient<AddPickupLocationPage>();
+        builder.Services.AddTransient<CancelEventPage>();
         builder.Services.AddTransient<ContactUsPage>();
         builder.Services.AddTransient<CreateEventPage>();
         builder.Services.AddTransient<EditEventPage>();
-        builder.Services.AddTransient<MyDashboardPage>();
+        builder.Services.AddTransient<EditEventPartnerLocationServicesPage>();
+        builder.Services.AddTransient<EditEventSummaryPage>();
+        builder.Services.AddTransient<EditPickupLocationPage>();
         builder.Services.AddTransient<MainPage>();
+        builder.Services.AddTransient<ManageEventPartnersPage>();
+        builder.Services.AddTransient<MyDashboardPage>();
         builder.Services.AddTransient<SearchEventsPage>();
         builder.Services.AddTransient<SearchLitterReportsPage>();
         builder.Services.AddTransient<SetUserLocationPreferencePage>();
+        builder.Services.AddTransient<SubmitLitterReportPage>();
         builder.Services.AddTransient<ViewEventPage>();
         builder.Services.AddTransient<ViewEventSummaryPage>();
         builder.Services.AddTransient<ViewLitterReportPage>();
+        builder.Services.AddTransient<WaiverPage>();
         builder.Services.AddTransient<WelcomePage>();
 
         // ViewModels
+        builder.Services.AddTransient<AddPickupLocationViewModel>();
+        builder.Services.AddTransient<CancelEventViewModel>();
         builder.Services.AddTransient<ContactUsViewModel>();
         builder.Services.AddTransient<CreateEventViewModel>();
         builder.Services.AddTransient<EditEventViewModel>();
+        builder.Services.AddTransient<EditEventPartnerLocationServicesViewModel>();
+        builder.Services.AddTransient<EditEventSummaryViewModel>();
+        builder.Services.AddTransient<EditPickupLocationViewModel>();
         builder.Services.AddTransient<EventSummaryViewModel>();
         builder.Services.AddTransient<MainViewModel>();
+        builder.Services.AddTransient<ManageEventPartnersViewModel>();
         builder.Services.AddTransient<MyDashboardViewModel>();
         builder.Services.AddTransient<SearchEventsViewModel>();
         builder.Services.AddTransient<SearchLitterReportsViewModel>();
         builder.Services.AddTransient<SocialMediaShareViewModel>();
+        builder.Services.AddTransient<SubmitLitterReportViewModel>();
         builder.Services.AddTransient<UserLocationPreferenceViewModel>();
         builder.Services.AddTransient<ViewEventViewModel>();
+        builder.Services.AddTransient<ViewEventSummaryViewModel>();
         builder.Services.AddTransient<ViewLitterReportViewModel>();
+        builder.Services.AddTransient<WaiverViewModel>();
         builder.Services.AddTransient<WelcomeViewModel>();
 
 #if DEBUG

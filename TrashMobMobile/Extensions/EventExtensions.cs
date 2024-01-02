@@ -69,6 +69,11 @@
             return mobEvent.CreatedByUserId == userId;
         }
 
+        public static bool IsCompleted(this Event mobEvent)
+        {
+            return mobEvent.EventDate.ToUniversalTime() < DateTimeOffset.UtcNow;
+        }
+
         public static bool IsCancellable(this Event mobEvent)
         {
             return mobEvent.EventDate.ToUniversalTime() > DateTimeOffset.UtcNow;
@@ -100,6 +105,7 @@
                 IsEventPublic = mobEvent.IsEventPublic,
                 MaxNumberOfParticipants = mobEvent.MaxNumberOfParticipants,
                 Name = mobEvent.Name,
+                UserRoleForEvent = mobEvent.IsEventLead() ? "Lead" : "Attendee"
             };
 
             return eventViewModel;

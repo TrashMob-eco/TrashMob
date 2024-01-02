@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using System.Windows.Input;
 using TrashMob.Models;
 using TrashMobMobile.Extensions;
 
@@ -8,6 +9,7 @@ public partial class EventViewModel : ObservableObject
 {
     public EventViewModel()
     {
+        CancelEventCommand = new Command(async () => await CancelEvent());
     }
 
     [ObservableProperty]
@@ -35,6 +37,8 @@ public partial class EventViewModel : ObservableObject
                 OnPropertyChanged(nameof(EventDate));
                 OnPropertyChanged(nameof(DisplayDate));
                 OnPropertyChanged(nameof(DisplayTime));
+                OnPropertyChanged(nameof(EventTime));
+                OnPropertyChanged(nameof(EventDateOnly));
             }
         }
     }
@@ -63,6 +67,42 @@ public partial class EventViewModel : ObservableObject
     [ObservableProperty]
     string cancellationReason;
 
+    [ObservableProperty]
+    bool canCancelEvent;
+
+    public ICommand CancelEventCommand { get; set; }
+
+    public string GetUserRole(Event mobEvent)
+    {
+        if (mobEvent.IsEventLead())
+        {
+            return "Lead";
+        }
+
+        if (IsUserAttending)
+        {
+            return "Attendee";
+        }
+
+        return string.Empty;
+    }
+
+    private bool isUserAttending;
+
+    public bool IsUserAttending
+    {
+        get { return isUserAttending; }
+        set
+        {
+            if ( isUserAttending != value )
+            {
+                isUserAttending = value;
+                OnPropertyChanged(nameof(IsUserAttending));
+                OnPropertyChanged(nameof(UserRoleForEvent));
+            }
+        }
+    }
+
     public string DisplayDate
     {
         get
@@ -78,6 +118,48 @@ public partial class EventViewModel : ObservableObject
             return EventDate.GetFormattedLocalTime();
         }
     }
+
+    public TimeSpan EventTime
+    {
+        get
+        {
+            return EventDate.TimeOfDay;
+        }
+        set
+        {
+            var fullDateTime = EventDateOnly.Add(EventTime);
+            EventDate = fullDateTime;
+        }
+    }
+
+    public DateTime EventDateOnly
+    {
+        get
+        {
+            return EventDate.Date;
+        }
+        set
+        {
+            var fullDateTime = value.Add(EventTime);
+            EventDate = fullDateTime;
+        }
+    }
+
+    public bool IsValid()
+    {
+        if (EventDate == DateTimeOffset.MinValue)
+        {
+            ErrorMessage = "Event Date and Time must be specified.";
+            return false;
+        }
+
+        return true;
+    }
+
+    [ObservableProperty]
+    string userRoleForEvent;
+
+    public string ErrorMessage { get; set; }
 
     public Event ToEvent()
     {
@@ -100,6 +182,12 @@ public partial class EventViewModel : ObservableObject
             PostalCode = Address.PostalCode,
             Region = Address.Region,
             StreetAddress = Address.StreetAddress,
+            EventStatusId = EventStatusId,
         };
+    }
+
+    private async Task CancelEvent()
+    {
+        await Shell.Current.GoToAsync($"{nameof(CancelEventPage)}?EventId={Id}");
     }
 }

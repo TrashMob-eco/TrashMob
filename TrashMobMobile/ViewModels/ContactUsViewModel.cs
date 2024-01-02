@@ -4,7 +4,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using System.Windows.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
-using TrashMobMobile.Extensions;
 
 public partial class ContactUsViewModel : BaseViewModel
 {
@@ -25,10 +24,15 @@ public partial class ContactUsViewModel : BaseViewModel
     [ObservableProperty]
     string message;
 
+    [ObservableProperty]
+    string confirmation;
+
     public ICommand SubmitMessageCommand { get; set; }
 
     private async Task SubmitMessage()
     {
+        IsBusy = true;
+
         var contactRequest = new ContactRequest
         {
             Name = Name,
@@ -37,44 +41,11 @@ public partial class ContactUsViewModel : BaseViewModel
         };
 
         await contactRequestManager.AddContactRequestAsync(contactRequest);
-    }
 
-    protected override void Validate()
-    {
-        if (string.IsNullOrEmpty(Name))
-        {
-            IsValid = false;
-            ErrorMessage = "Name cannot be blank.";
-            IsErrorMessageVisible = true;
-            return;
-        }
+        IsBusy = false;
 
-        if (string.IsNullOrEmpty(Email))
-        {
-            IsValid = false;
-            ErrorMessage = "Email cannot be blank.";
-            IsErrorMessageVisible = true;
-            return;
-        }
+        await Notify("Message sent successfully!");
 
-        if (!Email.IsValidEmailAddress())
-        {
-            IsValid = false;
-            ErrorMessage = "Email is not a valid address.";
-            IsErrorMessageVisible = true;
-            return;
-        }
-
-        if (string.IsNullOrEmpty(Message))
-        {
-            IsValid = false;
-            ErrorMessage = "Message cannot be blank.";
-            IsErrorMessageVisible = true;
-            return;
-        }
-
-        IsValid = true;
-        ErrorMessage = string.Empty;
-        IsErrorMessageVisible = false;
+        await Navigation.PopToRootAsync();
     }
 }

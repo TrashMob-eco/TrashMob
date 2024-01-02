@@ -27,10 +27,21 @@
 
                 using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
                 {
-                    response.EnsureSuccessStatusCode();
-                    string content = await response.Content.ReadAsStringAsync(cancellationToken);
-                    var result = JsonConvert.DeserializeObject<List<EventSummary>>(content);
-                    return result.FirstOrDefault();
+                    try
+                    {
+                        response.EnsureSuccessStatusCode();
+                        string content = await response.Content.ReadAsStringAsync(cancellationToken);
+                        return JsonConvert.DeserializeObject<EventSummary>(content);
+                    }
+                    catch (HttpRequestException)
+                    {
+                        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                        {
+                            return new EventSummary();
+                        }
+
+                        throw;
+                    }
                 }
             }
             catch (Exception ex)

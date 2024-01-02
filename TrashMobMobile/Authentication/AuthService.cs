@@ -62,6 +62,31 @@ public class AuthService : IAuthService
         }
     }
 
+    public async Task SignOutAsync()
+    {
+        if (_pca == null)
+        {
+            InitializeClient();
+        }
+
+        var accounts = await _pca.GetAccountsAsync();
+
+        try
+        {
+            foreach (var account in accounts)
+            {
+                await _pca.RemoveAsync(account);
+            }
+
+            App.CurrentUser = null;
+        }
+        catch (Exception ex)
+        {
+            // TODO: handle
+            Debug.WriteLine($"MSAL Silent Error: {ex.Message}");            
+        }
+    }
+
     public async Task<SignInResult> SignInSilentAsync(bool AllowInteractive = true)
     {
         if (_pca == null)

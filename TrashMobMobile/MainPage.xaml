@@ -10,6 +10,8 @@
             Padding="30,0"
             Spacing="25">
 
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+            
             <Grid RowDefinitions = "1*, 1*" ColumnDefinitions="1*, 1*, 1*, 1*" MaximumWidthRequest="400" >
                 <Label Grid.Row="0" Grid.Column="0" Text="Events" />
                 <Label Grid.Row="1" Grid.Column="0" Text="{ Binding StatisticsViewModel.TotalEvents }" />
@@ -30,7 +32,9 @@
                     <DataTemplate>
                         <maps:Pin Location="{Binding Address.Location}"
                                   Address="{Binding Address.StreetAddress}"
-                                  Label="{Binding Name}" />
+                                  Label="{Binding Name}" 
+                                  AutomationId="{Binding Id}"
+                                  InfoWindowClicked="Pin_InfoWindowClicked" />
                     </DataTemplate>
                 </maps:Map.ItemTemplate>
             </maps:Map>
@@ -43,18 +47,18 @@
                     <DataTemplate>
                         <Border StrokeThickness="1">
                             <Grid WidthRequest = "400"
-                                  ColumnDefinitions="2*, 2*, 2*"
+                                  ColumnDefinitions="1*, 1*, 1*, 1*"
                                   RowDefinitions="Auto"
                                   x:Name="EventItem">
 
                                 <Label Text="{Binding Name}" Grid.Column="0" />
                                 <Label Text="{Binding DisplayDate}" Grid.Column="1" />
                                 <Label Text="{Binding Address.City}" Grid.Column="2" />
-                        </Grid>
+                                <Label Text="{Binding UserRoleForEvent}" Grid.Column="3" />
+                            </Grid>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
-
             </CollectionView>
 
             <Button Text="Contact Us" Command="{Binding ContactUsCommand}" />

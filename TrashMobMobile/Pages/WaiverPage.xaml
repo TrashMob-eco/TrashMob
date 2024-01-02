@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="TrashMobMobile.Pages.WaiverPage">
+    <FlexLayout Direction="Column"
+                JustifyContent="SpaceAround">
+        <Label 
+            Text="TrashMob.eco Waiver"
+            FontSize="Large"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
+        <Label 
+            Text="In order to create or participate in TrashMob.eco events, you must agree to a liability waiver. Please click the
+                Sign Waiver button below. This will open a browser which will ask you to view and sign the waiver.
+                Once that is done, you will be redirected to the TrashMob.eco website to sign in and complete the waiver signing experience there. If you don't complete that last step, you will
+                need to repeat the process."
+            FontSize="Small"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+        <Label 
+            Text="You will only need to sign this waiver once unless we have to change the legalese." FontSize="Small"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center" />
+
+        <Label 
+            Text="Thank you!" FontSize="Small"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center" />
+
+        <Label 
+            Text="Full Name" FontSize="Small"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center" />
+
+        <Entry Text="{Binding Name}"             
+               FontSize="Small"
+               VerticalOptions="Center" 
+               HorizontalOptions="Center"
+               HorizontalTextAlignment="Center"
+               WidthRequest="400">
+            <Entry.Behaviors>
+                <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
+            </Entry.Behaviors>
+        </Entry>
+
+        <Button Text="Sign Waiver" Command="{Binding SignWaiverCommand}">
+            <Button.Triggers>
+                <MultiTrigger TargetType="Button">
+                    <MultiTrigger.Conditions>
+                        <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="IsEnabled" Value="True" />
+                </MultiTrigger>
+            </Button.Triggers>
+        </Button>
+
+        <Label 
+            FontSize="Micro"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center" 
+            TextColor="Red">
+            <Label.Triggers>
+                <MultiTrigger TargetType="Label">
+                    <MultiTrigger.Conditions>
+                        <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="IsVisible" Value="False" />
+                </MultiTrigger>
+                <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="False">
+                    <Setter Property="Text" Value="Name is required and must be at least 5 characters." />
+                </DataTrigger>
+            </Label.Triggers>
+        </Label>
+    </FlexLayout>
+</ContentPage>
