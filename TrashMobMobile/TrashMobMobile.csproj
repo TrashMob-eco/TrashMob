@@ -24,7 +24,7 @@
 		<ApplicationTitle>TrashMobMobile</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>eco.trashmob.trashmobmobile</ApplicationId>
+		<ApplicationId>eco.trashmob.trashmobmobileapp</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>

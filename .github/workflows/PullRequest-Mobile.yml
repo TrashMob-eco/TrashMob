@@ -116,7 +116,7 @@ jobs:
 
   buildiOSApp:
     needs: generate-build-number
-    runs-on: macos-latest
+    runs-on: macos-13
     environment: test
     name: iOS Build
 
