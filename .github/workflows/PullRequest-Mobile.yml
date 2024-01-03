@@ -144,6 +144,9 @@ jobs:
     - name: Update Build Number
       run: sed -i '' "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>$buildNumber</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
 
+    - name: Update Bundle ID
+      run: sed -i '' "s|<ApplicationId>.*</ApplicationId>|<ApplicationId>${{ env.IOS_BUNDLE_ID }}</ApplicationId>|g" TrashMobMobile/TrashMobMobile.csproj
+
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v3
       with:
