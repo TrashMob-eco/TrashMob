@@ -136,7 +136,7 @@ jobs:
           TrashMobMobile\bin\${{ env.CONFIGURATION }}\net8.0-android\publish\*.aab
 
   calliOSBuild:
-    needs: generate-build-number
+    needs: [generate-build-number, exposeEnvironmentVariables]
     uses: ./.github/workflows/build-ios.yml
     with:
       configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
