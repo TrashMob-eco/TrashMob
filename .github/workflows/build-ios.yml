@@ -1,0 +1,92 @@
+name: Build iOS app
+
+on:
+    workflow_call:
+        inputs:
+            configuration:
+                required: true
+                type: string
+            build_number:
+                required: true
+                type: string
+            bundle_id:
+                required: true
+                type: string
+            dotnet_version:
+                required: true
+                type: string
+            ios_provisioning_profile_type:
+                required: true
+                type: string
+        secrets:
+            ios_signing_certificate:
+                required: true
+            ios_signing_certificate_password:
+                required: true
+            apple_issuer_id:
+                required: true
+            apple_key_id:
+                required: true
+            apple_key:
+                required: true
+
+jobs:
+    build:
+        runs-on: macos-13
+        name: iOS Build
+
+        steps:
+        - uses: actions/checkout@v3
+
+        - name: Update Build Number
+          run: sed -i '' "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>${{ inputs.build_number }}</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
+
+        - name: Update Bundle ID
+          run: sed -i '' "s|<ApplicationId>.*</ApplicationId>|<ApplicationId>${{ inputs.bundle_id }}</ApplicationId>|g" TrashMobMobile/TrashMobMobile.csproj
+
+        - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
+          uses: actions/setup-dotnet@v3
+          with:
+            dotnet-version: ${{ inputs.dotnet_version }}
+
+        - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
+          uses: actions/setup-dotnet@v3
+          with:
+            dotnet-version: ${{ inputs.dotnet_version }}
+
+        - name: Install MAUI Workload
+          run: |
+            dotnet nuget locals all --clear
+            dotnet workload install maui --ignore-failed-sources
+            dotnet workload install ios maui wasm-tools --source https://api.nuget.org/v3/index.json --ignore-failed-sources
+
+        - name: Set XCode Version
+          if: runner.os == 'macOS'
+          shell: bash
+          run: |
+            sudo xcode-select -s "/Applications/Xcode_15.1.app"
+            echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_15.1.app" >> $GITHUB_ENV
+
+        - name: Import Code-Signing Certificates
+          uses: Apple-Actions/import-codesign-certs@v1
+          with:
+            p12-file-base64: ${{ secrets.IOS_CERTIFICATES_P12 }}
+            p12-password: ${{ secrets.IOS_CERTIFICATES_P12_PASSWORD }}
+
+        - name: Download Apple Provisioning Profiles
+          uses: Apple-Actions/download-provisioning-profiles@v1
+          with:
+            bundle-id: ${{ env.IOS_BUNDLE_ID }}
+            profile-type: ${{ env.IOS_PROFILE_TYPE }}
+            issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+            api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+            api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+
+        - name: Build MAUI iOS
+          run: dotnet publish TrashMobMobile/TrashMobMobile.csproj -c ${{ inputs.configuration }} -f net8.0-ios -r ios-arm64 --self-contained /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=true /p:PublishTrimmed=true
+
+        - name: Upload iOS Artifact
+          uses: actions/upload-artifact@v3.1.2
+          with:
+            name: trashmobmobileapp-ios-pr-build
+            path: TrashMobMobile/bin/${{ inputs.configuration }}/net8.0-ios/ios-arm64/publish//*.ipa

@@ -34,16 +34,37 @@ jobs:
         run: |
           commitHash=$(git rev-parse HEAD)
           hexBuildNumber=${commitHash: -8}
-          
+
           # Convert hexadecimal to uppercase
           hexBuildNumber=$(echo "$hexBuildNumber" | tr '[:lower:]' '[:upper:]')
-          
+
           # Convert from hexadecimal to decimal
           buildNumber=$(echo "ibase=16; $hexBuildNumber" | bc)
           echo "Decimal Build Number based on Commit ID: $buildNumber"
-        
+
           echo "buildNumber=$buildNumber" >> $GITHUB_ENV
           echo "buildNumber=$buildNumber" >> $GITHUB_OUTPUT
+
+  exposeEnvironmentVariables:
+    runs-on: ubuntu-latest
+    name: Expose environment variables
+    outputs:
+      configuration: ${{ steps.expose_environment_variables.outputs.configuration }}
+      bundle_id: ${{ steps.expose_environment_variables.outputs.bundle_id }}
+      dotnet_version: ${{ steps.expose_environment_variables.outputs.dotnet_version }}
+      ios_provisioning_profile_type: ${{ steps.expose_environment_variables.outputs.ios_provisioning_profile_type }}
+    steps:
+      - name: Set environment variable outputs
+        id: expose_environment_variables
+        run: |
+          echo "configuration=${{ env.CONFIGURATION }}" >> $GITHUB_ENV
+          echo "configuration=${{ env.CONFIGURATION }}" >> $GITHUB_OUTPUT
+          echo "bundle_id=${{ env.IOS_BUNDLE_ID }}" >> $GITHUB_ENV
+          echo "bundle_id=${{ env.IOS_BUNDLE_ID }}" >> $GITHUB_OUTPUT
+          echo "dotnet_version=${{ env.DOTNET_VERSION }}" >> $GITHUB_ENV
+          echo "dotnet_version=${{ env.DOTNET_VERSION }}" >> $GITHUB_OUTPUT
+          echo "ios_provisioning_profile_type=${{ env.IOS_PROFILE_TYPE }}" >> $GITHUB_ENV
+          echo "ios_provisioning_profile_type=${{ env.IOS_PROFILE_TYPE }}" >> $GITHUB_OUTPUT
 
   buildAndroidApp:
     needs: generate-build-number
@@ -62,11 +83,11 @@ jobs:
     - name: Update Build Number
       run: |
         $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
-        
+
         $newContent = $content -replace '<ApplicationVersion>.*</ApplicationVersion>', "<ApplicationVersion>$buildNumber</ApplicationVersion>"
-        
+
         Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
-      
+
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v3
       with:
@@ -114,79 +135,95 @@ jobs:
         path: |
           TrashMobMobile\bin\${{ env.CONFIGURATION }}\net8.0-android\publish\*.aab
 
-  buildiOSApp:
+  calliOSBuild:
     needs: generate-build-number
-    runs-on: macos-13
-    environment: test
-    name: iOS Build
+    uses: ./.github/workflows/build-ios.yml
+    with:
+      configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
+      build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
+      bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
+      dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
+      ios_provisioning_profile_type: ${{ needs.exposeEnvironmentVariables.outputs.ios_provisioning_profile_type }}
+    secrets:
+      ios_signing_certificate: ${{ secrets.IOS_CERTIFICATES_P12 }}
+      ios_signing_certificate_password: ${{ secrets.IOS_CERTIFICATES_P12_PASSWORD }}
+      apple_issuer_id: ${{ secrets.APPSTORE_ISSUER_ID }}
+      apple_key_id: ${{ secrets.APPSTORE_KEY_ID }}
+      apple_key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
 
-    steps:
-    - uses: actions/checkout@v3
+  # buildiOSApp:
+  #   needs: generate-build-number
+  #   runs-on: macos-13
+  #   environment: test
+  #   name: iOS Build
 
-    - name: Use build number
-      run: |
-        buildNumber=${{ needs.generate-build-number.outputs.buildNumber }}
-        echo "Build Number: $buildNumber"
+  #   steps:
+  #   - uses: actions/checkout@v3
 
-    - name: Update Build Number
-      run: sed -i '' "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>$buildNumber</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
+  #   - name: Use build number
+  #     run: |
+  #       buildNumber=${{ needs.generate-build-number.outputs.buildNumber }}
+  #       echo "Build Number: $buildNumber"
 
-    - name: Update Bundle ID
-      run: sed -i '' "s|<ApplicationId>.*</ApplicationId>|<ApplicationId>${{ env.IOS_BUNDLE_ID }}</ApplicationId>|g" TrashMobMobile/TrashMobMobile.csproj
+  #   - name: Update Build Number
+  #     run: sed -i '' "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>$buildNumber</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
 
-    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+  #   - name: Update Bundle ID
+  #     run: sed -i '' "s|<ApplicationId>.*</ApplicationId>|<ApplicationId>${{ env.IOS_BUNDLE_ID }}</ApplicationId>|g" TrashMobMobile/TrashMobMobile.csproj
 
-    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION2 }}
+  #   - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+  #     uses: actions/setup-dotnet@v3
+  #     with:
+  #       dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Install MAUI Workload
-      run: |
-        dotnet nuget locals all --clear
-        dotnet workload install maui --ignore-failed-sources
-        dotnet workload install ios maui wasm-tools --source https://api.nuget.org/v3/index.json --ignore-failed-sources
+  #   - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
+  #     uses: actions/setup-dotnet@v3
+  #     with:
+  #       dotnet-version: ${{ env.DOTNET_VERSION2 }}
 
-    - name: Set XCode Version
-      if: runner.os == 'macOS'
-      shell: bash
-      run: |
-        sudo xcode-select -s "/Applications/Xcode_15.1.app"
-        echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_15.1.app" >> $GITHUB_ENV
+  #   - name: Install MAUI Workload
+  #     run: |
+  #       dotnet nuget locals all --clear
+  #       dotnet workload install maui --ignore-failed-sources
+  #       dotnet workload install ios maui wasm-tools --source https://api.nuget.org/v3/index.json --ignore-failed-sources
 
-    - name: Import Code-Signing Certificates
-      uses: Apple-Actions/import-codesign-certs@v1
-      with:
-        p12-file-base64: ${{ secrets.IOS_CERTIFICATES_P12 }}
-        p12-password: ${{ secrets.IOS_CERTIFICATES_P12_PASSWORD }}
+  #   - name: Set XCode Version
+  #     if: runner.os == 'macOS'
+  #     shell: bash
+  #     run: |
+  #       sudo xcode-select -s "/Applications/Xcode_15.1.app"
+  #       echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_15.1.app" >> $GITHUB_ENV
 
-    - name: Download Apple Provisioning Profiles
-      uses: Apple-Actions/download-provisioning-profiles@v1
-      with:
-        bundle-id: ${{ env.IOS_BUNDLE_ID }}
-        profile-type: ${{ env.IOS_PROFILE_TYPE }}
-        issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
-        api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
-        api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+  #   - name: Import Code-Signing Certificates
+  #     uses: Apple-Actions/import-codesign-certs@v1
+  #     with:
+  #       p12-file-base64: ${{ secrets.IOS_CERTIFICATES_P12 }}
+  #       p12-password: ${{ secrets.IOS_CERTIFICATES_P12_PASSWORD }}
 
-    - name: Build MAUI iOS
-      run: dotnet publish TrashMobMobile/TrashMobMobile.csproj -c ${{ env.CONFIGURATION }} -f net8.0-ios -r ios-arm64 --self-contained /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=true /p:PublishTrimmed=true
+  #   - name: Download Apple Provisioning Profiles
+  #     uses: Apple-Actions/download-provisioning-profiles@v1
+  #     with:
+  #       bundle-id: ${{ env.IOS_BUNDLE_ID }}
+  #       profile-type: ${{ env.IOS_PROFILE_TYPE }}
+  #       issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+  #       api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+  #       api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
 
-    - name: Check Artifact paths
-      shell: bash
-      run: |
-        pwd
-        #ls TrashMobMobile/bin/Debug/net8.0-ios/ios-arm64/publish//TrashMobMobileApp.ipa
-        #ls /Users/runner/work/TrashMob/TrashMob/TrashMobMobile/bin/Debug/net8.0-ios/ios-arm64/publish//TrashMobMobileApp.ipa
-        #ls /Users/runner/work/TrashMob/TrashMob/TrashMobMobile/bin/Debug/net8.0-ios/ios-arm64/*
-        #ls /Users/runner/work/TrashMob/TrashMob/TrashMobMobile/bin/Debug/net8.0-ios/ios-arm64/publish/*
-        #ls **/*.ipa
+  #   - name: Build MAUI iOS
+  #     run: dotnet publish TrashMobMobile/TrashMobMobile.csproj -c ${{ env.CONFIGURATION }} -f net8.0-ios -r ios-arm64 --self-contained /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=true /p:PublishTrimmed=true
 
-    - name: Upload iOS Artifact
-      uses: actions/upload-artifact@v3.1.2
-      with:
-        name: trashmobmobileapp-ios-pr-build
-        path: TrashMobMobile/bin/${{ env.CONFIGURATION }}/net8.0-ios/ios-arm64/publish//*.ipa
+  #   - name: Check Artifact paths
+  #     shell: bash
+  #     run: |
+  #       pwd
+  #       #ls TrashMobMobile/bin/Debug/net8.0-ios/ios-arm64/publish//TrashMobMobileApp.ipa
+  #       #ls /Users/runner/work/TrashMob/TrashMob/TrashMobMobile/bin/Debug/net8.0-ios/ios-arm64/publish//TrashMobMobileApp.ipa
+  #       #ls /Users/runner/work/TrashMob/TrashMob/TrashMobMobile/bin/Debug/net8.0-ios/ios-arm64/*
+  #       #ls /Users/runner/work/TrashMob/TrashMob/TrashMobMobile/bin/Debug/net8.0-ios/ios-arm64/publish/*
+  #       #ls **/*.ipa
+
+  #   - name: Upload iOS Artifact
+  #     uses: actions/upload-artifact@v3.1.2
+  #     with:
+  #       name: trashmobmobileapp-ios-pr-build
+  #       path: TrashMobMobile/bin/${{ env.CONFIGURATION }}/net8.0-ios/ios-arm64/publish//*.ipa
