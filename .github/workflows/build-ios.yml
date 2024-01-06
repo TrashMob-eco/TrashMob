@@ -70,17 +70,17 @@ jobs:
         - name: Import Code-Signing Certificates
           uses: Apple-Actions/import-codesign-certs@v1
           with:
-            p12-file-base64: ${{ secrets.IOS_CERTIFICATES_P12 }}
-            p12-password: ${{ secrets.IOS_CERTIFICATES_P12_PASSWORD }}
+            p12-file-base64: ${{ secrets.ios_signing_certificate }}
+            p12-password: ${{ secrets.ios_signing_certificate_password }}
 
         - name: Download Apple Provisioning Profiles
           uses: Apple-Actions/download-provisioning-profiles@v1
           with:
-            bundle-id: ${{ env.IOS_BUNDLE_ID }}
-            profile-type: ${{ env.IOS_PROFILE_TYPE }}
-            issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
-            api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
-            api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+            bundle-id: ${{ inputs.bundle_id }}
+            profile-type: ${{ inputs.ios_provisioning_profile_type }}
+            issuer-id: ${{ secrets.apple_issuer_id }}
+            api-key-id: ${{ secrets.apple_key_id }}
+            api-private-key: ${{ secrets.apple_key }}
 
         - name: Build MAUI iOS
           run: dotnet publish TrashMobMobile/TrashMobMobile.csproj -c ${{ inputs.configuration }} -f net8.0-ios -r ios-arm64 --self-contained /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=true /p:PublishTrimmed=true
