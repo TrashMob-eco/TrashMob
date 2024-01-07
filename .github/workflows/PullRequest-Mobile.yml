@@ -66,76 +66,91 @@ jobs:
           echo "ios_provisioning_profile_type=${{ env.IOS_PROFILE_TYPE }}" >> $GITHUB_ENV
           echo "ios_provisioning_profile_type=${{ env.IOS_PROFILE_TYPE }}" >> $GITHUB_OUTPUT
 
-  buildAndroidApp:
-    needs: generate-build-number
-    runs-on: windows-latest
-    environment: test
-    name: Android Build
+  # buildAndroidApp:
+  #   needs: generate-build-number
+  #   runs-on: windows-latest
+  #   environment: test
+  #   name: Android Build
 
-    steps:
-    - uses: actions/checkout@v3
+  #   steps:
+  #   - uses: actions/checkout@v3
 
-    - name: Use build number
-      run: |
-        $buildNumber=${{ needs.generate-build-number.outputs.buildNumber }}
-        echo "Build Number: $buildNumber"
+  #   - name: Use build number
+  #     run: |
+  #       $buildNumber=${{ needs.generate-build-number.outputs.buildNumber }}
+  #       echo "Build Number: $buildNumber"
 
-    - name: Update Build Number
-      run: |
-        $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
+  #   - name: Update Build Number
+  #     run: |
+  #       $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
 
-        $newContent = $content -replace '<ApplicationVersion>.*</ApplicationVersion>', "<ApplicationVersion>$buildNumber</ApplicationVersion>"
+  #       $newContent = $content -replace '<ApplicationVersion>.*</ApplicationVersion>', "<ApplicationVersion>$buildNumber</ApplicationVersion>"
 
-        Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
+  #       Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
 
-    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+  #   - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+  #     uses: actions/setup-dotnet@v3
+  #     with:
+  #       dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION2 }}
+  #   - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
+  #     uses: actions/setup-dotnet@v3
+  #     with:
+  #       dotnet-version: ${{ env.DOTNET_VERSION2 }}
 
-    - name: Install MAUI Workload
-      run: |
-        dotnet nuget locals all --clear
-        dotnet workload install maui --ignore-failed-sources
-        dotnet workload install android maui wasm-tools --source https://api.nuget.org/v3/index.json
+  #   - name: Install MAUI Workload
+  #     run: |
+  #       dotnet nuget locals all --clear
+  #       dotnet workload install maui --ignore-failed-sources
+  #       dotnet workload install android maui wasm-tools --source https://api.nuget.org/v3/index.json
 
-    - name: Restore Dependencies
-      run: |
-        dotnet restore TrashMobMobileApp.sln
+  #   - name: Restore Dependencies
+  #     run: |
+  #       dotnet restore TrashMobMobileApp.sln
 
-    - name: Publish Android Mobile App
-      run: |
-        dotnet publish TrashMobMobile/TrashMobMobile.csproj -c:${{ env.CONFIGURATION }} -f:net8.0-android --no-restore /p:AndroidPackageFormat="aab"
+  #   - name: Publish Android Mobile App
+  #     run: |
+  #       dotnet publish TrashMobMobile/TrashMobMobile.csproj -c:${{ env.CONFIGURATION }} -f:net8.0-android --no-restore /p:AndroidPackageFormat="aab"
 
-    # Store Android Signing Keystore and password in Secrets using base64 encoding
-    # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil
-    # command line util to encode to base64 on windows
-    - name: Extract Android signing key from env
-      shell: bash
-      run: |
-        cd TrashMobMobile
-        mkdir android
-        echo "${{ secrets.ANDROID_KEYSTORE }}" > android/trashmobmobileapp.jks.base64
-        base64 -d android/trashmobmobileapp.jks.base64 > android/trashmobmobileapp.decrypted.jks
-    # check android SDK paths etc in installed VM : https://github.com/actions/virtual-environments#available-environments
-    - name: Sign dev build
-      shell: bash
-      run: |
-        cd TrashMobMobile
-        jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -signedjar bin/${{ env.CONFIGURATION }}/net8.0-android/publish/eco.trashmob.trashmobmobileapp-Signed.aab bin/${{ env.CONFIGURATION }}/net8.0-android/publish/eco.trashmob.trashmobmobileapp.aab key
+  #   # Store Android Signing Keystore and password in Secrets using base64 encoding
+  #   # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil
+  #   # command line util to encode to base64 on windows
+  #   - name: Extract Android signing key from env
+  #     shell: bash
+  #     run: |
+  #       cd TrashMobMobile
+  #       mkdir android
+  #       echo "${{ secrets.ANDROID_KEYSTORE }}" > android/trashmobmobileapp.jks.base64
+  #       base64 -d android/trashmobmobileapp.jks.base64 > android/trashmobmobileapp.decrypted.jks
+  #   # check android SDK paths etc in installed VM : https://github.com/actions/virtual-environments#available-environments
+  #   - name: Sign dev build
+  #     shell: bash
+  #     run: |
+  #       cd TrashMobMobile
+  #       jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -signedjar bin/${{ env.CONFIGURATION }}/net8.0-android/publish/eco.trashmob.trashmobmobileapp-Signed.aab bin/${{ env.CONFIGURATION }}/net8.0-android/publish/eco.trashmob.trashmobmobileapp.aab key
 
-    - uses: actions/upload-artifact@v3.1.2
-      with:
-        name: artifacts-android
-        path: |
-          TrashMobMobile\bin\${{ env.CONFIGURATION }}\net8.0-android\publish\*.aab
+  #   - uses: actions/upload-artifact@v3.1.2
+  #     with:
+  #       name: artifacts-android
+  #       path: |
+  #         TrashMobMobile\bin\${{ env.CONFIGURATION }}\net8.0-android\publish\*.aab
+
+
+  callBuildAndroid:
+    name: Call Android build workflow
+    needs: [generate-build-number, exposeEnvironmentVariables]
+    uses: ./.github/workflows/build-android.yml
+    with:
+      configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
+      build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
+      dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
+    secrets:
+      android_keystore: ${{ secrets.ANDROID_KEYSTORE }}
+      android_keystore_password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+
 
   calliOSBuild:
+    name: Call iOS buils workflow
     needs: [generate-build-number, exposeEnvironmentVariables]
     uses: ./.github/workflows/build-ios.yml
     with:
