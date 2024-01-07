@@ -49,6 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Expose environment variables
     outputs:
+      environment: ${{ steps.expose_environment_variables.outputs.environment }}
       configuration: ${{ steps.expose_environment_variables.outputs.configuration }}
       bundle_id: ${{ steps.expose_environment_variables.outputs.bundle_id }}
       dotnet_version: ${{ steps.expose_environment_variables.outputs.dotnet_version }}
@@ -57,6 +58,8 @@ jobs:
       - name: Set environment variable outputs
         id: expose_environment_variables
         run: |
+          echo "environment=${{ env.ENVIRONMENT }}" >> $GITHUB_ENV
+          echo "environment=${{ env.ENVIRONMENT }}" >> $GITHUB_OUTPUT
           echo "configuration=${{ env.CONFIGURATION }}" >> $GITHUB_ENV
           echo "configuration=${{ env.CONFIGURATION }}" >> $GITHUB_OUTPUT
           echo "bundle_id=${{ env.IOS_BUNDLE_ID }}" >> $GITHUB_ENV
@@ -72,6 +75,7 @@ jobs:
     needs: [generate-build-number, exposeEnvironmentVariables]
     uses: ./.github/workflows/build-android.yml
     with:
+      environment: ${{ needs.exposeEnvironmentVariables.outputs.environment }}
       configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
       build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
@@ -85,6 +89,7 @@ jobs:
     needs: [generate-build-number, exposeEnvironmentVariables]
     uses: ./.github/workflows/build-ios.yml
     with:
+      environment: ${{ needs.exposeEnvironmentVariables.outputs.environment }}
       configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
       build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
       bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}

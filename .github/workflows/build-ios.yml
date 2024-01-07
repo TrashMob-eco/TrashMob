@@ -3,6 +3,9 @@ name: Build iOS app
 on:
     workflow_call:
         inputs:
+            environment:
+                required: true
+                type: string
             configuration:
                 required: true
                 type: string
@@ -33,7 +36,7 @@ on:
 jobs:
     build:
         runs-on: macos-13
-        environment: test
+        environment: ${{ inputs.environment }}
         name: iOS Build
 
         steps:
