@@ -33,6 +33,7 @@ on:
 jobs:
     build:
         runs-on: macos-13
+        environment: test
         name: iOS Build
 
         steps:
