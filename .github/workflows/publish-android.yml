@@ -1,0 +1,30 @@
+name: Pulish Android app
+
+on:
+    workflow_call:
+        inputs:
+            build_number:
+                required: true
+                type: string
+        secrets:
+            GCP_SERVICE_ACCOUNT:
+                required: true
+
+jobs:
+    deploy-android:
+        name: Deploy Android to Google Play
+        runs-on: ubuntu-latest
+        steps:
+            - name: Download artifact
+              uses: actions/download-artifact@v2
+              with:
+                    name: artifacts-android-${{ inputs.build_number }}
+
+            - name: Upload signed AAB
+              uses: r0adkll/upload-google-play@v1
+              with:
+                    serviceAccountJsonPlainText: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+                    packageName: com.mildredssurfshack.MauiStockTake
+                    releaseFiles: ./*Signed.aab
+                    track: internal
+                    status: completed
