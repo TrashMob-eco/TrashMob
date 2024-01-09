@@ -121,5 +121,5 @@ jobs:
       build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
     secrets:
       APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
-      APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
-      APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+      APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+      APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}

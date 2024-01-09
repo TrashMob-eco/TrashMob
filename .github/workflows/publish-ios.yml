@@ -19,6 +19,7 @@ jobs:
     deploy-ios:
         name: Deploy iOS to TestFlight
         runs-on: macos-13
+        environment: production
         steps:
             - name: Download artifact
               uses: actions/download-artifact@v2
