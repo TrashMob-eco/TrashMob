@@ -48,11 +48,6 @@ jobs:
           with:
             dotnet-version: ${{ inputs.dotnet_version }}
 
-        - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
-          uses: actions/setup-dotnet@v3
-          with:
-            dotnet-version: ${{ inputs.dotnet_version }}
-
         - name: Install MAUI Workload
           run: |
             dotnet nuget locals all --clear

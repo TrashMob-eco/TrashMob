@@ -3,6 +3,9 @@ name: Pulish Android app
 on:
     workflow_call:
         inputs:
+            bundle_id:
+                required: true
+                type: string
             build_number:
                 required: true
                 type: string
@@ -25,7 +28,7 @@ jobs:
               uses: r0adkll/upload-google-play@v1
               with:
                     serviceAccountJsonPlainText: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-                    packageName: com.mildredssurfshack.MauiStockTake
+                    packageName: ${{ inputs.bundle_id }}
                     releaseFiles: ./*Signed.aab
                     track: internal
                     status: completed
