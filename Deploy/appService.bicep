@@ -3,6 +3,7 @@ param subscriptionId string
 param rgName string
 param appServicePlanName string
 param appServiceName string
+param alwaysOn bool = true
 
 var serverfarms_tmplan_externalid = '/subscriptions/${subscriptionId}/resourceGroups/${rgName}/providers/Microsoft.Web/serverfarms/${appServicePlanName}'
 
@@ -47,7 +48,8 @@ resource sites_tm_name_resource 'Microsoft.Web/sites@2018-11-01' = {
 }
 
 resource sites_tm_name_web 'Microsoft.Web/sites/config@2018-11-01' = {
-  name: '${sites_tm_name_resource.name}/web'
+  parent: sites_tm_name_resource
+  name: 'web'
   properties: {
     numberOfWorkers: 1
     defaultDocuments: [
@@ -71,7 +73,7 @@ resource sites_tm_name_web 'Microsoft.Web/sites/config@2018-11-01' = {
     azureStorageAccounts: {}
     use32BitWorkerProcess: true
     webSocketsEnabled: false
-    alwaysOn: true
+    alwaysOn: alwaysOn
     managedPipelineMode: 'Integrated'
     virtualApplications: [
       {
@@ -114,7 +116,8 @@ resource sites_tm_name_web 'Microsoft.Web/sites/config@2018-11-01' = {
 }
 
 resource sites_tm_name_sites_tm_name_azurewebsites_net 'Microsoft.Web/sites/hostNameBindings@2018-11-01' = {
-  name: '${sites_tm_name_resource.name}/${appServiceName}.azurewebsites.net'
+  parent: sites_tm_name_resource
+  name: '${appServiceName}.azurewebsites.net'
   properties: {
     siteName: appServiceName
     hostNameType: 'Verified'
@@ -122,5 +125,6 @@ resource sites_tm_name_sites_tm_name_azurewebsites_net 'Microsoft.Web/sites/host
 }
 
 resource sites_tm_name_Microsoft_AspNetCore_AzureAppServices_SiteExtension 'Microsoft.Web/sites/siteextensions@2018-11-01' = {
-  name: '${sites_tm_name_resource.name}/Microsoft.AspNetCore.AzureAppServices.SiteExtension'
+  parent: sites_tm_name_resource
+  name: 'Microsoft.AspNetCore.AzureAppServices.SiteExtension'
 }

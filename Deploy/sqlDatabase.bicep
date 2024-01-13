@@ -1,6 +1,5 @@
 param environment string
 param region string
-param subscriptionId string
 
 var servers_db_name = 'sql-tm-${environment}-${region}'
 var db_Name = 'db-tm-${environment}-${region}'
@@ -20,6 +19,6 @@ resource servers_db_name_tm 'Microsoft.Sql/servers/databases@2020-11-01-preview'
     zoneRedundant: false
     readScale: 'Disabled'
     requestedBackupStorageRedundancy: 'Geo'
-    maintenanceConfigurationId: '/subscriptions/${subscriptionId}/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default'
+    maintenanceConfigurationId: subscriptionResourceId('Microsoft.Maintenance/publicMaintenanceConfigurations', 'SQL_Default')
   }
 }

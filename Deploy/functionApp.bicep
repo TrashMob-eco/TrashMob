@@ -3,6 +3,7 @@ param functionAppName string
 param serverFarmId string
 param appInsightsInstrumentationKey string
 param storageAccountName string
+@secure()
 param storageAccountKey string
 
 resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
@@ -19,20 +20,20 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
     siteConfig: {
       appSettings: [
         {
-          'name': 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          'value': appInsightsInstrumentationKey
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: appInsightsInstrumentationKey
         }
         {
           name: 'AzureWebJobsStorage'
           value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccountKey}'
         }
         {
-          'name': 'FUNCTIONS_EXTENSION_VERSION'
-          'value': '~3'
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~3'
         }
         {
-          'name': 'FUNCTIONS_WORKER_RUNTIME'
-          'value': 'dotnet'
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: 'dotnet'
         }
         {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'

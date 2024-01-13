@@ -5,6 +5,7 @@ param ([Parameter(Mandatory=$true)] [String]$environment,
        [Parameter(Mandatory=$true)] [String]$region, 
        [Parameter(Mandatory=$true)] [String]$subscriptionId, 
        [Parameter(Mandatory=$true)] [String]$sqlAdminPassword, 
+       [Parameter(Mandatory=$false)] [bool]$alwaysOn, 
        [Parameter(Mandatory=$false)] [String]$sendGridApiKey = "x")
 
 
@@ -27,11 +28,11 @@ az group create --location $region --name $rgName
 # Set up the Assets needed with bicep files
 az deployment group create --template-file ".\azureMaps.bicep" -g $rgName --parameters environment=$environment region=$region
 az deployment group create --template-file ".\storageAccount.bicep" -g $rgName --parameters storageAccountName=$storageAccountName region=$region
-az deployment group create --template-file ".\sqlServer.bicep" -g $rgName --parameters environment=$environment region=$region subscriptionId=$subscriptionId sqlAdminPassword=$sqlAdminPassword
-az deployment group create --template-file ".\sqlDatabase.bicep" -g $rgName --parameters environment=$environment region=$region subscriptionId=$subscriptionId
+az deployment group create --template-file ".\sqlServer.bicep" -g $rgName --parameters environment=$environment region=$region sqlAdminPassword=$sqlAdminPassword
+az deployment group create --template-file ".\sqlDatabase.bicep" -g $rgName --parameters environment=$environment region=$region
 az deployment group create --template-file ".\keyVault.bicep" -g $rgName --parameters environment=$environment region=$region
 az deployment group create --template-file ".\appServicePlan.bicep" -g $rgName --parameters appServicePlanName=$appServicePlanName region=$region
-az deployment group create --template-file ".\appService.bicep" -g $rgName --parameters appServicePlanName=$appServicePlanName appServiceName=$appServiceName region=$region subscriptionId=$subscriptionId rgName=$rgName
+az deployment group create --template-file ".\appService.bicep" -g $rgName --parameters appServicePlanName=$appServicePlanName appServiceName=$appServiceName region=$region subscriptionId=$subscriptionId rgName=$rgName alwaysOn=$alwaysOn
 az deployment group create --template-file ".\logAnalyticsWorkspace.bicep" -g $rgName --parameters environment=$environment region=$region
 az deployment group create --template-file ".\appInsights.bicep" -g $rgName --parameters appInsightsName=$appInsightsName environment=$environment region=$region subscriptionId=$subscriptionId rgName=$rgName
 

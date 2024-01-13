@@ -2,7 +2,8 @@
 
 param environment string
 param region string
-param subscriptionId string
+
+@secure()
 param sqlAdminPassword string
 
 var servers_db_name = 'sql-tm-${environment}-${region}'
@@ -20,7 +21,8 @@ resource servers_db_name_resource 'Microsoft.Sql/servers@2020-11-01-preview' = {
 }
 
 resource servers_db_name_tm_ 'Microsoft.Sql/servers/databases@2020-11-01-preview' = {
-  name: '${servers_db_name_resource.name}/${db_Name}'
+  parent: servers_db_name_resource
+  name: db_Name
   location: region
   sku: {
     name: 'Basic'
@@ -34,12 +36,13 @@ resource servers_db_name_tm_ 'Microsoft.Sql/servers/databases@2020-11-01-preview
     zoneRedundant: false
     readScale: 'Disabled'
     requestedBackupStorageRedundancy: 'Geo'
-    maintenanceConfigurationId: '/subscriptions/${subscriptionId}/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default'
+    maintenanceConfigurationId: subscriptionResourceId('Microsoft.Maintenance/publicMaintenanceConfigurations', 'SQL_Default')
   }
 }
 
 resource servers_db_name_AllowAllWindowsAzureIps 'Microsoft.Sql/servers/firewallRules@2020-11-01-preview' = {
-  name: '${servers_db_name_resource.name}/AllowAllWindowsAzureIps'
+  parent: servers_db_name_resource
+  name: 'AllowAllWindowsAzureIps'
   properties: {
     startIpAddress: '0.0.0.0'
     endIpAddress: '0.0.0.0'
