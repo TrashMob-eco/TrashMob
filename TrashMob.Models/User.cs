@@ -16,6 +16,7 @@ namespace TrashMob.Models
             PartnersCreated = new HashSet<Partner>();
             PartnersUpdated = new HashSet<Partner>();
             EventAttendees = new HashSet<EventAttendee>();
+            EventAttendeeRoutes = new HashSet<EventAttendeeRoute>();
         }
 
         public Guid ObjectId { get; set; }
@@ -53,6 +54,8 @@ namespace TrashMob.Models
         public DateTimeOffset? MemberSince { get; set; }
 
         public virtual ICollection<EventAttendee> EventAttendees { get; set; }
+
+        public virtual ICollection<EventAttendeeRoute> EventAttendeeRoutes { get; set; }
 
         public virtual ICollection<Event> EventsCreated { get; set; }
 
@@ -141,6 +144,10 @@ namespace TrashMob.Models
         public virtual ICollection<EventAttendee> EventAttendeesCreated { get; set; }
 
         public virtual ICollection<EventAttendee> EventAttendeesUpdated { get; set; }
+
+        public virtual ICollection<EventAttendeeRoute> EventAttendeeRoutesCreated { get; set; }
+
+        public virtual ICollection<EventAttendeeRoute> EventAttendeeRoutesUpdated { get; set; }
 
         public virtual ICollection<Waiver> WaiverStatusesCreated { get; set; }
 

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 using TrashMob.Shared.Persistence;
 
 #nullable disable
@@ -18,7 +19,7 @@ namespace TrashMob.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .UseCollation("SQL_Latin1_General_CP1_CI_AS")
-                .HasAnnotation("ProductVersion", "7.0.13")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -197,6 +198,52 @@ namespace TrashMob.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("EventAttendees");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.EventAttendeeRoute", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("EndTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("StartTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<LineString>("UserPath")
+                        .HasColumnType("geography");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("EventAttendeeRoutes");
                 });
 
             modelBuilder.Entity("TrashMob.Models.EventPartnerLocationService", b =>
@@ -1998,6 +2045,41 @@ namespace TrashMob.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("TrashMob.Models.EventAttendeeRoute", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("EventAttendeeRoutesCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_EventAttendeeRoutes_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.Event", "Event")
+                        .WithMany("EventAttendeeRoutes")
+                        .HasForeignKey("EventId")
+                        .IsRequired()
+                        .HasConstraintName("FK_EventAttendeeRoutes_Events");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("EventAttendeeRoutesUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_EventAttendeeRoutes_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "User")
+                        .WithMany("EventAttendeeRoutes")
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_EventAttendeeRoutes_ApplicationUser");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("Event");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("TrashMob.Models.EventPartnerLocationService", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
@@ -2606,6 +2688,8 @@ namespace TrashMob.Migrations
 
             modelBuilder.Entity("TrashMob.Models.Event", b =>
                 {
+                    b.Navigation("EventAttendeeRoutes");
+
                     b.Navigation("EventAttendees");
 
                     b.Navigation("PickupLocations");
@@ -2682,6 +2766,12 @@ namespace TrashMob.Migrations
                     b.Navigation("ContactRequestsCreated");
 
                     b.Navigation("ContactRequestsUpdated");
+
+                    b.Navigation("EventAttendeeRoutes");
+
+                    b.Navigation("EventAttendeeRoutesCreated");
+
+                    b.Navigation("EventAttendeeRoutesUpdated");
 
                     b.Navigation("EventAttendees");
 
