@@ -18,11 +18,11 @@
 1. Execute the following command to deploy the Infrastructure needed
 ```
 
-.\deployInfra.ps1 -environment <env> -region <regionName> -subscriptionId <subscriptionId> -sqlAdminPassword <password>
+.\deployInfra.ps1 -environment <env> -region <regionName> -subscriptionId <subscriptionId> -sqlAdminPassword <password> -alwaysOn $False
 
 i.e.
 
-.\deployInfra.ps1 -environment jb -region westus2 -subscriptionId <your subscription Id> -sqlAdminPassword "TestP$$wrd1"
+.\deployInfra.ps1 -environment jb -region westus2 -subscriptionId <your subscription Id> -sqlAdminPassword "TestP$$wrd1" -alwaysOn $False
 
 ```
 where:

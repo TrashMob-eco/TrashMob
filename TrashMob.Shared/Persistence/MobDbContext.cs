@@ -902,6 +902,8 @@
 
                 entity.Property(e => e.Notes).HasMaxLength(2048);
 
+                entity.Property(e => e.Name).HasMaxLength(50);
+
                 entity.Property(e => e.Region)
                     .IsRequired()
                     .HasMaxLength(256);
