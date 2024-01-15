@@ -17,6 +17,7 @@
             // Migrated Managers
             services.AddScoped<IKeyedManager<ContactRequest>, ContactRequestManager>();
             services.AddScoped<IBaseManager<EventAttendee>, EventAttendeeManager>();
+            services.AddScoped<IKeyedManager<EventAttendeeRoute>, EventAttendeeRouteManager>();
             services.AddScoped<IKeyedManager<Event>, EventManager>();
             services.AddScoped<ILookupManager<EventPartnerLocationServiceStatus>, LookupManager<EventPartnerLocationServiceStatus>>();
             services.AddScoped<IBaseManager<EventPartnerLocationService>, EventPartnerLocationServiceManager>();
@@ -81,6 +82,7 @@
             services.AddScoped<IKeyedRepository<ContactRequest>, KeyedRepository<ContactRequest>>();
             services.AddScoped<IKeyedRepository<Event>, KeyedRepository<Event>>();
             services.AddScoped<IBaseRepository<EventAttendee>, BaseRepository<EventAttendee>>();
+            services.AddScoped<IKeyedRepository<EventAttendeeRoute>, KeyedRepository<EventAttendeeRoute>>();
             services.AddScoped<IBaseRepository<EventPartnerLocationService>, BaseRepository<EventPartnerLocationService>>();
             services.AddScoped<ILookupRepository<EventPartnerLocationServiceStatus>, LookupRepository<EventPartnerLocationServiceStatus>>();
             services.AddScoped<ILookupRepository<EventStatus>, LookupRepository<EventStatus>>();

@@ -13,7 +13,7 @@
 
         public MobDbContext(IConfiguration configuration)
         {
-            this.configuration = configuration;
+            this.configuration = configuration;            
         }
 
         public virtual DbSet<ContactRequest> ContactRequests { get; set; }
@@ -21,6 +21,8 @@
         public virtual DbSet<EventPartnerLocationService> EventPartnerLocationServices { get; set; }
 
         public virtual DbSet<EventAttendee> EventAttendees { get; set; }
+
+        public virtual DbSet<EventAttendeeRoute> EventAttendeeRoutes { get; set; }
 
         public virtual DbSet<Event> Events { get; set; }
 
@@ -82,7 +84,7 @@
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"]);
+            optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"], x => x.UseNetTopologySuite());
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -95,7 +97,7 @@
                 entity.Property(e => e.Name).HasMaxLength(64);
 
                 entity.Property(e => e.Email).HasMaxLength(64);
-
+                 
                 entity.Property(e => e.Message).HasMaxLength(2048);
 
                 entity.HasOne(d => d.CreatedByUser)
@@ -307,6 +309,41 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EventAttendees_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<EventAttendeeRoute>(entity =>
+            {
+                entity.HasKey(e => new { e.Id });
+
+                entity.Property(e => e.EventId)
+                    .IsRequired();
+
+                entity.Property(e => e.UserId)
+                    .IsRequired();
+
+                entity.HasOne(d => d.Event)
+                    .WithMany(d => d.EventAttendeeRoutes)
+                    .HasForeignKey(d => d.EventId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventAttendeeRoutes_Events");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(d => d.EventAttendeeRoutes)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventAttendeeRoutes_ApplicationUser");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.EventAttendeeRoutesCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventAttendeeRoutes_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.EventAttendeeRoutesUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventAttendeeRoutes_User_LastUpdatedBy");
             });
 
             modelBuilder.Entity<EventPartnerLocationService>(entity =>

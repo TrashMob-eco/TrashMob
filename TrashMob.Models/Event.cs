@@ -56,6 +56,8 @@ namespace TrashMob.Models
 
         public virtual ICollection<EventAttendee> EventAttendees {get;set;}
 
+        public virtual ICollection<EventAttendeeRoute> EventAttendeeRoutes { get; set; }
+
         public virtual ICollection<UserNotification> UserNotifications { get; set; }
 
         public virtual ICollection<PickupLocation> PickupLocations { get; set; }
