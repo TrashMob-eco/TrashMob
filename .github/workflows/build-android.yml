@@ -48,11 +48,6 @@ jobs:
           with:
             dotnet-version: ${{ inputs.dotnet_version }}
 
-        - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
-          uses: actions/setup-dotnet@v3
-          with:
-            dotnet-version: ${{ inputs.dotnet_version }}
-
         - name: Install MAUI Workload
           run: |
             dotnet nuget locals all --clear
@@ -86,6 +81,6 @@ jobs:
 
         - uses: actions/upload-artifact@v3.1.2
           with:
-            name: artifacts-android
+            name: artifacts-android-${{ inputs.build_number }}
             path: |
               TrashMobMobile\bin\${{ inputs.configuration }}\net8.0-android\publish\*.aab
