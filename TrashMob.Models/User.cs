@@ -156,5 +156,9 @@ namespace TrashMob.Models
         public virtual ICollection<PickupLocation> PickupLocationsCreated { get; set; }
 
         public virtual ICollection<PickupLocation> PickupLocationsUpdated { get; set; }
+        
+        public virtual ICollection<EventLitterReport> EventLitterReportsCreated { get; set; }
+
+        public virtual ICollection<EventLitterReport> EventLitterReportUpdated { get; set; }
     }
 }

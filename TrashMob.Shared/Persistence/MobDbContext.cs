@@ -81,6 +81,14 @@
         public virtual DbSet<UserNotificationType> UserNotificationTypes { get; set; }
 
         public virtual DbSet<Waiver> WaiverStatuses { get; set; }
+        
+        public virtual DbSet<LitterReportStatus> LitterReportStatuses { get; set; }
+
+        public virtual DbSet<EventLitterReport> EventLitterReports { get; set; }
+
+        public virtual DbSet<LitterImage> LitterImages { get; set; }
+        
+        public virtual DbSet<LitterReport> LitterReports { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -1123,6 +1131,88 @@
                 // Stick in a default value for the Waiver
                 entity.HasData(
                     new Waiver { Id = new Guid("4D222D04-AC1F-4A87-886D-FDB686F9F55C"), Name = "trashmob", IsWaiverEnabled = false, CreatedByUserId = Guid.Empty, LastUpdatedByUserId = Guid.Empty, CreatedDate = new DateTimeOffset(2022, 11, 24, 0, 0, 0, TimeSpan.Zero) });
+            });
+            
+            modelBuilder.Entity<LitterReportStatus>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Description);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasData(
+                    new LitterReportStatus { Id = (int)LitterReportStatusEnum.New, Name = "New", Description = "New created", DisplayOrder = 1, IsActive = true },
+                    new LitterReportStatus { Id = (int)LitterReportStatusEnum.Assigned, Name = "Assigned", Description = "Assigned To Event", DisplayOrder = 2, IsActive = true },
+                    new LitterReportStatus { Id = (int)LitterReportStatusEnum.Cleaned, Name = "Cleaned", Description = "Litter Cleaned", DisplayOrder = 3, IsActive = true },
+                    new LitterReportStatus { Id = (int)LitterReportStatusEnum.Cancelled, Name = "Cancelled", Description = "Report Cancelled", DisplayOrder = 4, IsActive = true });
+            });
+
+            modelBuilder.Entity<LitterImage>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.AzureBlobURL)
+                    .IsRequired();
+
+                entity.HasOne(d => d.LitterReport)
+                    .WithMany(p => p.LitterImages)
+                    .HasForeignKey(d => d.LitterReportId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_LitterImage_LitterReports");
+            });
+            
+            modelBuilder.Entity<LitterReport>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(64);
+
+                entity.Property(e => e.Description)
+                    .IsRequired()
+                    .HasMaxLength(2048);
+
+                entity.Property(e => e.CreatedByUserId);
+
+                entity.Property(e => e.LastUpdatedByUserId);
+
+                entity.HasOne(d => d.LitterReportStatus)
+                    .WithMany(p => p.LitterReports)
+                    .HasForeignKey(d => d.LitterReportStatusId)
+                    .HasConstraintName("FK_LitterReport_LitterReportStatuses");
+            });
+
+            modelBuilder.Entity<EventLitterReport>(entity =>
+            {
+                entity.HasKey(e => new { e.EventId, e.LitterReportId });
+
+                entity.HasOne(d => d.Event)
+                    .WithMany(p => p.EventLitterReports)
+                    .HasForeignKey(d => d.EventId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventLitterReport_Event");
+                    
+                entity.HasOne(d => d.LitterReport)
+                    .WithMany(p => p.EventLitterReports)
+                    .HasForeignKey(d => d.LitterReportId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventLitterReport_LitterReport");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.EventLitterReportsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventLitterReport_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.EventLitterReportUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventLitterReport_LastUpdatedBy");
             });
 
         }

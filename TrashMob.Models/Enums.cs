@@ -68,3 +68,11 @@
         Pickup = 3,
     }
 }
+
+    public enum LitterReportStatusEnum
+    {
+        New = 1,
+        Assigned = 2,
+        Cleaned = 3,
+        Cancelled = 4,
+    }
