@@ -1,0 +1,34 @@
+name: Publish Android app
+
+on:    
+    workflow_call:
+        inputs:
+            bundle_id:
+                required: true
+                type: string
+            build_number:
+                required: true
+                type: string
+        secrets:
+            GCP_SERVICE_ACCOUNT:
+                required: true
+
+jobs:
+    deploy-android:
+        name: Deploy Android to Google Play
+        runs-on: ubuntu-latest
+        environment: production
+        steps:
+            - name: Download artifact
+              uses: actions/download-artifact@v2
+              with:
+                    name: artifacts-android-${{ inputs.build_number }}
+
+            - name: Upload signed AAB
+              uses: r0adkll/upload-google-play@v1
+              with:
+                    serviceAccountJsonPlainText: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+                    packageName: ${{ inputs.bundle_id }}
+                    releaseFiles: ./*Signed.aab
+                    track: internal
+                    status: completed
