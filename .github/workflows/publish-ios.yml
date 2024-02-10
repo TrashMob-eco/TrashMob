@@ -1,4 +1,4 @@
-name: Pulish iOS app
+name: Publish iOS app
 
 on:
     workflow_call:

@@ -1,6 +1,6 @@
-name: Pulish Android app
+name: Publish Android app
 
-on:
+on:    
     workflow_call:
         inputs:
             bundle_id:
