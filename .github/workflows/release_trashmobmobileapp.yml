@@ -7,16 +7,16 @@ on:
   push:
     branches:
       - release
-    paths: 
+    paths:
       - '.github/**'
       - 'TrashMob.Models/**'
-      - 'TrashMobMobileApp/**'
+      - 'TrashMobMobile/**'
 
   workflow_dispatch:
 
 env:
-  DOTNET_VERSION: '7.0.x'  # set this to the dotnet version to use
-  DOTNET_VERSION2: '7.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION: '8.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION2: '8.0.x'  # set this to the dotnet version to use
   CONFIGURATION: Release      # Values: Debug, Release
   ENVIRONMENT: production         # Values: test, production
   IOS_BUNDLE_ID: 'eco.trashmob'   # Values: 'eco.trashmobdev.trashmobmobile', 'eco.trashmob'
@@ -24,138 +24,102 @@ env:
 
 
 jobs:
-  buildAndroidApp:
-    runs-on: windows-latest
-    environment: production
-
+  generate-build-number:
+    runs-on: ubuntu-latest
+    outputs:
+      buildNumber: ${{ steps.set_build_number.outputs.buildNumber }}
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Generate build number
+        id: set_build_number
+        run: |
+          commitHash=$(git rev-parse HEAD)
+          hexBuildNumber=${commitHash: -8}
 
-    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+          # Convert hexadecimal to uppercase
+          hexBuildNumber=$(echo "$hexBuildNumber" | tr '[:lower:]' '[:upper:]')
 
-    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION2 }}
+          # Convert from hexadecimal to decimal
+          buildNumber=$(echo "ibase=16; $hexBuildNumber" | bc)
+          echo "Decimal Build Number based on Commit ID: $buildNumber"
 
-    - name: Install MAUI Workload
-      run: |
-        dotnet nuget locals all --clear
-        dotnet workload install maui --ignore-failed-sources
-        dotnet workload install android ios maccatalyst tvos macos maui wasm-tools --source https://api.nuget.org/v3/index.json
+          echo "buildNumber=$buildNumber" >> $GITHUB_ENV
+          echo "buildNumber=$buildNumber" >> $GITHUB_OUTPUT
 
-    - name: Restore Dependencies
-      run: | 
-        dotnet restore TrashMobMobileApp.sln
-
-    - name: Rename AndroidManifest.xml for Release
-      run: |
-        rm ./TrashMobMobileApp/Platforms/Android/AndroidManifest.xml 
-        cp ./TrashMobMobileApp/Platforms/Android/AndroidManifest-Release.xml TrashMobMobileApp/Platforms/Android/AndroidManifest.xml 
-
-    - uses: managedcode/MAUIAppVersion@v1
-      with:
-        csproj: 'TrashMobMobileApp/TrashMobMobileApp.csproj'
-        version: ${{ github.run_number }} # to keep value unique
-        displayVersion: '1.0.${{ github.run_number }}'
-        printFile: true # optional
-
-    - name: Publish Mobile App
-      run: |
-        dotnet publish TrashMobMobileApp.sln -c:${{ env.CONFIGURATION }} -f:net7.0-android --no-restore /p:AndroidPackageFormat="aab"
-      
-    # Store Android Signing Keystore and password in Secrets using base64 encoding
-    # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil
-    # command line util to encode to base64 on windows
-    - name: Extract Android signing key from env
-      shell: bash
-      run: |
-        cd TrashMobMobileApp
-        mkdir android
-        echo "${{ secrets.ANDROID_KEYSTORE }}" > android/trashmobmobileapp.jks.base64
-        base64 -d android/trashmobmobileapp.jks.base64 > android/trashmobmobileapp.decrypted.jks
-    # check android SDK paths etc in installed VM : https://github.com/actions/virtual-environments#available-environments
-    - name: Sign dev build
-      shell: bash
-      run: |
-        cd TrashMobMobileApp
-        jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -signedjar bin/${{ env.CONFIGURATION }}/net7.0-android/publish/eco.trashmob.trashmobmobileapp-Signed.aab bin/${{ env.CONFIGURATION }}/net7.0-android/publish/eco.trashmob.trashmobmobileapp.aab key
-
-    - uses: actions/upload-artifact@v3.1.2
-      with:
-        name: artifacts-android
-        path: |
-          TrashMobMobileApp\bin\${{ env.CONFIGURATION }}\net7.0-android\publish\*.aab
-
-  buildiOSApp:
-    runs-on: macos-13
-    environment: production
-    name: iOS Build
-
+  exposeEnvironmentVariables:
+    runs-on: ubuntu-latest
+    name: Expose environment variables
+    outputs:
+      environment: ${{ steps.expose_environment_variables.outputs.environment }}
+      configuration: ${{ steps.expose_environment_variables.outputs.configuration }}
+      bundle_id: ${{ steps.expose_environment_variables.outputs.bundle_id }}
+      dotnet_version: ${{ steps.expose_environment_variables.outputs.dotnet_version }}
+      ios_provisioning_profile_type: ${{ steps.expose_environment_variables.outputs.ios_provisioning_profile_type }}
     steps:
-    - uses: actions/checkout@v3
+      - name: Set environment variable outputs
+        id: expose_environment_variables
+        run: |
+          echo "environment=${{ env.ENVIRONMENT }}" >> $GITHUB_ENV
+          echo "environment=${{ env.ENVIRONMENT }}" >> $GITHUB_OUTPUT
+          echo "configuration=${{ env.CONFIGURATION }}" >> $GITHUB_ENV
+          echo "configuration=${{ env.CONFIGURATION }}" >> $GITHUB_OUTPUT
+          echo "bundle_id=${{ env.IOS_BUNDLE_ID }}" >> $GITHUB_ENV
+          echo "bundle_id=${{ env.IOS_BUNDLE_ID }}" >> $GITHUB_OUTPUT
+          echo "dotnet_version=${{ env.DOTNET_VERSION }}" >> $GITHUB_ENV
+          echo "dotnet_version=${{ env.DOTNET_VERSION }}" >> $GITHUB_OUTPUT
+          echo "ios_provisioning_profile_type=${{ env.IOS_PROFILE_TYPE }}" >> $GITHUB_ENV
+          echo "ios_provisioning_profile_type=${{ env.IOS_PROFILE_TYPE }}" >> $GITHUB_OUTPUT
 
-    - uses: managedcode/MAUIAppVersion@v1
-      with:
-        csproj: 'TrashMobMobileApp/TrashMobMobileApp.csproj'
-        version: ${{ github.run_number }} # to keep value unique
-        displayVersion: '1.0.${{ github.run_number }}'
-        printFile: false # optional
 
-    - name: Update Build Number
-      run: |
-        /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ github.run_number }}" "TrashMobMobileApp/Platforms/iOS/Info.plist"
+  callBuildAndroid:
+    name: Call Android build workflow
+    needs: [generate-build-number, exposeEnvironmentVariables]
+    uses: ./.github/workflows/build-android.yml
+    with:
+      environment: ${{ needs.exposeEnvironmentVariables.outputs.environment }}
+      configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
+      build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
+      dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
+    secrets:
+      android_keystore: ${{ secrets.ANDROID_KEYSTORE }}
+      android_keystore_password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
 
-    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION2 }}
+  calliOSBuild:
+    name: Call iOS build workflow
+    needs: [generate-build-number, exposeEnvironmentVariables]
+    uses: ./.github/workflows/build-ios.yml
+    with:
+      environment: ${{ needs.exposeEnvironmentVariables.outputs.environment }}
+      configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
+      build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
+      bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
+      dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
+      ios_provisioning_profile_type: ${{ needs.exposeEnvironmentVariables.outputs.ios_provisioning_profile_type }}
+    secrets:
+      ios_signing_certificate: ${{ secrets.IOS_CERTIFICATES_P12 }}
+      ios_signing_certificate_password: ${{ secrets.IOS_CERTIFICATES_P12_PASSWORD }}
+      apple_issuer_id: ${{ secrets.APPSTORE_ISSUER_ID }}
+      apple_key_id: ${{ secrets.APPSTORE_KEY_ID }}
+      apple_key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
 
-    - name: Install MAUI Workload
-      run: |
-        dotnet nuget locals all --clear
-        dotnet workload install maui --ignore-failed-sources
-        dotnet workload install ios macos maui wasm-tools --source https://api.nuget.org/v3/index.json --ignore-failed-sources
+  callAndroidDeploy:
+    name: Call Android deploy workflow
+    needs: callBuildAndroid
+    uses: ./.github/workflows/publish-android.yml
+    with:
+      build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
+    secrets:
+      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
-    - name: Set XCode Version
-      if: runner.os == 'macOS'
-      shell: bash
-      run: |
-        sudo xcode-select -s "/Applications/Xcode_14.3.app"
-        echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_14.3.app" >> $GITHUB_ENV
-  
-    - name: Restore Dependencies
-      run: | 
-        dotnet restore TrashMobMobileApp.sln
-
-    - name: Import Code-Signing Certificates
-      uses: Apple-Actions/import-codesign-certs@v1
-      with:
-        p12-file-base64: ${{ secrets.IOS_CERTIFICATES_P12 }}
-        p12-password: ${{ secrets.IOS_CERTIFICATES_P12_PASSWORD }}
-
-    - name: Download Apple Provisioning Profiles
-      uses: Apple-Actions/download-provisioning-profiles@v1
-      with:
-        bundle-id: ${{ env.IOS_BUNDLE_ID }}
-        profile-type: ${{ env.IOS_PROFILE_TYPE }}
-        issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
-        api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
-        api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
-
-    - name: Build MAUI iOS
-      run: dotnet publish TrashMobMobileApp.sln -c ${{ env.CONFIGURATION }} -f net7.0-ios -r ios-arm64 --self-contained --no-restore /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=true
-
-    - name: Upload iOS Artifact
-      uses: actions/upload-artifact@v3.1.2
-      with:
-        name: trashmobmobileapp-ios-${{ env.CONFIGURATION }}-build
-        path: trashmobmobileapp/bin/${{ env.CONFIGURATION }}/net7.0-ios/ios-arm64/publish//*.ipa
+  calliOSDeploy:
+    name: Call iOS deploy workflow
+    needs: calliOSBuild
+    uses: ./.github/workflows/publish-ios.yml
+    with:
+      build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
+    secrets:
+      APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+      APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+      APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}

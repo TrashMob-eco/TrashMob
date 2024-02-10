@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             x:Class="TrashMobMobile.Pages.EditEventPartnerLocationServicesPage">
+    <ScrollView>
+        <FlexLayout Direction="Column"
+                JustifyContent="SpaceAround">
+            <Label 
+            Text="Manage Event Partner Location Services"
+            FontSize="Large"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
+            <Label 
+            Text="Available Services"
+            FontSize="Large"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+            <CollectionView x:Name="PartnerLocationServices" 
+                            ItemsSource="{Binding EventPartnerLocationServices}" 
+                            SelectionMode="None" >
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border StrokeThickness="1">
+                            <Grid WidthRequest = "400"
+                                  ColumnDefinitions="1*, 1*, 1*, 1*, 1*"
+                                  RowDefinitions="Auto"
+                                  x:Name="EventItem">
+
+                                <Label Text="{Binding PartnerLocationName}" Grid.Column="0" />
+                                <Label Text="{Binding ServiceName}" Grid.Column="1" />
+                                <Label Text="{Binding ServiceStatus}" Grid.Column="2" />
+                                <Label Text="{Binding Notes}" Grid.Column="3" />
+                                <Button Text="Request Service" Command="{Binding RequestServiceCommand}" IsEnabled="{Binding CanRequestService}" IsVisible="{Binding CanRequestService}"  Grid.Column="4" />
+                                <Button Text="Cancel Service Request" Command="{Binding UnrequestServiceCommand}" IsEnabled="{Binding CanUnrequestService}" IsVisible="{Binding CanUnrequestService}" Grid.Column="4" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </FlexLayout>
+    </ScrollView>
+</ContentPage>

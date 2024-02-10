@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             x:Class="TrashMobMobile.Pages.SetUserLocationPreferencePage">
+    <FlexLayout Direction="Column"
+                JustifyContent="SpaceAround">
+        <Label 
+            Text="Set Your Location!"
+            FontSize="Large"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
+        <Label 
+            Text="Click on the map to set your location."
+            FontSize="Micro"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+        <maps:Map x:Name="userLocationMap" 
+                  ItemsSource="{Binding Addresses}" 
+                  IsShowingUser="True" 
+                  HeightRequest="300" 
+                  IsScrollEnabled="True"
+                  MapClicked="OnMapClicked">
+            <maps:Map.ItemTemplate>
+                <DataTemplate>
+                    <maps:Pin Location="{Binding Location}"
+                                  Address="{Binding StreetAddress}"
+                                  Label="Your Preferred Location" />
+                </DataTemplate>
+            </maps:Map.ItemTemplate>
+        </maps:Map>
+
+        <Label 
+            Text="Max Travel Distance"
+            FontSize="Small"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+        <Entry Text="{Binding TravelDistance}"
+               Keyboard="Numeric"
+            FontSize="Small"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+        <Label 
+            Text="Units"
+            FontSize="Small"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+        <Picker SelectedItem="{Binding Units}">
+            <Picker.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Kilometers</x:String>
+                    <x:String>Miles</x:String>
+                </x:Array>
+            </Picker.ItemsSource>
+        </Picker>
+        <Label Text="City" />
+        <Label Text="{Binding Address.City }" />
+        <Label Text="Region" />
+        <Label Text="{Binding Address.Region }" />
+        <Label Text="Country" />
+        <Label Text="{Binding Address.Country }" />
+        <Label Text="Postal Code" />
+        <Label Text="{Binding Address.PostalCode }" />
+
+        <Button Text="Submit" Command="{Binding UpdateLocationCommand}" />
+        
+    </FlexLayout>
+</ContentPage>

@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:sensors="clr-namespace:Microsoft.Maui.Devices.Sensors;assembly=Microsoft.Maui.Essentials"
+             x:Class="TrashMobMobile.MainPage">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30,0"
+            Spacing="25">
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+            
+            <Grid RowDefinitions = "1*, 1*" ColumnDefinitions="1*, 1*, 1*, 1*" MaximumWidthRequest="400" >
+                <Label Grid.Row="0" Grid.Column="0" Text="Events" />
+                <Label Grid.Row="1" Grid.Column="0" Text="{ Binding StatisticsViewModel.TotalEvents }" />
+                <Label Grid.Row="0" Grid.Column="1" Text="Attendees" />
+                <Label Grid.Row="1" Grid.Column="1" Text="{ Binding StatisticsViewModel.TotalAttendees }" />
+                <Label Grid.Row="0" Grid.Column="2" Text="Bags" />
+                <Label Grid.Row="1" Grid.Column="2" Text="{ Binding StatisticsViewModel.TotalBags }" />
+                <Label Grid.Row="0" Grid.Column="3" Text="Hours" />
+                <Label Grid.Row="1" Grid.Column="3" Text="{ Binding StatisticsViewModel.TotalHours }" />
+            </Grid>
+
+            <maps:Map x:Name="upcomingEventsMap"
+                      IsShowingUser="True"
+                      ItemsSource="{Binding UpcomingEvents}"
+                      HeightRequest="300"
+                      IsScrollEnabled="True">
+                <maps:Map.ItemTemplate>
+                    <DataTemplate>
+                        <maps:Pin Location="{Binding Address.Location}"
+                                  Address="{Binding Address.StreetAddress}"
+                                  Label="{Binding Name}" 
+                                  AutomationId="{Binding Id}"
+                                  InfoWindowClicked="Pin_InfoWindowClicked" />
+                    </DataTemplate>
+                </maps:Map.ItemTemplate>
+            </maps:Map>
+
+            <CollectionView x:Name="EventsCollection" 
+                            ItemsSource="{Binding UpcomingEvents}" 
+                            SelectedItem="{Binding SelectedEvent}" 
+                            SelectionMode="Single" >
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border StrokeThickness="1">
+                            <Grid WidthRequest = "400"
+                                  ColumnDefinitions="1*, 1*, 1*, 1*"
+                                  RowDefinitions="Auto"
+                                  x:Name="EventItem">
+
+                                <Label Text="{Binding Name}" Grid.Column="0" />
+                                <Label Text="{Binding DisplayDate}" Grid.Column="1" />
+                                <Label Text="{Binding Address.City}" Grid.Column="2" />
+                                <Label Text="{Binding UserRoleForEvent}" Grid.Column="3" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Button Text="Contact Us" Command="{Binding ContactUsCommand}" />
+            <Button Text="My Dashboard" Command="{Binding MyDashboardCommand}" />
+            <Button Text="Search Events" Command="{Binding SearchEventsCommand}" />
+            <Button Text="Create an Event" Command="{Binding CreateEventCommand}" />
+            <Button Text="Submit a Litter Report" Command="{Binding SubmitLitterReportCommand}" />
+            <Button Text="Search Litter Reports" Command="{Binding SearchLitterReportsCommand}" />
+            <Button Text="Set My Location Preference" Command="{Binding SetLocationPreferenceCommand}" />
+            <Button Text="Log Out" Command="{Binding LogoutCommand}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
