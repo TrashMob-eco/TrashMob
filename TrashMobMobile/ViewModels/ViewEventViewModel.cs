@@ -65,7 +65,7 @@ public partial class ViewEventViewModel : BaseViewModel
         
         Events.Clear();
         Events.Add(EventViewModel);
-        var isAttending = await mobEventManager.IsUserAttendingAsync(eventId, App.CurrentUser.Id);
+        var isAttending = await mobEventManager.IsUserAttendingAsync(eventId, App.CurrentUser?.Id ?? Guid.Empty);
 
         EnableRegister = !mobEvent.IsEventLead() && !isAttending && mobEvent.AreNewRegistrationsAllowed();
         EnableUnregister = !mobEvent.IsEventLead() && isAttending && mobEvent.AreUnregistrationsAllowed();
@@ -77,12 +77,12 @@ public partial class ViewEventViewModel : BaseViewModel
 
     private async Task EditEvent()
     {
-        await Shell.Current.GoToAsync($"{nameof(EditEventPage)}?EventId={eventViewModel.Id}");
+        await Shell.Current.GoToAsync($"{nameof(EditEventPage)}?EventId={EventViewModel.Id}");
     }
 
     private async Task ViewEventSummary()
     {
-        await Shell.Current.GoToAsync($"{nameof(ViewEventSummaryPage)}?EventId={eventViewModel.Id}");
+        await Shell.Current.GoToAsync($"{nameof(ViewEventSummaryPage)}?EventId={EventViewModel.Id}");
     }
 
     private async Task Register()
@@ -97,7 +97,7 @@ public partial class ViewEventViewModel : BaseViewModel
         var eventAttendee = new EventAttendee()
         {
             EventId = EventViewModel.Id,
-            UserId = App.CurrentUser.Id
+            UserId = App.CurrentUser?.Id ?? Guid.Empty
         };
 
         await mobEventManager.AddEventAttendeeAsync(eventAttendee);
@@ -114,7 +114,7 @@ public partial class ViewEventViewModel : BaseViewModel
         var eventAttendee = new EventAttendee()
         {
             EventId = EventViewModel.Id,
-            UserId = App.CurrentUser.Id
+            UserId = App.CurrentUser?.Id ?? Guid.Empty
         };
 
         await mobEventManager.RemoveEventAttendeeAsync(eventAttendee);

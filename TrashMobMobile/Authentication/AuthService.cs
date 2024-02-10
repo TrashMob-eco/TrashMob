@@ -8,13 +8,13 @@ using TrashMobMobile.Data;
 
 public class AuthService : IAuthService
 {
-    private IPublicClientApplication _pca;
+    private IPublicClientApplication? pca;
 
-    private string _accessToken = string.Empty;
+    private string accessToken = string.Empty;
 
-    private DateTimeOffset _expiresOn;
+    private DateTimeOffset expiresOn;
     
-    private string _userEmail = string.Empty;
+    private string userEmail = string.Empty;
     private readonly IUserManager userManager;
 
     public AuthService(IUserManager userManager)
@@ -35,82 +35,28 @@ public class AuthService : IAuthService
 #endif
             .WithRedirectUri(AuthConstants.RedirectUri);
 
-        _pca = pcaBuilder.Build();
+        pca = pcaBuilder.Build();
     }
 
     public async Task<SignInResult> SignInAsync()
     {
-        if (_pca == null)
+        if (pca == null)
         {
             InitializeClient();
         }
 
-        _ = await _pca.GetAccountsAsync();
+        if (pca != null)
+        {
+            _ = await pca.GetAccountsAsync();
 
-        try
-        {
-            return await SignInSilentAsync();
-        }
-        catch (Exception ex)
-        {
-            // TODO: handle
-            Debug.WriteLine($"MSAL Silent Error: {ex.Message}");
-            return new SignInResult
+            try
             {
-                Succeeded = false
-            };
-        }
-    }
-
-    public async Task SignOutAsync()
-    {
-        if (_pca == null)
-        {
-            InitializeClient();
-        }
-
-        var accounts = await _pca.GetAccountsAsync();
-
-        try
-        {
-            foreach (var account in accounts)
-            {
-                await _pca.RemoveAsync(account);
+                return await SignInSilentAsync();
             }
-
-            App.CurrentUser = null;
-        }
-        catch (Exception ex)
-        {
-            // TODO: handle
-            Debug.WriteLine($"MSAL Silent Error: {ex.Message}");            
-        }
-    }
-
-    public async Task<SignInResult> SignInSilentAsync(bool AllowInteractive = true)
-    {
-        if (_pca == null)
-        {
-            InitializeClient();
-        }
-
-        var accounts = await _pca.GetAccountsAsync();
-        AuthenticationResult result;
-
-        try
-        {
-            result = await _pca
-                    .AcquireTokenSilent(AuthConstants.Scopes, accounts.FirstOrDefault())
-                    .ExecuteAsync();
-        }
-        catch (MsalUiRequiredException)
-        {
-            if (AllowInteractive)
+            catch (Exception ex)
             {
-                return await SignInInteractive();
-            }
-            else
-            {
+                // TODO: handle
+                Debug.WriteLine($"MSAL Silent Error: {ex.Message}");
                 return new SignInResult
                 {
                     Succeeded = false
@@ -118,14 +64,82 @@ public class AuthService : IAuthService
             }
         }
 
-        if (result != null && !string.IsNullOrWhiteSpace(result.AccessToken))
+        return new SignInResult
         {
-            await SetAuthenticated(result);
+            Succeeded = false
+        };
+    }
 
-            return new SignInResult
+    public async Task SignOutAsync()
+    {
+        if (pca == null)
+        {
+            InitializeClient();
+        }
+
+        if (pca != null)
+        {
+            var accounts = await pca.GetAccountsAsync();
+
+            try
             {
-                Succeeded = true
-            };
+                foreach (var account in accounts)
+                {
+                    await pca.RemoveAsync(account);
+                }
+
+                App.CurrentUser = null;
+            }
+            catch (Exception ex)
+            {
+                // TODO: handle
+                Debug.WriteLine($"MSAL Silent Error: {ex.Message}");
+            }
+        }
+    }
+
+    public async Task<SignInResult> SignInSilentAsync(bool AllowInteractive = true)
+    {
+        if (pca == null)
+        {
+            InitializeClient();
+        }
+
+        if (pca != null)
+        {
+            var accounts = await pca.GetAccountsAsync();
+            AuthenticationResult result;
+
+            try
+            {
+                result = await pca
+                        .AcquireTokenSilent(AuthConstants.Scopes, accounts.FirstOrDefault())
+                        .ExecuteAsync();
+            }
+            catch (MsalUiRequiredException)
+            {
+                if (AllowInteractive)
+                {
+                    return await SignInInteractive();
+                }
+                else
+                {
+                    return new SignInResult
+                    {
+                        Succeeded = false
+                    };
+                }
+            }
+
+            if (result != null && !string.IsNullOrWhiteSpace(result.AccessToken))
+            {
+                await SetAuthenticated(result);
+
+                return new SignInResult
+                {
+                    Succeeded = true
+                };
+            }
         }
 
         return new SignInResult
@@ -136,23 +150,26 @@ public class AuthService : IAuthService
 
     private async Task<SignInResult> SignInInteractive()
     {
-        if (_pca == null)
+        if (pca == null)
         {
             InitializeClient();
         }
 
-        AuthenticationResult result = await _pca
-                .AcquireTokenInteractive(AuthConstants.Scopes)
-                .ExecuteAsync();
-
-        if (result != null && !string.IsNullOrWhiteSpace(result.AccessToken))
+        if (pca != null)
         {
-            await SetAuthenticated(result);
+            AuthenticationResult result = await pca
+                    .AcquireTokenInteractive(AuthConstants.Scopes)
+                    .ExecuteAsync();
 
-            return new SignInResult
+            if (result != null && !string.IsNullOrWhiteSpace(result.AccessToken))
             {
-                Succeeded = true
-            };
+                await SetAuthenticated(result);
+
+                return new SignInResult
+                {
+                    Succeeded = true
+                };
+            }
         }
 
         return new SignInResult
@@ -163,15 +180,15 @@ public class AuthService : IAuthService
 
     private async Task SetAuthenticated(AuthenticationResult result)
     {
-        _accessToken = result.AccessToken;
-        _expiresOn = result.ExpiresOn;
+        accessToken = result.AccessToken;
+        expiresOn = result.ExpiresOn;
 
         var emailClaim = result.ClaimsPrincipal.Claims.FirstOrDefault(c => c.Type == "email");
         var context = GetUserContext(result);
         
         if (emailClaim != null)
         {
-            _userEmail = emailClaim.Value;
+            userEmail = emailClaim.Value;
             var user = await userManager.GetUserByEmailAsync(context.EmailAddress, context);
 
             App.CurrentUser = user;
@@ -184,43 +201,48 @@ public class AuthService : IAuthService
     private bool IsTokenExpired()
     {
         var bufferTime = TimeSpan.FromMinutes(5);
-        return DateTimeOffset.UtcNow > _expiresOn - bufferTime;
+        return DateTimeOffset.UtcNow > expiresOn - bufferTime;
     }
     
     public async Task<string> GetAccessTokenAsync()
     {
-        if (!string.IsNullOrWhiteSpace(_accessToken) && !IsTokenExpired())
+        if (!string.IsNullOrWhiteSpace(accessToken) && !IsTokenExpired())
         {
-            return _accessToken;
+            return accessToken;
         }
-        
-        var accounts = await _pca.GetAccountsAsync();
-        
-        try
-        {
-            var result = await _pca
-                    .AcquireTokenSilent(AuthConstants.Scopes, accounts.FirstOrDefault())
-                    .ExecuteAsync();
-            
-            await SetAuthenticated(result);
 
-            return result.AccessToken;
-        }
-        catch (MsalUiRequiredException)
+        if (pca != null)
         {
-            // TODO: retry policies
-            return string.Empty;
+            var accounts = await pca.GetAccountsAsync();
+
+            try
+            {
+                var result = await pca
+                        .AcquireTokenSilent(AuthConstants.Scopes, accounts.FirstOrDefault())
+                        .ExecuteAsync();
+
+                await SetAuthenticated(result);
+
+                return result.AccessToken;
+            }
+            catch (MsalUiRequiredException)
+            {
+                // TODO: retry policies
+                return string.Empty;
+            }
         }
+
+        return string.Empty;
     }
 
     public string GetUserEmail()
     {
-        if (string.IsNullOrWhiteSpace(_userEmail))
+        if (string.IsNullOrWhiteSpace(userEmail))
         {
             throw new Exception("User is not authenticated");
         }
 
-        return _userEmail;
+        return userEmail;
     }
 
     private UserContext GetUserContext(AuthenticationResult ar)

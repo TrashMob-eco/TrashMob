@@ -70,20 +70,23 @@ public partial class UserLocationPreferenceViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        App.CurrentUser.City = Address.City;
-        App.CurrentUser.Country = Address.Country;
-        App.CurrentUser.Latitude = Address.Latitude;
-        App.CurrentUser.Longitude = Address.Longitude;
-        App.CurrentUser.Country = Address.Country;
-        App.CurrentUser.PostalCode = Address.PostalCode;
-        App.CurrentUser.TravelLimitForLocalEvents = TravelDistance;
-        App.CurrentUser.PrefersMetric = Units == "Kilometers";
+        if (App.CurrentUser != null)
+        {
+            App.CurrentUser.City = Address.City;
+            App.CurrentUser.Country = Address.Country;
+            App.CurrentUser.Latitude = Address.Latitude;
+            App.CurrentUser.Longitude = Address.Longitude;
+            App.CurrentUser.Country = Address.Country;
+            App.CurrentUser.PostalCode = Address.PostalCode;
+            App.CurrentUser.TravelLimitForLocalEvents = TravelDistance;
+            App.CurrentUser.PrefersMetric = Units == "Kilometers";
 
-        await userManager.UpdateUserAsync(App.CurrentUser);
+            await userManager.UpdateUserAsync(App.CurrentUser);
 
-        IsBusy = false;
+            IsBusy = false;
 
-        await Notify("User location preference has been updated.");
+            await Notify("User location preference has been updated.");
+        }
 
         await Navigation.PopToRootAsync();
     }

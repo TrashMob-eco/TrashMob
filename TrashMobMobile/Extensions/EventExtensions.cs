@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobile.Extensions
 {
     using TrashMob.Models;
+    using TrashMobMobile.Config;
 
     public static class EventExtensions
     {
@@ -64,7 +65,7 @@
 
         public static bool IsEventLead(this Event mobEvent)
         {
-            var userId = App.CurrentUser.Id;
+            var userId = App.CurrentUser?.Id ?? Guid.Empty;
 
             return mobEvent.CreatedByUserId == userId;
         }
@@ -122,7 +123,7 @@
                 PostalCode = mobEvent.PostalCode,
                 Region = mobEvent.Region,
                 StreetAddress = mobEvent.StreetAddress,
-                Location = new Location(mobEvent.Latitude.Value, mobEvent.Longitude.Value)
+                Location = new Location(mobEvent.Latitude ?? AppConstants.DefaultLatitude, mobEvent.Longitude ?? AppConstants.DefaultLongitude)
             };
         }
     }

@@ -141,7 +141,7 @@ public partial class MainViewModel : BaseViewModel
         UpcomingEvents.Clear();
         var events = await mobEventManager.GetActiveEventsAsync();
 
-        var eventsUserIsAttending = await mobEventManager.GetEventsUserIsAttending(App.CurrentUser.Id);
+        var eventsUserIsAttending = await mobEventManager.GetEventsUserIsAttending(App.CurrentUser?.Id ?? Guid.Empty);
 
         foreach (var mobEvent in events)
         {

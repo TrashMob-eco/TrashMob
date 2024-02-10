@@ -51,16 +51,20 @@
             //string fairPlayTubeapiAddress = "REPLACE_WITH_NGROK_GENERATED_URL";
             var settings = configuration.GetSection("Settings").Get<Settings>();
             services.AddScoped<BaseAddressAuthorizationMessageHandler>();
-            services.AddHttpClient($"{ASSEMBLY_NAME}.ServerAPI", client =>
-                    client.BaseAddress = new Uri(settings.ApiBaseUrl))
-                                            .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>()
-                                            .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
-                                            .AddPolicyHandler(GetRetryPolicy());
 
-            services.AddHttpClient($"{ASSEMBLY_NAME}.ServerAPI.Anonymous", client =>
-                    client.BaseAddress = new Uri(settings.ApiBaseUrl))
-                                            .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
-                                            .AddPolicyHandler(GetRetryPolicy());
+            if (settings != null)
+            {
+                services.AddHttpClient($"{ASSEMBLY_NAME}.ServerAPI", client =>
+                        client.BaseAddress = new Uri(settings.ApiBaseUrl))
+                                                .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>()
+                                                .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
+                                                .AddPolicyHandler(GetRetryPolicy());
+
+                services.AddHttpClient($"{ASSEMBLY_NAME}.ServerAPI.Anonymous", client =>
+                        client.BaseAddress = new Uri(settings.ApiBaseUrl))
+                                                .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
+                                                .AddPolicyHandler(GetRetryPolicy());
+            }
 
             services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>()
                 .CreateClient($"{ASSEMBLY_NAME}.ServerAPI"));

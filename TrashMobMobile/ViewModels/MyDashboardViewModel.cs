@@ -64,8 +64,7 @@ public partial class MyDashboardViewModel : BaseViewModel
     private async Task RefreshStatistics()
     {
 
-        var stats = await statsRestService.GetUserStatsAsync(App.CurrentUser.Id);
-
+        var stats = await statsRestService.GetUserStatsAsync(App.CurrentUser?.Id ?? Guid.Empty);
         StatisticsViewModel = new StatisticsViewModel
         {
             TotalBags = stats.TotalBags,
@@ -79,7 +78,7 @@ public partial class MyDashboardViewModel : BaseViewModel
         CompletedEvents.Clear();
         UpcomingEvents.Clear();
 
-        var events = await mobEventManager.GetUserEventsAsync(App.CurrentUser.Id, false);
+        var events = await mobEventManager.GetUserEventsAsync(App.CurrentUser?.Id ?? Guid.Empty, false);
 
         foreach (var mobEvent in events.OrderByDescending(e => e.EventDate))
         {

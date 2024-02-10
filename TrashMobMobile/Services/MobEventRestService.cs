@@ -23,7 +23,7 @@
 
         public async Task<IEnumerable<Event>> GetActiveEventsAsync(CancellationToken cancellationToken = default)
         {
-            var mobEvents = new List<Event>();
+            IEnumerable<Event>? mobEvents = null;
 
             try
             {
@@ -31,7 +31,11 @@
                 var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
                 response.EnsureSuccessStatusCode();
                 string content = await response.Content.ReadAsStringAsync(cancellationToken);
-                mobEvents = JsonConvert.DeserializeObject<List<Event>>(content);
+
+                if (!string.IsNullOrEmpty(content))
+                {
+                    mobEvents = JsonConvert.DeserializeObject<IEnumerable<Event>>(content);
+                }
             }
             catch (Exception ex)
             {
@@ -39,12 +43,12 @@
                 throw;
             }
 
-            return mobEvents;
+            return mobEvents ?? new List<Event>();
         }
 
         public async Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly, CancellationToken cancellationToken = default)
         {
-            var mobEvents = new List<Event>();
+            IEnumerable<Event>? mobEvents = null;
 
             try
             {
@@ -59,10 +63,10 @@
                 Debug.WriteLine(@"\tERROR {0}", ex.Message);
             }
 
-            return mobEvents;
+            return mobEvents ?? new List<Event>();
         }
 
-        public async Task<Event> GetEventAsync(Guid eventId, CancellationToken cancellationToken = default)
+        public async Task<Event?> GetEventAsync(Guid eventId, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -79,7 +83,7 @@
             }
         }
 
-        public async Task<Event> UpdateEventAsync(Event mobEvent, CancellationToken cancellationToken = default)
+        public async Task<Event?> UpdateEventAsync(Event mobEvent, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -96,14 +100,12 @@
             }
         }
 
-        public async Task<Event> AddEventAsync(Event mobEvent, CancellationToken cancellationToken = default)
+        public async Task<Event?> AddEventAsync(Event mobEvent, CancellationToken cancellationToken = default)
         {
-            HttpResponseMessage response = null;
-
             try
             {
                 var content = JsonContent.Create(mobEvent, typeof(Event), null, SerializerOptions);
-                response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken);
+                var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken);
                 response.EnsureSuccessStatusCode();
                 string returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
                 return JsonConvert.DeserializeObject<Event>(returnContent);
@@ -117,8 +119,6 @@
 
         public async Task DeleteEventAsync(EventCancellationRequest cancelEvent, CancellationToken cancellationToken = default)
         {
-            HttpResponseMessage response = null;
-
             try
             {
                 var content = JsonContent.Create(cancelEvent, typeof(EventCancellationRequest), null, SerializerOptions);
@@ -129,7 +129,7 @@
                     RequestUri = AuthorizedHttpClient.BaseAddress,
                 };
 
-                response = await AuthorizedHttpClient.SendAsync(httpRequestMessage, cancellationToken);
+                var response = await AuthorizedHttpClient.SendAsync(httpRequestMessage, cancellationToken);
                 response.EnsureSuccessStatusCode();
             }
             catch (Exception ex)
@@ -141,7 +141,7 @@
 
         public async Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid userId, CancellationToken cancellationToken = default)
         {
-            var mobEvents = new List<Event>();
+            IEnumerable<Event>? mobEvents = null;
 
             try
             {
@@ -157,7 +157,7 @@
                 throw;
             }
 
-            return mobEvents;
+            return mobEvents ?? new List<Event>();
         }
     }
 }

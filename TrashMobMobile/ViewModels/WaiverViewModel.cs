@@ -23,18 +23,21 @@ public partial class WaiverViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        var envelopeRequest = new EnvelopeRequest();
-        envelopeRequest.SignerEmail = App.CurrentUser.Email;
-        envelopeRequest.CreatedByUserId = App.CurrentUser.Id;
-        envelopeRequest.SignerName = Name;
-        envelopeRequest.ReturnUrl = $"{App.CurrentSettings.SiteBaseUrl}/waiversreturn";
+        if (App.CurrentUser != null && App.CurrentSettings != null)
+        {
+            var envelopeRequest = new EnvelopeRequest();
+            envelopeRequest.SignerEmail = App.CurrentUser.Email;
+            envelopeRequest.CreatedByUserId = App.CurrentUser.Id;
+            envelopeRequest.SignerName = Name;
+            envelopeRequest.ReturnUrl = $"{App.CurrentSettings.SiteBaseUrl}/waiversreturn";
 
-        var response = await waiverManager.GetWaiverEnvelopeAsync(envelopeRequest);
+            var response = await waiverManager.GetWaiverEnvelopeAsync(envelopeRequest);
 
-        var uri = new Uri(response.RedirectUrl);
-        await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
+            var uri = new Uri(response.RedirectUrl);
+            await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
 
-        await Navigation.PopAsync();
+            await Navigation.PopAsync();
+        }
 
         IsBusy = false;
     }
