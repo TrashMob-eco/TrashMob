@@ -110,6 +110,7 @@ jobs:
     uses: ./.github/workflows/publish-android.yml
     with:
       build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
+      bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
     secrets:
       GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
