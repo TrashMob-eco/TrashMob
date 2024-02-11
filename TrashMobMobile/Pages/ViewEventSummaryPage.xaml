@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:ev="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:button="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"             
              x:Class="TrashMobMobile.Pages.ViewEventSummaryPage">
     <FlexLayout Direction="Column"
                 JustifyContent="SpaceAround">
@@ -39,8 +41,8 @@
                             <Label Text="{Binding Name}" Grid.Column="0" />
                             <Label Text="{Binding Address.StreetAddress}" Grid.Column="1" />
                             <Label Text="{Binding Address.City}" Grid.Column="2" />
-                            <Button Text="Edit Location" Grid.Column="3" Command="{Binding EditPickupLocationCommand}" IsEnabled="{Binding CanEditPickupLocation}" IsVisible="{Binding CanEditPickupLocation}" />
-                            <Button Text="Delete Location" Grid.Column="4" Command="{Binding DeletePickupLocationCommand}" IsEnabled="{Binding CanDeletePickupLocation}" IsVisible="{Binding CanDeletePickupLocation}" />
+                            <button:SfButton Text="Edit Location" Grid.Column="3" Command="{Binding EditPickupLocationCommand}" IsEnabled="{Binding CanEditPickupLocation}" IsVisible="{Binding CanEditPickupLocation}" />
+                            <button:SfButton Text="Delete Location" Grid.Column="4" Command="{Binding DeletePickupLocationCommand}" IsEnabled="{Binding CanDeletePickupLocation}" IsVisible="{Binding CanDeletePickupLocation}" />
                         </Grid>
                     </Border>
                 </DataTemplate>
@@ -62,8 +64,8 @@
             </maps:Map.ItemTemplate>
         </maps:Map>
 
-        <Button Text="Edit Event Summary" Command="{Binding EditEventSummaryCommand}" IsVisible="{Binding EnableEditEventSummary}"/>
-        <Button Text="Add Pickup Location" Command="{Binding AddPickupLocationCommand}" IsVisible="{Binding EnableAddPickupLocation}"/>
+        <button:SfButton Text="Edit Event Summary" Command="{Binding EditEventSummaryCommand}" IsVisible="{Binding EnableEditEventSummary}"/>
+        <button:SfButton Text="Add Pickup Location" Command="{Binding AddPickupLocationCommand}" IsVisible="{Binding EnableAddPickupLocation}"/>
 
     </FlexLayout>
 </ContentPage>

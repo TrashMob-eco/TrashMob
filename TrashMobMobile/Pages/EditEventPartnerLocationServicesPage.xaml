@@ -4,6 +4,8 @@
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:ev="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:button="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
              x:Class="TrashMobMobile.Pages.EditEventPartnerLocationServicesPage">
     <ScrollView>
         <FlexLayout Direction="Column"
@@ -39,8 +41,8 @@
                                 <Label Text="{Binding ServiceName}" Grid.Column="1" />
                                 <Label Text="{Binding ServiceStatus}" Grid.Column="2" />
                                 <Label Text="{Binding Notes}" Grid.Column="3" />
-                                <Button Text="Request Service" Command="{Binding RequestServiceCommand}" IsEnabled="{Binding CanRequestService}" IsVisible="{Binding CanRequestService}"  Grid.Column="4" />
-                                <Button Text="Cancel Service Request" Command="{Binding UnrequestServiceCommand}" IsEnabled="{Binding CanUnrequestService}" IsVisible="{Binding CanUnrequestService}" Grid.Column="4" />
+                                <button:SfButton Text="Request Service" Command="{Binding RequestServiceCommand}" IsEnabled="{Binding CanRequestService}" IsVisible="{Binding CanRequestService}"  Grid.Column="4" />
+                                <button:SfButton Text="Cancel Service Request" Command="{Binding UnrequestServiceCommand}" IsEnabled="{Binding CanUnrequestService}" IsVisible="{Binding CanUnrequestService}" Grid.Column="4" />
                             </Grid>
                         </Border>
                     </DataTemplate>

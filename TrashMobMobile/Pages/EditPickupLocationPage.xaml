@@ -4,6 +4,8 @@
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:ev="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:button="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"             
              x:Class="TrashMobMobile.Pages.EditPickupLocationPage">
     <ScrollView>
         <FlexLayout Direction="Column"
@@ -33,8 +35,8 @@
                 </Editor>
             </Grid>
 
-            <Button Text="Save Pickup Location" Command="{Binding SavePickupLocationCommand}">
-                <Button.Triggers>
+            <button:SfButton Text="Save Pickup Location" Command="{Binding SavePickupLocationCommand}">
+                <button:SfButton.Triggers>
                     <MultiTrigger TargetType="Button">
                         <MultiTrigger.Conditions>
                             <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
@@ -42,8 +44,8 @@
                         </MultiTrigger.Conditions>
                         <Setter Property="IsEnabled" Value="True" />
                     </MultiTrigger>
-                </Button.Triggers>
-            </Button>
+                </button:SfButton.Triggers>
+            </button:SfButton>
 
             <Label 
             FontSize="Micro"

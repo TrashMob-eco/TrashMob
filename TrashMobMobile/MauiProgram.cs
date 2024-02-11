@@ -5,21 +5,21 @@ using CommunityToolkit.Maui;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Controls.Hosting;
+using Syncfusion.Maui.Core.Hosting;
 using TrashMobMobile.Authentication;
 using TrashMobMobile.Config;
 using TrashMobMobile.Extensions;
-using Sentry;
-using Microsoft.Maui.Controls.Hosting;
-
 public static class MauiProgram
 {
 	public static MauiApp CreateMauiApp()
-	{
-		var builder = MauiApp.CreateBuilder();
+	{        
+        var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
             .UseMauiMaps()
 			.UseMauiCommunityToolkit()
+            .ConfigureSyncfusionCore()
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

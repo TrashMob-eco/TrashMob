@@ -2,6 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:ev="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:button="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
              x:Class="TrashMobMobile.Pages.SetUserLocationPreferencePage">
     <FlexLayout Direction="Column"
                 JustifyContent="SpaceAround">
@@ -74,7 +76,7 @@
         <Label Text="Postal Code" />
         <Label Text="{Binding Address.PostalCode }" />
 
-        <Button Text="Submit" Command="{Binding UpdateLocationCommand}" />
+        <button:SfButton Text="Submit" Command="{Binding UpdateLocationCommand}" />
         
     </FlexLayout>
 </ContentPage>

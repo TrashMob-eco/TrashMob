@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:ev="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:button="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
              x:Class="TrashMobMobile.Pages.AddPickupLocationPage">
     <ScrollView>
         <FlexLayout Direction="Column"
@@ -17,8 +19,8 @@
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
             <Label Text="To add a pickup location, click the Take Photo button. The location will be auto-determined from that." />
-            
-            <Button Text="Take Photo" Clicked="TakePhoto_Clicked" />
+
+            <button:SfButton Text="Take Photo" Clicked="TakePhoto_Clicked" />
             <Image x:Name="pickupPhoto" IsVisible="false" MaximumHeightRequest="200" />
             
             <Grid RowDefinitions = "1*, 1*" ColumnDefinitions="1*, 1*" MaximumWidthRequest="400" >
@@ -60,8 +62,8 @@
                 <Label Grid.Row="4" Grid.Column="1" Text="{Binding PickupLocationViewModel.Address.PostalCode }" />
             </Grid>
 
-            <Button Text="Save Pickup Location" Command="{Binding SavePickupLocationCommand}">
-                <Button.Triggers>
+            <button:SfButton Text="Save Pickup Location" Command="{Binding SavePickupLocationCommand}">
+                <button:SfButton.Triggers>
                     <MultiTrigger TargetType="Button">
                         <MultiTrigger.Conditions>
                             <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
@@ -69,8 +71,8 @@
                         </MultiTrigger.Conditions>
                         <Setter Property="IsEnabled" Value="True" />
                     </MultiTrigger>
-                </Button.Triggers>
-            </Button>
+                </button:SfButton.Triggers>
+            </button:SfButton>
             
             <Label 
             FontSize="Micro"

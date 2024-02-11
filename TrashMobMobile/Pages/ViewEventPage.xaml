@@ -2,6 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:ev="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:button="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
              x:Class="TrashMobMobile.Pages.ViewEventPage">
     <ScrollView>
         <VerticalStackLayout>
@@ -33,10 +35,10 @@
                 <Label Grid.Row="7" Grid.Column="1" Text="{Binding EventViewModel.IsEventPublic}" />
             </Grid>
 
-            <Button Text="Register" Command="{Binding RegisterCommand}" IsVisible="{Binding EnableRegister}" />
-            <Button Text="Unregister" Command="{Binding UnregisterCommand}" IsVisible="{Binding EnableUnregister}"/>
-            <Button Text="Edit Event" Command="{Binding EditEventCommand}" IsVisible="{Binding EnableEditEvent}"/>
-            <Button Text="View Event Summary" Command="{Binding ViewEventSummaryCommand}" IsVisible="{Binding EnableViewEventSummary}"/>
+            <button:SfButton Text="Register" Command="{Binding RegisterCommand}" IsVisible="{Binding EnableRegister}" />
+            <button:SfButton Text="Unregister" Command="{Binding UnregisterCommand}" IsVisible="{Binding EnableUnregister}"/>
+            <button:SfButton Text="Edit Event" Command="{Binding EditEventCommand}" IsVisible="{Binding EnableEditEvent}"/>
+            <button:SfButton Text="View Event Summary" Command="{Binding ViewEventSummaryCommand}" IsVisible="{Binding EnableViewEventSummary}"/>
 
             <maps:Map x:Name="eventLocationMap" ItemsSource="{Binding Events}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True">
                 <maps:Map.ItemTemplate>

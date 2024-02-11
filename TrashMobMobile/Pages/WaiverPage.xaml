@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:ev="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:button="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
              x:Class="TrashMobMobile.Pages.WaiverPage">
     <FlexLayout Direction="Column"
                 JustifyContent="SpaceAround">
@@ -54,16 +56,16 @@
             </Entry.Behaviors>
         </Entry>
 
-        <Button Text="Sign Waiver" Command="{Binding SignWaiverCommand}">
-            <Button.Triggers>
+        <button:SfButton Text="Sign Waiver" Command="{Binding SignWaiverCommand}">
+            <button:SfButton.Triggers>
                 <MultiTrigger TargetType="Button">
                     <MultiTrigger.Conditions>
                         <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
                     </MultiTrigger.Conditions>
                     <Setter Property="IsEnabled" Value="True" />
                 </MultiTrigger>
-            </Button.Triggers>
-        </Button>
+            </button:SfButton.Triggers>
+        </button:SfButton>
 
         <Label 
             FontSize="Micro"

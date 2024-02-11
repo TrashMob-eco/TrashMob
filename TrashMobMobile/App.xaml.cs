@@ -1,5 +1,6 @@
 ﻿namespace TrashMobMobile;
 
+using Syncfusion.Licensing;
 using TrashMob.Models;
 using TrashMobMobile.Config;
 
@@ -11,7 +12,10 @@ public partial class App : Application
 
     public App()
 	{
-		InitializeComponent();
+        // Todo: Move this key to a protected location.
+        SyncfusionLicenseProvider.RegisterLicense("");
+        
+        InitializeComponent();
 
         MainPage = new AppShell();
 	}
