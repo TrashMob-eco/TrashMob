@@ -1162,6 +1162,18 @@
                     .HasForeignKey(d => d.LitterReportId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_LitterImage_LitterReports");
+                    
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.LitterImagesCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_LitterImage_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.LitterImagesUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_LitterImage_LastUpdatedBy");
             });
             
             modelBuilder.Entity<LitterReport>(entity =>
@@ -1184,6 +1196,18 @@
                     .WithMany(p => p.LitterReports)
                     .HasForeignKey(d => d.LitterReportStatusId)
                     .HasConstraintName("FK_LitterReport_LitterReportStatuses");
+                    
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.LitterReportsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_LitterReport_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.LitterReportsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_LitterReport_LastUpdatedBy");
             });
 
             modelBuilder.Entity<EventLitterReport>(entity =>
@@ -1209,7 +1233,7 @@
                     .HasConstraintName("FK_EventLitterReport_User_CreatedBy");
 
                 entity.HasOne(d => d.LastUpdatedByUser)
-                    .WithMany(p => p.EventLitterReportUpdated)
+                    .WithMany(p => p.EventLitterReportsUpdated)
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EventLitterReport_LastUpdatedBy");
