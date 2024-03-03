@@ -79,6 +79,7 @@ jobs:
       configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
       build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
+      bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
     secrets:
       android_keystore: ${{ secrets.ANDROID_KEYSTORE }}
       android_keystore_password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
