@@ -31,6 +31,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Generate build number
         id: set_build_number
         run: |
@@ -81,6 +82,7 @@ jobs:
       configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
       build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
+      bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
     secrets:
       android_keystore: ${{ secrets.ANDROID_KEYSTORE }}
       android_keystore_password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -109,8 +111,8 @@ jobs:
     needs: callBuildAndroid
     uses: ./.github/workflows/publish-android.yml
     with:
-      build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
-      bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
+      artifact_name: ${{ needs.callBuildAndroid.outputs.artifact_name }}
+      bundle_id: ${{ needs.callBuildAndroid.outputs.bundle_id }}
     secrets:
       GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
@@ -119,7 +121,7 @@ jobs:
     needs: calliOSBuild
     uses: ./.github/workflows/publish-ios.yml
     with:
-      build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
+      artifact_name: ${{ needs.calliOSBuild.outputs.artifact_name }}
     secrets:
       APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
       APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}

@@ -3,7 +3,7 @@ name: Publish iOS app
 on:
     workflow_call:
         inputs:
-            build_number:
+            artifact_name:
                 required: true
                 type: string
         secrets:
@@ -24,7 +24,7 @@ jobs:
             - name: Download artifact
               uses: actions/download-artifact@v2
               with:
-                    name: artifacts-ios-${{ inputs.build_number }}
+                    name: ${{ inputs.artifact_name }}
 
             - name: Get ipa filename
               run: echo "IPA_FILENAME=$(ls -R *.ipa)" > $GITHUB_ENV

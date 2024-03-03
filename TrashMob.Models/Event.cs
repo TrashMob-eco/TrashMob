@@ -61,5 +61,7 @@ namespace TrashMob.Models
         public virtual ICollection<UserNotification> UserNotifications { get; set; }
 
         public virtual ICollection<PickupLocation> PickupLocations { get; set; }
+        
+        public virtual ICollection<EventLitterReport> EventLitterReports { get; set; }
     }
 }

@@ -13,10 +13,10 @@ on:
 env:
   DOTNET_VERSION: '8.0.x'  # set this to the dotnet version to use
   DOTNET_VERSION2: '8.0.x'  # set this to the dotnet version to use
-  CONFIGURATION: Debug      # Values: Debug, Release
+  CONFIGURATION: Release      # Values: Debug, Release
   ENVIRONMENT: test         # Values: test, production
   IOS_BUNDLE_ID: 'eco.trashmobdev.trashmobmobile'   # Values: 'eco.trashmobdev.trashmobmobile', 'eco.trashmob'
-  IOS_PROFILE_TYPE: 'IOS_APP_DEVELOPMENT'           # Values: 'IOS_APP_DEVELOPMENT', 'IOS_APP_STORE'
+  IOS_PROFILE_TYPE: 'IOS_APP_STORE'           # Values: 'IOS_APP_DEVELOPMENT', 'IOS_APP_STORE'
 
 jobs:
   generate-build-number:
@@ -76,6 +76,7 @@ jobs:
       configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
       build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
+      bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
     secrets:
       android_keystore: ${{ secrets.ANDROID_KEYSTORE }}
       android_keystore_password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -98,3 +99,24 @@ jobs:
       apple_issuer_id: ${{ secrets.APPSTORE_ISSUER_ID }}
       apple_key_id: ${{ secrets.APPSTORE_KEY_ID }}
       apple_key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+
+  callAndroidDeploy:
+    name: Call Android deploy workflow
+    needs: callBuildAndroid
+    uses: ./.github/workflows/publish-android.yml
+    with:
+      artifact_name: ${{ needs.callBuildAndroid.outputs.artifact_name }}
+      bundle_id: ${{ needs.callBuildAndroid.outputs.bundle_id }}
+    secrets:
+      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+  calliOSDeploy:
+    name: Call iOS deploy workflow
+    needs: calliOSBuild
+    uses: ./.github/workflows/publish-ios.yml
+    with:
+      artifact_name: ${{ needs.calliOSBuild.outputs.artifact_name }}
+    secrets:
+      APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+      APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+      APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}

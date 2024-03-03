@@ -13,7 +13,7 @@ using TrashMob.Shared.Persistence;
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    [Migration("20240114212159_EventAttendeeRoutes")]
+    [Migration("20240229030528_EventAttendeeRoutes")]
     partial class EventAttendeeRoutes
     {
         /// <inheritdoc />
@@ -1478,6 +1478,10 @@ namespace TrashMob.Migrations
 
                     b.Property<double?>("Longitude")
                         .HasColumnType("float");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(2048)
