@@ -15,11 +15,19 @@ on:
             dotnet_version:
                 required: true
                 type: string
+            bundle_id:
+                required: true
+                type: string
         secrets:
             android_keystore:
                 required: true
             android_keystore_password:
                 required: true
+        outputs:
+            artifact_name:
+                value: artifacts-android-${{ inputs.build_number }}
+            bundle_id:
+                value: ${{ inputs.bundle_id }}
 
 jobs:
     build:
