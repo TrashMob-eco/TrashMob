@@ -18,7 +18,7 @@ env:
   CONFIGURATION: Debug      # Values: Debug, Release
   ENVIRONMENT: test         # Values: test, production
   IOS_BUNDLE_ID: 'eco.trashmobdev.trashmobmobile'   # Values: 'eco.trashmobdev.trashmobmobile', 'eco.trashmob'
-  IOS_PROFILE_TYPE: 'IOS_APP_DEVELOPMENT'           # Values: 'IOS_APP_DEVELOPMENT', 'IOS_APP_STORE'
+  IOS_PROFILE_TYPE: 'IOS_APP_STORE'           # Values: 'IOS_APP_DEVELOPMENT', 'IOS_APP_STORE'
 
 
 jobs:
