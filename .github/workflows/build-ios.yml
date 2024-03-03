@@ -70,17 +70,11 @@ jobs:
             sudo xcode-select -s "/Applications/Xcode_15.1.app"
             echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_15.1.app" >> $GITHUB_ENV
 
-        # - name: Import Code-Signing Certificates
-        #   uses: Apple-Actions/import-codesign-certs@v1
-        #   with:
-        #     p12-file-base64: ${{ secrets.ios_signing_certificate }}
-        #     p12-password: ${{ secrets.ios_signing_certificate_password }}
-
-        - name: Import Distribution Certificate
-          run: |
-            echo ${{ secrets.ios_signing_certificate }} | base64 --decode > DistributionCertificate.p12
-            security import DistributionCertificate.p12 -k ~/Library/Keychains/login.keychain -P ${{ secrets.ios_signing_certificate_password }}
-
+        - name: Import Code-Signing Certificates
+          uses: Apple-Actions/import-codesign-certs@v1
+          with:
+            p12-file-base64: ${{ secrets.ios_signing_certificate }}
+            p12-password: ${{ secrets.ios_signing_certificate_password }}
 
         - name: Download Apple Provisioning Profiles
           uses: Apple-Actions/download-provisioning-profiles@v1
