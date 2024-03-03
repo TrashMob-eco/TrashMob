@@ -20,6 +20,8 @@ on:
                 required: true
             android_keystore_password:
                 required: true
+            syncfusion_license:
+                required: true
 
 jobs:
     build:
@@ -42,6 +44,21 @@ jobs:
             $newContent = $content -replace '<ApplicationVersion>.*</ApplicationVersion>', "<ApplicationVersion>$buildNumber</ApplicationVersion>"
 
             Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
+
+        - name: Generate mobile constants file
+          run: |
+            $constants = @"""
+            namespace TrashMobMobile;
+
+            public static partial class Constants
+            {
+                public partial string GetSyncfusionLicenseKey()
+                {
+                    return "${{ secrets.syncfusion_license }}";
+                }
+            }@"""
+
+            Set-Content TrashMobMobile/Constants.secret.cs -Value $constants
 
         - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
           uses: actions/setup-dotnet@v3

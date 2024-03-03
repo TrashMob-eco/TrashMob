@@ -59,3 +59,4 @@ node_modules
 
 **/.idea
 /TrashMobMobile/TrashMobMobile.Android/TrashMobMobile.Android.iml
+**/*.secret.cs
