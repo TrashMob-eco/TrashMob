@@ -6,7 +6,7 @@ on:
             bundle_id:
                 required: true
                 type: string
-            build_number:
+            artifact_name:
                 required: true
                 type: string
         secrets:
@@ -22,7 +22,7 @@ jobs:
             - name: Download artifact
               uses: actions/download-artifact@v2
               with:
-                    name: artifacts-android-${{ inputs.build_number }}
+                    name: ${{ inputs.artifact_name }}
 
             - name: Upload signed AAB
               uses: r0adkll/upload-google-play@v1
