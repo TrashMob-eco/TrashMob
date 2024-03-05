@@ -47,6 +47,7 @@ public static class MauiProgram
         // Services
         builder.Services.AddSingleton<AuthHandler>();
         
+        // TODO: technical debt. Compiled config and secrets would be better. See: https://github.com/TrashMob-eco/TrashMob/issues/1291
 #if DEBUG
 		builder.Configuration.AddUserSecrets<App>();	
 #endif
