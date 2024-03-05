@@ -4,15 +4,19 @@
 name: TrashMobMobileApp - Prod
 
 on:
-  push:
-    branches:
-      - release
-    paths:
-      - '.github/**'
-      - 'TrashMob.Models/**'
-      - 'TrashMobMobile/**'
+  # push:
+  #   branches:
+  #     - release
+  #   paths:
+  #     - '.github/**'
+  #     - 'TrashMob.Models/**'
+  #     - 'TrashMobMobile/**'
 
   workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        required: true
 
 env:
   DOTNET_VERSION: '8.0.x'  # set this to the dotnet version to use
