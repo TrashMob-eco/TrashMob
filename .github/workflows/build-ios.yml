@@ -21,6 +21,7 @@ on:
             ios_provisioning_profile_type:
                 required: true
                 type: string
+
         secrets:
             ios_signing_certificate:
                 required: true
@@ -32,7 +33,7 @@ on:
                 required: true
             apple_key:
                 required: true
-            syncfusion_license:
+            appsettings:
                 required: true
 
 jobs:
@@ -50,20 +51,9 @@ jobs:
         - name: Update Bundle ID
           run: sed -i '' "s|<ApplicationId>.*</ApplicationId>|<ApplicationId>${{ inputs.bundle_id }}</ApplicationId>|g" TrashMobMobile/TrashMobMobile.csproj
 
-        - name: Generate mobile constants file
+        - name: Replace appSettings.json
           run: |
-            cat > TrashMobMobile/Constants.secret.cs <<EOF
-            namespace TrashMobMobile;
-        
-            public static partial class Constants
-            {
-                public partial string GetSyncfusionLicenseKey()
-                {
-                    return "${{ secrets.syncfusion_license }}";
-                }
-            }
-            EOF
-          shell: bash
+            echo "${{ secrets.appsettings }}" > TrashMobMobile/appSettings.json
 
         - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
           uses: actions/setup-dotnet@v3
