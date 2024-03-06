@@ -37,7 +37,7 @@
         <string>Auth</string>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>eco.trashmob.trashmobmobile://auth</string>
+          <string>eco.trashmob.trashmobmobile</string>
         </array>
       </dict>
     </array>

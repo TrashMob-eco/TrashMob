@@ -18,6 +18,9 @@ on:
             bundle_id:
                 required: true
                 type: string
+            version:
+                required: false
+                type: string
         secrets:
             android_keystore:
                 required: true
@@ -48,6 +51,15 @@ jobs:
             $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
 
             $newContent = $content -replace '<ApplicationVersion>.*</ApplicationVersion>', "<ApplicationVersion>$buildNumber</ApplicationVersion>"
+
+            Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
+
+        - name: Update version
+          if: inputs.version != null
+          run: |
+            $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
+
+            $newContent = $content -replace '<ApplicationDisplayVersion>.*</ApplicationDisplayVersion>', "<ApplicationDisplayVersion>${{ inputs.version }}</ApplicationDisplayVersion>"
 
             Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
 
