@@ -26,6 +26,8 @@ on:
                 required: true
             android_keystore_password:
                 required: true
+            appsettings:
+                required: true
         outputs:
             artifact_name:
                 value: artifacts-android-${{ inputs.build_number }}
@@ -54,6 +56,12 @@ jobs:
 
             Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
 
+        - name: Replace appsettings.json
+          run: |
+            $newContent = @"${{ secrets.appsettings }}"
+
+            Set-Content TrashMobMobile/appsettings.json -Value $newContent
+            
         - name: Update version
           if: inputs.version != null
           run: |

@@ -46,17 +46,12 @@ public static class MauiProgram
 
         // Services
         builder.Services.AddSingleton<AuthHandler>();
-
-        string strAppConfigStreamName;
+        
+        // TODO: technical debt. Compiled config and secrets would be better. See: https://github.com/TrashMob-eco/TrashMob/issues/1291
 #if DEBUG
-        strAppConfigStreamName = "TrashMobMobile.appSettings.Development.json";
-#else
-        strAppConfigStreamName = "TrashMobMobile.appSettings.json"; 
+		builder.Configuration.AddUserSecrets<App>();	
 #endif
-
-        var assembly = IntrospectionExtensions.GetTypeInfo(typeof(MauiProgram)).Assembly;
-        var stream = assembly.GetManifestResourceStream(strAppConfigStreamName);
-        builder.Configuration.AddJsonStream(stream);
+		builder.Configuration.AddJsonFile("appSettings.json", optional: false);
 
         builder.Services.AddHttpClient(AuthConstants.AUTHENTICATED_CLIENT, client =>
 		{

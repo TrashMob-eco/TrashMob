@@ -35,6 +35,8 @@ on:
                 required: true
             apple_key:
                 required: true
+            appsettings:
+                required: true
         outputs:
             artifact_name:
                 value: artifacts-ios-${{ inputs.build_number }}
@@ -58,6 +60,10 @@ jobs:
 
         - name: Update Bundle ID
           run: sed -i '' "s|<ApplicationId>.*</ApplicationId>|<ApplicationId>${{ inputs.bundle_id }}</ApplicationId>|g" TrashMobMobile/TrashMobMobile.csproj
+
+        - name: Replace appSettings.json
+          run: |
+            echo "${{ secrets.appsettings }}" > TrashMobMobile/appSettings.json
 
         - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
           uses: actions/setup-dotnet@v3
