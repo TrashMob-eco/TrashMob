@@ -83,6 +83,7 @@ jobs:
     secrets:
       android_keystore: ${{ secrets.ANDROID_KEYSTORE }}
       android_keystore_password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      appsettings: ${{ secrets.MOBILE_APPSETTINGS }}
 
 
   calliOSBuild:
@@ -102,3 +103,4 @@ jobs:
       apple_issuer_id: ${{ secrets.APPSTORE_ISSUER_ID }}
       apple_key_id: ${{ secrets.APPSTORE_KEY_ID }}
       apple_key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+      appsettings: ${{ secrets.MOBILE_APPSETTINGS }}
