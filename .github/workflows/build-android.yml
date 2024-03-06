@@ -58,9 +58,10 @@ jobs:
 
         - name: Replace appsettings.json
           run: |
-            $newContent = @"${{ secrets.appsettings }}"
-
-            Set-Content TrashMobMobile/appsettings.json -Value $newContent
+            $base64Content = "${{ secrets.appsettings }}"
+            $jsonContent = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($base64Content))
+            
+            Set-Content TrashMobMobile/appsettings.json -Value $jsonContent
             
         - name: Update version
           if: inputs.version != null
