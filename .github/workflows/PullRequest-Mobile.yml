@@ -15,10 +15,10 @@ on:
 env:
   DOTNET_VERSION: '8.0.x'   # set this to the dotnet version to use
   DOTNET_VERSION2: '8.0.x'  # set this to the dotnet version to use
-  CONFIGURATION: Debug      # Values: Debug, Release
+  CONFIGURATION: Release      # Values: Debug, Release
   ENVIRONMENT: test         # Values: test, production
   IOS_BUNDLE_ID: 'eco.trashmobdev.trashmobmobile'   # Values: 'eco.trashmobdev.trashmobmobile', 'eco.trashmob'
-  IOS_PROFILE_TYPE: 'IOS_APP_DEVELOPMENT'           # Values: 'IOS_APP_DEVELOPMENT', 'IOS_APP_STORE'
+  IOS_PROFILE_TYPE: 'IOS_APP_STORE'           # Values: 'IOS_APP_DEVELOPMENT', 'IOS_APP_STORE'
 
 
 jobs:
@@ -79,6 +79,7 @@ jobs:
       configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
       build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
+      bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
     secrets:
       android_keystore: ${{ secrets.ANDROID_KEYSTORE }}
       android_keystore_password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}

@@ -15,6 +15,12 @@ on:
             dotnet_version:
                 required: true
                 type: string
+            bundle_id:
+                required: true
+                type: string
+            version:
+                required: false
+                type: string
         secrets:
             android_keystore:
                 required: true
@@ -22,6 +28,11 @@ on:
                 required: true
             appsettings:
                 required: true
+        outputs:
+            artifact_name:
+                value: artifacts-android-${{ inputs.build_number }}
+            bundle_id:
+                value: ${{ inputs.bundle_id }}
 
 jobs:
     build:
@@ -50,6 +61,15 @@ jobs:
             $newContent = @"${{ secrets.appsettings }}"
 
             Set-Content TrashMobMobile/appsettings.json -Value $newContent
+            
+        - name: Update version
+          if: inputs.version != null
+          run: |
+            $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
+
+            $newContent = $content -replace '<ApplicationDisplayVersion>.*</ApplicationDisplayVersion>', "<ApplicationDisplayVersion>${{ inputs.version }}</ApplicationDisplayVersion>"
+
+            Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
 
         - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
           uses: actions/setup-dotnet@v3
