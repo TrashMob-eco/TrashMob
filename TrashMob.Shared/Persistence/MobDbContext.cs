@@ -1157,6 +1157,8 @@
                 entity.Property(e => e.AzureBlobURL)
                     .IsRequired();
 
+                entity.Property(e => e.IsCancelled).HasDefaultValue(false);
+
                 entity.HasOne(d => d.LitterReport)
                     .WithMany(p => p.LitterImages)
                     .HasForeignKey(d => d.LitterReportId)
