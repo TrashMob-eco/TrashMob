@@ -9,6 +9,7 @@
     using TrashMob.Shared.Managers.Partners;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Managers.IFTTT;
+    using TrashMob.Shared.Managers.LitterReport;
 
     public static class ServiceBuilder
     {
@@ -44,6 +45,8 @@
             services.AddScoped<IKeyedManager<NonEventUserNotification>, KeyedManager<NonEventUserNotification>>();
             services.AddScoped<IKeyedManager<User>, UserManager>();
             services.AddScoped<IKeyedManager<UserNotification>, UserNotificationManager>();
+            services.AddScoped<IKeyedManager<LitterReport>, LitterReportManager>();
+            services.AddScoped<IKeyedManager<LitterImage>, LitterImageManager>();
 
             // Intentional deviation due to unique methods
             services.AddScoped<IEventAttendeeManager, EventAttendeeManager>();
@@ -62,6 +65,8 @@
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<INonEventUserNotificationManager, NonEventUserNotificationManager>();
             services.AddScoped<IWaiverManager, WaiverManager>();
+            services.AddScoped<ILitterImageManager, LitterImageManager>();
+            services.AddScoped<ILitterReportManager, LitterReportManager>();
 
             // Non-patterned
             services.AddScoped<IActiveDirectoryManager, ActiveDirectoryManager>();
@@ -74,6 +79,7 @@
             services.AddScoped<INotificationManager, NotificationManager>();
             services.AddScoped<IQueriesManager, QueriesManager>();
             services.AddScoped<ITriggersManager, TriggersManager>();
+            services.AddScoped<IDbTransaction, DbTransaction>();
         }
 
         public static void AddRepositories(IServiceCollection services)
@@ -111,6 +117,8 @@
             services.AddScoped<IKeyedRepository<User>, KeyedRepository<User>>();
             services.AddScoped<IKeyedRepository<UserNotification>, KeyedRepository<UserNotification>>();
             services.AddScoped<IKeyedRepository<Waiver>, KeyedRepository<Waiver>>();
+            services.AddScoped<IKeyedRepository<LitterImage>, KeyedRepository<LitterImage>>();
+            services.AddScoped<IKeyedRepository<LitterReport>, KeyedRepository<LitterReport>>();
         }
     }
 }

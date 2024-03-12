@@ -1,8 +1,10 @@
 ﻿namespace TrashMob.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using TrashMob.Models;
     using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
@@ -34,6 +36,20 @@
             await imageManager.UploadImage(imageUpload);
 
             return Ok();
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteImage(Guid parentId, ImageTypeEnum imageType, CancellationToken cancellationToken)
+        {
+            var deleted = await imageManager.DeleteImage(parentId, imageType);
+            if(deleted)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest("The image is not deleted");
+            }
         }
     }
 }

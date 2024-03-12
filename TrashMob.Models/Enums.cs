@@ -66,6 +66,7 @@
         Before = 1,
         After = 2,
         Pickup = 3,
+        LitterImage = 4,
     }
     public enum LitterReportStatusEnum
     {
