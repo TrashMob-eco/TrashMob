@@ -24,6 +24,8 @@ namespace TrashMob.Models
 
         public double? Longitude { get; set; }
 
+        public bool IsCancelled { get; set; }
+
         public virtual LitterReport LitterReport { get; set; }
     }
 }
