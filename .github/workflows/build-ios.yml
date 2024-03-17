@@ -63,7 +63,7 @@ jobs:
 
         - name: Replace appSettings.json
           run: |
-            echo "${{ secrets.appsettings }}" > TrashMobMobile/appSettings.json
+            echo "${{ secrets.appsettings }}" > TrashMobMobile/Resources/Raw/appSettings.json
 
         - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
           uses: actions/setup-dotnet@v3
