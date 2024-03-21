@@ -1,55 +1,51 @@
-﻿namespace TrashMobMobile.Data
+﻿namespace TrashMobMobile.Data;
+
+using System;
+using System.Diagnostics;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
+using TrashMob.Models;
+
+public class EventAttendeeRestService : RestServiceBase, IEventAttendeeRestService
 {
-    using Microsoft.Extensions.Options;
-    using System;
-    using System.Diagnostics;
-    using System.Net.Http.Json;
-    using System.Threading.Tasks;
-    using TrashMob.Models;
-    using TrashMobMobile.Config;
+    protected override string Controller => "eventattendees";
 
-    public class EventAttendeeRestService : RestServiceBase, IEventAttendeeRestService
+    public EventAttendeeRestService()
     {
-        protected override string Controller => "eventattendees";
+    }
 
-        public EventAttendeeRestService(IOptions<Settings> settings)
-            : base(settings)
+    public async Task AddAttendeeAsync(EventAttendee eventAttendee, CancellationToken cancellationToken = default)
+    {
+        try
         {
+            var content = JsonContent.Create(eventAttendee, typeof(EventAttendee), null, SerializerOptions);
+            var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken);
+            response.EnsureSuccessStatusCode();
         }
-
-        public async Task AddAttendeeAsync(EventAttendee eventAttendee, CancellationToken cancellationToken = default)
+        catch (Exception ex)
         {
-            try
+            Debug.WriteLine(@"\tERROR {0}", ex.Message);
+            throw;
+        }
+    }
+
+    public async Task RemoveAttendeeAsync(EventAttendee eventAttendee, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var requestUri = string.Concat(Controller, $"/{eventAttendee.EventId}/{eventAttendee.UserId}");
+
+            using (var response = await AuthorizedHttpClient.DeleteAsync(requestUri, cancellationToken))
             {
-                var content = JsonContent.Create(eventAttendee, typeof(EventAttendee), null, SerializerOptions);
-                var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken);
                 response.EnsureSuccessStatusCode();
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(@"\tERROR {0}", ex.Message);
-                throw;
-            }
         }
-
-        public async Task RemoveAttendeeAsync(EventAttendee eventAttendee, CancellationToken cancellationToken = default)
+        catch (Exception ex)
         {
-            try
-            {
-                var requestUri = string.Concat(Controller, $"/{eventAttendee.EventId}/{eventAttendee.UserId}");
-
-                using (var response = await AuthorizedHttpClient.DeleteAsync(requestUri, cancellationToken))
-                {
-                    response.EnsureSuccessStatusCode();
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(@"\tERROR {0}", ex.Message);
-                throw;
-            }
-
-            return;
+            Debug.WriteLine(@"\tERROR {0}", ex.Message);
+            throw;
         }
+
+        return;
     }
 }

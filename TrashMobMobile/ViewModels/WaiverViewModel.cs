@@ -2,6 +2,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Windows.Input;
+using TrashMobMobile.Config;
 using TrashMobMobile.Data;
 using TrashMobMobile.Models;
 
@@ -27,7 +28,7 @@ public partial class WaiverViewModel : BaseViewModel
         envelopeRequest.SignerEmail = App.CurrentUser.Email;
         envelopeRequest.CreatedByUserId = App.CurrentUser.Id;
         envelopeRequest.SignerName = Name;
-        envelopeRequest.ReturnUrl = $"{App.CurrentSettings.SiteBaseUrl}/waiversreturn";
+        envelopeRequest.ReturnUrl = $"{Settings.SiteBaseUrl}/waiversreturn";
 
         var response = await waiverManager.GetWaiverEnvelopeAsync(envelopeRequest);
 

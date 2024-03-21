@@ -69,8 +69,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="appSettings.Development.json" />
-	  <None Remove="appSettings.json" />
+	  <EmbeddedResource Include="appSettings.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="appSettings.production.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -222,10 +226,6 @@
 	  <MauiXaml Update="Pages\WelcomePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Include="Resources\Raw\appSettings.json" />
 	</ItemGroup>
 
 </Project>

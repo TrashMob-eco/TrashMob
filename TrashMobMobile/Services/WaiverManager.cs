@@ -1,37 +1,33 @@
-﻿namespace TrashMobMobile.Data
+﻿namespace TrashMobMobile.Data;
+
+using System.Threading;
+using System.Threading.Tasks;
+using TrashMobMobile.Config;
+using TrashMobMobile.Extensions;
+using TrashMobMobile.Models;
+
+public class WaiverManager : IWaiverManager
 {
-    using Microsoft.Extensions.Options;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using TrashMobMobile.Config;
-    using TrashMobMobile.Extensions;
-    using TrashMobMobile.Models;
+    const string TrashMobWaiverName = "trashmob";
 
-    public class WaiverManager : IWaiverManager
+    private readonly IWaiverRestService waiverRestService;
+    private readonly IDocusignRestService docusignRestService;
+
+    public WaiverManager(IWaiverRestService service, IDocusignRestService docusignRestService)
     {
-        const string TrashMobWaiverName = "trashmob";
+        waiverRestService = service;
+        this.docusignRestService = docusignRestService;
+    }
 
-        private readonly IWaiverRestService waiverRestService;
-        private readonly IDocusignRestService docusignRestService;
-        private readonly IOptions<Settings> settings;
+    public Task<EnvelopeResponse> GetWaiverEnvelopeAsync(EnvelopeRequest envelopeRequest, CancellationToken cancellationToken = default)
+    {
+        return docusignRestService.GetWaiverEnvelopeAsync(envelopeRequest, cancellationToken);
+    }
 
-        public WaiverManager(IWaiverRestService service, IDocusignRestService docusignRestService, IOptions<Settings> settings)
-        {
-            waiverRestService = service;
-            this.docusignRestService = docusignRestService;
-            this.settings = settings;
-        }
-
-        public Task<EnvelopeResponse> GetWaiverEnvelopeAsync(EnvelopeRequest envelopeRequest, CancellationToken cancellationToken = default)
-        {
-            return docusignRestService.GetWaiverEnvelopeAsync(envelopeRequest, cancellationToken);
-        }
-
-        public async Task<bool> HasUserSignedTrashMobWaiverAsync(CancellationToken cancellationToken = default)
-        {
-            var waiver = await waiverRestService.GetWaiver(TrashMobWaiverName, cancellationToken);
-            return App.CurrentUser.HasUserSignedWaiver(waiver, settings.Value.CurrentTrashMobWaiverVersion);
-        }
+    public async Task<bool> HasUserSignedTrashMobWaiverAsync(CancellationToken cancellationToken = default)
+    {
+        var waiver = await waiverRestService.GetWaiver(TrashMobWaiverName, cancellationToken);
+        return App.CurrentUser.HasUserSignedWaiver(waiver, Settings.CurrentTrashMobWaiverVersion);
     }
 }
 

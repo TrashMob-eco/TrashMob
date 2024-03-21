@@ -1,38 +1,34 @@
-﻿namespace TrashMobMobile.Data
+﻿namespace TrashMobMobile.Data;
+
+using System;
+using System.Diagnostics;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
+using TrashMob.Models;
+
+public class ContactRequestRestService : RestServiceBase, IContactRequestRestService
 {
-    using Microsoft.Extensions.Options;
-    using System;
-    using System.Diagnostics;
-    using System.Net.Http.Json;
-    using System.Threading.Tasks;
-    using TrashMob.Models;
-    using TrashMobMobile.Config;
+    protected override string Controller => "contactrequest";
 
-    public class ContactRequestRestService : RestServiceBase, IContactRequestRestService
+    public ContactRequestRestService()
     {
-        protected override string Controller => "contactrequest";
+    }
 
-        public ContactRequestRestService(IOptions<Settings> settings) 
-            : base(settings)
+    public async Task AddContactRequest(ContactRequest contactRequest, CancellationToken cancellationToken = default)
+    {
+        try
         {
+            contactRequest.Id = Guid.NewGuid();
+            var content = JsonContent.Create(contactRequest, typeof(ContactRequest), null, SerializerOptions);
+
+            using (var response = await AnonymousHttpClient.PostAsync(Controller, content, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+            }
         }
-
-        public async Task AddContactRequest(ContactRequest contactRequest, CancellationToken cancellationToken = default)
+        catch (Exception ex)
         {
-            try
-            {
-                contactRequest.Id = Guid.NewGuid();
-                var content = JsonContent.Create(contactRequest, typeof(ContactRequest), null, SerializerOptions);
-
-                using (var response = await AnonymousHttpClient.PostAsync(Controller, content, cancellationToken))
-                {
-                    response.EnsureSuccessStatusCode();
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(@"\tERROR {0}", ex.Message);
-            }
+            Debug.WriteLine(@"\tERROR {0}", ex.Message);
         }
     }
 }
