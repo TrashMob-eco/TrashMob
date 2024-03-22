@@ -1,60 +1,56 @@
-﻿namespace TrashMobMobile.Data
+﻿namespace TrashMobMobile.Data;
+
+using Newtonsoft.Json;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using TrashMob.Models.Poco;
+
+public class StatsRestService : RestServiceBase, IStatsRestService
 {
-    using Microsoft.Extensions.Options;
-    using Newtonsoft.Json;
-    using System;
-    using System.Diagnostics;
-    using System.Threading.Tasks;
-    using TrashMob.Models.Poco;
-    using TrashMobMobile.Config;
+    protected override string Controller => "stats";
 
-    public class StatsRestService : RestServiceBase, IStatsRestService
+    public StatsRestService()
     {
-        protected override string Controller => "stats";
+    }
 
-        public StatsRestService(IOptions<Settings> settings) 
-            : base(settings)
+    public async Task<Stats> GetStatsAsync(CancellationToken cancellationToken = default)
+    {
+        try
         {
-        }
-
-        public async Task<Stats> GetStatsAsync(CancellationToken cancellationToken = default)
-        {
-            try
+            using (var response = await AnonymousHttpClient.GetAsync(Controller, cancellationToken))
             {
-                using (var response = await AnonymousHttpClient.GetAsync(Controller, cancellationToken))
-                {
-                    response.EnsureSuccessStatusCode();
-                    string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+                response.EnsureSuccessStatusCode();
+                string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                    return JsonConvert.DeserializeObject<Stats>(responseString);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(@"\tERROR {0}", ex.Message);
-                throw;
+                return JsonConvert.DeserializeObject<Stats>(responseString);
             }
         }
-
-        public async Task<Stats> GetUserStatsAsync(Guid userId, CancellationToken cancellationToken = default)
+        catch (Exception ex)
         {
-            try
-            {
-                var requestUri = Controller + "/" + userId;
+            Debug.WriteLine(@"\tERROR {0}", ex.Message);
+            throw;
+        }
+    }
 
-                using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
-                {
-                    response.EnsureSuccessStatusCode();
-                    string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+    public async Task<Stats> GetUserStatsAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var requestUri = Controller + "/" + userId;
 
-                    return JsonConvert.DeserializeObject<Stats>(responseString);
-                }
-            }
-            catch (Exception ex)
+            using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
             {
-                Debug.WriteLine(@"\tERROR {0}", ex.Message);
-                throw;
+                response.EnsureSuccessStatusCode();
+                string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                return JsonConvert.DeserializeObject<Stats>(responseString);
             }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(@"\tERROR {0}", ex.Message);
+            throw;
         }
     }
 }

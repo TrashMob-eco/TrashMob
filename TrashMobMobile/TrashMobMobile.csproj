@@ -69,11 +69,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="appSettings.Development.json" />
-	  <None Remove="appSettings.json" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="7.0.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
@@ -222,10 +217,6 @@
 	  <MauiXaml Update="Pages\WelcomePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Include="appSettings.json" />
 	</ItemGroup>
 
 </Project>

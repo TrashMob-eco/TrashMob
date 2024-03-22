@@ -46,19 +46,12 @@ public static class MauiProgram
 
         // Services
         builder.Services.AddSingleton<AuthHandler>();
-        
-        // TODO: technical debt. Compiled config and secrets would be better. See: https://github.com/TrashMob-eco/TrashMob/issues/1291
-#if DEBUG
-		builder.Configuration.AddUserSecrets<App>();	
-#endif
-		builder.Configuration.AddJsonFile("appSettings.json", optional: false);
 
         builder.Services.AddHttpClient(AuthConstants.AUTHENTICATED_CLIENT, client =>
 		{
 			client.BaseAddress = new Uri(AuthConstants.ApiBaseUri);
 		}).AddHttpMessageHandler<AuthHandler>();
 
-        builder.Services.Configure<Settings>(options => builder.Configuration.GetSection("Settings").Bind(options));
         builder.Services.AddTrashMobServices();
         builder.Services.AddRestClientServices(builder.Configuration);
 

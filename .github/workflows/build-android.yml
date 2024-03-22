@@ -56,13 +56,6 @@ jobs:
 
             Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
 
-        - name: Replace appsettings.json
-          run: |
-            $base64Content = "${{ secrets.appsettings }}"
-            $jsonContent = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($base64Content))
-            
-            Set-Content TrashMobMobile/appsettings.json -Value $jsonContent
-            
         - name: Update version
           if: inputs.version != null
           run: |
