@@ -56,6 +56,14 @@ jobs:
 
             Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
 
+        - name: Update Bundle ID
+          run: |
+            $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
+
+            $newContent = $content -replace '<ApplicationId>.*</ApplicationId>', "<ApplicationId>${{ inputs.bundle_id }}</ApplicationId>"
+
+            Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
+
         - name: Update version
           if: inputs.version != null
           run: |
