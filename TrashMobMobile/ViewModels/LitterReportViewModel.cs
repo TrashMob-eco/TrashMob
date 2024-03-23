@@ -7,6 +7,8 @@ public partial class LitterReportViewModel : ObservableObject
 {
     public LitterReportViewModel()
     {
+        Description = string.Empty;
+        Name = string.Empty;
     }
 
     [ObservableProperty]
@@ -19,7 +21,7 @@ public partial class LitterReportViewModel : ObservableObject
     string description;
 
     [ObservableProperty]
-    DateTimeOffset reportDate;
+    int litterReportStatusId;
 
-    public ObservableCollection<AddressViewModel> Addresses { get; set; } = new ObservableCollection<AddressViewModel>();
+    public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
 }

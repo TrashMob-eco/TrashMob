@@ -15,6 +15,7 @@ public partial class SearchEventsPage : ContentPage
         _viewModel.Notify = Notify;
         BindingContext = _viewModel;
     }
+
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);

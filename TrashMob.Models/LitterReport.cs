@@ -2,8 +2,6 @@
 
 namespace TrashMob.Models
 {
-    using System;
-
     public class LitterReport : KeyedModel
     {
         public LitterReport()
