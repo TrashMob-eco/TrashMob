@@ -122,7 +122,7 @@ jobs:
     uses: ./.github/workflows/publish-android.yml
     with:
       artifact_name: ${{ needs.callBuildAndroid.outputs.artifact_name }}
-      bundle_id: ${{ needs.callBuildAndroid.outputs.android_bundle_id }}
+      bundle_id: ${{ needs.callBuildAndroid.outputs.bundle_id }}
     secrets:
       GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
