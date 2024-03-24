@@ -1,41 +1,37 @@
-﻿namespace TrashMobMobile.Data
+﻿namespace TrashMobMobile.Data;
+
+using Newtonsoft.Json;
+using System;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
+using TrashMob.Models;
+
+public class WaiverRestService : RestServiceBase, IWaiverRestService
 {
-    using Microsoft.Extensions.Options;
-    using Newtonsoft.Json;
-    using System;
-    using System.Diagnostics;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using TrashMob.Models;
-    using TrashMobMobile.Config;
+    protected override string Controller => "waivers";
 
-    public class WaiverRestService : RestServiceBase, IWaiverRestService
+    public WaiverRestService()
     {
-        protected override string Controller => "waivers";
+    }
 
-        public WaiverRestService(IOptions<Settings> settings)
-            : base(settings)
+    public async Task<Waiver> GetWaiver(string waiverName, CancellationToken cancellationToken)
+    {
+        try
         {
+            var requestUri = Controller + "/" + waiverName;
+            using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+                string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                return JsonConvert.DeserializeObject<Waiver>(responseString);
+            }
         }
-
-        public async Task<Waiver> GetWaiver(string waiverName, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var requestUri = Controller + "/" + waiverName;
-                using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
-                {
-                    response.EnsureSuccessStatusCode();
-                    string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
-
-                    return JsonConvert.DeserializeObject<Waiver>(responseString);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(@"\tERROR {0}", ex.Message);
-                throw;
-            }
+            Debug.WriteLine(@"\tERROR {0}", ex.Message);
+            throw;
         }
     }
 }

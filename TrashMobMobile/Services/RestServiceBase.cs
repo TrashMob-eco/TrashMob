@@ -1,6 +1,5 @@
 ﻿namespace TrashMobMobile.Data
 {
-    using Microsoft.Extensions.Options;
     using System.Text.Json;
     using TrashMobMobile.Authentication;
     using TrashMobMobile.Config;
@@ -40,7 +39,7 @@
         }
         protected HttpClient AnonymousHttpClient { get; }
 
-        protected RestServiceBase(IOptions<Settings> settings)
+        protected RestServiceBase()
         {
             SerializerOptions = new JsonSerializerOptions
             {
@@ -48,7 +47,7 @@
                 WriteIndented = true
             };
 
-            TrashMobApiAddress = settings.Value.ApiBaseUrl;
+            TrashMobApiAddress = Settings.ApiBaseUrl;
 
             authorizedHttpClient = new HttpClient()
             {

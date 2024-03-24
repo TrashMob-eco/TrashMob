@@ -47,23 +47,11 @@ public static class MauiProgram
         // Services
         builder.Services.AddSingleton<AuthHandler>();
 
-        string strAppConfigStreamName;
-#if DEBUG
-        strAppConfigStreamName = "TrashMobMobile.appSettings.Development.json";
-#else
-        strAppConfigStreamName = "TrashMobMobile.appSettings.json"; 
-#endif
-
-        var assembly = IntrospectionExtensions.GetTypeInfo(typeof(MauiProgram)).Assembly;
-        var stream = assembly.GetManifestResourceStream(strAppConfigStreamName);
-        builder.Configuration.AddJsonStream(stream);
-
         builder.Services.AddHttpClient(AuthConstants.AUTHENTICATED_CLIENT, client =>
 		{
 			client.BaseAddress = new Uri(AuthConstants.ApiBaseUri);
 		}).AddHttpMessageHandler<AuthHandler>();
 
-        builder.Services.Configure<Settings>(options => builder.Configuration.GetSection("Settings").Bind(options));
         builder.Services.AddTrashMobServices();
         builder.Services.AddRestClientServices(builder.Configuration);
 

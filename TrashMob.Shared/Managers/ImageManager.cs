@@ -49,5 +49,40 @@
 
             await blobClient.UploadAsync(imageUpload.FormFile.OpenReadStream(), new BlobHttpHeaders { ContentType = imageUpload.FormFile.ContentType });
         }
+
+
+        public async Task<bool> DeleteImage(Guid parentId, ImageTypeEnum imageType)
+        {
+            var imageName = await GetImageNameAsync(parentId, imageType);
+
+            if(imageName == null)
+            {
+                return false;
+            }
+
+            var blobContainer = blobServiceClient.GetBlobContainerClient(imageType.ToString().ToLower());
+            var blobClient = blobContainer.GetBlobClient(imageName);
+
+            return await blobClient.DeleteIfExistsAsync();
+        }
+
+        private async Task<string> GetImageNameAsync(Guid parentId, ImageTypeEnum imageType)
+        {
+            var blobContainer = blobServiceClient.GetBlobContainerClient(imageType.ToString().ToLower());
+
+            var fileNameFilter = string.Format("{0}-{1}", parentId, imageType.ToString()).ToLower();
+
+            var imageName = string.Empty;
+
+            // For now, only show the first image, since there should only be one for Pickups.
+            await foreach (BlobItem blob in blobContainer.GetBlobsAsync(prefix: fileNameFilter))
+            {
+                imageName = blob.Name;
+                break;
+            }
+
+            return imageName;
+        }
+
     }
 }

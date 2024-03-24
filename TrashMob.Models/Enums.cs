@@ -66,9 +66,8 @@
         Before = 1,
         After = 2,
         Pickup = 3,
+        LitterImage = 4,
     }
-}
-
     public enum LitterReportStatusEnum
     {
         New = 1,
@@ -76,3 +75,4 @@
         Cleaned = 3,
         Cancelled = 4,
     }
+}

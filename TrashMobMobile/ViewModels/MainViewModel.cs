@@ -102,6 +102,8 @@ public partial class MainViewModel : BaseViewModel
                 TravelDistance = App.CurrentUser.TravelLimitForLocalEvents;
             }
 
+            await RefreshEvents();
+
             IsBusy = false;
         }
         else
@@ -117,7 +119,6 @@ public partial class MainViewModel : BaseViewModel
         }
 
         await RefreshStatistics();
-        await RefreshEvents();
     }
 
     private async Task RefreshStatistics()

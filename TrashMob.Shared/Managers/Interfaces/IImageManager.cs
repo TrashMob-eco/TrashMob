@@ -9,6 +9,8 @@
     {
         public Task UploadImage(ImageUpload imageUpload);
 
-        public Task<string> GetImageUrlAsync(Guid pickupLocationId, ImageTypeEnum imageType);
+        public Task<string> GetImageUrlAsync(Guid parentId, ImageTypeEnum imageType);
+
+        public Task<bool> DeleteImage(Guid parentId, ImageTypeEnum imageType); 
     }
 }
