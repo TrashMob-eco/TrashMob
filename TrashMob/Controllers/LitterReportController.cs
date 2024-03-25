@@ -1,23 +1,18 @@
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Threading;
-using TrashMob.Models;
-using TrashMob.Shared.Managers.Events;
-using TrashMob.Shared.Managers.Interfaces;
-using TrashMob.Shared.Poco;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Identity.Web.Resource;
-using TrashMob.Security;
-using TrashMob.Shared;
-using System;
-using TrashMob.Shared.Managers.LitterReport;
-using DocuSign.eSign.Model;
-using TrashMob.Shared.Extensions;
-using AzureMapsToolkit.Spatial;
-
 namespace TrashMob.Controllers
 {
+    using Microsoft.AspNetCore.Mvc;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using System.Threading;
+    using TrashMob.Models;
+    using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.Identity.Web.Resource;
+    using TrashMob.Security;
+    using TrashMob.Shared;
+    using System;
+
     [Route("api/litterreport")]
     public class LitterReportController : SecureController
     {
@@ -180,6 +175,5 @@ namespace TrashMob.Controllers
 
             return Ok(fullLitterReports);
         }
-
     }
 }
