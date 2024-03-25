@@ -50,7 +50,6 @@
             await blobClient.UploadAsync(imageUpload.FormFile.OpenReadStream(), new BlobHttpHeaders { ContentType = imageUpload.FormFile.ContentType });
         }
 
-
         public async Task<bool> DeleteImage(Guid parentId, ImageTypeEnum imageType)
         {
             var imageName = await GetImageNameAsync(parentId, imageType);
@@ -83,6 +82,5 @@
 
             return imageName;
         }
-
     }
 }
