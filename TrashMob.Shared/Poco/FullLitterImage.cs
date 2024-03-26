@@ -1,8 +1,9 @@
-using Microsoft.AspNetCore.Http;
-using System;
 
 namespace TrashMob.Shared.Poco
 {
+    using Microsoft.AspNetCore.Http;
+    using System;
+
     public class FullLitterImage
     {
         public IFormFile formFile {  get; set; }
