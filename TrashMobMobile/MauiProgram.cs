@@ -10,21 +10,26 @@ using TrashMobMobile.Config;
 using TrashMobMobile.Extensions;
 using Sentry;
 using Microsoft.Maui.Controls.Hosting;
+using Syncfusion.Maui.Core.Hosting;
 
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp()
-	{
-		var builder = MauiApp.CreateBuilder();
-		builder
-			.UseMauiApp<App>()
+    public static MauiApp CreateMauiApp()
+    {
+        var builder = MauiApp.CreateBuilder();
+        builder
+            .UseMauiApp<App>()
             .UseMauiMaps()
-			.UseMauiCommunityToolkit()
-			.ConfigureFonts(fonts =>
-			{
-				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-			});
+            .UseMauiCommunityToolkit()
+            .ConfigureSyncfusionCore()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                fonts.AddFont("Poppins-Bold.ttf", "PoppinsBold");
+                fonts.AddFont("Poppins-Medium.ttf", "PoppinsMedium");
+                fonts.AddFont("Poppins-SemiBold.ttf", "PoppinsSemiBold");
+            });
 
         builder.UseSentry(options =>
         {
@@ -48,9 +53,9 @@ public static class MauiProgram
         builder.Services.AddSingleton<AuthHandler>();
 
         builder.Services.AddHttpClient(AuthConstants.AUTHENTICATED_CLIENT, client =>
-		{
-			client.BaseAddress = new Uri(AuthConstants.ApiBaseUri);
-		}).AddHttpMessageHandler<AuthHandler>();
+        {
+            client.BaseAddress = new Uri(AuthConstants.ApiBaseUri);
+        }).AddHttpMessageHandler<AuthHandler>();
 
         builder.Services.AddTrashMobServices();
         builder.Services.AddRestClientServices(builder.Configuration);
@@ -105,5 +110,5 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
         return builder.Build();
-	}
+    }
 }

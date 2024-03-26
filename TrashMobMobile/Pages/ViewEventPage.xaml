@@ -1,7 +1,8 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
              x:Class="TrashMobMobile.Pages.ViewEventPage">
     <ScrollView>
         <VerticalStackLayout>
@@ -11,7 +12,7 @@
             VerticalOptions="Center" 
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center"/>
-
+            <buttons:SfButton x:Name="button" />
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
             <Grid RowDefinitions = "1*, 1*, 4*, 1*, 1*, 1*, 1*, 1*" ColumnDefinitions="1*, 1*" MaximumWidthRequest="400" >
