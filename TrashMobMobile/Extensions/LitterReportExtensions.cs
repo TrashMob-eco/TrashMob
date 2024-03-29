@@ -14,5 +14,16 @@
                 LitterReportStatusId = litterReport.LitterReportStatusId,
             };
         }
+
+        public static LitterReport ToLitterReport(this LitterReportViewModel litterReportViewModel)
+        {
+            return new LitterReport
+            {
+                Id = litterReportViewModel.Id,
+                Name = litterReportViewModel.Name,
+                Description = litterReportViewModel.Description,
+                LitterReportStatusId = litterReportViewModel.LitterReportStatusId,
+            };
+        }
     }
 }

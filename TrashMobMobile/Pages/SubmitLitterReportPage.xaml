@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
-             x:DataType="vm:SubmitLitterReportViewModel"
-             x:Class="TrashMobMobile.Pages.SubmitLitterReportPage">
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="TrashMobMobile.Pages.CreateLitterReportPage">
     <FlexLayout Direction="Column"
                 JustifyContent="SpaceAround">
         <Label 
@@ -15,5 +14,32 @@
 
         <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
+        <Grid RowDefinitions = "1*, 1*, 1*, 4*, 1*, 1*, 1*, 1*, 1*" ColumnDefinitions="1*, 1*" MaximumWidthRequest="400" >
+            <Label Grid.Row="0" Grid.Column="0" Text="Name"  />
+            <Entry Grid.Row="0" Grid.Column="1" Text="{Binding LitterReportViewModel.Name}">
+                <Entry.Behaviors>
+                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
+                </Entry.Behaviors>
+            </Entry>
+
+            <Label Grid.Row="1" Grid.Column="0" Text="Description" />
+            <Editor Grid.Row="1" Grid.Column="1" Text="{Binding LitterReportViewModel.Description}">
+                <Editor.Behaviors>
+                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10" x:Name="descriptionValidator" />
+                </Editor.Behaviors>
+            </Editor>
+        </Grid>
+
+        <Button Text="Save Litter Report" Command="{Binding SaveLitterReportCommand}">
+            <Button.Triggers>
+                <MultiTrigger TargetType="Button">
+                    <MultiTrigger.Conditions>
+                        <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
+                        <BindingCondition Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="IsEnabled" Value="True" />
+                </MultiTrigger>
+            </Button.Triggers>
+        </Button>
     </FlexLayout>
 </ContentPage>

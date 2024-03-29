@@ -12,7 +12,7 @@
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center"/>
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" /> 
 
             <CollectionView x:Name="LitterReportsCollection" 
                  ItemsSource="{Binding LitterReports}" 

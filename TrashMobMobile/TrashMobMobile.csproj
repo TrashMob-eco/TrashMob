@@ -109,12 +109,15 @@
 	  <Compile Update="Pages\AddPickupLocationPage.xaml.cs">
 	    <DependentUpon>AddPickupLocationPage.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Pages\CreateEventPage.xaml.cs">
+    <Compile Update="Pages\CancelEventPage.xaml.cs">
+      <DependentUpon>CancelEventPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\CreateEventPage.xaml.cs">
 	    <DependentUpon>%(Filename)</DependentUpon>
 	  </Compile>
-	  <Compile Update="Pages\CancelEventPage.xaml.cs">
-	    <DependentUpon>CancelEventPage.xaml</DependentUpon>
-	  </Compile>
+    <Compile Update="Pages\CreateLitterReportPage.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
 	  <Compile Update="Pages\EditPickupLocationPage.xaml.cs">
 	    <DependentUpon>EditPickupLocationPage.xaml</DependentUpon>
 	  </Compile>
@@ -137,9 +140,6 @@
 	    <DependentUpon>%(Filename)</DependentUpon>
 	  </Compile>
 	  <Compile Update="Pages\SetUserLocationPreferencePage.xaml.cs">
-	    <DependentUpon>%(Filename)</DependentUpon>
-	  </Compile>
-	  <Compile Update="Pages\SubmitLitterReportPage.xaml.cs">
 	    <DependentUpon>%(Filename)</DependentUpon>
 	  </Compile>
 	  <Compile Update="Pages\ViewEventPage.xaml.cs">
@@ -169,12 +169,15 @@
 	  <MauiXaml Update="Pages\AddPickupLocationPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\CreateEventPage.xaml">
+    <MauiXaml Update="Pages\CancelEventPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="Pages\CreateEventPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\CancelEventPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
+    <MauiXaml Update="Pages\CreateLitterReportPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
 	  <MauiXaml Update="Pages\EditPickupLocationPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -197,9 +200,6 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\SetUserLocationPreferencePage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Pages\SubmitLitterReportPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\ViewEventPage.xaml">

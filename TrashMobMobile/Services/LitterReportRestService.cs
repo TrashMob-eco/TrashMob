@@ -74,6 +74,12 @@
             {
                 response.EnsureSuccessStatusCode();
                 string content = await response.Content.ReadAsStringAsync(cancellationToken);
+                
+                if (string.IsNullOrEmpty(content))
+                {
+                    return [];
+                }
+
                 return JsonConvert.DeserializeObject<IEnumerable<LitterReport>>(content);
             }
         }
@@ -86,6 +92,12 @@
             {
                 response.EnsureSuccessStatusCode();
                 string content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                if (string.IsNullOrEmpty(content))
+                {
+                    return [];
+                }
+
                 return JsonConvert.DeserializeObject<IEnumerable<LitterReport>>(content);
             }
         }
@@ -98,6 +110,12 @@
             {
                 response.EnsureSuccessStatusCode();
                 string content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                if (string.IsNullOrEmpty(content))
+                {
+                    return [];
+                }
+
                 return JsonConvert.DeserializeObject<IEnumerable<LitterReport>>(content);
             }
         }
@@ -110,6 +128,12 @@
             {
                 response.EnsureSuccessStatusCode();
                 string content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                if (string.IsNullOrEmpty(content))
+                {
+                    return [];
+                }
+
                 return JsonConvert.DeserializeObject<IEnumerable<LitterReport>>(content);
             }
         }
@@ -122,6 +146,12 @@
             {
                 response.EnsureSuccessStatusCode();
                 string content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                if (string.IsNullOrEmpty(content))
+                {
+                    return [];
+                }
+
                 return JsonConvert.DeserializeObject<IEnumerable<LitterReport>>(content);
             }
         }
@@ -134,6 +164,12 @@
             {
                 response.EnsureSuccessStatusCode();
                 string content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                if (string.IsNullOrEmpty(content))
+                {
+                    return [];
+                }
+
                 return JsonConvert.DeserializeObject<IEnumerable<LitterReport>>(content);
             }
         }

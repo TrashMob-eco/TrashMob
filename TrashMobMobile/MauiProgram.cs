@@ -60,6 +60,7 @@ public static class MauiProgram
         builder.Services.AddTransient<CancelEventPage>();
         builder.Services.AddTransient<ContactUsPage>();
         builder.Services.AddTransient<CreateEventPage>();
+        builder.Services.AddTransient<CreateLitterReportPage>();
         builder.Services.AddTransient<EditEventPage>();
         builder.Services.AddTransient<EditEventPartnerLocationServicesPage>();
         builder.Services.AddTransient<EditEventSummaryPage>();
@@ -70,7 +71,6 @@ public static class MauiProgram
         builder.Services.AddTransient<SearchEventsPage>();
         builder.Services.AddTransient<SearchLitterReportsPage>();
         builder.Services.AddTransient<SetUserLocationPreferencePage>();
-        builder.Services.AddTransient<SubmitLitterReportPage>();
         builder.Services.AddTransient<ViewEventPage>();
         builder.Services.AddTransient<ViewEventSummaryPage>();
         builder.Services.AddTransient<ViewLitterReportPage>();
@@ -82,7 +82,8 @@ public static class MauiProgram
         builder.Services.AddTransient<CancelEventViewModel>();
         builder.Services.AddTransient<ContactUsViewModel>();
         builder.Services.AddTransient<CreateEventViewModel>();
-        builder.Services.AddTransient<EditEventViewModel>();
+        builder.Services.AddTransient<CreateLitterReportViewModel>();
+         builder.Services.AddTransient<EditEventViewModel>();
         builder.Services.AddTransient<EditEventPartnerLocationServicesViewModel>();
         builder.Services.AddTransient<EditEventSummaryViewModel>();
         builder.Services.AddTransient<EditPickupLocationViewModel>();
@@ -93,7 +94,6 @@ public static class MauiProgram
         builder.Services.AddTransient<SearchEventsViewModel>();
         builder.Services.AddTransient<SearchLitterReportsViewModel>();
         builder.Services.AddTransient<SocialMediaShareViewModel>();
-        builder.Services.AddTransient<SubmitLitterReportViewModel>();
         builder.Services.AddTransient<UserLocationPreferenceViewModel>();
         builder.Services.AddTransient<ViewEventViewModel>();
         builder.Services.AddTransient<ViewEventSummaryViewModel>();
