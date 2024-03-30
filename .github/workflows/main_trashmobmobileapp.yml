@@ -35,8 +35,8 @@ jobs:
           # Convert hexadecimal to uppercase
           hexBuildNumber=$(echo "$hexBuildNumber" | tr '[:lower:]' '[:upper:]')
 
-          # Convert from hexadecimal to decimal
-          buildNumber=$(echo "ibase=16; $hexBuildNumber" | bc)
+          # Convert from hexadecimal to decimal and apply modulus to ensure it's within int range
+          buildNumber=$(echo "ibase=16; $hexBuildNumber % 7FFFFFFF" | bc)
           echo "Decimal Build Number based on Commit ID: $buildNumber"
 
           echo "buildNumber=$buildNumber" >> $GITHUB_ENV
