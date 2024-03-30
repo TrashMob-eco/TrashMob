@@ -17,8 +17,8 @@ on:
       - '!TrashMobMobileApp/**'
 
 env:
-  DOTNET_VERSION: '6.0.x'  # set this to the dotnet version to use
-  DOTNET_VERSION2: '6.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION: '8.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION2: '8.0.x'  # set this to the dotnet version to use
   CONFIGURATION: Release
 
 jobs:
