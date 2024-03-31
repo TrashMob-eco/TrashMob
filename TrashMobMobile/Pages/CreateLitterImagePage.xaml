@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="TrashMobMobile.Pages.CreateLitterImagePage">
+    <ScrollView>
+        <FlexLayout Direction="Column"
+                JustifyContent="SpaceAround">
+            <Label 
+            Text="Add Litter Report Location!"
+            FontSize="Large"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
+            <Label Text="To add a litter report location, click the Take Photo button. The location will be auto-determined from that." />
+            
+            <Button Text="Take Photo" Clicked="TakePhoto_Clicked" />
+            <Image x:Name="litterPhoto" IsVisible="false" MaximumHeightRequest="200" />
+            
+            <Grid RowDefinitions = "1*, 1*" ColumnDefinitions="1*, 1*" MaximumWidthRequest="400" >
+                <Label Grid.Row="0" Grid.Column="0" Text="Name"  />
+                <Entry Grid.Row="0" Grid.Column="1" Text="{Binding LitterImageLocationViewModel.Name}">
+                    <Entry.Behaviors>
+                        <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
+                    </Entry.Behaviors>
+                </Entry>
+            </Grid>
+
+            <maps:Map x:Name="litterImageLocationsMap" ItemsSource="{Binding LitterImageLocations}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True" >
+                <maps:Map.ItemTemplate>
+                    <DataTemplate>
+                        <maps:Pin Location="{Binding Address.Location}"
+                              Address="{Binding Address.StreetAddress}"
+                              Label="{Binding Name}" />
+                    </DataTemplate>
+                </maps:Map.ItemTemplate>
+            </maps:Map>
+
+            <Grid RowDefinitions = "1*, 1*, 1*, 1*, 1*" ColumnDefinitions="1*, 1*" MaximumWidthRequest="400" >
+                <Label Grid.Row="0" Grid.Column="0" Text="Address" />
+                <Label Grid.Row="0" Grid.Column="1" Text="{Binding LitterImageViewModel.Address.StreetAddress }" />
+                <Label Grid.Row="1" Grid.Column="0" Text="City" />
+                <Label Grid.Row="1" Grid.Column="1" Text="{Binding LitterImageViewModel.Address.City }" />
+                <Label Grid.Row="2" Grid.Column="0" Text="Region" />
+                <Label Grid.Row="2" Grid.Column="1" Text="{Binding LitterImageViewModel.Address.Region }" />
+                <Label Grid.Row="3" Grid.Column="0" Text="Country" />
+                <Label Grid.Row="3" Grid.Column="1" Text="{Binding LitterImageViewModel.Address.Country }" />
+                <Label Grid.Row="4" Grid.Column="0" Text="Postal Code" />
+                <Label Grid.Row="4" Grid.Column="1" Text="{Binding LitterImageViewModel.Address.PostalCode }" />
+            </Grid>
+
+            <Button Text="Save Litter Image" Command="{Binding SaveLitterImageCommand}">
+                <Button.Triggers>
+                    <MultiTrigger TargetType="Button">
+                        <MultiTrigger.Conditions>
+                            <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
+                        </MultiTrigger.Conditions>
+                        <Setter Property="IsEnabled" Value="True" />
+                    </MultiTrigger>
+                </Button.Triggers>
+            </Button>
+            
+            <Label 
+            FontSize="Micro"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center" 
+            TextColor="Red">
+                <Label.Triggers>
+                    <MultiTrigger TargetType="Label">
+                        <MultiTrigger.Conditions>
+                            <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
+                        </MultiTrigger.Conditions>
+                        <Setter Property="IsVisible" Value="False" />
+                    </MultiTrigger>
+                    <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="False">
+                        <Setter Property="Text" Value="Name is required and must be at least 5 characters." />
+                    </DataTrigger>
+                </Label.Triggers>
+            </Label>
+        </FlexLayout>
+    </ScrollView>
+</ContentPage>

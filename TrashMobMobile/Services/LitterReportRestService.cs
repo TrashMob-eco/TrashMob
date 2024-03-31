@@ -7,6 +7,7 @@
     using System.Net.Http.Json;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMobMobile.Models;
 
     public class LitterReportRestService : RestServiceBase, ILitterReportRestService
     {
@@ -177,6 +178,61 @@
         public Task DeleteLitterReportAsync(Guid litterReportId, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<string> GetLitterImageAsync(Guid litterImageId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var requestUri = Controller + "/image/" + litterImageId;
+
+                using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
+                {
+                    response.EnsureSuccessStatusCode();
+                    string content = await response.Content.ReadAsStringAsync(cancellationToken);
+                    return content.TrimStart('"').TrimEnd('"');
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(@"\tERROR {0}", ex.Message);
+                throw;
+            }
+        }
+
+        public async Task AddLitterImageAsync(Guid litterReportId, Guid litterImageId, string localFileName, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var requestUri = Controller + "/image/" + litterReportId;
+
+                using (var stream = File.OpenRead(localFileName))
+                {
+                    using var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
+
+                    var streamContent = new StreamContent(stream);
+                    streamContent.Headers.Add("Content-Type", "image/jpeg");
+
+                    var content = new MultipartFormDataContent
+                    {
+                        { streamContent, "formFile", Path.GetFileName(localFileName)},
+                        { new StringContent(litterImageId.ToString()), "parentId" },
+                        { new StringContent(ImageUploadType.Pickup), "imageType" },
+                    };
+
+                    request.Content = content;
+
+                    using (var response = await AuthorizedHttpClient.SendAsync(request, cancellationToken))
+                    {
+                        response.EnsureSuccessStatusCode();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(@"\tERROR {0}", ex.Message);
+                throw;
+            }
         }
     }
 }

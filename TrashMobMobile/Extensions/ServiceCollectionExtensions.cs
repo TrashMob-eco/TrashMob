@@ -26,6 +26,7 @@
             services.AddSingleton<IEventPartnerLocationServiceStatusRestService, EventPartnerLocationServiceStatusRestService>();
             services.AddSingleton<IEventSummaryRestService, EventSummaryRestService>();
             services.AddSingleton<IEventTypeRestService, EventTypeRestService>();
+            services.AddSingleton<ILitterImageRestService, LitterImageRestService>();
             services.AddSingleton<ILitterReportRestService, LitterReportRestService>();
             services.AddSingleton<IMapRestService, MapRestService>();
             services.AddSingleton<IMobEventManager, MobEventManager>();

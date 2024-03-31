@@ -14,7 +14,7 @@
 
         <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-        <Grid RowDefinitions = "1*, 1*, 1*, 4*, 1*, 1*, 1*, 1*, 1*" ColumnDefinitions="1*, 1*" MaximumWidthRequest="400" >
+        <Grid RowDefinitions = "1*, 4*" ColumnDefinitions="1*, 1*" MaximumWidthRequest="400" >
             <Label Grid.Row="0" Grid.Column="0" Text="Name"  />
             <Entry Grid.Row="0" Grid.Column="1" Text="{Binding LitterReportViewModel.Name}">
                 <Entry.Behaviors>
@@ -29,6 +29,18 @@
                 </Editor.Behaviors>
             </Editor>
         </Grid>
+
+        <Button Text="Add Image" Command="{Binding AddImageCommand}">
+            <Button.Triggers>
+                <MultiTrigger TargetType="Button">
+                    <MultiTrigger.Conditions>
+                        <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
+                        <BindingCondition Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="IsEnabled" Value="True" />
+                </MultiTrigger>
+            </Button.Triggers>
+        </Button>
 
         <Button Text="Save Litter Report" Command="{Binding SaveLitterReportCommand}">
             <Button.Triggers>

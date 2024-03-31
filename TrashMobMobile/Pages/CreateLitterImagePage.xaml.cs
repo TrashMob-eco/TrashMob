@@ -4,12 +4,12 @@ using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using Microsoft.Maui.Maps;
 
-[QueryProperty(nameof(EventId), nameof(EventId))]
-public partial class AddPickupLocationPage : ContentPage
+[QueryProperty(nameof(LitterReportId), nameof(LitterReportId))]
+public partial class CreateLitterImagePage : ContentPage
 {
-    private readonly AddPickupLocationViewModel _viewModel;
+    private readonly CreateLitterImageViewModel _viewModel;
     
-    public AddPickupLocationPage(AddPickupLocationViewModel viewModel)
+    public CreateLitterImagePage(CreateLitterImageViewModel viewModel)
 	{
 		InitializeComponent();
         _viewModel = viewModel;
@@ -18,18 +18,19 @@ public partial class AddPickupLocationPage : ContentPage
         _viewModel.Navigation = Navigation;
         BindingContext = _viewModel;
     }
-    public string EventId { get; set; }
+
+    public string LitterReportId { get; set; }
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await _viewModel.Init(new Guid(EventId));
+        await _viewModel.Init(new Guid(LitterReportId));
 
         // Default the map zoom to the location of the event
-        if (_viewModel?.EventViewModel?.Address != null)
+        if (_viewModel?.LitterImageViewModel?.Address != null)
         {
-            var mapSpan = new MapSpan(_viewModel.EventViewModel.Address.Location, 0.05, 0.05);
-            pickupLocationMap.MoveToRegion(mapSpan);
+            var mapSpan = new MapSpan(_viewModel.LitterImageViewModel.Address.Location, 0.05, 0.05);
+            litterImageLocationsMap.MoveToRegion(mapSpan);
         }
     }
 
@@ -80,8 +81,8 @@ public partial class AddPickupLocationPage : ContentPage
 
                 await sourceStream.CopyToAsync(localFileStream);
 
-                pickupPhoto.Source = _viewModel.LocalFilePath;
-                pickupPhoto.IsVisible = true;
+                litterPhoto.Source = _viewModel.LocalFilePath;
+                litterPhoto.IsVisible = true;
             }
         }
 

@@ -56,7 +56,7 @@ public static class MauiProgram
         builder.Services.AddRestClientServices(builder.Configuration);
 
         // Pages
-        builder.Services.AddTransient<AddPickupLocationPage>();
+        builder.Services.AddTransient<CreatePickupLocationPage>();
         builder.Services.AddTransient<CancelEventPage>();
         builder.Services.AddTransient<ContactUsPage>();
         builder.Services.AddTransient<CreateEventPage>();
@@ -64,6 +64,7 @@ public static class MauiProgram
         builder.Services.AddTransient<EditEventPage>();
         builder.Services.AddTransient<EditEventPartnerLocationServicesPage>();
         builder.Services.AddTransient<EditEventSummaryPage>();
+        builder.Services.AddTransient<EditLitterImagePage>();
         builder.Services.AddTransient<EditPickupLocationPage>();
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<ManageEventPartnersPage>();
@@ -78,14 +79,15 @@ public static class MauiProgram
         builder.Services.AddTransient<WelcomePage>();
 
         // ViewModels
-        builder.Services.AddTransient<AddPickupLocationViewModel>();
+        builder.Services.AddTransient<CreatePickupLocationViewModel>();
         builder.Services.AddTransient<CancelEventViewModel>();
         builder.Services.AddTransient<ContactUsViewModel>();
         builder.Services.AddTransient<CreateEventViewModel>();
         builder.Services.AddTransient<CreateLitterReportViewModel>();
-         builder.Services.AddTransient<EditEventViewModel>();
+        builder.Services.AddTransient<EditEventViewModel>();
         builder.Services.AddTransient<EditEventPartnerLocationServicesViewModel>();
         builder.Services.AddTransient<EditEventSummaryViewModel>();
+        builder.Services.AddTransient<EditLitterImageViewModel>();
         builder.Services.AddTransient<EditPickupLocationViewModel>();
         builder.Services.AddTransient<EventSummaryViewModel>();
         builder.Services.AddTransient<MainViewModel>();
