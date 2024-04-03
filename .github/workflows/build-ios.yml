@@ -51,8 +51,9 @@ jobs:
         steps:
         - uses: actions/checkout@v3
 
-        - name: Update Build Number
-          run: sed -i '' "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>${{ inputs.build_number }}</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
+        # This process needs some more work - for now we will increment the version number manually
+        # - name: Update Build Number
+        #   run: sed -i '' "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>${{ inputs.build_number }}</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
 
         - name: Update Version Number
           if: inputs.version != null
