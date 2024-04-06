@@ -42,15 +42,16 @@ jobs:
 
         steps:
         - uses: actions/checkout@v3
+        
+        # This process needs some more work - for now we will increment the version number manually
+        # - name: Update Build Number
+        #   run: |
+        #     $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
 
-        - name: Update Build Number
-          run: |
-            $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
+        #     $newContent = $content -replace '<ApplicationVersion>.*</ApplicationVersion>', "<ApplicationVersion>${{ inputs.build_number }}</ApplicationVersion>"
 
-            $newContent = $content -replace '<ApplicationVersion>.*</ApplicationVersion>', "<ApplicationVersion>${{ inputs.build_number }}</ApplicationVersion>"
-
-            Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
-
+        #     Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
+        
         - name: Update Bundle ID
           run: |
             $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
