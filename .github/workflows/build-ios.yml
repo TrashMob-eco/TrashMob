@@ -49,15 +49,26 @@ jobs:
         name: iOS Build
 
         steps:
-        - uses: actions/checkout@v3
+        - name: Checkout
+          uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
 
-        # This process needs some more work - for now we will increment the version number manually
-        # - name: Update Build Number
-        #   run: sed -i '' "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>${{ inputs.build_number }}</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
+        - name: Install GitVersion
+          uses: gittools/actions/gitversion/setup@v1.1.1
+          with:
+            versionSpec: '5.x'
+  
+        - name: Determine Version
+          id: version_step # step id used as reference for output values
+          uses: gittools/actions/gitversion/execute@v1.1.1
+
+        - name: Update Build Number
+          run: sed -i '' "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>${{ env.semVer }}</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
 
         - name: Update Version Number
           if: inputs.version != null
-          run: sed -i '' "s|<ApplicationDisplayVersion>.*</ApplicationDisplayVersion>|<Version>${{ inputs.version }}</Version>|g" TrashMobMobile/TrashMobMobile.csproj
+          run: sed -i '' "s|<ApplicationDisplayVersion>.*</ApplicationDisplayVersion>|<Version>${{ env.semVer }}</Version>|g" TrashMobMobile/TrashMobMobile.csproj
 
         - name: Update Bundle ID
           run: sed -i '' "s|<ApplicationId>.*</ApplicationId>|<ApplicationId>${{ inputs.bundle_id }}</ApplicationId>|g" TrashMobMobile/TrashMobMobile.csproj
@@ -101,5 +112,5 @@ jobs:
         - name: Upload iOS Artifact
           uses: actions/upload-artifact@v3.1.2
           with:
-            name: artifacts-ios-${{ inputs.build_number }}
+            name: artifacts-ios-${{ inputs.semVer }}
             path: TrashMobMobile/bin/${{ inputs.configuration }}/net8.0-ios/ios-arm64/publish//*.ipa
