@@ -1,6 +1,7 @@
 assembly-versioning-scheme: MajorMinorPatch
 mode: Mainline
 next-version: 2.0.0
+tag-pre-release-weight: 5000
 branches:
   main:
     regex: ^main$
@@ -9,7 +10,6 @@ branches:
   release:
     regex: ^release$
     mode: ContinuousDelivery
-    tag-pre-release-weight: 5000
     tag: ''
 ignore:
   sha: []
