@@ -24,23 +24,19 @@ jobs:
     outputs:
       buildNumber: ${{ steps.set_build_number.outputs.buildNumber }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Generate build number
-        id: set_build_number
-        run: |
-          commitHash=$(git rev-parse HEAD)
-          hexBuildNumber=${commitHash: -8}
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-          # Convert hexadecimal to uppercase
-          hexBuildNumber=$(echo "$hexBuildNumber" | tr '[:lower:]' '[:upper:]')
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v1.1.1
+        with:
+          versionSpec: '5.x'
 
-          # Convert from hexadecimal to decimal and apply modulus to ensure it's within int range
-          buildNumber=$(echo "ibase=16; $hexBuildNumber % 7FFFFFFF" | bc)
-          echo "Decimal Build Number based on Commit ID: $buildNumber"
-
-          echo "buildNumber=$buildNumber" >> $GITHUB_ENV
-          echo "buildNumber=$buildNumber" >> $GITHUB_OUTPUT
+      - name: Determine Version
+        id: version_step # step id used as reference for output values
+        uses: gittools/actions/gitversion/execute@v1.1.1
 
   exposeEnvironmentVariables:
     runs-on: ubuntu-latest
@@ -74,7 +70,7 @@ jobs:
     with:
       environment: ${{ needs.exposeEnvironmentVariables.outputs.environment }}
       configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
-      build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
+      build_number: ${{ needs.version_step.outputs.GitVersion_semVer }}
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
       bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
     secrets:
@@ -90,7 +86,7 @@ jobs:
     with:
       environment: ${{ needs.exposeEnvironmentVariables.outputs.environment }}
       configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
-      build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
+      build_number: ${{ needs.version_step.outputs.GitVersion_semVer }}
       bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
       ios_provisioning_profile_type: ${{ needs.exposeEnvironmentVariables.outputs.ios_provisioning_profile_type }}
