@@ -51,9 +51,9 @@ jobs:
       - name: Set Build Number
         id: set_build_number
         run: |
-          buildNumber=${{ steps.version_step.outputs.GitVersion_semVer }}
-          echo "buildNumber=$env.GitVersion_semVer" >> $GITHUB_ENV
-          echo "buildNumber=$env.GitVersion_semVer" >> $GITHUB_OUTPUT
+          buildNumber=${{ steps.version_step.outputs.semVer }}
+          echo "buildNumber=${{ steps.version_step.outputs.semVer }}" >> $GITHUB_ENV
+          echo "buildNumber=${{ steps.version_step.outputs.semVer }}" >> $GITHUB_OUTPUT
         
   exposeEnvironmentVariables:
     runs-on: ubuntu-latest
