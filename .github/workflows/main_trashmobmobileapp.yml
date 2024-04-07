@@ -38,6 +38,13 @@ jobs:
         id: version_step # step id used as reference for output values
         uses: gittools/actions/gitversion/execute@v1.1.1
 
+      - name: Set Build Number
+        id: set_build_number
+        run: |
+          buildNumber=$env.GitVersion_semVer
+          echo "buildNumber=$env.GitVersion_semVer" >> $GITHUB_ENV
+          echo "buildNumber=$env.GitVersion_semVer" >> $GITHUB_OUTPUT
+
   exposeEnvironmentVariables:
     runs-on: ubuntu-latest
     name: Expose environment variables
@@ -70,7 +77,7 @@ jobs:
     with:
       environment: ${{ needs.exposeEnvironmentVariables.outputs.environment }}
       configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
-      build_number: ${{ needs.version_step.outputs.GitVersion_semVer }}
+      build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
       bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
     secrets:
@@ -86,7 +93,7 @@ jobs:
     with:
       environment: ${{ needs.exposeEnvironmentVariables.outputs.environment }}
       configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
-      build_number: ${{ needs.version_step.outputs.GitVersion_semVer }}
+      build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
       bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
       ios_provisioning_profile_type: ${{ needs.exposeEnvironmentVariables.outputs.ios_provisioning_profile_type }}
