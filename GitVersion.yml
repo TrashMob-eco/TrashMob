@@ -1,7 +1,17 @@
 assembly-versioning-scheme: MajorMinorPatch
 mode: Mainline
 next-version: 2.0.0
-branches: {}
+branches:
+  main:
+    regex: ^main$
+    mode: ContinuousDelivery
+    tag: ''
+  release:
+    regex: ^release$
+    mode: ContinuousDelivery
+    tag: ''
 ignore:
   sha: []
 merge-message-formats: {}
+
+
