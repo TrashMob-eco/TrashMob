@@ -14,5 +14,3 @@ branches:
 ignore:
   sha: []
 merge-message-formats: {}
-
-
