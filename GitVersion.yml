@@ -9,6 +9,7 @@ branches:
   release:
     regex: ^release$
     mode: ContinuousDelivery
+    tag-pre-release-weight: 5000
     tag: ''
 ignore:
   sha: []
