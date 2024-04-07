@@ -58,7 +58,7 @@ jobs:
         - name: Update Build Number
           run: |
             $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
-            $newContent = $content -replace '<ApplicationVersion>.*</ApplicationVersion>', "<ApplicationVersion>${{ env.BuildMetaData }}</ApplicationVersion>"
+            $newContent = $content -replace '<ApplicationVersion>.*</ApplicationVersion>', "<ApplicationVersion>${{ inputs.build_number }}</ApplicationVersion>"
             Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
         
         - name: Update Bundle ID
