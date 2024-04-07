@@ -26,6 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       buildNumber: ${{ steps.set_build_number.outputs.buildNumber }}
+      releaseNumber: ${{ steps.set_build_number.outputs.releaseNumber }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,8 +46,11 @@ jobs:
         id: set_build_number
         run: |
           buildNumber=${{ steps.version_step.outputs.semVer }}
+          releaseNumber=${{ steps.version_step.outputs.WeightedPreReleaseNumber }}
           echo "buildNumber=${{ steps.version_step.outputs.semVer }}" >> $GITHUB_ENV
           echo "buildNumber=${{ steps.version_step.outputs.semVer }}" >> $GITHUB_OUTPUT
+          echo "releaseNumber=${{ steps.version_step.outputs.WeightedPreReleaseNumber }}" >> $GITHUB_ENV
+          echo "releaseNumber=${{ steps.version_step.outputs.WeightedPreReleaseNumber }}" >> $GITHUB_OUTPUT
 
   exposeEnvironmentVariables:
     runs-on: ubuntu-latest
@@ -81,6 +85,7 @@ jobs:
       environment: ${{ needs.exposeEnvironmentVariables.outputs.environment }}
       configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
       build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
+      release_number: ${{ needs.generate-build-number.outputs.releaseNumber }}
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
       bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
     secrets:
