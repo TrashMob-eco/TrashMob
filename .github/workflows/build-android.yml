@@ -12,6 +12,9 @@ on:
             build_number:
                 required: true
                 type: string
+            release_number:
+                  required: true
+                  type: string
             dotnet_version:
                 required: true
                 type: string
@@ -58,7 +61,7 @@ jobs:
         - name: Update Build Number
           run: |
             $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
-            $newContent = $content -replace '<ApplicationVersion>.*</ApplicationVersion>', "<ApplicationVersion>${{ env.BuildMetaData }}</ApplicationVersion>"
+            $newContent = $content -replace '<ApplicationVersion>.*</ApplicationVersion>', "<ApplicationVersion>${{ inputs.release_number }}</ApplicationVersion>"
             Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
         
         - name: Update Bundle ID
