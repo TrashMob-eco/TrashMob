@@ -23,5 +23,5 @@ public partial class LitterReportViewModel : ObservableObject
     [ObservableProperty]
     int litterReportStatusId;
 
-    public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
+    public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; set; } = [];
 }

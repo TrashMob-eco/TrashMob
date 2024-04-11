@@ -100,12 +100,6 @@
 	    <SubType>Code</SubType>
 	    <DependentUpon>%(Filename)</DependentUpon>
 	  </Compile>
-	  <Compile Update="Pages\CreateLitterImagePage.xaml.cs">
-	    <DependentUpon>CreateLitterImagePage.xaml</DependentUpon>
-	  </Compile>
-	  <Compile Update="Pages\EditLitterImagePage.xaml.cs">
-	    <DependentUpon>EditLitterImagePage.xaml</DependentUpon>
-	  </Compile>
 	  <Compile Update="Pages\CreateLitterReportPage.xaml.cs">
 	    <DependentUpon>CreateLitterReportPage.xaml</DependentUpon>
 	  </Compile>
@@ -169,12 +163,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Pages\CreateLitterImagePage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Pages\EditLitterImagePage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
 	  <MauiXaml Update="Pages\WaiverPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

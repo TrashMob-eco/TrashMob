@@ -25,5 +25,23 @@
                 LitterReportStatusId = litterReportViewModel.LitterReportStatusId,
             };
         }
+
+        public static LitterImage ToLitterImage(this LitterImageViewModel litterImageViewModel)
+        {
+            return new LitterImage
+            {
+                Id = litterImageViewModel.Id,
+                LitterReportId = litterImageViewModel.LitterReportId,
+            };
+        }
+
+        public static LitterImageViewModel ToLitterImageViewModel(this LitterImage litterImage)
+        {
+            return new LitterImageViewModel
+            {
+                Id = litterImage.Id,
+                LitterReportId = litterImage.LitterReportId,
+            };
+        }
     }
 }

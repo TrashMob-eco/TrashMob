@@ -47,4 +47,28 @@ public partial class CreateLitterReportPage : ContentPage
 
         await snackbar.Show(cancellationTokenSource.Token);
     }
+
+    private async void TakePhoto_Clicked(object sender, EventArgs e)
+    {
+        if (MediaPicker.Default.IsCaptureSupported)
+        {
+            FileResult photo = await MediaPicker.Default.CapturePhotoAsync();
+
+            if (photo != null)
+            {
+                // save the file into local storage
+                _viewModel.LocalFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
+
+                using Stream sourceStream = await photo.OpenReadAsync();
+                using FileStream localFileStream = File.OpenWrite(_viewModel.LocalFilePath);
+
+                await sourceStream.CopyToAsync(localFileStream);
+
+                litterPhoto.Source = _viewModel.LocalFilePath;
+                litterPhoto.IsVisible = true;
+            }
+        }
+
+        await _viewModel.UpdateLocation();
+    }
 }
