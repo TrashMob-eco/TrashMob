@@ -107,7 +107,7 @@ namespace TrashMob.Controllers
                 return null;
             }
 
-            logger.LogInformation("AddLitterReport - Name: {Name}, Description: {Description}, Status: {Status}}", fullLitterReport.Name, fullLitterReport.Description, fullLitterReport.LitterReportStatusId);
+            logger.LogInformation("AddLitterReport - Name: {Name}, Description: {Description}, Status: {Status}", fullLitterReport.Name, fullLitterReport.Description, fullLitterReport.LitterReportStatusId);
 
             var newLitterReport = await litterReportManager.AddAsync(fullLitterReport, UserId, cancellationToken);
 
