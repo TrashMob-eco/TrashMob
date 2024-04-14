@@ -1,9 +1,11 @@
 ﻿namespace TrashMobMobile.Data
 {
     using Newtonsoft.Json;
+    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Net.Http;
     using System.Net.Http.Json;
     using System.Threading.Tasks;
     using TrashMob.Models;
@@ -58,7 +60,18 @@
 
             try
             {
-                var content = JsonContent.Create(fullLitterReport, typeof(FullLitterReport), null, SerializerOptions);
+                var content = new MultipartFormDataContent
+                {
+                    { JsonContent.Create(fullLitterReport, typeof(FullLitterReport), null, SerializerOptions), "litterReport" }
+                };
+
+                foreach (var litterImage in litterReport.LitterImages)
+                {
+                    var stream = File.OpenRead(litterImage.AzureBlobURL);
+                    var streamContent = new StreamContent(stream);
+                    streamContent.Headers.Add("Content-Type", "image/jpeg");
+                    content.Add(streamContent, "formFile", Path.GetFileName(litterImage.AzureBlobURL));
+                }
 
                 using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
                 {
