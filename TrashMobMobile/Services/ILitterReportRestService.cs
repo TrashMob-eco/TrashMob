@@ -1,14 +1,13 @@
-namespace TrashMob.Shared.Managers.Interfaces
-{    
+﻿namespace TrashMobMobile.Data
+{
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
-    using System.Threading;
     using TrashMob.Models;
-    using TrashMob.Models.Poco;
 
-    public interface ILitterReportManager : IKeyedManager<LitterReport>
+    public interface ILitterReportRestService
     {
+        Task<IEnumerable<LitterReport>> GetAllLitterReportsAsync(CancellationToken cancellationToken = default);
+
         Task<IEnumerable<LitterReport>> GetNewLitterReportsAsync(CancellationToken cancellationToken = default);
 
         Task<IEnumerable<LitterReport>> GetCleanedLitterReportsAsync(CancellationToken cancellationToken = default);
@@ -19,10 +18,12 @@ namespace TrashMob.Shared.Managers.Interfaces
 
         Task<IEnumerable<LitterReport>> GetUserLitterReportsAsync(Guid userId, CancellationToken cancellationToken = default);
 
-        Task<int> DeleteAsync(Guid id, Guid userId, CancellationToken cancellationToken = default);
+        Task<LitterReport> GetLitterReportAsync(Guid litterReportId, CancellationToken cancellationToken = default);
 
-        Task<LitterReport> AddAsync(FullLitterReport instance, Guid userId, CancellationToken cancellationToken);
+        Task<LitterReport> UpdateLitterReportAsync(LitterReport litterReport, CancellationToken cancellationToken = default);
 
-        Task<LitterReport> UpdateAsync(FullLitterReport instance, Guid userId, CancellationToken cancellationToken);
+        Task<LitterReport> AddLitterReportAsync(LitterReport litterReport, CancellationToken cancellationToken = default);
+
+        Task DeleteLitterReportAsync(Guid litterReportId, CancellationToken cancellationToken = default);
     }
 }

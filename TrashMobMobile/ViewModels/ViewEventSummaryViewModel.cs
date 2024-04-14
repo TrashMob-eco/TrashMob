@@ -99,7 +99,7 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
 
     private async Task AddPickupLocation()
     {
-        await Shell.Current.GoToAsync($"{nameof(AddPickupLocationPage)}?EventId={EventSummaryViewModel.EventId}");
+        await Shell.Current.GoToAsync($"{nameof(CreatePickupLocationPage)}?EventId={EventSummaryViewModel.EventId}");
     }
 
     private async Task EditEventSummary()

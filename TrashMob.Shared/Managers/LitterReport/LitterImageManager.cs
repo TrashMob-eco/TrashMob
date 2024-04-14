@@ -7,6 +7,8 @@ namespace TrashMob.Shared.Managers.LitterReport
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using TrashMob.Models;
+    using TrashMob.Models.Extensions;
+    using TrashMob.Models.Poco;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Shared.Poco;
@@ -44,6 +46,7 @@ namespace TrashMob.Shared.Managers.LitterReport
             {
                 Console.WriteLine(ex.Message);
             }
+
             await UpdateAsync(newLitterImage, userId, cancellationToken);
 
             return newLitterImage;

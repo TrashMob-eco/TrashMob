@@ -2,14 +2,12 @@ namespace TrashMobMobile.Pages;
 
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
-using Microsoft.Maui.Maps;
 
-[QueryProperty(nameof(EventId), nameof(EventId))]
-public partial class AddPickupLocationPage : ContentPage
+public partial class CreateLitterReportPage : ContentPage
 {
-    private readonly AddPickupLocationViewModel _viewModel;
-    
-    public AddPickupLocationPage(AddPickupLocationViewModel viewModel)
+    private readonly CreateLitterReportViewModel _viewModel;
+
+    public CreateLitterReportPage(CreateLitterReportViewModel viewModel)
 	{
 		InitializeComponent();
         _viewModel = viewModel;
@@ -17,20 +15,6 @@ public partial class AddPickupLocationPage : ContentPage
         _viewModel.NotifyError = NotifyError;
         _viewModel.Navigation = Navigation;
         BindingContext = _viewModel;
-    }
-    public string EventId { get; set; }
-
-    protected override async void OnNavigatedTo(NavigatedToEventArgs args)
-    {
-        base.OnNavigatedTo(args);
-        await _viewModel.Init(new Guid(EventId));
-
-        // Default the map zoom to the location of the event
-        if (_viewModel?.EventViewModel?.Address != null)
-        {
-            var mapSpan = new MapSpan(_viewModel.EventViewModel.Address.Location, 0.05, 0.05);
-            pickupLocationMap.MoveToRegion(mapSpan);
-        }
     }
 
     private async Task Notify(string message)
@@ -53,7 +37,7 @@ public partial class AddPickupLocationPage : ContentPage
             BackgroundColor = Colors.Red,
             TextColor = Colors.White,
             CornerRadius = new CornerRadius(10),
-            Font = Microsoft.Maui.Font.SystemFontOfSize(14),            
+            Font = Microsoft.Maui.Font.SystemFontOfSize(14),
         };
 
         string text = message;
@@ -68,7 +52,7 @@ public partial class AddPickupLocationPage : ContentPage
     {
         if (MediaPicker.Default.IsCaptureSupported)
         {
-            FileResult photo = await MediaPicker.Default.CapturePhotoAsync();
+            FileResult? photo = await MediaPicker.Default.CapturePhotoAsync();
 
             if (photo != null)
             {
@@ -80,11 +64,11 @@ public partial class AddPickupLocationPage : ContentPage
 
                 await sourceStream.CopyToAsync(localFileStream);
 
-                pickupPhoto.Source = _viewModel.LocalFilePath;
-                pickupPhoto.IsVisible = true;
+                litterPhoto.Source = _viewModel.LocalFilePath;
+                litterPhoto.IsVisible = true;
             }
         }
 
-        await _viewModel.UpdateLocation();
+        await _viewModel.AddImageToCollection();
     }
 }
