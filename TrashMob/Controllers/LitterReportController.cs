@@ -13,6 +13,7 @@ namespace TrashMob.Controllers
     using TrashMob.Security;
     using TrashMob.Shared;
     using System;
+    using Microsoft.Extensions.Logging;
 
     [Route("api/litterreport")]
     public class LitterReportController : SecureController
@@ -20,15 +21,17 @@ namespace TrashMob.Controllers
         private readonly ILitterReportManager litterReportManager;
         private readonly ILitterImageManager litterImageManager;
         private readonly IUserManager userManager;
+        private readonly ILogger<LitterReportController> logger;
 
         public LitterReportController(ILitterReportManager litterReportManager, 
                                         ILitterImageManager litterImageManager, 
-                                        IUserManager userManager, 
-                                        IImageManager imageManager)
+                                        IUserManager userManager,
+                                        ILogger<LitterReportController> logger)
         {
             this.litterReportManager = litterReportManager;
             this.litterImageManager = litterImageManager;
             this.userManager = userManager;
+            this.logger = logger;
         }
 
         [HttpGet]
@@ -103,6 +106,8 @@ namespace TrashMob.Controllers
             {
                 return null;
             }
+
+            logger.LogInformation("AddLitterReport - Name: {Name}, Description: {Description}, Status: {Status}}", fullLitterReport.Name, fullLitterReport.Description, fullLitterReport.LitterReportStatusId);
 
             var newLitterReport = await litterReportManager.AddAsync(fullLitterReport, UserId, cancellationToken);
 
