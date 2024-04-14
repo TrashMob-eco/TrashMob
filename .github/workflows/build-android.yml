@@ -12,6 +12,9 @@ on:
             build_number:
                 required: true
                 type: string
+            release_number:
+                  required: true
+                  type: string
             dotnet_version:
                 required: true
                 type: string
@@ -41,16 +44,26 @@ jobs:
         name: Android Build
 
         steps:
-        - uses: actions/checkout@v3
+        - name: Checkout
+          uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+
+        - name: Install GitVersion
+          uses: gittools/actions/gitversion/setup@v1.1.1
+          with:
+            versionSpec: '5.x'
+        
+        - name: Determine Version
+          id: version_step # step id used as reference for output values
+          uses: gittools/actions/gitversion/execute@v1.1.1
 
         - name: Update Build Number
           run: |
             $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
-
-            $newContent = $content -replace '<ApplicationVersion>.*</ApplicationVersion>', "<ApplicationVersion>${{ inputs.build_number }}</ApplicationVersion>"
-
+            $newContent = $content -replace '<ApplicationVersion>.*</ApplicationVersion>', "<ApplicationVersion>${{ inputs.release_number }}</ApplicationVersion>"
             Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
-
+        
         - name: Update Bundle ID
           run: |
             $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
@@ -60,11 +73,10 @@ jobs:
             Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
 
         - name: Update version
-          if: inputs.version != null
           run: |
             $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
 
-            $newContent = $content -replace '<ApplicationDisplayVersion>.*</ApplicationDisplayVersion>', "<ApplicationDisplayVersion>${{ inputs.version }}</ApplicationDisplayVersion>"
+            $newContent = $content -replace '<ApplicationDisplayVersion>.*</ApplicationDisplayVersion>', "<ApplicationDisplayVersion>${{ env.semVer }}</ApplicationDisplayVersion>"
 
             Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
 
@@ -106,6 +118,6 @@ jobs:
 
         - uses: actions/upload-artifact@v3.1.2
           with:
-            name: artifacts-android-${{ inputs.build_number }}
+            name: artifacts-android-${{ env.semVer }}
             path: |
               TrashMobMobile\bin\${{ inputs.configuration }}\net8.0-android\publish\*.aab

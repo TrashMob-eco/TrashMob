@@ -1,0 +1,18 @@
+assembly-versioning-scheme: MajorMinorPatch
+mode: Mainline
+next-version: 2.0.0
+tag-pre-release-weight: 2182384210
+branches:
+  main:
+    regex: ^main$
+    mode: ContinuousDelivery
+    tag: ''
+  release:
+    regex: ^release$
+    mode: ContinuousDelivery
+    tag: ''
+ignore:
+  sha: []
+merge-message-formats: {}
+
+
