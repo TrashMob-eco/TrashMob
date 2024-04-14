@@ -30,17 +30,18 @@ namespace TrashMob.Shared.Managers.LitterReport
             try
             {
                 await dbTransaction.BeginTransactionAsync();
-                //Add litter report
+                
+                // Add litter report
                 LitterReport litterReport = instance.ToLitterReport();
                 var newLitterReport = await base.AddAsync(litterReport, userId, cancellationToken);
 
-                if(newLitterReport == null)
+                if (newLitterReport == null)
                 {
                     return null;
                 }
 
-                //add litter images
-                if(instance.LitterImages != null && instance.LitterImages.Any())
+                // Add litter images
+                if (instance.LitterImages != null && instance.LitterImages.Any())
                 {
                     foreach(FullLitterImage fullLitterImage in instance.LitterImages)
                     {
