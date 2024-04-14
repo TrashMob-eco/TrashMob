@@ -52,7 +52,7 @@ public partial class CreateLitterReportPage : ContentPage
     {
         if (MediaPicker.Default.IsCaptureSupported)
         {
-            FileResult photo = await MediaPicker.Default.CapturePhotoAsync();
+            FileResult? photo = await MediaPicker.Default.CapturePhotoAsync();
 
             if (photo != null)
             {
@@ -69,6 +69,6 @@ public partial class CreateLitterReportPage : ContentPage
             }
         }
 
-        await _viewModel.UpdateLocation();
+        await _viewModel.AddImageToCollection();
     }
 }

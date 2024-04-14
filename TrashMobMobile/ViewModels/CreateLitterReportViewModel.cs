@@ -9,23 +9,24 @@ using TrashMobMobile.Extensions;
 
 public partial class CreateLitterReportViewModel : BaseViewModel
 {
-    [ObservableProperty]
-    LitterReportViewModel litterReportViewModel;
-
-    public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; init; } = [];
-    public LitterImageViewModel SelectedLitterImageViewModel { get; set; }
-
+    private readonly IMapRestService mapRestService;
     private readonly ILitterReportRestService litterReportRestService;
     private const int NewLitterReportStatus = 1;
 
+    [ObservableProperty]
+    LitterReportViewModel litterReportViewModel;
+    
+    public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; init; } = [];
+    
+    public LitterImageViewModel? SelectedLitterImageViewModel { get; set; }
+
     public string DefaultLitterReportName { get; } = "New Litter Report";
 
-    public CreateLitterReportViewModel(ILitterReportRestService litterReportRestService)
+    public CreateLitterReportViewModel(ILitterReportRestService litterReportRestService, IMapRestService mapRestService)
     {
         SaveLitterReportCommand = new Command(async () => await SaveLitterReport());
-        AddLitterImageCommand = new Command(async () => await AddLitterImage());
         this.litterReportRestService = litterReportRestService;
-
+        this.mapRestService = mapRestService;
         LitterReportViewModel = new LitterReportViewModel
         {
             Name = DefaultLitterReportName,
@@ -35,18 +36,19 @@ public partial class CreateLitterReportViewModel : BaseViewModel
 
     public ICommand SaveLitterReportCommand { get; set; }
 
-    public ICommand AddLitterImageCommand { get; set; }
+    public string LocalFilePath { get; set; } = string.Empty;
 
-    private readonly IMapRestService mapRestService;
-
-    public string LocalFilePath { get; set; }
-
-    public async Task UpdateLocation()
+    public async Task AddImageToCollection()
     {
         Location? location = await GetCurrentLocation();
 
         if (location != null)
         {
+            if (SelectedLitterImageViewModel == null)
+            {
+                SelectedLitterImageViewModel = new LitterImageViewModel();
+            }
+
             var address = await mapRestService.GetAddressAsync(location.Latitude, location.Longitude);
             SelectedLitterImageViewModel.Address.Longitude = location.Longitude;
             SelectedLitterImageViewModel.Address.Latitude = location.Latitude;
@@ -58,22 +60,12 @@ public partial class CreateLitterReportViewModel : BaseViewModel
             SelectedLitterImageViewModel.Address.StreetAddress = address.StreetAddress;
             SelectedLitterImageViewModel.Address.Location = new Location(SelectedLitterImageViewModel.Address.Latitude.Value, SelectedLitterImageViewModel.Address.Longitude.Value);
             LitterImageViewModels.Add(SelectedLitterImageViewModel);
+            SelectedLitterImageViewModel = null;
         }
         else
         {
             await NotifyError("Could not get location for image");
         }
-    }
-
-    private async Task AddLitterImage()
-    {
-        SelectedLitterImageViewModel = new LitterImageViewModel
-        {
-            Address = new AddressViewModel(),
-            Notify = Notify,
-            NotifyError = NotifyError,
-            Navigation = Navigation,
-        };
     }
 
     public static async Task<Location?> GetCurrentLocation()
@@ -130,6 +122,9 @@ public partial class CreateLitterReportViewModel : BaseViewModel
                 PostalCode = litterImageViewModel.Address.PostalCode,
                 Region = litterImageViewModel.Address.Region,
                 StreetAddress = litterImageViewModel.Address.StreetAddress,
+
+                // Use the Azure Blob Url as local file on create
+                AzureBlobURL = litterImageViewModel.FilePath
             };
 
             litterReport.LitterImages.Add(litterImage);

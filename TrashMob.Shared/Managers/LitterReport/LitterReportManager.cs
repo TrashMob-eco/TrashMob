@@ -1,15 +1,16 @@
 namespace TrashMob.Shared.Managers.LitterReport
 {
     using System;
-    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Models;
+    using TrashMob.Models.Extensions;
+    using TrashMob.Models.Poco;
+    using TrashMob.Shared.Managers.Interfaces;
     using System.Threading.Tasks;
     using System.Threading;
     using System.Collections.Generic;
     using TrashMob.Shared.Persistence.Interfaces;
     using Microsoft.EntityFrameworkCore;
     using System.Linq;
-    using TrashMob.Shared.Poco;
 
     public class LitterReportManager : KeyedManager<LitterReport>, ILitterReportManager
     {
@@ -174,5 +175,4 @@ namespace TrashMob.Shared.Managers.LitterReport
             return await Repository.Get(lr => lr.Id == id).Include(lr => lr.LitterImages).FirstOrDefaultAsync(cancellationToken);
         }
     }
-
 }

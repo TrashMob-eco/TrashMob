@@ -23,6 +23,7 @@
                 Name = litterReportViewModel.Name,
                 Description = litterReportViewModel.Description,
                 LitterReportStatusId = litterReportViewModel.LitterReportStatusId,
+                LitterImages = [],
             };
         }
 

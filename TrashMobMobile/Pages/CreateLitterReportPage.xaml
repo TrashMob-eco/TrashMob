@@ -39,21 +39,21 @@
                 <DataTemplate>
                     <Border StrokeThickness="1">
                         <Grid WidthRequest = "400"
-                       ColumnDefinitions="1*, 1*, 1*, 1*"
+                       ColumnDefinitions="1*, 1*, 1*, 1*, 5*"
                        RowDefinitions="Auto"
                        x:Name="EventItem">
-
                             <Label Text="{Binding Id}" Grid.Column="0" />
                             <Label Text="{Binding AzureBlobUrl}" Grid.Column="1" />
                             <Label Text="{Binding Address.City}" Grid.Column="2" />
                             <Label Text="{Binding Address.StreetAddress}" Grid.Column="3" />
+                            <Image IsVisible="true" MaximumHeightRequest="50" Grid.Column="4" Source="{Binding AzureBlobUrl}" />
                         </Grid>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <Button Text="Take Photo" Clicked="TakePhoto_Clicked" />
+        <Button Text="Add Litter Image" Clicked="TakePhoto_Clicked" />
         <Image x:Name="litterPhoto" IsVisible="false" MaximumHeightRequest="200" />
 
         <Button Text="Save Litter Report" Command="{Binding SaveLitterReportCommand}">

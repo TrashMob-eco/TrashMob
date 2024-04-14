@@ -7,6 +7,8 @@
     using System.Net.Http.Json;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Models.Extensions;
+    using TrashMob.Models.Poco;
     using TrashMobMobile.Models;
 
     public class LitterReportRestService : RestServiceBase, ILitterReportRestService
@@ -51,9 +53,12 @@
 
         public async Task<LitterReport> AddLitterReportAsync(LitterReport litterReport, CancellationToken cancellationToken = default)
         {
+            // todo - why does this need a user name?
+            var fullLitterReport = litterReport.ToFullLitterReport("test");
+
             try
             {
-                var content = JsonContent.Create(litterReport, typeof(LitterReport), null, SerializerOptions);
+                var content = JsonContent.Create(fullLitterReport, typeof(FullLitterReport), null, SerializerOptions);
 
                 using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
                 {

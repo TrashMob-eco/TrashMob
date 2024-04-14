@@ -1,4 +1,4 @@
-namespace TrashMob.Shared.Poco
+namespace TrashMob.Models.Poco
 {
     using System;
     using System.Collections.Generic;
@@ -7,9 +7,9 @@ namespace TrashMob.Shared.Poco
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         public int LitterReportStatusId { get; set; }
 
@@ -23,6 +23,6 @@ namespace TrashMob.Shared.Poco
 
         public DateTimeOffset? LastUpdatedDate { get; set; }
 
-        public string CreateByUserName { get; set; }
+        public string CreateByUserName { get; set; } = string.Empty;
     }
 }

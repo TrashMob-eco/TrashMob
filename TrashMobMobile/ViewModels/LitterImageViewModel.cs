@@ -24,4 +24,7 @@ public partial class LitterImageViewModel : BaseViewModel
 
     [ObservableProperty]
     bool isCancelled;
+
+    [ObservableProperty]
+    string filePath;
 }
