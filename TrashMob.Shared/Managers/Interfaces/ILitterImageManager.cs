@@ -4,7 +4,7 @@ namespace TrashMob.Shared.Managers.Interfaces
     using System.Threading;
     using System;
     using TrashMob.Models;
-    using TrashMob.Shared.Poco;
+    using TrashMob.Models.Poco;
 
     public interface ILitterImageManager: IKeyedManager<LitterImage>
     {

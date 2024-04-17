@@ -1,6 +1,5 @@
 ﻿namespace TrashMobMobile.Data
 {
-    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using System;
     using System.Diagnostics;
@@ -8,14 +7,12 @@
     using System.Net.Http.Json;
     using System.Threading.Tasks;
     using TrashMob.Models;
-    using TrashMobMobile.Config;
 
     public class EventSummaryRestService : RestServiceBase, IEventSummaryRestService
     {
         protected override string Controller => "eventsummaries";
 
-        public EventSummaryRestService(IOptions<Settings> settings)
-            : base(settings)
+        public EventSummaryRestService()
         {
         }
 

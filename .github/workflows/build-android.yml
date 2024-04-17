@@ -12,6 +12,9 @@ on:
             build_number:
                 required: true
                 type: string
+            release_number:
+                  required: true
+                  type: string
             dotnet_version:
                 required: true
                 type: string
@@ -41,34 +44,39 @@ jobs:
         name: Android Build
 
         steps:
-        - uses: actions/checkout@v3
+        - name: Checkout
+          uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
 
-        - name: Use build number
-          run: |
-            $buildNumber=${{ inputs.build_number }}
-            echo "Build Number: $buildNumber"
+        - name: Install GitVersion
+          uses: gittools/actions/gitversion/setup@v1.1.1
+          with:
+            versionSpec: '5.x'
+        
+        - name: Determine Version
+          id: version_step # step id used as reference for output values
+          uses: gittools/actions/gitversion/execute@v1.1.1
 
         - name: Update Build Number
           run: |
             $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
-
-            $newContent = $content -replace '<ApplicationVersion>.*</ApplicationVersion>', "<ApplicationVersion>$buildNumber</ApplicationVersion>"
-
+            $newContent = $content -replace '<ApplicationVersion>.*</ApplicationVersion>', "<ApplicationVersion>${{ inputs.release_number }}</ApplicationVersion>"
             Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
-
-        - name: Replace appsettings.json
-          run: |
-            $base64Content = "${{ secrets.appsettings }}"
-            $jsonContent = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($base64Content))
-            
-            Set-Content TrashMobMobile/appsettings.json -Value $jsonContent
-            
-        - name: Update version
-          if: inputs.version != null
+        
+        - name: Update Bundle ID
           run: |
             $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
 
-            $newContent = $content -replace '<ApplicationDisplayVersion>.*</ApplicationDisplayVersion>', "<ApplicationDisplayVersion>${{ inputs.version }}</ApplicationDisplayVersion>"
+            $newContent = $content -replace '<ApplicationId>.*</ApplicationId>', "<ApplicationId>${{ inputs.bundle_id }}</ApplicationId>"
+
+            Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
+
+        - name: Update version
+          run: |
+            $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
+
+            $newContent = $content -replace '<ApplicationDisplayVersion>.*</ApplicationDisplayVersion>', "<ApplicationDisplayVersion>${{ env.semVer }}</ApplicationDisplayVersion>"
 
             Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
 
@@ -106,10 +114,10 @@ jobs:
           shell: bash
           run: |
             cd TrashMobMobile
-            jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.android_keystore_password }}" -signedjar bin/${{ inputs.configuration }}/net8.0-android/publish/eco.trashmob.trashmobmobileapp-Signed.aab bin/${{ inputs.configuration }}/net8.0-android/publish/eco.trashmob.trashmobmobileapp.aab key
+            jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.android_keystore_password }}" -signedjar bin/${{ inputs.configuration }}/net8.0-android/publish/${{ inputs.bundle_id }}-Signed.aab bin/${{ inputs.configuration }}/net8.0-android/publish/${{ inputs.bundle_id }}.aab key
 
         - uses: actions/upload-artifact@v3.1.2
           with:
-            name: artifacts-android-${{ inputs.build_number }}
+            name: artifacts-android-${{ env.semVer }}
             path: |
               TrashMobMobile\bin\${{ inputs.configuration }}\net8.0-android\publish\*.aab

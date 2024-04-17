@@ -141,18 +141,26 @@ public class AuthService : IAuthService
             InitializeClient();
         }
 
-        AuthenticationResult result = await _pca
+        try
+        {
+            AuthenticationResult result = await _pca
                 .AcquireTokenInteractive(AuthConstants.Scopes)
                 .ExecuteAsync();
 
-        if (result != null && !string.IsNullOrWhiteSpace(result.AccessToken))
-        {
-            await SetAuthenticated(result);
-
-            return new SignInResult
+            if (result != null && !string.IsNullOrWhiteSpace(result.AccessToken))
             {
-                Succeeded = true
-            };
+                await SetAuthenticated(result);
+
+                return new SignInResult
+                {
+                    Succeeded = true
+                };
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            
         }
 
         return new SignInResult

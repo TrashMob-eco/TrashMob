@@ -26,6 +26,7 @@
             services.AddSingleton<IEventPartnerLocationServiceStatusRestService, EventPartnerLocationServiceStatusRestService>();
             services.AddSingleton<IEventSummaryRestService, EventSummaryRestService>();
             services.AddSingleton<IEventTypeRestService, EventTypeRestService>();
+            services.AddSingleton<ILitterReportRestService, LitterReportRestService>();
             services.AddSingleton<IMapRestService, MapRestService>();
             services.AddSingleton<IMobEventManager, MobEventManager>();
             services.AddSingleton<IMobEventRestService, MobEventRestService>();
@@ -48,17 +49,16 @@
              * Use your correct FairPlayTube API port
              * */
             //ngrok.exe http https://localhost:44373 -host-header="localhost:44373"
-            //string fairPlayTubeapiAddress = "REPLACE_WITH_NGROK_GENERATED_URL";
-            var settings = configuration.GetSection("Settings").Get<Settings>();
+            //string fairPlayTubeapiAddress = "REPLACE_WITH_NGROK_GENERATED_URL"
             services.AddScoped<BaseAddressAuthorizationMessageHandler>();
             services.AddHttpClient($"{ASSEMBLY_NAME}.ServerAPI", client =>
-                    client.BaseAddress = new Uri(settings.ApiBaseUrl))
+                    client.BaseAddress = new Uri(Settings.ApiBaseUrl))
                                             .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>()
                                             .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
                                             .AddPolicyHandler(GetRetryPolicy());
 
             services.AddHttpClient($"{ASSEMBLY_NAME}.ServerAPI.Anonymous", client =>
-                    client.BaseAddress = new Uri(settings.ApiBaseUrl))
+                    client.BaseAddress = new Uri(Settings.ApiBaseUrl))
                                             .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
                                             .AddPolicyHandler(GetRetryPolicy());
 
@@ -67,8 +67,6 @@
 
             services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>()
                 .CreateClient($"{ASSEMBLY_NAME}.ServerAPI.Anonymous"));
-
-            App.CurrentSettings = settings;
 
             return services;
         }

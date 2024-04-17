@@ -20,30 +20,36 @@ env:
   IOS_BUNDLE_ID: 'eco.trashmobdev.trashmobmobile'   # Values: 'eco.trashmobdev.trashmobmobile', 'eco.trashmob'
   IOS_PROFILE_TYPE: 'IOS_APP_STORE'           # Values: 'IOS_APP_DEVELOPMENT', 'IOS_APP_STORE'
 
-
 jobs:
   generate-build-number:
     runs-on: ubuntu-latest
     outputs:
       buildNumber: ${{ steps.set_build_number.outputs.buildNumber }}
+      releaseNumber: ${{ steps.set_build_number.outputs.releaseNumber }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Generate build number
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v1.1.1
+        with:
+          versionSpec: '5.x'
+
+      - name: Determine Version
+        id: version_step # step id used as reference for output values
+        uses: gittools/actions/gitversion/execute@v1.1.1
+
+      - name: Set Build Number
         id: set_build_number
         run: |
-          commitHash=$(git rev-parse HEAD)
-          hexBuildNumber=${commitHash: -8}
-
-          # Convert hexadecimal to uppercase
-          hexBuildNumber=$(echo "$hexBuildNumber" | tr '[:lower:]' '[:upper:]')
-
-          # Convert from hexadecimal to decimal
-          buildNumber=$(echo "ibase=16; $hexBuildNumber" | bc)
-          echo "Decimal Build Number based on Commit ID: $buildNumber"
-
-          echo "buildNumber=$buildNumber" >> $GITHUB_ENV
-          echo "buildNumber=$buildNumber" >> $GITHUB_OUTPUT
+          buildNumber=${{ steps.version_step.outputs.semVer }}
+          releaseNumber=${{ steps.version_step.outputs.WeightedPreReleaseNumber }}
+          echo "buildNumber=${{ steps.version_step.outputs.semVer }}" >> $GITHUB_ENV
+          echo "buildNumber=${{ steps.version_step.outputs.semVer }}" >> $GITHUB_OUTPUT
+          echo "releaseNumber=${{ steps.version_step.outputs.WeightedPreReleaseNumber }}" >> $GITHUB_ENV
+          echo "releaseNumber=${{ steps.version_step.outputs.WeightedPreReleaseNumber }}" >> $GITHUB_OUTPUT
 
   exposeEnvironmentVariables:
     runs-on: ubuntu-latest
@@ -78,11 +84,13 @@ jobs:
       environment: ${{ needs.exposeEnvironmentVariables.outputs.environment }}
       configuration: ${{ needs.exposeEnvironmentVariables.outputs.configuration }}
       build_number: ${{ needs.generate-build-number.outputs.buildNumber }}
+      release_number: ${{ needs.generate-build-number.outputs.releaseNumber }}
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
       bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
     secrets:
       android_keystore: ${{ secrets.ANDROID_KEYSTORE }}
       android_keystore_password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      appsettings: ${{ secrets.MOBILE_APPSETTINGS }}
 
 
   calliOSBuild:
@@ -102,3 +110,4 @@ jobs:
       apple_issuer_id: ${{ secrets.APPSTORE_ISSUER_ID }}
       apple_key_id: ${{ secrets.APPSTORE_KEY_ID }}
       apple_key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+      appsettings: ${{ secrets.MOBILE_APPSETTINGS }}

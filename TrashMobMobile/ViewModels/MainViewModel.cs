@@ -33,7 +33,7 @@ public partial class MainViewModel : BaseViewModel
         MyDashboardCommand = new Command(async () => await MyDashboard());
         SearchEventsCommand = new Command(async () => await SearchEvents());
         CreateEventCommand = new Command(async () => await CreateEvent());
-        SubmitLitterReportCommand = new Command(async () => await SubmitLitterReport());
+        SubmitLitterReportCommand = new Command(async () => await CreateLitterReport());
         SearchLitterReportsCommand = new Command(async () => await SearchLitterReports());
         SetLocationPreferenceCommand = new Command(async () => await SetLocationPreference());
         LogoutCommand = new Command(async () => await Logout());
@@ -102,6 +102,8 @@ public partial class MainViewModel : BaseViewModel
                 TravelDistance = App.CurrentUser.TravelLimitForLocalEvents;
             }
 
+            await RefreshEvents();
+
             IsBusy = false;
         }
         else
@@ -117,7 +119,6 @@ public partial class MainViewModel : BaseViewModel
         }
 
         await RefreshStatistics();
-        await RefreshEvents();
     }
 
     private async Task RefreshStatistics()
@@ -165,9 +166,9 @@ public partial class MainViewModel : BaseViewModel
         await Shell.Current.GoToAsync(nameof(MyDashboardPage));
     }
 
-    private async Task SubmitLitterReport()
+    private async Task CreateLitterReport()
     {
-        await Shell.Current.GoToAsync(nameof(SubmitLitterReportPage));
+        await Shell.Current.GoToAsync(nameof(CreateLitterReportPage));
     }
 
     private async Task SearchLitterReports()

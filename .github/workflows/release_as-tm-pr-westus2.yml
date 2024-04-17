@@ -17,8 +17,8 @@ on:
 
 env:
   AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
-  DOTNET_VERSION: '6.0.x'  # set this to the dotnet version to use
-  DOTNET_VERSION2: '6.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION: '8.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION2: '8.0.x'  # set this to the dotnet version to use
   CONFIGURATION: Release
 
 jobs:
@@ -27,7 +27,19 @@ jobs:
     environment: production
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v1.1.1
+      with:
+        versionSpec: '5.x'
+
+    - name: Determine Version
+      id: version_step # step id used as reference for output values
+      uses: gittools/actions/gitversion/execute@v1.1.1
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v3
