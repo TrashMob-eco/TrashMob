@@ -11,7 +11,7 @@ namespace TrashMob.Shared.Poco
 
         public string Description { get; set; }
 
-        public int LitterReportStatusId { get; set; }
+        public int LitterReportStatusId { get; set; } = 1;
 
         public List<FullLitterImage> LitterImages { get; set; } = new List<FullLitterImage>();
 
