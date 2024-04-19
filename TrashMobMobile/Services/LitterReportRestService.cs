@@ -75,7 +75,7 @@
                         foreach (var litterImage in litterReport.LitterImages)
                         {
                             await AddLitterImageAsync(litterImage.Id, litterImage.AzureBlobURL, cancellationToken);
-                        }
+                }
                     }
                 }
 
