@@ -59,6 +59,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
             SelectedLitterImageViewModel.Address.Region = address.Region;
             SelectedLitterImageViewModel.Address.StreetAddress = address.StreetAddress;
             SelectedLitterImageViewModel.Address.Location = new Location(SelectedLitterImageViewModel.Address.Latitude.Value, SelectedLitterImageViewModel.Address.Longitude.Value);
+            SelectedLitterImageViewModel.FilePath = LocalFilePath;
             LitterImageViewModels.Add(SelectedLitterImageViewModel);
             SelectedLitterImageViewModel = null;
         }

@@ -14,6 +14,8 @@ namespace TrashMob.Controllers
     using TrashMob.Shared;
     using System;
     using Microsoft.Extensions.Logging;
+    using TrashMob.Shared.Managers.Events;
+    using TrashMob.Shared.Poco;
 
     [Route("api/litterreport")]
     public class LitterReportController : SecureController
@@ -21,16 +23,19 @@ namespace TrashMob.Controllers
         private readonly ILitterReportManager litterReportManager;
         private readonly ILitterImageManager litterImageManager;
         private readonly IUserManager userManager;
+        private readonly IImageManager imageManager;
         private readonly ILogger<LitterReportController> logger;
 
         public LitterReportController(ILitterReportManager litterReportManager, 
-                                        ILitterImageManager litterImageManager, 
-                                        IUserManager userManager,
-                                        ILogger<LitterReportController> logger)
+                                      ILitterImageManager litterImageManager, 
+                                      IUserManager userManager,
+                                      IImageManager imageManager,
+                                      ILogger<LitterReportController> logger)
         {
             this.litterReportManager = litterReportManager;
             this.litterImageManager = litterImageManager;
             this.userManager = userManager;
+            this.imageManager = imageManager;
             this.logger = logger;
         }
 
@@ -118,6 +123,45 @@ namespace TrashMob.Controllers
             }
 
             return BadRequest("Failed to create litter report");
+        }
+
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [Route("multiadd")]
+        public async Task<IActionResult> AddLitterReportMultiAdd(FullLitterReport fullLitterReport, CancellationToken cancellationToken)
+        {
+            if (fullLitterReport == null)
+            {
+                return null;
+            }
+
+            logger.LogInformation("AddLitterReport - Name: {Name}, Description: {Description}, Status: {Status}", fullLitterReport.Name, fullLitterReport.Description, fullLitterReport.LitterReportStatusId);
+
+            var newLitterReport = await litterReportManager.AddAsync(fullLitterReport, UserId, cancellationToken);
+
+            if (newLitterReport != null)
+            {
+                TelemetryClient.TrackEvent(nameof(AddLitterReport));
+                return Ok(newLitterReport);
+            }
+
+            return BadRequest("Failed to create litter report");
+        }
+        
+        [HttpPost("image/{litterImageId}")]
+        public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload, Guid litterImageId, CancellationToken cancellationToken)
+        {
+            var litterImage = await litterImageManager.GetAsync(litterImageId, cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, litterImage, AuthorizationPolicyConstants.UserOwnsEntity);
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            await imageManager.UploadImage(imageUpload);
+
+            return Ok();
         }
 
         [HttpPut]

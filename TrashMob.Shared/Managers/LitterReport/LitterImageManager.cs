@@ -11,7 +11,6 @@ namespace TrashMob.Shared.Managers.LitterReport
     using TrashMob.Models.Poco;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
-    using TrashMob.Shared.Poco;
 
     public class LitterImageManager : KeyedManager<LitterImage>, ILitterImageManager
     {
@@ -28,25 +27,6 @@ namespace TrashMob.Shared.Managers.LitterReport
         {
             LitterImage litterImage = instance.ToLitterImage();
             var newLitterImage = await base.AddAsync(litterImage, userId, cancellationToken);
-
-            //upload to azure blob
-            ImageUpload imageUpload = new ImageUpload()
-            {
-                FormFile = instance.formFile,
-                ImageType = ImageTypeEnum.LitterImage,
-                ParentId = newLitterImage.Id,
-            };
-
-            try
-            {
-                await imageManager.UploadImage(imageUpload);
-                newLitterImage.AzureBlobURL = await imageManager.GetImageUrlAsync(imageUpload.ParentId, ImageTypeEnum.LitterImage);
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-
             await UpdateAsync(newLitterImage, userId, cancellationToken);
 
             return newLitterImage;
