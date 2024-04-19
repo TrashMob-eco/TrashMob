@@ -60,25 +60,61 @@
 
             try
             {
-                var content = new MultipartFormDataContent
-                {
-                    { JsonContent.Create(fullLitterReport, typeof(FullLitterReport), null, SerializerOptions), "litterReport" }
-                };
+                var url = Controller + "/multiadd";
+                var content = JsonContent.Create(fullLitterReport, typeof(FullLitterReport), null, SerializerOptions);
 
-                foreach (var litterImage in litterReport.LitterImages)
-                {
-                    var stream = File.OpenRead(litterImage.AzureBlobURL);
-                    var streamContent = new StreamContent(stream);
-                    streamContent.Headers.Add("Content-Type", "image/jpeg");
-                    content.Add(streamContent, "formFile", Path.GetFileName(litterImage.AzureBlobURL));
-                }
-
-                using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
+                using (var response = await AuthorizedHttpClient.PostAsync(url, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
+
+                    var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                    var result = JsonConvert.DeserializeObject<FullLitterReport>(responseContent);
+
+                    if (result != null)
+                    {
+                        foreach (var litterImage in litterReport.LitterImages)
+                        {
+                            await AddLitterImageAsync(litterImage.Id, litterImage.AzureBlobURL, cancellationToken);
+                        }
+                    }
                 }
 
                 return await GetLitterReportAsync(litterReport.Id, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(@"\tERROR {0}", ex.Message);
+                throw;
+            }
+        }
+
+        public async Task AddLitterImageAsync(Guid litterImageId, string localFileName, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var requestUri = Controller + "/image/" + litterImageId;
+
+                using (var stream = File.OpenRead(localFileName))
+                {
+                    using var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
+
+                    var streamContent = new StreamContent(stream);
+                    streamContent.Headers.Add("Content-Type", "image/jpeg");
+
+                    var content = new MultipartFormDataContent
+                {
+                    { streamContent, "formFile", Path.GetFileName(localFileName)},
+                    { new StringContent(litterImageId.ToString()), "parentId" },
+                    { new StringContent(ImageUploadType.LitterImage), "imageType" },
+                };
+
+                    request.Content = content;
+
+                    using (var response = await AuthorizedHttpClient.SendAsync(request, cancellationToken))
+                    {
+                        response.EnsureSuccessStatusCode();
+                    }
+                }
             }
             catch (Exception ex)
             {
