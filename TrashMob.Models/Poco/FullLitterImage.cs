@@ -6,8 +6,6 @@ namespace TrashMob.Models.Poco
 
     public class FullLitterImage
     {
-        public IFormFile? formFile {  get; set; }
-
         public Guid Id { get; set; }
 
         public Guid LitterReportId { get; set; }

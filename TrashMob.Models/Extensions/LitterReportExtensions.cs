@@ -41,7 +41,7 @@
         {
             return new FullLitterImage
             {
-                Id = litterImage.Id,
+                Id = litterImage.Id == Guid.Empty ? Guid.NewGuid() : litterImage.Id,
                 LitterReportId = litterImage.LitterReportId,
                 ImageURL = litterImage.AzureBlobURL,
                 StreetAddress = litterImage.StreetAddress,
