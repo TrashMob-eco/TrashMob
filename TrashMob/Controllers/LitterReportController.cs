@@ -215,7 +215,7 @@ namespace TrashMob.Controllers
 
         }
 
-        private async Task<IActionResult> ToFullLitterReport(IEnumerable<LitterReport> litterReports, CancellationToken cancellationToken)
+        private async Task<IEnumerable<FullLitterReport>> ToFullLitterReport(IEnumerable<LitterReport> litterReports, CancellationToken cancellationToken)
         {
             var fullLitterReports = new List<FullLitterReport>();
 
@@ -225,7 +225,7 @@ namespace TrashMob.Controllers
                 fullLitterReports.Add(litterReport.ToFullLitterReport(user.UserName));
             }
 
-            return Ok(fullLitterReports);
+            return fullLitterReports;
         }
     }
 }
