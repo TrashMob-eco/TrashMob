@@ -134,7 +134,7 @@
                     return [];
                 }
 
-                return JsonConvert.DeserializeObject<IEnumerable<LitterReport>>(content);
+                return JsonConvert.DeserializeObject<List<LitterReport>>(content);
             }
         }
 
