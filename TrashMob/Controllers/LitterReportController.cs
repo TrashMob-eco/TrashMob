@@ -40,7 +40,6 @@ namespace TrashMob.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> GetLitterReports(CancellationToken cancellationToken)
         {
             var result = await litterReportManager.GetAsync(cancellationToken).ConfigureAwait(false);
@@ -149,6 +148,7 @@ namespace TrashMob.Controllers
         }
         
         [HttpPost("image/{litterImageId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload, Guid litterImageId, CancellationToken cancellationToken)
         {
             var litterImage = await litterImageManager.GetAsync(litterImageId, cancellationToken);
@@ -165,6 +165,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdateLitterReport([FromForm]FullLitterReport fullLitterReport, CancellationToken cancellationToken)
         {
@@ -189,6 +190,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteLitterReport(Guid id, CancellationToken cancellationToken)
         {

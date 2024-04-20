@@ -1,7 +1,6 @@
 ﻿namespace TrashMobMobile.Data
 {
     using Newtonsoft.Json;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -75,7 +74,7 @@
                         foreach (var litterImage in litterReport.LitterImages)
                         {
                             await AddLitterImageAsync(litterImage.Id, litterImage.AzureBlobURL, cancellationToken);
-                }
+                        }
                     }
                 }
 
