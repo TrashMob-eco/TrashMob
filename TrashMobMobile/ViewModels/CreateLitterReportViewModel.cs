@@ -115,6 +115,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
         {
             var litterImage = new LitterImage
             {
+                Id = Guid.NewGuid(),
                 City = litterImageViewModel.Address.City,
                 Country = litterImageViewModel.Address.Country,
                 LitterReportId = litterImageViewModel.LitterReportId,

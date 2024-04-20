@@ -102,11 +102,11 @@
                     streamContent.Headers.Add("Content-Type", "image/jpeg");
 
                     var content = new MultipartFormDataContent
-                {
-                    { streamContent, "formFile", Path.GetFileName(localFileName)},
-                    { new StringContent(litterImageId.ToString()), "parentId" },
-                    { new StringContent(ImageUploadType.LitterImage), "imageType" },
-                };
+                    {
+                        { streamContent, "formFile", Path.GetFileName(localFileName)},
+                        { new StringContent(litterImageId.ToString()), "parentId" },
+                        { new StringContent(ImageUploadType.LitterImage), "imageType" },
+                    };
 
                     request.Content = content;
 
