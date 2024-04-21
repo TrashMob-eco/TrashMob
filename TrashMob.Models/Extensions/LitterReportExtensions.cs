@@ -22,6 +22,22 @@
             };
         }
 
+        public static FullLitterReport ToFullLitterReport(this LitterReport litterReport)
+        {
+            return new FullLitterReport
+            {
+                Id = litterReport.Id,
+                Name = litterReport.Name,
+                Description = litterReport.Description,
+                LitterReportStatusId = litterReport.LitterReportStatusId,
+                CreatedByUserId = litterReport.CreatedByUserId,
+                CreatedDate = litterReport.CreatedDate,
+                LastUpdatedByUserId = litterReport.LastUpdatedByUserId,
+                LastUpdatedDate = litterReport.LastUpdatedDate,
+                LitterImages = litterReport.LitterImages == null ? [] : litterReport.LitterImages.Select(image => image.ToFullLitterImage()).ToList(),                
+            };
+        }
+
         public static LitterReport ToLitterReport(this FullLitterReport fullLitterReport)
         {
             return new LitterReport
