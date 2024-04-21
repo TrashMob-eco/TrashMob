@@ -39,13 +39,12 @@ namespace TrashMob.Controllers
             this.logger = logger;
         }
 
-        [HttpGet]
+        [HttpGet("{litterReportId}")]
         public async Task<IActionResult> GetLitterReport(Guid litterReportId, CancellationToken cancellationToken)
         {
             var result = await litterReportManager.GetAsync(litterReportId, cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
-
 
         [HttpGet]
         public async Task<IActionResult> GetLitterReports(CancellationToken cancellationToken)
