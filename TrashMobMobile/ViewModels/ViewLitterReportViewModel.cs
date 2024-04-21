@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections.ObjectModel;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
@@ -12,7 +13,11 @@ public partial class ViewLitterReportViewModel : BaseViewModel
     }
 
     [ObservableProperty]
-    public LitterReportViewModel litterReportViewModel;
+    public LitterReportViewModel? litterReportViewModel;
+    public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; init; } = [];
+
+    public LitterImageViewModel? SelectedLitterImageViewModel { get; set; }
+
     private readonly ILitterReportRestService litterReportRestService;
 
     public async Task Init(Guid litterReportId)
@@ -22,6 +27,12 @@ public partial class ViewLitterReportViewModel : BaseViewModel
         var litterReport = await litterReportRestService.GetLitterReportAsync(litterReportId);
 
         LitterReportViewModel = litterReport.ToLitterReportViewModel();
+
+        LitterImageViewModels.Clear();
+        foreach (var litterImage in litterReport.LitterImages)
+        {
+            LitterImageViewModels.Add(litterImage.ToLitterImageViewModel());
+        }
 
         IsBusy = false;
     }

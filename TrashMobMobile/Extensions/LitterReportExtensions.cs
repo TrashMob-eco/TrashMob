@@ -42,6 +42,17 @@
             {
                 Id = litterImage.Id,
                 LitterReportId = litterImage.LitterReportId,
+                Address = new AddressViewModel
+                {
+                    City = litterImage.City,
+                    Country = litterImage.Country,
+                    Latitude = litterImage.Latitude,
+                    Longitude = litterImage.Longitude,
+                    PostalCode = litterImage.PostalCode,
+                    Region = litterImage.Region,
+                    StreetAddress = litterImage.StreetAddress,
+                    Location = new Location(litterImage.Latitude.Value, litterImage.Longitude.Value)
+                },
             };
         }
     }
