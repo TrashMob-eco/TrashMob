@@ -5,13 +5,17 @@ namespace TrashMob.Controllers
     using System.Threading.Tasks;
     using System.Threading;
     using TrashMob.Models;
+    using TrashMob.Models.Extensions;
+    using TrashMob.Models.Poco;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Poco;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Security;
     using TrashMob.Shared;
     using System;
+    using Microsoft.Extensions.Logging;
+    using TrashMob.Shared.Managers.Events;
+    using TrashMob.Shared.Poco;
 
     [Route("api/litterreport")]
     public class LitterReportController : SecureController
@@ -19,19 +23,30 @@ namespace TrashMob.Controllers
         private readonly ILitterReportManager litterReportManager;
         private readonly ILitterImageManager litterImageManager;
         private readonly IUserManager userManager;
+        private readonly IImageManager imageManager;
+        private readonly ILogger<LitterReportController> logger;
 
         public LitterReportController(ILitterReportManager litterReportManager, 
-                                        ILitterImageManager litterImageManager, 
-                                        IUserManager userManager, 
-                                        IImageManager imageManager)
+                                      ILitterImageManager litterImageManager, 
+                                      IUserManager userManager,
+                                      IImageManager imageManager,
+                                      ILogger<LitterReportController> logger)
         {
             this.litterReportManager = litterReportManager;
             this.litterImageManager = litterImageManager;
             this.userManager = userManager;
+            this.imageManager = imageManager;
+            this.logger = logger;
+        }
+
+        [HttpGet("{litterReportId}")]
+        public async Task<IActionResult> GetLitterReport(Guid litterReportId, CancellationToken cancellationToken)
+        {
+            var result = await litterReportManager.GetAsync(litterReportId, cancellationToken).ConfigureAwait(false);
+            return Ok(result);
         }
 
         [HttpGet]
-        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> GetLitterReports(CancellationToken cancellationToken)
         {
             var result = await litterReportManager.GetAsync(cancellationToken).ConfigureAwait(false);
@@ -103,6 +118,8 @@ namespace TrashMob.Controllers
                 return null;
             }
 
+            logger.LogInformation("AddLitterReport - Name: {Name}, Description: {Description}, Status: {Status}", fullLitterReport.Name, fullLitterReport.Description, fullLitterReport.LitterReportStatusId);
+
             var newLitterReport = await litterReportManager.AddAsync(fullLitterReport, UserId, cancellationToken);
 
             if (newLitterReport != null)
@@ -114,7 +131,48 @@ namespace TrashMob.Controllers
             return BadRequest("Failed to create litter report");
         }
 
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [Route("multiadd")]
+        public async Task<IActionResult> AddLitterReportMultiAdd(FullLitterReport fullLitterReport, CancellationToken cancellationToken)
+        {
+            if (fullLitterReport == null)
+            {
+                return null;
+            }
+
+            logger.LogInformation("AddLitterReport - Name: {Name}, Description: {Description}, Status: {Status}", fullLitterReport.Name, fullLitterReport.Description, fullLitterReport.LitterReportStatusId);
+
+            var newLitterReport = await litterReportManager.AddAsync(fullLitterReport, UserId, cancellationToken);
+
+            if (newLitterReport != null)
+            {
+                TelemetryClient.TrackEvent(nameof(AddLitterReport));
+                return Ok(newLitterReport);
+            }
+
+            return BadRequest("Failed to create litter report");
+        }
+        
+        [HttpPost("image/{litterImageId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload, Guid litterImageId, CancellationToken cancellationToken)
+        {
+            var litterImage = await litterImageManager.GetAsync(litterImageId, cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, litterImage, AuthorizationPolicyConstants.UserOwnsEntity);
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            await imageManager.UploadImage(imageUpload);
+
+            return Ok();
+        }
+
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdateLitterReport([FromForm]FullLitterReport fullLitterReport, CancellationToken cancellationToken)
         {
@@ -139,6 +197,7 @@ namespace TrashMob.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteLitterReport(Guid id, CancellationToken cancellationToken)
         {
@@ -163,7 +222,7 @@ namespace TrashMob.Controllers
 
         }
 
-        private async Task<IActionResult> ToFullLitterReport(IEnumerable<LitterReport> litterReports, CancellationToken cancellationToken)
+        private async Task<IEnumerable<FullLitterReport>> ToFullLitterReport(IEnumerable<LitterReport> litterReports, CancellationToken cancellationToken)
         {
             var fullLitterReports = new List<FullLitterReport>();
 
@@ -173,7 +232,7 @@ namespace TrashMob.Controllers
                 fullLitterReports.Add(litterReport.ToFullLitterReport(user.UserName));
             }
 
-            return Ok(fullLitterReports);
+            return fullLitterReports;
         }
     }
 }

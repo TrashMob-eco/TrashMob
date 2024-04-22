@@ -7,7 +7,7 @@ using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
-public partial class AddPickupLocationViewModel : BaseViewModel
+public partial class CreatePickupLocationViewModel : BaseViewModel
 {
     [ObservableProperty]
     PickupLocationViewModel pickupLocationViewModel;
@@ -15,7 +15,7 @@ public partial class AddPickupLocationViewModel : BaseViewModel
     [ObservableProperty]
     EventViewModel eventViewModel;
 
-    public AddPickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMapRestService mapRestService, IMobEventManager mobEventManager)
+    public CreatePickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMapRestService mapRestService, IMobEventManager mobEventManager)
     {
         SavePickupLocationCommand = new Command(async () => await SavePickupLocation());
         this.pickupLocationManager = pickupLocationManager;

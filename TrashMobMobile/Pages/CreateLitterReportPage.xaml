@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="TrashMobMobile.Pages.CreateLitterReportPage">
+    <FlexLayout Direction="Column"
+                JustifyContent="SpaceAround">
+        <Label 
+            Text="Submit Litter Report!"
+            FontSize="Large"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"/>
+
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
+        <!-- Litter Report Top -->
+        <Grid RowDefinitions = "1*, 4*" ColumnDefinitions="1*, 1*" MaximumWidthRequest="400" >
+            <Label Grid.Row="0" Grid.Column="0" Text="Name"  />
+            <Entry Grid.Row="0" Grid.Column="1" Text="{Binding LitterReportViewModel.Name}">
+                <Entry.Behaviors>
+                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
+                </Entry.Behaviors>
+            </Entry>
+
+            <Label Grid.Row="1" Grid.Column="0" Text="Description" />
+            <Editor Grid.Row="1" Grid.Column="1" Text="{Binding LitterReportViewModel.Description}">
+                <Editor.Behaviors>
+                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10" x:Name="descriptionValidator" />
+                </Editor.Behaviors>
+            </Editor>
+        </Grid>
+
+        <CollectionView x:Name="LitterImagesCollection" 
+                 ItemsSource="{Binding LitterImageViewModels}" 
+                 SelectedItem="{Binding SelectedLitterImageViewModel}" 
+                 SelectionMode="Single" >
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border StrokeThickness="1">
+                        <Grid WidthRequest = "400"
+                       ColumnDefinitions="1*, 1*, 1*, 1*, 5*"
+                       RowDefinitions="Auto"
+                       x:Name="EventItem">
+                            <Label Text="{Binding Id}" Grid.Column="0" />
+                            <Label Text="{Binding AzureBlobUrl}" Grid.Column="1" />
+                            <Label Text="{Binding Address.City}" Grid.Column="2" />
+                            <Label Text="{Binding Address.StreetAddress}" Grid.Column="3" />
+                            <Image IsVisible="true" MaximumHeightRequest="50" Grid.Column="4" Source="{Binding AzureBlobUrl}" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Button Text="Add Litter Image" Clicked="TakePhoto_Clicked" />
+        <Image x:Name="litterPhoto" IsVisible="false" MaximumHeightRequest="200" />
+
+        <Button Text="Save Litter Report" Command="{Binding SaveLitterReportCommand}">
+            <Button.Triggers>
+                <MultiTrigger TargetType="Button">
+                    <MultiTrigger.Conditions>
+                        <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
+                        <BindingCondition Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="IsEnabled" Value="True" />
+                </MultiTrigger>
+            </Button.Triggers>
+        </Button>
+    </FlexLayout>
+</ContentPage>

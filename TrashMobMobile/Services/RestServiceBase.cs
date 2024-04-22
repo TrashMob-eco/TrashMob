@@ -6,8 +6,12 @@
 
     public abstract class RestServiceBase
     {
-        protected JsonSerializerOptions SerializerOptions { get; private set; }
-        
+        protected static JsonSerializerOptions SerializerOptions { get; } = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = true
+        };
+
         protected string TrashMobApiAddress { get; }
 
         protected abstract string Controller { get; }
@@ -41,12 +45,6 @@
 
         protected RestServiceBase()
         {
-            SerializerOptions = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                WriteIndented = true
-            };
-
             TrashMobApiAddress = Settings.ApiBaseUrl;
 
             authorizedHttpClient = new HttpClient()

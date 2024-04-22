@@ -25,13 +25,21 @@ namespace TrashMob.Shared.Managers
 
         public override Task<T> AddAsync(T instance, CancellationToken cancellationToken = default)
         {
-            instance.Id = Guid.NewGuid();
+            if (instance.Id == Guid.Empty)
+            {
+                instance.Id = Guid.NewGuid();
+            }
+
             return base.AddAsync(instance, cancellationToken);
         }
 
         public override Task<T> AddAsync(T instance, Guid userId, CancellationToken cancellationToken = default)
         {
-            instance.Id = Guid.NewGuid();
+            if (instance.Id == Guid.Empty)
+            {
+                instance.Id = Guid.NewGuid();
+            }
+
             return base.AddAsync(instance, userId, cancellationToken);
         }
 

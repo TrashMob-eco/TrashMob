@@ -1,28 +1,26 @@
 
-namespace TrashMob.Shared.Poco
+namespace TrashMob.Models.Poco
 {
     using Microsoft.AspNetCore.Http;
     using System;
 
     public class FullLitterImage
     {
-        public IFormFile formFile {  get; set; }
-
         public Guid Id { get; set; }
 
         public Guid LitterReportId { get; set; }
 
         public string ImageURL { get; set; } = string.Empty;
 
-        public string StreetAddress { get; set; }
+        public string StreetAddress { get; set; } = string.Empty;
 
-        public string City { get; set; }
+        public string City { get; set; } = string.Empty;
 
-        public string Region { get; set; }
+        public string Region { get; set; } = string.Empty;
 
-        public string Country { get; set; }
+        public string Country { get; set; } = string.Empty;
 
-        public string PostalCode { get; set; }
+        public string PostalCode { get; set; } = string.Empty;
 
         public double? Latitude { get; set; }
 
