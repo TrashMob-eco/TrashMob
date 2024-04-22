@@ -23,28 +23,42 @@
 
             <Button Text="Edit Litter Report" Command="{Binding EditEventCommand}" IsVisible="{Binding EnableEditEvent}"/>
 
-            <maps:Map x:Name="litterReportLocationMap" ItemsSource="{Binding LitterImages}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True">
+            <maps:Map x:Name="litterReportLocationMap" ItemsSource="{Binding LitterImageViewModels}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True">
                 <maps:Map.ItemTemplate>
                     <DataTemplate>
                         <maps:Pin Location="{Binding Address.Location}"
                               Address="{Binding Address.StreetAddress}"
-                              Label="{Binding Name}" />
+                              Label="Litter Image" />
                     </DataTemplate>
                 </maps:Map.ItemTemplate>
             </maps:Map>
 
-            <Grid RowDefinitions = "1*, 1*, 1*, 1*, 1*" ColumnDefinitions="1*, 1*" MaximumWidthRequest="400" >
-                <Label Grid.Row="0" Grid.Column="0" Text="Address" />
-                <Label Grid.Row="0" Grid.Column="1" Text="{Binding EventViewModel.Address.StreetAddress }" />
-                <Label Grid.Row="1" Grid.Column="0" Text="City" />
-                <Label Grid.Row="1" Grid.Column="1" Text="{Binding EventViewModel.Address.City }" />
-                <Label Grid.Row="2" Grid.Column="0" Text="Region" />
-                <Label Grid.Row="2" Grid.Column="1" Text="{Binding EventViewModel.Address.Region }" />
-                <Label Grid.Row="3" Grid.Column="0" Text="Country" />
-                <Label Grid.Row="3" Grid.Column="1" Text="{Binding EventViewModel.Address.Country }" />
-                <Label Grid.Row="4" Grid.Column="0" Text="Postal Code" />
-                <Label Grid.Row="4" Grid.Column="1" Text="{Binding EventViewModel.Address.PostalCode }" />
-            </Grid>
+            <CollectionView x:Name="LitterImagesCollection"
+                 ItemsSource="{Binding LitterImageViewModels}" 
+                 SelectedItem="{Binding SelectedLitterImage}" 
+                 SelectionMode="Single" >
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border StrokeThickness="1">
+                            <Grid WidthRequest = "400"
+                                  ColumnDefinitions="1*, 1*" 
+                                  RowDefinitions="Auto"
+                                  x:Name="LitterImageItem">
+                                <Label Grid.Row="0" Grid.Column="0" Text="Address" />
+                                <Label Grid.Row="0" Grid.Column="1" Text="{Binding EventViewModel.Address.StreetAddress }" />
+                                <Label Grid.Row="1" Grid.Column="0" Text="City" />
+                                <Label Grid.Row="1" Grid.Column="1" Text="{Binding EventViewModel.Address.City }" />
+                                <Label Grid.Row="2" Grid.Column="0" Text="Region" />
+                                <Label Grid.Row="2" Grid.Column="1" Text="{Binding EventViewModel.Address.Region }" />
+                                <Label Grid.Row="3" Grid.Column="0" Text="Country" />
+                                <Label Grid.Row="3" Grid.Column="1" Text="{Binding EventViewModel.Address.Country }" />
+                                <Label Grid.Row="4" Grid.Column="0" Text="Postal Code" />
+                                <Label Grid.Row="4" Grid.Column="1" Text="{Binding EventViewModel.Address.PostalCode }" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
         </VerticalStackLayout>
     </ScrollView>
