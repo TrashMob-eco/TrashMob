@@ -1,4 +1,7 @@
-﻿namespace TrashMobMobile.ViewModels;
+﻿
+namespace TrashMobMobile.ViewModels;
+
+#nullable enable
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
