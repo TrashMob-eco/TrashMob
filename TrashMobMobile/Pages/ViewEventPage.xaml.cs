@@ -1,5 +1,7 @@
 namespace TrashMobMobile.Pages;
 
+#nullable enable
+
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using Microsoft.Maui.Maps;

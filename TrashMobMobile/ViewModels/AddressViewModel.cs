@@ -1,5 +1,7 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
+#nullable enable
+
 using CommunityToolkit.Mvvm.ComponentModel;
 
 public partial class AddressViewModel : ObservableObject
