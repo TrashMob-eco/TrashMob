@@ -67,7 +67,6 @@ jobs:
           run: sed -i '' "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>${{ env.semVer }}</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
 
         - name: Update Version Number
-          if: inputs.version != null
           run: sed -i '' "s|<ApplicationDisplayVersion>.*</ApplicationDisplayVersion>|<Version>${{ env.semVer }}</Version>|g" TrashMobMobile/TrashMobMobile.csproj
 
         - name: Update Bundle ID
