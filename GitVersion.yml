@@ -1,6 +1,5 @@
 assembly-versioning-scheme: MajorMinorPatch
 mode: Mainline
-next-version: 2.1.1
 tag-pre-release-weight: 1590664954
 continuous-delivery-fallback-tag: ''
 branches:
