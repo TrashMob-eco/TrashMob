@@ -11,6 +11,8 @@ branches:
     regex: ^release$
     mode: ContinuousDeployment
     tag: ''
+    continuous-delivery-fallback-tag: ''
+    tag-pre-release-weight: 1590664954
 ignore:
   sha: []
 merge-message-formats: {}
