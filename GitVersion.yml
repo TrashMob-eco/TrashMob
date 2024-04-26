@@ -6,11 +6,10 @@ continuous-delivery-fallback-tag: ''
 branches:
   main:
     regex: ^main$
-    mode: ContinuousDelivery
     tag: ''
   release:
     regex: ^release$
-    mode: ContinuousDeployment
+    increment: Patch
     tag: ''
     is-release-branch: true
     pre-release-weight: 1590664954
