@@ -9,7 +9,7 @@ branches:
     tag: ''
   release:
     regex: ^release$
-    mode: ContinuousDelivery
+    mode: ContinuousDeployment
     tag: ''
 ignore:
   sha: []
