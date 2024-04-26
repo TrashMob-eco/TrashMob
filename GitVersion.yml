@@ -2,6 +2,7 @@ assembly-versioning-scheme: MajorMinorPatch
 mode: Mainline
 next-version: 2.1.1
 tag-pre-release-weight: 1590664954
+continuous-delivery-fallback-tag: ''
 branches:
   main:
     regex: ^main$
@@ -11,8 +12,8 @@ branches:
     regex: ^release$
     mode: ContinuousDeployment
     tag: ''
-    continuous-delivery-fallback-tag: ''
-    tag-pre-release-weight: 1590664954
+    is-release-branch: true
+    pre-release-weight: 1590664954
 ignore:
   sha: []
 merge-message-formats: {}
