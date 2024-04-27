@@ -12,6 +12,7 @@ branches:
     tag: ''
     is-release-branch: true
     pre-release-weight: 1590664954
+    source-branches: ['main']
 ignore:
   sha: []
 merge-message-formats: {}
