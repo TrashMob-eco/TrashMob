@@ -8,10 +8,10 @@ using Microsoft.Maui.Maps;
 public partial class CreatePickupLocationPage : ContentPage
 {
     private readonly CreatePickupLocationViewModel _viewModel;
-    
+
     public CreatePickupLocationPage(CreatePickupLocationViewModel viewModel)
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         _viewModel = viewModel;
         _viewModel.Notify = Notify;
         _viewModel.NotifyError = NotifyError;
@@ -53,7 +53,7 @@ public partial class CreatePickupLocationPage : ContentPage
             BackgroundColor = Colors.Red,
             TextColor = Colors.White,
             CornerRadius = new CornerRadius(10),
-            Font = Microsoft.Maui.Font.SystemFontOfSize(14),            
+            Font = Microsoft.Maui.Font.SystemFontOfSize(14),
         };
 
         string text = message;
