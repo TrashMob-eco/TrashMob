@@ -32,4 +32,13 @@ public partial class SearchLitterReportsPage : ContentPage
         var toast = Toast.Make(message, duration, fontSize);
         await toast.Show(cancellationTokenSource.Token);
     }
+
+    private async void OnReportStatusRadioButtonCheckedChanged(object sender, CheckedChangedEventArgs e)
+    {
+        if (sender is RadioButton radioButton && radioButton.IsChecked)
+        {
+            _viewModel.ReportStatus = (string)radioButton.Content;
+            await _viewModel.Init();
+        }
+    }
 }

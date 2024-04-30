@@ -60,6 +60,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
             SelectedLitterImageViewModel.Address.StreetAddress = address.StreetAddress;
             SelectedLitterImageViewModel.Address.Location = new Location(SelectedLitterImageViewModel.Address.Latitude.Value, SelectedLitterImageViewModel.Address.Longitude.Value);
             SelectedLitterImageViewModel.FilePath = LocalFilePath;
+            
             LitterImageViewModels.Add(SelectedLitterImageViewModel);
             SelectedLitterImageViewModel = null;
         }
@@ -136,7 +137,9 @@ public partial class CreateLitterReportViewModel : BaseViewModel
 
         IsBusy = false;
 
-        await Notify("Litter Report has been saved.");
+        await Notify("Litter Report has been submitted.");
+
+        await Navigation.PopAsync();
     }
 
     private async Task<bool> Validate()

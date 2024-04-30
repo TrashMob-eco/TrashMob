@@ -138,6 +138,24 @@
             }
         }
 
+        public async Task<IEnumerable<LitterReport>> GetAssignedLitterReportsAsync(CancellationToken cancellationToken = default)
+        {
+            var requestUri = Controller + "/assigned";
+
+            using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+                string content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                if (string.IsNullOrEmpty(content))
+                {
+                    return [];
+                }
+
+                return JsonConvert.DeserializeObject<IEnumerable<LitterReport>>(content);
+            }
+        }
+
         public async Task<IEnumerable<LitterReport>> GetNewLitterReportsAsync(CancellationToken cancellationToken = default)
         {
             var requestUri = Controller + "/new";

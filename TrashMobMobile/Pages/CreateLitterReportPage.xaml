@@ -2,60 +2,72 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             x:Class="TrashMobMobile.Pages.CreateLitterReportPage">
+             x:Class="TrashMobMobile.Pages.CreateLitterReportPage"
+             Title="Submit Litter Report">
     <FlexLayout Direction="Column"
                 JustifyContent="SpaceAround">
-        <Label 
-            Text="Submit Litter Report!"
-            FontSize="Large"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center"/>
-
+        
         <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
         <!-- Litter Report Top -->
-        <Grid RowDefinitions = "1*, 4*" ColumnDefinitions="1*, 1*" MaximumWidthRequest="400" >
-            <Label Grid.Row="0" Grid.Column="0" Text="Name"  />
-            <Entry Grid.Row="0" Grid.Column="1" Text="{Binding LitterReportViewModel.Name}">
-                <Entry.Behaviors>
-                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
-                </Entry.Behaviors>
-            </Entry>
+        <Grid RowDefinitions = "Auto, *, Auto" >
+            <VerticalStackLayout Spacing="5" Grid.Row="0" Margin="10,0">
+                <Label 
+                    Text="Name"
+                    FontSize="Small"
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Start"
+                    HorizontalTextAlignment="Center"
+                    FontAttributes="Bold" />
 
-            <Label Grid.Row="1" Grid.Column="0" Text="Description" />
-            <Editor Grid.Row="1" Grid.Column="1" Text="{Binding LitterReportViewModel.Description}">
-                <Editor.Behaviors>
-                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10" x:Name="descriptionValidator" />
-                </Editor.Behaviors>
-            </Editor>
+                <Frame Style="{x:StaticResource Frame}">
+                    <Entry Grid.Row="0" Grid.Column="1" Text="{Binding LitterReportViewModel.Name}">
+                        <Entry.Behaviors>
+                            <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
+                        </Entry.Behaviors>
+                    </Entry>
+                </Frame>
+            </VerticalStackLayout>
+            <VerticalStackLayout Spacing="5" Grid.Row="1" Margin="10,0">
+                <Label Text="Description" 
+                       FontSize="Small"
+                       VerticalOptions="Center" 
+                       HorizontalOptions="Start"
+                       HorizontalTextAlignment="Center"
+                       FontAttributes="Bold" />
+
+                <Frame Style="{x:StaticResource Frame}">
+                    <Editor Grid.Row="1" Grid.Column="1" Text="{Binding LitterReportViewModel.Description}">
+                        <Editor.Behaviors>
+                            <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10" x:Name="descriptionValidator" />
+                        </Editor.Behaviors>
+                    </Editor>
+                </Frame>
+             </VerticalStackLayout>
+
+            <Button Text="Add Litter Image" Grid.Row="2"  Clicked="TakePhoto_Clicked" Margin="10,0" />
         </Grid>
 
-        <CollectionView x:Name="LitterImagesCollection" 
+        <Grid RowDefinitions = "Auto, *">
+            <Label Text="Images" Grid.Row="0" Margin="10,0" FontSize="Small" FontAttributes="Bold" />
+
+            <CollectionView x:Name="LitterImagesCollection" Grid.Row="1"
                  ItemsSource="{Binding LitterImageViewModels}" 
-                 SelectedItem="{Binding SelectedLitterImageViewModel}" 
-                 SelectionMode="Single" >
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Border StrokeThickness="1">
-                        <Grid WidthRequest = "400"
-                       ColumnDefinitions="1*, 1*, 1*, 1*, 5*"
-                       RowDefinitions="Auto"
-                       x:Name="EventItem">
-                            <Label Text="{Binding Id}" Grid.Column="0" />
-                            <Label Text="{Binding AzureBlobUrl}" Grid.Column="1" />
-                            <Label Text="{Binding Address.City}" Grid.Column="2" />
-                            <Label Text="{Binding Address.StreetAddress}" Grid.Column="3" />
-                            <Image IsVisible="true" MaximumHeightRequest="50" Grid.Column="4" Source="{Binding AzureBlobUrl}" />
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-
-        <Button Text="Add Litter Image" Clicked="TakePhoto_Clicked" />
-        <Image x:Name="litterPhoto" IsVisible="false" MaximumHeightRequest="200" />
-
+                 SelectionMode="None" >
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border StrokeThickness="1">
+                            <Grid ColumnDefinitions="Auto, *, Auto">
+                                <Image Source="{Binding FilePath}" MaximumWidthRequest="100" Grid.Column="0" />
+                                <Label Text="{Binding Address.StreetAddress}" Grid.Column="1" />
+                                <Button Text="Delete Image" Grid.Column="2" Clicked="DeleteLitterImage_Clicked" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+        
         <Button Text="Save Litter Report" Command="{Binding SaveLitterReportCommand}">
             <Button.Triggers>
                 <MultiTrigger TargetType="Button">
