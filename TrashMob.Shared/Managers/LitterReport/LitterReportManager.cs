@@ -134,6 +134,14 @@ namespace TrashMob.Shared.Managers.LitterReport
                             .ConfigureAwait(false);
         }
 
+        public async Task<IEnumerable<LitterReport>> GetAssignedLitterReportsAsync(CancellationToken cancellationToken = default)
+        {
+            return await Repo.Get(lr => lr.LitterReportStatusId == (int)LitterReportStatusEnum.Assigned)
+                            .Include(lr => lr.LitterImages)
+                            .ToListAsync(cancellationToken)
+                            .ConfigureAwait(false);
+        }
+
         public async Task<IEnumerable<LitterReport>> GetCleanedLitterReportsAsync(CancellationToken cancellationToken = default)
         {
             return await Repo.Get(lr => lr.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned)

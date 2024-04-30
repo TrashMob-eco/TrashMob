@@ -1,38 +1,44 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TrashMobMobile.Pages.SearchLitterReportsPage">
+             x:Class="TrashMobMobile.Pages.SearchLitterReportsPage"
+             Title="Search Litter Reports">
     <ScrollView>
         <FlexLayout Direction="Column"
                 JustifyContent="SpaceAround">
-            <Label 
-            Text="Search Litter Reports"
-            FontSize="Large"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center"/>
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" /> 
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-            <CollectionView x:Name="LitterReportsCollection" 
-                 ItemsSource="{Binding LitterReports}" 
-                 SelectedItem="{Binding SelectedLitterReport}" 
-                 SelectionMode="Single" >
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border StrokeThickness="1">
-                            <Grid WidthRequest = "400"
-                       ColumnDefinitions="2*, 2*, 2*"
-                       RowDefinitions="Auto"
-                       x:Name="EventItem">
-
-                                <Label Text="{Binding Name}" Grid.Column="0" />
-                                <Label Text="{Binding Description}" Grid.Column="1" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+            <Grid RowDefinitions="Auto, Auto, *">
+                <HorizontalStackLayout Grid.Row="0">
+                    <RadioButton Content="New" IsChecked="True" RadioButtonGroup.GroupName="LitterReportStatus" CheckedChanged="OnReportStatusRadioButtonCheckedChanged" />
+                    <RadioButton Content="Assigned" RadioButtonGroup.GroupName="LitterReportStatus" CheckedChanged="OnReportStatusRadioButtonCheckedChanged"/>
+                    <RadioButton Content="Cleaned" RadioButtonGroup.GroupName="LitterReportStatus" CheckedChanged="OnReportStatusRadioButtonCheckedChanged"/>
+                </HorizontalStackLayout>
+                <HorizontalStackLayout Grid.Row="1">
+                    <Picker x:Name="CountryPicker" Title="Select a country" ItemsSource="{Binding CountryCollection}" SelectedItem="{Binding SelectedCountry}" />
+                    <Picker x:Name="RegionPicker" Title="Select a state/region" ItemsSource="{Binding RegionCollection}" SelectedItem="{Binding SelectedRegion}"/>
+                    <Picker x:Name="CityPicker" Title="Select a city" ItemsSource="{Binding CityCollection}" SelectedItem="{Binding SelectedCity}" />
+                </HorizontalStackLayout>
+                <CollectionView x:Name="LitterReportsCollection" Grid.Row="2"
+                     ItemsSource="{Binding LitterReports}" 
+                     SelectedItem="{Binding SelectedLitterReport}" 
+                     SelectionMode="Single" >
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border StrokeThickness="1">
+                                <Grid WidthRequest = "400"
+                           ColumnDefinitions="2*, 2*, 2*"
+                           RowDefinitions="Auto"
+                           x:Name="LitterReportItem">
+                                    <Label Text="{Binding Name}" Grid.Column="0" />
+                                    <Label Text="{Binding Description}" Grid.Column="1" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
         </FlexLayout>
     </ScrollView>
 </ContentPage>

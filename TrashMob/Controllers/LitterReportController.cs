@@ -14,7 +14,6 @@ namespace TrashMob.Controllers
     using TrashMob.Shared;
     using System;
     using Microsoft.Extensions.Logging;
-    using TrashMob.Shared.Managers.Events;
     using TrashMob.Shared.Poco;
 
     [Route("api/litterreport")]
@@ -84,7 +83,17 @@ namespace TrashMob.Controllers
 
             return Ok(fullLitterReports);
         }
-        
+
+        [HttpGet]
+        [Route("assigned")]
+        public async Task<IActionResult> GetAssignedLitterReports(CancellationToken cancellationToken)
+        {
+            var result = await litterReportManager.GetAssignedLitterReportsAsync(cancellationToken).ConfigureAwait(false);
+            var fullLitterReports = await ToFullLitterReport(result, cancellationToken);
+
+            return Ok(fullLitterReports);
+        }
+
         [HttpGet]
         [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         [Route("cancelled")]
