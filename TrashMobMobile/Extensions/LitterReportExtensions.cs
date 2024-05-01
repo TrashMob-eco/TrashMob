@@ -4,6 +4,11 @@
 
     public static class LitterReportExtensions
     {
+        public static string GetLitterStatusFromId(int? id)
+        {
+            return id == null ? string.Empty : Enum.GetName(typeof(LitterReportStatusEnum), id.Value) ?? string.Empty;
+        }
+
         public static LitterReportViewModel ToLitterReportViewModel(this LitterReport litterReport)
         {
             return new LitterReportViewModel
@@ -11,7 +16,7 @@
                 Id = litterReport.Id,
                 Name = litterReport.Name,
                 Description = litterReport.Description,
-                LitterReportStatusId = litterReport.LitterReportStatusId,
+                LitterReportStatusId = litterReport.LitterReportStatusId,                
             };
         }
 
@@ -42,6 +47,7 @@
             {
                 Id = litterImage.Id,
                 LitterReportId = litterImage.LitterReportId,
+                AzureBlobUrl = litterImage.AzureBlobURL,
                 Address = new AddressViewModel
                 {
                     City = litterImage.City,

@@ -14,6 +14,10 @@ public partial class ViewLitterReportViewModel : BaseViewModel
 
     [ObservableProperty]
     public LitterReportViewModel? litterReportViewModel;
+
+    [ObservableProperty]
+    private string litterReportStatus;
+
     public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; init; } = [];
 
     public LitterImageViewModel? SelectedLitterImageViewModel { get; set; }
@@ -27,6 +31,7 @@ public partial class ViewLitterReportViewModel : BaseViewModel
         var litterReport = await litterReportRestService.GetLitterReportAsync(litterReportId);
 
         LitterReportViewModel = litterReport.ToLitterReportViewModel();
+        LitterReportStatus = LitterReportExtensions.GetLitterStatusFromId(LitterReportViewModel?.LitterReportStatusId);
 
         LitterImageViewModels.Clear();
         foreach (var litterImage in litterReport.LitterImages)
