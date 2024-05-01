@@ -14,7 +14,7 @@
             <VerticalStackLayout Spacing="5" Grid.Row="0" Margin="10,0">
                 <Label 
                     Text="Name"
-                    FontSize="Small"
+                    FontSize="Micro"
                     VerticalOptions="Center" 
                     HorizontalOptions="Start"
                     HorizontalTextAlignment="Center"
@@ -30,7 +30,7 @@
             </VerticalStackLayout>
             <VerticalStackLayout Spacing="5" Grid.Row="1" Margin="10,0">
                 <Label Text="Description" 
-                       FontSize="Small"
+                       FontSize="Micro"
                        VerticalOptions="Center" 
                        HorizontalOptions="Start"
                        HorizontalTextAlignment="Center"
