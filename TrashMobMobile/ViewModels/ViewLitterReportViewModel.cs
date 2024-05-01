@@ -16,7 +16,7 @@ public partial class ViewLitterReportViewModel : BaseViewModel
     public LitterReportViewModel? litterReportViewModel;
 
     [ObservableProperty]
-    private string litterReportStatus;
+    string litterReportStatus;
 
     public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; init; } = [];
 
