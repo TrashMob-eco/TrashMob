@@ -2,13 +2,17 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
 public partial class SearchLitterReportsViewModel : BaseViewModel
 {
+    private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
+    private string? selectedCountry;
+    private string? selectedRegion;
+    private string? selectedCity;
+
     private readonly ILitterReportRestService litterReportRestService;
     private LitterReportViewModel? selectedLitterReport;
 
@@ -16,10 +20,10 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
     private string reportStatus = "New";
 
     public ObservableCollection<string> CountryCollection { get; set; } = [];
+    public ObservableCollection<string> RegionCollection { get; set; } = [];
+    public ObservableCollection<string> CityCollection { get; set; } = [];
 
-    private string selectedCountry;
-
-    public string SelectedCountry
+    public string? SelectedCountry
     {
         get 
         { 
@@ -30,18 +34,11 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
             selectedCountry = value;
             OnPropertyChanged(nameof(SelectedCountry));
 
-            if (selectedCountry != null)
-            {
-                RefreshLitterReportsCommand.Execute(null);
-            }
+            HandleCountrySelected(value);
         }
     }
-    
-    public ObservableCollection<string> RegionCollection { get; set; } = [];
 
-    private string selectedRegion;
-
-    public string SelectedRegion
+    public string? SelectedRegion
     {
         get
         {
@@ -52,18 +49,11 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
             selectedRegion = value;
             OnPropertyChanged(nameof(SelectedRegion));
 
-            if (selectedRegion != null)
-            {
-                RefreshLitterReportsCommand.Execute(null);
-            }
+            HandleRegionSelected(value);
         }
     }
 
-    public ObservableCollection<string> CityCollection { get; set; } = [];
-
-    private string selectedCity;
-
-    public string SelectedCity
+    public string? SelectedCity
     {
         get
         {
@@ -74,24 +64,18 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
             selectedCity = value;
             OnPropertyChanged(nameof(SelectedCity));
 
-            if (selectedCity != null)
-            {
-                RefreshLitterReportsCommand.Execute(null);
-            }
+            HandleCitySelected(value);
         }
     }
-
-    public ICommand RefreshLitterReportsCommand { get; set; }
 
     public SearchLitterReportsViewModel(ILitterReportRestService litterReportRestService)
     {
         this.litterReportRestService = litterReportRestService;
-        RefreshLitterReportsCommand = new Command(async () => await RefreshLitterReports());
     }
 
     public ObservableCollection<LitterReportViewModel> LitterReports { get; set; } = [];
 
-    public LitterReportViewModel SelectedLitterReport
+    public LitterReportViewModel? SelectedLitterReport
     {
         get { return selectedLitterReport; }
         set
@@ -125,32 +109,32 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
         LitterReports.Clear();
 
-        IEnumerable<LitterReport> litterReports;
-
         if (ReportStatus == "Assigned")
         {
-            litterReports = await litterReportRestService.GetAssignedLitterReportsAsync();
+            RawLitterReports = await litterReportRestService.GetAssignedLitterReportsAsync();
         }
         else if (ReportStatus == "New")
         {
-            litterReports = await litterReportRestService.GetNewLitterReportsAsync();
+            RawLitterReports = await litterReportRestService.GetNewLitterReportsAsync();
         }
         else if (ReportStatus == "Cleaned")
         {
-            litterReports = await litterReportRestService.GetCleanedLitterReportsAsync();
+            RawLitterReports = await litterReportRestService.GetCleanedLitterReportsAsync();
         }
         else
         {
-            litterReports = await litterReportRestService.GetAllLitterReportsAsync();
+            RawLitterReports = await litterReportRestService.GetAllLitterReportsAsync();
         }
 
         var countryList = new List<string>();
-        foreach (var litterReport in litterReports)
+        foreach (var litterReport in RawLitterReports)
         {
             countryList.AddRange(litterReport.LitterImages.Select(i => i.Country));
         }
 
         CountryCollection.Clear();
+        RegionCollection.Clear();
+        CityCollection.Clear();
 
         var countries = countryList.Distinct();
 
@@ -159,14 +143,34 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
             CountryCollection.Add(country);
         }
 
-        if (!string.IsNullOrEmpty(SelectedCountry))
+        UpdateLitterReportViewModels();
+
+        IsBusy = false;
+
+        await Notify("Litter Report list has been refreshed.");
+    }
+
+    private void HandleCountrySelected(string? selectedCountry)
+    {
+        IsBusy = true;
+
+        if (selectedCountry != null)
         {
-            litterReports = litterReports.Where(l => l.LitterImages.Any(i => i.Country == SelectedCountry));
+            RawLitterReports = RawLitterReports.Where(l => l.LitterImages.Any(i => i.Country == SelectedCountry));
         }
 
+        UpdateLitterReportViewModels();
+
+        RefreshRegionList();
+
+        IsBusy = false;
+    }
+
+    private void RefreshRegionList()
+    {
         var regionList = new List<string>();
-        
-        foreach (var litterReport in litterReports)
+
+        foreach (var litterReport in RawLitterReports)
         {
             regionList.AddRange(litterReport.LitterImages.Select(i => i.Region));
         }
@@ -179,15 +183,29 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
         {
             RegionCollection.Add(region);
         }
+    }
 
-        if (!string.IsNullOrEmpty(SelectedRegion))
+    private void HandleRegionSelected(string? selectedRegion)
+    {
+        IsBusy = true;
+
+        if (!string.IsNullOrEmpty(selectedRegion))
         {
-            litterReports = litterReports.Where(l => l.LitterImages.Any(i => i.Region == SelectedRegion));
+            RawLitterReports = RawLitterReports.Where(l => l.LitterImages.Any(i => i.Region == selectedRegion));
         }
 
+        UpdateLitterReportViewModels();
+
+        RefreshCityList();
+
+        IsBusy = false;
+    }
+
+    private void RefreshCityList()
+    {
         var cityList = new List<string>();
 
-        foreach (var litterReport in litterReports)
+        foreach (var litterReport in RawLitterReports)
         {
             cityList.AddRange(litterReport.LitterImages.Select(i => i.City));
         }
@@ -200,20 +218,30 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
         {
             CityCollection.Add(city);
         }
+    }
 
-        if (!string.IsNullOrEmpty(SelectedCity))
+    private void HandleCitySelected(string? selectedCity)
+    {
+        IsBusy = true;
+
+        if (!string.IsNullOrEmpty(selectedCity))
         {
-            litterReports = litterReports.Where(l => l.LitterImages.Any(i => i.Region == SelectedCity));
+            RawLitterReports = RawLitterReports.Where(l => l.LitterImages.Any(i => i.City == selectedCity));
         }
 
-        foreach (var litterReport in litterReports)
+        UpdateLitterReportViewModels();
+
+        IsBusy = false;
+    }
+
+    private void UpdateLitterReportViewModels()
+    {
+        LitterReports.Clear();
+
+        foreach (var litterReport in RawLitterReports)
         {
             var vm = litterReport.ToLitterReportViewModel();
             LitterReports.Add(vm);
         }
-
-        IsBusy = false;
-
-        await Notify("Litter Report list has been refreshed.");
     }
 }
