@@ -12,10 +12,20 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     private readonly IMapRestService mapRestService;
     private readonly ILitterReportRestService litterReportRestService;
     private const int NewLitterReportStatus = 1;
+    public const int MaxImages = 5;
 
     [ObservableProperty]
     LitterReportViewModel litterReportViewModel;
-    
+
+    [ObservableProperty]
+    bool hasNoImages = true;
+
+    [ObservableProperty]
+    bool hasMaxImages = false;
+
+    [ObservableProperty]
+    bool reportIsValid = false;
+
     public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; init; } = [];
     
     public LitterImageViewModel? SelectedLitterImageViewModel { get; set; }
@@ -63,6 +73,8 @@ public partial class CreateLitterReportViewModel : BaseViewModel
             
             LitterImageViewModels.Add(SelectedLitterImageViewModel);
             SelectedLitterImageViewModel = null;
+
+            ValidateReport();
         }
         else
         {
@@ -104,7 +116,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        if (!await Validate())
+        if (!ReportIsValid)
         {
             IsBusy = false;
             return;
@@ -142,8 +154,10 @@ public partial class CreateLitterReportViewModel : BaseViewModel
         await Navigation.PopAsync();
     }
 
-    private async Task<bool> Validate()
+    public void ValidateReport()
     {
-        return true;
+        HasNoImages = !LitterImageViewModels.Any();
+        HasMaxImages = LitterImageViewModels.Count >= MaxImages;
+        ReportIsValid = LitterImageViewModels.Count > 0;
     }
 }
