@@ -78,5 +78,7 @@ public partial class CreateLitterReportPage : ContentPage
         {
             _viewModel.LitterImageViewModels.Remove(litterImageViewModel);
         }
+
+        _viewModel.ValidateReport();
     }
 }
