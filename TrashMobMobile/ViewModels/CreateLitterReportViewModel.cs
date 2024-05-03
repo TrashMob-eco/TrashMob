@@ -9,10 +9,14 @@ using TrashMobMobile.Extensions;
 
 public partial class CreateLitterReportViewModel : BaseViewModel
 {
+    private const string DefaultLitterReportName = "New Litter Report";
     private readonly IMapRestService mapRestService;
     private readonly ILitterReportRestService litterReportRestService;
     private const int NewLitterReportStatus = 1;
     public const int MaxImages = 5;
+
+    private string name = DefaultLitterReportName;
+    private string description = string.Empty;
 
     [ObservableProperty]
     LitterReportViewModel litterReportViewModel;
@@ -24,13 +28,36 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     bool hasMaxImages = false;
 
     [ObservableProperty]
+    bool canAddImages = false;
+
+    [ObservableProperty]
     bool reportIsValid = false;
+
+    public string Name
+    {
+        get => name;
+        set
+        {
+            name = value;
+            OnPropertyChanged(nameof(Name));
+            ValidateReport();
+        }
+    }
+
+    public string Description
+    {
+        get => description;
+        set
+        {
+            description = value;
+            OnPropertyChanged(nameof(Description));
+            ValidateReport();
+        }
+    }
 
     public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; init; } = [];
     
     public LitterImageViewModel? SelectedLitterImageViewModel { get; set; }
-
-    public string DefaultLitterReportName { get; } = "New Litter Report";
 
     public CreateLitterReportViewModel(ILitterReportRestService litterReportRestService, IMapRestService mapRestService)
     {
@@ -39,13 +66,13 @@ public partial class CreateLitterReportViewModel : BaseViewModel
         this.mapRestService = mapRestService;
         LitterReportViewModel = new LitterReportViewModel
         {
-            Name = DefaultLitterReportName,
             LitterReportStatusId = NewLitterReportStatus
         };
     }
 
     public ICommand SaveLitterReportCommand { get; set; }
 
+    
     public string LocalFilePath { get; set; } = string.Empty;
 
     public async Task AddImageToCollection()
@@ -123,6 +150,8 @@ public partial class CreateLitterReportViewModel : BaseViewModel
         }
 
         var litterReport = LitterReportViewModel.ToLitterReport();
+        litterReport.Name = Name;
+        litterReport.Description = Description;
 
         foreach (var litterImageViewModel in LitterImageViewModels)
         {
@@ -158,6 +187,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     {
         HasNoImages = !LitterImageViewModels.Any();
         HasMaxImages = LitterImageViewModels.Count >= MaxImages;
-        ReportIsValid = LitterImageViewModels.Count > 0;
+        CanAddImages = LitterImageViewModels.Count < MaxImages;
+        ReportIsValid = LitterImageViewModels.Count > 0 && Name.Length > 5 && Description.Length > 5;
     }
 }
