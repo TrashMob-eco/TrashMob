@@ -83,7 +83,7 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
             if (selectedLitterReport != value)
             {
                 selectedLitterReport = value;
-                OnPropertyChanged(nameof(selectedLitterReport));
+                OnPropertyChanged(nameof(SelectedLitterReport));
 
                 if (selectedLitterReport != null)
                 {
