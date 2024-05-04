@@ -45,6 +45,7 @@
                 </maps:Map.ItemTemplate>
             </maps:Map>
 
+            <Label Text="Upcoming Events" />
             <CollectionView x:Name="EventsCollection" 
                             ItemsSource="{Binding UpcomingEvents}" 
                             SelectedItem="{Binding SelectedEvent}" 

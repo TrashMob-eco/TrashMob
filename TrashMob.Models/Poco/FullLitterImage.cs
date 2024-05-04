@@ -1,7 +1,6 @@
 
 namespace TrashMob.Models.Poco
 {
-    using Microsoft.AspNetCore.Http;
     using System;
 
     public class FullLitterImage

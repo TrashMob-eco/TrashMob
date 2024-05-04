@@ -8,8 +8,6 @@
     Title="TrashMobMobile">
 
     <ShellContent
-        Title="Welcome"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
-
 </Shell>
