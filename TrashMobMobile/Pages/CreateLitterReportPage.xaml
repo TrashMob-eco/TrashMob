@@ -4,14 +4,14 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="TrashMobMobile.Pages.CreateLitterReportPage"
              Title="Submit Litter Report">
-    <FlexLayout Direction="Column">
-        
-        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+    <ScrollView Orientation="Vertical">
+        <FlexLayout Direction="Column">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-        <!-- Litter Report Top -->
-        <Grid RowDefinitions = "Auto, *, Auto" >
-            <VerticalStackLayout Spacing="5" Grid.Row="0" Margin="10">
-                <Label 
+            <!-- Litter Report Top -->
+            <Grid RowDefinitions = "Auto, *, Auto" >
+                <VerticalStackLayout Spacing="5" Grid.Row="0" Margin="10">
+                    <Label 
                     Text="Name"
                     FontSize="Micro"
                     VerticalOptions="Center" 
@@ -19,65 +19,47 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                <Frame Style="{x:StaticResource Frame}">
-                    <Entry Text="{Binding LitterReportViewModel.Name}">
-                        <Entry.Behaviors>
-                            <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
-                        </Entry.Behaviors>
-                    </Entry>
-                </Frame>
-            </VerticalStackLayout>
-            <VerticalStackLayout Spacing="5" Grid.Row="1" Margin="10">
-                <Label Text="Description" 
+                    <Frame Style="{x:StaticResource Frame}">
+                        <Entry Text="{Binding Name}" />
+                    </Frame>
+                </VerticalStackLayout>
+                <VerticalStackLayout Spacing="5" Grid.Row="1" Margin="10">
+                    <Label Text="Description" 
                        FontSize="Micro"
                        VerticalOptions="Center" 
                        HorizontalOptions="Start"
                        HorizontalTextAlignment="Center"
                        FontAttributes="Bold" />
 
-                <Frame Style="{x:StaticResource Frame}">
-                    <Editor Text="{Binding LitterReportViewModel.Description}">
-                        <Editor.Behaviors>
-                            <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10" x:Name="descriptionValidator" />
-                        </Editor.Behaviors>
-                    </Editor>
-                </Frame>
-             </VerticalStackLayout>
+                    <Frame Style="{x:StaticResource Frame}">
+                        <Editor Text="{Binding Description}" />
+                    </Frame>
+                </VerticalStackLayout>
 
-            <Button Text="Add Litter Image" Grid.Row="2"  Clicked="TakePhoto_Clicked" Margin="10" />
-        </Grid>
+                <Button Text="Add Litter Image" Grid.Row="2"  Clicked="TakePhoto_Clicked" Margin="10" IsEnabled="{Binding CanAddImages}" />
+            </Grid>
 
-        <Grid RowDefinitions = "Auto, *" Margin="10">
-            <Label Text="Please add between 1 and 5 images of the litter to your report." Grid.Row="0" Margin="10" FontSize="Small" FontAttributes="Bold" IsVisible="{Binding HasNoImages}" HorizontalTextAlignment="Center" />
+            <Grid RowDefinitions = "Auto, *" Margin="10">
+                <Label Text="Please add between 1 and 5 images of the litter to your report." Grid.Row="0" Margin="10" FontSize="Small" FontAttributes="Bold" IsVisible="{Binding HasNoImages}" HorizontalTextAlignment="Center" />
 
-            <CollectionView x:Name="LitterImagesCollection" Grid.Row="1" Margin="10"
+                <CollectionView x:Name="LitterImagesCollection" Grid.Row="1" Margin="10"
                  ItemsSource="{Binding LitterImageViewModels}" 
                  SelectionMode="None" >
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border StrokeThickness="1">
-                            <Grid ColumnDefinitions="Auto, *, Auto">
-                                <Image Source="{Binding FilePath}" MaximumWidthRequest="100" Grid.Column="0" Margin="5" />
-                                <Label Text="{Binding Address.DisplayAddress}" Grid.Column="1" Margin="5" />
-                                <Button Text="Delete Image" Grid.Column="2" Clicked="DeleteLitterImage_Clicked" Margin="5" WidthRequest="80" HeightRequest="40" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </Grid>
-        
-        <Button Text="Save Litter Report" Command="{Binding SaveLitterReportCommand}" Margin="10">
-            <Button.Triggers>
-                <MultiTrigger TargetType="Button">
-                    <MultiTrigger.Conditions>
-                        <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
-                        <BindingCondition Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" Value="True" />
-                        <BindingCondition Binding="{Binding ReportIsValid}" Value="True" />
-                    </MultiTrigger.Conditions>
-                    <Setter Property="IsEnabled" Value="True" />
-                </MultiTrigger>
-            </Button.Triggers>
-        </Button>
-    </FlexLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border StrokeThickness="1">
+                                <Grid ColumnDefinitions="Auto, *, Auto">
+                                    <Image Source="{Binding FilePath}" MaximumWidthRequest="100" Grid.Column="0" Margin="5" />
+                                    <Label Text="{Binding Address.DisplayAddress}" Grid.Column="1" Margin="5" />
+                                    <Button Text="Delete Image" Grid.Column="2" Clicked="DeleteLitterImage_Clicked" Margin="5" WidthRequest="80" HeightRequest="40" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+
+            <Button Text="Save Litter Report" Command="{Binding SaveLitterReportCommand}" Margin="10" IsEnabled="{Binding ReportIsValid}" />
+        </FlexLayout>
+    </ScrollView>
 </ContentPage>

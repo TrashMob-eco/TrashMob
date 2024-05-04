@@ -5,13 +5,12 @@
              x:Class="TrashMobMobile.Pages.ViewLitterReportPage"
              Title="Litter Report">
     
-    <FlexLayout Direction="Column"
-                JustifyContent="SpaceAround">
+    <FlexLayout Direction="Column">
 
         <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-            <Grid RowDefinitions="Auto, Auto, Auto, *, Auto">
-                <VerticalStackLayout Spacing="5" Grid.Row="0" Margin="10,0">
+            <Grid RowDefinitions="Auto, Auto, Auto">
+                <VerticalStackLayout Spacing="5" Grid.Row="0" Margin="10">
                     <Label 
                         Text="Name"
                         FontSize="Micro"
@@ -28,7 +27,7 @@
                 </Frame>
             </VerticalStackLayout>
 
-            <VerticalStackLayout Spacing="5" Grid.Row="1" Margin="10,0">
+            <VerticalStackLayout Spacing="5" Grid.Row="1" Margin="10">
                 <Label 
                         Text="Description"
                         FontSize="Micro"
@@ -44,7 +43,7 @@
                         HorizontalTextAlignment="Center"/>
                 </Frame>
             </VerticalStackLayout>
-            <VerticalStackLayout Spacing="5" Grid.Row="2" Margin="10,0">
+            <VerticalStackLayout Spacing="5" Grid.Row="2" Margin="10">
                 <Label 
                         Text="Status"
                         FontSize="Micro"
@@ -54,14 +53,15 @@
                         FontAttributes="Bold" />
                 <Frame Style="{x:StaticResource Frame}">
                     <Label 
-                        Text="{Binding LitterReportViewModel.LitterReportStatus}"
+                        Text="{Binding LitterReportStatus}"
                         VerticalOptions="Center" 
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Center"/>
                 </Frame>
             </VerticalStackLayout>
-                
-                <maps:Map x:Name="litterReportLocationMap" ItemsSource="{Binding LitterImageViewModels}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True" Grid.Row="3">
+        </Grid>
+
+        <maps:Map x:Name="litterReportLocationMap" ItemsSource="{Binding LitterImageViewModels}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True" Margin="10">
                     <maps:Map.ItemTemplate>
                         <DataTemplate>
                             <maps:Pin Location="{Binding Address.Location}"
@@ -78,26 +78,15 @@
                         <DataTemplate>
                             <Border StrokeThickness="1">
                                 <Grid WidthRequest = "400"
-                                  ColumnDefinitions="*, 1*, 1*" 
-                                  RowDefinitions="Auto, Auto, Auto, Auto, Auto"
+                                  ColumnDefinitions="*, 1*" 
+                                  RowDefinitions="Auto"
                                   x:Name="LitterImageItem">
                                 <Image Source="{Binding AzureBlobUrl}" MaximumWidthRequest="100" Grid.Column="0" Grid.RowSpan="5" />
-                                    <Label Grid.Row="0" Grid.Column="1" Text="Address" />
-                                    <Label Grid.Row="0" Grid.Column="2" Text="{Binding Address.StreetAddress }" />
-                                    <Label Grid.Row="1" Grid.Column="1" Text="City" />
-                                    <Label Grid.Row="1" Grid.Column="2" Text="{Binding Address.City }" />
-                                    <Label Grid.Row="2" Grid.Column="1" Text="Region" />
-                                    <Label Grid.Row="2" Grid.Column="2" Text="{Binding Address.Region }" />
-                                    <Label Grid.Row="3" Grid.Column="1" Text="Country" />
-                                    <Label Grid.Row="3" Grid.Column="2" Text="{Binding Address.Country }" />
-                                    <Label Grid.Row="4" Grid.Column="1" Text="Postal Code" />
-                                    <Label Grid.Row="4" Grid.Column="2" Text="{Binding Address.PostalCode }" />
+                                <Label Grid.Row="0" Grid.Column="2" Text="{Binding Address.DisplayAddress }" />
                                 </Grid>
                             </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
-
-            </Grid>
     </FlexLayout>
 </ContentPage>

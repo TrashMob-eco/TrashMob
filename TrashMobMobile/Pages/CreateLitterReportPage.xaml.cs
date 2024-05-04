@@ -63,10 +63,10 @@ public partial class CreateLitterReportPage : ContentPage
                 using FileStream localFileStream = File.OpenWrite(_viewModel.LocalFilePath);
 
                 await sourceStream.CopyToAsync(localFileStream);
+                await _viewModel.AddImageToCollection();
+                _viewModel.ValidateReport();
             }
         }
-
-        await _viewModel.AddImageToCollection();
     }
 
     private void DeleteLitterImage_Clicked(object sender, EventArgs e)

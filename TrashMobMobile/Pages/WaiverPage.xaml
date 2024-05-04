@@ -3,15 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             x:Class="TrashMobMobile.Pages.WaiverPage">
-    <FlexLayout Direction="Column"
-                JustifyContent="SpaceAround">
-        <Label 
-            Text="TrashMob.eco Waiver"
-            FontSize="Large"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center"/>
+             x:Class="TrashMobMobile.Pages.WaiverPage"
+             Title="TrashMob.eco Waiver">
+    <FlexLayout Direction="Column">
 
         <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
@@ -37,22 +31,25 @@
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center" />
 
-        <Label 
-            Text="Full Name" FontSize="Small"
+        <VerticalStackLayout Spacing="5" Margin="10">
+            <Label 
+            Text="Full Name" 
+            FontSize="Micro"
             VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center" />
+            HorizontalOptions="Start"
+            HorizontalTextAlignment="Center"
+            FontAttributes="Bold" />
 
-        <Entry Text="{Binding Name}"             
+            <Entry Text="{Binding Name}"             
                FontSize="Small"
                VerticalOptions="Center" 
-               HorizontalOptions="Center"
-               HorizontalTextAlignment="Center"
-               WidthRequest="400">
-            <Entry.Behaviors>
-                <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
-            </Entry.Behaviors>
-        </Entry>
+               HorizontalOptions="Start"
+               HorizontalTextAlignment="Center">
+                <Entry.Behaviors>
+                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
+                </Entry.Behaviors>
+            </Entry>
+        </VerticalStackLayout>
 
         <Button Text="Sign Waiver" Command="{Binding SignWaiverCommand}">
             <Button.Triggers>

@@ -42,6 +42,9 @@ public partial class MainViewModel : BaseViewModel
     [ObservableProperty]
     private string? welcomeMessage;
 
+    [ObservableProperty]
+    string userLocationDisplay = "Set Your Location Preference";
+
     public ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = [];
 
     public ICommand ContactUsCommand { get; set; }
@@ -100,6 +103,7 @@ public partial class MainViewModel : BaseViewModel
                 WelcomeMessage = $"Welcome, {user.UserName}!";
                 UserLocation = App.CurrentUser.GetAddress();
                 TravelDistance = App.CurrentUser.TravelLimitForLocalEvents;
+                UserLocationDisplay = $"{UserLocation.City}, {UserLocation.Region}";
             }
 
             await RefreshEvents();
@@ -144,7 +148,7 @@ public partial class MainViewModel : BaseViewModel
 
         var eventsUserIsAttending = await mobEventManager.GetEventsUserIsAttending(App.CurrentUser.Id);
 
-        foreach (var mobEvent in events)
+        foreach (var mobEvent in events.OrderBy(e => e.EventDate))
         {
             var vm = mobEvent.ToEventViewModel();
 

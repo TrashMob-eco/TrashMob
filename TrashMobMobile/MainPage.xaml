@@ -6,34 +6,48 @@
              x:Class="TrashMobMobile.MainPage">
 
     <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25">
-
+        <VerticalStackLayout Spacing="5">
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
-
-            <Frame Style="{x:StaticResource Frame}">
-                <Grid RowDefinitions = "Auto, Auto, Auto" ColumnDefinitions="1*, 1*, 1*, 1*">
-                    <Image Grid.Row="0" Grid.Column="0" Source="Resources\Images\calendar.svg" MaximumWidthRequest="25" />
-                    <Label Grid.Row="1" Grid.Column="0" Text="{ Binding StatisticsViewModel.TotalEvents }" FontSize="Micro" HorizontalTextAlignment ="Center" />
-                    <Label Grid.Row="2" Grid.Column="0" Text="Events Hosted" FontSize="Micro" HorizontalTextAlignment ="Center" />
-                    <Image Grid.Row="0" Grid.Column="1" Source="Resources\Images\person.svg" MaximumWidthRequest="25" />
-                    <Label Grid.Row="1" Grid.Column="1" Text="{ Binding StatisticsViewModel.TotalAttendees }" FontSize="Micro" HorizontalTextAlignment ="Center" />
-                    <Label Grid.Row="2" Grid.Column="1" Text="Participants" FontSize="Micro" HorizontalTextAlignment ="Center" />
-                    <Image Grid.Row="0" Grid.Column="2" Source="Resources\Images\trashbag.svg" WidthRequest="25" />
-                    <Label Grid.Row="1" Grid.Column="2" Text="{ Binding StatisticsViewModel.TotalBags }" FontSize="Micro"  HorizontalTextAlignment ="Center"/>
-                    <Label Grid.Row="2" Grid.Column="2" Text="Bags Collected" FontSize="Micro" HorizontalTextAlignment ="Center" />
-                    <Image Grid.Row="0" Grid.Column="3" Source="Resources\Images\clock.svg" WidthRequest="25"/>
-                    <Label Grid.Row="1" Grid.Column="3" Text="{ Binding StatisticsViewModel.TotalHours }" FontSize="Micro"  HorizontalTextAlignment ="Center" />
-                    <Label Grid.Row="2" Grid.Column="3" Text="Hours Spent" FontSize="Micro" HorizontalTextAlignment ="Center" />
+            <Image Source="bannerlogo.png" />
+            <Grid RowDefinitions="Auto" ColumnDefinitions="1*, 1*">
+                <Button Text="Search Events" Command="{Binding SearchEventsCommand}" HorizontalOptions="Center" FontSize="Small" Background="Transparent" TextColor="Purple" HeightRequest="40" Grid.Column="0"/>
+                <Button Text="Search Litter Reports" Command="{Binding SearchLitterReportsCommand}" HorizontalOptions="Center" FontSize="Small" Background="Transparent" TextColor="Purple" HeightRequest="40" Grid.Column="1" /> 
+             </Grid>
+            <Frame Style="{x:StaticResource Frame}" Margin="5,0">
+                <Grid RowDefinitions = "Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 1*, 1*, 1*">
+                    <Label Text="Here's what TrashMob's volunteers have done so far!" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" FontSize="Micro" Margin="0, 0, 0, 10" />
+                    <Image Grid.Row="1" Grid.Column="0" Source="calendar.svg" MaximumWidthRequest="25" />
+                    <Label Grid.Row="2" Grid.Column="0" Text="{ Binding StatisticsViewModel.TotalEvents }" FontSize="Micro" HorizontalTextAlignment ="Center" />
+                    <Label Grid.Row="3" Grid.Column="0" Text="Events Hosted" FontSize="Micro" HorizontalTextAlignment ="Center" />
+                    <Image Grid.Row="1" Grid.Column="1" Source="person.svg" MaximumWidthRequest="25" />
+                    <Label Grid.Row="2" Grid.Column="1" Text="{ Binding StatisticsViewModel.TotalAttendees }" FontSize="Micro" HorizontalTextAlignment ="Center" />
+                    <Label Grid.Row="3" Grid.Column="1" Text="Participants" FontSize="Micro" HorizontalTextAlignment ="Center" />
+                    <Image Grid.Row="1" Grid.Column="2" Source="trashbag.svg" WidthRequest="25" />
+                    <Label Grid.Row="2" Grid.Column="2" Text="{ Binding StatisticsViewModel.TotalBags }" FontSize="Micro"  HorizontalTextAlignment ="Center"/>
+                    <Label Grid.Row="3" Grid.Column="2" Text="Bags Collected" FontSize="Micro" HorizontalTextAlignment ="Center" />
+                    <Image Grid.Row="1" Grid.Column="3" Source="clock.svg" WidthRequest="25"/>
+                    <Label Grid.Row="2" Grid.Column="3" Text="{ Binding StatisticsViewModel.TotalHours }" FontSize="Micro"  HorizontalTextAlignment ="Center" />
+                    <Label Grid.Row="3" Grid.Column="3" Text="Hours Spent" FontSize="Micro" HorizontalTextAlignment ="Center" />
                 </Grid>
             </Frame>
+
+            <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="1*, 1*" Margin="5">
+                <Button Text="View My Dashboard" Command="{Binding MyDashboardCommand}" HorizontalOptions="End" FontSize="Micro" Background="Transparent" TextColor="Green" Grid.Row="0" Grid.Column="1"/>
+                <Label Text="Find Events Nearby" FontAttributes="Bold" Grid.Column="0" Grid.Row="1"/>
+                <HorizontalStackLayout Grid.Row="2">
+                    <RadioButton Content="Map" IsChecked="True" x:Name="viewMap" FontSize="Micro" />
+                    <RadioButton Content="List" x:Name="viewList" FontSize="Micro" />
+                </HorizontalStackLayout>
+                <Button Text="{Binding UserLocationDisplay}" Command="{Binding SetLocationPreferenceCommand}" HorizontalOptions="End" FontSize="Micro" Background="Transparent" TextColor="Green" Grid.Row="2" Grid.Column="1" />
+            </Grid>
 
             <maps:Map x:Name="upcomingEventsMap"
                       IsShowingUser="True"
                       ItemsSource="{Binding UpcomingEvents}"
                       HeightRequest="300"
-                      IsScrollEnabled="True">
+                      IsScrollEnabled="True" 
+                      Margin="5" 
+                      IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked }">
                 <maps:Map.ItemTemplate>
                     <DataTemplate>
                         <maps:Pin Location="{Binding Address.Location}"
@@ -48,33 +62,34 @@
             <CollectionView x:Name="EventsCollection" 
                             ItemsSource="{Binding UpcomingEvents}" 
                             SelectedItem="{Binding SelectedEvent}" 
-                            SelectionMode="Single" >
+                            SelectionMode="Single"
+                            IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked }"
+                            Margin="5" 
+                            MaximumHeightRequest="250" >
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border StrokeThickness="1">
-                            <Grid WidthRequest = "400"
-                                  ColumnDefinitions="1*, 1*, 1*, 1*"
-                                  RowDefinitions="Auto"
+                        <Frame BorderColor="Green" Margin="1"  >
+                            <Grid ColumnDefinitions="1*, 1*"                                  
+                                  RowDefinitions="Auto, Auto, Auto, Auto"
                                   x:Name="EventItem">
 
-                                <Label Text="{Binding Name}" Grid.Column="0" />
-                                <Label Text="{Binding DisplayDate}" Grid.Column="1" />
-                                <Label Text="{Binding Address.City}" Grid.Column="2" />
-                                <Label Text="{Binding UserRoleForEvent}" Grid.Column="3" />
+                                <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
+                                <Label Text="{Binding DisplayDate}" Grid.Row="1" Grid.ColumnSpan="2" FontSize="Micro" />
+                                <Label Text="{Binding DisplayTime}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
+                                <Label Text="{Binding Address.DisplayAddress}" Grid.Row="2" Grid.ColumnSpan="2" FontSize="Micro" />
+                                <Label Text="{Binding UserRoleForEvent}" Grid.Row="3" FontSize="Micro" />
                             </Grid>
-                        </Border>
+                        </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <Button Text="Contact Us" Command="{Binding ContactUsCommand}" />
-            <Button Text="My Dashboard" Command="{Binding MyDashboardCommand}" />
-            <Button Text="Search Events" Command="{Binding SearchEventsCommand}" />
-            <Button Text="Create an Event" Command="{Binding CreateEventCommand}" />
-            <Button Text="Submit a Litter Report" Command="{Binding SubmitLitterReportCommand}" />
-            <Button Text="Search Litter Reports" Command="{Binding SearchLitterReportsCommand}" />
-            <Button Text="Set My Location Preference" Command="{Binding SetLocationPreferenceCommand}" />
-            <Button Text="Log Out" Command="{Binding LogoutCommand}" />
+            <Grid ColumnDefinitions="1*,1*, 1*, 1*" RowDefinitions="Auto, Auto">
+                <Button Text="Create an Event" Command="{Binding CreateEventCommand}" HorizontalOptions="Center" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" />
+                <Button Text="Submit a Litter Report" Command="{Binding SubmitLitterReportCommand}" Grid.Row="0" Grid.Column="2" HorizontalOptions="Center" Grid.ColumnSpan="2" />
+                <Button Text="Contact Us" Command="{Binding ContactUsCommand}" HorizontalOptions="Center" Grid.Row="1" FontSize="Micro" Background="Transparent" TextColor="Purple" HeightRequest="40" Grid.Column="2"/>
+                <Button Text="Log Out" Command="{Binding LogoutCommand}" HorizontalOptions="Center" Grid.Row="1" FontSize="Micro" Background="Transparent" TextColor="Purple" HeightRequest="40" Grid.Column="3" />
+            </Grid>
 
         </VerticalStackLayout>
     </ScrollView>
