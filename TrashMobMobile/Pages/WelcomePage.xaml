@@ -15,16 +15,16 @@
 
         <Frame Style="{x:StaticResource Frame}">
             <Grid RowDefinitions = "Auto, Auto, Auto" ColumnDefinitions="1*, 1*, 1*, 1*">
-                <Image Grid.Row="0" Grid.Column="0" Source="Resources\Images\calendar.svg" MaximumWidthRequest="25" />
+                <Image Grid.Row="0" Grid.Column="0" Source="calendar.svg" MaximumWidthRequest="25" />
                 <Label Grid.Row="1" Grid.Column="0" Text="{ Binding StatisticsViewModel.TotalEvents }" FontSize="Micro" HorizontalTextAlignment ="Center" />
                 <Label Grid.Row="2" Grid.Column="0" Text="Events Hosted" FontSize="Micro" HorizontalTextAlignment ="Center" />
-                <Image Grid.Row="0" Grid.Column="1" Source="Resources\Images\person.svg" MaximumWidthRequest="25" />
+                <Image Grid.Row="0" Grid.Column="1" Source="person.svg" MaximumWidthRequest="25" />
                 <Label Grid.Row="1" Grid.Column="1" Text="{ Binding StatisticsViewModel.TotalAttendees }" FontSize="Micro" HorizontalTextAlignment ="Center" />
                 <Label Grid.Row="2" Grid.Column="1" Text="Participants" FontSize="Micro" HorizontalTextAlignment ="Center" />
-                <Image Grid.Row="0" Grid.Column="2" Source="Resources\Images\trashbag.svg" WidthRequest="25" />
+                <Image Grid.Row="0" Grid.Column="2" Source="trashbag.svg" WidthRequest="25" />
                 <Label Grid.Row="1" Grid.Column="2" Text="{ Binding StatisticsViewModel.TotalBags }" FontSize="Micro"  HorizontalTextAlignment ="Center"/>
                 <Label Grid.Row="2" Grid.Column="2" Text="Bags Collected" FontSize="Micro" HorizontalTextAlignment ="Center" />
-                <Image Grid.Row="0" Grid.Column="3" Source="Resources\Images\clock.svg" WidthRequest="25"/>
+                <Image Grid.Row="0" Grid.Column="3" Source="clock.svg" WidthRequest="25"/>
                 <Label Grid.Row="1" Grid.Column="3" Text="{ Binding StatisticsViewModel.TotalHours }" FontSize="Micro"  HorizontalTextAlignment ="Center" />
                 <Label Grid.Row="2" Grid.Column="3" Text="Hours Spent" FontSize="Micro" HorizontalTextAlignment ="Center" />
             </Grid>
