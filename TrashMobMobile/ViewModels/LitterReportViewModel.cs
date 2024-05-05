@@ -20,8 +20,37 @@ public partial class LitterReportViewModel : ObservableObject
     [ObservableProperty]
     string description;
 
+    private int litterReportStatusId;
+    
+    public int LitterReportStatusId
+    {
+        get
+        {
+            return litterReportStatusId;
+        }
+        set
+        {
+            litterReportStatusId = value;
+            OnPropertyChanged(nameof(LitterReportStatusId));
+            switch (litterReportStatusId)
+            {
+                case 1:
+                    LitterReportStatus = "New";
+                    break;
+                case 2:
+                    LitterReportStatus = "Assigned";
+                    break;
+                case 3:
+                    LitterReportStatus = "Cleaned";
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
     [ObservableProperty]
-    int litterReportStatusId;
+    string litterReportStatus;
 
     public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; set; } = [];
 }

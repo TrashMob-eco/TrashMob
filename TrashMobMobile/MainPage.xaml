@@ -11,8 +11,8 @@
             <Image Source="bannerlogo.png" />
             <Grid RowDefinitions="Auto" ColumnDefinitions="1*, 1*">
                 <Button Text="Search Events" Command="{Binding SearchEventsCommand}" HorizontalOptions="Center" FontSize="Small" Background="Transparent" TextColor="Purple" HeightRequest="40" Grid.Column="0"/>
-                <Button Text="Search Litter Reports" Command="{Binding SearchLitterReportsCommand}" HorizontalOptions="Center" FontSize="Small" Background="Transparent" TextColor="Purple" HeightRequest="40" Grid.Column="1" /> 
-             </Grid>
+                <Button Text="Search Litter Reports" Command="{Binding SearchLitterReportsCommand}" HorizontalOptions="Center" FontSize="Small" Background="Transparent" TextColor="Purple" HeightRequest="40" Grid.Column="1" />
+            </Grid>
             <Frame Style="{x:StaticResource Frame}" Margin="5,0">
                 <Grid RowDefinitions = "Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 1*, 1*, 1*">
                     <Label Text="Here's what TrashMob's volunteers have done so far!" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" FontSize="Micro" Margin="0, 0, 0, 10" />
@@ -61,14 +61,15 @@
 
             <CollectionView x:Name="EventsCollection" 
                             ItemsSource="{Binding UpcomingEvents}" 
-                            SelectedItem="{Binding SelectedEvent}" 
+                            SelectedItem="{Binding SelectedEvent}"
                             SelectionMode="Single"
                             IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked }"
                             Margin="5" 
                             MaximumHeightRequest="250" >
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame BorderColor="Green" Margin="1"  >
+                        <StackLayout Margin="5">
+                            <Border Padding="3" Stroke="Green">
                             <Grid ColumnDefinitions="1*, 1*"                                  
                                   RowDefinitions="Auto, Auto, Auto, Auto"
                                   x:Name="EventItem">
@@ -79,7 +80,8 @@
                                 <Label Text="{Binding Address.DisplayAddress}" Grid.Row="2" Grid.ColumnSpan="2" FontSize="Micro" />
                                 <Label Text="{Binding UserRoleForEvent}" Grid.Row="3" FontSize="Micro" />
                             </Grid>
-                        </Frame>
+                            </Border>
+                        </StackLayout>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>

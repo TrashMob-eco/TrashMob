@@ -73,7 +73,7 @@ public partial class MainViewModel : BaseViewModel
             if (selectedEvent != value)
             {
                 selectedEvent = value;
-                OnPropertyChanged(nameof(selectedEvent));
+                OnPropertyChanged(nameof(SelectedEvent));
 
                 if (selectedEvent != null)
                 {
