@@ -11,13 +11,24 @@
 
         public static LitterReportViewModel ToLitterReportViewModel(this LitterReport litterReport)
         {
-            return new LitterReportViewModel
+            var litterReportViewModel = new LitterReportViewModel
             {
                 Id = litterReport.Id,
                 Name = litterReport.Name,
                 Description = litterReport.Description,
                 LitterReportStatusId = litterReport.LitterReportStatusId,                
             };
+
+            foreach (var litterImage in litterReport.LitterImages)
+            {
+                var litterImageViewModel = litterImage.ToLitterImageViewModel();
+                if (litterImageViewModel != null)
+                {
+                    litterReportViewModel.LitterImageViewModels.Add(litterImageViewModel);
+                }
+            }
+
+            return litterReportViewModel;
         }
 
         public static LitterReport ToLitterReport(this LitterReportViewModel litterReportViewModel)
@@ -41,8 +52,13 @@
             };
         }
 
-        public static LitterImageViewModel ToLitterImageViewModel(this LitterImage litterImage)
+        public static LitterImageViewModel? ToLitterImageViewModel(this LitterImage litterImage)
         {
+            if (litterImage?.Latitude == null || litterImage.Longitude == null)
+            {
+                return null;
+            }
+
             return new LitterImageViewModel
             {
                 Id = litterImage.Id,

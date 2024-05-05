@@ -9,8 +9,8 @@
 
         <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-            <Grid RowDefinitions="Auto, Auto, Auto">
-                <VerticalStackLayout Spacing="5" Grid.Row="0" Margin="10">
+        <Grid RowDefinitions="Auto, Auto, Auto">
+            <VerticalStackLayout Spacing="5" Grid.Row="0" Margin="10">
                     <Label 
                         Text="Name"
                         FontSize="Micro"

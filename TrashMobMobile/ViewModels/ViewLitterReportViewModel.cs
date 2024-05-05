@@ -2,6 +2,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
@@ -36,7 +37,12 @@ public partial class ViewLitterReportViewModel : BaseViewModel
         LitterImageViewModels.Clear();
         foreach (var litterImage in litterReport.LitterImages)
         {
-            LitterImageViewModels.Add(litterImage.ToLitterImageViewModel());
+            var litterImageViewModel = litterImage.ToLitterImageViewModel();
+
+            if (litterImageViewModel != null)
+            {
+                LitterImageViewModels.Add(litterImageViewModel);
+            }
         }
 
         IsBusy = false;

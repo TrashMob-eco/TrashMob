@@ -2,6 +2,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -15,6 +16,12 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
     private readonly ILitterReportRestService litterReportRestService;
     private LitterReportViewModel? selectedLitterReport;
+    private LitterImageViewModel? selectedLitterImage;
+
+    public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
+
+    [ObservableProperty]
+    AddressViewModel userLocation;
 
     [ObservableProperty]
     private string reportStatus = "New";
@@ -87,7 +94,26 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
                 if (selectedLitterReport != null)
                 {
-                    PerformNavigation(selectedLitterReport);
+                    PerformNavigation(selectedLitterReport.Id);
+                }
+            }
+        }
+    }
+
+    public LitterImageViewModel? SelectedLitterImage
+    {
+        get { return selectedLitterImage; }
+        set
+        {
+            if (selectedLitterImage != value)
+            {
+                selectedLitterImage = value;
+                OnPropertyChanged(nameof(SelectedLitterImage));
+
+                if (selectedLitterImage != null)
+                {
+                    var litterReport = RawLitterReports.FirstOrDefault(l => l.LitterImages.Any(i => i.Id == selectedLitterImage.Id));
+                    PerformNavigation(litterReport.Id);
                 }
             }
         }
@@ -95,12 +121,13 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
     public async Task Init()
     {
+        UserLocation = App.CurrentUser.GetAddress();
         await RefreshLitterReports();
     }
 
-    private async void PerformNavigation(LitterReportViewModel litterReportViewModel)
+    private async void PerformNavigation(Guid litterReportId)
     {
-        await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportViewModel.Id}");
+        await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportId}");
     }
 
     private async Task RefreshLitterReports()
@@ -237,10 +264,22 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
     private void UpdateLitterReportViewModels()
     {
         LitterReports.Clear();
+        LitterImages.Clear();
 
         foreach (var litterReport in RawLitterReports)
         {
             var vm = litterReport.ToLitterReportViewModel();
+
+            foreach (var litterImage in litterReport.LitterImages)
+            {
+                var litterImageViewModel = litterImage.ToLitterImageViewModel();
+
+                if (litterImageViewModel != null)
+                {
+                    LitterImages.Add(litterImageViewModel);
+                }
+            }
+
             LitterReports.Add(vm);
         }
     }
