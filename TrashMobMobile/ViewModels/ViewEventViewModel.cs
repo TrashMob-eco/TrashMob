@@ -45,6 +45,15 @@ public partial class ViewEventViewModel : BaseViewModel
     [ObservableProperty]
     string selectedEventType;
 
+    [ObservableProperty]
+    string whatToExpect;
+
+    [ObservableProperty]
+    string attendeeCount;
+
+    [ObservableProperty]
+    string spotsLeft;
+
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
 
     public ICommand RegisterCommand { get; set; }
@@ -74,6 +83,11 @@ public partial class ViewEventViewModel : BaseViewModel
         EnableUnregister = !mobEvent.IsEventLead() && isAttending && mobEvent.AreUnregistrationsAllowed();
         EnableEditEvent = mobEvent.IsEventLead();
         EnableViewEventSummary = mobEvent.IsCompleted();
+
+        WhatToExpect = "What to Expect: \nCleanup supplies provided\nMeet fellow community members\nContribute to a cleaner environment.";
+
+        AttendeeCount = "99 people are going!";
+        SpotsLeft = "91 spots left!";
 
         IsBusy = false;
     }
