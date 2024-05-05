@@ -21,6 +21,9 @@ public partial class EditEventSummaryViewModel : BaseViewModel
 
     private EventSummary EventSummary { get; set; }
 
+    [ObservableProperty]
+    private bool enableSaveEventSummary;
+
     public async Task Init(string eventId)
     {
         IsBusy = true;
@@ -38,6 +41,8 @@ public partial class EditEventSummaryViewModel : BaseViewModel
                 NumberOfBags = EventSummary.NumberOfBags,
             };
         }
+
+        EnableSaveEventSummary = true;
 
         IsBusy = false;
     }

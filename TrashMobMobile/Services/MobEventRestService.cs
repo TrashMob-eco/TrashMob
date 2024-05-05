@@ -39,6 +39,48 @@ public class MobEventRestService : RestServiceBase, IMobEventRestService
         return mobEvents;
     }
 
+    public async Task<IEnumerable<Event>> GetCompletedEventsAsync(CancellationToken cancellationToken = default)
+    {
+        var mobEvents = new List<Event>();
+
+        try
+        {
+            var requestUri = $"{Controller}/completed";
+            var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            string content = await response.Content.ReadAsStringAsync(cancellationToken);
+            mobEvents = JsonConvert.DeserializeObject<List<Event>>(content);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(@"\tERROR {0}", ex.Message);
+            throw;
+        }
+
+        return mobEvents;
+    }
+
+    public async Task<IEnumerable<Event>> GetAllEventsAsync(CancellationToken cancellationToken = default)
+    {
+        var mobEvents = new List<Event>();
+
+        try
+        {
+            var requestUri = $"{Controller}";
+            var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            string content = await response.Content.ReadAsStringAsync(cancellationToken);
+            mobEvents = JsonConvert.DeserializeObject<List<Event>>(content);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(@"\tERROR {0}", ex.Message);
+            throw;
+        }
+
+        return mobEvents;
+    }
+
     public async Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly, CancellationToken cancellationToken = default)
     {
         var mobEvents = new List<Event>();

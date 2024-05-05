@@ -25,6 +25,8 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
     [ObservableProperty]
     EventViewModel eventViewModel;
 
+    PickupLocationViewModel selectedPickupLocationViewModel;
+
     public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = new ObservableCollection<PickupLocationViewModel>();
 
     [ObservableProperty]
@@ -36,10 +38,29 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
     public ICommand EditEventSummaryCommand { get; set; }
     public ICommand AddPickupLocationCommand { get; set; }
 
+    public PickupLocationViewModel SelectedPickupLocation
+    {
+        get { return selectedPickupLocationViewModel; }
+        set
+        {
+            selectedPickupLocationViewModel = value;
+            OnPropertyChanged(nameof(SelectedPickupLocation));
+
+            if (selectedPickupLocationViewModel != null)
+            {
+                PerformNavigation(selectedPickupLocationViewModel.PickupLocation.Id);
+            }
+        }
+    }
+
+    private async void PerformNavigation(Guid pickupLocationId)
+    {
+        await Shell.Current.GoToAsync($"{nameof(ViewPickupLocationPage)}?PickupLocationId={pickupLocationId}");
+    }
+
     public async Task Init(Guid eventId)
     {
-        IsBusy = true;
-
+        IsBusy = true; 
         var mobEvent = await mobEventManager.GetEventAsync(eventId);
         EventViewModel = mobEvent.ToEventViewModel();
 

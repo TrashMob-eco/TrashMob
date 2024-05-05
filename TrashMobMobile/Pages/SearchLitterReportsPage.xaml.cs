@@ -2,6 +2,7 @@ namespace TrashMobMobile.Pages;
 
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using Microsoft.Maui.Maps;
 
 public partial class SearchLitterReportsPage : ContentPage
 {
@@ -20,6 +21,12 @@ public partial class SearchLitterReportsPage : ContentPage
     {
         base.OnNavigatedTo(args);
         await _viewModel.Init();
+
+        if (_viewModel?.UserLocation?.Location != null)
+        {
+            var mapSpan = new MapSpan(new Location(_viewModel.UserLocation.Location.Latitude, _viewModel.UserLocation.Location.Longitude), 0.05, 0.05);
+            litterImagesMap.MoveToRegion(mapSpan);
+        }
     }
 
     private async Task Notify(string message)

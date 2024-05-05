@@ -101,6 +101,9 @@
 	  <Compile Update="Pages\CreateLitterReportPage.xaml.cs">
 	    <DependentUpon>CreateLitterReportPage.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Pages\ViewPickupLocationPage.xaml.cs">
+	    <DependentUpon>ViewPickupLocationPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\WaiverPage.xaml.cs">
 	    <DependentUpon>WaiverPage.xaml</DependentUpon>
 	  </Compile>
@@ -161,6 +164,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Pages\ViewPickupLocationPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\WaiverPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
