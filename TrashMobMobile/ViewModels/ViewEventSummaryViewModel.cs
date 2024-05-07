@@ -68,7 +68,6 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
 
         if (eventSummary != null)
         {
-
             EventSummaryViewModel = new EventSummaryViewModel
             {
                 ActualNumberOfAttendees = eventSummary.ActualNumberOfAttendees,
@@ -107,7 +106,8 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
                 Notify = Notify,
                 NotifyError = NotifyError,
                 Navigation = Navigation,
-                PickupLocation = pickupLocation
+                PickupLocation = pickupLocation,
+                ImageUrl = pickupLocation.ImageUrl,
             };
 
             await pickupLocationViewModel.Init(eventId);

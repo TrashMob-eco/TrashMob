@@ -8,6 +8,8 @@
     {
         Task<IEnumerable<PickupLocationImage>> GetPickupLocationsAsync(Guid eventId, CancellationToken cancellationToken = default);
 
+        Task<PickupLocationImage> GetPickupLocationImageAsync(Guid pickupLocatioImageId, CancellationToken cancellationToken = default);
+
         Task<PickupLocation> GetPickupLocationAsync(Guid pickupLocationId, CancellationToken cancellationToken = default);
 
         Task<PickupLocation> AddPickupLocationAsync(PickupLocation pickupLocation, CancellationToken cancellationToken = default);

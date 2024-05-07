@@ -2,6 +2,7 @@ namespace TrashMobMobile.Pages;
 
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using Microsoft.Maui.Maps;
 
 [QueryProperty(nameof(PickupLocationId), nameof(PickupLocationId))]
 public partial class ViewPickupLocationPage : ContentPage
@@ -24,6 +25,12 @@ public partial class ViewPickupLocationPage : ContentPage
     {
         base.OnNavigatedTo(args);
         await _viewModel.Init(new Guid(PickupLocationId));
+
+        if (_viewModel?.PickupLocationViewModel?.Address?.Location != null)
+        {
+            var mapSpan = new MapSpan(_viewModel.PickupLocationViewModel.Address.Location, 0.05, 0.05);
+            pickupLocationsMap.MoveToRegion(mapSpan);
+        }
     }
 
     private async Task Notify(string message)
