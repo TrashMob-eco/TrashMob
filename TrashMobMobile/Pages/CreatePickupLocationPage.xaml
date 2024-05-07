@@ -3,41 +3,53 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             x:Class="TrashMobMobile.Pages.CreatePickupLocationPage">
+             x:Class="TrashMobMobile.Pages.CreatePickupLocationPage"
+             Title="Create Pickup Location">
     <ScrollView>
-        <FlexLayout Direction="Column"
-                JustifyContent="SpaceAround">
-            <Label 
-            Text="Create Event!"
-            FontSize="Large"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center"/>
+        <FlexLayout Direction="Column">
 
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-            <Label Text="To add a pickup location, click the Take Photo button. The location will be auto-determined from that." />
+            <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="1*">
+                <Label Text="To add a pickup location, click the Take Photo button. The location will be auto-determined from that." Grid.Row="0" FontSize="Micro" Margin="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" />
+                <Button Text="Take Photo" Clicked="TakePhoto_Clicked" Grid.Row="1" Margin="10" />
+                <VerticalStackLayout Spacing="5" Grid.Row="2" Margin="10">
+                    <Label 
+                        Text="Name"
+                        FontSize="Micro"
+                        VerticalOptions="Center" 
+                        HorizontalOptions="Start"
+                        HorizontalTextAlignment="Center"
+                        FontAttributes="Bold" />
+                    <Frame Style="{x:StaticResource Frame}">
+                        <Entry Text="{Binding PickupLocationViewModel.Name}" >
+                            <Entry.Behaviors>
+                                <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
+                            </Entry.Behaviors>
+                        </Entry>
+                    </Frame>
+                </VerticalStackLayout>
+                <VerticalStackLayout Spacing="5" Grid.Row="3" Margin="10">
+                    <Label 
+                        Text="Description"
+                        FontSize="Micro"
+                        VerticalOptions="Center" 
+                        HorizontalOptions="Start"
+                        HorizontalTextAlignment="Center"
+                        FontAttributes="Bold" />
+                    <Frame Style="{x:StaticResource Frame}">
+                        <Editor Text="{Binding PickupLocationViewModel.Notes}" >
+                            <Editor.Behaviors>
+                                <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10" x:Name="notesValidator" />
+                            </Editor.Behaviors>
+                        </Editor>
+                    </Frame>
+                </VerticalStackLayout>
+            </Grid>
             
-            <Button Text="Take Photo" Clicked="TakePhoto_Clicked" />
             <Image x:Name="pickupPhoto" IsVisible="false" MaximumHeightRequest="200" />
             
-            <Grid RowDefinitions = "1*, 1*" ColumnDefinitions="1*, 1*" MaximumWidthRequest="400" >
-                <Label Grid.Row="0" Grid.Column="0" Text="Name"  />
-                <Entry Grid.Row="0" Grid.Column="1" Text="{Binding PickupLocationViewModel.Name}">
-                    <Entry.Behaviors>
-                        <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
-                    </Entry.Behaviors>
-                </Entry>
-
-                <Label Grid.Row="1" Grid.Column="0" Text="Notes" />
-                <Editor Grid.Row="1" Grid.Column="1" Text="{Binding PickupLocationViewModel.Notes}">
-                    <Editor.Behaviors>
-                        <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10" x:Name="notesValidator" />
-                    </Editor.Behaviors>
-                </Editor>
-            </Grid>
-
-            <maps:Map x:Name="pickupLocationMap" ItemsSource="{Binding PickupLocations}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True" >
+            <maps:Map x:Name="pickupLocationMap" ItemsSource="{Binding PickupLocations}" IsShowingUser="True" HeightRequest="250" IsScrollEnabled="True" Margin="10" WidthRequest="300" >
                 <maps:Map.ItemTemplate>
                     <DataTemplate>
                         <maps:Pin Location="{Binding Address.Location}"
@@ -47,20 +59,75 @@
                 </maps:Map.ItemTemplate>
             </maps:Map>
 
-            <Grid RowDefinitions = "1*, 1*, 1*, 1*, 1*" ColumnDefinitions="1*, 1*" MaximumWidthRequest="400" >
-                <Label Grid.Row="0" Grid.Column="0" Text="Address" />
-                <Label Grid.Row="0" Grid.Column="1" Text="{Binding PickupLocationViewModel.Address.StreetAddress }" />
-                <Label Grid.Row="1" Grid.Column="0" Text="City" />
-                <Label Grid.Row="1" Grid.Column="1" Text="{Binding PickupLocationViewModel.Address.City }" />
-                <Label Grid.Row="2" Grid.Column="0" Text="Region" />
-                <Label Grid.Row="2" Grid.Column="1" Text="{Binding PickupLocationViewModel.Address.Region }" />
-                <Label Grid.Row="3" Grid.Column="0" Text="Country" />
-                <Label Grid.Row="3" Grid.Column="1" Text="{Binding PickupLocationViewModel.Address.Country }" />
-                <Label Grid.Row="4" Grid.Column="0" Text="Postal Code" />
-                <Label Grid.Row="4" Grid.Column="1" Text="{Binding PickupLocationViewModel.Address.PostalCode }" />
+            <Grid RowDefinitions = "Auto, Auto, Auto" ColumnDefinitions="1*, 1*">
+                <VerticalStackLayout Spacing="5" Grid.Row="0" Margin="10" Grid.ColumnSpan="2">
+                    <Label 
+                    Text="Address"
+                    FontSize="Micro"
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Start"
+                    HorizontalTextAlignment="Center"
+                    FontAttributes="Bold" />
+
+                    <Frame Style="{x:StaticResource Frame}">
+                        <Label Text="{Binding PickupLocationViewModel.Address.StreetAddress }"  FontSize="Micro"/>
+                    </Frame>
+                </VerticalStackLayout>
+                <VerticalStackLayout Spacing="5" Grid.Row="1" Grid.Column="0" Margin="10">
+                    <Label 
+                    Text="City"
+                    FontSize="Micro"
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Start"
+                    HorizontalTextAlignment="Center"
+                    FontAttributes="Bold" />
+
+                    <Frame Style="{x:StaticResource Frame}">
+                        <Label Text="{Binding PickupLocationViewModel.Address.City }"  FontSize="Micro"/>
+                    </Frame>
+                </VerticalStackLayout>
+                <VerticalStackLayout Spacing="5" Grid.Row="1" Grid.Column="1" Margin="10">
+                    <Label 
+                    Text="State/Region"
+                    FontSize="Micro"
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Start"
+                    HorizontalTextAlignment="Center"
+                    FontAttributes="Bold" />
+
+                    <Frame Style="{x:StaticResource Frame}">
+                        <Label Text="{Binding PickupLocationViewModel.Address.Region }"  FontSize="Micro"/>
+                    </Frame>
+                </VerticalStackLayout>
+                <VerticalStackLayout Spacing="5" Grid.Row="2" Grid.Column="0" Margin="10">
+                    <Label 
+                    Text="Country"
+                    FontSize="Micro"
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Start"
+                    HorizontalTextAlignment="Center"
+                    FontAttributes="Bold" />
+
+                    <Frame Style="{x:StaticResource Frame}">
+                        <Label Text="{Binding PickupLocationViewModel.Address.Country }"  FontSize="Micro"/>
+                    </Frame>
+                </VerticalStackLayout>
+                <VerticalStackLayout Spacing="5" Grid.Row="2" Grid.Column="1" Margin="10">
+                    <Label 
+                    Text="Postal Code"
+                    FontSize="Micro"
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Start"
+                    HorizontalTextAlignment="Center"
+                    FontAttributes="Bold" />
+
+                    <Frame Style="{x:StaticResource Frame}">
+                        <Label Text="{Binding PickupLocationViewModel.Address.PostalCode }" FontSize="Micro" />
+                    </Frame>
+                </VerticalStackLayout>
             </Grid>
 
-            <Button Text="Save Pickup Location" Command="{Binding SavePickupLocationCommand}">
+            <Button Text="Save Pickup Location" Command="{Binding SavePickupLocationCommand}" Margin="10">
                 <Button.Triggers>
                     <MultiTrigger TargetType="Button">
                         <MultiTrigger.Conditions>

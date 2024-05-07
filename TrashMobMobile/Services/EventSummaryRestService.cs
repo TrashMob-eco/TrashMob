@@ -34,7 +34,16 @@
                     {
                         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                         {
-                            return new EventSummary();
+                            var eventSummary = new EventSummary
+                            {
+                                EventId = eventId,
+                                ActualNumberOfAttendees = 0,
+                                DurationInMinutes = 0,
+                                NumberOfBags = 0,
+                                Notes = string.Empty,
+                            };
+
+                            return eventSummary;
                         }
 
                         throw;

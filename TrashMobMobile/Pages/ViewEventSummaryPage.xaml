@@ -51,23 +51,24 @@
             <CollectionView x:Name="PickupLocationCollection" 
                  ItemsSource="{Binding PickupLocations}" 
                  SelectedItem="{Binding SelectedPickupLocation}" 
-                 IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}"
+                 IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked}"
                  SelectionMode="Single"
                  Grid.Row="4"
                  Grid.ColumnSpan="2">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border StrokeThickness="1">
-                            <Grid WidthRequest = "400"
-                       ColumnDefinitions="1*, 1*, 1*, 1*, 1*"
-                       RowDefinitions="Auto">
-                                <Label Text="{Binding Name}" Grid.Column="0" />
-                                <Label Text="{Binding Address.StreetAddress}" Grid.Column="1" />
-                                <Label Text="{Binding Address.City}" Grid.Column="2" />
-                                <Button Text="Edit Location" Grid.Column="3" Command="{Binding EditPickupLocationCommand}" IsEnabled="{Binding CanEditPickupLocation}" IsVisible="{Binding CanEditPickupLocation}" />
-                                <Button Text="Delete Location" Grid.Column="4" Command="{Binding DeletePickupLocationCommand}" IsEnabled="{Binding CanDeletePickupLocation}" IsVisible="{Binding CanDeletePickupLocation}" />
-                            </Grid>
-                        </Border>
+                        <StackLayout Margin="5">
+                            <Border Padding="3" Stroke="Green">
+                                <Grid ColumnDefinitions="1*, 1*, 1*, 1*"                                  
+                                  RowDefinitions="Auto"
+                                  x:Name="LitterReportItem">
+                                    <Image Source="{Binding ImageUrl}" Grid.Column="0" Margin="5" />
+                                    <Label Text="{Binding Address.DisplayAddress}" Grid.Column="1" Margin="5" FontSize="Micro" />
+                                    <Button Text="Edit Location" Grid.Column="2" Command="{Binding EditPickupLocationCommand}" IsEnabled="{Binding CanEditPickupLocation}" IsVisible="{Binding CanEditPickupLocation}" Margin="5" HeightRequest="40" FontSize="Micro" />
+                                    <Button Text="Delete Location" Grid.Column="3" Command="{Binding DeletePickupLocationCommand}" IsEnabled="{Binding CanDeletePickupLocation}" IsVisible="{Binding CanDeletePickupLocation}" Margin="5" HeightRequest="40" FontSize="Micro" />
+                                </Grid>
+                            </Border>
+                        </StackLayout>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
