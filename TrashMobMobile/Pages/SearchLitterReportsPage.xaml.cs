@@ -2,6 +2,7 @@ namespace TrashMobMobile.Pages;
 
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 
 public partial class SearchLitterReportsPage : ContentPage
@@ -47,5 +48,13 @@ public partial class SearchLitterReportsPage : ContentPage
             _viewModel.ReportStatus = (string)radioButton.Content;
             await _viewModel.Init();
         }
+    }
+
+    private async void Pin_InfoWindowClicked(object sender, PinClickedEventArgs e)
+    {
+        Pin p = (Pin)sender;
+
+        var litterReportId = p.AutomationId;
+        await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportId}");
     }
 }

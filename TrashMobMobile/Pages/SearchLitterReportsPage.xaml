@@ -15,11 +15,12 @@
                     <RadioButton Content="Assigned" RadioButtonGroup.GroupName="LitterReportStatus" CheckedChanged="OnReportStatusRadioButtonCheckedChanged"/>
                     <RadioButton Content="Cleaned" RadioButtonGroup.GroupName="LitterReportStatus" CheckedChanged="OnReportStatusRadioButtonCheckedChanged"/>
                 </HorizontalStackLayout>
-                <HorizontalStackLayout Grid.Row="1">
-                    <Picker x:Name="CountryPicker" Title="Select a country" ItemsSource="{Binding CountryCollection}" SelectedItem="{Binding SelectedCountry}" />
-                    <Picker x:Name="RegionPicker" Title="Select a state/region" ItemsSource="{Binding RegionCollection}" SelectedItem="{Binding SelectedRegion}"/>
-                    <Picker x:Name="CityPicker" Title="Select a city" ItemsSource="{Binding CityCollection}" SelectedItem="{Binding SelectedCity}" />
-                </HorizontalStackLayout>
+                <Grid Grid.Row="1" ColumnDefinitions="1*, 1*, 1*, 1*">
+                    <Picker x:Name="CountryPicker" Title="Select a country" ItemsSource="{Binding CountryCollection}" SelectedItem="{Binding SelectedCountry}" FontSize="Micro" Grid.Column="0" />
+                    <Picker x:Name="RegionPicker" Title="Select a state" ItemsSource="{Binding RegionCollection}" SelectedItem="{Binding SelectedRegion}" FontSize="Micro" Grid.Column="1" />
+                    <Picker x:Name="CityPicker" Title="Select a city" ItemsSource="{Binding CityCollection}" SelectedItem="{Binding SelectedCity}" FontSize="Micro" Grid.Column="2"/>
+                    <Button Text="Clear Selections" Command="{Binding ClearSelectionsCommand}" Margin="10" FontSize="Micro"  Grid.Column="3" />
+                </Grid>
                 <HorizontalStackLayout Grid.Row="2">
                     <RadioButton Content="Map" IsChecked="True" x:Name="viewMap" FontSize="Micro" />
                     <RadioButton Content="List" x:Name="viewList" FontSize="Micro" />
@@ -36,7 +37,9 @@
                         <DataTemplate>
                             <maps:Pin Location="{Binding Address.Location}"
                             Address="{Binding Address.StreetAddress}"
-                            Label="{Binding Address.StreetAddress}" />
+                            Label="{Binding Address.StreetAddress}" 
+                            AutomationId="{Binding LitterReportId}"
+                            InfoWindowClicked="Pin_InfoWindowClicked" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
                 </maps:Map>
