@@ -2,6 +2,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -15,9 +16,12 @@ public partial class SearchEventsViewModel : BaseViewModel
     private readonly IMobEventManager mobEventManager;
     private EventViewModel selectedEvent;
 
+    public ICommand ClearSelectionsCommand { get; set; }
+
     public SearchEventsViewModel(IMobEventManager mobEventManager)
     {
         this.mobEventManager = mobEventManager;
+        ClearSelectionsCommand = new Command(async () => await ClearSelections());
     }
 
     [ObservableProperty]
@@ -222,5 +226,18 @@ public partial class SearchEventsViewModel : BaseViewModel
             var vm = mobEvent.ToEventViewModel();
             Events.Add(vm);
         }
+    }
+
+    private async Task ClearSelections()
+    {
+        IsBusy = true;
+
+        SelectedCountry = null;
+        SelectedRegion = null;
+        SelectedCity = null;
+
+        await RefreshEvents();
+
+        IsBusy = false;
     }
 }

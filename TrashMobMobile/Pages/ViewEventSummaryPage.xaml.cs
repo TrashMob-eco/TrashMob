@@ -2,6 +2,7 @@ namespace TrashMobMobile.Pages;
 
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 
 [QueryProperty(nameof(EventId), nameof(EventId))]
@@ -39,5 +40,13 @@ public partial class ViewEventSummaryPage : ContentPage
 
         var toast = Toast.Make(message, duration, fontSize);
         await toast.Show(cancellationTokenSource.Token);
+    }
+
+    private async void Pin_InfoWindowClicked(object sender, PinClickedEventArgs e)
+    {
+        Pin p = (Pin)sender;
+
+        var pickupLocationId = p.AutomationId;
+        await Shell.Current.GoToAsync($"{nameof(ViewPickupLocationPage)}?LitterReportId={pickupLocationId}");
     }
 }

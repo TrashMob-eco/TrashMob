@@ -15,8 +15,12 @@ public partial class ViewEventViewModel : BaseViewModel
     private readonly IMobEventManager mobEventManager;
     private readonly IEventTypeRestService eventTypeRestService;
     private readonly IWaiverManager waiverManager;
+    private readonly IEventAttendeeRestService eventAttendeeRestService;
 
-    public ViewEventViewModel(IMobEventManager mobEventManager, IEventTypeRestService eventTypeRestService, IWaiverManager waiverManager)
+    public ViewEventViewModel(IMobEventManager mobEventManager, 
+                              IEventTypeRestService eventTypeRestService,
+                              IWaiverManager waiverManager,
+                              IEventAttendeeRestService eventAttendeeRestService)
     {
         RegisterCommand = new Command(async () => await Register());
         UnregisterCommand = new Command(async () => await Unregister());
@@ -25,6 +29,7 @@ public partial class ViewEventViewModel : BaseViewModel
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
         this.waiverManager = waiverManager;
+        this.eventAttendeeRestService = eventAttendeeRestService;
     }
 
     [ObservableProperty]
@@ -86,8 +91,32 @@ public partial class ViewEventViewModel : BaseViewModel
 
         WhatToExpect = "What to Expect: \nCleanup supplies provided\nMeet fellow community members\nContribute to a cleaner environment.";
 
-        AttendeeCount = "99 people are going!";
-        SpotsLeft = "91 spots left!";
+        var attendees = await eventAttendeeRestService.GetEventAttendeesAsync(eventId);
+
+        if (attendees.Count() == 1)
+        {
+            AttendeeCount = $"{attendees.Count()} person is going!";
+        }
+        else
+        {
+            AttendeeCount = "{attendees.Count()} people are going!";
+        }
+
+        if (mobEvent.MaxNumberOfParticipants > 0)
+        {
+            if (mobEvent.MaxNumberOfParticipants - attendees.Count() > 0)
+            {
+                SpotsLeft = $"{mobEvent.MaxNumberOfParticipants - attendees.Count()} spot left!";
+            }
+            else
+            {
+                SpotsLeft = "We're sorry. This event is currently full.";
+            }
+        }
+        else
+        {
+            SpotsLeft = "";
+        }
 
         IsBusy = false;
     }

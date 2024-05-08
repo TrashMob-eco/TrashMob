@@ -14,6 +14,21 @@ public class EventAttendeeRestService : RestServiceBase, IEventAttendeeRestServi
     {
     }
 
+    public async Task<IEnumerable<EventAttendee>> GetEventAttendeesAsync(Guid eventId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var requestUri = string.Concat(Controller, $"/{eventId}");
+            var eventAttendees = await AuthorizedHttpClient.GetFromJsonAsync<IEnumerable<EventAttendee>>(requestUri, SerializerOptions, cancellationToken);
+            return eventAttendees ?? [];
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(@"\tERROR {0}", ex.Message);
+            throw;
+        }
+    }
+
     public async Task AddAttendeeAsync(EventAttendee eventAttendee, CancellationToken cancellationToken = default)
     {
         try
