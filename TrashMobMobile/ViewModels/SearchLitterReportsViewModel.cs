@@ -15,7 +15,7 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
     private string? selectedRegion;
     private string? selectedCity;
 
-    private readonly ILitterReportRestService litterReportRestService;
+    private readonly ILitterReportManager litterReportManager;
     private LitterReportViewModel? selectedLitterReport;
     private LitterImageViewModel? selectedLitterImage;
 
@@ -78,9 +78,9 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
         }
     }
 
-    public SearchLitterReportsViewModel(ILitterReportRestService litterReportRestService)
+    public SearchLitterReportsViewModel(ILitterReportManager litterReportManager)
     {
-        this.litterReportRestService = litterReportRestService;
+        this.litterReportManager = litterReportManager;
         ClearSelectionsCommand = new Command(async () => await ClearSelections());
     }
 
@@ -142,19 +142,19 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
         if (ReportStatus == "Assigned")
         {
-            RawLitterReports = await litterReportRestService.GetAssignedLitterReportsAsync();
+            RawLitterReports = await litterReportManager.GetAssignedLitterReportsAsync();
         }
         else if (ReportStatus == "New")
         {
-            RawLitterReports = await litterReportRestService.GetNewLitterReportsAsync();
+            RawLitterReports = await litterReportManager.GetNewLitterReportsAsync();
         }
         else if (ReportStatus == "Cleaned")
         {
-            RawLitterReports = await litterReportRestService.GetCleanedLitterReportsAsync();
+            RawLitterReports = await litterReportManager.GetCleanedLitterReportsAsync();
         }
         else
         {
-            RawLitterReports = await litterReportRestService.GetAllLitterReportsAsync();
+            RawLitterReports = await litterReportManager.GetAllLitterReportsAsync();
         }
 
         var countryList = new List<string>();

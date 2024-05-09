@@ -127,7 +127,7 @@ public partial class EventViewModel : ObservableObject
         }
         set
         {
-            var fullDateTime = EventDateOnly.Add(EventTime);
+            var fullDateTime = EventDateOnly.Add(value);
             EventDate = fullDateTime;
         }
     }

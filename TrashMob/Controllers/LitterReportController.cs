@@ -243,5 +243,18 @@ namespace TrashMob.Controllers
 
             return fullLitterReports;
         }
+
+        [HttpGet("image/{litterImageId}")]
+        public async Task<IActionResult> GetImage(Guid litterImageId, CancellationToken cancellationToken)
+        {
+            var url = await imageManager.GetImageUrlAsync(litterImageId, ImageTypeEnum.LitterImage);
+
+            if (string.IsNullOrEmpty(url))
+            {
+                return NoContent();
+            }
+
+            return Ok(url);
+        }
     }
 }
