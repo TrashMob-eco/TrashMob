@@ -12,13 +12,13 @@ public partial class MyDashboardViewModel : BaseViewModel
     private LitterReportViewModel? selectedLitterReport;
     private readonly IMobEventManager mobEventManager;
     private readonly IStatsRestService statsRestService;
-    private readonly ILitterReportRestService litterReportRestService;
+    private readonly ILitterReportManager litterReportManager;
 
-    public MyDashboardViewModel(IMobEventManager mobEventManager, IStatsRestService statsRestService, ILitterReportRestService litterReportRestService)
+    public MyDashboardViewModel(IMobEventManager mobEventManager, IStatsRestService statsRestService, ILitterReportManager litterReportManager)
     {
         this.mobEventManager = mobEventManager;
         this.statsRestService = statsRestService;
-        this.litterReportRestService = litterReportRestService;
+        this.litterReportManager = litterReportManager;
     }
 
     public ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = [];
@@ -149,7 +149,7 @@ public partial class MyDashboardViewModel : BaseViewModel
     {
         LitterReports.Clear();
 
-        var litterReports = await litterReportRestService.GetUserLitterReportsAsync(App.CurrentUser.Id);
+        var litterReports = await litterReportManager.GetUserLitterReportsAsync(App.CurrentUser.Id);
 
         foreach (var litterReport in litterReports.OrderByDescending(l => l.CreatedDate))
         {

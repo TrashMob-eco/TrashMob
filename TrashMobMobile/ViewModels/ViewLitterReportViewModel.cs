@@ -2,15 +2,14 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
-using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
 public partial class ViewLitterReportViewModel : BaseViewModel
 {
-    public ViewLitterReportViewModel(ILitterReportRestService litterReportRestService)
+    public ViewLitterReportViewModel(ILitterReportManager litterReportManager)
     {
-        this.litterReportRestService = litterReportRestService;
+        this.litterReportManager = litterReportManager;
     }
 
     [ObservableProperty]
@@ -23,13 +22,13 @@ public partial class ViewLitterReportViewModel : BaseViewModel
 
     public LitterImageViewModel? SelectedLitterImageViewModel { get; set; }
 
-    private readonly ILitterReportRestService litterReportRestService;
+    private readonly ILitterReportManager litterReportManager;
 
     public async Task Init(Guid litterReportId)
     {
         IsBusy = true;
 
-        var litterReport = await litterReportRestService.GetLitterReportAsync(litterReportId);
+        var litterReport = await litterReportManager.GetLitterReportAsync(litterReportId);
 
         LitterReportViewModel = litterReport.ToLitterReportViewModel();
         LitterReportStatus = LitterReportExtensions.GetLitterStatusFromId(LitterReportViewModel?.LitterReportStatusId);

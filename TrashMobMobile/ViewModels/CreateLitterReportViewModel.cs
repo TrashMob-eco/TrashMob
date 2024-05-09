@@ -11,7 +11,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
 {
     private const string DefaultLitterReportName = "New Litter Report";
     private readonly IMapRestService mapRestService;
-    private readonly ILitterReportRestService litterReportRestService;
+    private readonly ILitterReportManager litterReportManager;
     private const int NewLitterReportStatus = 1;
     public const int MaxImages = 5;
 
@@ -59,10 +59,10 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     
     public LitterImageViewModel? SelectedLitterImageViewModel { get; set; }
 
-    public CreateLitterReportViewModel(ILitterReportRestService litterReportRestService, IMapRestService mapRestService)
+    public CreateLitterReportViewModel(ILitterReportManager litterReportManager, IMapRestService mapRestService)
     {
         SaveLitterReportCommand = new Command(async () => await SaveLitterReport());
-        this.litterReportRestService = litterReportRestService;
+        this.litterReportManager = litterReportManager;
         this.mapRestService = mapRestService;
         LitterReportViewModel = new LitterReportViewModel
         {
@@ -174,7 +174,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
             litterReport.LitterImages.Add(litterImage);
         }
 
-        var updatedLitterReport = await litterReportRestService.AddLitterReportAsync(litterReport);
+        var updatedLitterReport = await litterReportManager.AddLitterReportAsync(litterReport);
 
         IsBusy = false;
 
