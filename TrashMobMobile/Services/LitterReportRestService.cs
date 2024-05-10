@@ -39,7 +39,8 @@
             using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadAsStringAsync(cancellationToken);
+                var result = await response.Content.ReadAsStringAsync(cancellationToken);
+                return JsonConvert.DeserializeObject<string>(result);
             }
         }
 

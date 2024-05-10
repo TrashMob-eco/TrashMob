@@ -1,7 +1,6 @@
 ﻿namespace TrashMobMobile.Extensions
 {
     using TrashMob.Models;
-
     public static class LitterReportExtensions
     {
         public static string GetLitterStatusFromId(int? id)
@@ -17,6 +16,7 @@
                 Name = litterReport.Name,
                 Description = litterReport.Description,
                 LitterReportStatusId = litterReport.LitterReportStatusId,                
+                CreatedDate = litterReport.CreatedDate?.GetFormattedLocalDate() ?? string.Empty,
             };
 
             foreach (var litterImage in litterReport.LitterImages)
