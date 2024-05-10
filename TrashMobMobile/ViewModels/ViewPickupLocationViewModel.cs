@@ -18,11 +18,15 @@ public partial class ViewPickupLocationViewModel : BaseViewModel
     [ObservableProperty]
     PickupLocationViewModel pickupLocationViewModel;
 
+    [ObservableProperty]
+    double overlayOpacity;
+
     public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = new ObservableCollection<PickupLocationViewModel>();
 
     public async Task Init(Guid pickupLocationId)
     {
         IsBusy = true;
+        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
 
         var pickupLocation = await pickupLocationManager.GetPickupLocationImageAsync(pickupLocationId);
 

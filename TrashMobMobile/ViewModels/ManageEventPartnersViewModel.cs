@@ -24,6 +24,9 @@ public partial class ManageEventPartnersViewModel :  BaseViewModel
 
     private EventPartnerLocationViewModel selectedEventPartnerLocation;
 
+    [ObservableProperty]
+    double overlayOpacity;
+
     public EventPartnerLocationViewModel SelectedEventPartnerLocation
     {
         get { return selectedEventPartnerLocation; }
@@ -52,6 +55,7 @@ public partial class ManageEventPartnersViewModel :  BaseViewModel
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
+        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
 
         var eventPartnerLocations = await eventPartnerLocationServiceRestService.GetEventPartnerLocationsAsync(eventId);
 

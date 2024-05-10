@@ -30,6 +30,9 @@ public partial class MyDashboardViewModel : BaseViewModel
     [ObservableProperty]
     public StatisticsViewModel statisticsViewModel;
 
+    [ObservableProperty]
+    double overlayOpacity;
+
     public EventViewModel? UpcomingSelectedEvent
     {
         get { return upcomingSelectedEvent; }
@@ -87,6 +90,7 @@ public partial class MyDashboardViewModel : BaseViewModel
     public async Task Init()
     {
         IsBusy = true;
+        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
 
         var task1 = RefreshEvents();
         var task2 = RefreshStatistics();

@@ -5,64 +5,68 @@
              x:Class="TrashMobMobile.Pages.SearchEventsPage"
              Title="Search Events">
     <ScrollView>
-        <FlexLayout Direction="Column">
+        <Grid>
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+            <VerticalStackLayout Spacing="5">
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-            <Grid RowDefinitions="Auto, Auto, *">
-                <HorizontalStackLayout Grid.Row="0">
-                    <RadioButton Content="Upcoming" IsChecked="True" RadioButtonGroup.GroupName="EventStatus" CheckedChanged="OnEventStatusRadioButtonCheckedChanged" FontSize="Micro" />
-                    <RadioButton Content="Complete" RadioButtonGroup.GroupName="EventStatus" CheckedChanged="OnEventStatusRadioButtonCheckedChanged" FontSize="Micro" />
-                    <RadioButton Content="Both" RadioButtonGroup.GroupName="EventStatus" CheckedChanged="OnEventStatusRadioButtonCheckedChanged" FontSize="Micro" />
-                </HorizontalStackLayout>
-                <Grid Grid.Row="1" ColumnDefinitions="1*, 1*, 1*, 1*">
-                    <Picker x:Name="CountryPicker" Title="Select a country" ItemsSource="{Binding CountryCollection}" SelectedItem="{Binding SelectedCountry}" FontSize="Micro" Grid.Column="0" />
-                    <Picker x:Name="RegionPicker" Title="Select a state" ItemsSource="{Binding RegionCollection}" SelectedItem="{Binding SelectedRegion}" FontSize="Micro" Grid.Column="1" />
-                    <Picker x:Name="CityPicker" Title="Select a city" ItemsSource="{Binding CityCollection}" SelectedItem="{Binding SelectedCity}" FontSize="Micro" Grid.Column="2"/>
-                    <Button Text="Clear Selections" Command="{Binding ClearSelectionsCommand}" Margin="10" FontSize="Micro"  Grid.Column="3" />
+                <Grid RowDefinitions="Auto, Auto, *">
+                    <HorizontalStackLayout Grid.Row="0">
+                        <RadioButton Content="Upcoming" IsChecked="True" RadioButtonGroup.GroupName="EventStatus" CheckedChanged="OnEventStatusRadioButtonCheckedChanged" FontSize="Micro" />
+                        <RadioButton Content="Complete" RadioButtonGroup.GroupName="EventStatus" CheckedChanged="OnEventStatusRadioButtonCheckedChanged" FontSize="Micro" />
+                        <RadioButton Content="Both" RadioButtonGroup.GroupName="EventStatus" CheckedChanged="OnEventStatusRadioButtonCheckedChanged" FontSize="Micro" />
+                    </HorizontalStackLayout>
+                    <Grid Grid.Row="1" ColumnDefinitions="1*, 1*, 1*, 1*">
+                        <Picker x:Name="CountryPicker" Title="Select a country" ItemsSource="{Binding CountryCollection}" SelectedItem="{Binding SelectedCountry}" FontSize="Micro" Grid.Column="0" />
+                        <Picker x:Name="RegionPicker" Title="Select a state" ItemsSource="{Binding RegionCollection}" SelectedItem="{Binding SelectedRegion}" FontSize="Micro" Grid.Column="1" />
+                        <Picker x:Name="CityPicker" Title="Select a city" ItemsSource="{Binding CityCollection}" SelectedItem="{Binding SelectedCity}" FontSize="Micro" Grid.Column="2"/>
+                        <Button Text="Clear Selections" Command="{Binding ClearSelectionsCommand}" Margin="10" FontSize="Micro"  Grid.Column="3" />
+                    </Grid>
+                    <HorizontalStackLayout Grid.Row="2">
+                        <RadioButton Content="Map" IsChecked="True" x:Name="viewMap" FontSize="Micro" />
+                        <RadioButton Content="List" x:Name="viewList" FontSize="Micro" />
+                    </HorizontalStackLayout>
                 </Grid>
-                <HorizontalStackLayout Grid.Row="2">
-                    <RadioButton Content="Map" IsChecked="True" x:Name="viewMap" FontSize="Micro" />
-                    <RadioButton Content="List" x:Name="viewList" FontSize="Micro" />
-                </HorizontalStackLayout>
-            </Grid>
 
-            <maps:Map x:Name="eventsMap" IsShowingUser="True" ItemsSource="{Binding Events}" HeightRequest="300" IsScrollEnabled="True" IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}" >
-                <maps:Map.ItemTemplate>
-                    <DataTemplate>
-                        <maps:Pin Location="{Binding Address.Location}"
+                <maps:Map x:Name="eventsMap" IsShowingUser="True" ItemsSource="{Binding Events}" HeightRequest="300" IsScrollEnabled="True" IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}" >
+                    <maps:Map.ItemTemplate>
+                        <DataTemplate>
+                            <maps:Pin Location="{Binding Address.Location}"
                        Address="{Binding Address.StreetAddress}"
                        Label="{Binding Name}"
                        AutomationId="{Binding Id}"
-                       InfoWindowClicked="Pin_InfoWindowClicked" />/>
-                    </DataTemplate>
-                </maps:Map.ItemTemplate>
-            </maps:Map>
+                       InfoWindowClicked="Pin_InfoWindowClicked" /> />
+                        </DataTemplate>
+                    </maps:Map.ItemTemplate>
+                </maps:Map>
 
-            <CollectionView x:Name="EventsCollection" 
+                <CollectionView x:Name="EventsCollection" 
                  ItemsSource="{Binding Events}" 
                  SelectedItem="{Binding SelectedEvent}"
                  IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked }"
                  SelectionMode="Single" >
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <StackLayout Margin="5">
-                            <Border Padding="3" Stroke="Green">
-                                <Grid ColumnDefinitions="1*, 1*"                                  
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <StackLayout Margin="5">
+                                <Border Padding="3" Stroke="Green">
+                                    <Grid ColumnDefinitions="1*, 1*"                                  
                                   RowDefinitions="Auto, Auto, Auto, Auto"
                                   x:Name="EventItem">
 
-                                    <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
-                                    <Label Text="{Binding DisplayDate}" Grid.Row="1" Grid.ColumnSpan="2" FontSize="Micro" />
-                                    <Label Text="{Binding DisplayTime}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
-                                    <Label Text="{Binding Address.DisplayAddress}" Grid.Row="2" Grid.ColumnSpan="2" FontSize="Micro" />
-                                    <Label Text="{Binding UserRoleForEvent}" Grid.Row="3" FontSize="Micro" />
-                                </Grid>
-                            </Border>
-                        </StackLayout>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </FlexLayout>
+                                        <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
+                                        <Label Text="{Binding DisplayDate}" Grid.Row="1" Grid.ColumnSpan="2" FontSize="Micro" />
+                                        <Label Text="{Binding DisplayTime}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
+                                        <Label Text="{Binding Address.DisplayAddress}" Grid.Row="2" Grid.ColumnSpan="2" FontSize="Micro" />
+                                        <Label Text="{Binding UserRoleForEvent}" Grid.Row="3" FontSize="Micro" />
+                                    </Grid>
+                                </Border>
+                            </StackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+            <BoxView BackgroundColor="Black" Opacity="{Binding OverlayOpacity}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+        </Grid>
     </ScrollView>
 </ContentPage>
