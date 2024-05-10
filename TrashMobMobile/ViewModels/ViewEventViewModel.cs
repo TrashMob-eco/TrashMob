@@ -59,6 +59,9 @@ public partial class ViewEventViewModel : BaseViewModel
     [ObservableProperty]
     string spotsLeft;
 
+    [ObservableProperty]
+    double overlayOpacity;
+
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
 
     public ICommand RegisterCommand { get; set; }
@@ -72,6 +75,7 @@ public partial class ViewEventViewModel : BaseViewModel
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
+        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
 
         var mobEvent = await mobEventManager.GetEventAsync(eventId);
 

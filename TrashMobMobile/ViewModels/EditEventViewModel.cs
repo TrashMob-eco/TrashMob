@@ -31,11 +31,15 @@ public partial class EditEventViewModel :  BaseViewModel
     [ObservableProperty]
     AddressViewModel userLocation;
 
+    [ObservableProperty]
+    double overlayOpacity;
+
     private Event MobEvent { get; set; }
 
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
+        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
 
         UserLocation = App.CurrentUser.GetAddress();
         EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();

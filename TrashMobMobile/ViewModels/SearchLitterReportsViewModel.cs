@@ -33,6 +33,9 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
     public ICommand ClearSelectionsCommand { get; set; }
 
+    [ObservableProperty]
+    double overlayOpacity;
+
     public string? SelectedCountry
     {
         get 
@@ -125,6 +128,7 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
     public async Task Init()
     {
+        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
         UserLocation = App.CurrentUser.GetAddress();
         await RefreshLitterReports();
     }
