@@ -48,8 +48,12 @@ public partial class TMEntry : ContentView
         WrappedEntry.HorizontalTextAlignment = newValue;
     }
 
-    [AutoBindable(DefaultBindingMode = "OneWayToSource")]
-    private bool _isValid;
+    [AutoBindable(OnChanged = nameof(OnKeyboardChanged))]
+    private Keyboard _keyboard;
+    private void OnKeyboardChanged(Keyboard kb)
+    {
+        WrappedEntry.Keyboard = kb;
+    }
 }
 
 public class BorderlessEntry : Entry
@@ -85,6 +89,5 @@ public class BorderlessEntry : Entry
         focusedTrigger.Setters.Add(transparentBackgroundSetter);
 
         Triggers.Add(focusedTrigger);
-
     }
 }

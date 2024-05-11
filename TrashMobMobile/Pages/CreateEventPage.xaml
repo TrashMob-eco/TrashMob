@@ -76,18 +76,16 @@
                                Text="Duration Hours"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:StaticResource Frame}">
-                            <Entry Keyboard="Numeric"
-                                   Text="{Binding EventViewModel.DurationHours}">
-                                <Entry.Behaviors>
-                                    <toolkit:NumericValidationBehavior x:Name="durationHoursValidator"
-                                                                       Flags="ValidateOnValueChanged"
-                                                                       MaximumDecimalPlaces="0"
-                                                                       MaximumValue="10"
-                                                                       MinimumValue="1" />
-                                </Entry.Behaviors>
-                            </Entry>
-                        </Frame>
+                        <controls:TMEntry Keyboard="Numeric"
+                                          Text="{Binding EventVieWModel.DurationHours}">
+                            <controls:BehaviorAttachment.PassthroughBehavior>
+                                <toolkit:NumericValidationBehavior x:Name="durationHoursValidator"
+                                                                   Flags="ValidateOnValueChanged"
+                                                                   MaximumDecimalPlaces="0"
+                                                                   MaximumValue="10"
+                                                                   MinimumValue="1" />
+                            </controls:BehaviorAttachment.PassthroughBehavior>
+                        </controls:TMEntry>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="2"
@@ -102,18 +100,16 @@
                                Text="Duration Minutes"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:StaticResource Frame}">
-                            <Entry Keyboard="Numeric"
-                                   Text="{Binding EventViewModel.DurationMinutes}">
-                                <Entry.Behaviors>
-                                    <toolkit:NumericValidationBehavior x:Name="durationMinutesValidator"
-                                                                       Flags="ValidateOnValueChanged"
-                                                                       MaximumDecimalPlaces="0"
-                                                                       MaximumValue="59"
-                                                                       MinimumValue="0" />
-                                </Entry.Behaviors>
-                            </Entry>
-                        </Frame>
+                        <controls:TMEntry Keyboard="Numeric"
+                                          Text="{Binding EventViewModel.DurationMinutes}">
+                            <controls:BehaviorAttachment.PassthroughBehavior>
+                                <toolkit:NumericValidationBehavior x:Name="durationMinutesValidator"
+                                                                   Flags="ValidateOnValueChanged"
+                                                                   MaximumDecimalPlaces="0"
+                                                                   MaximumValue="59"
+                                                                   MinimumValue="0" />
+                            </controls:BehaviorAttachment.PassthroughBehavior>
+                        </controls:TMEntry>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="3"
@@ -127,15 +123,13 @@
                                Text="Description"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:StaticResource Frame}">
-                            <Editor Text="{Binding EventViewModel.Description}">
-                                <Editor.Behaviors>
-                                    <toolkit:TextValidationBehavior x:Name="descriptionValidator"
-                                                                    Flags="ValidateOnValueChanged"
-                                                                    MinimumLength="10" />
-                                </Editor.Behaviors>
-                            </Editor>
-                        </Frame>
+                        <controls:TMEditor Text="{Binding EventViewModel.Description}">
+                            <controls:BehaviorAttachment.PassthroughBehavior>
+                                <toolkit:TextValidationBehavior x:Name="descriptionValidator"
+                                                                Flags="ValidateOnValueChanged"
+                                                                MinimumLength="10" />
+                            </controls:BehaviorAttachment.PassthroughBehavior>
+                        </controls:TMEditor>
                     </VerticalStackLayout>
 
 
@@ -169,17 +163,15 @@
                                Text="Max Attendees"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:StaticResource Frame}">
-                            <Entry Keyboard="Numeric"
-                                   Text="{Binding EventViewModel.MaxNumberOfParticipants}">
-                                <Entry.Behaviors>
-                                    <toolkit:NumericValidationBehavior x:Name="maxNumberOfParticipantsValidator"
-                                                                       Flags="ValidateOnValueChanged"
-                                                                       MaximumDecimalPlaces="0"
-                                                                       MinimumValue="0" />
-                                </Entry.Behaviors>
-                            </Entry>
-                        </Frame>
+                        <controls:TMEntry Keyboard="Numeric"
+                                          Text="{Binding EventViewModel.MaxNumberOfParticipants}">
+                            <controls:BehaviorAttachment.PassthroughBehavior>
+                                <toolkit:NumericValidationBehavior x:Name="maxNumberOfParticipantsValidator"
+                                                                   Flags="ValidateOnValueChanged"
+                                                                   MaximumDecimalPlaces="0"
+                                                                   MinimumValue="0" />
+                            </controls:BehaviorAttachment.PassthroughBehavior>
+                        </controls:TMEntry>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="4"
@@ -337,6 +329,9 @@
                         IsEnabled="{Binding IsManageEventPartersEnabled}"
                         Text="Manage Event Partners" />
 
+                <!--TODO: check with Shiyi, but I think the validations should be with their respective elements
+                            rather than at the end of the page. Especially in a scrollview.
+                -->
                 <Label FontSize="Micro"
                        HorizontalOptions="Center"
                        HorizontalTextAlignment="Center"

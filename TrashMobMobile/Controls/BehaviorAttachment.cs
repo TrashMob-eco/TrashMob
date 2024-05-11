@@ -2,7 +2,7 @@
 
 public static class BehaviorAttachment
 {
-    public static readonly BindableProperty AttachBehaviorProperty =
+    public static readonly BindableProperty PassthroughBehaviorProperty =
         BindableProperty.CreateAttached(
             "PassthroughBehavior",
             typeof(Behavior),
@@ -10,14 +10,14 @@ public static class BehaviorAttachment
             null,
             propertyChanged: OnBehaviorChanged);
 
-    public static void SetAttachBehavior(BindableObject view, Behavior value)
+    public static void SetPassthroughBehavior(BindableObject view, Behavior value)
     {
-        view.SetValue(AttachBehaviorProperty, value);
+        view.SetValue(PassthroughBehaviorProperty, value);
     }
 
-    public static Behavior GetAttachBehavior(BindableObject view)
+    public static Behavior GetPassthroughBehavior(BindableObject view)
     {
-        return (Behavior)view.GetValue(AttachBehaviorProperty);
+        return (Behavior)view.GetValue(PassthroughBehaviorProperty);
     }
 
     static void OnBehaviorChanged(BindableObject bindable, object oldValue, object newValue)
