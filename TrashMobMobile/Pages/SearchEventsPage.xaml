@@ -28,14 +28,15 @@
                     </HorizontalStackLayout>
                 </Grid>
 
-                <maps:Map x:Name="eventsMap" IsShowingUser="True" ItemsSource="{Binding Events}" HeightRequest="300" IsScrollEnabled="True" IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}" >
+                <maps:Map x:Name="eventsMap"
+                          IsShowingUser="True" ItemsSource="{Binding Events}" HeightRequest="300" IsScrollEnabled="True" IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}" >
                     <maps:Map.ItemTemplate>
                         <DataTemplate>
                             <maps:Pin Location="{Binding Address.Location}"
-                       Address="{Binding Address.StreetAddress}"
-                       Label="{Binding Name}"
-                       AutomationId="{Binding Id}"
-                       InfoWindowClicked="Pin_InfoWindowClicked" /> />
+                                Address="{Binding Address.StreetAddress}"
+                                Label="{Binding Name}"
+                                AutomationId="{Binding Id}"
+                                InfoWindowClicked="Pin_InfoWindowClicked" /> />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
                 </maps:Map>
@@ -65,7 +66,7 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
             </VerticalStackLayout>
-            <BoxView BackgroundColor="Black" Opacity="{Binding OverlayOpacity}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
+            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
         </Grid>
     </ScrollView>
