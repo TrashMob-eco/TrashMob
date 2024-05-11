@@ -2,5 +2,6 @@
 
 public static partial class Constants
 {
-    public static partial string GetSyncfusionKey();
+    // TODO: uncomment if we use Syncfusion
+    //public static partial string GetSyncfusionKey();
 }

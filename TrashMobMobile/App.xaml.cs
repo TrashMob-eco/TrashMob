@@ -8,9 +8,10 @@ public partial class App : Application
 
     public App()
 	{
-        var sfLicense = Constants.GetSyncfusionKey();
+        // TODO: uncomment if we need syncfusion
+        //var sfLicense = Constants.GetSyncfusionKey();
 
-        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(sfLicense);
+        //Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(sfLicense);
 
         InitializeComponent();
 
