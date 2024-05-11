@@ -20,6 +20,9 @@ public partial class LitterReportViewModel : ObservableObject
     [ObservableProperty]
     string description;
 
+    [ObservableProperty]
+    string createdDate;
+
     private int litterReportStatusId;
     
     public int LitterReportStatusId

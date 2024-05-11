@@ -22,11 +22,15 @@ public partial class EditEventPartnerLocationServicesViewModel :  BaseViewModel
     [ObservableProperty]
     EventPartnerLocationServiceViewModel selectedEventPartnerLocationServiceViewModel;
 
+    [ObservableProperty]
+    double overlayOpacity;
+
     public ObservableCollection<EventPartnerLocationServiceViewModel> EventPartnerLocationServices { get; set; } = new ObservableCollection<EventPartnerLocationServiceViewModel>();
 
     public async Task Init(Guid eventId, Guid partnerLocationId)
     {
         IsBusy = true;
+        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
 
         var serviceTypes = await serviceTypeRestService.GetServiceTypesAsync();
         var serviceStatuses = await eventPartnerLocationServiceStatusRestService.GetEventPartnerLocationServiceStatusesAsync();

@@ -5,74 +5,77 @@
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              Title="Search Litter Reports">
     <ScrollView>
-        <FlexLayout Direction="Column">
+        <Grid>
+            <VerticalStackLayout Spacing="5">
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+                <Grid RowDefinitions="Auto, Auto, Auto, *">
+                    <HorizontalStackLayout Grid.Row="0">
+                        <RadioButton Content="New" IsChecked="True" RadioButtonGroup.GroupName="LitterReportStatus" CheckedChanged="OnReportStatusRadioButtonCheckedChanged" />
+                        <RadioButton Content="Assigned" RadioButtonGroup.GroupName="LitterReportStatus" CheckedChanged="OnReportStatusRadioButtonCheckedChanged"/>
+                        <RadioButton Content="Cleaned" RadioButtonGroup.GroupName="LitterReportStatus" CheckedChanged="OnReportStatusRadioButtonCheckedChanged"/>
+                    </HorizontalStackLayout>
+                    <Grid Grid.Row="1" ColumnDefinitions="1*, 1*, 1*, 1*">
+                        <Picker x:Name="CountryPicker" Title="Select a country" ItemsSource="{Binding CountryCollection}" SelectedItem="{Binding SelectedCountry}" FontSize="Micro" Grid.Column="0" />
+                        <Picker x:Name="RegionPicker" Title="Select a state" ItemsSource="{Binding RegionCollection}" SelectedItem="{Binding SelectedRegion}" FontSize="Micro" Grid.Column="1" />
+                        <Picker x:Name="CityPicker" Title="Select a city" ItemsSource="{Binding CityCollection}" SelectedItem="{Binding SelectedCity}" FontSize="Micro" Grid.Column="2"/>
+                        <Button Text="Clear Selections" Command="{Binding ClearSelectionsCommand}" Margin="10" FontSize="Micro"  Grid.Column="3" />
+                    </Grid>
+                    <HorizontalStackLayout Grid.Row="2">
+                        <RadioButton Content="Map" IsChecked="True" x:Name="viewMap" FontSize="Micro" />
+                        <RadioButton Content="List" x:Name="viewList" FontSize="Micro" />
+                    </HorizontalStackLayout>
 
-            <Grid RowDefinitions="Auto, Auto, Auto, *">
-                <HorizontalStackLayout Grid.Row="0">
-                    <RadioButton Content="New" IsChecked="True" RadioButtonGroup.GroupName="LitterReportStatus" CheckedChanged="OnReportStatusRadioButtonCheckedChanged" />
-                    <RadioButton Content="Assigned" RadioButtonGroup.GroupName="LitterReportStatus" CheckedChanged="OnReportStatusRadioButtonCheckedChanged"/>
-                    <RadioButton Content="Cleaned" RadioButtonGroup.GroupName="LitterReportStatus" CheckedChanged="OnReportStatusRadioButtonCheckedChanged"/>
-                </HorizontalStackLayout>
-                <Grid Grid.Row="1" ColumnDefinitions="1*, 1*, 1*, 1*">
-                    <Picker x:Name="CountryPicker" Title="Select a country" ItemsSource="{Binding CountryCollection}" SelectedItem="{Binding SelectedCountry}" FontSize="Micro" Grid.Column="0" />
-                    <Picker x:Name="RegionPicker" Title="Select a state" ItemsSource="{Binding RegionCollection}" SelectedItem="{Binding SelectedRegion}" FontSize="Micro" Grid.Column="1" />
-                    <Picker x:Name="CityPicker" Title="Select a city" ItemsSource="{Binding CityCollection}" SelectedItem="{Binding SelectedCity}" FontSize="Micro" Grid.Column="2"/>
-                    <Button Text="Clear Selections" Command="{Binding ClearSelectionsCommand}" Margin="10" FontSize="Micro"  Grid.Column="3" />
-                </Grid>
-                <HorizontalStackLayout Grid.Row="2">
-                    <RadioButton Content="Map" IsChecked="True" x:Name="viewMap" FontSize="Micro" />
-                    <RadioButton Content="List" x:Name="viewList" FontSize="Micro" />
-                </HorizontalStackLayout>
-
-                <maps:Map x:Name="litterImagesMap" 
+                    <maps:Map x:Name="litterImagesMap" 
                           Grid.Row="3"  
                           IsShowingUser="True" 
                           ItemsSource="{Binding LitterImages}" 
                           HeightRequest="300" 
                           IsScrollEnabled="True" 
                           IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}" >
-                    <maps:Map.ItemTemplate>
-                        <DataTemplate>
-                            <maps:Pin Location="{Binding Address.Location}"
+                        <maps:Map.ItemTemplate>
+                            <DataTemplate>
+                                <maps:Pin Location="{Binding Address.Location}"
                             Address="{Binding Address.StreetAddress}"
                             Label="{Binding Address.StreetAddress}" 
                             AutomationId="{Binding LitterReportId}"
                             InfoWindowClicked="Pin_InfoWindowClicked" />
-                        </DataTemplate>
-                    </maps:Map.ItemTemplate>
-                </maps:Map>
+                            </DataTemplate>
+                        </maps:Map.ItemTemplate>
+                    </maps:Map>
 
-                <CollectionView x:Name="LitterReportsCollection" Grid.Row="4"
+                    <CollectionView x:Name="LitterReportsCollection" Grid.Row="4"
                      ItemsSource="{Binding LitterReports}" 
                      SelectedItem="{Binding SelectedLitterReport}" 
                      IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked}"
                      SelectionMode="Single" >
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <StackLayout Margin="5">
-                                <Border Padding="3" Stroke="Green">
-                                    <Grid ColumnDefinitions="1*, 1*"                                  
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <StackLayout Margin="5">
+                                    <Border Padding="3" Stroke="Green">
+                                        <Grid ColumnDefinitions="1*, 1*"                                  
                                   RowDefinitions="Auto, Auto, Auto"
                                   x:Name="LitterReportItem">
-                                        <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
-                                        <Label Text="{Binding Description}" Grid.Row="1" Grid.ColumnSpan="2" FontSize="Micro" />
-                                        <Label Text="Locations" Grid.Row="2" FontSize="Micro" FontAttributes="Bold" />
-                                        <CollectionView ItemsSource="{Binding LitterImageViewModels}" Grid.Row="2" Grid.Column="1">
-                                            <CollectionView.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro" />
-                                                </DataTemplate>
-                                            </CollectionView.ItemTemplate>
-                                        </CollectionView>                                    
-                                    </Grid>
-                                </Border>
-                            </StackLayout>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </Grid>
-        </FlexLayout>
+                                            <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="1" FontSize="Small" />
+                                            <Label Text="{Binding CreatedDate}" Grid.Row="0" Grid.ColumnSpan="1" Grid.Column="1" FontSize="Micro" />
+                                            <Label Text="{Binding Description}" Grid.Row="1" Grid.ColumnSpan="2" FontSize="Micro" />
+                                            <Label Text="Locations" Grid.Row="2" FontSize="Micro" FontAttributes="Bold" />
+                                            <CollectionView ItemsSource="{Binding LitterImageViewModels}" Grid.Row="2" Grid.Column="1">
+                                                <CollectionView.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro" />
+                                                    </DataTemplate>
+                                                </CollectionView.ItemTemplate>
+                                            </CollectionView>
+                                        </Grid>
+                                    </Border>
+                                </StackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </VerticalStackLayout>
+            <BoxView BackgroundColor="Black" Opacity="{Binding OverlayOpacity}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+        </Grid>
     </ScrollView>
 </ContentPage>

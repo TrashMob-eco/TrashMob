@@ -4,14 +4,14 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="TrashMobMobile.Pages.CreateLitterReportPage"
              Title="Submit Litter Report">
-    <ScrollView Orientation="Vertical">
-        <FlexLayout Direction="Column">
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+    <ScrollView>
+        <Grid>
+            <VerticalStackLayout>
 
-            <!-- Litter Report Top -->
-            <Grid RowDefinitions = "Auto, *, Auto" >
-                <VerticalStackLayout Spacing="5" Grid.Row="0" Margin="10">
-                    <Label 
+                <!-- Litter Report Top -->
+                <Grid RowDefinitions = "Auto, *, Auto" >
+                    <VerticalStackLayout Spacing="5" Grid.Row="0" Margin="10">
+                        <Label 
                     Text="Name"
                     FontSize="Micro"
                     VerticalOptions="Center" 
@@ -19,47 +19,50 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                    <Frame Style="{x:StaticResource Frame}">
-                        <Entry Text="{Binding Name}" />
-                    </Frame>
-                </VerticalStackLayout>
-                <VerticalStackLayout Spacing="5" Grid.Row="1" Margin="10">
-                    <Label Text="Description" 
+                        <Frame Style="{x:StaticResource Frame}">
+                            <Entry Text="{Binding Name}" />
+                        </Frame>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="5" Grid.Row="1" Margin="10">
+                        <Label Text="Description" 
                        FontSize="Micro"
                        VerticalOptions="Center" 
                        HorizontalOptions="Start"
                        HorizontalTextAlignment="Center"
                        FontAttributes="Bold" />
 
-                    <Frame Style="{x:StaticResource Frame}">
-                        <Editor Text="{Binding Description}" />
-                    </Frame>
-                </VerticalStackLayout>
+                        <Frame Style="{x:StaticResource Frame}">
+                            <Editor Text="{Binding Description}" />
+                        </Frame>
+                    </VerticalStackLayout>
 
-                <Button Text="Add Litter Image" Grid.Row="2"  Clicked="TakePhoto_Clicked" Margin="10" IsEnabled="{Binding CanAddImages}" />
-            </Grid>
+                    <Button Text="Add Litter Image" Grid.Row="2"  Clicked="TakePhoto_Clicked" Margin="10" IsEnabled="{Binding CanAddImages}" />
+                </Grid>
 
-            <Grid RowDefinitions = "Auto, *" Margin="10">
-                <Label Text="Please add between 1 and 5 images of the litter to your report." Grid.Row="0" Margin="10" FontSize="Small" FontAttributes="Bold" IsVisible="{Binding HasNoImages}" HorizontalTextAlignment="Center" />
+                <Grid RowDefinitions = "Auto, *" Margin="10">
+                    <Label Text="Please add between 1 and 5 images of the litter to your report." Grid.Row="0" Margin="10" FontSize="Small" FontAttributes="Bold" IsVisible="{Binding HasNoImages}" HorizontalTextAlignment="Center" />
 
-                <CollectionView x:Name="LitterImagesCollection" Grid.Row="1" Margin="10"
+                    <CollectionView x:Name="LitterImagesCollection" Grid.Row="1" Margin="10"
                  ItemsSource="{Binding LitterImageViewModels}" 
                  SelectionMode="None" >
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Border StrokeThickness="1">
-                                <Grid ColumnDefinitions="Auto, *, Auto">
-                                    <Image Source="{Binding FilePath}" MaximumWidthRequest="100" Grid.Column="0" Margin="5" />
-                                    <Label Text="{Binding Address.DisplayAddress}" Grid.Column="1" Margin="5" />
-                                    <Button Text="Delete Image" Grid.Column="2" Clicked="DeleteLitterImage_Clicked" Margin="5" WidthRequest="80" HeightRequest="40" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </Grid>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border StrokeThickness="1">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <Image Source="{Binding FilePath}" MaximumWidthRequest="100" Grid.Column="0" Margin="5" />
+                                        <Label Text="{Binding Address.DisplayAddress}" Grid.Column="1" Margin="5" />
+                                        <Button Text="Delete Image" Grid.Column="2" Clicked="DeleteLitterImage_Clicked" Margin="5" WidthRequest="80" HeightRequest="40" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
 
-            <Button Text="Save Litter Report" Command="{Binding SaveLitterReportCommand}" Margin="10" IsEnabled="{Binding ReportIsValid}" />
-        </FlexLayout>
+                <Button Text="Save Litter Report" Command="{Binding SaveLitterReportCommand}" Margin="10" IsEnabled="{Binding ReportIsValid}" />
+            </VerticalStackLayout>
+            <BoxView BackgroundColor="Black" Opacity="{Binding OverlayOpacity}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+        </Grid>
     </ScrollView>
 </ContentPage>

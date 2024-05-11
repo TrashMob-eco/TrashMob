@@ -7,36 +7,40 @@
              x:Class="TrashMobMobile.Pages.ManageEventPartnersPage"
              Title="Manage Event Partners">
     <ScrollView>
-        <FlexLayout Direction="Column">
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+        <Grid>
+            <VerticalStackLayout Spacing="5">
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-            <Grid RowDefinitions="Auto, Auto">
-                <Label Grid.Row="0"
+                <Grid RowDefinitions="Auto, Auto">
+                    <Label Grid.Row="0"
                     Text="Available Event Partners"
                     FontSize="Micro"
                     VerticalOptions="Center" 
                     HorizontalOptions="Start"
                     HorizontalTextAlignment="Center"/>
 
-                <CollectionView Grid.Row="1" x:Name="AvailableEventPartners" 
+                    <CollectionView Grid.Row="1" x:Name="AvailableEventPartners" 
                             ItemsSource="{Binding AvailablePartners}" 
                             SelectedItem="{Binding SelectedEventPartnerLocation}" 
                             SelectionMode="Single" >
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Border Padding="3" Stroke="Green">
-                                <Grid ColumnDefinitions="1*, 1*, 1*"                                  
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="3" Stroke="Green">
+                                    <Grid ColumnDefinitions="1*, 1*, 1*"                                  
                                   RowDefinitions="Auto"
                                   x:Name="PartnerLocationItem">
-                                    <Label Text="{Binding PartnerLocationName}" Grid.Column="0" />
-                                    <Label Text="{Binding PartnerLocationNotes}" Grid.Column="1" />
-                                    <Label Text="{Binding PartnerServicesEngaged}" Grid.Column="2" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </Grid>
-        </FlexLayout>
+                                        <Label Text="{Binding PartnerLocationName}" Grid.Column="0" />
+                                        <Label Text="{Binding PartnerLocationNotes}" Grid.Column="1" />
+                                        <Label Text="{Binding PartnerServicesEngaged}" Grid.Column="2" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </VerticalStackLayout>
+            <BoxView BackgroundColor="Black" Opacity="{Binding OverlayOpacity}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+        </Grid>
     </ScrollView>
 </ContentPage>

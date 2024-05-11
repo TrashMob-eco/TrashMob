@@ -4,27 +4,26 @@
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              x:Class="TrashMobMobile.Pages.MyDashboardPage"
              Title="My Dashboard">
-    
+
     <ScrollView>
-        <FlexLayout Direction="Column">
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+        <Grid>
+            <VerticalStackLayout Spacing="5">
+                <Frame Style="{x:StaticResource Frame}" Margin="5,0">
+                    <Grid RowDefinitions = "Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 1*, 1*">
+                        <Label Text="Here's what you have done so far!" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Micro" Margin="0, 0, 0, 10" />
+                        <Image Grid.Row="1" Grid.Column="0" Source="calendar.svg" MaximumWidthRequest="25" />
+                        <Label Grid.Row="2" Grid.Column="0" Text="{ Binding StatisticsViewModel.TotalEvents }" FontSize="Micro" HorizontalTextAlignment ="Center" />
+                        <Label Grid.Row="3" Grid.Column="0" Text="Events Attended" FontSize="Micro" HorizontalTextAlignment ="Center" />
+                        <Image Grid.Row="1" Grid.Column="1" Source="trashbag.svg" WidthRequest="25" />
+                        <Label Grid.Row="2" Grid.Column="1" Text="{ Binding StatisticsViewModel.TotalBags }" FontSize="Micro"  HorizontalTextAlignment ="Center"/>
+                        <Label Grid.Row="3" Grid.Column="1" Text="Bags Collected" FontSize="Micro" HorizontalTextAlignment ="Center" />
+                        <Image Grid.Row="1" Grid.Column="2" Source="clock.svg" WidthRequest="25"/>
+                        <Label Grid.Row="2" Grid.Column="2" Text="{ Binding StatisticsViewModel.TotalHours }" FontSize="Micro"  HorizontalTextAlignment ="Center" />
+                        <Label Grid.Row="3" Grid.Column="2" Text="Hours Spent" FontSize="Micro" HorizontalTextAlignment ="Center" />
+                    </Grid>
+                </Frame>
 
-            <Frame Style="{x:StaticResource Frame}" Margin="5,0">
-                <Grid RowDefinitions = "Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 1*, 1*">
-                    <Label Text="Here's what you have done so far!" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Micro" Margin="0, 0, 0, 10" />
-                    <Image Grid.Row="1" Grid.Column="0" Source="calendar.svg" MaximumWidthRequest="25" />
-                    <Label Grid.Row="2" Grid.Column="0" Text="{ Binding StatisticsViewModel.TotalEvents }" FontSize="Micro" HorizontalTextAlignment ="Center" />
-                    <Label Grid.Row="3" Grid.Column="0" Text="Events Attended" FontSize="Micro" HorizontalTextAlignment ="Center" />
-                    <Image Grid.Row="1" Grid.Column="1" Source="trashbag.svg" WidthRequest="25" />
-                    <Label Grid.Row="2" Grid.Column="1" Text="{ Binding StatisticsViewModel.TotalBags }" FontSize="Micro"  HorizontalTextAlignment ="Center"/>
-                    <Label Grid.Row="3" Grid.Column="1" Text="Bags Collected" FontSize="Micro" HorizontalTextAlignment ="Center" />
-                    <Image Grid.Row="1" Grid.Column="2" Source="clock.svg" WidthRequest="25"/>
-                    <Label Grid.Row="2" Grid.Column="2" Text="{ Binding StatisticsViewModel.TotalHours }" FontSize="Micro"  HorizontalTextAlignment ="Center" />
-                    <Label Grid.Row="3" Grid.Column="2" Text="Hours Spent" FontSize="Micro" HorizontalTextAlignment ="Center" />
-                </Grid>
-            </Frame>
-
-            <Label 
+                <Label 
             Text="Upcoming Events"
                 FontSize="Medium"
                 VerticalOptions="Center" 
@@ -32,31 +31,31 @@
                 HorizontalTextAlignment="Center"
                 Margin="10"/>
 
-            <CollectionView x:Name="UpcomingEventsCollection" 
+                <CollectionView x:Name="UpcomingEventsCollection" 
                             ItemsSource="{Binding UpcomingEvents}" 
                             SelectedItem="{Binding UpcomingSelectedEvent}" 
                             SelectionMode="Single"
                             Margin="5" 
                             MaximumHeightRequest="250" >
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border Padding="3" Stroke="Green">
-                            <Grid ColumnDefinitions="1*, 1*"                                  
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Padding="3" Stroke="Green">
+                                <Grid ColumnDefinitions="1*, 1*"                                  
                                   RowDefinitions="Auto, Auto, Auto, Auto"
                                   x:Name="EventItem">
 
-                                <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
-                                <Label Text="{Binding DisplayDate}" Grid.Row="1" Grid.ColumnSpan="2" FontSize="Micro" />
-                                <Label Text="{Binding DisplayTime}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
-                                <Label Text="{Binding Address.DisplayAddress}" Grid.Row="2" Grid.ColumnSpan="2" FontSize="Micro" />
-                                <Label Text="{Binding UserRoleForEvent}" Grid.Row="3" FontSize="Micro" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                                    <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
+                                    <Label Text="{Binding DisplayDate}" Grid.Row="1" Grid.ColumnSpan="2" FontSize="Micro" />
+                                    <Label Text="{Binding DisplayTime}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
+                                    <Label Text="{Binding Address.DisplayAddress}" Grid.Row="2" Grid.ColumnSpan="2" FontSize="Micro" />
+                                    <Label Text="{Binding UserRoleForEvent}" Grid.Row="3" FontSize="Micro" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
-            <Label 
+                <Label 
             Text="Completed Events"
                 FontSize="Medium"
                 VerticalOptions="Center" 
@@ -64,31 +63,31 @@
                 HorizontalTextAlignment="Center" 
                 Margin="10"/>
 
-            <CollectionView x:Name="CompletedEventsCollection" 
+                <CollectionView x:Name="CompletedEventsCollection" 
                             ItemsSource="{Binding CompletedEvents}" 
                             SelectedItem="{Binding CompletedSelectedEvent}"
                             SelectionMode="Single"
                             Margin="5" 
                             MaximumHeightRequest="250" >
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border Padding="3" Stroke="Green">
-                            <Grid ColumnDefinitions="1*, 1*"                                  
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Padding="3" Stroke="Green">
+                                <Grid ColumnDefinitions="1*, 1*"                                  
                                   RowDefinitions="Auto, Auto, Auto, Auto"
                                   x:Name="EventItem">
 
-                                <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
-                                <Label Text="{Binding DisplayDate}" Grid.Row="1" Grid.ColumnSpan="2" FontSize="Micro" />
-                                <Label Text="{Binding DisplayTime}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
-                                <Label Text="{Binding Address.DisplayAddress}" Grid.Row="2" Grid.ColumnSpan="2" FontSize="Micro" />
-                                <Label Text="{Binding UserRoleForEvent}" Grid.Row="3" FontSize="Micro" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                                    <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
+                                    <Label Text="{Binding DisplayDate}" Grid.Row="1" Grid.ColumnSpan="2" FontSize="Micro" />
+                                    <Label Text="{Binding DisplayTime}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
+                                    <Label Text="{Binding Address.DisplayAddress}" Grid.Row="2" Grid.ColumnSpan="2" FontSize="Micro" />
+                                    <Label Text="{Binding UserRoleForEvent}" Grid.Row="3" FontSize="Micro" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
-            <Label 
+                <Label 
             Text="Litter Reports"
                 FontSize="Medium"
                 VerticalOptions="Center" 
@@ -96,29 +95,32 @@
                 HorizontalTextAlignment="Center" 
                 Margin="10"/>
 
-            <CollectionView x:Name="LitterReportCollection" 
+                <CollectionView x:Name="LitterReportCollection" 
                             ItemsSource="{Binding LitterReports}" 
                             SelectedItem="{Binding SelectedLitterReport}"
                             SelectionMode="Single"
                             Margin="5" 
                             MaximumHeightRequest="250" >
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border Padding="3" Stroke="Green">
-                            <Grid ColumnDefinitions="1*, 1*"                                  
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Padding="3" Stroke="Green">
+                                <Grid ColumnDefinitions="1*, 1*"                                  
                                   RowDefinitions="Auto, Auto, Auto, Auto"
                                   x:Name="LitterReportItem">
 
-                                <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
-                                <Label Text="{Binding CreatedDate}" Grid.Row="1" Grid.ColumnSpan="1" FontSize="Micro" />
-                                <Label Text="{Binding LitterReportStatus}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
-                                <Label Text="{Binding Description}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                                    <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
+                                    <Label Text="{Binding CreatedDate}" Grid.Row="1" Grid.ColumnSpan="1" FontSize="Micro" />
+                                    <Label Text="{Binding LitterReportStatus}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
+                                    <Label Text="{Binding Description}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
-        </FlexLayout>
+            </VerticalStackLayout>
+            <BoxView BackgroundColor="Black" Opacity="{Binding OverlayOpacity}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+        </Grid>
     </ScrollView>
 </ContentPage>

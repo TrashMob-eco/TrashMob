@@ -5,11 +5,11 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="TrashMobMobile.Pages.WaiverPage"
              Title="TrashMob.eco Waiver">
-    <FlexLayout Direction="Column">
+    <ScrollView>
+        <Grid>
+            <VerticalStackLayout Spacing="5">
 
-        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
-
-        <Label 
+                <Label 
             Text="In order to create or participate in TrashMob.eco events, you must agree to a liability waiver. Please click the
                 Sign Waiver button below. This will open a browser which will ask you to view and sign the waiver.
                 Once that is done, you will be redirected to the TrashMob.eco website to sign in and complete the waiver signing experience there. If you don't complete that last step, you will
@@ -19,20 +19,20 @@
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center"/>
 
-        <Label 
+                <Label 
             Text="You will only need to sign this waiver once unless we have to change the legalese." FontSize="Small"
             VerticalOptions="Center" 
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center" />
 
-        <Label 
+                <Label 
             Text="Thank you!" FontSize="Small"
             VerticalOptions="Center" 
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center" />
 
-        <VerticalStackLayout Spacing="5" Margin="10">
-            <Label 
+                <VerticalStackLayout Spacing="5" Margin="10">
+                    <Label 
             Text="Full Name" 
             FontSize="Micro"
             VerticalOptions="Center" 
@@ -40,45 +40,49 @@
             HorizontalTextAlignment="Center"
             FontAttributes="Bold" />
 
-            <Entry Text="{Binding Name}"             
+                    <Entry Text="{Binding Name}"             
                FontSize="Small"
                VerticalOptions="Center" 
                HorizontalOptions="Start"
                HorizontalTextAlignment="Center">
-                <Entry.Behaviors>
-                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
-                </Entry.Behaviors>
-            </Entry>
-        </VerticalStackLayout>
+                        <Entry.Behaviors>
+                            <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
+                        </Entry.Behaviors>
+                    </Entry>
+                </VerticalStackLayout>
 
-        <Button Text="Sign Waiver" Command="{Binding SignWaiverCommand}">
-            <Button.Triggers>
-                <MultiTrigger TargetType="Button">
-                    <MultiTrigger.Conditions>
-                        <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
-                    </MultiTrigger.Conditions>
-                    <Setter Property="IsEnabled" Value="True" />
-                </MultiTrigger>
-            </Button.Triggers>
-        </Button>
+                <Button Text="Sign Waiver" Command="{Binding SignWaiverCommand}">
+                    <Button.Triggers>
+                        <MultiTrigger TargetType="Button">
+                            <MultiTrigger.Conditions>
+                                <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="IsEnabled" Value="True" />
+                        </MultiTrigger>
+                    </Button.Triggers>
+                </Button>
 
-        <Label 
+                <Label 
             FontSize="Micro"
             VerticalOptions="Center" 
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center" 
             TextColor="Red">
-            <Label.Triggers>
-                <MultiTrigger TargetType="Label">
-                    <MultiTrigger.Conditions>
-                        <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
-                    </MultiTrigger.Conditions>
-                    <Setter Property="IsVisible" Value="False" />
-                </MultiTrigger>
-                <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="False">
-                    <Setter Property="Text" Value="Name is required and must be at least 5 characters." />
-                </DataTrigger>
-            </Label.Triggers>
-        </Label>
-    </FlexLayout>
+                    <Label.Triggers>
+                        <MultiTrigger TargetType="Label">
+                            <MultiTrigger.Conditions>
+                                <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="IsVisible" Value="False" />
+                        </MultiTrigger>
+                        <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="False">
+                            <Setter Property="Text" Value="Name is required and must be at least 5 characters." />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+            </VerticalStackLayout>
+            <BoxView BackgroundColor="Black" Opacity="{Binding OverlayOpacity}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+        </Grid>
+    </ScrollView>
 </ContentPage>

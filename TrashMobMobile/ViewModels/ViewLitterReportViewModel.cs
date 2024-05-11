@@ -18,6 +18,9 @@ public partial class ViewLitterReportViewModel : BaseViewModel
     [ObservableProperty]
     string litterReportStatus;
 
+    [ObservableProperty]
+    double overlayOpacity;
+
     public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; init; } = [];
 
     public LitterImageViewModel? SelectedLitterImageViewModel { get; set; }
@@ -27,6 +30,7 @@ public partial class ViewLitterReportViewModel : BaseViewModel
     public async Task Init(Guid litterReportId)
     {
         IsBusy = true;
+        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
 
         var litterReport = await litterReportManager.GetLitterReportAsync(litterReportId);
 

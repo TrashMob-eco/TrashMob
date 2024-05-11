@@ -39,6 +39,7 @@ public partial class CreateEventViewModel : BaseViewModel
     public async Task Init()
     {
         IsBusy = true;
+        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
 
         if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
         {
@@ -85,6 +86,9 @@ public partial class CreateEventViewModel : BaseViewModel
 
     [ObservableProperty]
     string selectedEventType;
+
+    [ObservableProperty]
+    double overlayOpacity;
 
     public ICommand SaveEventCommand { get; set; }
 
