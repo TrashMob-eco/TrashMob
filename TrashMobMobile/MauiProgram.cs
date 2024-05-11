@@ -24,7 +24,9 @@ public static class MauiProgram
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-			});
+                fonts.AddFont("Lexend-Regular.ttf", "LexendRegular");
+                fonts.AddFont("Lexend-SemiBold.ttf", "LexendSemibold");
+            });
 
         builder.UseSentry(options =>
         {

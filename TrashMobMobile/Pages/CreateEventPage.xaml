@@ -1,302 +1,406 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<ContentPage x:Class="TrashMobMobile.Pages.CreateEventPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             x:Class="TrashMobMobile.Pages.CreateEventPage"
              Title="Create Event">
     <ScrollView>
         <Grid>
             <VerticalStackLayout>
-                <Grid RowDefinitions = "Auto, Auto, Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 1*, 1*, 1*" MaximumWidthRequest="400" >
-                    <VerticalStackLayout Spacing="5" Grid.Row="0" Margin="10" Grid.ColumnSpan="4">
-                        <Label 
-                    Text="Name"
-                    FontSize="Micro"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    FontAttributes="Bold" />
+                <Grid ColumnDefinitions="1*, 1*, 1*, 1*"
+                      MaximumWidthRequest="400"
+                      RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto">
+                    <VerticalStackLayout Grid.Row="0"
+                                         Grid.ColumnSpan="4"
+                                         Margin="10"
+                                         Spacing="5">
+                        <Label FontAttributes="Bold"
+                               FontSize="Micro"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               Text="Name"
+                               VerticalOptions="Center" />
 
                         <Frame Style="{x:StaticResource Frame}">
                             <Entry Text="{Binding EventViewModel.Name}">
                                 <Entry.Behaviors>
-                                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
+                                    <toolkit:TextValidationBehavior x:Name="nameValidator"
+                                                                    Flags="ValidateOnValueChanged"
+                                                                    MinimumLength="5" />
                                 </Entry.Behaviors>
                             </Entry>
                         </Frame>
                     </VerticalStackLayout>
 
-                    <VerticalStackLayout Spacing="5" Grid.Row="1" Margin="10" Grid.Column="0" Grid.ColumnSpan="2">
-                        <Label 
-                    Text="Event Date"
-                    FontSize="Micro"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="1"
+                                         Grid.Column="0"
+                                         Grid.ColumnSpan="2"
+                                         Margin="10"
+                                         Spacing="5">
+                        <Label FontAttributes="Bold"
+                               FontSize="Micro"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               Text="Event Date"
+                               VerticalOptions="Center" />
 
                         <Frame Style="{x:StaticResource Frame}">
-                            <DatePicker Grid.Row="1" Grid.Column="1" Date="{Binding EventViewModel.EventDateOnly}" />
+                            <DatePicker Grid.Row="1"
+                                        Grid.Column="1"
+                                        Date="{Binding EventViewModel.EventDateOnly}" />
                         </Frame>
                     </VerticalStackLayout>
 
-                    <VerticalStackLayout Spacing="5" Grid.Row="1" Margin="10" Grid.Column="2" Grid.ColumnSpan="2">
-                        <Label 
-                    Text="Event Time"
-                    FontSize="Micro"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="1"
+                                         Grid.Column="2"
+                                         Grid.ColumnSpan="2"
+                                         Margin="10"
+                                         Spacing="5">
+                        <Label FontAttributes="Bold"
+                               FontSize="Micro"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               Text="Event Time"
+                               VerticalOptions="Center" />
 
                         <Frame Style="{x:StaticResource Frame}">
-                            <TimePicker Grid.Row="2" Grid.Column="1" Time="{Binding EventViewModel.EventTime}" />
+                            <TimePicker Grid.Row="2"
+                                        Grid.Column="1"
+                                        Time="{Binding EventViewModel.EventTime}" />
                         </Frame>
                     </VerticalStackLayout>
 
-                    <VerticalStackLayout Spacing="5" Grid.Row="2" Margin="10" Grid.Column="0" Grid.ColumnSpan="2">
-                        <Label 
-                    Text="Duration Hours"
-                    FontSize="Micro"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="2"
+                                         Grid.Column="0"
+                                         Grid.ColumnSpan="2"
+                                         Margin="10"
+                                         Spacing="5">
+                        <Label FontAttributes="Bold"
+                               FontSize="Micro"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               Text="Duration Hours"
+                               VerticalOptions="Center" />
 
                         <Frame Style="{x:StaticResource Frame}">
-                            <Entry Keyboard="Numeric" Text="{Binding EventViewModel.DurationHours}">
+                            <Entry Keyboard="Numeric"
+                                   Text="{Binding EventViewModel.DurationHours}">
                                 <Entry.Behaviors>
-                                    <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged" x:Name="durationHoursValidator" MinimumValue="1" MaximumValue="10" MaximumDecimalPlaces="0" />
+                                    <toolkit:NumericValidationBehavior x:Name="durationHoursValidator"
+                                                                       Flags="ValidateOnValueChanged"
+                                                                       MaximumDecimalPlaces="0"
+                                                                       MaximumValue="10"
+                                                                       MinimumValue="1" />
                                 </Entry.Behaviors>
                             </Entry>
                         </Frame>
                     </VerticalStackLayout>
 
-                    <VerticalStackLayout Spacing="5" Grid.Row="2" Margin="10" Grid.Column="2" Grid.ColumnSpan="2">
-                        <Label 
-                    Text="Duration Minutes"
-                    FontSize="Micro"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="2"
+                                         Grid.Column="2"
+                                         Grid.ColumnSpan="2"
+                                         Margin="10"
+                                         Spacing="5">
+                        <Label FontAttributes="Bold"
+                               FontSize="Micro"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               Text="Duration Minutes"
+                               VerticalOptions="Center" />
 
                         <Frame Style="{x:StaticResource Frame}">
-                            <Entry Keyboard="Numeric" Text="{Binding EventViewModel.DurationMinutes}">
+                            <Entry Keyboard="Numeric"
+                                   Text="{Binding EventViewModel.DurationMinutes}">
                                 <Entry.Behaviors>
-                                    <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged" x:Name="durationMinutesValidator" MinimumValue="0" MaximumValue="59" MaximumDecimalPlaces="0" />
+                                    <toolkit:NumericValidationBehavior x:Name="durationMinutesValidator"
+                                                                       Flags="ValidateOnValueChanged"
+                                                                       MaximumDecimalPlaces="0"
+                                                                       MaximumValue="59"
+                                                                       MinimumValue="0" />
                                 </Entry.Behaviors>
                             </Entry>
                         </Frame>
                     </VerticalStackLayout>
 
-                    <VerticalStackLayout Spacing="5" Grid.Row="3" Margin="10" Grid.ColumnSpan="4">
-                        <Label 
-                    Text="Description"
-                    FontSize="Micro"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="3"
+                                         Grid.ColumnSpan="4"
+                                         Margin="10"
+                                         Spacing="5">
+                        <Label FontAttributes="Bold"
+                               FontSize="Micro"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               Text="Description"
+                               VerticalOptions="Center" />
 
                         <Frame Style="{x:StaticResource Frame}">
                             <Editor Text="{Binding EventViewModel.Description}">
                                 <Editor.Behaviors>
-                                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10" x:Name="descriptionValidator" />
+                                    <toolkit:TextValidationBehavior x:Name="descriptionValidator"
+                                                                    Flags="ValidateOnValueChanged"
+                                                                    MinimumLength="10" />
                                 </Editor.Behaviors>
                             </Editor>
                         </Frame>
                     </VerticalStackLayout>
 
 
-                    <VerticalStackLayout Spacing="5" Grid.Row="4" Margin="10" Grid.Column="0" Grid.ColumnSpan="2">
-                        <Label 
-                    Text="Event Type"
-                    FontSize="Micro"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="4"
+                                         Grid.Column="0"
+                                         Grid.ColumnSpan="2"
+                                         Margin="10"
+                                         Spacing="5">
+                        <Label FontAttributes="Bold"
+                               FontSize="Micro"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               Text="Event Type"
+                               VerticalOptions="Center" />
 
                         <Frame Style="{x:StaticResource Frame}">
-                            <Picker Title="Event Type" ItemsSource="{Binding ETypes}" SelectedItem="{Binding SelectedEventType}" />
+                            <Picker Title="Event Type"
+                                    ItemsSource="{Binding ETypes}"
+                                    SelectedItem="{Binding SelectedEventType}" />
                         </Frame>
                     </VerticalStackLayout>
 
-                    <VerticalStackLayout Spacing="5" Grid.Row="4" Margin="10" Grid.Column="2">
-                        <Label 
-                    Text="Max Attendees"
-                    FontSize="Micro"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="4"
+                                         Grid.Column="2"
+                                         Margin="10"
+                                         Spacing="5">
+                        <Label FontAttributes="Bold"
+                               FontSize="Micro"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               Text="Max Attendees"
+                               VerticalOptions="Center" />
 
                         <Frame Style="{x:StaticResource Frame}">
-                            <Entry Keyboard="Numeric" Text="{Binding EventViewModel.MaxNumberOfParticipants}">
+                            <Entry Keyboard="Numeric"
+                                   Text="{Binding EventViewModel.MaxNumberOfParticipants}">
                                 <Entry.Behaviors>
-                                    <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged" x:Name="maxNumberOfParticipantsValidator" MinimumValue="0" MaximumDecimalPlaces="0" />
+                                    <toolkit:NumericValidationBehavior x:Name="maxNumberOfParticipantsValidator"
+                                                                       Flags="ValidateOnValueChanged"
+                                                                       MaximumDecimalPlaces="0"
+                                                                       MinimumValue="0" />
                                 </Entry.Behaviors>
                             </Entry>
                         </Frame>
                     </VerticalStackLayout>
 
-                    <VerticalStackLayout Spacing="5" Grid.Row="4" Margin="10" Grid.Column="3">
-                        <Label 
-                    Text="Is Event Public?"
-                    FontSize="Micro"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="4"
+                                         Grid.Column="3"
+                                         Margin="10"
+                                         Spacing="5">
+                        <Label FontAttributes="Bold"
+                               FontSize="Micro"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               Text="Is Event Public?"
+                               VerticalOptions="Center" />
 
                         <Frame Style="{x:StaticResource Frame}">
                             <CheckBox IsChecked="{Binding EventViewModel.IsEventPublic}" />
                         </Frame>
                     </VerticalStackLayout>
 
-                    <Label Grid.Row="5" Grid.ColumnSpan="4"
-                    Text="Click on the map to set the event location."
-                    FontSize="Micro"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Center"
-                    HorizontalTextAlignment="Center"
-                    Margin="5"/>
+                    <Label Grid.Row="5"
+                           Grid.ColumnSpan="4"
+                           Margin="5"
+                           FontSize="Micro"
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center"
+                           Text="Click on the map to set the event location."
+                           VerticalOptions="Center" />
 
-                    <maps:Map Grid.Row="6" Grid.ColumnSpan="4" x:Name="eventLocationMap" ItemsSource="{Binding Events}" IsShowingUser="True" HeightRequest="250" IsScrollEnabled="True" MapClicked="OnMapClicked" Margin="10">
+                    <maps:Map x:Name="eventLocationMap"
+                              Grid.Row="6"
+                              Grid.ColumnSpan="4"
+                              Margin="10"
+                              HeightRequest="250"
+                              IsScrollEnabled="True"
+                              IsShowingUser="True"
+                              ItemsSource="{Binding Events}"
+                              MapClicked="OnMapClicked">
                         <maps:Map.ItemTemplate>
                             <DataTemplate>
-                                <maps:Pin Location="{Binding Address.Location}"
-                                    Address="{Binding Address.StreetAddress}"
-                                    Label="{Binding Name}" />
+                                <maps:Pin Address="{Binding Address.StreetAddress}"
+                                          Label="{Binding Name}"
+                                          Location="{Binding Address.Location}" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>
                     </maps:Map>
                 </Grid>
 
-                <Grid RowDefinitions = "Auto, Auto, Auto" ColumnDefinitions="1*, 1*">
-                    <VerticalStackLayout Spacing="5" Grid.Row="0" Margin="10" Grid.ColumnSpan="2">
-                        <Label 
-                    Text="Address"
-                    FontSize="Micro"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    FontAttributes="Bold" />
+                <Grid ColumnDefinitions="1*, 1*"
+                      RowDefinitions="Auto, Auto, Auto">
+                    <VerticalStackLayout Grid.Row="0"
+                                         Grid.ColumnSpan="2"
+                                         Margin="10"
+                                         Spacing="5">
+                        <Label FontAttributes="Bold"
+                               FontSize="Micro"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               Text="Address"
+                               VerticalOptions="Center" />
 
                         <Frame Style="{x:StaticResource Frame}">
-                            <Label Text="{Binding EventViewModel.Address.StreetAddress }"  FontSize="Micro"/>
+                            <Label FontSize="Micro"
+                                   Text="{Binding EventViewModel.Address.StreetAddress}" />
                         </Frame>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="5" Grid.Row="1" Grid.Column="0" Margin="10">
-                        <Label 
-                    Text="City"
-                    FontSize="Micro"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="1"
+                                         Grid.Column="0"
+                                         Margin="10"
+                                         Spacing="5">
+                        <Label FontAttributes="Bold"
+                               FontSize="Micro"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               Text="City"
+                               VerticalOptions="Center" />
 
                         <Frame Style="{x:StaticResource Frame}">
-                            <Label Text="{Binding EventViewModel.Address.City }"  FontSize="Micro"/>
+                            <Label FontSize="Micro"
+                                   Text="{Binding EventViewModel.Address.City}" />
                         </Frame>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="5" Grid.Row="1" Grid.Column="1" Margin="10">
-                        <Label 
-                    Text="State/Region"
-                    FontSize="Micro"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="1"
+                                         Grid.Column="1"
+                                         Margin="10"
+                                         Spacing="5">
+                        <Label FontAttributes="Bold"
+                               FontSize="Micro"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               Text="State/Region"
+                               VerticalOptions="Center" />
 
                         <Frame Style="{x:StaticResource Frame}">
-                            <Label Text="{Binding EventViewModel.Address.Region }"  FontSize="Micro"/>
+                            <Label FontSize="Micro"
+                                   Text="{Binding EventViewModel.Address.Region}" />
                         </Frame>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="5" Grid.Row="2" Grid.Column="0" Margin="10">
-                        <Label 
-                    Text="Country"
-                    FontSize="Micro"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="2"
+                                         Grid.Column="0"
+                                         Margin="10"
+                                         Spacing="5">
+                        <Label FontAttributes="Bold"
+                               FontSize="Micro"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               Text="Country"
+                               VerticalOptions="Center" />
 
                         <Frame Style="{x:StaticResource Frame}">
-                            <Label Text="{Binding EventViewModel.Address.Country }"  FontSize="Micro"/>
+                            <Label FontSize="Micro"
+                                   Text="{Binding EventViewModel.Address.Country}" />
                         </Frame>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="5" Grid.Row="2" Grid.Column="1" Margin="10">
-                        <Label 
-                    Text="Postal Code"
-                    FontSize="Micro"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="2"
+                                         Grid.Column="1"
+                                         Margin="10"
+                                         Spacing="5">
+                        <Label FontAttributes="Bold"
+                               FontSize="Micro"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               Text="Postal Code"
+                               VerticalOptions="Center" />
 
                         <Frame Style="{x:StaticResource Frame}">
-                            <Label Text="{Binding EventViewModel.Address.PostalCode }"  FontSize="Micro"/>
+                            <Label FontSize="Micro"
+                                   Text="{Binding EventViewModel.Address.PostalCode}" />
                         </Frame>
                     </VerticalStackLayout>
                 </Grid>
 
-                <Button Text="Save Event" Command="{Binding SaveEventCommand}" Margin="10">
+                <Button Margin="10"
+                        Command="{Binding SaveEventCommand}"
+                        Text="Save Event">
                     <Button.Triggers>
                         <MultiTrigger TargetType="Button">
                             <MultiTrigger.Conditions>
-                                <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}" Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}" Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}" Value="True" />
+                                <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
+                                                  Value="True" />
+                                <BindingCondition Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}"
+                                                  Value="True" />
+                                <BindingCondition Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}"
+                                                  Value="True" />
+                                <BindingCondition Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}"
+                                                  Value="True" />
+                                <BindingCondition Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}"
+                                                  Value="True" />
                             </MultiTrigger.Conditions>
                             <Setter Property="IsEnabled" Value="True" />
                         </MultiTrigger>
                     </Button.Triggers>
                 </Button>
 
-                <Button Text="Manage Event Partners" Command="{Binding ManageEventPartnersCommand}" IsEnabled="{Binding IsManageEventPartersEnabled}" Margin="10"  />
+                <Button Margin="10"
+                        Command="{Binding ManageEventPartnersCommand}"
+                        IsEnabled="{Binding IsManageEventPartersEnabled}"
+                        Text="Manage Event Partners" />
 
-                <Label 
-            FontSize="Micro"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center" 
-            TextColor="Red">
+                <Label FontSize="Micro"
+                       HorizontalOptions="Center"
+                       HorizontalTextAlignment="Center"
+                       TextColor="Red"
+                       VerticalOptions="Center">
                     <Label.Triggers>
                         <MultiTrigger TargetType="Label">
                             <MultiTrigger.Conditions>
-                                <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}" Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}" Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}" Value="True" />
+                                <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
+                                                  Value="True" />
+                                <BindingCondition Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}"
+                                                  Value="True" />
+                                <BindingCondition Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}"
+                                                  Value="True" />
+                                <BindingCondition Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}"
+                                                  Value="True" />
+                                <BindingCondition Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}"
+                                                  Value="True" />
                             </MultiTrigger.Conditions>
                             <Setter Property="IsVisible" Value="False" />
                         </MultiTrigger>
-                        <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="False">
+                        <DataTrigger Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
+                                     TargetType="Label"
+                                     Value="False">
                             <Setter Property="Text" Value="Name is required and must be at least 5 characters." />
                         </DataTrigger>
-                        <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" Value="False">
+                        <DataTrigger Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}"
+                                     TargetType="Label"
+                                     Value="False">
                             <Setter Property="Text" Value="Description is required and must be at least 10 characters." />
                         </DataTrigger>
-                        <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}" Value="False">
+                        <DataTrigger Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}"
+                                     TargetType="Label"
+                                     Value="False">
                             <Setter Property="Text" Value="Maximum Participants cannot be less than 0." />
                         </DataTrigger>
-                        <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}" Value="False">
+                        <DataTrigger Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}"
+                                     TargetType="Label"
+                                     Value="False">
                             <Setter Property="Text" Value="Duration Hours must be between 1 and 10." />
                         </DataTrigger>
-                        <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}" Value="False">
+                        <DataTrigger Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}"
+                                     TargetType="Label"
+                                     Value="False">
                             <Setter Property="Text" Value="Duration Minutes must be between 0 and 59." />
                         </DataTrigger>
                     </Label.Triggers>
                 </Label>
             </VerticalStackLayout>
-            <BoxView BackgroundColor="Black" Opacity="{Binding OverlayOpacity}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+            <BoxView BackgroundColor="{StaticResource TransparentBlack}"
+                     HorizontalOptions="Fill"
+                     IsVisible="{Binding IsBusy}"
+                     VerticalOptions="Fill" />
+            <ActivityIndicator HorizontalOptions="Center"
+                               IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               VerticalOptions="Center" />
         </Grid>
     </ScrollView>
 </ContentPage>

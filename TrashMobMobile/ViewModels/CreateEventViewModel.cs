@@ -1,8 +1,8 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -28,8 +28,6 @@ public partial class CreateEventViewModel : BaseViewModel
                                 IMapRestService mapRestService,
                                 IWaiverManager waiverManager)
     {
-        SaveEventCommand = new Command(async () => await SaveEvent());
-        ManageEventPartnersCommand = new Command(async () => await ManageEventPartners());
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
         this.mapRestService = mapRestService;
@@ -39,7 +37,6 @@ public partial class CreateEventViewModel : BaseViewModel
     public async Task Init()
     {
         IsBusy = true;
-        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
 
         if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
         {
@@ -88,15 +85,9 @@ public partial class CreateEventViewModel : BaseViewModel
     string selectedEventType;
 
     [ObservableProperty]
-    double overlayOpacity;
-
-    public ICommand SaveEventCommand { get; set; }
-
-    public ICommand ManageEventPartnersCommand { get; set; }
-
-    [ObservableProperty]
     bool isManageEventPartnersEnabled;
 
+    [RelayCommand]
     private async Task SaveEvent()
     {
         IsBusy = true;
@@ -130,6 +121,7 @@ public partial class CreateEventViewModel : BaseViewModel
         await Notify("Event has been saved.");
     }
 
+    [RelayCommand]
     private async Task ManageEventPartners()
     {
         await Shell.Current.GoToAsync($"{nameof(ManageEventPartnersPage)}?EventId={eventViewModel.Id}");

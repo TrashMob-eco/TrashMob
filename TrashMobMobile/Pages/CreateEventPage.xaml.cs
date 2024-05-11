@@ -36,6 +36,7 @@ public partial class CreateEventPage : ContentPage
         await _viewModel.ChangeLocation(e.Location);
     }
 
+    // TODO: These can be moved to a service/abstraction
     private async Task Notify(string message)
     {
         CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
