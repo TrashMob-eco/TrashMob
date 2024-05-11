@@ -27,15 +27,11 @@ public partial class ContactUsViewModel : BaseViewModel
     [ObservableProperty]
     string confirmation;
 
-    [ObservableProperty]
-    double overlayOpacity;
-
     public ICommand SubmitMessageCommand { get; set; }
 
     private async Task SubmitMessage()
     {
         IsBusy = true;
-        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
 
         var contactRequest = new ContactRequest
         {

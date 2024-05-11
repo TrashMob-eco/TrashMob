@@ -111,7 +111,7 @@
 
                 <Button Text="Update Location" Command="{Binding UpdateLocationCommand}" Margin="10" />
             </VerticalStackLayout>
-            <BoxView BackgroundColor="Black" Opacity="{Binding OverlayOpacity}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
+            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
         </Grid>
     </ScrollView>

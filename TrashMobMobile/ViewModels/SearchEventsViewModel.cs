@@ -30,9 +30,6 @@ public partial class SearchEventsViewModel : BaseViewModel
     [ObservableProperty]
     private string eventStatus = "Upcoming";
 
-    [ObservableProperty]
-    double overlayOpacity;
-
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
 
     public ObservableCollection<string> CountryCollection { get; set; } = [];
@@ -105,7 +102,6 @@ public partial class SearchEventsViewModel : BaseViewModel
     public async Task Init()
     {
         UserLocation = App.CurrentUser.GetAddress();
-        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
         await RefreshEvents();
     }
 

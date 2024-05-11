@@ -22,9 +22,6 @@ public partial class UserLocationPreferenceViewModel : BaseViewModel
     [ObservableProperty]
     AddressViewModel address;
 
-    [ObservableProperty]
-    double overlayOpacity;
-
     public UserLocationPreferenceViewModel(IUserManager userManager, IMapRestService mapRestService)
     {
         UpdateLocationCommand = new Command(async () => await UpdateLocation());
@@ -36,8 +33,7 @@ public partial class UserLocationPreferenceViewModel : BaseViewModel
     public void Init()
     {
         IsBusy = true;
-        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
-
+        
         Addresses.Clear();
         Address = App.CurrentUser.GetAddress();
         Addresses.Add(Address);
