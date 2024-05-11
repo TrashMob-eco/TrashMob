@@ -1,15 +1,12 @@
 ﻿namespace TrashMobMobile;
 
-using System.Reflection;
 using CommunityToolkit.Maui;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using TrashMobMobile.Authentication;
-using TrashMobMobile.Config;
-using TrashMobMobile.Extensions;
-using Sentry;
 using Microsoft.Maui.Controls.Hosting;
+using Syncfusion.Maui.Core.Hosting;
+using TrashMobMobile.Authentication;
+using TrashMobMobile.Extensions;
 
 public static class MauiProgram
 {
@@ -17,7 +14,8 @@ public static class MauiProgram
 	{
 		var builder = MauiApp.CreateBuilder();
 		builder
-			.UseMauiApp<App>()
+            .ConfigureSyncfusionCore()
+            .UseMauiApp<App>()
             .UseMauiMaps()
 			.UseMauiCommunityToolkit()
 			.ConfigureFonts(fonts =>
