@@ -8,7 +8,11 @@ public partial class App : Application
 
     public App()
 	{
-		InitializeComponent();
+        var sfLicense = Constants.GetSyncfusionKey();
+
+        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(sfLicense);
+
+        InitializeComponent();
 
         MainPage = new AppShell();
 	}
