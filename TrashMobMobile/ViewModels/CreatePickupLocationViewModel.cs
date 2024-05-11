@@ -15,11 +15,7 @@ public partial class CreatePickupLocationViewModel : BaseViewModel
     [ObservableProperty]
     EventViewModel eventViewModel;
 
-    [ObservableProperty]
-    double overlayOpacity;
-
-    public CreatePickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMapRestService mapRestService, IMobEventManager mobEventManager)
-    {
+    public CreatePickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMapRestService mapRestService, IMobEventManager mobEventManager)    {
         SavePickupLocationCommand = new Command(async () => await SavePickupLocation());
         this.pickupLocationManager = pickupLocationManager;
         this.mapRestService = mapRestService;
@@ -29,7 +25,6 @@ public partial class CreatePickupLocationViewModel : BaseViewModel
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
-        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
 
         var mobEvent = await mobEventManager.GetEventAsync(eventId);
 

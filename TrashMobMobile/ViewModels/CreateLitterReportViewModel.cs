@@ -33,9 +33,6 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     [ObservableProperty]
     bool reportIsValid = false;
 
-    [ObservableProperty]
-    double overlayOpacity;
-
     public string Name
     {
         get => name;
@@ -145,8 +142,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     private async Task SaveLitterReport()
     {
         IsBusy = true;
-        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
-
+        
         if (!ReportIsValid)
         {
             IsBusy = false;

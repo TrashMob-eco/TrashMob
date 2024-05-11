@@ -25,9 +25,6 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
     [ObservableProperty]
     EventViewModel eventViewModel;
 
-    [ObservableProperty]
-    double overlayOpacity;
-
     PickupLocationViewModel selectedPickupLocationViewModel;
 
     public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = new ObservableCollection<PickupLocationViewModel>();
@@ -64,8 +61,7 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
-        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
-
+        
         var mobEvent = await mobEventManager.GetEventAsync(eventId);
         EventViewModel = mobEvent.ToEventViewModel();
 

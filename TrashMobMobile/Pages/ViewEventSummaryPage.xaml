@@ -97,7 +97,7 @@
                     <Button Text="Add Pickup Location" Command="{Binding AddPickupLocationCommand}" IsVisible="{Binding EnableAddPickupLocation}" Grid.Row="5" Grid.Column="1" Margin="10"/>
                 </Grid>
             </VerticalStackLayout>
-            <BoxView BackgroundColor="Black" Opacity="{Binding OverlayOpacity}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
+            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
         </Grid>
     </ScrollView>

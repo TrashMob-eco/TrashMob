@@ -19,14 +19,10 @@ public partial class WelcomeViewModel : BaseViewModel
     [ObservableProperty]
     StatisticsViewModel statisticsViewModel = new StatisticsViewModel();
 
-    [ObservableProperty]
-    double overlayOpacity;
-
     public async Task Init()
     {
         IsBusy = true;
-        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
-
+        
         var stats = await statsRestService.GetStatsAsync();
 
         StatisticsViewModel.TotalAttendees = stats.TotalParticipants;

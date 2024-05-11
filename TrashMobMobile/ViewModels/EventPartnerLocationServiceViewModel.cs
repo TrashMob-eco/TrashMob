@@ -25,9 +25,6 @@ public partial class EventPartnerLocationServiceViewModel : BaseViewModel
     [ObservableProperty]
     int serviceTypeId;
 
-    [ObservableProperty]
-    double overlayOpacity;
-
     private int serviceStatusId;
 
     public int ServiceStatusId
@@ -74,8 +71,7 @@ public partial class EventPartnerLocationServiceViewModel : BaseViewModel
     private async Task RequestService()
     {
         IsBusy = true;
-        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
-
+        
         var eventPartnerLocationService = new EventPartnerLocationService()
         {
             EventId = EventId,
@@ -95,8 +91,7 @@ public partial class EventPartnerLocationServiceViewModel : BaseViewModel
     private async Task UnrequestService()
     {
         IsBusy = true;
-        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
-
+        
         var eventPartnerLocationService = new EventPartnerLocationService()
         {
             EventId = EventId,

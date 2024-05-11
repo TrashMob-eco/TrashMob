@@ -90,15 +90,8 @@
                         IsEnabled="{Binding ReportIsValid}"
                         Text="Save Litter Report" />
             </VerticalStackLayout>
-            <BoxView BackgroundColor="Black"
-                     HorizontalOptions="Fill"
-                     IsVisible="{Binding IsBusy}"
-                     Opacity="{Binding OverlayOpacity}"
-                     VerticalOptions="Fill" />
-            <ActivityIndicator HorizontalOptions="Center"
-                               IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}"
-                               VerticalOptions="Center" />
+            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
         </Grid>
     </ScrollView>
 </ContentPage>

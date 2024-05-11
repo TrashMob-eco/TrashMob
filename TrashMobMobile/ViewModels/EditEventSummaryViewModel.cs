@@ -24,14 +24,10 @@ public partial class EditEventSummaryViewModel : BaseViewModel
     [ObservableProperty]
     private bool enableSaveEventSummary;
 
-    [ObservableProperty]
-    double overlayOpacity;
-
     public async Task Init(string eventId)
     {
         IsBusy = true;
-        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
-
+        
         EventSummary = await mobEventManager.GetEventSummaryAsync(new Guid(eventId));
 
         if (EventSummary != null)
