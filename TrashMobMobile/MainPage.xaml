@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              xmlns:sensors="clr-namespace:Microsoft.Maui.Devices.Sensors;assembly=Microsoft.Maui.Essentials"
+             xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="vm:MainViewModel"
              x:Class="TrashMobMobile.MainPage">
 
     <ScrollView>
@@ -42,37 +44,37 @@
                 </Grid>
 
                 <maps:Map x:Name="upcomingEventsMap"
-              IsShowingUser="True"
-              ItemsSource="{Binding UpcomingEvents}"
-              HeightRequest="300"
-              IsScrollEnabled="True" 
-              Margin="5" 
-              IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked }">
+                          IsShowingUser="True"
+                          ItemsSource="{Binding UpcomingEvents}"
+                          HeightRequest="300"
+                          IsScrollEnabled="True" 
+                          Margin="5" 
+                          IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked }">  
                     <maps:Map.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="vm:EventViewModel">
                             <maps:Pin Location="{Binding Address.Location}"
-                          Address="{Binding Address.StreetAddress}"
-                          Label="{Binding Name}" 
-                          AutomationId="{Binding Id}"
-                          InfoWindowClicked="Pin_InfoWindowClicked" />
+                                      Address="{Binding Address.StreetAddress}"
+                                      Label="{Binding Name}" 
+                                      AutomationId="{Binding Id}"
+                                      InfoWindowClicked="Pin_InfoWindowClicked" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
                 </maps:Map>
 
                 <CollectionView x:Name="EventsCollection" 
-                    ItemsSource="{Binding UpcomingEvents}" 
-                    SelectedItem="{Binding SelectedEvent}"
-                    SelectionMode="Single"
-                    IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked }"
-                    Margin="5" 
-                    MaximumHeightRequest="250" >
+                                ItemsSource="{Binding UpcomingEvents}" 
+                                SelectedItem="{Binding SelectedEvent}"
+                                SelectionMode="Single"
+                                IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked }"
+                                Margin="5" 
+                                MaximumHeightRequest="250" >
                     <CollectionView.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="vm:EventViewModel">
                             <StackLayout Margin="5">
                                 <Border Padding="3" Stroke="Green">
                                     <Grid ColumnDefinitions="1*, 1*"                                  
-                          RowDefinitions="Auto, Auto, Auto, Auto"
-                          x:Name="EventItem">
+                                          RowDefinitions="Auto, Auto, Auto, Auto"
+                                          x:Name="EventItem">
 
                                         <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
                                         <Label Text="{Binding DisplayDate}" Grid.Row="1" Grid.ColumnSpan="2" FontSize="Micro" />
@@ -88,7 +90,7 @@
 
                 <Grid ColumnDefinitions="1*,1*, 1*, 1*" RowDefinitions="Auto, Auto">
                     <Button Text="Create an Event" Command="{Binding CreateEventCommand}" HorizontalOptions="Center" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource RoundButton}" />
-                    <Button Text="Submit a Litter Report" Command="{Binding SubmitLitterReportCommand}" Grid.Row="0" Grid.Column="2" HorizontalOptions="Center" Grid.ColumnSpan="2" Style="{StaticResource RoundButton}" />
+                    <Button Text="Submit a Litter Report" Command="{Binding CreateLitterReportCommand}" Grid.Row="0" Grid.Column="2" HorizontalOptions="Center" Grid.ColumnSpan="2" Style="{StaticResource RoundButton}" />
                     <Button Text="Contact Us" Command="{Binding ContactUsCommand}" HorizontalOptions="Center" Grid.Row="1" Grid.Column="2" Style="{StaticResource LinkButton}"/>
                     <Button Text="Log Out" Command="{Binding LogoutCommand}" HorizontalOptions="Center" Grid.Row="1" Grid.Column="3" Style="{StaticResource LinkButton}" />
                 </Grid>
