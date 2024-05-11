@@ -45,4 +45,7 @@
     <Color x:Key="PageBackgroundDark">#1F1F1F</Color>
 
     <Color x:Key="TransparentBlack">#50000000</Color>
+
+    <Color x:Key="InputBorderActive">#679D94</Color>
+    <Color x:Key="InputBorderInactive">#E4E5DE</Color>
 </ResourceDictionary>

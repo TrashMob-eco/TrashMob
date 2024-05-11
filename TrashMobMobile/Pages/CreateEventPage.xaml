@@ -4,6 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Create Event">
     <ScrollView>
         <Grid>
@@ -22,15 +23,7 @@
                                Text="Name"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:StaticResource Frame}">
-                            <Entry Text="{Binding EventViewModel.Name}">
-                                <Entry.Behaviors>
-                                    <toolkit:TextValidationBehavior x:Name="nameValidator"
-                                                                    Flags="ValidateOnValueChanged"
-                                                                    MinimumLength="5" />
-                                </Entry.Behaviors>
-                            </Entry>
-                        </Frame>
+                        <controls:TMEntry Text="{Binding EventViewModel.Name}" />
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="1"
