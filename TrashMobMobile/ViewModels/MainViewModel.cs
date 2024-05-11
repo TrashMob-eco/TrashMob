@@ -6,7 +6,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Windows.Input;
 using TrashMobMobile.Authentication;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -49,9 +48,6 @@ public partial class MainViewModel : BaseViewModel
     [ObservableProperty]
     int travelDistance;
 
-    [ObservableProperty]
-    double overlayOpacity;
-
     public EventViewModel SelectedEvent
     {
         get { return selectedEvent; }
@@ -78,7 +74,6 @@ public partial class MainViewModel : BaseViewModel
     public async Task Init()
     {
         IsBusy = true;
-        OverlayOpacity = 0.25; // Workaround for: https://github.com/dotnet/maui/issues/18234
 
         var signedIn = await authService.SignInSilentAsync(true);
 

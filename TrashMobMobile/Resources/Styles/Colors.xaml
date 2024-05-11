@@ -43,4 +43,6 @@
 
     <Color x:Key="PageBackgroundLight">White</Color>
     <Color x:Key="PageBackgroundDark">#1F1F1F</Color>
+
+    <Color x:Key="TransparentBlack">#50000000</Color>
 </ResourceDictionary>
