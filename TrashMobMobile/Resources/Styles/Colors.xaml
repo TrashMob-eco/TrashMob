@@ -7,7 +7,7 @@
     <Color x:Key="Primary">#005C4B</Color>
     <Color x:Key="PrimaryDark">#ac99ea</Color>
     <Color x:Key="PrimaryDarkText">#242424</Color>
-    <Color x:Key="Secondary">#DFD8F7</Color>
+    <Color x:Key="Secondary">#CCDEDA</Color>
     <Color x:Key="SecondaryDarkText">#9880e5</Color>
     <Color x:Key="Tertiary">#2B0B98</Color>
 
@@ -48,4 +48,10 @@
 
     <Color x:Key="InputBorderActive">#679D94</Color>
     <Color x:Key="InputBorderInactive">#E4E5DE</Color>
+
+    <Color x:Key="FlyoutSelectedItemColor">#F5F7EB</Color>
+    
+    <Color x:Key="TextBase">#1C1C1A</Color>
+    
+    <Color x:Key="GlobalBorderBase">#E4E5DE</Color>
 </ResourceDictionary>

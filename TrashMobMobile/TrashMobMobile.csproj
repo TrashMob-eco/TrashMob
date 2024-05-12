@@ -68,6 +68,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Fonts\feather.ttf" />
 	  <None Remove="Resources\Fonts\Lexend-Regular.ttf" />
 	  <None Remove="Resources\Fonts\Lexend-SemiBold.ttf" />
 	  <None Remove="Resources\Fonts\Lexend-VariableFont_wght.ttf" />
@@ -236,6 +237,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\WelcomePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Resources\Styles\Icons.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
