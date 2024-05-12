@@ -3,9 +3,11 @@ import { Col, Container, Image, Row } from 'react-bootstrap';
 import linkedIn from './assets/card/linkedin.svg';
 import JoeBeernink from './assets/boardOfDirectors/JoeBeernink.jpg';
 import DarylBarber from './assets/boardOfDirectors/darylbarber.jpg';
+import JakeDiliberto from './assets/boardOfDirectors/JakeDiliberto.svg';
 import KevinGleason from './assets/boardOfDirectors/KevinGleason.svg';
 import SandraMau from './assets/boardOfDirectors/SandraMau.png';
 import CynthiaMitchell from './assets/boardOfDirectors/CynthiaMitchell.jpg';
+import SofiaSamuels from './assets/boardOfDirectors/SofiaSamuels.png';
 import ValerieWilden from './assets/boardOfDirectors/ValerieWilden.svg';
 import { HeroSection } from './Customization/HeroSection'
 
@@ -34,32 +36,6 @@ export const Board: React.FC = () => {
                             <p className='font-size-sm color-grey'>Joe grew up on a small farm in Southern Ontario, Canada, working and playing in the great outdoors, graduated with a degree in Space Science from York University in Toronto in 1994, and moved to the US in 1996. He previously lived in Michigan and Colorado before making Washington State his home in 1999.</p>
                             <p className='font-size-sm color-grey'>In 2021, Joe was inspired by Edgar McGregor, a climate activist in California, to get out and start cleaning up his community. After seeing just how much work needed to be done, Joe envisioned a website that enabled like-minded people to get out and start cleaning the environment together, and the idea for TrashMob.eco was born.</p>
                             <p className='font-size-sm color-grey'>Joe resides in Issaquah, WA with his 2 kids.</p>
-                        </Col>
-                    </Row>
-                </div>
-                <div className='p-4 directorCard'>
-                    <Row>
-                        <Col md={5}>
-                            <Image src={CynthiaMitchell} alt="Cynthia Mitchell" className="h-100 mt-0 object-fit-cover rounded" />
-                        </Col>
-                        <Col md={7}>
-                            <div className='d-flex justify-content-between align-items-center'>
-                                <h2 className='m-0 fw-500 font-size-xl color-primary '>Cynthia Mitchell</h2>
-                                <a href="https://www.linkedin.com/in/cynthia-mitchell/"><Image src={linkedIn} alt="linkedIn icon" className="h-100 mt-0 object-fit-cover" /></a>
-                            </div>
-                            <h5 className='my-3 fw-500 color-grey'>Vice President</h5>
-                            <p className='font-size-sm color-grey'>Cynthia Mitchell is a serial tech and media entrepreneur, C-Suite advisor to startups and
-                                board member. Mitchell has worked for more than 50 different companies across an array of
-                                industries including technology, environmental, energy, construction, health, media, fashion
-                                and entertainment. Brands include American Broadcasting Company, Time Warner, Meredith
-                                Corporation, Maclean Hunter, Times Mirror, Kaiser Permanente, Mutual of Omaha, and The
-                                Summer Olympic Games among others. As a strategist, she has created programs for leading
-                                global brands such as Toyota, Nissan, Honda, Coors, Nike, Rolex, and American Express.
-                                Over the past several years, she has worked with the Government of India in partnership with
-                                The Netherlands to develop biomass plants that recycle agricultural waste into green energy
-                                and biofertilizers. She has also led private enterprise initiatives to develop biomass
-                                innovation for construction, packaging, displays and other applications.</p>
-                            <p className='font-size-sm color-grey'>Mitchell lives in Southern California. She is the mother of two daughters – both also entrepreneurs. She is a lifelong equestrian and breeder, a passionate gardener and believes in the collective power of personal service and stewardship to make the world a better, healthier place for all its inhabitants.</p>
                         </Col>
                     </Row>
                 </div>
@@ -113,6 +89,22 @@ export const Board: React.FC = () => {
                 <div className='p-4 directorCard'>
                     <Row>
                         <Col md={5}>
+                            <Image src={JakeDiliberto} alt="Jake Diliberto" className="h-100 mt-0 object-fit-cover rounded" />
+                        </Col>
+                        <Col md={7}>
+                            <div className='d-flex justify-content-between align-items-center'>
+                                <h2 className='m-0 fw-500 font-size-xl color-primary '>Jake Diliberto</h2>
+                                <a href="https://www.linkedin.com/in/jakediliberto/"><Image src={linkedIn} alt="linkedIn icon" className="h-100 mt-0 object-fit-cover" /></a>
+                            </div>
+                            <h5 className='my-3 fw-500 color-grey'>Member at large</h5>
+                            <p className='font-size-sm color-grey'>Jake Diliberto is a senior operations professional having managed a (NYSE) fortune 500 portfolio. He has proven expertise in transformational management with comprehensive experience managing multiple operating units, driving change management, project management, process reengineering, resource optimization, and systems implementations.</p>
+                            <p className='font-size-sm color-grey'>Jake also has veteran/military front-line field leadership expertise, having directed and motivated teams in high pressure settings with real-time consequences.</p>
+                        </Col>
+                    </Row>
+                </div>
+                <div className='p-4 directorCard'>
+                    <Row>
+                        <Col md={5}>
                             <Image src={KevinGleason} alt="Kevin Gleason" className="h-100 mt-0 object-fit-cover rounded" />
                         </Col>
                         <Col md={7}>
@@ -143,6 +135,49 @@ export const Board: React.FC = () => {
                             <p className='font-size-sm color-grey'>Sandra is VP of Product for Cloud Solutions at Clarivate (NYSE:CLVT). Prior to joining Clarivate via acquisition, she was the CEO and Founder of TrademarkVision, an award-winning AI/Computer Vision startup doing visual brand protection.</p>
                             <p className='font-size-sm color-grey'>Sandra is very active in supporting tech and startup communities. She was the Founding Chair of IEEE QLD Women in Engineering, and listed as one of Australia's Top 50 Female Programmers by Pollenizer 2014, and one of Australia's Top 100 Most Influential Engineers by Engineer's Australia 2015. She's also a regular participant in hackathons including past GovHacks and International Women's Day. She was recognised in 2018 by Pittsburgh Business Times with the Pittsburgh Innovator Award and by QUT with the Innovation and Entrepreneurship Outstanding Alumni Award.</p>
                             <p className='font-size-sm color-grey'>She holds a Masters in Robotics from Carnegie Mellon University, a Bachelors in Engineering Science (Aerospace) from University of Toronto, and an MBA from Queensland University of Technology (QUT).</p>
+                        </Col>
+                    </Row>
+                </div>
+                <div className='p-4 directorCard'>
+                    <Row>
+                        <Col md={5}>
+                            <Image src={CynthiaMitchell} alt="Cynthia Mitchell" className="h-100 mt-0 object-fit-cover rounded" />
+                        </Col>
+                        <Col md={7}>
+                            <div className='d-flex justify-content-between align-items-center'>
+                                <h2 className='m-0 fw-500 font-size-xl color-primary '>Cynthia Mitchell</h2>
+                                <a href="https://www.linkedin.com/in/cynthia-mitchell/"><Image src={linkedIn} alt="linkedIn icon" className="h-100 mt-0 object-fit-cover" /></a>
+                            </div>
+                            <h5 className='my-3 fw-500 color-grey'>Member at large</h5>
+                            <p className='font-size-sm color-grey'>Cynthia Mitchell is a serial tech and media entrepreneur, C-Suite advisor to startups and
+                                board member. Mitchell has worked for more than 50 different companies across an array of
+                                industries including technology, environmental, energy, construction, health, media, fashion
+                                and entertainment. Brands include American Broadcasting Company, Time Warner, Meredith
+                                Corporation, Maclean Hunter, Times Mirror, Kaiser Permanente, Mutual of Omaha, and The
+                                Summer Olympic Games among others. As a strategist, she has created programs for leading
+                                global brands such as Toyota, Nissan, Honda, Coors, Nike, Rolex, and American Express.
+                                Over the past several years, she has worked with the Government of India in partnership with
+                                The Netherlands to develop biomass plants that recycle agricultural waste into green energy
+                                and biofertilizers. She has also led private enterprise initiatives to develop biomass
+                                innovation for construction, packaging, displays and other applications.</p>
+                            <p className='font-size-sm color-grey'>Mitchell lives in Southern California. She is the mother of two daughters – both also entrepreneurs. She is a lifelong equestrian and breeder, a passionate gardener and believes in the collective power of personal service and stewardship to make the world a better, healthier place for all its inhabitants.</p>
+                        </Col>
+                    </Row>
+                </div>
+                <div className='p-4 directorCard'>
+                    <Row>
+                        <Col md={5}>
+                            <Image src={SofiaSamuels} alt="Sofia Samuels" className="h-100 mt-0 object-fit-cover rounded" />
+                        </Col>
+                        <Col md={7}>
+                            <div className='d-flex justify-content-between align-items-center'>
+                                <h2 className='m-0 fw-500 font-size-xl color-primary '>Sofia Samuels</h2>
+                                <a href="https://www.linkedin.com/in/sofiasamuels/"><Image src={linkedIn} alt="linkedIn icon" className="h-100 mt-0 object-fit-cover" /></a>
+                            </div>
+                            <h5 className='my-3 fw-500 color-grey'>Member at large</h5>
+                            <p className='font-size-sm color-grey'>Sofia Samuels is Co-Founder and Chief Strategist at Innovista Partners.</p>
+                            <p className='font-size-sm color-grey'>Prior to co-founding Innovista Partners, Ms. Samuels served as Vice President, Marketing & Communications for Ruan Transportation Management Systems, Vice President, Marketing Services for Sachs Horace Janson, Chief Marketing Officer for the American Welding Society (AWS) and held a variety of marketing and business development roles at Ryder System Inc., United Parcel Service, Carnival Cruise Lines and DHL.   Her professional experience spans a broad blend of B2B and B2C expertise with specialties including integrated marketing, sales and customer service leadership, eCommerce, and publishing/editorial.</p>
+                            <p className='font-size-sm color-grey'>Sofia has been recognized as one of South Florida’s Top Black Corporate Executives and was honored by Legacy Magazine as one of South Florida’s Top 25 Most Influential and Prominent Black Women in Business. Ms. Samuels received her M.B.A. from the University of Connecticut and currently resides in Miami Beach, Florida.</p>
                         </Col>
                     </Row>
                 </div>
