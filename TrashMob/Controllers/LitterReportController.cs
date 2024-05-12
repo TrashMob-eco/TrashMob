@@ -205,7 +205,7 @@ namespace TrashMob.Controllers
             return BadRequest("Failed to update litter report");
         }
 
-        [HttpDelete]
+        [HttpDelete("id")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteLitterReport(Guid id, CancellationToken cancellationToken)

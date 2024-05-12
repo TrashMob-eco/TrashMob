@@ -71,6 +71,30 @@
                     </maps:Map.ItemTemplate>
                 </maps:Map>
 
+                <Grid ColumnDefinitions="1*,1*, 1*, 1*"
+                  RowDefinitions="Auto"
+                  VerticalOptions="End"
+                  Margin="0,0,0,20">
+                    <Button Grid.Row="0"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="2"
+                            Command="{Binding DeleteLitterReportCommand}"
+                            HorizontalOptions="Center"
+                            Style="{StaticResource RoundButton}"
+                            Text="Delete Litter Report" 
+                            IsEnabled="{Binding CanDeleteLitterReport}" 
+                            IsVisible="{Binding CanDeleteLitterReport}" />
+                    <Button Grid.Row="0"
+                            Grid.Column="2"
+                            Grid.ColumnSpan="2"
+                            Command="{Binding CloseLitterReportCommand}"
+                            HorizontalOptions="Center"
+                            Style="{StaticResource RoundButton}"
+                            Text="Close Litter Report" 
+                            IsEnabled="{Binding CanCloseLitterReport}"
+                            IsVisible="{Binding CanCloseLitterReport}" />
+                </Grid>
+
                 <CollectionView x:Name="LitterImagesCollection"
                  ItemsSource="{Binding LitterImageViewModels}" 
                  SelectionMode="None" >
