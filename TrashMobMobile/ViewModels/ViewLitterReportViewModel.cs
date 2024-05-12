@@ -10,6 +10,7 @@ using TrashMobMobile.Extensions;
 public partial class ViewLitterReportViewModel : BaseViewModel
 {
     private const int NewLitterReportStatus = 1;
+    private const int AssignedLitterReportStatus = 2;
     private const int ClosedLitterReportStatus = 3;
 
     public ViewLitterReportViewModel(ILitterReportManager litterReportManager)
@@ -47,6 +48,15 @@ public partial class ViewLitterReportViewModel : BaseViewModel
         else
         {
             CanDeleteLitterReport = false;
+        }
+
+        if (LitterReport.CreatedByUserId == App.CurrentUser.Id && (LitterReport.LitterReportStatusId == NewLitterReportStatus || LitterReport.LitterReportStatusId == AssignedLitterReportStatus))
+        {
+            CanCloseLitterReport = true;
+        }
+        else
+        {
+            CanCloseLitterReport = false;
         }
 
         LitterImageViewModels.Clear();

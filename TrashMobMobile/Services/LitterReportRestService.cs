@@ -262,7 +262,7 @@
         {
             try
             {
-                var requestUri = string.Concat(Controller, litterReportId.ToString());
+                var requestUri = string.Concat(Controller, $"/{litterReportId}");
 
                 using (var response = await AuthorizedHttpClient.DeleteAsync(requestUri, cancellationToken))
                 {
