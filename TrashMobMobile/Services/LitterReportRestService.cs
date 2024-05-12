@@ -244,7 +244,7 @@
         {
             var requestUri = Controller + "/userlitterreports/" + userId;
 
-            using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
+            using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
                 string content = await response.Content.ReadAsStringAsync(cancellationToken);

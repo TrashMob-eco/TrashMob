@@ -5,7 +5,7 @@
              x:Class="TrashMobMobile.Pages.MyDashboardPage"
              Title="My Dashboard">
 
-    <ScrollView>
+    <ScrollView Margin="0, 0, 0, 100">
         <Grid>
             <VerticalStackLayout Spacing="5">
                 <Frame Style="{x:StaticResource Frame}" Margin="5,0">
@@ -22,6 +22,25 @@
                         <Label Grid.Row="3" Grid.Column="2" Text="Hours Spent" FontSize="Micro" HorizontalTextAlignment ="Center" />
                     </Grid>
                 </Frame>
+                <Grid ColumnDefinitions="1*,1*, 1*, 1*"
+                  RowDefinitions="Auto"
+                  VerticalOptions="End"
+                  Margin="0,0,0,20">
+                    <Button Grid.Row="0"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Command="{Binding CreateEventCommand}"
+                        HorizontalOptions="Center"
+                        Style="{StaticResource RoundButton}"
+                        Text="Create an Event" />
+                    <Button Grid.Row="0"
+                        Grid.Column="2"
+                        Grid.ColumnSpan="2"
+                        Command="{Binding CreateLitterReportCommand}"
+                        HorizontalOptions="Center"
+                        Style="{StaticResource RoundButton}"
+                        Text="Submit a Litter Report" />
+                </Grid>
 
                 <Label 
             Text="Upcoming Events"
@@ -106,19 +125,19 @@
                             <Border Padding="3" Stroke="Green">
                                 <Grid ColumnDefinitions="1*, 1*"                                  
                                   RowDefinitions="Auto, Auto, Auto, Auto"
-                                  x:Name="LitterReportItem">
+                                  x:Name="LitterReportItem" RowSpacing="3">
 
                                     <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
-                                    <Label Text="{Binding CreatedDate}" Grid.Row="1" Grid.ColumnSpan="1" FontSize="Micro" />
-                                    <Label Text="{Binding LitterReportStatus}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
+                                    <Label Text="{Binding LitterReportStatus}" Grid.Row="0" Grid.Column="1" FontSize="Micro" />
+                                    <Label Text="{Binding CreatedDate}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" FontSize="Micro" />
                                     <Label Text="{Binding Description}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
                                 </Grid>
                             </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
-
             </VerticalStackLayout>
+
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
         </Grid>

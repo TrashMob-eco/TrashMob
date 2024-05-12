@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -156,5 +157,17 @@ public partial class MyDashboardViewModel : BaseViewModel
             var vm = litterReport.ToLitterReportViewModel();
             LitterReports.Add(vm);
         }
+    }
+
+    [RelayCommand]
+    private async Task CreateLitterReport()
+    {
+        await Shell.Current.GoToAsync(nameof(CreateLitterReportPage));
+    }
+
+    [RelayCommand]
+    private async Task CreateEvent()
+    {
+        await Shell.Current.GoToAsync(nameof(CreateEventPage));
     }
 }
