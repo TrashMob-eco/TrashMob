@@ -117,42 +117,18 @@ namespace TrashMob.Controllers
             return Ok(fullLitterReports);
         }
 
-        [HttpPost]
-        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
-        [RequiredScope(Constants.TrashMobWriteScope)]        
-        public async Task<IActionResult> AddLitterReport([FromForm]FullLitterReport fullLitterReport, CancellationToken cancellationToken)
-        {
-            if (fullLitterReport == null)
-            {
-                return null;
-            }
-
-            logger.LogInformation("AddLitterReport - Name: {Name}, Description: {Description}, Status: {Status}", fullLitterReport.Name, fullLitterReport.Description, fullLitterReport.LitterReportStatusId);
-
-            var newLitterReport = await litterReportManager.AddAsync(fullLitterReport, UserId, cancellationToken);
-
-            if (newLitterReport != null)
-            {
-                TelemetryClient.TrackEvent(nameof(AddLitterReport));
-                return Ok(newLitterReport);
-            }
-
-            return BadRequest("Failed to create litter report");
-        }
-
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [Route("multiadd")]
-        public async Task<IActionResult> AddLitterReportMultiAdd(FullLitterReport fullLitterReport, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddLitterReport(LitterReport litterReport, CancellationToken cancellationToken)
         {
-            if (fullLitterReport == null)
+            if (litterReport == null)
             {
                 return null;
             }
 
-            logger.LogInformation("AddLitterReport - Name: {Name}, Description: {Description}, Status: {Status}", fullLitterReport.Name, fullLitterReport.Description, fullLitterReport.LitterReportStatusId);
+            logger.LogInformation("AddLitterReport - Name: {Name}, Description: {Description}, Status: {Status}", litterReport.Name, litterReport.Description, litterReport.LitterReportStatusId);
 
-            var newLitterReport = await litterReportManager.AddAsync(fullLitterReport, UserId, cancellationToken);
+            var newLitterReport = await litterReportManager.AddAsync(litterReport, UserId, cancellationToken);
 
             if (newLitterReport != null)
             {
@@ -183,10 +159,8 @@ namespace TrashMob.Controllers
         [HttpPut]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> UpdateLitterReport([FromForm]FullLitterReport fullLitterReport, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateLitterReport(LitterReport litterReport, CancellationToken cancellationToken)
         {
-            var litterReport = fullLitterReport.ToLitterReport();
-
             var authResult = await AuthorizationService.AuthorizeAsync(User, litterReport, AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
@@ -194,9 +168,9 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var updatedLitterReport = await litterReportManager.UpdateAsync(fullLitterReport, UserId, cancellationToken);
+            var updatedLitterReport = await litterReportManager.UpdateAsync(litterReport, UserId, cancellationToken);
             
-            if(updatedLitterReport != null)
+            if (updatedLitterReport != null)
             {
                 TelemetryClient.TrackEvent(nameof(UpdateLitterReport));
                 return Ok(updatedLitterReport);
@@ -205,7 +179,7 @@ namespace TrashMob.Controllers
             return BadRequest("Failed to update litter report");
         }
 
-        [HttpDelete("id")]
+        [HttpDelete("{id}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteLitterReport(Guid id, CancellationToken cancellationToken)

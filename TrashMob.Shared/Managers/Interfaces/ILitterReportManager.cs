@@ -22,9 +22,5 @@ namespace TrashMob.Shared.Managers.Interfaces
         Task<IEnumerable<LitterReport>> GetUserLitterReportsAsync(Guid userId, CancellationToken cancellationToken = default);
 
         Task<int> DeleteAsync(Guid id, Guid userId, CancellationToken cancellationToken = default);
-
-        Task<LitterReport> AddAsync(FullLitterReport instance, Guid userId, CancellationToken cancellationToken);
-
-        Task<LitterReport> UpdateAsync(FullLitterReport instance, Guid userId, CancellationToken cancellationToken);
     }
 }
