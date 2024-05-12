@@ -90,7 +90,7 @@
         </DataTemplate>
     </Shell.MenuItemTemplate>
     
-    <Shell.FlyoutHeader> <!-- Details hardcoded for demo until we have this functionality -->
+    <!--<Shell.FlyoutHeader> --><!-- Details hardcoded for demo until we have this functionality --><!--
         <VerticalStackLayout>
             <Grid ColumnDefinitions="40,*"
                   RowDefinitions="25,25"
@@ -121,7 +121,7 @@
                      Margin="0,16"
                      BackgroundColor="{StaticResource GlobalBorderBase}"/>
         </VerticalStackLayout>
-    </Shell.FlyoutHeader>
+    </Shell.FlyoutHeader>-->
     
     <Shell.Behaviors>
         <toolkit:StatusBarBehavior StatusBarColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}" StatusBarStyle="LightContent" />
@@ -135,20 +135,29 @@
 
     <MenuItem x:Name="Dashboard"
               Text="My Dashboard"
+              Clicked="OnMyDashboardClicked"
               IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconPulse}, Color={StaticResource TextBase}}" />
 
-    <MenuItem x:Name="Terms"
-              Text="Terms of Privacy"
+    <MenuItem x:Name="PrivacyPolicy"
+              Text="Privacy Policy"
+              Clicked="OnPrivacyPolicyClicked"
+              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconBook}, Color={StaticResource TextBase}}" />
+
+    <MenuItem x:Name="TermsOfUse"
+              Text="Terms of Use"
+              Clicked="OnTermsOfUseClicked"
               IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconBook}, Color={StaticResource TextBase}}" />
 
     <MenuItem x:Name="Contact"
               Text="Contact us"
+              Clicked="OnContactUsClicked"
               IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconInbox}, Color={StaticResource TextBase}}" />
 
     <Shell.FlyoutFooter>
         <VerticalStackLayout Padding="28,48">
             <Button Style="{StaticResource SecondaryLargeButton}"
                     ContentLayout="Left, 10"
+                    Clicked="OnLogoutClicked"
                     Text="Sign out"
                     ImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconSignOut}, Color={StaticResource Primary}}" />
         </VerticalStackLayout>

@@ -38,7 +38,6 @@ public partial class MainViewModel : BaseViewModel
 
     public ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = [];
 
-
     [ObservableProperty]
     StatisticsViewModel statisticsViewModel = new StatisticsViewModel();
 
@@ -144,24 +143,16 @@ public partial class MainViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task ContactUs()
-    {
-        await Shell.Current.GoToAsync(nameof(ContactUsPage));
-    }
-
-    [RelayCommand]
     private async Task MyDashboard()
     {
         await Shell.Current.GoToAsync(nameof(MyDashboardPage));
     }
-
 
     [RelayCommand]
     private async Task CreateLitterReport()
     {
         await Shell.Current.GoToAsync(nameof(CreateLitterReportPage));
     }
-
 
     [RelayCommand]
     private async Task SearchLitterReports()
@@ -185,12 +176,5 @@ public partial class MainViewModel : BaseViewModel
     private async Task SearchEvents()
     {
         await Shell.Current.GoToAsync(nameof(SearchEventsPage));
-    }
-
-    [RelayCommand]
-    private async Task Logout()
-    {
-        await authService.SignOutAsync();
-        await Shell.Current.GoToAsync($"{nameof(WelcomePage)}");
     }
 }
