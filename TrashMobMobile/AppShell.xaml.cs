@@ -1,8 +1,10 @@
 ﻿namespace TrashMobMobile;
 
+using TrashMobMobile.Authentication;
+
 public partial class AppShell : Shell
 {
-	public AppShell()
+    public AppShell()
 	{
 		InitializeComponent();
 
@@ -23,7 +25,42 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(ViewEventPage), typeof(ViewEventPage));
         Routing.RegisterRoute(nameof(ViewEventSummaryPage), typeof(ViewEventSummaryPage));
         Routing.RegisterRoute(nameof(ViewLitterReportPage), typeof(ViewLitterReportPage));
+        Routing.RegisterRoute(nameof(ViewPickupLocationPage), typeof(ViewPickupLocationPage));
         Routing.RegisterRoute(nameof(WaiverPage), typeof(WaiverPage));
         Routing.RegisterRoute(nameof(WelcomePage), typeof(WelcomePage));
+    }
+
+    public async void OnMyDashboardClicked(object sender, EventArgs e)
+    {
+        Current.FlyoutIsPresented = false;
+        await Current.GoToAsync($"{nameof(MyDashboardPage)}");
+    }
+
+    public async void OnPrivacyPolicyClicked(object sender, EventArgs e)
+    {
+        Current.FlyoutIsPresented = false;
+        var uri = new Uri("https://www.trashmob.eco/privacypolicy");
+        await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
+    }
+
+    public async void OnTermsOfUseClicked(object sender, EventArgs e)
+    {
+        Current.FlyoutIsPresented = false;
+        var uri = new Uri("https://www.trashmob.eco/termsofservice");
+        await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
+    }
+
+    public async void OnContactUsClicked(object sender, EventArgs e)
+    {
+        Current.FlyoutIsPresented = false;
+        await Current.GoToAsync(nameof(ContactUsPage));
+    }
+
+    public async void OnLogoutClicked(object sender, EventArgs e)
+    {
+        Current.FlyoutIsPresented = false;
+        // Todo: Implement logout
+        // await authService.SignOutAsync();
+        await Current.GoToAsync($"{nameof(WelcomePage)}");
     }
 }

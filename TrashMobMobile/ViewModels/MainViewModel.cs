@@ -3,9 +3,9 @@
 namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Windows.Input;
 using TrashMobMobile.Authentication;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -28,30 +28,15 @@ public partial class MainViewModel : BaseViewModel
         this.userRestService = userRestService;
         this.statsRestService = statsRestService;
         this.mobEventManager = mobEventManager;
-
-        ContactUsCommand = new Command(async () => await ContactUs());
-        MyDashboardCommand = new Command(async () => await MyDashboard());
-        SearchEventsCommand = new Command(async () => await SearchEvents());
-        CreateEventCommand = new Command(async () => await CreateEvent());
-        SubmitLitterReportCommand = new Command(async () => await CreateLitterReport());
-        SearchLitterReportsCommand = new Command(async () => await SearchLitterReports());
-        SetLocationPreferenceCommand = new Command(async () => await SetLocationPreference());
-        LogoutCommand = new Command(async () => await Logout());
     }
 
     [ObservableProperty]
     private string? welcomeMessage;
 
-    public ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = [];
+    [ObservableProperty]
+    string userLocationDisplay = "Set Your Location Preference";
 
-    public ICommand ContactUsCommand { get; set; }
-    public ICommand MyDashboardCommand { get; set; }
-    public ICommand SearchEventsCommand { get; set; }
-    public ICommand CreateEventCommand { get; set; }
-    public ICommand SubmitLitterReportCommand { get; set; }
-    public ICommand SearchLitterReportsCommand { get; set; }
-    public ICommand SetLocationPreferenceCommand { get; set; }
-    public ICommand LogoutCommand { get; set; }
+    public ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = [];
 
     [ObservableProperty]
     StatisticsViewModel statisticsViewModel = new StatisticsViewModel();
@@ -70,7 +55,7 @@ public partial class MainViewModel : BaseViewModel
             if (selectedEvent != value)
             {
                 selectedEvent = value;
-                OnPropertyChanged(nameof(selectedEvent));
+                OnPropertyChanged(nameof(SelectedEvent));
 
                 if (selectedEvent != null)
                 {
@@ -100,6 +85,7 @@ public partial class MainViewModel : BaseViewModel
                 WelcomeMessage = $"Welcome, {user.UserName}!";
                 UserLocation = App.CurrentUser.GetAddress();
                 TravelDistance = App.CurrentUser.TravelLimitForLocalEvents;
+                UserLocationDisplay = $"{UserLocation.City}, {UserLocation.Region}";
             }
 
             await RefreshEvents();
@@ -144,7 +130,7 @@ public partial class MainViewModel : BaseViewModel
 
         var eventsUserIsAttending = await mobEventManager.GetEventsUserIsAttending(App.CurrentUser.Id);
 
-        foreach (var mobEvent in events)
+        foreach (var mobEvent in events.OrderBy(e => e.EventDate))
         {
             var vm = mobEvent.ToEventViewModel();
 
@@ -156,44 +142,39 @@ public partial class MainViewModel : BaseViewModel
         IsBusy = false;
     }
 
-    private async Task ContactUs()
-    {
-        await Shell.Current.GoToAsync(nameof(ContactUsPage));
-    }
-
+    [RelayCommand]
     private async Task MyDashboard()
     {
         await Shell.Current.GoToAsync(nameof(MyDashboardPage));
     }
 
+    [RelayCommand]
     private async Task CreateLitterReport()
     {
         await Shell.Current.GoToAsync(nameof(CreateLitterReportPage));
     }
 
+    [RelayCommand]
     private async Task SearchLitterReports()
     {
         await Shell.Current.GoToAsync(nameof(SearchLitterReportsPage));
     }
 
+    [RelayCommand]
     private async Task CreateEvent()
     {
         await Shell.Current.GoToAsync(nameof(CreateEventPage));
     }
 
+    [RelayCommand]
     private async Task SetLocationPreference()
     {
         await Shell.Current.GoToAsync(nameof(SetUserLocationPreferencePage));
     }
 
+    [RelayCommand]
     private async Task SearchEvents()
     {
         await Shell.Current.GoToAsync(nameof(SearchEventsPage));
-    }
-
-    private async Task Logout()
-    {
-        await authService.SignOutAsync();
-        await Shell.Current.GoToAsync($"{nameof(WelcomePage)}");
     }
 }

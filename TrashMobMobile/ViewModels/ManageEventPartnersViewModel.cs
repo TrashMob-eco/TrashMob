@@ -52,7 +52,7 @@ public partial class ManageEventPartnersViewModel :  BaseViewModel
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
-
+        
         var eventPartnerLocations = await eventPartnerLocationServiceRestService.GetEventPartnerLocationsAsync(eventId);
 
         AvailablePartners.Clear();

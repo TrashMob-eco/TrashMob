@@ -26,7 +26,7 @@ public partial class EditPickupLocationViewModel : BaseViewModel
     public async Task Init(Guid eventId, Guid pickupLocationId)
     {
         IsBusy = true;
-
+        
         var mobEvent = await mobEventManager.GetEventAsync(eventId);
 
         EventViewModel = mobEvent.ToEventViewModel();

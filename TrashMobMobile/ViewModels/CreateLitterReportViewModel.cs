@@ -9,33 +9,70 @@ using TrashMobMobile.Extensions;
 
 public partial class CreateLitterReportViewModel : BaseViewModel
 {
+    private const string DefaultLitterReportName = "New Litter Report";
     private readonly IMapRestService mapRestService;
-    private readonly ILitterReportRestService litterReportRestService;
+    private readonly ILitterReportManager litterReportManager;
     private const int NewLitterReportStatus = 1;
+    public const int MaxImages = 5;
+
+    private string name = DefaultLitterReportName;
+    private string description = string.Empty;
 
     [ObservableProperty]
     LitterReportViewModel litterReportViewModel;
-    
+
+    [ObservableProperty]
+    bool hasNoImages = true;
+
+    [ObservableProperty]
+    bool hasMaxImages = false;
+
+    [ObservableProperty]
+    bool canAddImages = false;
+
+    [ObservableProperty]
+    bool reportIsValid = false;
+
+    public string Name
+    {
+        get => name;
+        set
+        {
+            name = value;
+            OnPropertyChanged(nameof(Name));
+            ValidateReport();
+        }
+    }
+
+    public string Description
+    {
+        get => description;
+        set
+        {
+            description = value;
+            OnPropertyChanged(nameof(Description));
+            ValidateReport();
+        }
+    }
+
     public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; init; } = [];
     
     public LitterImageViewModel? SelectedLitterImageViewModel { get; set; }
 
-    public string DefaultLitterReportName { get; } = "New Litter Report";
-
-    public CreateLitterReportViewModel(ILitterReportRestService litterReportRestService, IMapRestService mapRestService)
+    public CreateLitterReportViewModel(ILitterReportManager litterReportManager, IMapRestService mapRestService)
     {
         SaveLitterReportCommand = new Command(async () => await SaveLitterReport());
-        this.litterReportRestService = litterReportRestService;
+        this.litterReportManager = litterReportManager;
         this.mapRestService = mapRestService;
         LitterReportViewModel = new LitterReportViewModel
         {
-            Name = DefaultLitterReportName,
             LitterReportStatusId = NewLitterReportStatus
         };
     }
 
     public ICommand SaveLitterReportCommand { get; set; }
 
+    
     public string LocalFilePath { get; set; } = string.Empty;
 
     public async Task AddImageToCollection()
@@ -60,8 +97,11 @@ public partial class CreateLitterReportViewModel : BaseViewModel
             SelectedLitterImageViewModel.Address.StreetAddress = address.StreetAddress;
             SelectedLitterImageViewModel.Address.Location = new Location(SelectedLitterImageViewModel.Address.Latitude.Value, SelectedLitterImageViewModel.Address.Longitude.Value);
             SelectedLitterImageViewModel.FilePath = LocalFilePath;
+            
             LitterImageViewModels.Add(SelectedLitterImageViewModel);
             SelectedLitterImageViewModel = null;
+
+            ValidateReport();
         }
         else
         {
@@ -102,14 +142,16 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     private async Task SaveLitterReport()
     {
         IsBusy = true;
-
-        if (!await Validate())
+        
+        if (!ReportIsValid)
         {
             IsBusy = false;
             return;
         }
 
         var litterReport = LitterReportViewModel.ToLitterReport();
+        litterReport.Name = Name;
+        litterReport.Description = Description;
 
         foreach (var litterImageViewModel in LitterImageViewModels)
         {
@@ -132,15 +174,20 @@ public partial class CreateLitterReportViewModel : BaseViewModel
             litterReport.LitterImages.Add(litterImage);
         }
 
-        var updatedLitterReport = await litterReportRestService.AddLitterReportAsync(litterReport);
+        var updatedLitterReport = await litterReportManager.AddLitterReportAsync(litterReport);
 
         IsBusy = false;
 
-        await Notify("Litter Report has been saved.");
+        await Notify("Litter Report has been submitted.");
+
+        await Navigation.PopAsync();
     }
 
-    private async Task<bool> Validate()
+    public void ValidateReport()
     {
-        return true;
+        HasNoImages = !LitterImageViewModels.Any();
+        HasMaxImages = LitterImageViewModels.Count >= MaxImages;
+        CanAddImages = LitterImageViewModels.Count < MaxImages;
+        ReportIsValid = LitterImageViewModels.Count > 0 && Name.Length > 5 && Description.Length > 5;
     }
 }

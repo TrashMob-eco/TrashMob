@@ -10,6 +10,10 @@
     {
         Task<IEnumerable<Event>> GetActiveEventsAsync(CancellationToken cancellationToken = default);
 
+        Task<IEnumerable<Event>> GetCompletedEventsAsync(CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<Event>> GetAllEventsAsync(CancellationToken cancellationToken = default);
+
         Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly, CancellationToken cancellationToken = default);
 
         Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid userId, CancellationToken cancellationToken = default);

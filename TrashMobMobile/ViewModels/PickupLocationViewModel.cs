@@ -52,6 +52,9 @@ public partial class PickupLocationViewModel : BaseViewModel
     [ObservableProperty]
     bool canEditPickupLocation;
 
+    [ObservableProperty]
+    string imageUrl;
+
     private readonly IPickupLocationManager pickupLocationManager;
     private readonly IMobEventManager mobEventManager;
 

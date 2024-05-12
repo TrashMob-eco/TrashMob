@@ -10,17 +10,45 @@ public partial class AddressViewModel : ObservableObject
     {
     }
 
-    [ObservableProperty]
-    string streetAddress;
+    private string streetAddress = string.Empty;
+    private string city = string.Empty;
+    private string region = string.Empty;
 
-    [ObservableProperty]
-    string city;
+    public string StreetAddress
+    {
+        get => streetAddress;
+        set
+        {
+            streetAddress = value;
+            OnPropertyChanged(nameof(StreetAddress));
+            UpdateDisplayAddress();
+        }
+    }
+
+    public string City
+    {
+        get => city;
+        set
+        {
+            city = value;
+            OnPropertyChanged(nameof(City));
+            UpdateDisplayAddress();
+        }
+    }
 
     [ObservableProperty]
     string county;
 
-    [ObservableProperty]
-    string region;
+    public string Region
+    {
+        get => region;
+        set
+        {
+            region = value;
+            OnPropertyChanged(nameof(Region));
+            UpdateDisplayAddress();
+        }
+    }
 
     [ObservableProperty]
     string country;
@@ -36,4 +64,12 @@ public partial class AddressViewModel : ObservableObject
 
     [ObservableProperty]
     Location location;
+
+    [ObservableProperty]
+    string displayAddress;
+
+    private void UpdateDisplayAddress()
+    {
+        DisplayAddress = $"{StreetAddress}, {City}, {Region}";
+    }
 }

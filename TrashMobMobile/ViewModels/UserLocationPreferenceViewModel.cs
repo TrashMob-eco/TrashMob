@@ -33,7 +33,7 @@ public partial class UserLocationPreferenceViewModel : BaseViewModel
     public void Init()
     {
         IsBusy = true;
-
+        
         Addresses.Clear();
         Address = App.CurrentUser.GetAddress();
         Addresses.Add(Address);

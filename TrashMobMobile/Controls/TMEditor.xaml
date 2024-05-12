@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
+             x:Class="TrashMobMobile.Controls.TMEditor">
+    <Border Padding="5,0"
+        Style="{StaticResource InputStyle}">
+        <Border.Triggers>
+            <DataTrigger Binding="{Binding Source={x:Reference Entry}, Path=IsFocused}"
+                     TargetType="Border"
+                     Value="True">
+                <Setter Property="Stroke" Value="{StaticResource InputBorderActive}" />
+            </DataTrigger>
+        </Border.Triggers>
+        <controls:BorderlessEditor x:Name="WrappedEditor"
+                                   AutoSize="TextChanges"
+                                   TextChanged="Entry_OnTextChanged" />
+    </Border>
+</ContentView>

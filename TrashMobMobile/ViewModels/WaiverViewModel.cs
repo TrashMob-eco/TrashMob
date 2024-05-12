@@ -23,7 +23,7 @@ public partial class WaiverViewModel : BaseViewModel
     private async Task SignWaiver()
     {
         IsBusy = true;
-
+        
         var envelopeRequest = new EnvelopeRequest();
         envelopeRequest.SignerEmail = App.CurrentUser.Email;
         envelopeRequest.CreatedByUserId = App.CurrentUser.Id;

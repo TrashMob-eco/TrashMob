@@ -27,7 +27,7 @@ public partial class EditEventPartnerLocationServicesViewModel :  BaseViewModel
     public async Task Init(Guid eventId, Guid partnerLocationId)
     {
         IsBusy = true;
-
+        
         var serviceTypes = await serviceTypeRestService.GetServiceTypesAsync();
         var serviceStatuses = await eventPartnerLocationServiceStatusRestService.GetEventPartnerLocationServiceStatusesAsync();
 

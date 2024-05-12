@@ -14,7 +14,6 @@ namespace TrashMob.Controllers
     using TrashMob.Shared;
     using System;
     using Microsoft.Extensions.Logging;
-    using TrashMob.Shared.Managers.Events;
     using TrashMob.Shared.Poco;
 
     [Route("api/litterreport")]
@@ -84,7 +83,17 @@ namespace TrashMob.Controllers
 
             return Ok(fullLitterReports);
         }
-        
+
+        [HttpGet]
+        [Route("assigned")]
+        public async Task<IActionResult> GetAssignedLitterReports(CancellationToken cancellationToken)
+        {
+            var result = await litterReportManager.GetAssignedLitterReportsAsync(cancellationToken).ConfigureAwait(false);
+            var fullLitterReports = await ToFullLitterReport(result, cancellationToken);
+
+            return Ok(fullLitterReports);
+        }
+
         [HttpGet]
         [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         [Route("cancelled")]
@@ -196,7 +205,7 @@ namespace TrashMob.Controllers
             return BadRequest("Failed to update litter report");
         }
 
-        [HttpDelete]
+        [HttpDelete("id")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteLitterReport(Guid id, CancellationToken cancellationToken)
@@ -233,6 +242,19 @@ namespace TrashMob.Controllers
             }
 
             return fullLitterReports;
+        }
+
+        [HttpGet("image/{litterImageId}")]
+        public async Task<IActionResult> GetImage(Guid litterImageId, CancellationToken cancellationToken)
+        {
+            var url = await imageManager.GetImageUrlAsync(litterImageId, ImageTypeEnum.LitterImage);
+
+            if (string.IsNullOrEmpty(url))
+            {
+                return NoContent();
+            }
+
+            return Ok(url);
         }
     }
 }

@@ -22,7 +22,7 @@ public partial class WelcomeViewModel : BaseViewModel
     public async Task Init()
     {
         IsBusy = true;
-
+        
         var stats = await statsRestService.GetStatsAsync();
 
         StatisticsViewModel.TotalAttendees = stats.TotalParticipants;

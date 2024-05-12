@@ -10,6 +10,8 @@
 
         Task<IEnumerable<LitterReport>> GetNewLitterReportsAsync(CancellationToken cancellationToken = default);
 
+        Task<IEnumerable<LitterReport>> GetAssignedLitterReportsAsync(CancellationToken cancellationToken = default);
+
         Task<IEnumerable<LitterReport>> GetCleanedLitterReportsAsync(CancellationToken cancellationToken = default);
 
         Task<IEnumerable<LitterReport>> GetNotCancelledLitterReportsAsync(CancellationToken cancellationToken = default);
@@ -23,6 +25,8 @@
         Task<LitterReport> UpdateLitterReportAsync(LitterReport litterReport, CancellationToken cancellationToken = default);
 
         Task<LitterReport> AddLitterReportAsync(LitterReport litterReport, CancellationToken cancellationToken = default);
+
+        Task<string> GetLitterImageUrlAsync(Guid litterImageId, CancellationToken cancellationToken = default);
 
         Task DeleteLitterReportAsync(Guid litterReportId, CancellationToken cancellationToken = default);
     }

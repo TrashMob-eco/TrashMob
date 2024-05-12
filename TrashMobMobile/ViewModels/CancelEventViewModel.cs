@@ -24,7 +24,7 @@ public partial class CancelEventViewModel : BaseViewModel
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
-
+        
         var mobEvent = await mobEventManager.GetEventAsync(eventId);
 
         EventViewModel = mobEvent.ToEventViewModel();

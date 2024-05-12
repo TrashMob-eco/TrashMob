@@ -71,7 +71,7 @@ public partial class EventPartnerLocationServiceViewModel : BaseViewModel
     private async Task RequestService()
     {
         IsBusy = true;
-
+        
         var eventPartnerLocationService = new EventPartnerLocationService()
         {
             EventId = EventId,
@@ -91,7 +91,7 @@ public partial class EventPartnerLocationServiceViewModel : BaseViewModel
     private async Task UnrequestService()
     {
         IsBusy = true;
-
+        
         var eventPartnerLocationService = new EventPartnerLocationService()
         {
             EventId = EventId,

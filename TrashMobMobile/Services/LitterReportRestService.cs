@@ -32,6 +32,18 @@
             }
         }
 
+        public async Task<string> GetLitterImageUrlAsync(Guid litterImageId, CancellationToken cancellationToken = default)
+        {
+            var requestUri = Controller + "/image/" + litterImageId;
+
+            using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+                var result = await response.Content.ReadAsStringAsync(cancellationToken);
+                return JsonConvert.DeserializeObject<string>(result);
+            }
+        }
+
         public async Task<LitterReport> UpdateLitterReportAsync(LitterReport litterReport, CancellationToken cancellationToken = default)
         {
             try
@@ -138,6 +150,24 @@
             }
         }
 
+        public async Task<IEnumerable<LitterReport>> GetAssignedLitterReportsAsync(CancellationToken cancellationToken = default)
+        {
+            var requestUri = Controller + "/assigned";
+
+            using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+                string content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                if (string.IsNullOrEmpty(content))
+                {
+                    return [];
+                }
+
+                return JsonConvert.DeserializeObject<IEnumerable<LitterReport>>(content);
+            }
+        }
+
         public async Task<IEnumerable<LitterReport>> GetNewLitterReportsAsync(CancellationToken cancellationToken = default)
         {
             var requestUri = Controller + "/new";
@@ -214,7 +244,7 @@
         {
             var requestUri = Controller + "/userlitterreports/" + userId;
 
-            using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
+            using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
                 string content = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -228,9 +258,24 @@
             }
         }
 
-        public Task DeleteLitterReportAsync(Guid litterReportId, CancellationToken cancellationToken = default)
+        public async Task DeleteLitterReportAsync(Guid litterReportId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var requestUri = string.Concat(Controller, $"/{litterReportId}");
+
+                using (var response = await AuthorizedHttpClient.DeleteAsync(requestUri, cancellationToken))
+                {
+                    response.EnsureSuccessStatusCode();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(@"\tERROR {0}", ex.Message);
+                throw;
+            }
+
+            return;
         }
 
         public async Task<string> GetLitterImageAsync(Guid litterImageId, CancellationToken cancellationToken = default)

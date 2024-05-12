@@ -1,15 +1,12 @@
 ﻿namespace TrashMobMobile;
 
-using System.Reflection;
 using CommunityToolkit.Maui;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using TrashMobMobile.Authentication;
-using TrashMobMobile.Config;
-using TrashMobMobile.Extensions;
-using Sentry;
 using Microsoft.Maui.Controls.Hosting;
+using Syncfusion.Maui.Core.Hosting;
+using TrashMobMobile.Authentication;
+using TrashMobMobile.Extensions;
 
 public static class MauiProgram
 {
@@ -17,14 +14,18 @@ public static class MauiProgram
 	{
 		var builder = MauiApp.CreateBuilder();
 		builder
-			.UseMauiApp<App>()
+            .ConfigureSyncfusionCore()
+            .UseMauiApp<App>()
             .UseMauiMaps()
 			.UseMauiCommunityToolkit()
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-			});
+                fonts.AddFont("Lexend-Regular.ttf", "LexendRegular");
+                fonts.AddFont("Lexend-SemiBold.ttf", "LexendSemibold");
+                fonts.AddFont("feather.ttf", "Icons");
+            });
 
         builder.UseSentry(options =>
         {
@@ -74,6 +75,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ViewEventPage>();
         builder.Services.AddTransient<ViewEventSummaryPage>();
         builder.Services.AddTransient<ViewLitterReportPage>();
+        builder.Services.AddTransient<ViewPickupLocationPage>();
         builder.Services.AddTransient<WaiverPage>();
         builder.Services.AddTransient<WelcomePage>();
 
@@ -98,6 +100,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ViewEventViewModel>();
         builder.Services.AddTransient<ViewEventSummaryViewModel>();
         builder.Services.AddTransient<ViewLitterReportViewModel>();
+        builder.Services.AddTransient<ViewPickupLocationViewModel>();
         builder.Services.AddTransient<WaiverViewModel>();
         builder.Services.AddTransient<WelcomeViewModel>();
 

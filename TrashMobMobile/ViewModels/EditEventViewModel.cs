@@ -36,7 +36,7 @@ public partial class EditEventViewModel :  BaseViewModel
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
-
+        
         UserLocation = App.CurrentUser.GetAddress();
         EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
 
@@ -106,7 +106,7 @@ public partial class EditEventViewModel :  BaseViewModel
         MobEvent.Region = EventViewModel.Address.Region;
         MobEvent.StreetAddress = EventViewModel.Address.StreetAddress;
 
-        MobEvent = await mobEventManager.AddEventAsync(MobEvent);
+        MobEvent = await mobEventManager.UpdateEventAsync(MobEvent);
 
         EventViewModel = MobEvent.ToEventViewModel();
         Events.Clear();

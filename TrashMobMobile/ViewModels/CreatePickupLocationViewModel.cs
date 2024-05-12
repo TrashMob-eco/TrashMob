@@ -15,8 +15,7 @@ public partial class CreatePickupLocationViewModel : BaseViewModel
     [ObservableProperty]
     EventViewModel eventViewModel;
 
-    public CreatePickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMapRestService mapRestService, IMobEventManager mobEventManager)
-    {
+    public CreatePickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMapRestService mapRestService, IMobEventManager mobEventManager)    {
         SavePickupLocationCommand = new Command(async () => await SavePickupLocation());
         this.pickupLocationManager = pickupLocationManager;
         this.mapRestService = mapRestService;

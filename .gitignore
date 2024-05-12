@@ -61,3 +61,4 @@ node_modules
 /TrashMobMobile/TrashMobMobile.Android/TrashMobMobile.Android.iml
 **/*.secret.cs
 **/*.secret.json
+/TrashMobMobile/ConstantsLocal.cs

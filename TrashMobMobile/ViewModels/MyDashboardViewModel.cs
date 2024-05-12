@@ -1,20 +1,25 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
 public partial class MyDashboardViewModel : BaseViewModel
 {
-    private EventViewModel selectedEvent;
+    private EventViewModel? upcomingSelectedEvent;
+    private EventViewModel? completedSelectedEvent;
+    private LitterReportViewModel? selectedLitterReport;
     private readonly IMobEventManager mobEventManager;
     private readonly IStatsRestService statsRestService;
+    private readonly ILitterReportManager litterReportManager;
 
-    public MyDashboardViewModel(IMobEventManager mobEventManager, IStatsRestService statsRestService)
+    public MyDashboardViewModel(IMobEventManager mobEventManager, IStatsRestService statsRestService, ILitterReportManager litterReportManager)
     {
         this.mobEventManager = mobEventManager;
         this.statsRestService = statsRestService;
+        this.litterReportManager = litterReportManager;
     }
 
     public ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = [];
@@ -26,19 +31,55 @@ public partial class MyDashboardViewModel : BaseViewModel
     [ObservableProperty]
     public StatisticsViewModel statisticsViewModel;
 
-    public EventViewModel SelectedEvent
+    public EventViewModel? UpcomingSelectedEvent
     {
-        get { return selectedEvent; }
+        get { return upcomingSelectedEvent; }
         set
         {
-            if (selectedEvent != value)
+            if (upcomingSelectedEvent != value)
             {
-                selectedEvent = value;
-                OnPropertyChanged(nameof(selectedEvent));
+                upcomingSelectedEvent = value;
+                OnPropertyChanged(nameof(UpcomingSelectedEvent));
 
-                if (selectedEvent != null)
+                if (upcomingSelectedEvent != null)
                 {
-                    PerformNavigation(selectedEvent);
+                    PerformEventNavigation(upcomingSelectedEvent);
+                }
+            }
+        }
+    }
+
+    public EventViewModel? CompletedSelectedEvent
+    {
+        get { return completedSelectedEvent; }
+        set
+        {
+            if (completedSelectedEvent != value)
+            {
+                completedSelectedEvent = value;
+                OnPropertyChanged(nameof(CompletedSelectedEvent));
+
+                if (completedSelectedEvent != null)
+                {
+                    PerformEventNavigation(completedSelectedEvent);
+                }
+            }
+        }
+    }
+
+    public LitterReportViewModel? SelectedLitterReport
+    {
+        get { return selectedLitterReport; }
+        set
+        {
+            if (selectedLitterReport != value)
+            {
+                selectedLitterReport = value;
+                OnPropertyChanged(nameof(SelectedLitterReport));
+
+                if (SelectedLitterReport != null)
+                {
+                    PerformLitterReportNavigation(SelectedLitterReport);
                 }
             }
         }
@@ -47,18 +88,24 @@ public partial class MyDashboardViewModel : BaseViewModel
     public async Task Init()
     {
         IsBusy = true;
-
+        
         var task1 = RefreshEvents();
         var task2 = RefreshStatistics();
+        var task3 = RefreshLitterReports();
 
-        await Task.WhenAll(task1, task2);
+        await Task.WhenAll(task1, task2, task3);
         
         IsBusy = false;
     }
 
-    private async void PerformNavigation(EventViewModel eventViewModel)
+    private async void PerformEventNavigation(EventViewModel eventViewModel)
     {
         await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventViewModel.Id}");
+    }
+
+    private async void PerformLitterReportNavigation(LitterReportViewModel litterReportViewModel)
+    {
+        await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportViewModel.Id}");
     }
 
     private async Task RefreshStatistics()
@@ -97,5 +144,30 @@ public partial class MyDashboardViewModel : BaseViewModel
                 UpcomingEvents.Add(vm);
             }
         }
+    }
+
+    private async Task RefreshLitterReports()
+    {
+        LitterReports.Clear();
+
+        var litterReports = await litterReportManager.GetUserLitterReportsAsync(App.CurrentUser.Id);
+
+        foreach (var litterReport in litterReports.OrderByDescending(l => l.CreatedDate))
+        {
+            var vm = litterReport.ToLitterReportViewModel();
+            LitterReports.Add(vm);
+        }
+    }
+
+    [RelayCommand]
+    private async Task CreateLitterReport()
+    {
+        await Shell.Current.GoToAsync(nameof(CreateLitterReportPage));
+    }
+
+    [RelayCommand]
+    private async Task CreateEvent()
+    {
+        await Shell.Current.GoToAsync(nameof(CreateEventPage));
     }
 }

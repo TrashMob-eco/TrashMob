@@ -15,8 +15,12 @@ public partial class ViewEventViewModel : BaseViewModel
     private readonly IMobEventManager mobEventManager;
     private readonly IEventTypeRestService eventTypeRestService;
     private readonly IWaiverManager waiverManager;
+    private readonly IEventAttendeeRestService eventAttendeeRestService;
 
-    public ViewEventViewModel(IMobEventManager mobEventManager, IEventTypeRestService eventTypeRestService, IWaiverManager waiverManager)
+    public ViewEventViewModel(IMobEventManager mobEventManager, 
+                              IEventTypeRestService eventTypeRestService,
+                              IWaiverManager waiverManager,
+                              IEventAttendeeRestService eventAttendeeRestService)
     {
         RegisterCommand = new Command(async () => await Register());
         UnregisterCommand = new Command(async () => await Unregister());
@@ -25,6 +29,7 @@ public partial class ViewEventViewModel : BaseViewModel
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
         this.waiverManager = waiverManager;
+        this.eventAttendeeRestService = eventAttendeeRestService;
     }
 
     [ObservableProperty]
@@ -45,6 +50,15 @@ public partial class ViewEventViewModel : BaseViewModel
     [ObservableProperty]
     string selectedEventType;
 
+    [ObservableProperty]
+    string whatToExpect;
+
+    [ObservableProperty]
+    string attendeeCount;
+
+    [ObservableProperty]
+    string spotsLeft;
+
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
 
     public ICommand RegisterCommand { get; set; }
@@ -58,7 +72,7 @@ public partial class ViewEventViewModel : BaseViewModel
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
-
+        
         var mobEvent = await mobEventManager.GetEventAsync(eventId);
 
         EventViewModel = mobEvent.ToEventViewModel();
@@ -74,6 +88,35 @@ public partial class ViewEventViewModel : BaseViewModel
         EnableUnregister = !mobEvent.IsEventLead() && isAttending && mobEvent.AreUnregistrationsAllowed();
         EnableEditEvent = mobEvent.IsEventLead();
         EnableViewEventSummary = mobEvent.IsCompleted();
+
+        WhatToExpect = "What to Expect: \nCleanup supplies provided\nMeet fellow community members\nContribute to a cleaner environment.";
+
+        var attendees = await eventAttendeeRestService.GetEventAttendeesAsync(eventId);
+
+        if (attendees.Count() == 1)
+        {
+            AttendeeCount = $"{attendees.Count()} person is going!";
+        }
+        else
+        {
+            AttendeeCount = "{attendees.Count()} people are going!";
+        }
+
+        if (mobEvent.MaxNumberOfParticipants > 0)
+        {
+            if (mobEvent.MaxNumberOfParticipants - attendees.Count() > 0)
+            {
+                SpotsLeft = $"{mobEvent.MaxNumberOfParticipants - attendees.Count()} spot left!";
+            }
+            else
+            {
+                SpotsLeft = "We're sorry. This event is currently full.";
+            }
+        }
+        else
+        {
+            SpotsLeft = "";
+        }
 
         IsBusy = false;
     }

@@ -4,12 +4,163 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:TrashMobMobile"
-    Shell.FlyoutBehavior="Disabled"
-    Title="TrashMobMobile">
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    Title="TrashMobMobile"
+    Shell.FlyoutBehavior="Flyout">
+    
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <Border StrokeShape="RoundRectangle 22"
+                    HeightRequest="44"
+                    Margin="12,16"
+                    StrokeThickness="0"
+                    Padding="16,8">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor"
+                                            Value="Transparent" />
+                                </VisualState.Setters>
+                            </VisualState>          
+                            <VisualState x:Name="Selected">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor"
+                                            Value="{StaticResource FlyoutSelectedItemColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </VisualStateManager.VisualStateGroups>
+                <Grid ColumnDefinitions="48,*"
+                      ColumnSpacing="12">
+                    <Image Source="{Binding FlyoutIcon}"
+                           Margin="5"
+                           HeightRequest="30"
+                           VerticalOptions="Center"/>
+                    <Label Grid.Column="1"
+                           Text="{Binding Title}"
+                           FontSize="16"
+                           VerticalOptions="Center"
+                           VerticalTextAlignment="Center"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+    
+    <Shell.MenuItemTemplate>
+        <DataTemplate>
+            <Border StrokeShape="RoundRectangle 22"
+                    Height="44"
+                    StrokeThickness="0"
+                    Margin="12,16"
+                    Padding="16,8">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor"
+                                            Value="Transparent" />
+                                </VisualState.Setters>
+                            </VisualState>          
+                            <VisualState x:Name="Selected">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor"
+                                            Value="{StaticResource FlyoutSelectedItemColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </VisualStateManager.VisualStateGroups>
+                <Grid ColumnDefinitions="48,*"
+                      ColumnSpacing="12">
+                    <Image Source="{Binding FlyoutIcon}"
+                           Margin="5"
+                           HeightRequest="30"
+                           VerticalOptions="Center"/>
+                    <Label Grid.Column="1"
+                           Text="{Binding Title}"
+                           FontSize="16"
+                           VerticalOptions="Center"
+                           VerticalTextAlignment="Center"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </Shell.MenuItemTemplate>
+    
+    <!--<Shell.FlyoutHeader> --><!-- Details hardcoded for demo until we have this functionality --><!--
+        <VerticalStackLayout>
+            <Grid ColumnDefinitions="40,*"
+                  RowDefinitions="25,25"
+                  ColumnSpacing="10"
+                  RowSpacing="5"
+                  Margin="25,40">
+                <toolkit:AvatarView ImageSource="joepic.jpg"
+                                    HeightRequest="40"
+                                    WidthRequest="40"
+                                    Grid.RowSpan="2"
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="Center"/> 
+                
+                <Label FontSize="Large"
+                       TextColor="Black"
+                       Text="Joe Beernink"
+                       Grid.Column="1"
+                       Grid.Row="0"/>
+                
+                <Label FontSize="Small"
+                       Text="Edit profile"
+                       TextColor="{StaticResource Primary}"
+                       Grid.Column="1"
+                       Grid.Row="1"/>
+            </Grid>
+            <BoxView HorizontalOptions="Fill"
+                     HeightRequest="1"
+                     Margin="0,16"
+                     BackgroundColor="{StaticResource GlobalBorderBase}"/>
+        </VerticalStackLayout>
+    </Shell.FlyoutHeader>-->
+    
+    <Shell.Behaviors>
+        <toolkit:StatusBarBehavior StatusBarColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}" StatusBarStyle="LightContent" />
+    </Shell.Behaviors>
 
-    <ShellContent
-        Title="Welcome"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <FlyoutItem x:Name="Home"
+                Title="Home"
+                Icon="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconHome}, Color={StaticResource TextBase}}">
+        <ShellContent ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
+    </FlyoutItem>
+
+    <MenuItem x:Name="Dashboard"
+              Text="My Dashboard"
+              Clicked="OnMyDashboardClicked"
+              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconPulse}, Color={StaticResource TextBase}}" />
+
+    <MenuItem x:Name="PrivacyPolicy"
+              Text="Privacy Policy"
+              Clicked="OnPrivacyPolicyClicked"
+              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconBook}, Color={StaticResource TextBase}}" />
+
+    <MenuItem x:Name="TermsOfUse"
+              Text="Terms of Use"
+              Clicked="OnTermsOfUseClicked"
+              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconBook}, Color={StaticResource TextBase}}" />
+
+    <MenuItem x:Name="Contact"
+              Text="Contact us"
+              Clicked="OnContactUsClicked"
+              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconInbox}, Color={StaticResource TextBase}}" />
+
+    <Shell.FlyoutFooter>
+        <VerticalStackLayout Padding="28,48">
+            <Button Style="{StaticResource SecondaryLargeButton}"
+                    ContentLayout="Left, 10"
+                    Clicked="OnLogoutClicked"
+                    Text="Sign out"
+                    ImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconSignOut}, Color={StaticResource Primary}}" />
+        </VerticalStackLayout>
+    </Shell.FlyoutFooter>
 
 </Shell>

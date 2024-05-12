@@ -19,7 +19,7 @@
         }
 
         protected override async void OnNavigatedTo(NavigatedToEventArgs args)
-        {
+        {            
             base.OnNavigatedTo(args);
             await _viewModel.Init();
 

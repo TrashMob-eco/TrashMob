@@ -178,6 +178,22 @@ The mobile app is written using .NET MAUI. It requires a few prerequisites in or
     5. Restart your emulator. Maps should work now
 
     <b>Never check in any file that contains your real api key.</b>
+6. Add a file to the root of the mobile project called `ConstantsLocal.cs`
+7. Get the Syncfusion license key from Key Vault (get help from another dev if needed)
+8. Add the following code:
+
+```csharp
+namespace TrashMobMobile;
+
+public partial class Constants
+{
+    public static partial string GetSyncfusionKey()
+    {
+        return "<<Replace with Syncfusion license key>>";
+    }
+}
+```
+9. ❗**Important** _Before_ committing any changes, check your git status to ensure that this file is not being tracked. If it is, check for typos in the filename or incorrect path. Check the `.gitignore` file for guidance.
 
 ## To Build the Web App:
 

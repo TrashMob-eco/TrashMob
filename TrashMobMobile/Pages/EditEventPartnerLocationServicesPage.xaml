@@ -4,48 +4,44 @@
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
-             x:Class="TrashMobMobile.Pages.EditEventPartnerLocationServicesPage">
+             x:Class="TrashMobMobile.Pages.EditEventPartnerLocationServicesPage"
+             Title="Partner Services">
     <ScrollView>
-        <FlexLayout Direction="Column"
-                JustifyContent="SpaceAround">
-            <Label 
-            Text="Manage Event Partner Location Services"
-            FontSize="Large"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center"/>
+        <Grid>
+            <VerticalStackLayout Spacing="5">
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
-
-            <Label 
+                <Grid RowDefinitions="Auto, Auto">
+                    <Label Grid.Row="0"
             Text="Available Services"
-            FontSize="Large"
+            FontSize="Micro"
             VerticalOptions="Center" 
-            HorizontalOptions="Center"
+            HorizontalOptions="Start"
             HorizontalTextAlignment="Center"/>
 
-            <CollectionView x:Name="PartnerLocationServices" 
+                    <CollectionView Grid.Row="1" x:Name="PartnerLocationServices" 
                             ItemsSource="{Binding EventPartnerLocationServices}" 
                             SelectionMode="None" >
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border StrokeThickness="1">
-                            <Grid WidthRequest = "400"
-                                  ColumnDefinitions="1*, 1*, 1*, 1*, 1*"
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="3" Stroke="Green">
+                                    <Grid ColumnDefinitions="1*, 1*, 1*, 1*"                                  
                                   RowDefinitions="Auto"
-                                  x:Name="EventItem">
-
-                                <Label Text="{Binding PartnerLocationName}" Grid.Column="0" />
-                                <Label Text="{Binding ServiceName}" Grid.Column="1" />
-                                <Label Text="{Binding ServiceStatus}" Grid.Column="2" />
-                                <Label Text="{Binding Notes}" Grid.Column="3" />
-                                <Button Text="Request Service" Command="{Binding RequestServiceCommand}" IsEnabled="{Binding CanRequestService}" IsVisible="{Binding CanRequestService}"  Grid.Column="4" />
-                                <Button Text="Cancel Service Request" Command="{Binding UnrequestServiceCommand}" IsEnabled="{Binding CanUnrequestService}" IsVisible="{Binding CanUnrequestService}" Grid.Column="4" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </FlexLayout>
+                                  x:Name="PartnerLocationServiceItem">
+                                        <Label Text="{Binding PartnerLocationName}" Grid.Column="0" FontSize="Micro" />
+                                        <Label Text="{Binding ServiceName}" Grid.Column="1" FontSize="Micro" />
+                                        <Label Text="{Binding ServiceStatus}" Grid.Column="2" FontSize="Micro" />
+                                        <Label Text="{Binding Notes}" Grid.Column="3" FontSize="Micro" />
+                                        <Button Text="Request Service" Command="{Binding RequestServiceCommand}" IsEnabled="{Binding CanRequestService}" IsVisible="{Binding CanRequestService}"  Grid.Column="4" FontSize="Micro" Margin="5" />
+                                        <Button Text="Cancel Service Request" Command="{Binding UnrequestServiceCommand}" IsEnabled="{Binding CanUnrequestService}" IsVisible="{Binding CanUnrequestService}" Grid.Column="4" FontSize="Micro" Margin="5" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </VerticalStackLayout>
+            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+        </Grid>
     </ScrollView>
 </ContentPage>

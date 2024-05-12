@@ -3,6 +3,7 @@ import { Col, Container, Image, Row } from 'react-bootstrap';
 import linkedIn from './assets/card/linkedin.svg';
 import JoeBeernink from './assets/boardOfDirectors/JoeBeernink.jpg';
 import DarylBarber from './assets/boardOfDirectors/darylbarber.jpg';
+import JakeDiliberto from './assets/boardOfDirectors/JakeDiliberto.svg';
 import KevinGleason from './assets/boardOfDirectors/KevinGleason.svg';
 import SandraMau from './assets/boardOfDirectors/SandraMau.png';
 import CynthiaMitchell from './assets/boardOfDirectors/CynthiaMitchell.jpg';
@@ -47,7 +48,7 @@ export const Board: React.FC = () => {
                                 <h2 className='m-0 fw-500 font-size-xl color-primary '>Cynthia Mitchell</h2>
                                 <a href="https://www.linkedin.com/in/cynthia-mitchell/"><Image src={linkedIn} alt="linkedIn icon" className="h-100 mt-0 object-fit-cover" /></a>
                             </div>
-                            <h5 className='my-3 fw-500 color-grey'>Vice President</h5>
+                            <h5 className='my-3 fw-500 color-grey'>Board Vice-President</h5>
                             <p className='font-size-sm color-grey'>Cynthia Mitchell is a serial tech and media entrepreneur, C-Suite advisor to startups and
                                 board member. Mitchell has worked for more than 50 different companies across an array of
                                 industries including technology, environmental, energy, construction, health, media, fashion
@@ -63,6 +64,7 @@ export const Board: React.FC = () => {
                         </Col>
                     </Row>
                 </div>
+
                 <div className='p-4 directorCard'>
                     <Row>
                         <Col md={5}>
@@ -107,6 +109,22 @@ export const Board: React.FC = () => {
                                 Now at Vivid Communication, she consults with charity and for-profit organizations by writing marketing plans, boosting social media, creating promotions and guiding efforts toward highest net revenue potential. She is a three-term trustee of Westminster College, where she earned her Bachelor of Arts in English. Upon graduating with a Master of Arts in Journalism and Mass Communication from Point Park University, she taught corporate writing there.
                             </p>
                             <p className='font-size-sm color-grey'>She and her husband, Greg, live in Wexford, a northern suburb of Pittsburgh, Pennsylvania and are parents of Alyssa, Scott, and Dayne.</p>
+                        </Col>
+                    </Row>
+                </div>
+                <div className='p-4 directorCard'>
+                    <Row>
+                        <Col md={5}>
+                            <Image src={JakeDiliberto} alt="Jake Diliberto" className="h-100 mt-0 object-fit-cover rounded" />
+                        </Col>
+                        <Col md={7}>
+                            <div className='d-flex justify-content-between align-items-center'>
+                                <h2 className='m-0 fw-500 font-size-xl color-primary '>Jake Diliberto</h2>
+                                <a href="https://www.linkedin.com/in/jakediliberto/"><Image src={linkedIn} alt="linkedIn icon" className="h-100 mt-0 object-fit-cover" /></a>
+                            </div>
+                            <h5 className='my-3 fw-500 color-grey'>Member at large</h5>
+                            <p className='font-size-sm color-grey'>Jake Diliberto is a senior operations professional having managed a (NYSE) fortune 500 portfolio. He has proven expertise in transformational management with comprehensive experience managing multiple operating units, driving change management, project management, process reengineering, resource optimization, and systems implementations.</p>
+                            <p className='font-size-sm color-grey'>Jake also has veteran/military front-line field leadership expertise, having directed and motivated teams in high pressure settings with real-time consequences.</p>
                         </Col>
                     </Row>
                 </div>

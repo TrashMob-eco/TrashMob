@@ -2,6 +2,7 @@ namespace TrashMobMobile.Pages;
 
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using Microsoft.Maui.Maps;
 
 [QueryProperty(nameof(LitterReportId), nameof(LitterReportId))]
 public partial class ViewLitterReportPage : ContentPage
@@ -21,6 +22,12 @@ public partial class ViewLitterReportPage : ContentPage
     {
         base.OnNavigatedTo(args);
         await _viewModel.Init(new Guid(LitterReportId));
+
+        if (_viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location != null)
+        {
+            var mapSpan = new MapSpan(_viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location, 0.05, 0.05);
+            litterReportLocationMap.MoveToRegion(mapSpan);
+        }
     }
 
     private async Task Notify(string message)

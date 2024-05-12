@@ -2,79 +2,117 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
-             x:Class="TrashMobMobile.Pages.SetUserLocationPreferencePage">
-    <FlexLayout Direction="Column"
-                JustifyContent="SpaceAround">
-        <Label 
-            Text="Set Your Location!"
-            FontSize="Large"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center"/>
+             x:Class="TrashMobMobile.Pages.SetUserLocationPreferencePage"
+             Title="Set Your Location">
+    <ScrollView>
+        <Grid>
+            <VerticalStackLayout Spacing="5">
 
-        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
-
-        <Label 
-            Text="Click on the map to set your location."
+                <Label 
+            Text="Click on the map to set your preferred location."
             FontSize="Micro"
             VerticalOptions="Center" 
             HorizontalOptions="Center"
-            HorizontalTextAlignment="Center"/>
+            HorizontalTextAlignment="Center"
+            Margin="5"/>
 
-        <maps:Map x:Name="userLocationMap" 
+                <maps:Map x:Name="userLocationMap" 
                   ItemsSource="{Binding Addresses}" 
                   IsShowingUser="True" 
-                  HeightRequest="300" 
+                  HeightRequest="250" 
+                  WidthRequest="350"
                   IsScrollEnabled="True"
-                  MapClicked="OnMapClicked">
-            <maps:Map.ItemTemplate>
-                <DataTemplate>
-                    <maps:Pin Location="{Binding Location}"
+                  MapClicked="OnMapClicked"
+                  Margin="10,0">
+                    <maps:Map.ItemTemplate>
+                        <DataTemplate>
+                            <maps:Pin Location="{Binding Location}"
                                   Address="{Binding StreetAddress}"
                                   Label="Your Preferred Location" />
-                </DataTemplate>
-            </maps:Map.ItemTemplate>
-        </maps:Map>
+                        </DataTemplate>
+                    </maps:Map.ItemTemplate>
+                </maps:Map>
 
-        <Label 
-            Text="Max Travel Distance"
-            FontSize="Small"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center"/>
+                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 1*" Margin="10">
+                    <VerticalStackLayout Spacing="5" Grid.Row="0" Grid.Column="0" Margin="10">
+                        <Label Text="Set the Max Travel Distance you are willing to travel for an event."
+                   FontSize="Micro"
+                   VerticalOptions="Center" 
+                   HorizontalOptions="Start"
+                   HorizontalTextAlignment="Center"
+                   FontAttributes="Bold" />
+                        <Frame Style="{x:StaticResource Frame}" >
+                            <Entry Text="{Binding TravelDistance}" Keyboard="Numeric" FontSize="Small" />
+                        </Frame>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="5" Grid.Row="0" Grid.Column="1" Margin="10">
+                        <Label Text="Set your preferred Units of measure."
+                   FontSize="Micro"
+                   VerticalOptions="Center" 
+                   HorizontalOptions="Start"
+                   HorizontalTextAlignment="Center"
+                   FontAttributes="Bold" />
+                        <Frame Style="{x:StaticResource Frame}">
+                            <Picker SelectedItem="{Binding Units}" FontSize="Small">
+                                <Picker.ItemsSource>
+                                    <x:Array Type="{x:Type x:String}">
+                                        <x:String>Kilometers</x:String>
+                                        <x:String>Miles</x:String>
+                                    </x:Array>
+                                </Picker.ItemsSource>
+                            </Picker>
+                        </Frame>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="5" Grid.Row="1" Grid.Column="0" Margin="10">
+                        <Label Text="City"
+                   FontSize="Micro"
+                   VerticalOptions="Center" 
+                   HorizontalOptions="Start"
+                   HorizontalTextAlignment="Center"
+                   FontAttributes="Bold" />
+                        <Frame Style="{x:StaticResource Frame}">
+                            <Label Text="{Binding Address.City }" FontSize="Small" />
+                        </Frame>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="5" Grid.Row="1" Grid.Column="1" Margin="10">
+                        <Label Text="State/Region"
+                    FontSize="Micro"
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Start"
+                    HorizontalTextAlignment="Center"
+                    FontAttributes="Bold" />
+                        <Frame Style="{x:StaticResource Frame}">
+                            <Label Text="{Binding Address.Region }" FontSize="Small" />
+                        </Frame>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="5" Grid.Row="2" Grid.Column="0" Margin="10">
+                        <Label Text="Country"
+                    FontSize="Micro"
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Start"
+                    HorizontalTextAlignment="Center"
+                    FontAttributes="Bold" />
+                        <Frame Style="{x:StaticResource Frame}">
+                            <Label Text="{Binding Address.Country }" FontSize="Small" />
+                        </Frame>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="5" Grid.Row="2" Grid.Column="1" Margin="10">
+                        <Label Text="Postal Code"
+                    FontSize="Micro"
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Start"
+                    HorizontalTextAlignment="Center"
+                    FontAttributes="Bold" />
+                        <Frame Style="{x:StaticResource Frame}">
+                            <Label Text="{Binding Address.PostalCode }" FontSize="Small" />
+                        </Frame>
+                    </VerticalStackLayout>
+                </Grid>
 
-        <Entry Text="{Binding TravelDistance}"
-               Keyboard="Numeric"
-            FontSize="Small"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center"/>
-
-        <Label 
-            Text="Units"
-            FontSize="Small"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center"/>
-
-        <Picker SelectedItem="{Binding Units}">
-            <Picker.ItemsSource>
-                <x:Array Type="{x:Type x:String}">
-                    <x:String>Kilometers</x:String>
-                    <x:String>Miles</x:String>
-                </x:Array>
-            </Picker.ItemsSource>
-        </Picker>
-        <Label Text="City" />
-        <Label Text="{Binding Address.City }" />
-        <Label Text="Region" />
-        <Label Text="{Binding Address.Region }" />
-        <Label Text="Country" />
-        <Label Text="{Binding Address.Country }" />
-        <Label Text="Postal Code" />
-        <Label Text="{Binding Address.PostalCode }" />
-
-        <Button Text="Submit" Command="{Binding UpdateLocationCommand}" />
-        
-    </FlexLayout>
+                <Button Text="Update Location" Command="{Binding UpdateLocationCommand}" Margin="10" />
+            </VerticalStackLayout>
+            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+        </Grid>
+    </ScrollView>
 </ContentPage>
