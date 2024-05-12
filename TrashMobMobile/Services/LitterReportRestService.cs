@@ -66,20 +66,16 @@
 
         public async Task<LitterReport> AddLitterReportAsync(LitterReport litterReport, CancellationToken cancellationToken = default)
         {
-            // todo - why does this need a user name?
-            var fullLitterReport = litterReport.ToFullLitterReport("test");
-
             try
             {
-                var url = Controller + "/multiadd";
-                var content = JsonContent.Create(fullLitterReport, typeof(FullLitterReport), null, SerializerOptions);
+                var content = JsonContent.Create(litterReport, typeof(LitterReport), null, SerializerOptions);
 
-                using (var response = await AuthorizedHttpClient.PostAsync(url, content, cancellationToken))
+                using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
 
                     var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-                    var result = JsonConvert.DeserializeObject<FullLitterReport>(responseContent);
+                    var result = JsonConvert.DeserializeObject<LitterReport>(responseContent);
 
                     if (result != null)
                     {
