@@ -196,7 +196,7 @@
             </VerticalStackLayout>
         </ScrollView>
         <Grid ColumnDefinitions="1*,1*, 1*, 1*"
-              RowDefinitions="Auto, Auto"
+              RowDefinitions="Auto"
               VerticalOptions="End"
               Margin="0,0,0,20">
             <Button Grid.Row="0"
@@ -213,18 +213,6 @@
                     HorizontalOptions="Center"
                     Style="{StaticResource RoundButton}"
                     Text="Submit a Litter Report" />
-            <Button Grid.Row="1"
-                    Grid.Column="2"
-                    Command="{Binding ContactUsCommand}"
-                    HorizontalOptions="Center"
-                    Style="{StaticResource LinkButton}"
-                    Text="Contact Us" />
-            <Button Grid.Row="1"
-                    Grid.Column="3"
-                    Command="{Binding LogoutCommand}"
-                    HorizontalOptions="Center"
-                    Style="{StaticResource LinkButton}"
-                    Text="Log Out" />
         </Grid>
         <BoxView BackgroundColor="{StaticResource TransparentBlack}"
                  HorizontalOptions="Fill"
