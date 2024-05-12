@@ -258,9 +258,24 @@
             }
         }
 
-        public Task DeleteLitterReportAsync(Guid litterReportId, CancellationToken cancellationToken = default)
+        public async Task DeleteLitterReportAsync(Guid litterReportId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var requestUri = string.Concat(Controller, litterReportId.ToString());
+
+                using (var response = await AuthorizedHttpClient.DeleteAsync(requestUri, cancellationToken))
+                {
+                    response.EnsureSuccessStatusCode();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(@"\tERROR {0}", ex.Message);
+                throw;
+            }
+
+            return;
         }
 
         public async Task<string> GetLitterImageAsync(Guid litterImageId, CancellationToken cancellationToken = default)
