@@ -52,7 +52,12 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiIcon Include="Resources\AppIcon\appiconfg.svg">
+		  <Color>#FBFBFA</Color>
+		</MauiIcon>
+		<MauiIcon Include="Resources\AppIcon\appicon.svg">
+		  <Color>#FBFBFA</Color>
+		</MauiIcon>
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#FBFBFA" />
@@ -68,6 +73,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\AppIcon\appicon.svg" />
+	  <None Remove="Resources\AppIcon\appiconfg.svg" />
 	  <None Remove="Resources\Fonts\feather.ttf" />
 	  <None Remove="Resources\Fonts\Lexend-Regular.ttf" />
 	  <None Remove="Resources\Fonts\Lexend-SemiBold.ttf" />
