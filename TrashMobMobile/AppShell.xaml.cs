@@ -17,6 +17,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(EditEventPartnerLocationServicesPage), typeof(EditEventPartnerLocationServicesPage));
         Routing.RegisterRoute(nameof(EditEventSummaryPage), typeof(EditEventSummaryPage));
         Routing.RegisterRoute(nameof(EditPickupLocationPage), typeof(EditPickupLocationPage));
+        Routing.RegisterRoute(nameof(LogoutPage), typeof(LogoutPage));
         Routing.RegisterRoute(nameof(ManageEventPartnersPage), typeof(ManageEventPartnersPage));
         Routing.RegisterRoute(nameof(MyDashboardPage), typeof(MyDashboardPage));
         Routing.RegisterRoute(nameof(SearchEventsPage), typeof(SearchEventsPage));
@@ -59,8 +60,6 @@ public partial class AppShell : Shell
     public async void OnLogoutClicked(object sender, EventArgs e)
     {
         Current.FlyoutIsPresented = false;
-        // Todo: Implement logout
-        // await authService.SignOutAsync();
-        await Current.GoToAsync($"{nameof(WelcomePage)}");
+        await Current.GoToAsync(nameof(LogoutPage));
     }
 }
