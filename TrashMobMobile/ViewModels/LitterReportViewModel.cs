@@ -46,6 +46,9 @@ public partial class LitterReportViewModel : ObservableObject
                 case 3:
                     LitterReportStatus = "Cleaned";
                     break;
+                case 4:
+                    LitterReportStatus = "Cancelled";
+                    break;
                 default:
                     break;
             }

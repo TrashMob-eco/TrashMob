@@ -1,10 +1,10 @@
 namespace TrashMobMobile.Pages;
 
-public partial class WelcomePage : ContentPage
+public partial class LogoutPage : ContentPage
 {
-    private readonly WelcomeViewModel _viewModel;
+    private readonly LogoutViewModel _viewModel;
 
-    public WelcomePage(WelcomeViewModel viewModel)
+    public LogoutPage(LogoutViewModel viewModel)
 	{
 		InitializeComponent();
         _viewModel = viewModel;

@@ -16,6 +16,7 @@ public partial class ViewEventViewModel : BaseViewModel
     private readonly IEventTypeRestService eventTypeRestService;
     private readonly IWaiverManager waiverManager;
     private readonly IEventAttendeeRestService eventAttendeeRestService;
+    private Event mobEvent;
 
     public ViewEventViewModel(IMobEventManager mobEventManager, 
                               IEventTypeRestService eventTypeRestService,
@@ -72,26 +73,32 @@ public partial class ViewEventViewModel : BaseViewModel
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
-        
-        var mobEvent = await mobEventManager.GetEventAsync(eventId);
+
+        mobEvent = await mobEventManager.GetEventAsync(eventId);
 
         EventViewModel = mobEvent.ToEventViewModel();
 
         var eventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
         SelectedEventType = eventTypes.First(et => et.Id == mobEvent.EventTypeId).Name;
-        
+
         Events.Clear();
         Events.Add(EventViewModel);
         var isAttending = await mobEventManager.IsUserAttendingAsync(eventId, App.CurrentUser.Id);
 
-        EnableRegister = !mobEvent.IsEventLead() && !isAttending && mobEvent.AreNewRegistrationsAllowed();
-        EnableUnregister = !mobEvent.IsEventLead() && isAttending && mobEvent.AreUnregistrationsAllowed();
         EnableEditEvent = mobEvent.IsEventLead();
         EnableViewEventSummary = mobEvent.IsCompleted();
 
         WhatToExpect = "What to Expect: \nCleanup supplies provided\nMeet fellow community members\nContribute to a cleaner environment.";
 
-        var attendees = await eventAttendeeRestService.GetEventAttendeesAsync(eventId);
+        await SetRegistrationOptions();
+        await GetAttendeeCount();
+
+        IsBusy = false;
+    }
+
+    private async Task GetAttendeeCount()
+    {
+        var attendees = await eventAttendeeRestService.GetEventAttendeesAsync(mobEvent.Id);
 
         if (attendees.Count() == 1)
         {
@@ -99,7 +106,7 @@ public partial class ViewEventViewModel : BaseViewModel
         }
         else
         {
-            AttendeeCount = "{attendees.Count()} people are going!";
+            AttendeeCount = $"{attendees.Count()} people are going!";
         }
 
         if (mobEvent.MaxNumberOfParticipants > 0)
@@ -117,8 +124,6 @@ public partial class ViewEventViewModel : BaseViewModel
         {
             SpotsLeft = "";
         }
-
-        IsBusy = false;
     }
 
     private async Task EditEvent()
@@ -148,6 +153,9 @@ public partial class ViewEventViewModel : BaseViewModel
 
         await mobEventManager.AddEventAttendeeAsync(eventAttendee);
 
+        await SetRegistrationOptions();
+        await GetAttendeeCount();
+
         IsBusy = false;
 
         await Notify("You have been registered for this event.");
@@ -165,8 +173,19 @@ public partial class ViewEventViewModel : BaseViewModel
 
         await mobEventManager.RemoveEventAttendeeAsync(eventAttendee);
 
+        await SetRegistrationOptions();
+        await GetAttendeeCount();
+
         IsBusy = false;
 
         await Notify("You have been unregistered for this event.");
+    }
+
+    private async Task SetRegistrationOptions()
+    {
+        var isAttending = await mobEventManager.IsUserAttendingAsync(mobEvent.Id, App.CurrentUser.Id);
+
+        EnableRegister = !mobEvent.IsEventLead() && !isAttending && mobEvent.AreNewRegistrationsAllowed();
+        EnableUnregister = !mobEvent.IsEventLead() && isAttending && mobEvent.AreUnregistrationsAllowed();
     }
 }
