@@ -87,12 +87,12 @@
                     <Button Grid.Row="0"
                             Grid.Column="2"
                             Grid.ColumnSpan="2"
-                            Command="{Binding CloseLitterReportCommand}"
+                            Command="{Binding MarkLitterReportCleanedCommand}"
                             HorizontalOptions="Center"
                             Style="{StaticResource RoundButton}"
-                            Text="Close Litter Report" 
-                            IsEnabled="{Binding CanCloseLitterReport}"
-                            IsVisible="{Binding CanCloseLitterReport}" />
+                            Text="Mark Cleaned" 
+                            IsEnabled="{Binding CanMarkLitterReportCleaned}"
+                            IsVisible="{Binding CanMarkLitterReportCleaned}" />
                 </Grid>
 
                 <CollectionView x:Name="LitterImagesCollection"

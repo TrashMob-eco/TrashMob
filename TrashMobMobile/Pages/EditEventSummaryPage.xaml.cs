@@ -14,6 +14,7 @@ public partial class EditEventSummaryPage : ContentPage
 	{
 		InitializeComponent();
         _viewModel = viewModel;
+        _viewModel.Navigation = Navigation;
         _viewModel.Notify = Notify;
         BindingContext = _viewModel;
     }

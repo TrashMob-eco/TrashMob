@@ -245,22 +245,45 @@
                     </VerticalStackLayout>
                 </Grid>
 
-                <Button Text="Save Event" Command="{Binding SaveEventCommand}" Margin="10">
-                    <Button.Triggers>
-                        <MultiTrigger TargetType="Button">
-                            <MultiTrigger.Conditions>
-                                <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}" Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}" Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}" Value="True" />
-                            </MultiTrigger.Conditions>
-                            <Setter Property="IsEnabled" Value="True" />
-                        </MultiTrigger>
-                    </Button.Triggers>
-                </Button>
+                <Grid ColumnDefinitions="1*,1*, 1*, 1*"
+                  RowDefinitions="Auto"
+                  VerticalOptions="End"
+                  Margin="0,0,0,20">
 
-                <Button Text="Manage Event Partners" Command="{Binding ManageEventPartnersCommand}" IsEnabled="{Binding IsManageEventPartersEnabled}" Margin="10" />
+                    <Button Margin="10"
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Command="{Binding SaveEventCommand}"
+                        Text="Save Event">
+                        <Button.Triggers>
+                            <MultiTrigger TargetType="Button">
+                                <MultiTrigger.Conditions>
+                                    <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
+                                                  Value="True" />
+                                    <BindingCondition Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}"
+                                                  Value="True" />
+                                    <BindingCondition Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}"
+                                                  Value="True" />
+                                    <BindingCondition Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}"
+                                                  Value="True" />
+                                    <BindingCondition Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}"
+                                                  Value="True" />
+                                </MultiTrigger.Conditions>
+                                <Setter Property="IsEnabled" Value="True" />
+                            </MultiTrigger>
+                        </Button.Triggers>
+                    </Button>
+
+                    <Button Margin="10"
+                        Grid.Row="0"
+                        Grid.Column="2"
+                        Grid.ColumnSpan="2"
+                        Command="{Binding ManageEventPartnersCommand}"
+                        IsEnabled="{Binding IsManageEventPartnersEnabled}"
+                        IsVisible="{Binding IsManageEventPartnersEnabled}"
+                        Text="Manage Partners" />
+                </Grid>
 
                 <Label 
             FontSize="Micro"
