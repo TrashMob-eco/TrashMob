@@ -11,7 +11,7 @@ public partial class ViewLitterReportViewModel : BaseViewModel
 {
     private const int NewLitterReportStatus = 1;
     private const int AssignedLitterReportStatus = 2;
-    private const int ClosedLitterReportStatus = 3;
+    private const int CleanedLitterReportStatus = 3;
 
     public ViewLitterReportViewModel(ILitterReportManager litterReportManager)
     {
@@ -52,11 +52,11 @@ public partial class ViewLitterReportViewModel : BaseViewModel
 
         if (LitterReport.CreatedByUserId == App.CurrentUser.Id && (LitterReport.LitterReportStatusId == NewLitterReportStatus || LitterReport.LitterReportStatusId == AssignedLitterReportStatus))
         {
-            CanCloseLitterReport = true;
+            CanMarkLitterReportCleaned = true;
         }
         else
         {
-            CanCloseLitterReport = false;
+            CanMarkLitterReportCleaned = false;
         }
 
         LitterImageViewModels.Clear();
@@ -77,7 +77,7 @@ public partial class ViewLitterReportViewModel : BaseViewModel
     private bool canDeleteLitterReport;
 
     [ObservableProperty]
-    private bool canCloseLitterReport;
+    private bool canMarkLitterReportCleaned;
 
     [RelayCommand]
     private async Task DeleteLitterReport()
@@ -87,10 +87,12 @@ public partial class ViewLitterReportViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task CloseLitterReport()
+    private async Task MarkLitterReportCleaned()
     {
-        LitterReport.LitterReportStatusId = ClosedLitterReportStatus;
-        await litterReportManager.UpdateLitterReportAsync(LitterReport);
+        LitterReport.LitterReportStatusId = CleanedLitterReportStatus;
+        var tempLitterReport = LitterReport;
+        tempLitterReport.LitterImages.Clear();
+        await litterReportManager.UpdateLitterReportAsync(tempLitterReport);
         await Navigation.PopAsync();
     }
 }

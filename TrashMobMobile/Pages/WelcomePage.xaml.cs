@@ -8,6 +8,7 @@ public partial class WelcomePage : ContentPage
 	{
 		InitializeComponent();
         _viewModel = viewModel;
+        _viewModel.Navigation = Navigation;
         BindingContext = _viewModel;
     }
 
