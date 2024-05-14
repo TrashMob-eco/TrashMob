@@ -4,10 +4,15 @@ using TrashMobMobile.Models;
 
 public static class Settings
 {
-    // TODO: replace with PROD values in release pipeline
+#if DEBUG
     public const string ApiBaseUrl = "https://as-tm-dev-westus2.azurewebsites.net/api/";
 
     public const string SiteBaseUrl = "https://as-tm-dev-westus2.azurewebsites.net";
+#else
+    public const string ApiBaseUrl = "https://www.trashmob.eco/api/";
+
+    public const string SiteBaseUrl = "https://www.trashmob.eco";
+#endif
 
     public static WaiverVersion CurrentTrashMobWaiverVersion = new WaiverVersion
     {
