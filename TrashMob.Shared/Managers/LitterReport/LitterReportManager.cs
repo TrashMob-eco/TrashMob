@@ -16,12 +16,12 @@ namespace TrashMob.Shared.Managers.LitterReport
     public class LitterReportManager : KeyedManager<LitterReport>, ILitterReportManager
     {
         private readonly ILitterImageManager litterImageManager;
-        private readonly ILogger logger;
+        private readonly ILogger<LitterReportManager> logger;
         private readonly IDbTransaction dbTransaction;
 
         public LitterReportManager(IKeyedRepository<LitterReport> repository, 
                                     ILitterImageManager litterImageManager,
-                                    ILogger logger,
+                                    ILogger<LitterReportManager> logger,
                                     IDbTransaction dbTransaction) : base(repository)
         {
             this.litterImageManager = litterImageManager;
