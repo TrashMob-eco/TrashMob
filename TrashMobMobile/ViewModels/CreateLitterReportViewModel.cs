@@ -166,7 +166,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
                 PostalCode = litterImageViewModel.Address.PostalCode,
                 Region = litterImageViewModel.Address.Region,
                 StreetAddress = litterImageViewModel.Address.StreetAddress,
-
+                
                 // Use the Azure Blob Url as local file on create
                 AzureBlobURL = litterImageViewModel.FilePath
             };
