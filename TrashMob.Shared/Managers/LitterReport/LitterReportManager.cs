@@ -44,18 +44,18 @@ namespace TrashMob.Shared.Managers.LitterReport
                     return null;
                 }
 
-                // Add litter images
-                if (litterReport.LitterImages != null && litterReport.LitterImages.Any())
-                {
-                    foreach (var litterImage in litterReport.LitterImages)
-                    {
-                        logger.LogInformation("Adding litter image");
+                //// Add litter images
+                //if (litterReport.LitterImages != null && litterReport.LitterImages.Any())
+                //{
+                //    foreach (var litterImage in litterReport.LitterImages)
+                //    {
+                //        logger.LogInformation("Adding litter image");
 
-                        litterImage.LitterReportId = newLitterReport.Id;
-                        LitterImage newLitterImage = await litterImageManager.AddAsync(litterImage, userId, cancellationToken);
-                        newLitterReport.LitterImages.Add(newLitterImage);
-                    }
-                }
+                //        litterImage.LitterReportId = newLitterReport.Id;
+                //        LitterImage newLitterImage = await litterImageManager.AddAsync(litterImage, userId, cancellationToken);
+                //        newLitterReport.LitterImages.Add(newLitterImage);
+                //    }
+                //}
 
                 await dbTransaction.CommitTransactionAsync();
                 return newLitterReport;
