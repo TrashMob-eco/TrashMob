@@ -117,6 +117,7 @@ namespace TrashMob.Controllers
             return Ok(fullLitterReports);
         }
 
+        [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddLitterReport(LitterReport litterReport, CancellationToken cancellationToken)

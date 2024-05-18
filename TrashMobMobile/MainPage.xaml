@@ -212,7 +212,7 @@
                     Command="{Binding CreateLitterReportCommand}"
                     HorizontalOptions="Center"
                     Style="{StaticResource RoundButton}"
-                    Text="Submit a Litter Report" />
+                    Text="Report Litter" />
         </Grid>
         <BoxView BackgroundColor="{StaticResource TransparentBlack}"
                  HorizontalOptions="Fill"
