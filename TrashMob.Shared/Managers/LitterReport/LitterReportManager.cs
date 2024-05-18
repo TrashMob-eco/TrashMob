@@ -11,17 +11,21 @@ namespace TrashMob.Shared.Managers.LitterReport
     using TrashMob.Shared.Persistence.Interfaces;
     using Microsoft.EntityFrameworkCore;
     using System.Linq;
+    using Microsoft.Extensions.Logging;
 
     public class LitterReportManager : KeyedManager<LitterReport>, ILitterReportManager
     {
         private readonly ILitterImageManager litterImageManager;
+        private readonly ILogger logger;
         private readonly IDbTransaction dbTransaction;
 
         public LitterReportManager(IKeyedRepository<LitterReport> repository, 
-                                    ILitterImageManager litterImageManager, 
+                                    ILitterImageManager litterImageManager,
+                                    ILogger logger,
                                     IDbTransaction dbTransaction) : base(repository)
         {
             this.litterImageManager = litterImageManager;
+            this.logger = logger;
             this.dbTransaction = dbTransaction;
         }
 
@@ -31,6 +35,7 @@ namespace TrashMob.Shared.Managers.LitterReport
             {
                 await dbTransaction.BeginTransactionAsync();
                 
+                logger.LogInformation("Adding litter report");
                 // Add litter report
                 var newLitterReport = await base.AddAsync(litterReport, userId, cancellationToken);
 
@@ -44,6 +49,8 @@ namespace TrashMob.Shared.Managers.LitterReport
                 {
                     foreach (var litterImage in litterReport.LitterImages)
                     {
+                        logger.LogInformation("Adding litter image");
+
                         litterImage.LitterReportId = newLitterReport.Id;
                         LitterImage newLitterImage = await litterImageManager.AddAsync(litterImage, userId, cancellationToken);
                         newLitterReport.LitterImages.Add(newLitterImage);
@@ -53,8 +60,9 @@ namespace TrashMob.Shared.Managers.LitterReport
                 await dbTransaction.CommitTransactionAsync();
                 return newLitterReport;
             }
-            catch
+            catch (Exception ex)
             {
+                logger.LogError(ex, "Error adding litter report");
                 await dbTransaction.RollbackTransactionAsync();
                 return null;
             }
