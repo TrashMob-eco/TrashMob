@@ -1,9 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-
-#nullable disable
+﻿#nullable disable
+#pragma warning disable CS8981
+#pragma warning disable CA1861
+#pragma warning disable IDE0300
 
 namespace TrashMob.Migrations
 {
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     /// <inheritdoc />
     public partial class addhabitat : Migration
     {

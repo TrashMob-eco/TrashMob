@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿#pragma warning disable CS8981
 
 namespace TrashMob.Migrations
 {
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     public partial class fixlongitude : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
