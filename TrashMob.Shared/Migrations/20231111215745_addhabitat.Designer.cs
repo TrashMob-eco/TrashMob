@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrashMob.Shared.Persistence;
 
 #nullable disable
+#pragma warning disable CS8981
 
 namespace TrashMob.Migrations
 {

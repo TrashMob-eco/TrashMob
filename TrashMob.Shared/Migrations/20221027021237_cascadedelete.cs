@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-
-#nullable disable
+﻿#nullable disable
+#pragma warning disable CS8981
 
 namespace TrashMob.Migrations
 {
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     public partial class cascadedelete : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
