@@ -36,6 +36,16 @@ namespace TrashMob.Shared.Managers.LitterReport
                 await dbTransaction.BeginTransactionAsync();
                 
                 logger.LogInformation("Adding litter report");
+
+                foreach (var litterImage in litterReport.LitterImages)
+                {
+                    litterImage.LitterReportId = litterReport.Id;
+                    litterImage.CreatedByUserId = userId;
+                    litterImage.LastUpdatedByUserId = userId;
+                    litterImage.CreatedDate = DateTime.UtcNow;
+                    litterImage.LastUpdatedDate = DateTime.UtcNow;
+                }
+
                 // Add litter report
                 var newLitterReport = await base.AddAsync(litterReport, userId, cancellationToken);
 
@@ -44,18 +54,18 @@ namespace TrashMob.Shared.Managers.LitterReport
                     return null;
                 }
 
-                // Add litter images
-                if (litterReport.LitterImages != null && litterReport.LitterImages.Any())
-                {
-                    foreach (var litterImage in litterReport.LitterImages)
-                    {
-                        logger.LogInformation("Adding litter image");
+                //// Add litter images
+                //if (litterReport.LitterImages != null && litterReport.LitterImages.Any())
+                //{
+                //    foreach (var litterImage in litterReport.LitterImages)
+                //    {
+                //        logger.LogInformation("Adding litter image");
 
-                        litterImage.LitterReportId = newLitterReport.Id;
-                        LitterImage newLitterImage = await litterImageManager.AddAsync(litterImage, userId, cancellationToken);
-                        newLitterReport.LitterImages.Add(newLitterImage);
-                    }
-                }
+                //        litterImage.LitterReportId = newLitterReport.Id;
+                //        LitterImage newLitterImage = await litterImageManager.AddAsync(litterImage, userId, cancellationToken);
+                //        newLitterReport.LitterImages.Add(newLitterImage);
+                //    }
+                //}
 
                 await dbTransaction.CommitTransactionAsync();
                 return newLitterReport;
@@ -79,12 +89,12 @@ namespace TrashMob.Shared.Managers.LitterReport
 
             var updateInstance = await base.UpdateAsync(instance.ToLitterReport(), userId, cancellationToken);
 
-            //Delete images not in the updated report
+            // Delete images not in the updated report
             IEnumerable<LitterImage> ExistinglitterImages = await litterImageManager.GetByParentIdAsync(instance.Id, cancellationToken);
 
-            foreach(LitterImage image in ExistinglitterImages)
+            foreach (LitterImage image in ExistinglitterImages)
             {
-                if(!instance.LitterImages.Select(img=>img.Id).Contains(image.Id))
+                if (!instance.LitterImages.Select(img=>img.Id).Contains(image.Id))
                 {
                     await litterImageManager.HardDeleteAsync(image.Id, cancellationToken);
                 }
