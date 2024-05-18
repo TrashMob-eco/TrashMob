@@ -73,6 +73,7 @@
 
                 using var memoryStreamThumbNail = new System.IO.MemoryStream();
                 await image.SaveAsync(memoryStreamThumbNail, new SixLabors.ImageSharp.Formats.Png.PngEncoder());
+                memoryStreamThumbNail.Position = 0;
                 await blobClient.UploadAsync(memoryStreamThumbNail, new BlobHttpHeaders { ContentType = imageUpload.FormFile.ContentType });
             }
 
@@ -88,6 +89,7 @@
 
                 using var memoryStreamReduced = new System.IO.MemoryStream();
                 await image.SaveAsync(memoryStreamReduced, new SixLabors.ImageSharp.Formats.Png.PngEncoder());
+                memoryStreamReduced.Position = 0;
                 await blobClient.UploadAsync(memoryStreamReduced, new BlobHttpHeaders { ContentType = imageUpload.FormFile.ContentType });
             }
         }
