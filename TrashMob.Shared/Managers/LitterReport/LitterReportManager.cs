@@ -25,14 +25,13 @@ namespace TrashMob.Shared.Managers.LitterReport
             this.dbTransaction = dbTransaction;
         }
 
-        public async Task<LitterReport> AddAsync(FullLitterReport instance, Guid userId, CancellationToken cancellationToken)
+        public override async Task<LitterReport> AddAsync(LitterReport litterReport, Guid userId, CancellationToken cancellationToken)
         {
             try
             {
                 await dbTransaction.BeginTransactionAsync();
                 
                 // Add litter report
-                LitterReport litterReport = instance.ToLitterReport();
                 var newLitterReport = await base.AddAsync(litterReport, userId, cancellationToken);
 
                 if (newLitterReport == null)
@@ -41,13 +40,13 @@ namespace TrashMob.Shared.Managers.LitterReport
                 }
 
                 // Add litter images
-                if (instance.LitterImages != null && instance.LitterImages.Any())
+                if (litterReport.LitterImages != null && litterReport.LitterImages.Any())
                 {
-                    foreach(FullLitterImage fullLitterImage in instance.LitterImages)
+                    foreach (var litterImage in litterReport.LitterImages)
                     {
-                        fullLitterImage.LitterReportId = newLitterReport.Id;
-                        LitterImage litterImage = await litterImageManager.AddAsync(fullLitterImage, userId, cancellationToken);
-                        newLitterReport.LitterImages.Add(litterImage);
+                        litterImage.LitterReportId = newLitterReport.Id;
+                        LitterImage newLitterImage = await litterImageManager.AddAsync(litterImage, userId, cancellationToken);
+                        newLitterReport.LitterImages.Add(newLitterImage);
                     }
                 }
 
