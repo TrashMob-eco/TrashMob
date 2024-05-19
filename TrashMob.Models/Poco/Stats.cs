@@ -9,6 +9,5 @@
         public int TotalEvents { get; set; }
 
         public int TotalParticipants { get; set; }
-
     }
 }

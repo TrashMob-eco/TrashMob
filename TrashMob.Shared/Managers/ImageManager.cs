@@ -58,12 +58,7 @@
             var fileName = string.Format("{0}-{1}-{2}{3}", imageUpload.ParentId, imageUpload.ImageType.ToString(), fileTime, System.IO.Path.GetExtension(imageUpload.FormFile?.FileName)).ToLower();
 
             // Upload the raw file
-<<<<<<< HEAD
             await UploadBlob(imageUpload.FormFile.OpenReadStream(), fileName, blobContainer);
-=======
-            logger.LogInformation("Creating raw blob: {BlobName}", fileName);
-            await blobClient.UploadAsync(imageUpload.FormFile.OpenReadStream(), new BlobHttpHeaders { ContentType = imageUpload.FormFile.ContentType });
->>>>>>> origin/main
 
             using var memoryStream = new MemoryStream();
             await imageUpload.FormFile.CopyToAsync(memoryStream);
@@ -74,7 +69,6 @@
             using (Image image = Image.Load(memoryStream))
             {
                 var thumbNailFileName = string.Format("{0}-{1}-{2}-thumb.jpg", imageUpload.ParentId, imageUpload.ImageType.ToString(), fileTime).ToLower();
-<<<<<<< HEAD
 
                 image.Mutate(x => x.Resize(ThumbnailWidth, ThumbnailHeight));
 
@@ -84,17 +78,6 @@
                 memoryStreamThumbNail.Position = 0;
 
                 await UploadBlob(memoryStreamThumbNail, thumbNailFileName, blobContainer);
-=======
-                var thumbNailBlobClient = blobContainer.GetBlobClient(thumbNailFileName);
-
-                image.Mutate(x => x.Resize(ThumbnailWidth, ThumbnailHeight));
-
-                using var memoryStreamThumbNail = new System.IO.MemoryStream();
-                await image.SaveAsync(memoryStreamThumbNail, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder());
-                memoryStreamThumbNail.Position = 0;
-                logger.LogInformation("Creating thumbnail blob: {BlobName}", thumbNailFileName);
-                await blobClient.UploadAsync(memoryStreamThumbNail, new BlobHttpHeaders { ContentType = imageUpload.FormFile.ContentType });
->>>>>>> origin/main
             }
 
             memoryStream.Position = 0;
@@ -103,7 +86,6 @@
             using (Image image = Image.Load(memoryStream))
             {
                 var reducedFileName = string.Format("{0}-{1}-{2}-reduced.jpg", imageUpload.ParentId, imageUpload.ImageType.ToString(), fileTime).ToLower();
-<<<<<<< HEAD
 
                 image.Mutate(x => x.Resize(ReducedWidth, ReducedHeight));
 
@@ -113,17 +95,6 @@
                 memoryStreamReduced.Position = 0;
 
                 await UploadBlob(memoryStreamReduced, reducedFileName, blobContainer);
-=======
-                var reducedBlobClient = blobContainer.GetBlobClient(reducedFileName);
-
-                image.Mutate(x => x.Resize(ReducedWidth, ReducedHeight));
-
-                using var memoryStreamReduced = new System.IO.MemoryStream();
-                await image.SaveAsync(memoryStreamReduced, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder());
-                memoryStreamReduced.Position = 0;
-                logger.LogInformation("Creating reduced blob: {BlobName}", reducedFileName);
-                await blobClient.UploadAsync(memoryStreamReduced, new BlobHttpHeaders { ContentType = imageUpload.FormFile.ContentType });
->>>>>>> origin/main
             }
         }
 
