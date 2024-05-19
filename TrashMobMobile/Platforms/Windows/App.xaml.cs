@@ -21,5 +21,4 @@ namespace TrashMobMobile.WinUI
 
         protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
     }
-
 }
