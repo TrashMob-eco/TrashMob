@@ -121,7 +121,7 @@
 
             foreach (var pickupLocation in pickupLocations)
             {
-                var imageUrl = await imageManager.GetImageUrlAsync(eventId, ImageTypeEnum.Pickup);
+                var imageUrl = await imageManager.GetImageUrlAsync(eventId, ImageTypeEnum.Pickup, ImageSizeEnum.Thumb);
 
                 var pickSpot = new PickupSpot
                 {
