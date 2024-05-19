@@ -86,7 +86,7 @@ jobs:
           run: |
               $content = Get-Content TrashMobMobile/Platforms/Android/AndroidManifest.xml -Raw
   
-              $newContent = $content -replace '<meta-data android:name=\"com.google.android.geo.API_KEY\" android:value=\".*\" />', "<meta-data android:name=\"com.google.android.geo.API_KEY\" android:value=\"${{secrets.googlemaps_android_key}}\" />"
+              $newContent = $content -replace '<meta-data android:name="com.google.android.geo.API_KEY" android:value=".*" />', '<meta-data android:name="com.google.android.geo.API_KEY" android:value="${{secrets.googlemaps_android_key}}" />'
   
               Set-Content TrashMobMobile/Platforms/Android/AndroidManifest.xml -Value $newContent
   
