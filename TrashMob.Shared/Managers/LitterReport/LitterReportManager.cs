@@ -12,27 +12,38 @@ namespace TrashMob.Shared.Managers.LitterReport
     using Microsoft.EntityFrameworkCore;
     using System.Linq;
     using Microsoft.Extensions.Logging;
+    using TrashMob.Shared.Engine;
+    using TrashMob.Shared.Poco;
+    using TrashMob.Shared.Extensions;
 
     public class LitterReportManager : KeyedManager<LitterReport>, ILitterReportManager
     {
         private readonly ILitterImageManager litterImageManager;
         private readonly ILogger<LitterReportManager> logger;
         private readonly IDbTransaction dbTransaction;
+        private readonly IEmailManager emailManager;
 
         public LitterReportManager(IKeyedRepository<LitterReport> repository, 
                                     ILitterImageManager litterImageManager,
                                     ILogger<LitterReportManager> logger,
-                                    IDbTransaction dbTransaction) : base(repository)
+                                    IDbTransaction dbTransaction,
+                                    IEmailManager emailManager) : base(repository)
         {
             this.litterImageManager = litterImageManager;
             this.logger = logger;
             this.dbTransaction = dbTransaction;
+            this.emailManager = emailManager;
         }
 
         public override async Task<LitterReport> AddAsync(LitterReport litterReport, Guid userId, CancellationToken cancellationToken)
         {
             try
             {
+                if (litterReport.LitterImages == null || litterReport.LitterImages.Count == 0)
+                {
+                    return null;
+                }
+
                 await dbTransaction.BeginTransactionAsync();
                 
                 logger.LogInformation("Adding litter report");
@@ -54,20 +65,28 @@ namespace TrashMob.Shared.Managers.LitterReport
                     return null;
                 }
 
-                //// Add litter images
-                //if (litterReport.LitterImages != null && litterReport.LitterImages.Any())
-                //{
-                //    foreach (var litterImage in litterReport.LitterImages)
-                //    {
-                //        logger.LogInformation("Adding litter image");
-
-                //        litterImage.LitterReportId = newLitterReport.Id;
-                //        LitterImage newLitterImage = await litterImageManager.AddAsync(litterImage, userId, cancellationToken);
-                //        newLitterReport.LitterImages.Add(newLitterImage);
-                //    }
-                //}
-
                 await dbTransaction.CommitTransactionAsync();
+
+                var message = $"A new litter report: {litterReport.Name} in {litterReport.LitterImages.First().City} has been created on TrashMob.eco!";
+                var subject = "New Litter Report Alert";
+
+                var recipients = new List<EmailAddress>
+                {
+                    new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
+                };
+
+                var dynamicTemplateData = new
+                {
+                    username = Constants.TrashMobEmailName,
+                    litterReportName = litterReport.Name,
+                    eventAddress = litterReport.LitterImages.First().DisplayAddress(),
+                    emailCopy = message,
+                    subject = subject,
+                    googleMapsUrl = litterReport.LitterImages.First().GoogleMapsUrl(),
+                };
+
+                await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.LitterReportEmail, SendGridEmailGroupId.LitterReportRelated, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+
                 return newLitterReport;
             }
             catch (Exception ex)
