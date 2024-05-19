@@ -1,6 +1,6 @@
-using Maui.BindableProperty.Generator.Core;
-
 namespace TrashMobMobile.Controls;
+
+using Maui.BindableProperty.Generator.Core;
 
 public partial class TMEntry : ContentView
 {

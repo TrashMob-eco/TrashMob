@@ -8,7 +8,7 @@
     <ScrollView Margin="0, 0, 0, 100">
         <Grid>
             <VerticalStackLayout Spacing="5">
-                <Frame Style="{x:StaticResource Frame}" Margin="5,0">
+                <Frame Style="{x:DynamicResource Frame}" Margin="5,0">
                     <Grid RowDefinitions = "Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 1*, 1*">
                         <Label Text="Here's what you have done so far!" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Micro" Margin="0, 0, 0, 10" />
                         <Image Grid.Row="1" Grid.Column="0" Source="calendar.svg" MaximumWidthRequest="25" />
@@ -39,7 +39,7 @@
                         Command="{Binding CreateLitterReportCommand}"
                         HorizontalOptions="Center"
                         Style="{StaticResource RoundButton}"
-                        Text="Submit a Litter Report" />
+                        Text="Report Litter" />
                 </Grid>
 
                 <Label 

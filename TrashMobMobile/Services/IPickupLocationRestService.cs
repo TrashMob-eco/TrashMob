@@ -20,6 +20,6 @@
 
         Task AddPickupLocationImageAsync(Guid eventId, Guid pickupLocationId, string localFileName, CancellationToken cancellationToken = default);
         
-        Task<string> GetPickupLocationImageAsync(Guid pickupLocationId, CancellationToken cancellationToken = default);
+        Task<string> GetPickupLocationImageAsync(Guid pickupLocationId, ImageSizeEnum imageSize, CancellationToken cancellationToken = default);
     }
 }

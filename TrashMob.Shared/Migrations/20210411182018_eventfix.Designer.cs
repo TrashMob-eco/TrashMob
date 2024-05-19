@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrashMob.Shared.Persistence;
 
+#pragma warning disable CS8981
+
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]

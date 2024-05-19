@@ -5,7 +5,6 @@ namespace TrashMob.Shared.Managers.Interfaces
     using System.Threading.Tasks;
     using System.Threading;
     using TrashMob.Models;
-    using TrashMob.Models.Poco;
 
     public interface ILitterReportManager : IKeyedManager<LitterReport>
     {

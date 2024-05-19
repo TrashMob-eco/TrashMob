@@ -6,6 +6,7 @@ namespace TrashMobJobs
     using System.Threading.Tasks;
     using Microsoft.Azure.Functions.Worker;
     using Microsoft.Extensions.Logging;
+    using TrashMob.Models;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Poco;
@@ -37,6 +38,9 @@ namespace TrashMobJobs
                 siteStats.BagsCount = await CountBags(log, conn).ConfigureAwait(false);
                 siteStats.MinutesCount = await CountMinutes(log, conn).ConfigureAwait(false);
                 siteStats.ActualAttendeesCount = await CountActualAttendees(log, conn).ConfigureAwait(false);
+                siteStats.LitterReportsCount = await CountLitterReports(log, conn).ConfigureAwait(false);
+                siteStats.NewLitterReportsCount = await CountNewLitterReports(log, conn).ConfigureAwait(false);
+                siteStats.CleanedLitterReportsCount = await CountCleanedLitterReports(log, conn).ConfigureAwait(false);
             }
 
             await SendSummaryReport(siteStats, instanceName, sendGridApiKey).ConfigureAwait(false);
@@ -187,12 +191,63 @@ namespace TrashMobJobs
             {
                 numberOfContactRequests = (int)await cmd.ExecuteScalarAsync().ConfigureAwait(false);
 
-                log.LogInformation("There are currently '{numberOfContactRequests}' Future Events.", numberOfContactRequests);
+                log.LogInformation("There are currently '{numberOfContactRequests}' Contact Requests.", numberOfContactRequests);
             }
 
             await AddSiteMetrics(log, conn, "TotalContactRequests", numberOfContactRequests).ConfigureAwait(false);
 
             return numberOfContactRequests;
+        }
+
+        private static async Task<int> CountLitterReports(ILogger log, SqlConnection conn)
+        {
+            var sql = "SELECT count(*) FROM dbo.LitterReports";
+            var numberOfLitterReports = 0;
+
+            using (var cmd = new SqlCommand(sql, conn))
+            {
+                numberOfLitterReports = (int)await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+
+                log.LogInformation("There are currently '{numberOfLitterReports}' Litter Reports.", numberOfLitterReports);
+            }
+
+            await AddSiteMetrics(log, conn, "TotalLitterReports", numberOfLitterReports).ConfigureAwait(false);
+
+            return numberOfLitterReports;
+        }
+
+        private static async Task<int> CountNewLitterReports(ILogger log, SqlConnection conn)
+        {
+            var sql = "SELECT count(*) FROM dbo.LitterReports where LitterReportStatusId == " + LitterReportStatusEnum.New;
+            var numberOfLitterReports = 0;
+
+            using (var cmd = new SqlCommand(sql, conn))
+            {
+                numberOfLitterReports = (int)await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+
+                log.LogInformation("There are currently '{numberOfLitterReports}' New Litter Reports.", numberOfLitterReports);
+            }
+
+            await AddSiteMetrics(log, conn, "TotalNewLitterReports", numberOfLitterReports).ConfigureAwait(false);
+
+            return numberOfLitterReports;
+        }
+
+        private static async Task<int> CountCleanedLitterReports(ILogger log, SqlConnection conn)
+        {
+            var sql = "SELECT count(*) FROM dbo.LitterReports where LitterReportStatusId == " + LitterReportStatusEnum.Cleaned;
+            var numberOfLitterReports = 0;
+
+            using (var cmd = new SqlCommand(sql, conn))
+            {
+                numberOfLitterReports = (int)await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+
+                log.LogInformation("There are currently '{numberOfLitterReports}' Cleaned Litter Reports.", numberOfLitterReports);
+            }
+
+            await AddSiteMetrics(log, conn, "TotalCleanedLitterReports", numberOfLitterReports).ConfigureAwait(false);
+
+            return numberOfLitterReports;
         }
 
         private static async Task AddSiteMetrics(ILogger log, SqlConnection conn, string metricType, long metricValue)
@@ -229,6 +284,9 @@ namespace TrashMobJobs
             sb.AppendLine($"Total Number of Bags Collected: {siteStats.BagsCount}\n");
             sb.AppendLine($"Total Number of Minutes: {siteStats.MinutesCount}\n");
             sb.AppendLine($"Total Number of Actual Attendees: {siteStats.ActualAttendeesCount}\n");
+            sb.AppendLine($"Total Number of Litter Reports: {siteStats.LitterReportsCount}\n");
+            sb.AppendLine($"Total Number of New Litter Reports: {siteStats.NewLitterReportsCount}\n");
+            sb.AppendLine($"Total Number of Cleaned Litter Reports: {siteStats.CleanedLitterReportsCount}\n");
             sb.AppendLine($"End Report.\n");
 
             var email = new Email
@@ -263,5 +321,11 @@ namespace TrashMobJobs
         public int MinutesCount { get; set; }
 
         public int ActualAttendeesCount { get; set; }
+
+        public int LitterReportsCount { get; set; }
+
+        public int NewLitterReportsCount { get; set; }
+
+        public int CleanedLitterReportsCount { get; set; }
     }
 }

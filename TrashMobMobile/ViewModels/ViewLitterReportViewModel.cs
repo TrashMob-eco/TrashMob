@@ -36,7 +36,7 @@ public partial class ViewLitterReportViewModel : BaseViewModel
     {
         IsBusy = true;
         
-        LitterReport = await litterReportManager.GetLitterReportAsync(litterReportId);
+        LitterReport = await litterReportManager.GetLitterReportAsync(litterReportId, ImageSizeEnum.Reduced);
 
         LitterReportViewModel = LitterReport.ToLitterReportViewModel();
         LitterReportStatus = LitterReportExtensions.GetLitterStatusFromId(LitterReportViewModel?.LitterReportStatusId);

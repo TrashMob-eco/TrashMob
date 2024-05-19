@@ -35,7 +35,7 @@
             return pickupLocationRestService.DeletePickupLocationAsync(pickupLocation, cancellationToken);
         }
 
-        public async Task<IEnumerable<PickupLocationImage>> GetPickupLocationsAsync(Guid eventId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<PickupLocationImage>> GetPickupLocationsAsync(Guid eventId, ImageSizeEnum imageSize, CancellationToken cancellationToken = default)
         {
             var pickupLocations = await pickupLocationRestService.GetPickupLocationsAsync(eventId, cancellationToken);
 
@@ -45,7 +45,7 @@
 
                 foreach (var pickupLocation in pickupLocations)
                 {
-                    var url = await pickupLocationRestService.GetPickupLocationImageAsync(pickupLocation.Id, cancellationToken);
+                    var url = await pickupLocationRestService.GetPickupLocationImageAsync(pickupLocation.Id, imageSize, cancellationToken);
 
                     var pickupLocationImage = new PickupLocationImage
                     {
@@ -81,11 +81,11 @@
             return new List<PickupLocationImage>();
         }
 
-        public async Task<PickupLocationImage> GetPickupLocationImageAsync(Guid pickupLocationId, CancellationToken cancellationToken = default)
+        public async Task<PickupLocationImage> GetPickupLocationImageAsync(Guid pickupLocationId, ImageSizeEnum imageSize, CancellationToken cancellationToken = default)
         {
             var pickupLocation = await pickupLocationRestService.GetPickupLocationAsync(pickupLocationId, cancellationToken);
 
-            var url = await pickupLocationRestService.GetPickupLocationImageAsync(pickupLocation.Id, cancellationToken);
+            var url = await pickupLocationRestService.GetPickupLocationImageAsync(pickupLocation.Id, imageSize, cancellationToken);
 
             var pickupLocationImage = new PickupLocationImage
             {

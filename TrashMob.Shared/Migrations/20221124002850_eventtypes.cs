@@ -1,9 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-
-#nullable disable
+﻿#nullable disable
+#pragma warning disable CS8981
+#pragma warning disable IDE1006
+#pragma warning disable CA1861
+#pragma warning disable IDE0300
 
 namespace TrashMob.Migrations
 {
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     public partial class eventtypes : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)

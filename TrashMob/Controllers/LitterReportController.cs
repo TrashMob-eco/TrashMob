@@ -117,6 +117,7 @@ namespace TrashMob.Controllers
             return Ok(fullLitterReports);
         }
 
+        [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddLitterReport(LitterReport litterReport, CancellationToken cancellationToken)
@@ -218,10 +219,10 @@ namespace TrashMob.Controllers
             return fullLitterReports;
         }
 
-        [HttpGet("image/{litterImageId}")]
-        public async Task<IActionResult> GetImage(Guid litterImageId, CancellationToken cancellationToken)
+        [HttpGet("image/{litterImageId}/{imageSize}")]
+        public async Task<IActionResult> GetImage(Guid litterImageId, ImageSizeEnum imageSize, CancellationToken cancellationToken)
         {
-            var url = await imageManager.GetImageUrlAsync(litterImageId, ImageTypeEnum.LitterImage);
+            var url = await imageManager.GetImageUrlAsync(litterImageId, ImageTypeEnum.LitterImage, imageSize);
 
             if (string.IsNullOrEmpty(url))
             {

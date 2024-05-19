@@ -1,8 +1,11 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿#pragma warning disable CS8981
+#pragma warning disable IDE1006
 
 namespace TrashMob.Migrations
 {
+    using System;
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     public partial class historyfix : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
