@@ -17,7 +17,7 @@
                            HorizontalOptions="Start"
                            HorizontalTextAlignment="Center"
                            FontAttributes="Bold" />
-                        <Frame Style="{x:StaticResource Frame}" >
+                        <Frame Style="{x:DynamicResource Frame}" >
                             <Label Text="{Binding EventViewModel.Name}" FontSize="Small" />
                         </Frame>
                     </VerticalStackLayout>
@@ -29,7 +29,7 @@
                            HorizontalOptions="Start"
                            HorizontalTextAlignment="Center"
                            FontAttributes="Bold" />
-                        <Frame Style="{x:StaticResource Frame}" >
+                        <Frame Style="{x:DynamicResource Frame}" >
                             <Label Text="{Binding EventViewModel.EventViewModel.DisplayDate}" FontSize="Small" />
                         </Frame>
                     </VerticalStackLayout>
@@ -41,7 +41,7 @@
                            HorizontalOptions="Start"
                            HorizontalTextAlignment="Center"
                            FontAttributes="Bold" />
-                        <Frame Style="{x:StaticResource Frame}" >
+                        <Frame Style="{x:DynamicResource Frame}" >
                             <Label Text="{Binding EventViewModel.EventViewModel.DisplayTime}" FontSize="Small" />
                         </Frame>
                     </VerticalStackLayout>
@@ -53,7 +53,7 @@
                            HorizontalOptions="Start"
                            HorizontalTextAlignment="Center"
                            FontAttributes="Bold" />
-                        <Frame Style="{x:StaticResource Frame}" >
+                        <Frame Style="{x:DynamicResource Frame}" >
                             <Editor Text="{Binding EventViewModel.CancellationReason}">
                                 <Editor.Behaviors>
                                     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10" x:Name="cancellationReasonValidator" />
