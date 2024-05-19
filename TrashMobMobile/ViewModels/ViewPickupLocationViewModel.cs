@@ -2,6 +2,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+using TrashMob.Models;
 using TrashMobMobile.Data;
 
 public partial class ViewPickupLocationViewModel : BaseViewModel
@@ -24,7 +25,7 @@ public partial class ViewPickupLocationViewModel : BaseViewModel
     {
         IsBusy = true;
         
-        var pickupLocation = await pickupLocationManager.GetPickupLocationImageAsync(pickupLocationId);
+        var pickupLocation = await pickupLocationManager.GetPickupLocationImageAsync(pickupLocationId, ImageSizeEnum.Reduced);
 
         var pickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager)
         {

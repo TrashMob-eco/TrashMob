@@ -10,6 +10,7 @@
     using TrashMob.Models;
     using TrashMob.Security;
     using TrashMob.Shared;
+    using TrashMob.Shared.Managers;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
 
@@ -140,7 +141,20 @@
         [HttpGet("image/{pickupLocationId}")]
         public async Task<IActionResult> GetImage(Guid pickupLocationId, CancellationToken cancellationToken)
         {
-            var url = await imageManager.GetImageUrlAsync(pickupLocationId, ImageTypeEnum.Pickup);
+            var url = await imageManager.GetImageUrlAsync(pickupLocationId, ImageTypeEnum.Pickup, ImageSizeEnum.Raw);
+
+            if (string.IsNullOrEmpty(url))
+            {
+                return NoContent();
+            }
+
+            return Ok(url);
+        }
+
+        [HttpGet("image/{pickupLocationId}/{imageSize}")]
+        public async Task<IActionResult> GetImage(Guid pickupLocationId, ImageSizeEnum imageSize, CancellationToken cancellationToken)
+        {
+            var url = await imageManager.GetImageUrlAsync(pickupLocationId, ImageTypeEnum.Pickup, imageSize);
 
             if (string.IsNullOrEmpty(url))
             {

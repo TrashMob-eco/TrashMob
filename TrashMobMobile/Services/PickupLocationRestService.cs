@@ -140,11 +140,11 @@ public class PickupLocationRestService : RestServiceBase, IPickupLocationRestSer
         }
     }
 
-    public async Task<string> GetPickupLocationImageAsync(Guid pickupLocationId, CancellationToken cancellationToken = default)
+    public async Task<string> GetPickupLocationImageAsync(Guid pickupLocationId, ImageSizeEnum imageSize, CancellationToken cancellationToken = default)
     {
         try
         {
-            var requestUri = Controller + "/image/" + pickupLocationId;
+            var requestUri = Controller + "/image/" + pickupLocationId + "/" + imageSize;
 
             using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
             {

@@ -26,7 +26,7 @@
 
         Task<LitterReport> AddLitterReportAsync(LitterReport litterReport, CancellationToken cancellationToken = default);
 
-        Task<string> GetLitterImageUrlAsync(Guid litterImageId, CancellationToken cancellationToken = default);
+        Task<string> GetLitterImageUrlAsync(Guid litterImageId, ImageSizeEnum imageSize, CancellationToken cancellationToken = default);
 
         Task DeleteLitterReportAsync(Guid litterReportId, CancellationToken cancellationToken = default);
     }

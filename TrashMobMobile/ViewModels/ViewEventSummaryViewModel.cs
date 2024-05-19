@@ -3,6 +3,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
@@ -82,7 +83,7 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
         EnableEditEventSummary = mobEvent.IsEventLead();
         EnableAddPickupLocation = mobEvent.IsEventLead();
 
-        var pickupLocations = await pickupLocationManager.GetPickupLocationsAsync(eventId);
+        var pickupLocations = await pickupLocationManager.GetPickupLocationsAsync(eventId, ImageSizeEnum.Thumb);
 
         PickupLocations.Clear();
         foreach (var pickupLocation in pickupLocations)

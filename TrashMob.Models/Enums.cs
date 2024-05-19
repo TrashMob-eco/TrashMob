@@ -68,6 +68,13 @@
         Pickup = 3,
         LitterImage = 4,
     }
+    public enum ImageSizeEnum
+    {
+        Raw = 1,
+        Thumb = 2,
+        Reduced = 3,
+    }
+
     public enum LitterReportStatusEnum
     {
         New = 1,

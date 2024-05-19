@@ -6,9 +6,9 @@
 
     public interface IPickupLocationManager
     {
-        Task<IEnumerable<PickupLocationImage>> GetPickupLocationsAsync(Guid eventId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<PickupLocationImage>> GetPickupLocationsAsync(Guid eventId, ImageSizeEnum imageSize, CancellationToken cancellationToken = default);
 
-        Task<PickupLocationImage> GetPickupLocationImageAsync(Guid pickupLocatioImageId, CancellationToken cancellationToken = default);
+        Task<PickupLocationImage> GetPickupLocationImageAsync(Guid pickupLocatioImageId, ImageSizeEnum imageSize, CancellationToken cancellationToken = default);
 
         Task<PickupLocation> GetPickupLocationAsync(Guid pickupLocationId, CancellationToken cancellationToken = default);
 
