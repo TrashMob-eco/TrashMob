@@ -18,7 +18,7 @@
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Center"
                         FontAttributes="Bold" />
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Label 
                         Text="{Binding LitterReportViewModel.Name}"
                         VerticalOptions="Center" 
@@ -35,7 +35,7 @@
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Center"
                         FontAttributes="Bold" />
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Label 
                         Text="{Binding LitterReportViewModel.Description}"
                         VerticalOptions="Center" 
@@ -51,7 +51,7 @@
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Center"
                         FontAttributes="Bold" />
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Label 
                         Text="{Binding LitterReportStatus}"
                         VerticalOptions="Center" 

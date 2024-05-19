@@ -20,7 +20,7 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Entry 
                         Text="{Binding Name}"             
                         FontSize="Small">
@@ -40,7 +40,7 @@
                     HorizontalTextAlignment="Start"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Entry 
                         Text="{Binding Email}"
                         Keyboard="Email"
@@ -64,7 +64,7 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Editor 
                         Text="{Binding Message}"
                         FontSize="Small"

@@ -38,7 +38,7 @@
                                Text="Event Date"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <DatePicker Grid.Row="1"
                                         Grid.Column="1"
                                         Date="{Binding EventViewModel.EventDateOnly}" />
@@ -57,7 +57,7 @@
                                Text="Event Time"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <TimePicker Grid.Row="2"
                                         Grid.Column="1"
                                         Time="{Binding EventViewModel.EventTime}" />
@@ -145,7 +145,7 @@
                                Text="Event Type"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Picker Title="Event Type"
                                     ItemsSource="{Binding ETypes}"
                                     SelectedItem="{Binding SelectedEventType}" />
@@ -185,7 +185,7 @@
                                Text="Is Event Public?"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <CheckBox IsChecked="{Binding EventViewModel.IsEventPublic}" />
                         </Frame>
                     </VerticalStackLayout>
@@ -231,7 +231,7 @@
                                Text="Address"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Label FontSize="Micro"
                                    Text="{Binding EventViewModel.Address.StreetAddress}" />
                         </Frame>
@@ -247,7 +247,7 @@
                                Text="City"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Label FontSize="Micro"
                                    Text="{Binding EventViewModel.Address.City}" />
                         </Frame>
@@ -263,7 +263,7 @@
                                Text="State/Region"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Label FontSize="Micro"
                                    Text="{Binding EventViewModel.Address.Region}" />
                         </Frame>
@@ -279,7 +279,7 @@
                                Text="Country"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Label FontSize="Micro"
                                    Text="{Binding EventViewModel.Address.Country}" />
                         </Frame>
@@ -295,7 +295,7 @@
                                Text="Postal Code"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Label FontSize="Micro"
                                    Text="{Binding EventViewModel.Address.PostalCode}" />
                         </Frame>

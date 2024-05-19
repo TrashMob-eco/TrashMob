@@ -18,7 +18,7 @@
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Center"
                         FontAttributes="Bold" />
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Entry Text="{Binding PickupLocationViewModel.Name}" >
                                 <Entry.Behaviors>
                                     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
@@ -34,7 +34,7 @@
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Center"
                         FontAttributes="Bold" />
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Editor Text="{Binding PickupLocationViewModel.Notes}" >
                                 <Editor.Behaviors>
                                     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10" x:Name="notesValidator" />
