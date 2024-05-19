@@ -27,6 +27,5 @@
         InviteExistingUserToBePartnerAdmin = 23,
         EventPartnerPickupRequest = 24,
         EventPartnerRequestAutoApproved = 25,
-        LitterReportSubmitted = 26,
     }
 }
