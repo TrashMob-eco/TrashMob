@@ -32,9 +32,9 @@
             }
         }
 
-        public async Task<string> GetLitterImageUrlAsync(Guid litterImageId, CancellationToken cancellationToken = default)
+        public async Task<string> GetLitterImageUrlAsync(Guid litterImageId, ImageSizeEnum imageSize, CancellationToken cancellationToken = default)
         {
-            var requestUri = Controller + "/image/" + litterImageId;
+            var requestUri = Controller + "/image/" + litterImageId + "/" + imageSize;
 
             using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
             {

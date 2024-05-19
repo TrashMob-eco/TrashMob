@@ -48,13 +48,13 @@
             return litterReportRestService.GetUserLitterReportsAsync(userId, cancellationToken);
         }
 
-        public async Task<LitterReport> GetLitterReportAsync(Guid litterReportId, CancellationToken cancellationToken = default)
+        public async Task<LitterReport> GetLitterReportAsync(Guid litterReportId, ImageSizeEnum imageSize, CancellationToken cancellationToken = default)
         {
             var litterReport = await litterReportRestService.GetLitterReportAsync(litterReportId, cancellationToken);
 
             foreach (var litterImage in litterReport.LitterImages)
             {
-                litterImage.AzureBlobURL = await litterReportRestService.GetLitterImageUrlAsync(litterImage.Id, cancellationToken);
+                litterImage.AzureBlobURL = await litterReportRestService.GetLitterImageUrlAsync(litterImage.Id, imageSize, cancellationToken);
             }
 
             return litterReport;
