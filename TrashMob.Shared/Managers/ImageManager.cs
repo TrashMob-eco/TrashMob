@@ -10,6 +10,7 @@
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
     using SixLabors.ImageSharp.Processing;
+    using System.IO;
 
     internal class ImageManager : IImageManager
     {
@@ -49,34 +50,34 @@
             const int ReducedHeight = 400;
 
             var blobContainer = blobServiceClient.GetBlobContainerClient(imageUpload.ImageType.ToString().ToLower());
+ 
             var fileTime = DateTimeOffset.UtcNow.ToString("ddHHmmss");
 
             logger.LogInformation("ParentId: {ParentId}, ImageType: {ImageType}, File: {FileName}", imageUpload.ParentId, imageUpload.ImageType, imageUpload.FormFile?.FileName);
+            
             var fileName = string.Format("{0}-{1}-{2}{3}", imageUpload.ParentId, imageUpload.ImageType.ToString(), fileTime, System.IO.Path.GetExtension(imageUpload.FormFile?.FileName)).ToLower();
 
-            var blobClient = blobContainer.GetBlobClient(fileName);
-
             // Upload the raw file
-            logger.LogInformation("Creating raw blob: {BlobName}", fileName);
-            await blobClient.UploadAsync(imageUpload.FormFile.OpenReadStream(), new BlobHttpHeaders { ContentType = imageUpload.FormFile.ContentType });
+            await UploadBlob(imageUpload.FormFile.OpenReadStream(), fileName, blobContainer);
 
-            using var memoryStream = new System.IO.MemoryStream();
+            using var memoryStream = new MemoryStream();
             await imageUpload.FormFile.CopyToAsync(memoryStream);
+            
             memoryStream.Position = 0;
 
             // Create a thumbnail
             using (Image image = Image.Load(memoryStream))
             {
                 var thumbNailFileName = string.Format("{0}-{1}-{2}-thumb.jpg", imageUpload.ParentId, imageUpload.ImageType.ToString(), fileTime).ToLower();
-                var thumbNailBlobClient = blobContainer.GetBlobClient(thumbNailFileName);
 
                 image.Mutate(x => x.Resize(ThumbnailWidth, ThumbnailHeight));
 
-                using var memoryStreamThumbNail = new System.IO.MemoryStream();
+                using var memoryStreamThumbNail = new MemoryStream();
                 await image.SaveAsync(memoryStreamThumbNail, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder());
+
                 memoryStreamThumbNail.Position = 0;
-                logger.LogInformation("Creating thumbnail blob: {BlobName}", thumbNailFileName);
-                await blobClient.UploadAsync(memoryStreamThumbNail, new BlobHttpHeaders { ContentType = imageUpload.FormFile.ContentType });
+
+                await UploadBlob(memoryStreamThumbNail, thumbNailFileName, blobContainer);
             }
 
             memoryStream.Position = 0;
@@ -85,16 +86,25 @@
             using (Image image = Image.Load(memoryStream))
             {
                 var reducedFileName = string.Format("{0}-{1}-{2}-reduced.jpg", imageUpload.ParentId, imageUpload.ImageType.ToString(), fileTime).ToLower();
-                var reducedBlobClient = blobContainer.GetBlobClient(reducedFileName);
 
                 image.Mutate(x => x.Resize(ReducedWidth, ReducedHeight));
 
-                using var memoryStreamReduced = new System.IO.MemoryStream();
+                using var memoryStreamReduced = new MemoryStream();
                 await image.SaveAsync(memoryStreamReduced, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder());
+
                 memoryStreamReduced.Position = 0;
-                logger.LogInformation("Creating reduced blob: {BlobName}", reducedFileName);
-                await blobClient.UploadAsync(memoryStreamReduced, new BlobHttpHeaders { ContentType = imageUpload.FormFile.ContentType });
+
+                await UploadBlob(memoryStreamReduced, reducedFileName, blobContainer);
             }
+        }
+
+        private async Task UploadBlob(Stream stream, string fileName, BlobContainerClient blobContainer)
+        {
+            logger.LogInformation("Creating blob: {BlobName}, length: {Length}", fileName, stream.Length);
+ 
+            var blobClient = blobContainer.GetBlobClient(fileName);
+
+            await blobClient.UploadAsync(stream, new BlobHttpHeaders { ContentType = "image/jpeg" });
         }
 
         public async Task<bool> DeleteImage(Guid parentId, ImageTypeEnum imageType)
