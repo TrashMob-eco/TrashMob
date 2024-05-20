@@ -65,6 +65,7 @@ public static class MauiProgram
         builder.Services.AddTransient<EditEventPage>();
         builder.Services.AddTransient<EditEventPartnerLocationServicesPage>();
         builder.Services.AddTransient<EditEventSummaryPage>();
+        builder.Services.AddTransient<EditLitterReportPage>();
         builder.Services.AddTransient<EditPickupLocationPage>();
         builder.Services.AddTransient<LogoutPage>();
         builder.Services.AddTransient<MainPage>();
@@ -89,6 +90,7 @@ public static class MauiProgram
         builder.Services.AddTransient<EditEventViewModel>();
         builder.Services.AddTransient<EditEventPartnerLocationServicesViewModel>();
         builder.Services.AddTransient<EditEventSummaryViewModel>();
+        builder.Services.AddTransient<EditLitterReportViewModel>();
         builder.Services.AddTransient<EditPickupLocationViewModel>();
         builder.Services.AddTransient<EventSummaryViewModel>();
         builder.Services.AddTransient<LogoutViewModel>();
