@@ -52,6 +52,15 @@ public partial class ViewLitterReportViewModel : BaseViewModel
 
         if (LitterReport.CreatedByUserId == App.CurrentUser.Id && (LitterReport.LitterReportStatusId == NewLitterReportStatus || LitterReport.LitterReportStatusId == AssignedLitterReportStatus))
         {
+            CanEditLitterReport = true;
+        }
+        else
+        {
+            CanEditLitterReport = false;
+        }
+
+        if (LitterReport.CreatedByUserId == App.CurrentUser.Id && (LitterReport.LitterReportStatusId == NewLitterReportStatus || LitterReport.LitterReportStatusId == AssignedLitterReportStatus))
+        {
             CanMarkLitterReportCleaned = true;
         }
         else
@@ -77,7 +86,16 @@ public partial class ViewLitterReportViewModel : BaseViewModel
     private bool canDeleteLitterReport;
 
     [ObservableProperty]
+    private bool canEditLitterReport;
+
+    [ObservableProperty]
     private bool canMarkLitterReportCleaned;
+
+    [RelayCommand]
+    private async Task EditLitterReport()
+    {
+        await Shell.Current.GoToAsync($"{nameof(EditLitterReportPage)}?LitterReportId={litterReportViewModel.Id}");
+    }
 
     [RelayCommand]
     private async Task DeleteLitterReport()
