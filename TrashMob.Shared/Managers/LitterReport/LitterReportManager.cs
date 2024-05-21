@@ -219,5 +219,33 @@ namespace TrashMob.Shared.Managers.LitterReport
         {
             return await Repository.Get(lr => lr.Id == id).Include(lr => lr.LitterImages).FirstOrDefaultAsync(cancellationToken);
         }
+
+        public async Task<IEnumerable<Location>> GeLitterLocationsByTimeRangeAsync(DateTimeOffset? startTime, DateTimeOffset? endTime, CancellationToken cancellationToken=default)
+        {
+            var locations = await Repository.Get()
+                            .Where(lr => lr.LitterImages.Any(li => li.Country != null && li.Region != null && li.City != null) &&
+                                            (startTime == null || lr.CreatedDate >= startTime) &&
+                                            (endTime == null || lr.CreatedDate <= endTime))
+                            .SelectMany(lr => lr.LitterImages)
+                            .Where(li => li.Country != null && li.Region != null && li.City != null)
+                            .GroupBy(li => new { li.Country, li.Region, li.City })
+                            .Select(group => new Location { Country = group.Key.Country, Region = group.Key.Region, City = group.Key.City })
+                            .ToListAsync(cancellationToken)
+                            .ConfigureAwait(false);
+
+            return locations;
+        }
+
+        public async Task<IEnumerable<LitterReport>> GetFilteredLitterReportsAsync(LitterReportFilter filter, CancellationToken cancellationToken = default)
+        {
+            return await Repo.Get(lr => (filter.StartDate == null || lr.CreatedDate >= filter.StartDate) &&
+                                        (filter.EndDate == null || lr.CreatedDate <= filter.EndDate) &&
+                                        (filter.CreatedByUserId == null || lr.CreatedByUserId == filter.CreatedByUserId) &&
+                                        (filter.LitterReportStatusId == null || lr.LitterReportStatusId == filter.LitterReportStatusId) &&
+                                        (filter.Country == null || lr.LitterImages.Any(li => li.Country == filter.Country)) &&
+                                        (filter.Region == null || lr.LitterImages.Any(li => li.Region == filter.Region)) &&
+                                        (filter.City == null || lr.LitterImages.Any(li => li.City == filter.City)))
+                                .ToListAsync(cancellationToken).ConfigureAwait(false);
+        }
     }
 }

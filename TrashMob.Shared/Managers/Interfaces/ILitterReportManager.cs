@@ -5,6 +5,7 @@ namespace TrashMob.Shared.Managers.Interfaces
     using System.Threading.Tasks;
     using System.Threading;
     using TrashMob.Models;
+    using TrashMob.Shared.Poco;
 
     public interface ILitterReportManager : IKeyedManager<LitterReport>
     {
@@ -19,6 +20,10 @@ namespace TrashMob.Shared.Managers.Interfaces
         Task<IEnumerable<LitterReport>> GetCancelledLitterReportsAsync(CancellationToken cancellationToken = default);
 
         Task<IEnumerable<LitterReport>> GetUserLitterReportsAsync(Guid userId, CancellationToken cancellationToken = default);
+
+        public Task<IEnumerable<LitterReport>> GetFilteredLitterReportsAsync(LitterReportFilter filter, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<Location>> GeLitterLocationsByTimeRangeAsync(DateTimeOffset? startTime, DateTimeOffset? endTime, CancellationToken cancellationToken=default);
 
         Task<int> DeleteAsync(Guid id, Guid userId, CancellationToken cancellationToken = default);
     }
