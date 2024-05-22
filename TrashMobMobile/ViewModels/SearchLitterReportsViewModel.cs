@@ -270,7 +270,7 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
         LitterReports.Clear();
         LitterImages.Clear();
 
-        foreach (var litterReport in RawLitterReports)
+        foreach (var litterReport in RawLitterReports.OrderByDescending(l => l.CreatedDate))
         {
             var vm = litterReport.ToLitterReportViewModel();
 
