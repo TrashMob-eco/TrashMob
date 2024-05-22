@@ -1,7 +1,7 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Models;
@@ -12,14 +12,11 @@ public partial class CancelEventViewModel : BaseViewModel
 
     public CancelEventViewModel(IMobEventManager mobEventManager)
     {
-        CancelEventCommand = new Command(async () => await CancelEvent());
         this.mobEventManager = mobEventManager;
     }
 
     [ObservableProperty]
     EventViewModel eventViewModel;
-
-    public ICommand CancelEventCommand { get; set; }
 
     public async Task Init(Guid eventId)
     {
@@ -32,6 +29,7 @@ public partial class CancelEventViewModel : BaseViewModel
         IsBusy = false;
     }
 
+    [RelayCommand]
     private async Task CancelEvent()
     {
         IsBusy = true;

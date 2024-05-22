@@ -1,8 +1,8 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -16,12 +16,9 @@ public partial class SearchEventsViewModel : BaseViewModel
     private readonly IMobEventManager mobEventManager;
     private EventViewModel selectedEvent;
 
-    public ICommand ClearSelectionsCommand { get; set; }
-
     public SearchEventsViewModel(IMobEventManager mobEventManager)
     {
         this.mobEventManager = mobEventManager;
-        ClearSelectionsCommand = new Command(async () => await ClearSelections());
     }
 
     [ObservableProperty]
@@ -228,6 +225,7 @@ public partial class SearchEventsViewModel : BaseViewModel
         }
     }
 
+    [RelayCommand]
     private async Task ClearSelections()
     {
         IsBusy = true;

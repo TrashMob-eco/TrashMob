@@ -1,7 +1,7 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMobMobile.Extensions;
 
@@ -9,7 +9,6 @@ public partial class EventViewModel : ObservableObject
 {
     public EventViewModel()
     {
-        CancelEventCommand = new Command(async () => await CancelEvent());
     }
 
     [ObservableProperty]
@@ -69,8 +68,6 @@ public partial class EventViewModel : ObservableObject
 
     [ObservableProperty]
     bool canCancelEvent;
-
-    public ICommand CancelEventCommand { get; set; }
 
     public string GetUserRole(Event mobEvent)
     {
@@ -186,6 +183,7 @@ public partial class EventViewModel : ObservableObject
         };
     }
 
+    [RelayCommand]
     private async Task CancelEvent()
     {
         await Shell.Current.GoToAsync($"{nameof(CancelEventPage)}?EventId={Id}");

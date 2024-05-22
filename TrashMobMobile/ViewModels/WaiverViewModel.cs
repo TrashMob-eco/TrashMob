@@ -1,7 +1,7 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Config;
 using TrashMobMobile.Data;
 using TrashMobMobile.Models;
@@ -10,7 +10,6 @@ public partial class WaiverViewModel : BaseViewModel
 {
     public WaiverViewModel(IWaiverManager waiverManager)
     {
-        SignWaiverCommand = new Command(async () => await SignWaiver());
         this.waiverManager = waiverManager;
     }
 
@@ -18,8 +17,7 @@ public partial class WaiverViewModel : BaseViewModel
     string name;
     private readonly IWaiverManager waiverManager;
 
-    public ICommand SignWaiverCommand { get; set; } 
-
+    [RelayCommand]
     private async Task SignWaiver()
     {
         IsBusy = true;

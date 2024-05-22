@@ -1,7 +1,7 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 
@@ -11,7 +11,6 @@ public partial class ContactUsViewModel : BaseViewModel
 
     public ContactUsViewModel(IContactRequestManager contactRequestManager)
     {
-        SubmitMessageCommand = new Command(async () => await SubmitMessage());
         this.contactRequestManager = contactRequestManager;
     }
 
@@ -27,8 +26,7 @@ public partial class ContactUsViewModel : BaseViewModel
     [ObservableProperty]
     string confirmation;
 
-    public ICommand SubmitMessageCommand { get; set; }
-
+    [RelayCommand]
     private async Task SubmitMessage()
     {
         IsBusy = true;

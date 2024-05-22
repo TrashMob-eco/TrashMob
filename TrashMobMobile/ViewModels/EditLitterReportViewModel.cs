@@ -1,8 +1,8 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -87,12 +87,9 @@ public partial class EditLitterReportViewModel : BaseViewModel
 
     public EditLitterReportViewModel(ILitterReportManager litterReportManager, IMapRestService mapRestService)
     {
-        SaveLitterReportCommand = new Command(async () => await SaveLitterReport());
         this.litterReportManager = litterReportManager;
         this.mapRestService = mapRestService;
     }
-
-    public ICommand SaveLitterReportCommand { get; set; }
 
     public string LocalFilePath { get; set; } = string.Empty;
 
@@ -160,6 +157,7 @@ public partial class EditLitterReportViewModel : BaseViewModel
         return null;
     }
 
+    [RelayCommand]
     private async Task SaveLitterReport()
     {
         IsBusy = true;

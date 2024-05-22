@@ -1,8 +1,8 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
@@ -24,7 +24,6 @@ public partial class UserLocationPreferenceViewModel : BaseViewModel
 
     public UserLocationPreferenceViewModel(IUserManager userManager, IMapRestService mapRestService)
     {
-        UpdateLocationCommand = new Command(async () => await UpdateLocation());
         this.userManager = userManager;
         this.mapRestService = mapRestService;
         address = new AddressViewModel();
@@ -42,8 +41,6 @@ public partial class UserLocationPreferenceViewModel : BaseViewModel
 
         IsBusy = false;
     }
-
-    public ICommand UpdateLocationCommand { get; set; }
 
     public async Task ChangeLocation(Location location)
     {
@@ -66,6 +63,7 @@ public partial class UserLocationPreferenceViewModel : BaseViewModel
         IsBusy = false;
     }
 
+    [RelayCommand]
     private async Task UpdateLocation()
     {
         IsBusy = true;

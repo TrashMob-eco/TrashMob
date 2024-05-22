@@ -1,8 +1,8 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -14,8 +14,6 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
 
     public ViewEventSummaryViewModel(IMobEventManager mobEventManager, IPickupLocationManager pickupLocationManager)
     {
-        EditEventSummaryCommand = new Command(async () => await EditEventSummary());
-        AddPickupLocationCommand = new Command(async () => await AddPickupLocation());
         this.mobEventManager = mobEventManager;
         this.pickupLocationManager = pickupLocationManager;
     }
@@ -35,9 +33,6 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
 
     [ObservableProperty]
     bool enableAddPickupLocation;
-
-    public ICommand EditEventSummaryCommand { get; set; }
-    public ICommand AddPickupLocationCommand { get; set; }
 
     public PickupLocationViewModel SelectedPickupLocation
     {
@@ -120,11 +115,13 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
         IsBusy = false;
     }
 
+    [RelayCommand]
     private async Task AddPickupLocation()
     {
         await Shell.Current.GoToAsync($"{nameof(CreatePickupLocationPage)}?EventId={EventSummaryViewModel.EventId}");
     }
 
+    [RelayCommand]
     private async Task EditEventSummary()
     {
         await Shell.Current.GoToAsync($"{nameof(EditEventSummaryPage)}?EventId={EventSummaryViewModel.EventId}");
