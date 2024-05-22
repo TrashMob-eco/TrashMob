@@ -1,7 +1,7 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 
@@ -9,8 +9,6 @@ public partial class EventPartnerLocationServiceViewModel : BaseViewModel
 {
     public EventPartnerLocationServiceViewModel(IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService)
     {
-        RequestServiceCommand = new Command(async () => await RequestService());
-        UnrequestServiceCommand = new Command(async () => await UnrequestService());
         this.eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
         CanRequestService = true;
         CanUnrequestService = false;
@@ -64,10 +62,7 @@ public partial class EventPartnerLocationServiceViewModel : BaseViewModel
     bool canUnrequestService;
     private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService;
 
-    public ICommand RequestServiceCommand { get; set; }
-
-    public ICommand UnrequestServiceCommand { get; set; }
-
+    [RelayCommand]
     private async Task RequestService()
     {
         IsBusy = true;
@@ -88,6 +83,7 @@ public partial class EventPartnerLocationServiceViewModel : BaseViewModel
         IsBusy = true;
     }
 
+    [RelayCommand]
     private async Task UnrequestService()
     {
         IsBusy = true;

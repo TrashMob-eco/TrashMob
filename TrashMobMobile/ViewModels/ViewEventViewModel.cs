@@ -4,8 +4,8 @@ namespace TrashMobMobile.ViewModels;
 #nullable enable
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -23,10 +23,6 @@ public partial class ViewEventViewModel : BaseViewModel
                               IWaiverManager waiverManager,
                               IEventAttendeeRestService eventAttendeeRestService)
     {
-        RegisterCommand = new Command(async () => await Register());
-        UnregisterCommand = new Command(async () => await Unregister());
-        EditEventCommand = new Command(async () => await EditEvent());
-        ViewEventSummaryCommand = new Command(async () => await ViewEventSummary());
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
         this.waiverManager = waiverManager;
@@ -61,14 +57,6 @@ public partial class ViewEventViewModel : BaseViewModel
     string spotsLeft;
 
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
-
-    public ICommand RegisterCommand { get; set; }
-
-    public ICommand UnregisterCommand { get; set; }
-
-    public ICommand EditEventCommand { get; set; }
-
-    public ICommand ViewEventSummaryCommand { get; set; }
 
     public async Task Init(Guid eventId)
     {
@@ -126,16 +114,19 @@ public partial class ViewEventViewModel : BaseViewModel
         }
     }
 
+    [RelayCommand]
     private async Task EditEvent()
     {
-        await Shell.Current.GoToAsync($"{nameof(EditEventPage)}?EventId={eventViewModel.Id}");
+        await Shell.Current.GoToAsync($"{nameof(EditEventPage)}?EventId={EventViewModel.Id}");
     }
 
+    [RelayCommand]
     private async Task ViewEventSummary()
     {
-        await Shell.Current.GoToAsync($"{nameof(ViewEventSummaryPage)}?EventId={eventViewModel.Id}");
+        await Shell.Current.GoToAsync($"{nameof(ViewEventSummaryPage)}?EventId={EventViewModel.Id}");
     }
 
+    [RelayCommand]
     private async Task Register()
     {
         IsBusy = true;
@@ -161,6 +152,7 @@ public partial class ViewEventViewModel : BaseViewModel
         await Notify("You have been registered for this event.");
     }
 
+    [RelayCommand]
     private async Task Unregister()
     {
         IsBusy = true;

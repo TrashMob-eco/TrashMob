@@ -44,28 +44,50 @@ namespace TrashMob.Shared.Managers.LitterReport
                     return null;
                 }
 
-                await dbTransaction.BeginTransactionAsync();
-
                 logger.LogInformation("Updating litter report");
 
-                foreach (var litterImage in litterReport.LitterImages)
-                {
-                    litterImage.LitterReportId = litterReport.Id;
-                    litterImage.LastUpdatedByUserId = userId;
-                    litterImage.LastUpdatedDate = DateTime.UtcNow;
-                }
+                var existingInstance = Repo.Get().Where(l => l.Id == litterReport.Id)
+                                        .Include(l => l.LitterImages)
+                                        .FirstOrDefault();
 
-                // Add litter report
-                var updatedLitterReport = await base.UpdateAsync(litterReport, userId, cancellationToken);
-
-                if (updatedLitterReport == null)
+                if (existingInstance == null)
                 {
                     return null;
                 }
 
-                await dbTransaction.CommitTransactionAsync();
-                
-                return updatedLitterReport;
+                existingInstance.Name = litterReport.Name;
+                existingInstance.Description = litterReport.Description;
+                existingInstance.LitterReportStatusId = litterReport.LitterReportStatusId;
+
+                foreach (var litterImage in litterReport.LitterImages)
+                {
+                    if (litterImage.CreatedByUserId == Guid.Empty)
+                    {
+                        litterImage.LitterReportId = litterReport.Id;
+                        litterImage.CreatedByUserId = userId;
+                        litterImage.CreatedDate = DateTime.UtcNow;
+                        existingInstance.LitterImages.Add(litterImage);
+                    }
+                }
+
+                var deletedIds = new List<Guid>();
+                foreach (var litterImage in existingInstance.LitterImages)
+                {
+                    if (!litterReport.LitterImages.Select(x => x.Id).Contains(litterImage.Id))
+                    {
+                        deletedIds.Add(litterImage.Id);
+                    }
+                }
+
+                foreach (var deletedId in deletedIds)
+                {
+                    await litterImageManager.DeleteAsync(deletedId, userId, cancellationToken);
+                    existingInstance.LitterImages.Remove(existingInstance.LitterImages.First(x => x.Id == deletedId));
+                }
+
+                var resultLitterReport = await base.UpdateAsync(existingInstance, userId, cancellationToken);
+
+                return resultLitterReport;
             }
             catch (Exception ex)
             {

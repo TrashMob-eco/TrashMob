@@ -94,7 +94,7 @@ public partial class ViewLitterReportViewModel : BaseViewModel
     [RelayCommand]
     private async Task EditLitterReport()
     {
-        await Shell.Current.GoToAsync($"{nameof(EditLitterReportPage)}?LitterReportId={litterReportViewModel.Id}");
+        await Shell.Current.GoToAsync($"{nameof(EditLitterReportPage)}?LitterReportId={LitterReportViewModel.Id}");
     }
 
     [RelayCommand]

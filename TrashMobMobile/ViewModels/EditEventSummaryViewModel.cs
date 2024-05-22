@@ -1,7 +1,7 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 
@@ -11,13 +11,11 @@ public partial class EditEventSummaryViewModel : BaseViewModel
 
     public EditEventSummaryViewModel(IMobEventManager mobEventManager)
     {
-        SaveEventSummaryCommand = new Command(async () => await SaveEventSummary());
         this.mobEventManager = mobEventManager;
     }
 
     [ObservableProperty]
     EventSummaryViewModel eventSummaryViewModel;
-    public ICommand SaveEventSummaryCommand { get; set; }
 
     private EventSummary EventSummary { get; set; }
 
@@ -47,6 +45,7 @@ public partial class EditEventSummaryViewModel : BaseViewModel
         IsBusy = false;
     }
 
+    [RelayCommand]
     private async Task SaveEventSummary()
     {
         IsBusy = true;

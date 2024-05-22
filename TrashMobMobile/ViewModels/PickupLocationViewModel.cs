@@ -1,7 +1,7 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -10,14 +10,9 @@ public partial class PickupLocationViewModel : BaseViewModel
 {
     public PickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMobEventManager mobEventManager)
     {
-        DeletePickupLocationCommand = new Command(async () => await DeletePickupLocation());
-        EditPickupLocationCommand = new Command(async () => await EditPickupLocation());
         this.pickupLocationManager = pickupLocationManager;
         this.mobEventManager = mobEventManager;
     }
-
-    public ICommand DeletePickupLocationCommand { get; set; }
-    public ICommand EditPickupLocationCommand { get; set; }
 
     public PickupLocation PickupLocation { get; set; }
 
@@ -58,6 +53,7 @@ public partial class PickupLocationViewModel : BaseViewModel
     private readonly IPickupLocationManager pickupLocationManager;
     private readonly IMobEventManager mobEventManager;
 
+    [RelayCommand]
     private async Task DeletePickupLocation()
     {        
         await pickupLocationManager.DeletePickupLocationAsync(PickupLocation);
@@ -67,6 +63,7 @@ public partial class PickupLocationViewModel : BaseViewModel
         await Navigation.PopAsync();
     }
 
+    [RelayCommand]
     private async Task EditPickupLocation()
     {
         await Shell.Current.GoToAsync($"{nameof(EditPickupLocationPage)}?EventId={mobEvent.Id}&PickupLocationId={PickupLocation.Id}");

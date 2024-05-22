@@ -1,9 +1,8 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -30,8 +29,6 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
     public ObservableCollection<string> CountryCollection { get; set; } = [];
     public ObservableCollection<string> RegionCollection { get; set; } = [];
     public ObservableCollection<string> CityCollection { get; set; } = [];
-
-    public ICommand ClearSelectionsCommand { get; set; }
 
     public string? SelectedCountry
     {
@@ -81,7 +78,6 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
     public SearchLitterReportsViewModel(ILitterReportManager litterReportManager)
     {
         this.litterReportManager = litterReportManager;
-        ClearSelectionsCommand = new Command(async () => await ClearSelections());
     }
 
     public ObservableCollection<LitterReportViewModel> LitterReports { get; set; } = [];
@@ -288,6 +284,7 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
         }
     }
 
+    [RelayCommand]
     private async Task ClearSelections()
     {
         IsBusy = true;

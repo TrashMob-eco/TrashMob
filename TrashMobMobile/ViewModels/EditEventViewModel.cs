@@ -1,8 +1,8 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -17,9 +17,6 @@ public partial class EditEventViewModel :  BaseViewModel
                                 IEventTypeRestService eventTypeRestService,
                                 IMapRestService mapRestService)
     {
-        SaveEventCommand = new Command(async () => await SaveEvent());
-        ManageEventPartnersCommand = new Command(async () => await ManageEventPartners());
-
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
         this.mapRestService = mapRestService;
@@ -66,10 +63,7 @@ public partial class EditEventViewModel :  BaseViewModel
     [ObservableProperty]
     string selectedEventType;
 
-    public ICommand SaveEventCommand { get; set; }
-
-    public ICommand ManageEventPartnersCommand { get; set; }
-
+    [RelayCommand]
     private async Task SaveEvent()
     {
         IsBusy = true;
@@ -138,9 +132,10 @@ public partial class EditEventViewModel :  BaseViewModel
         IsBusy = false;
     }
 
+    [RelayCommand]
     private async Task ManageEventPartners()
     {
-        await Shell.Current.GoToAsync($"{nameof(ManageEventPartnersPage)}?EventId={eventViewModel.Id}");
+        await Shell.Current.GoToAsync($"{nameof(ManageEventPartnersPage)}?EventId={EventViewModel.Id}");
     }
 
     private async Task<bool> Validate()

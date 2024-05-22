@@ -1,8 +1,8 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -16,7 +16,6 @@ public partial class CreatePickupLocationViewModel : BaseViewModel
     EventViewModel eventViewModel;
 
     public CreatePickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMapRestService mapRestService, IMobEventManager mobEventManager)    {
-        SavePickupLocationCommand = new Command(async () => await SavePickupLocation());
         this.pickupLocationManager = pickupLocationManager;
         this.mapRestService = mapRestService;
         this.mobEventManager = mobEventManager;
@@ -46,8 +45,6 @@ public partial class CreatePickupLocationViewModel : BaseViewModel
 
     // This is only for the map point
     public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = new ObservableCollection<PickupLocationViewModel>();
-
-    public ICommand SavePickupLocationCommand { get; set; }
 
     private readonly IPickupLocationManager pickupLocationManager;
     private readonly IMapRestService mapRestService;
@@ -111,6 +108,7 @@ public partial class CreatePickupLocationViewModel : BaseViewModel
         return null;
     }
 
+    [RelayCommand]
     private async Task SavePickupLocation()
     {
         IsBusy = true;
