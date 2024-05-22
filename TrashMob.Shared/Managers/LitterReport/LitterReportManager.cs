@@ -15,7 +15,7 @@ namespace TrashMob.Shared.Managers.LitterReport
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Poco;
     using TrashMob.Shared.Extensions;
-
+    
     public class LitterReportManager : KeyedManager<LitterReport>, ILitterReportManager
     {
         private readonly ILitterImageManager litterImageManager;
@@ -33,6 +33,46 @@ namespace TrashMob.Shared.Managers.LitterReport
             this.logger = logger;
             this.dbTransaction = dbTransaction;
             this.emailManager = emailManager;
+        }
+
+        public override async Task<LitterReport> UpdateAsync(LitterReport litterReport, Guid userId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (litterReport.LitterImages == null || litterReport.LitterImages.Count == 0)
+                {
+                    return null;
+                }
+
+                await dbTransaction.BeginTransactionAsync();
+
+                logger.LogInformation("Updating litter report");
+
+                foreach (var litterImage in litterReport.LitterImages)
+                {
+                    litterImage.LitterReportId = litterReport.Id;
+                    litterImage.LastUpdatedByUserId = userId;
+                    litterImage.LastUpdatedDate = DateTime.UtcNow;
+                }
+
+                // Add litter report
+                var updatedLitterReport = await base.UpdateAsync(litterReport, userId, cancellationToken);
+
+                if (updatedLitterReport == null)
+                {
+                    return null;
+                }
+
+                await dbTransaction.CommitTransactionAsync();
+                
+                return updatedLitterReport;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error adding litter report");
+                await dbTransaction.RollbackTransactionAsync();
+                return null;
+            }
         }
 
         public override async Task<LitterReport> AddAsync(LitterReport litterReport, Guid userId, CancellationToken cancellationToken)

@@ -19,7 +19,7 @@
                         HorizontalTextAlignment="Center"
                         FontAttributes="Bold" />
                         <Frame Style="{x:DynamicResource Frame}">
-                            <Entry Text="{Binding LitterReportViewModel.Name}"/>
+                            <Entry Text="{Binding Name}"/>
                         </Frame>
                     </VerticalStackLayout>
 
@@ -32,7 +32,7 @@
                         HorizontalTextAlignment="Center"
                         FontAttributes="Bold" />
                         <Frame Style="{x:DynamicResource Frame}">
-                            <Editor Text="{Binding LitterReportViewModel.Description}" />
+                            <Editor Text="{Binding Description}" />
                         </Frame>
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="2" Margin="10">

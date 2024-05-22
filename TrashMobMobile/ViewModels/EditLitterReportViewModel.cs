@@ -14,11 +14,9 @@ public partial class EditLitterReportViewModel : BaseViewModel
     private const int NewLitterReportStatus = 1;
     public const int MaxImages = 5;
 
+    private LitterReport litterReport;
     private string name = string.Empty;
     private string description = string.Empty;
-
-    [ObservableProperty]
-    LitterReportViewModel litterReportViewModel;
 
     [ObservableProperty]
     bool hasNoImages = true;
@@ -58,13 +56,14 @@ public partial class EditLitterReportViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        var litterReport = await litterReportManager.GetLitterReportAsync(litterReportId, ImageSizeEnum.Thumb);
+        litterReport = await litterReportManager.GetLitterReportAsync(litterReportId, ImageSizeEnum.Thumb);
 
         if (litterReport != null)
         {
-            LitterReportViewModel = litterReport.ToLitterReportViewModel();
+            Name = litterReport.Name;
+            Description = litterReport.Description;
 
-            LitterReportStatus = LitterReportExtensions.GetLitterStatusFromId(LitterReportViewModel?.LitterReportStatusId);
+            LitterReportStatus = LitterReportExtensions.GetLitterStatusFromId(litterReport.LitterReportStatusId);
             Name = litterReport.Name;
             Description = litterReport.Description;
 
@@ -91,10 +90,6 @@ public partial class EditLitterReportViewModel : BaseViewModel
         SaveLitterReportCommand = new Command(async () => await SaveLitterReport());
         this.litterReportManager = litterReportManager;
         this.mapRestService = mapRestService;
-        LitterReportViewModel = new LitterReportViewModel
-        {
-            LitterReportStatusId = NewLitterReportStatus
-        };
     }
 
     public ICommand SaveLitterReportCommand { get; set; }
@@ -175,7 +170,6 @@ public partial class EditLitterReportViewModel : BaseViewModel
             return;
         }
 
-        var litterReport = LitterReportViewModel.ToLitterReport();
         litterReport.Name = Name;
         litterReport.Description = Description;
 
