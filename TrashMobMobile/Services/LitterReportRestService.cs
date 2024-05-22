@@ -53,6 +53,17 @@
                 using (var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken))
                 {
                     response.EnsureSuccessStatusCode();
+                    var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                    var result = JsonConvert.DeserializeObject<LitterReport>(responseContent);
+
+                    if (result != null)
+                    {
+                        // Only add images that have not been uploaded yet
+                        foreach (var litterImage in litterReport.LitterImages.Where(l => l.LastUpdatedByUserId == Guid.Empty))
+                        {
+                            await AddLitterImageAsync(litterImage.Id, litterImage.AzureBlobURL, cancellationToken);
+                        }
+                    }
                 }
 
                 return await GetLitterReportAsync(litterReport.Id, cancellationToken);
