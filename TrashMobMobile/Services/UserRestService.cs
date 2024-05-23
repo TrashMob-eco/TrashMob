@@ -1,21 +1,14 @@
 ﻿namespace TrashMobMobile.Data;
 
-using Newtonsoft.Json;
-using System;
 using System.Diagnostics;
-using System.Net.Http;
 using System.Net.Http.Json;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 using TrashMob.Models;
 using TrashMobMobile.Authentication;
 
 public class UserRestService : RestServiceBase, IUserRestService
 {
     protected override string Controller => "users";
-
-    public UserRestService()
-    {
-    }
 
     public async Task<User> GetUserAsync(string userId, CancellationToken cancellationToken = default)
     {
@@ -26,7 +19,7 @@ public class UserRestService : RestServiceBase, IUserRestService
             using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
-                string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+                var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
                 return JsonConvert.DeserializeObject<User>(responseString);
             }
@@ -38,7 +31,8 @@ public class UserRestService : RestServiceBase, IUserRestService
         }
     }
 
-    public async Task<User> GetUserByEmailAsync(string email, UserContext userContext, CancellationToken cancellationToken = default)
+    public async Task<User> GetUserByEmailAsync(string email, UserContext userContext,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -55,7 +49,7 @@ public class UserRestService : RestServiceBase, IUserRestService
             using (var response = await localHttpClient.GetAsync(requestUri, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
-                string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+                var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
                 return JsonConvert.DeserializeObject<User>(responseString);
             }
@@ -76,7 +70,7 @@ public class UserRestService : RestServiceBase, IUserRestService
             using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
-                string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+                var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
                 return JsonConvert.DeserializeObject<User>(responseString);
             }
@@ -97,7 +91,7 @@ public class UserRestService : RestServiceBase, IUserRestService
             using (var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
-                string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+                var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
                 return JsonConvert.DeserializeObject<User>(responseString);
             }

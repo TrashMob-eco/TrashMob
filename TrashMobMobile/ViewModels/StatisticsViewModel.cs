@@ -4,25 +4,21 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 public partial class StatisticsViewModel : ObservableObject
 {
-    public StatisticsViewModel()
-    {
-    }
+    [ObservableProperty]
+    private int totalAttendees;
 
     [ObservableProperty]
-    private int totalEvents = 0;
+    private int totalBags;
 
     [ObservableProperty]
-    private int totalBags = 0;
+    private int totalEvents;
 
     [ObservableProperty]
-    private int totalAttendees = 0;
+    private int totalHours;
 
     [ObservableProperty]
-    private int totalHours = 0;
+    private int totalLitterReportClosed;
 
     [ObservableProperty]
-    private int totalLitterReportSubmitted = 0;
-
-    [ObservableProperty]
-    private int totalLitterReportClosed = 0;
+    private int totalLitterReportSubmitted;
 }

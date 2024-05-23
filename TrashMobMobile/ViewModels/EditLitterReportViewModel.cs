@@ -1,34 +1,45 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
 public partial class EditLitterReportViewModel : BaseViewModel
 {
-    private readonly IMapRestService mapRestService;
-    private readonly ILitterReportManager litterReportManager;
     private const int NewLitterReportStatus = 1;
     public const int MaxImages = 5;
+    private readonly ILitterReportManager litterReportManager;
+    private readonly IMapRestService mapRestService;
 
-    private LitterReport litterReport;
-    private string name = string.Empty;
+    [ObservableProperty]
+    private bool canAddImages;
+
     private string description = string.Empty;
 
     [ObservableProperty]
-    bool hasNoImages = true;
+    private bool hasMaxImages;
 
     [ObservableProperty]
-    bool hasMaxImages = false;
+    private bool hasNoImages = true;
+
+    private LitterReport litterReport;
 
     [ObservableProperty]
-    bool canAddImages = false;
+    private string litterReportStatus;
+
+    private string name = string.Empty;
 
     [ObservableProperty]
-    bool reportIsValid = false;
+    private bool reportIsValid;
+
+    public EditLitterReportViewModel(ILitterReportManager litterReportManager, IMapRestService mapRestService)
+    {
+        this.litterReportManager = litterReportManager;
+        this.mapRestService = mapRestService;
+    }
 
     public string Name
     {
@@ -36,7 +47,7 @@ public partial class EditLitterReportViewModel : BaseViewModel
         set
         {
             name = value;
-            OnPropertyChanged(nameof(Name));
+            OnPropertyChanged();
             ValidateReport();
         }
     }
@@ -47,10 +58,16 @@ public partial class EditLitterReportViewModel : BaseViewModel
         set
         {
             description = value;
-            OnPropertyChanged(nameof(Description));
+            OnPropertyChanged();
             ValidateReport();
         }
     }
+
+    public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; init; } = [];
+
+    public LitterImageViewModel? SelectedLitterImageViewModel { get; set; }
+
+    public string LocalFilePath { get; set; } = string.Empty;
 
     public async Task Init(Guid litterReportId)
     {
@@ -77,25 +94,10 @@ public partial class EditLitterReportViewModel : BaseViewModel
 
         IsBusy = false;
     }
-    
-    [ObservableProperty]
-    string litterReportStatus;
-
-    public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; init; } = [];
-    
-    public LitterImageViewModel? SelectedLitterImageViewModel { get; set; }
-
-    public EditLitterReportViewModel(ILitterReportManager litterReportManager, IMapRestService mapRestService)
-    {
-        this.litterReportManager = litterReportManager;
-        this.mapRestService = mapRestService;
-    }
-
-    public string LocalFilePath { get; set; } = string.Empty;
 
     public async Task AddImageToCollection()
     {
-        Location? location = await GetCurrentLocation();
+        var location = await GetCurrentLocation();
 
         if (location != null)
         {
@@ -113,9 +115,11 @@ public partial class EditLitterReportViewModel : BaseViewModel
             SelectedLitterImageViewModel.Address.PostalCode = address.PostalCode;
             SelectedLitterImageViewModel.Address.Region = address.Region;
             SelectedLitterImageViewModel.Address.StreetAddress = address.StreetAddress;
-            SelectedLitterImageViewModel.Address.Location = new Location(SelectedLitterImageViewModel.Address.Latitude.Value, SelectedLitterImageViewModel.Address.Longitude.Value);
+            SelectedLitterImageViewModel.Address.Location = new Location(
+                SelectedLitterImageViewModel.Address.Latitude.Value,
+                SelectedLitterImageViewModel.Address.Longitude.Value);
             SelectedLitterImageViewModel.FilePath = LocalFilePath;
-            
+
             LitterImageViewModels.Add(SelectedLitterImageViewModel);
             SelectedLitterImageViewModel = null;
 
@@ -131,7 +135,7 @@ public partial class EditLitterReportViewModel : BaseViewModel
     {
         try
         {
-            GeolocationRequest request = new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(10));
+            var request = new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(10));
 
             var cancelTokenSource = new CancellationTokenSource();
 
@@ -161,7 +165,7 @@ public partial class EditLitterReportViewModel : BaseViewModel
     private async Task SaveLitterReport()
     {
         IsBusy = true;
-        
+
         if (!ReportIsValid)
         {
             IsBusy = false;

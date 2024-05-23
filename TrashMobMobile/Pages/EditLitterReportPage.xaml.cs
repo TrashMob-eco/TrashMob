@@ -8,16 +8,17 @@ using Microsoft.Maui.Maps;
 public partial class EditLitterReportPage : ContentPage
 {
     private readonly EditLitterReportViewModel _viewModel;
-    public string LitterReportId { get; set; }
 
     public EditLitterReportPage(EditLitterReportViewModel viewModel)
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         _viewModel = viewModel;
         _viewModel.Navigation = Navigation;
         _viewModel.Notify = Notify;
         BindingContext = _viewModel;
     }
+
+    public string LitterReportId { get; set; }
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
@@ -26,16 +27,17 @@ public partial class EditLitterReportPage : ContentPage
 
         if (_viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location != null)
         {
-            var mapSpan = new MapSpan(_viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location, 0.05, 0.05);
+            var mapSpan = new MapSpan(_viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location, 0.05,
+                0.05);
             litterReportLocationMap.MoveToRegion(mapSpan);
         }
     }
 
     private async Task Notify(string message)
     {
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        var cancellationTokenSource = new CancellationTokenSource();
 
-        ToastDuration duration = ToastDuration.Short;
+        var duration = ToastDuration.Short;
         double fontSize = 14;
 
         var toast = Toast.Make(message, duration, fontSize);
@@ -46,15 +48,15 @@ public partial class EditLitterReportPage : ContentPage
     {
         if (MediaPicker.Default.IsCaptureSupported)
         {
-            FileResult? photo = await MediaPicker.Default.CapturePhotoAsync();
+            var photo = await MediaPicker.Default.CapturePhotoAsync();
 
             if (photo != null)
             {
                 // save the file into local storage
                 _viewModel.LocalFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
 
-                using Stream sourceStream = await photo.OpenReadAsync();
-                using FileStream localFileStream = File.OpenWrite(_viewModel.LocalFilePath);
+                using var sourceStream = await photo.OpenReadAsync();
+                using var localFileStream = File.OpenWrite(_viewModel.LocalFilePath);
 
                 await sourceStream.CopyToAsync(localFileStream);
                 await _viewModel.AddImageToCollection();

@@ -1,8 +1,5 @@
 ﻿namespace TrashMobMobile.Authentication
 {
-    using System.Net.Http;
-    using System.Threading.Tasks;
-
     public class BaseAddressAuthorizationMessageHandler : DelegatingHandler
     {
         protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -11,7 +8,9 @@
             AddAcceptHeader(request);
             return base.Send(request, cancellationToken);
         }
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+            CancellationToken cancellationToken)
         {
             AddAuthToken(request);
             AddAcceptHeader(request);

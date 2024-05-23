@@ -8,20 +8,21 @@ using TrashMobMobile.Models;
 
 public partial class WaiverViewModel : BaseViewModel
 {
+    private readonly IWaiverManager waiverManager;
+
+    [ObservableProperty]
+    private string name;
+
     public WaiverViewModel(IWaiverManager waiverManager)
     {
         this.waiverManager = waiverManager;
     }
 
-    [ObservableProperty]
-    string name;
-    private readonly IWaiverManager waiverManager;
-
     [RelayCommand]
     private async Task SignWaiver()
     {
         IsBusy = true;
-        
+
         var envelopeRequest = new EnvelopeRequest();
         envelopeRequest.SignerEmail = App.CurrentUser.Email;
         envelopeRequest.CreatedByUserId = App.CurrentUser.Id;

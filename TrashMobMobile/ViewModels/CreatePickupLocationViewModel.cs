@@ -1,25 +1,37 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
 public partial class CreatePickupLocationViewModel : BaseViewModel
 {
-    [ObservableProperty]
-    PickupLocationViewModel pickupLocationViewModel;
+    private readonly IMapRestService mapRestService;
+    private readonly IMobEventManager mobEventManager;
+
+    private readonly IPickupLocationManager pickupLocationManager;
 
     [ObservableProperty]
-    EventViewModel eventViewModel;
+    private EventViewModel eventViewModel;
 
-    public CreatePickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMapRestService mapRestService, IMobEventManager mobEventManager)    {
+    [ObservableProperty]
+    private PickupLocationViewModel pickupLocationViewModel;
+
+    public CreatePickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMapRestService mapRestService,
+        IMobEventManager mobEventManager)
+    {
         this.pickupLocationManager = pickupLocationManager;
         this.mapRestService = mapRestService;
         this.mobEventManager = mobEventManager;
     }
+
+    // This is only for the map point
+    public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = new();
+
+    public string LocalFilePath { get; set; }
 
     public async Task Init(Guid eventId)
     {
@@ -35,7 +47,7 @@ public partial class CreatePickupLocationViewModel : BaseViewModel
             Address = new AddressViewModel(),
             Notify = Notify,
             NotifyError = NotifyError,
-            Navigation = Navigation,
+            Navigation = Navigation
         };
 
         await PickupLocationViewModel.Init(eventId);
@@ -43,18 +55,9 @@ public partial class CreatePickupLocationViewModel : BaseViewModel
         IsBusy = false;
     }
 
-    // This is only for the map point
-    public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = new ObservableCollection<PickupLocationViewModel>();
-
-    private readonly IPickupLocationManager pickupLocationManager;
-    private readonly IMapRestService mapRestService;
-    private readonly IMobEventManager mobEventManager;
-
-    public string LocalFilePath { get; set; }
-
     public async Task UpdateLocation()
     {
-        Location? location = await GetCurrentLocation();
+        var location = await GetCurrentLocation();
 
         if (location != null)
         {
@@ -67,7 +70,8 @@ public partial class CreatePickupLocationViewModel : BaseViewModel
             PickupLocationViewModel.Address.PostalCode = address.PostalCode;
             PickupLocationViewModel.Address.Region = address.Region;
             PickupLocationViewModel.Address.StreetAddress = address.StreetAddress;
-            PickupLocationViewModel.Address.Location = new Location(PickupLocationViewModel.Address.Latitude.Value, PickupLocationViewModel.Address.Longitude.Value);
+            PickupLocationViewModel.Address.Location = new Location(PickupLocationViewModel.Address.Latitude.Value,
+                PickupLocationViewModel.Address.Longitude.Value);
 
             PickupLocations.Clear();
             PickupLocations.Add(PickupLocationViewModel);
@@ -82,7 +86,7 @@ public partial class CreatePickupLocationViewModel : BaseViewModel
     {
         try
         {
-            GeolocationRequest request = new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(10));
+            var request = new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(10));
 
             var cancelTokenSource = new CancellationTokenSource();
 
@@ -127,11 +131,12 @@ public partial class CreatePickupLocationViewModel : BaseViewModel
             PostalCode = PickupLocationViewModel.Address.PostalCode,
             Region = PickupLocationViewModel.Address.Region,
             StreetAddress = PickupLocationViewModel.Address.StreetAddress,
-            County = PickupLocationViewModel.Address.County,            
+            County = PickupLocationViewModel.Address.County
         };
 
         var updatedPickupLocation = await pickupLocationManager.AddPickupLocationAsync(pickupLocation);
-        await pickupLocationManager.AddPickupLocationImageAsync(updatedPickupLocation.EventId, updatedPickupLocation.Id, LocalFilePath);
+        await pickupLocationManager.AddPickupLocationImageAsync(updatedPickupLocation.EventId, updatedPickupLocation.Id,
+            LocalFilePath);
 
         IsBusy = false;
 

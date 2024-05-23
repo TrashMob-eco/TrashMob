@@ -1,31 +1,33 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
 public partial class SearchEventsViewModel : BaseViewModel
 {
-    private IEnumerable<Event> RawEvents { get; set; } = [];
-    private string? selectedCountry;
-    private string? selectedRegion;
-    private string? selectedCity;
     private readonly IMobEventManager mobEventManager;
+
+    [ObservableProperty]
+    private string eventStatus = "Upcoming";
+
+    private string? selectedCity;
+    private string? selectedCountry;
     private EventViewModel selectedEvent;
+    private string? selectedRegion;
+
+    [ObservableProperty]
+    private AddressViewModel userLocation;
 
     public SearchEventsViewModel(IMobEventManager mobEventManager)
     {
         this.mobEventManager = mobEventManager;
     }
 
-    [ObservableProperty]
-    AddressViewModel userLocation;
-
-    [ObservableProperty]
-    private string eventStatus = "Upcoming";
+    private IEnumerable<Event> RawEvents { get; set; } = [];
 
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
 
@@ -35,14 +37,11 @@ public partial class SearchEventsViewModel : BaseViewModel
 
     public string? SelectedCountry
     {
-        get
-        {
-            return selectedCountry;
-        }
+        get => selectedCountry;
         set
         {
             selectedCountry = value;
-            OnPropertyChanged(nameof(SelectedCountry));
+            OnPropertyChanged();
 
             HandleCountrySelected(value);
         }
@@ -50,14 +49,11 @@ public partial class SearchEventsViewModel : BaseViewModel
 
     public string? SelectedRegion
     {
-        get
-        {
-            return selectedRegion;
-        }
+        get => selectedRegion;
         set
         {
             selectedRegion = value;
-            OnPropertyChanged(nameof(SelectedRegion));
+            OnPropertyChanged();
 
             HandleRegionSelected(value);
         }
@@ -65,14 +61,11 @@ public partial class SearchEventsViewModel : BaseViewModel
 
     public string? SelectedCity
     {
-        get
-        {
-            return selectedCity;
-        }
+        get => selectedCity;
         set
         {
             selectedCity = value;
-            OnPropertyChanged(nameof(SelectedCity));
+            OnPropertyChanged();
 
             HandleCitySelected(value);
         }
@@ -80,7 +73,7 @@ public partial class SearchEventsViewModel : BaseViewModel
 
     public EventViewModel SelectedEvent
     {
-        get { return selectedEvent; }
+        get => selectedEvent;
         set
         {
             if (selectedEvent != value)
@@ -127,7 +120,7 @@ public partial class SearchEventsViewModel : BaseViewModel
         }
 
         var countryList = RawEvents.Select(e => e.Country).Distinct();
-        
+
         CountryCollection.Clear();
         RegionCollection.Clear();
         CityCollection.Clear();

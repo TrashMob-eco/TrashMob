@@ -1,8 +1,8 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -10,54 +10,29 @@ using TrashMobMobile.Extensions;
 public partial class CreateLitterReportViewModel : BaseViewModel
 {
     private const string DefaultLitterReportName = "New Litter Report";
-    private readonly IMapRestService mapRestService;
-    private readonly ILitterReportManager litterReportManager;
     private const int NewLitterReportStatus = 1;
     public const int MaxImages = 5;
+    private readonly ILitterReportManager litterReportManager;
+    private readonly IMapRestService mapRestService;
 
-    private string name = DefaultLitterReportName;
+    [ObservableProperty]
+    private bool canAddImages;
+
     private string description = string.Empty;
 
     [ObservableProperty]
-    LitterReportViewModel litterReportViewModel;
+    private bool hasMaxImages;
 
     [ObservableProperty]
-    bool hasNoImages = true;
+    private bool hasNoImages = true;
 
     [ObservableProperty]
-    bool hasMaxImages = false;
+    private LitterReportViewModel litterReportViewModel;
+
+    private string name = DefaultLitterReportName;
 
     [ObservableProperty]
-    bool canAddImages = false;
-
-    [ObservableProperty]
-    bool reportIsValid = false;
-
-    public string Name
-    {
-        get => name;
-        set
-        {
-            name = value;
-            OnPropertyChanged(nameof(Name));
-            ValidateReport();
-        }
-    }
-
-    public string Description
-    {
-        get => description;
-        set
-        {
-            description = value;
-            OnPropertyChanged(nameof(Description));
-            ValidateReport();
-        }
-    }
-
-    public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; init; } = [];
-    
-    public LitterImageViewModel? SelectedLitterImageViewModel { get; set; }
+    private bool reportIsValid;
 
     public CreateLitterReportViewModel(ILitterReportManager litterReportManager, IMapRestService mapRestService)
     {
@@ -68,12 +43,38 @@ public partial class CreateLitterReportViewModel : BaseViewModel
             LitterReportStatusId = NewLitterReportStatus
         };
     }
-    
+
+    public string Name
+    {
+        get => name;
+        set
+        {
+            name = value;
+            OnPropertyChanged();
+            ValidateReport();
+        }
+    }
+
+    public string Description
+    {
+        get => description;
+        set
+        {
+            description = value;
+            OnPropertyChanged();
+            ValidateReport();
+        }
+    }
+
+    public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; init; } = [];
+
+    public LitterImageViewModel? SelectedLitterImageViewModel { get; set; }
+
     public string LocalFilePath { get; set; } = string.Empty;
 
     public async Task AddImageToCollection()
     {
-        Location? location = await GetCurrentLocation();
+        var location = await GetCurrentLocation();
 
         if (location != null)
         {
@@ -91,9 +92,11 @@ public partial class CreateLitterReportViewModel : BaseViewModel
             SelectedLitterImageViewModel.Address.PostalCode = address.PostalCode;
             SelectedLitterImageViewModel.Address.Region = address.Region;
             SelectedLitterImageViewModel.Address.StreetAddress = address.StreetAddress;
-            SelectedLitterImageViewModel.Address.Location = new Location(SelectedLitterImageViewModel.Address.Latitude.Value, SelectedLitterImageViewModel.Address.Longitude.Value);
+            SelectedLitterImageViewModel.Address.Location = new Location(
+                SelectedLitterImageViewModel.Address.Latitude.Value,
+                SelectedLitterImageViewModel.Address.Longitude.Value);
             SelectedLitterImageViewModel.FilePath = LocalFilePath;
-            
+
             LitterImageViewModels.Add(SelectedLitterImageViewModel);
             SelectedLitterImageViewModel = null;
 
@@ -109,7 +112,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     {
         try
         {
-            GeolocationRequest request = new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(10));
+            var request = new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(10));
 
             var cancelTokenSource = new CancellationTokenSource();
 
@@ -139,7 +142,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     private async Task SaveLitterReport()
     {
         IsBusy = true;
-        
+
         if (!ReportIsValid)
         {
             IsBusy = false;
@@ -163,7 +166,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
                 PostalCode = litterImageViewModel.Address.PostalCode,
                 Region = litterImageViewModel.Address.Region,
                 StreetAddress = litterImageViewModel.Address.StreetAddress,
-                
+
                 // Use the Azure Blob Url as local file on create
                 AzureBlobURL = litterImageViewModel.FilePath
             };
@@ -171,7 +174,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
             litterReport.LitterImages.Add(litterImage);
         }
 
-        var updatedLitterReport = await litterReportManager.AddLitterReportAsync(litterReport);
+        await litterReportManager.AddLitterReportAsync(litterReport);
 
         IsBusy = false;
 

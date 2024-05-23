@@ -9,16 +9,17 @@ using Microsoft.Maui.Maps;
 public partial class ViewEventSummaryPage : ContentPage
 {
     private readonly ViewEventSummaryViewModel _viewModel;
-    public string EventId { get; set; }
 
     public ViewEventSummaryPage(ViewEventSummaryViewModel viewModel)
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         _viewModel = viewModel;
         _viewModel.Navigation = Navigation;
         _viewModel.Notify = Notify;
         BindingContext = _viewModel;
     }
+
+    public string EventId { get; set; }
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
@@ -34,9 +35,9 @@ public partial class ViewEventSummaryPage : ContentPage
 
     private async Task Notify(string message)
     {
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        var cancellationTokenSource = new CancellationTokenSource();
 
-        ToastDuration duration = ToastDuration.Short;
+        var duration = ToastDuration.Short;
         double fontSize = 14;
 
         var toast = Toast.Make(message, duration, fontSize);
@@ -45,7 +46,7 @@ public partial class ViewEventSummaryPage : ContentPage
 
     private async void Pin_InfoWindowClicked(object sender, PinClickedEventArgs e)
     {
-        Pin p = (Pin)sender;
+        var p = (Pin)sender;
 
         var pickupLocationId = p.AutomationId;
         await Shell.Current.GoToAsync($"{nameof(ViewPickupLocationPage)}?LitterReportId={pickupLocationId}");

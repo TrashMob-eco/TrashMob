@@ -7,33 +7,59 @@ using TrashMobMobile.Extensions;
 
 public partial class EventViewModel : ObservableObject
 {
-    public EventViewModel()
-    {
-    }
-
-    [ObservableProperty]
-    Guid id;
-
-    [ObservableProperty]
-    string name;
-
-    [ObservableProperty]
-    string description;
-
     private DateTimeOffset _eventDate;
+
+    [ObservableProperty]
+    private AddressViewModel address;
+
+    [ObservableProperty]
+    private bool canCancelEvent;
+
+    [ObservableProperty]
+    private string cancellationReason;
+
+    [ObservableProperty]
+    private string description;
+
+    [ObservableProperty]
+    private int durationHours;
+
+    [ObservableProperty]
+    private int durationMinutes;
+
+    [ObservableProperty]
+    private int eventStatusId;
+
+    [ObservableProperty]
+    private int eventTypeId;
+
+    [ObservableProperty]
+    private Guid id;
+
+    [ObservableProperty]
+    private bool isEventPublic;
+
+    private bool isUserAttending;
+
+    [ObservableProperty]
+    private int maxNumberOfParticipants;
+
+    [ObservableProperty]
+    private string name;
+
+    [ObservableProperty]
+    private string userRoleForEvent;
+
     public DateTimeOffset EventDate
     {
-        get
-        {
-            return _eventDate;
-        }
+        get => _eventDate;
 
         set
         {
-            if ( _eventDate != value)
+            if (_eventDate != value)
             {
                 _eventDate = value;
-                OnPropertyChanged(nameof(EventDate));
+                OnPropertyChanged();
                 OnPropertyChanged(nameof(DisplayDate));
                 OnPropertyChanged(nameof(DisplayTime));
                 OnPropertyChanged(nameof(EventTime));
@@ -42,32 +68,45 @@ public partial class EventViewModel : ObservableObject
         }
     }
 
-    [ObservableProperty]
-    int durationHours;
+    public bool IsUserAttending
+    {
+        get => isUserAttending;
+        set
+        {
+            if (isUserAttending != value)
+            {
+                isUserAttending = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(UserRoleForEvent));
+            }
+        }
+    }
 
-    [ObservableProperty]
-    int durationMinutes;
+    public string DisplayDate => EventDate.GetFormattedLocalDate();
 
-    [ObservableProperty]
-    int eventTypeId;
+    public string DisplayTime => EventDate.GetFormattedLocalTime();
 
-    [ObservableProperty]
-    int eventStatusId;
+    public TimeSpan EventTime
+    {
+        get => EventDate.TimeOfDay;
+        set
+        {
+            var fullDateTime = EventDateOnly.Add(value);
+            EventDate = fullDateTime;
+        }
+    }
 
-    [ObservableProperty]
-    AddressViewModel address;
+    public DateTime EventDateOnly
+    {
+        get => EventDate.Date;
+        set
+        {
+            var fullDateTime = value.Add(EventTime);
+            EventDate = fullDateTime;
+        }
+    }
 
-    [ObservableProperty]
-    int maxNumberOfParticipants;
-
-    [ObservableProperty]
-    bool isEventPublic;
-
-    [ObservableProperty]
-    string cancellationReason;
-
-    [ObservableProperty]
-    bool canCancelEvent;
+    public string ErrorMessage { get; set; }
 
     public string GetUserRole(Event mobEvent)
     {
@@ -84,64 +123,6 @@ public partial class EventViewModel : ObservableObject
         return string.Empty;
     }
 
-    private bool isUserAttending;
-
-    public bool IsUserAttending
-    {
-        get { return isUserAttending; }
-        set
-        {
-            if ( isUserAttending != value )
-            {
-                isUserAttending = value;
-                OnPropertyChanged(nameof(IsUserAttending));
-                OnPropertyChanged(nameof(UserRoleForEvent));
-            }
-        }
-    }
-
-    public string DisplayDate
-    {
-        get
-        {
-            return EventDate.GetFormattedLocalDate();
-        }
-    }
-
-    public string DisplayTime
-    {
-        get
-        {
-            return EventDate.GetFormattedLocalTime();
-        }
-    }
-
-    public TimeSpan EventTime
-    {
-        get
-        {
-            return EventDate.TimeOfDay;
-        }
-        set
-        {
-            var fullDateTime = EventDateOnly.Add(value);
-            EventDate = fullDateTime;
-        }
-    }
-
-    public DateTime EventDateOnly
-    {
-        get
-        {
-            return EventDate.Date;
-        }
-        set
-        {
-            var fullDateTime = value.Add(EventTime);
-            EventDate = fullDateTime;
-        }
-    }
-
     public bool IsValid()
     {
         if (EventDate == DateTimeOffset.MinValue)
@@ -153,14 +134,9 @@ public partial class EventViewModel : ObservableObject
         return true;
     }
 
-    [ObservableProperty]
-    string userRoleForEvent;
-
-    public string ErrorMessage { get; set; }
-
     public Event ToEvent()
     {
-        return new Event()
+        return new Event
         {
             Id = Id,
             EventDate = EventDate,
@@ -179,7 +155,7 @@ public partial class EventViewModel : ObservableObject
             PostalCode = Address.PostalCode,
             Region = Address.Region,
             StreetAddress = Address.StreetAddress,
-            EventStatusId = EventStatusId,
+            EventStatusId = EventStatusId
         };
     }
 

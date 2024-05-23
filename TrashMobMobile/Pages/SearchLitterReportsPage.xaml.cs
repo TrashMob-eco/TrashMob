@@ -10,8 +10,8 @@ public partial class SearchLitterReportsPage : ContentPage
     private readonly SearchLitterReportsViewModel _viewModel;
 
     public SearchLitterReportsPage(SearchLitterReportsViewModel viewModel)
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         _viewModel = viewModel;
         _viewModel.Notify = Notify;
         _viewModel.Navigation = Navigation;
@@ -25,16 +25,19 @@ public partial class SearchLitterReportsPage : ContentPage
 
         if (_viewModel?.UserLocation?.Location != null)
         {
-            var mapSpan = new MapSpan(new Location(_viewModel.UserLocation.Location.Latitude, _viewModel.UserLocation.Location.Longitude), 0.05, 0.05);
+            var mapSpan =
+                new MapSpan(
+                    new Location(_viewModel.UserLocation.Location.Latitude, _viewModel.UserLocation.Location.Longitude),
+                    0.05, 0.05);
             litterImagesMap.MoveToRegion(mapSpan);
         }
     }
 
     private async Task Notify(string message)
     {
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        var cancellationTokenSource = new CancellationTokenSource();
 
-        ToastDuration duration = ToastDuration.Short;
+        var duration = ToastDuration.Short;
         double fontSize = 14;
 
         var toast = Toast.Make(message, duration, fontSize);
@@ -52,7 +55,7 @@ public partial class SearchLitterReportsPage : ContentPage
 
     private async void Pin_InfoWindowClicked(object sender, PinClickedEventArgs e)
     {
-        Pin p = (Pin)sender;
+        var p = (Pin)sender;
 
         var litterReportId = p.AutomationId;
         await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportId}");

@@ -1,38 +1,52 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
 public partial class CreateEventViewModel : BaseViewModel
 {
-    [ObservableProperty]
-    EventViewModel eventViewModel;
-
-    [ObservableProperty]
-    AddressViewModel userLocation;
-
-    private readonly IMobEventManager mobEventManager;
+    private const int ActiveEventStatus = 1;
     private readonly IEventTypeRestService eventTypeRestService;
     private readonly IMapRestService mapRestService;
+
+    private readonly IMobEventManager mobEventManager;
     private readonly IWaiverManager waiverManager;
-    private const int ActiveEventStatus = 1;
 
-    public string DefaultEventName { get; } = "New Event";
+    [ObservableProperty]
+    private EventViewModel eventViewModel;
 
-    public CreateEventViewModel(IMobEventManager mobEventManager, 
-                                IEventTypeRestService eventTypeRestService,
-                                IMapRestService mapRestService,
-                                IWaiverManager waiverManager)
+    [ObservableProperty]
+    private bool isManageEventPartnersEnabled;
+
+    [ObservableProperty]
+    private string selectedEventType;
+
+    [ObservableProperty]
+    private AddressViewModel userLocation;
+
+    public CreateEventViewModel(IMobEventManager mobEventManager,
+        IEventTypeRestService eventTypeRestService,
+        IMapRestService mapRestService,
+        IWaiverManager waiverManager)
     {
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
         this.mapRestService = mapRestService;
         this.waiverManager = waiverManager;
     }
+
+    public string DefaultEventName { get; } = "New Event";
+
+    // This is only for the map point
+    public ObservableCollection<EventViewModel> Events { get; set; } = new();
+
+    private List<EventType> EventTypes { get; set; } = new();
+
+    public ObservableCollection<string> ETypes { get; set; } = new();
 
     public async Task Init()
     {
@@ -66,26 +80,13 @@ public partial class CreateEventViewModel : BaseViewModel
 
         Events.Add(EventViewModel);
 
-        foreach ( var eventType in EventTypes )
+        foreach (var eventType in EventTypes)
         {
             ETypes.Add(eventType.Name);
         }
 
         IsBusy = false;
     }
-
-    // This is only for the map point
-    public ObservableCollection<EventViewModel> Events { get; set; } = new ObservableCollection<EventViewModel>();
-
-    private List<EventType> EventTypes { get; set; } = new List<EventType>();
-
-    public ObservableCollection<string> ETypes { get; set; } = new ObservableCollection<string>();
-
-    [ObservableProperty]
-    string selectedEventType;
-
-    [ObservableProperty]
-    bool isManageEventPartnersEnabled;
 
     [RelayCommand]
     private async Task SaveEvent()
@@ -98,10 +99,10 @@ public partial class CreateEventViewModel : BaseViewModel
             return;
         }
 
-        if ( !string.IsNullOrEmpty(SelectedEventType))
+        if (!string.IsNullOrEmpty(SelectedEventType))
         {
             var eventType = EventTypes.FirstOrDefault(e => e.Name == SelectedEventType);
-            if ( eventType != null )
+            if (eventType != null)
             {
                 EventViewModel.EventTypeId = eventType.Id;
             }

@@ -9,22 +9,22 @@ public partial class ContactUsViewModel : BaseViewModel
 {
     private readonly IContactRequestManager contactRequestManager;
 
+    [ObservableProperty]
+    private string confirmation;
+
+    [ObservableProperty]
+    private string email;
+
+    [ObservableProperty]
+    private string message;
+
+    [ObservableProperty]
+    private string name;
+
     public ContactUsViewModel(IContactRequestManager contactRequestManager)
     {
         this.contactRequestManager = contactRequestManager;
     }
-
-    [ObservableProperty]
-    string name;
-
-    [ObservableProperty]
-    string email;
-
-    [ObservableProperty]
-    string message;
-
-    [ObservableProperty]
-    string confirmation;
 
     [RelayCommand]
     private async Task SubmitMessage()

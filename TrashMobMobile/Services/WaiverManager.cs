@@ -1,17 +1,15 @@
 ﻿namespace TrashMobMobile.Data;
 
-using System.Threading;
-using System.Threading.Tasks;
 using TrashMobMobile.Config;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Models;
 
 public class WaiverManager : IWaiverManager
 {
-    const string TrashMobWaiverName = "trashmob";
+    private const string TrashMobWaiverName = "trashmob";
+    private readonly IDocusignRestService docusignRestService;
 
     private readonly IWaiverRestService waiverRestService;
-    private readonly IDocusignRestService docusignRestService;
 
     public WaiverManager(IWaiverRestService service, IDocusignRestService docusignRestService)
     {
@@ -19,7 +17,8 @@ public class WaiverManager : IWaiverManager
         this.docusignRestService = docusignRestService;
     }
 
-    public Task<EnvelopeResponse> GetWaiverEnvelopeAsync(EnvelopeRequest envelopeRequest, CancellationToken cancellationToken = default)
+    public Task<EnvelopeResponse> GetWaiverEnvelopeAsync(EnvelopeRequest envelopeRequest,
+        CancellationToken cancellationToken = default)
     {
         return docusignRestService.GetWaiverEnvelopeAsync(envelopeRequest, cancellationToken);
     }
@@ -30,4 +29,3 @@ public class WaiverManager : IWaiverManager
         return App.CurrentUser.HasUserSignedWaiver(waiver, Settings.CurrentTrashMobWaiverVersion);
     }
 }
-

@@ -10,18 +10,18 @@ public partial class CancelEventViewModel : BaseViewModel
 {
     private readonly IMobEventManager mobEventManager;
 
+    [ObservableProperty]
+    private EventViewModel eventViewModel;
+
     public CancelEventViewModel(IMobEventManager mobEventManager)
     {
         this.mobEventManager = mobEventManager;
     }
 
-    [ObservableProperty]
-    EventViewModel eventViewModel;
-
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
-        
+
         var mobEvent = await mobEventManager.GetEventAsync(eventId);
 
         EventViewModel = mobEvent.ToEventViewModel();
@@ -34,10 +34,10 @@ public partial class CancelEventViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        var cancellationRequest = new EventCancellationRequest()
+        var cancellationRequest = new EventCancellationRequest
         {
             CancellationReason = EventViewModel.CancellationReason,
-            EventId = EventViewModel.Id            
+            EventId = EventViewModel.Id
         };
 
         await mobEventManager.DeleteEventAsync(cancellationRequest);

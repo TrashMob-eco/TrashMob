@@ -1,60 +1,58 @@
-﻿
-namespace TrashMobMobile.ViewModels;
+﻿namespace TrashMobMobile.ViewModels;
 
-#nullable enable
-
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
 public partial class ViewEventViewModel : BaseViewModel
 {
-    private readonly IMobEventManager mobEventManager;
-    private readonly IEventTypeRestService eventTypeRestService;
-    private readonly IWaiverManager waiverManager;
     private readonly IEventAttendeeRestService eventAttendeeRestService;
+    private readonly IEventTypeRestService eventTypeRestService;
+    private readonly IMobEventManager mobEventManager;
+    private readonly IWaiverManager waiverManager;
+
+    [ObservableProperty]
+    private string attendeeCount;
+
+    [ObservableProperty]
+    private bool enableEditEvent;
+
+    [ObservableProperty]
+    private bool enableRegister;
+
+    [ObservableProperty]
+    private bool enableUnregister;
+
+    [ObservableProperty]
+    private bool enableViewEventSummary;
+
+    [ObservableProperty]
+    private EventViewModel eventViewModel;
+
     private Event mobEvent;
 
-    public ViewEventViewModel(IMobEventManager mobEventManager, 
-                              IEventTypeRestService eventTypeRestService,
-                              IWaiverManager waiverManager,
-                              IEventAttendeeRestService eventAttendeeRestService)
+    [ObservableProperty]
+    private string selectedEventType;
+
+    [ObservableProperty]
+    private string spotsLeft;
+
+    [ObservableProperty]
+    private string whatToExpect;
+
+    public ViewEventViewModel(IMobEventManager mobEventManager,
+        IEventTypeRestService eventTypeRestService,
+        IWaiverManager waiverManager,
+        IEventAttendeeRestService eventAttendeeRestService)
     {
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
         this.waiverManager = waiverManager;
         this.eventAttendeeRestService = eventAttendeeRestService;
     }
-
-    [ObservableProperty]
-    EventViewModel eventViewModel;
-
-    [ObservableProperty]
-    bool enableRegister;
-
-    [ObservableProperty]
-    bool enableUnregister;
-
-    [ObservableProperty]
-    bool enableEditEvent;
-
-    [ObservableProperty]
-    bool enableViewEventSummary;
-
-    [ObservableProperty]
-    string selectedEventType;
-
-    [ObservableProperty]
-    string whatToExpect;
-
-    [ObservableProperty]
-    string attendeeCount;
-
-    [ObservableProperty]
-    string spotsLeft;
 
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
 
@@ -76,7 +74,8 @@ public partial class ViewEventViewModel : BaseViewModel
         EnableEditEvent = mobEvent.IsEventLead();
         EnableViewEventSummary = mobEvent.IsCompleted();
 
-        WhatToExpect = "What to Expect: \nCleanup supplies provided\nMeet fellow community members\nContribute to a cleaner environment.";
+        WhatToExpect =
+            "What to Expect: \nCleanup supplies provided\nMeet fellow community members\nContribute to a cleaner environment.";
 
         await SetRegistrationOptions();
         await GetAttendeeCount();
@@ -136,7 +135,7 @@ public partial class ViewEventViewModel : BaseViewModel
             await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
         }
 
-        var eventAttendee = new EventAttendee()
+        var eventAttendee = new EventAttendee
         {
             EventId = EventViewModel.Id,
             UserId = App.CurrentUser.Id
@@ -157,7 +156,7 @@ public partial class ViewEventViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        var eventAttendee = new EventAttendee()
+        var eventAttendee = new EventAttendee
         {
             EventId = EventViewModel.Id,
             UserId = App.CurrentUser.Id

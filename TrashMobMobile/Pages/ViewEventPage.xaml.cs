@@ -1,7 +1,5 @@
 namespace TrashMobMobile.Pages;
 
-#nullable enable
-
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using Microsoft.Maui.Maps;
@@ -11,17 +9,17 @@ public partial class ViewEventPage : ContentPage
 {
     private readonly ViewEventViewModel _viewModel;
 
-    public string EventId { get; set; }
-    
     public ViewEventPage(ViewEventViewModel viewModel)
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         _viewModel = viewModel;
         _viewModel.Navigation = Navigation;
         _viewModel.Notify = Notify;
 
         BindingContext = _viewModel;
     }
+
+    public string EventId { get; set; }
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
@@ -37,9 +35,9 @@ public partial class ViewEventPage : ContentPage
 
     private async Task Notify(string message)
     {
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        var cancellationTokenSource = new CancellationTokenSource();
 
-        ToastDuration duration = ToastDuration.Short;
+        var duration = ToastDuration.Short;
         double fontSize = 14;
 
         var toast = Toast.Make(message, duration, fontSize);

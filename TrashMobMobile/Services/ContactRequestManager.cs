@@ -1,6 +1,5 @@
 ﻿namespace TrashMobMobile.Data
 {
-    using System.Threading.Tasks;
     using TrashMob.Models;
 
     public class ContactRequestManager : IContactRequestManager
@@ -18,4 +17,3 @@
         }
     }
 }
-

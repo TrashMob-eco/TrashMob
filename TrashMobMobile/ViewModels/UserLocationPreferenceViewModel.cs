@@ -1,26 +1,24 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
 public partial class UserLocationPreferenceViewModel : BaseViewModel
 {
-    private readonly IUserManager userManager;
     private readonly IMapRestService mapRestService;
-
-    public ObservableCollection<AddressViewModel> Addresses { get; set; } = [];
-
-    [ObservableProperty]
-    string units;
+    private readonly IUserManager userManager;
 
     [ObservableProperty]
-    int travelDistance;
+    private AddressViewModel address;
 
     [ObservableProperty]
-    AddressViewModel address;
+    private int travelDistance;
+
+    [ObservableProperty]
+    private string units;
 
     public UserLocationPreferenceViewModel(IUserManager userManager, IMapRestService mapRestService)
     {
@@ -29,10 +27,12 @@ public partial class UserLocationPreferenceViewModel : BaseViewModel
         address = new AddressViewModel();
     }
 
+    public ObservableCollection<AddressViewModel> Addresses { get; set; } = [];
+
     public void Init()
     {
         IsBusy = true;
-        
+
         Addresses.Clear();
         Address = App.CurrentUser.GetAddress();
         Addresses.Add(Address);

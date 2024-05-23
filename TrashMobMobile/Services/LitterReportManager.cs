@@ -1,7 +1,5 @@
 ﻿namespace TrashMobMobile.Data
 {
-    using System;
-    using System.Threading.Tasks;
     using TrashMob.Models;
 
     public class LitterReportManager : ILitterReportManager
@@ -23,49 +21,58 @@
             return litterReportRestService.GetNewLitterReportsAsync(cancellationToken);
         }
 
-        public Task<IEnumerable<LitterReport>> GetAssignedLitterReportsAsync(CancellationToken cancellationToken = default)
+        public Task<IEnumerable<LitterReport>> GetAssignedLitterReportsAsync(
+            CancellationToken cancellationToken = default)
         {
             return litterReportRestService.GetAssignedLitterReportsAsync(cancellationToken);
         }
 
-        public Task<IEnumerable<LitterReport>> GetCleanedLitterReportsAsync(CancellationToken cancellationToken = default)
+        public Task<IEnumerable<LitterReport>> GetCleanedLitterReportsAsync(
+            CancellationToken cancellationToken = default)
         {
             return litterReportRestService.GetCleanedLitterReportsAsync(cancellationToken);
         }
 
-        public Task<IEnumerable<LitterReport>> GetNotCancelledLitterReportsAsync(CancellationToken cancellationToken = default)
+        public Task<IEnumerable<LitterReport>> GetNotCancelledLitterReportsAsync(
+            CancellationToken cancellationToken = default)
         {
             return litterReportRestService.GetNotCancelledLitterReportsAsync(cancellationToken);
         }
 
-        public Task<IEnumerable<LitterReport>> GetCancelledLitterReportsAsync(CancellationToken cancellationToken = default)
+        public Task<IEnumerable<LitterReport>> GetCancelledLitterReportsAsync(
+            CancellationToken cancellationToken = default)
         {
             return litterReportRestService.GetNotCancelledLitterReportsAsync(cancellationToken);
         }
 
-        public Task<IEnumerable<LitterReport>> GetUserLitterReportsAsync(Guid userId, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<LitterReport>> GetUserLitterReportsAsync(Guid userId,
+            CancellationToken cancellationToken = default)
         {
             return litterReportRestService.GetUserLitterReportsAsync(userId, cancellationToken);
         }
 
-        public async Task<LitterReport> GetLitterReportAsync(Guid litterReportId, ImageSizeEnum imageSize, CancellationToken cancellationToken = default)
+        public async Task<LitterReport> GetLitterReportAsync(Guid litterReportId, ImageSizeEnum imageSize,
+            CancellationToken cancellationToken = default)
         {
             var litterReport = await litterReportRestService.GetLitterReportAsync(litterReportId, cancellationToken);
 
             foreach (var litterImage in litterReport.LitterImages)
             {
-                litterImage.AzureBlobURL = await litterReportRestService.GetLitterImageUrlAsync(litterImage.Id, imageSize, cancellationToken);
+                litterImage.AzureBlobURL =
+                    await litterReportRestService.GetLitterImageUrlAsync(litterImage.Id, imageSize, cancellationToken);
             }
 
             return litterReport;
         }
 
-        public Task<LitterReport> UpdateLitterReportAsync(LitterReport litterReport, CancellationToken cancellationToken = default)
+        public Task<LitterReport> UpdateLitterReportAsync(LitterReport litterReport,
+            CancellationToken cancellationToken = default)
         {
             return litterReportRestService.UpdateLitterReportAsync(litterReport, cancellationToken);
         }
 
-        public Task<LitterReport> AddLitterReportAsync(LitterReport litterReport, CancellationToken cancellationToken = default)
+        public Task<LitterReport> AddLitterReportAsync(LitterReport litterReport,
+            CancellationToken cancellationToken = default)
         {
             return litterReportRestService.AddLitterReportAsync(litterReport, cancellationToken);
         }

@@ -1,18 +1,12 @@
 ﻿namespace TrashMobMobile.Data;
 
-using System;
 using System.Diagnostics;
 using System.Net.Http.Json;
-using System.Threading.Tasks;
 using TrashMob.Models;
 
 public class ContactRequestRestService : RestServiceBase, IContactRequestRestService
 {
     protected override string Controller => "contactrequest";
-
-    public ContactRequestRestService()
-    {
-    }
 
     public async Task AddContactRequest(ContactRequest contactRequest, CancellationToken cancellationToken = default)
     {

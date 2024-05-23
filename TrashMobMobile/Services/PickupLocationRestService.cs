@@ -1,13 +1,8 @@
 ﻿namespace TrashMobMobile.Data;
 
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net.Http;
 using System.Net.Http.Json;
-using System.Threading;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 using TrashMob.Models;
 using TrashMobMobile.Models;
 
@@ -15,11 +10,8 @@ public class PickupLocationRestService : RestServiceBase, IPickupLocationRestSer
 {
     protected override string Controller => "pickuplocations";
 
-    public PickupLocationRestService()
-    {
-    }
-
-    public async Task<PickupLocation> GetPickupLocationAsync(Guid pickupLocationId, CancellationToken cancellationToken = default)
+    public async Task<PickupLocation> GetPickupLocationAsync(Guid pickupLocationId,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -28,8 +20,8 @@ public class PickupLocationRestService : RestServiceBase, IPickupLocationRestSer
             using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
-                string content = await response.Content.ReadAsStringAsync(cancellationToken);
-                return JsonConvert.DeserializeObject<PickupLocation>(content);                    
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                return JsonConvert.DeserializeObject<PickupLocation>(content);
             }
         }
         catch (Exception ex)
@@ -39,7 +31,8 @@ public class PickupLocationRestService : RestServiceBase, IPickupLocationRestSer
         }
     }
 
-    public async Task<PickupLocation> UpdatePickupLocationAsync(PickupLocation pickupLocation, CancellationToken cancellationToken = default)
+    public async Task<PickupLocation> UpdatePickupLocationAsync(PickupLocation pickupLocation,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -48,7 +41,7 @@ public class PickupLocationRestService : RestServiceBase, IPickupLocationRestSer
             using (var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
-                string responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
                 var result = JsonConvert.DeserializeObject<PickupLocation>(responseContent);
                 return result;
             }
@@ -60,7 +53,8 @@ public class PickupLocationRestService : RestServiceBase, IPickupLocationRestSer
         }
     }
 
-    public async Task<PickupLocation> AddPickupLocationAsync(PickupLocation pickupLocation, CancellationToken cancellationToken = default)
+    public async Task<PickupLocation> AddPickupLocationAsync(PickupLocation pickupLocation,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -69,7 +63,7 @@ public class PickupLocationRestService : RestServiceBase, IPickupLocationRestSer
             using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
-                string responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
                 var result = JsonConvert.DeserializeObject<PickupLocation>(responseContent);
                 return result;
             }
@@ -81,7 +75,8 @@ public class PickupLocationRestService : RestServiceBase, IPickupLocationRestSer
         }
     }
 
-    public async Task<IEnumerable<PickupLocation>> DeletePickupLocationAsync(PickupLocation pickupLocation, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<PickupLocation>> DeletePickupLocationAsync(PickupLocation pickupLocation,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -101,7 +96,8 @@ public class PickupLocationRestService : RestServiceBase, IPickupLocationRestSer
         }
     }
 
-    public async Task<IEnumerable<PickupLocation>> GetPickupLocationsAsync(Guid eventId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<PickupLocation>> GetPickupLocationsAsync(Guid eventId,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -110,7 +106,7 @@ public class PickupLocationRestService : RestServiceBase, IPickupLocationRestSer
             using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
-                string content = await response.Content.ReadAsStringAsync(cancellationToken);
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
                 var result = JsonConvert.DeserializeObject<List<PickupLocation>>(content);
                 return result;
             }
@@ -140,7 +136,8 @@ public class PickupLocationRestService : RestServiceBase, IPickupLocationRestSer
         }
     }
 
-    public async Task<string> GetPickupLocationImageAsync(Guid pickupLocationId, ImageSizeEnum imageSize, CancellationToken cancellationToken = default)
+    public async Task<string> GetPickupLocationImageAsync(Guid pickupLocationId, ImageSizeEnum imageSize,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -149,7 +146,7 @@ public class PickupLocationRestService : RestServiceBase, IPickupLocationRestSer
             using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
-                string content = await response.Content.ReadAsStringAsync(cancellationToken);
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
                 return content.TrimStart('"').TrimEnd('"');
             }
         }
@@ -160,7 +157,8 @@ public class PickupLocationRestService : RestServiceBase, IPickupLocationRestSer
         }
     }
 
-    public async Task AddPickupLocationImageAsync(Guid eventId, Guid pickupLocationId, string localFileName, CancellationToken cancellationToken = default)
+    public async Task AddPickupLocationImageAsync(Guid eventId, Guid pickupLocationId, string localFileName,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -175,9 +173,9 @@ public class PickupLocationRestService : RestServiceBase, IPickupLocationRestSer
 
                 var content = new MultipartFormDataContent
                 {
-                    { streamContent, "formFile", Path.GetFileName(localFileName)},
+                    { streamContent, "formFile", Path.GetFileName(localFileName) },
                     { new StringContent(pickupLocationId.ToString()), "parentId" },
-                    { new StringContent(ImageUploadType.Pickup), "imageType" },
+                    { new StringContent(ImageUploadType.Pickup), "imageType" }
                 };
 
                 request.Content = content;
