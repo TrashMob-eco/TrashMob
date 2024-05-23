@@ -31,6 +31,8 @@ on:
                 required: true
             appsettings:
                 required: true
+            googlemaps_android_key:
+                required: true
         outputs:
             artifact_name:
                 value: artifacts-android-${{ inputs.build_number }}
@@ -80,6 +82,14 @@ jobs:
 
             Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
 
+        - name: Update GoogleMaps Key
+          run: |
+              $content = Get-Content TrashMobMobile/Platforms/Android/AndroidManifest.xml -Raw
+  
+              $newContent = $content -replace '<meta-data android:name="com.google.android.geo.API_KEY" android:value=".*" />', '<meta-data android:name="com.google.android.geo.API_KEY" android:value="${{secrets.googlemaps_android_key}}" />'
+  
+              Set-Content TrashMobMobile/Platforms/Android/AndroidManifest.xml -Value $newContent
+  
         - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
           uses: actions/setup-dotnet@v3
           with:

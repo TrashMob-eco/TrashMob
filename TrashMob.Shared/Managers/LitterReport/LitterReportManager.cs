@@ -15,8 +15,8 @@ namespace TrashMob.Shared.Managers.LitterReport
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Poco;
     using TrashMob.Shared.Extensions;
-    
-    public class LitterReportManager : KeyedManager<LitterReport>, ILitterReportManager
+
+  public class LitterReportManager : KeyedManager<LitterReport>, ILitterReportManager
     {
         private readonly ILitterImageManager litterImageManager;
         private readonly ILogger<LitterReportManager> logger;

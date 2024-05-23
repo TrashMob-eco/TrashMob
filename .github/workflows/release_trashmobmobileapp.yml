@@ -105,7 +105,7 @@ jobs:
       android_keystore: ${{ secrets.ANDROID_KEYSTORE }}
       android_keystore_password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
       appsettings: ${{ secrets.MOBILE_APPSETTINGS }}
-
+      googlemaps_android_key: ${{ secrets.GOOGLEMAPS_ANDROID_APIKEY }}
 
   calliOSBuild:
     name: Call iOS build workflow
