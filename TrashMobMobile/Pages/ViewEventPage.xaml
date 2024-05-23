@@ -25,7 +25,7 @@
                     <Label Grid.Row="1" Grid.Column="0" Text="{Binding EventViewModel.DisplayDate}" FontAttributes="Bold" Margin="10,0,10,0" Grid.ColumnSpan="2" />
                     <Label Grid.Row="2" Grid.Column="0" Text="{Binding EventViewModel.DisplayTime}" FontSize="Micro" Margin="10, 0, 10,0" />
                     <Label Grid.Row="2" Grid.Column="1" Text="{Binding DisplayDuration}" FontSize="Micro" Margin="10, 0, 10,0" />
-                    <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding EventViewModel.Address.DisplayAddress }" FontAttributes="Bold" Margin="10,0,10,0" Grid.ColumnSpan="2" />
+                    <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding EventViewModel.Address.DisplayAddress }" FontAttributes="Bold" Margin="10,0,10,0" />
                     <maps:Map Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="eventLocationMap" ItemsSource="{Binding Events}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True">
                         <maps:Map.ItemTemplate>
                             <DataTemplate>
