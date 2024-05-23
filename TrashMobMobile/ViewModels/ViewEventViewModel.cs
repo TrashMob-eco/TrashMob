@@ -38,6 +38,9 @@ public partial class ViewEventViewModel : BaseViewModel
     private string selectedEventType;
 
     [ObservableProperty]
+    private string displayDuration;
+
+    [ObservableProperty]
     private string spotsLeft;
 
     [ObservableProperty]
@@ -66,16 +69,16 @@ public partial class ViewEventViewModel : BaseViewModel
 
         var eventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
         SelectedEventType = eventTypes.First(et => et.Id == mobEvent.EventTypeId).Name;
+        DisplayDuration = mobEvent.GetFormattedDuration();
 
         Events.Clear();
         Events.Add(EventViewModel);
-        var isAttending = await mobEventManager.IsUserAttendingAsync(eventId, App.CurrentUser.Id);
 
         EnableEditEvent = mobEvent.IsEventLead();
         EnableViewEventSummary = mobEvent.IsCompleted();
 
         WhatToExpect =
-            "What to Expect: \nCleanup supplies provided\nMeet fellow community members\nContribute to a cleaner environment.";
+            "What to Expect: \n\tCleanup supplies provided\n\tMeet fellow community members\n\tContribute to a cleaner environment.";
 
         await SetRegistrationOptions();
         await GetAttendeeCount();

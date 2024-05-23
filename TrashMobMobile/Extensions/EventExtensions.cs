@@ -21,7 +21,7 @@
         public static string GetFormattedDuration(this Event mobEvent)
         {
             //TODO: move hard code string to resource file
-            return string.Concat(mobEvent.DurationHours, " hour ", mobEvent.DurationMinutes, " minutes");
+            return string.Concat("Expected Duration: ", mobEvent.DurationHours, " hour ", mobEvent.DurationMinutes, " minutes");
         }
 
         public static string GetFormattedLocalDate(this DateTimeOffset dateTime)

@@ -110,7 +110,7 @@
                  SelectionMode="None" >
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Border StrokeThickness="1">
+                            <Border Style="{StaticResource RoundBorder}">
                                 <Grid WidthRequest = "400"
                                   ColumnDefinitions="*, 1*" 
                                   RowDefinitions="Auto"

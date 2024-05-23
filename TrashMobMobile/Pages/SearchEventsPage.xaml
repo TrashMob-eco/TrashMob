@@ -16,12 +16,14 @@
                         <RadioButton Content="Complete" RadioButtonGroup.GroupName="EventStatus" CheckedChanged="OnEventStatusRadioButtonCheckedChanged" FontSize="Micro" />
                         <RadioButton Content="Both" RadioButtonGroup.GroupName="EventStatus" CheckedChanged="OnEventStatusRadioButtonCheckedChanged" FontSize="Micro" />
                     </HorizontalStackLayout>
-                    <Grid Grid.Row="1" ColumnDefinitions="1*, 1*, 1*, 1*">
-                        <Picker x:Name="CountryPicker" Title="Select a country" ItemsSource="{Binding CountryCollection}" SelectedItem="{Binding SelectedCountry}" FontSize="Micro" Grid.Column="0" />
-                        <Picker x:Name="RegionPicker" Title="Select a state" ItemsSource="{Binding RegionCollection}" SelectedItem="{Binding SelectedRegion}" FontSize="Micro" Grid.Column="1" />
-                        <Picker x:Name="CityPicker" Title="Select a city" ItemsSource="{Binding CityCollection}" SelectedItem="{Binding SelectedCity}" FontSize="Micro" Grid.Column="2"/>
-                        <Button Text="Clear Selections" Command="{Binding ClearSelectionsCommand}" Margin="10" FontSize="Micro"  Grid.Column="3" />
-                    </Grid>
+                    <Border Grid.Row="1" Style="{StaticResource RoundBorder}" >
+                        <Grid ColumnDefinitions="1*, 1*, 1*, 1*">
+                            <Picker x:Name="CountryPicker" Title="Select a country" ItemsSource="{Binding CountryCollection}" SelectedItem="{Binding SelectedCountry}" FontSize="Micro" Grid.Column="0" />
+                            <Picker x:Name="RegionPicker" Title="Select a state" ItemsSource="{Binding RegionCollection}" SelectedItem="{Binding SelectedRegion}" FontSize="Micro" Grid.Column="1" />
+                            <Picker x:Name="CityPicker" Title="Select a city" ItemsSource="{Binding CityCollection}" SelectedItem="{Binding SelectedCity}" FontSize="Micro" Grid.Column="2"/>
+                            <Button Text="Clear Selections" Command="{Binding ClearSelectionsCommand}" Margin="10" FontSize="Micro"  Grid.Column="3" />
+                        </Grid>
+                    </Border>
                     <HorizontalStackLayout Grid.Row="2">
                         <RadioButton Content="Map" IsChecked="True" x:Name="viewMap" FontSize="Micro" />
                         <RadioButton Content="List" x:Name="viewList" FontSize="Micro" />
@@ -36,7 +38,7 @@
                                 Address="{Binding Address.StreetAddress}"
                                 Label="{Binding Name}"
                                 AutomationId="{Binding Id}"
-                                InfoWindowClicked="Pin_InfoWindowClicked" /> />
+                                InfoWindowClicked="Pin_InfoWindowClicked" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
                 </maps:Map>
@@ -49,7 +51,7 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <StackLayout Margin="5">
-                                <Border Padding="3" Stroke="Green">
+                                <Border Style="{StaticResource RoundBorder}">
                                     <Grid ColumnDefinitions="1*, 1*"                                  
                                   RowDefinitions="Auto, Auto, Auto, Auto"
                                   x:Name="EventItem">
