@@ -64,6 +64,10 @@
                 Id = litterImage.Id,
                 LitterReportId = litterImage.LitterReportId,
                 AzureBlobUrl = litterImage.AzureBlobURL,
+                CreatedByUserId = litterImage.CreatedByUserId,
+                LastUpdatedByUserId = litterImage.LastUpdatedByUserId,
+                CreatedDate = litterImage.CreatedDate,
+                LastUpdatedDate = litterImage.LastUpdatedDate,
                 Address = new AddressViewModel
                 {
                     City = litterImage.City,

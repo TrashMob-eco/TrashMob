@@ -27,4 +27,16 @@ public partial class LitterImageViewModel : BaseViewModel
 
     [ObservableProperty]
     string filePath;
+
+    [ObservableProperty]
+    Guid createdByUserId;
+
+    [ObservableProperty]
+    Guid lastUpdatedByUserId;
+
+    [ObservableProperty]
+    DateTimeOffset? createdDate;
+
+    [ObservableProperty]
+    DateTimeOffset? lastUpdatedDate;
 }

@@ -170,7 +170,7 @@ public partial class EditLitterReportViewModel : BaseViewModel
 
         litterReport.Name = Name;
         litterReport.Description = Description;
-
+        litterReport.LitterImages.Clear();
         foreach (var litterImageViewModel in LitterImageViewModels)
         {
             var litterImage = new LitterImage
@@ -184,7 +184,11 @@ public partial class EditLitterReportViewModel : BaseViewModel
                 PostalCode = litterImageViewModel.Address.PostalCode,
                 Region = litterImageViewModel.Address.Region,
                 StreetAddress = litterImageViewModel.Address.StreetAddress,
-                
+                CreatedByUserId = litterImageViewModel.CreatedByUserId,
+                LastUpdatedByUserId = litterImageViewModel.LastUpdatedByUserId,
+                CreatedDate = litterImageViewModel.CreatedDate,
+                LastUpdatedDate = litterImageViewModel.LastUpdatedDate,
+
                 // Use the Azure Blob Url as local file on create
                 AzureBlobURL = litterImageViewModel.FilePath
             };
