@@ -1,6 +1,5 @@
 ﻿namespace TrashMobMobile.Data
 {
-    using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMobMobile.Authentication;
 
@@ -18,7 +17,8 @@
             return userRestService.GetUserAsync(userId, cancellationToken);
         }
 
-        public Task<User> GetUserByEmailAsync(string email, UserContext userContext, CancellationToken cancellationToken = default)
+        public Task<User> GetUserByEmailAsync(string email, UserContext userContext,
+            CancellationToken cancellationToken = default)
         {
             return userRestService.GetUserByEmailAsync(email, userContext, cancellationToken);
         }
@@ -34,4 +34,3 @@
         }
     }
 }
-

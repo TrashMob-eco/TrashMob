@@ -1,18 +1,12 @@
 ﻿namespace TrashMobMobile.Data;
 
-using Newtonsoft.Json;
-using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 using TrashMob.Models.Poco;
 
 public class StatsRestService : RestServiceBase, IStatsRestService
 {
     protected override string Controller => "stats";
-
-    public StatsRestService()
-    {
-    }
 
     public async Task<Stats> GetStatsAsync(CancellationToken cancellationToken = default)
     {
@@ -21,7 +15,7 @@ public class StatsRestService : RestServiceBase, IStatsRestService
             using (var response = await AnonymousHttpClient.GetAsync(Controller, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
-                string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+                var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
                 return JsonConvert.DeserializeObject<Stats>(responseString);
             }
@@ -42,7 +36,7 @@ public class StatsRestService : RestServiceBase, IStatsRestService
             using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
-                string responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+                var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
                 return JsonConvert.DeserializeObject<Stats>(responseString);
             }

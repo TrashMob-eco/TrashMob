@@ -4,22 +4,18 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 public partial class EventPartnerLocationViewModel : ObservableObject
 {
-    public EventPartnerLocationViewModel()
-    {
-    }
+    [ObservableProperty]
+    private Guid partnerId;
 
     [ObservableProperty]
-    Guid partnerId;
+    private Guid partnerLocationId;
 
     [ObservableProperty]
-    Guid partnerLocationId;
+    private string partnerLocationName;
 
     [ObservableProperty]
-    string partnerLocationName;
+    private string partnerLocationNotes;
 
     [ObservableProperty]
-    string partnerLocationNotes;
-
-    [ObservableProperty]
-    string partnerServicesEngaged;
+    private string partnerServicesEngaged;
 }

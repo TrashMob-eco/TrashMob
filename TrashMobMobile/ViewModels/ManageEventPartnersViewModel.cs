@@ -1,32 +1,33 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
-public partial class ManageEventPartnersViewModel :  BaseViewModel
+public partial class ManageEventPartnersViewModel : BaseViewModel
 {
-    private readonly IMobEventManager mobEventManager;
     private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService;
+    private readonly IMobEventManager mobEventManager;
 
-    public ManageEventPartnersViewModel(IMobEventManager mobEventManager, IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService)
+    [ObservableProperty]
+    private EventViewModel eventViewModel;
+
+    private EventPartnerLocationViewModel selectedEventPartnerLocation;
+
+    public ManageEventPartnersViewModel(IMobEventManager mobEventManager,
+        IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService)
     {
         this.mobEventManager = mobEventManager;
         this.eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
     }
 
-    [ObservableProperty]
-    EventViewModel eventViewModel;
-
-    public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new ObservableCollection<EventPartnerLocationViewModel>();
-
-    private EventPartnerLocationViewModel selectedEventPartnerLocation;
+    public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
 
     public EventPartnerLocationViewModel SelectedEventPartnerLocation
     {
-        get { return selectedEventPartnerLocation; }
+        get => selectedEventPartnerLocation;
         set
         {
             if (selectedEventPartnerLocation != value)
@@ -42,22 +43,23 @@ public partial class ManageEventPartnersViewModel :  BaseViewModel
         }
     }
 
+    private Event MobEvent { get; set; }
+
     private async void PerformNavigation(EventPartnerLocationViewModel eventPartnerLocationViewModel)
     {
-        await Shell.Current.GoToAsync($"{nameof(EditEventPartnerLocationServicesPage)}?EventId={MobEvent.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+        await Shell.Current.GoToAsync(
+            $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={MobEvent.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
     }
-
-    private Event MobEvent { get; set; }
 
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
-        
+
         var eventPartnerLocations = await eventPartnerLocationServiceRestService.GetEventPartnerLocationsAsync(eventId);
 
         AvailablePartners.Clear();
 
-        foreach (var eventPartnerLocation in eventPartnerLocations) 
+        foreach (var eventPartnerLocation in eventPartnerLocations)
         {
             var eventPartnerLocationViewModel = new EventPartnerLocationViewModel
             {
@@ -65,7 +67,7 @@ public partial class ManageEventPartnersViewModel :  BaseViewModel
                 PartnerLocationName = eventPartnerLocation.PartnerLocationName,
                 PartnerLocationNotes = eventPartnerLocation.PartnerLocationNotes,
                 PartnerServicesEngaged = eventPartnerLocation.PartnerServicesEngaged,
-                PartnerId = eventPartnerLocation.PartnerId,
+                PartnerId = eventPartnerLocation.PartnerId
             };
 
             AvailablePartners.Add(eventPartnerLocationViewModel);

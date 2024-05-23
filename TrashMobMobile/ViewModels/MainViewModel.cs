@@ -1,11 +1,9 @@
-﻿#nullable enable
+﻿namespace TrashMobMobile.ViewModels;
 
-namespace TrashMobMobile.ViewModels;
-
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Authentication;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -13,16 +11,30 @@ using TrashMobMobile.Extensions;
 public partial class MainViewModel : BaseViewModel
 {
     private readonly IAuthService authService;
-    private readonly IUserRestService userRestService;
-    private readonly IStatsRestService statsRestService;
     private readonly IMobEventManager mobEventManager;
+    private readonly IStatsRestService statsRestService;
+    private readonly IUserRestService userRestService;
     private EventViewModel selectedEvent;
-    
 
-    public MainViewModel(IAuthService authService, 
-                         IUserRestService userRestService, 
-                         IStatsRestService statsRestService,
-                         IMobEventManager mobEventManager)
+    [ObservableProperty]
+    private StatisticsViewModel statisticsViewModel = new();
+
+    [ObservableProperty]
+    private int travelDistance;
+
+    [ObservableProperty]
+    private AddressViewModel userLocation;
+
+    [ObservableProperty]
+    private string userLocationDisplay = "Set Your Location Preference";
+
+    [ObservableProperty]
+    private string? welcomeMessage;
+
+    public MainViewModel(IAuthService authService,
+        IUserRestService userRestService,
+        IStatsRestService statsRestService,
+        IMobEventManager mobEventManager)
     {
         this.authService = authService;
         this.userRestService = userRestService;
@@ -30,32 +42,17 @@ public partial class MainViewModel : BaseViewModel
         this.mobEventManager = mobEventManager;
     }
 
-    [ObservableProperty]
-    private string? welcomeMessage;
-
-    [ObservableProperty]
-    string userLocationDisplay = "Set Your Location Preference";
-
     public ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = [];
-
-    [ObservableProperty]
-    StatisticsViewModel statisticsViewModel = new StatisticsViewModel();
-
-    [ObservableProperty]
-    AddressViewModel userLocation;
-
-    [ObservableProperty]
-    int travelDistance;
 
     public EventViewModel SelectedEvent
     {
-        get { return selectedEvent; }
+        get => selectedEvent;
         set
         {
             if (selectedEvent != value)
             {
                 selectedEvent = value;
-                OnPropertyChanged(nameof(SelectedEvent));
+                OnPropertyChanged();
 
                 if (selectedEvent != null)
                 {
@@ -74,7 +71,7 @@ public partial class MainViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        var signedIn = await authService.SignInSilentAsync(true);
+        var signedIn = await authService.SignInSilentAsync();
 
         if (signedIn.Succeeded)
         {

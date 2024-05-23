@@ -5,8 +5,8 @@ public partial class LogoutPage : ContentPage
     private readonly LogoutViewModel _viewModel;
 
     public LogoutPage(LogoutViewModel viewModel)
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         _viewModel = viewModel;
         _viewModel.Navigation = Navigation;
         BindingContext = _viewModel;

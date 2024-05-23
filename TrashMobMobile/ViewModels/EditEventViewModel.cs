@@ -1,39 +1,49 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
-public partial class EditEventViewModel :  BaseViewModel
+public partial class EditEventViewModel : BaseViewModel
 {
-    private readonly IMobEventManager mobEventManager;
     private readonly IEventTypeRestService eventTypeRestService;
     private readonly IMapRestService mapRestService;
+    private readonly IMobEventManager mobEventManager;
+
+    [ObservableProperty]
+    private EventViewModel eventViewModel;
+
+    [ObservableProperty]
+    private string selectedEventType;
+
+    [ObservableProperty]
+    private AddressViewModel userLocation;
 
     public EditEventViewModel(IMobEventManager mobEventManager,
-                                IEventTypeRestService eventTypeRestService,
-                                IMapRestService mapRestService)
+        IEventTypeRestService eventTypeRestService,
+        IMapRestService mapRestService)
     {
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
         this.mapRestService = mapRestService;
     }
 
-    [ObservableProperty]
-    EventViewModel eventViewModel;
-
-    [ObservableProperty]
-    AddressViewModel userLocation;
-
     private Event MobEvent { get; set; }
+
+    // This is only for the map point
+    public ObservableCollection<EventViewModel> Events { get; set; } = new();
+
+    private List<EventType> EventTypes { get; set; } = new();
+
+    public ObservableCollection<string> ETypes { get; set; } = new();
 
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
-        
+
         UserLocation = App.CurrentUser.GetAddress();
         EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
 
@@ -52,16 +62,6 @@ public partial class EditEventViewModel :  BaseViewModel
 
         IsBusy = false;
     }
-
-    // This is only for the map point
-    public ObservableCollection<EventViewModel> Events { get; set; } = new ObservableCollection<EventViewModel>();
-
-    private List<EventType> EventTypes { get; set; } = new List<EventType>();
-
-    public ObservableCollection<string> ETypes { get; set; } = new ObservableCollection<string>();
-
-    [ObservableProperty]
-    string selectedEventType;
 
     [RelayCommand]
     private async Task SaveEvent()
@@ -114,7 +114,7 @@ public partial class EditEventViewModel :  BaseViewModel
     public async Task ChangeLocation(Location location)
     {
         IsBusy = true;
-        
+
         var addr = await mapRestService.GetAddressAsync(location.Latitude, location.Longitude);
 
         EventViewModel.Address.City = addr.City;
@@ -128,7 +128,7 @@ public partial class EditEventViewModel :  BaseViewModel
 
         Events.Clear();
         Events.Add(EventViewModel);
-        
+
         IsBusy = false;
     }
 

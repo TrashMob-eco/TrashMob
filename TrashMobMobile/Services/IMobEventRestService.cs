@@ -1,8 +1,5 @@
 ﻿namespace TrashMobMobile.Data
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMobMobile.Models;
 
@@ -14,7 +11,8 @@
 
         Task<IEnumerable<Event>> GetAllEventsAsync(CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly,
+            CancellationToken cancellationToken = default);
 
         Task<Event> GetEventAsync(Guid eventId, CancellationToken cancellationToken = default);
 

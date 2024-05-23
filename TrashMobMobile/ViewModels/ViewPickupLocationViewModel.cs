@@ -1,14 +1,17 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 
 public partial class ViewPickupLocationViewModel : BaseViewModel
 {
-    private readonly IPickupLocationManager pickupLocationManager;
     private readonly IMobEventManager mobEventManager;
+    private readonly IPickupLocationManager pickupLocationManager;
+
+    [ObservableProperty]
+    private PickupLocationViewModel pickupLocationViewModel;
 
     public ViewPickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMobEventManager mobEventManager)
     {
@@ -16,16 +19,14 @@ public partial class ViewPickupLocationViewModel : BaseViewModel
         this.mobEventManager = mobEventManager;
     }
 
-    [ObservableProperty]
-    PickupLocationViewModel pickupLocationViewModel;
-
-    public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = new ObservableCollection<PickupLocationViewModel>();
+    public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = new();
 
     public async Task Init(Guid pickupLocationId)
     {
         IsBusy = true;
-        
-        var pickupLocation = await pickupLocationManager.GetPickupLocationImageAsync(pickupLocationId, ImageSizeEnum.Reduced);
+
+        var pickupLocation =
+            await pickupLocationManager.GetPickupLocationImageAsync(pickupLocationId, ImageSizeEnum.Reduced);
 
         var pickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager)
         {
@@ -39,7 +40,7 @@ public partial class ViewPickupLocationViewModel : BaseViewModel
                 Longitude = pickupLocation.Longitude.Value,
                 PostalCode = pickupLocation.PostalCode,
                 Region = pickupLocation.Region,
-                StreetAddress = pickupLocation.StreetAddress,
+                StreetAddress = pickupLocation.StreetAddress
             },
             Id = pickupLocation.Id,
             Notes = pickupLocation.Notes,
@@ -48,7 +49,7 @@ public partial class ViewPickupLocationViewModel : BaseViewModel
             NotifyError = NotifyError,
             Navigation = Navigation,
             PickupLocation = pickupLocation,
-            ImageUrl = pickupLocation.ImageUrl,
+            ImageUrl = pickupLocation.ImageUrl
         };
 
         PickupLocationViewModel = pickupLocationViewModel;

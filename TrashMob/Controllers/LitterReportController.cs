@@ -196,7 +196,7 @@ namespace TrashMob.Controllers
 
             var result = await litterReportManager.DeleteAsync(id, UserId, cancellationToken).ConfigureAwait(false);
 
-            if(result != -1)
+            if (result != -1)
             {
                 TelemetryClient.TrackEvent(nameof(DeleteLitterReport));
                 return Ok(id);

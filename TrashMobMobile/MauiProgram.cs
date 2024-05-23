@@ -1,27 +1,25 @@
 ﻿namespace TrashMobMobile;
 
 using CommunityToolkit.Maui;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Maui.Controls.Hosting;
 using Syncfusion.Maui.Core.Hosting;
 using TrashMobMobile.Authentication;
 using TrashMobMobile.Extensions;
 
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp()
-	{
-		var builder = MauiApp.CreateBuilder();
-		builder
+    public static MauiApp CreateMauiApp()
+    {
+        var builder = MauiApp.CreateBuilder();
+        builder
             .ConfigureSyncfusionCore()
             .UseMauiApp<App>()
             .UseMauiMaps()
-			.UseMauiCommunityToolkit()
-			.ConfigureFonts(fonts =>
-			{
-				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+            .UseMauiCommunityToolkit()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 fonts.AddFont("Lexend-Regular.ttf", "LexendRegular");
                 fonts.AddFont("Lexend-SemiBold.ttf", "LexendSemibold");
                 fonts.AddFont("feather.ttf", "Icons");
@@ -30,7 +28,8 @@ public static class MauiProgram
         builder.UseSentry(options =>
         {
             // The DSN is the only required setting.
-            options.Dsn = "https://4be7fb697cee47ce9554bb64f7d6a476@o4505460799045632.ingest.sentry.io/4505460800225280";
+            options.Dsn =
+                "https://4be7fb697cee47ce9554bb64f7d6a476@o4505460799045632.ingest.sentry.io/4505460800225280";
 
             // Use debug mode if you want to see what the SDK is doing.
             // Debug messages are written to stdout with Console.Writeline,
@@ -48,10 +47,10 @@ public static class MauiProgram
         // Services
         builder.Services.AddSingleton<AuthHandler>();
 
-        builder.Services.AddHttpClient(AuthConstants.AUTHENTICATED_CLIENT, client =>
-		{
-			client.BaseAddress = new Uri(AuthConstants.ApiBaseUri);
-		}).AddHttpMessageHandler<AuthHandler>();
+        builder.Services
+            .AddHttpClient(AuthConstants.AuthenticatedClient,
+                client => { client.BaseAddress = new Uri(AuthConstants.ApiBaseUri); })
+            .AddHttpMessageHandler<AuthHandler>();
 
         builder.Services.AddTrashMobServices();
         builder.Services.AddRestClientServices(builder.Configuration);
@@ -112,5 +111,5 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
         return builder.Build();
-	}
+    }
 }

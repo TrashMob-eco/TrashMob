@@ -48,7 +48,7 @@
                 VerticalOptions="Center" 
                 HorizontalOptions="Start"
                 HorizontalTextAlignment="Center"
-                Margin="10"/>
+                Margin="10, 0, 10, 0"/>
 
                 <CollectionView x:Name="UpcomingEventsCollection" 
                             ItemsSource="{Binding UpcomingEvents}" 
@@ -58,10 +58,10 @@
                             MaximumHeightRequest="250" >
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Border Padding="3" Stroke="Green">
+                            <Border Style="{StaticResource RoundBorder}" Margin="5">
                                 <Grid ColumnDefinitions="1*, 1*"                                  
                                   RowDefinitions="Auto, Auto, Auto, Auto"
-                                  x:Name="EventItem">
+                                  x:Name="EventItem" >
 
                                     <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
                                     <Label Text="{Binding DisplayDate}" Grid.Row="1" Grid.ColumnSpan="2" FontSize="Micro" />
@@ -90,7 +90,7 @@
                             MaximumHeightRequest="250" >
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Border Padding="3" Stroke="Green">
+                            <Border Style="{StaticResource RoundBorder}" Margin="5">
                                 <Grid ColumnDefinitions="1*, 1*"                                  
                                   RowDefinitions="Auto, Auto, Auto, Auto"
                                   x:Name="EventItem">
@@ -122,7 +122,7 @@
                             MaximumHeightRequest="250" >
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Border Padding="3" Stroke="Green">
+                            <Border Style="{StaticResource RoundBorder}" Margin="5">
                                 <Grid ColumnDefinitions="1*, 1*"                                  
                                   RowDefinitions="Auto, Auto, Auto, Auto"
                                   x:Name="LitterReportItem" RowSpacing="3">

@@ -19,7 +19,7 @@ public static class AuthConstants
     public const string ApiBaseUri = "https://www.trashmob.eco/api/";
 #endif
 
-    public static readonly string[] Scopes = new string[]
+    public static readonly string[] Scopes =
     {
         $"https://{TenantId}/api/TrashMob.Writes",
         $"https://{TenantId}/api/TrashMob.Read",
@@ -33,6 +33,6 @@ public static class AuthConstants
 
     public const string IosKeychainSecurityGroup = "com.microsoft.adalcache";
     public const string RedirectUri = "eco.trashmob.trashmobmobile://auth";
-    
-    public const string AUTHENTICATED_CLIENT = "AuthenticatedClient";
+
+    public const string AuthenticatedClient = "AuthenticatedClient";
 }

@@ -20,7 +20,7 @@ public static class BehaviorAttachment
         return (Behavior)view.GetValue(PassthroughBehaviorProperty);
     }
 
-    static void OnBehaviorChanged(BindableObject bindable, object oldValue, object newValue)
+    private static void OnBehaviorChanged(BindableObject bindable, object oldValue, object newValue)
     {
         if (newValue is Behavior newBehavior)
         {
@@ -41,7 +41,6 @@ public static class BehaviorAttachment
                     editor.Behaviors.Add(newBehavior);
                 }
             }
-        }        
+        }
     }
 }
-

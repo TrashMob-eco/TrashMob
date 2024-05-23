@@ -9,23 +9,23 @@ public partial class EditEventSummaryViewModel : BaseViewModel
 {
     private readonly IMobEventManager mobEventManager;
 
+    [ObservableProperty]
+    private bool enableSaveEventSummary;
+
+    [ObservableProperty]
+    private EventSummaryViewModel eventSummaryViewModel;
+
     public EditEventSummaryViewModel(IMobEventManager mobEventManager)
     {
         this.mobEventManager = mobEventManager;
     }
 
-    [ObservableProperty]
-    EventSummaryViewModel eventSummaryViewModel;
-
     private EventSummary EventSummary { get; set; }
-
-    [ObservableProperty]
-    private bool enableSaveEventSummary;
 
     public async Task Init(string eventId)
     {
         IsBusy = true;
-        
+
         EventSummary = await mobEventManager.GetEventSummaryAsync(new Guid(eventId));
 
         if (EventSummary != null)
@@ -36,7 +36,7 @@ public partial class EditEventSummaryViewModel : BaseViewModel
                 DurationInMinutes = EventSummary.DurationInMinutes,
                 EventId = EventSummary.EventId,
                 Notes = EventSummary.Notes,
-                NumberOfBags = EventSummary.NumberOfBags,
+                NumberOfBags = EventSummary.NumberOfBags
             };
         }
 

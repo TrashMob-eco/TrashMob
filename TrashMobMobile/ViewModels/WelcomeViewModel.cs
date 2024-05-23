@@ -10,19 +10,19 @@ public partial class WelcomeViewModel : BaseViewModel
     private readonly IAuthService authService;
     private readonly IStatsRestService statsRestService;
 
+    [ObservableProperty]
+    private StatisticsViewModel statisticsViewModel = new();
+
     public WelcomeViewModel(IAuthService authService, IStatsRestService statsRestService)
     {
         this.authService = authService;
-        this.statsRestService = statsRestService;        
+        this.statsRestService = statsRestService;
     }
-
-    [ObservableProperty]
-    StatisticsViewModel statisticsViewModel = new StatisticsViewModel();
 
     public async Task Init()
     {
         IsBusy = true;
-        
+
         var stats = await statsRestService.GetStatsAsync();
 
         StatisticsViewModel.TotalAttendees = stats.TotalParticipants;
