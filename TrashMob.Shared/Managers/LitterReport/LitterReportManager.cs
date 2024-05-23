@@ -92,7 +92,6 @@ namespace TrashMob.Shared.Managers.LitterReport
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error adding litter report");
-                await dbTransaction.RollbackTransactionAsync();
                 return null;
             }
         }
