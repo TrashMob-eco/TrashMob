@@ -20,7 +20,7 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Entry Text="{Binding EventViewModel.Name}">
                                 <Entry.Behaviors>
                                     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
@@ -38,7 +38,7 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <DatePicker Grid.Row="1" Grid.Column="1" Date="{Binding EventViewModel.EventDateOnly}" />
                         </Frame>
                     </VerticalStackLayout>
@@ -52,7 +52,7 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <TimePicker Grid.Row="2" Grid.Column="1" Time="{Binding EventViewModel.EventTime}" />
                         </Frame>
                     </VerticalStackLayout>
@@ -66,7 +66,7 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Entry Keyboard="Numeric" Text="{Binding EventViewModel.DurationHours}">
                                 <Entry.Behaviors>
                                     <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged" x:Name="durationHoursValidator" MinimumValue="1" MaximumValue="10" MaximumDecimalPlaces="0" />
@@ -84,7 +84,7 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Entry Keyboard="Numeric" Text="{Binding EventViewModel.DurationMinutes}">
                                 <Entry.Behaviors>
                                     <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged" x:Name="durationMinutesValidator" MinimumValue="0" MaximumValue="59" MaximumDecimalPlaces="0" />
@@ -102,7 +102,7 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Editor Text="{Binding EventViewModel.Description}">
                                 <Editor.Behaviors>
                                     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10" x:Name="descriptionValidator" />
@@ -121,7 +121,7 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Picker Title="Event Type" ItemsSource="{Binding ETypes}" SelectedItem="{Binding SelectedEventType}" />
                         </Frame>
                     </VerticalStackLayout>
@@ -135,7 +135,7 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Entry Keyboard="Numeric" Text="{Binding EventViewModel.MaxNumberOfParticipants}">
                                 <Entry.Behaviors>
                                     <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged" x:Name="maxNumberOfParticipantsValidator" MinimumValue="0" MaximumDecimalPlaces="0" />
@@ -153,7 +153,7 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <CheckBox IsChecked="{Binding EventViewModel.IsEventPublic}" />
                         </Frame>
                     </VerticalStackLayout>
@@ -187,7 +187,7 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Label Text="{Binding EventViewModel.Address.StreetAddress }"  FontSize="Micro"/>
                         </Frame>
                     </VerticalStackLayout>
@@ -200,7 +200,7 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Label Text="{Binding EventViewModel.Address.City }"  FontSize="Micro"/>
                         </Frame>
                     </VerticalStackLayout>
@@ -213,7 +213,7 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Label Text="{Binding EventViewModel.Address.Region }"  FontSize="Micro"/>
                         </Frame>
                     </VerticalStackLayout>
@@ -226,7 +226,7 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Label Text="{Binding EventViewModel.Address.Country }"  FontSize="Micro"/>
                         </Frame>
                     </VerticalStackLayout>
@@ -239,7 +239,7 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Label Text="{Binding EventViewModel.Address.PostalCode }" FontSize="Micro" />
                         </Frame>
                     </VerticalStackLayout>

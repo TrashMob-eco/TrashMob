@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobile.Extensions
 {
     using TrashMob.Models;
+
     public static class LitterReportExtensions
     {
         public static string GetLitterStatusFromId(int? id)
@@ -15,8 +16,8 @@
                 Id = litterReport.Id,
                 Name = litterReport.Name,
                 Description = litterReport.Description,
-                LitterReportStatusId = litterReport.LitterReportStatusId,                
-                CreatedDate = litterReport.CreatedDate?.GetFormattedLocalDate() ?? string.Empty,
+                LitterReportStatusId = litterReport.LitterReportStatusId,
+                CreatedDate = litterReport.CreatedDate?.GetFormattedLocalDate() ?? string.Empty
             };
 
             foreach (var litterImage in litterReport.LitterImages)
@@ -39,7 +40,7 @@
                 Name = litterReportViewModel.Name,
                 Description = litterReportViewModel.Description,
                 LitterReportStatusId = litterReportViewModel.LitterReportStatusId,
-                LitterImages = [],
+                LitterImages = []
             };
         }
 
@@ -48,7 +49,7 @@
             return new LitterImage
             {
                 Id = litterImageViewModel.Id,
-                LitterReportId = litterImageViewModel.LitterReportId,
+                LitterReportId = litterImageViewModel.LitterReportId
             };
         }
 
@@ -64,6 +65,10 @@
                 Id = litterImage.Id,
                 LitterReportId = litterImage.LitterReportId,
                 AzureBlobUrl = litterImage.AzureBlobURL,
+                CreatedByUserId = litterImage.CreatedByUserId,
+                LastUpdatedByUserId = litterImage.LastUpdatedByUserId,
+                CreatedDate = litterImage.CreatedDate,
+                LastUpdatedDate = litterImage.LastUpdatedDate,
                 Address = new AddressViewModel
                 {
                     City = litterImage.City,
@@ -74,7 +79,7 @@
                     Region = litterImage.Region,
                     StreetAddress = litterImage.StreetAddress,
                     Location = new Location(litterImage.Latitude.Value, litterImage.Longitude.Value)
-                },
+                }
             };
         }
     }

@@ -1,40 +1,40 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 public partial class LitterReportViewModel : ObservableObject
 {
+    [ObservableProperty]
+    private string createdDate;
+
+    [ObservableProperty]
+    private string description;
+
+    [ObservableProperty]
+    private Guid id;
+
+    [ObservableProperty]
+    private string litterReportStatus;
+
+    private int litterReportStatusId;
+
+    [ObservableProperty]
+    private string name;
+
     public LitterReportViewModel()
     {
         Description = string.Empty;
         Name = string.Empty;
     }
 
-    [ObservableProperty]
-    Guid id;
-
-    [ObservableProperty]
-    string name;
-
-    [ObservableProperty]
-    string description;
-
-    [ObservableProperty]
-    string createdDate;
-
-    private int litterReportStatusId;
-    
     public int LitterReportStatusId
     {
-        get
-        {
-            return litterReportStatusId;
-        }
+        get => litterReportStatusId;
         set
         {
             litterReportStatusId = value;
-            OnPropertyChanged(nameof(LitterReportStatusId));
+            OnPropertyChanged();
             switch (litterReportStatusId)
             {
                 case 1:
@@ -49,14 +49,9 @@ public partial class LitterReportViewModel : ObservableObject
                 case 4:
                     LitterReportStatus = "Cancelled";
                     break;
-                default:
-                    break;
             }
         }
     }
-
-    [ObservableProperty]
-    string litterReportStatus;
 
     public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; set; } = [];
 }

@@ -8,16 +8,17 @@ using Microsoft.Maui.Maps;
 public partial class ViewLitterReportPage : ContentPage
 {
     private readonly ViewLitterReportViewModel _viewModel;
-    public string LitterReportId { get; set; }
 
     public ViewLitterReportPage(ViewLitterReportViewModel viewModel)
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         _viewModel = viewModel;
         _viewModel.Navigation = Navigation;
         _viewModel.Notify = Notify;
         BindingContext = _viewModel;
     }
+
+    public string LitterReportId { get; set; }
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
@@ -26,16 +27,17 @@ public partial class ViewLitterReportPage : ContentPage
 
         if (_viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location != null)
         {
-            var mapSpan = new MapSpan(_viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location, 0.05, 0.05);
+            var mapSpan = new MapSpan(_viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location, 0.05,
+                0.05);
             litterReportLocationMap.MoveToRegion(mapSpan);
         }
     }
 
     private async Task Notify(string message)
     {
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        var cancellationTokenSource = new CancellationTokenSource();
 
-        ToastDuration duration = ToastDuration.Short;
+        var duration = ToastDuration.Short;
         double fontSize = 14;
 
         var toast = Toast.Make(message, duration, fontSize);

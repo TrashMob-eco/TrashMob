@@ -1,27 +1,47 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
 public partial class PickupLocationViewModel : BaseViewModel
 {
+    private readonly IMobEventManager mobEventManager;
+
+    private readonly IPickupLocationManager pickupLocationManager;
+
+    [ObservableProperty]
+    private AddressViewModel address;
+
+    [ObservableProperty]
+    private bool canDeletePickupLocation;
+
+    [ObservableProperty]
+    private bool canEditPickupLocation;
+
+    [ObservableProperty]
+    private Guid id;
+
+    [ObservableProperty]
+    private string imageUrl;
+
+    private Event mobEvent;
+
+    [ObservableProperty]
+    private string name;
+
+    [ObservableProperty]
+    private string notes;
+
     public PickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMobEventManager mobEventManager)
     {
-        DeletePickupLocationCommand = new Command(async () => await DeletePickupLocation());
-        EditPickupLocationCommand = new Command(async () => await EditPickupLocation());
         this.pickupLocationManager = pickupLocationManager;
         this.mobEventManager = mobEventManager;
     }
 
-    public ICommand DeletePickupLocationCommand { get; set; }
-    public ICommand EditPickupLocationCommand { get; set; }
-
     public PickupLocation PickupLocation { get; set; }
-
-    private Event mobEvent;
 
     public async Task Init(Guid eventId)
     {
@@ -34,32 +54,9 @@ public partial class PickupLocationViewModel : BaseViewModel
         IsBusy = false;
     }
 
-    [ObservableProperty]
-    Guid id;
-
-    [ObservableProperty]
-    string name;
-
-    [ObservableProperty]
-    string notes;
-
-    [ObservableProperty]
-    AddressViewModel address;
-
-    [ObservableProperty]
-    bool canDeletePickupLocation;
-
-    [ObservableProperty]
-    bool canEditPickupLocation;
-
-    [ObservableProperty]
-    string imageUrl;
-
-    private readonly IPickupLocationManager pickupLocationManager;
-    private readonly IMobEventManager mobEventManager;
-
+    [RelayCommand]
     private async Task DeletePickupLocation()
-    {        
+    {
         await pickupLocationManager.DeletePickupLocationAsync(PickupLocation);
 
         await Notify("Pickup location has been removed.");
@@ -67,8 +64,10 @@ public partial class PickupLocationViewModel : BaseViewModel
         await Navigation.PopAsync();
     }
 
+    [RelayCommand]
     private async Task EditPickupLocation()
     {
-        await Shell.Current.GoToAsync($"{nameof(EditPickupLocationPage)}?EventId={mobEvent.Id}&PickupLocationId={PickupLocation.Id}");
+        await Shell.Current.GoToAsync(
+            $"{nameof(EditPickupLocationPage)}?EventId={mobEvent.Id}&PickupLocationId={PickupLocation.Id}");
     }
 }

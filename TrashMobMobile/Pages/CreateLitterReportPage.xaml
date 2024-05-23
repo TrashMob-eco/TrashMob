@@ -20,7 +20,7 @@
                                Text="Name"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Entry Text="{Binding Name}" />
                         </Frame>
                     </VerticalStackLayout>
@@ -34,7 +34,7 @@
                                Text="Description"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:StaticResource Frame}">
+                        <Frame Style="{x:DynamicResource Frame}">
                             <Editor Text="{Binding Description}" />
                         </Frame>
                     </VerticalStackLayout>
@@ -63,7 +63,7 @@
                                     SelectionMode="None">
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <Border StrokeThickness="1">
+                                <Border Style="{StaticResource RoundBorder}">
                                     <Grid ColumnDefinitions="Auto, *, Auto">
                                         <Image Grid.Column="0"
                                                Margin="5"

@@ -7,24 +7,27 @@
         public static string GetFormattedAddress(this Event mobEvent)
         {
             if (string.IsNullOrEmpty(mobEvent.StreetAddress) && string.IsNullOrEmpty(mobEvent.City)
-                && string.IsNullOrEmpty(mobEvent.Country) && string.IsNullOrEmpty(mobEvent.PostalCode) && string.IsNullOrEmpty(mobEvent.Region))
+                                                             && string.IsNullOrEmpty(mobEvent.Country) &&
+                                                             string.IsNullOrEmpty(mobEvent.PostalCode) &&
+                                                             string.IsNullOrEmpty(mobEvent.Region))
             {
                 return string.Empty;
             }
 
-            return string.Concat(mobEvent.StreetAddress, ", ", mobEvent.City, ", ", mobEvent.Region, ", ", mobEvent.PostalCode, ", ", mobEvent.Country);
+            return string.Concat(mobEvent.StreetAddress, ", ", mobEvent.City, ", ", mobEvent.Region, ", ",
+                mobEvent.PostalCode, ", ", mobEvent.Country);
         }
 
         public static string GetFormattedDuration(this Event mobEvent)
         {
             //TODO: move hard code string to resource file
-            return string.Concat(mobEvent.DurationHours, " hour ", mobEvent.DurationMinutes, " minutes");
+            return string.Concat("Expected Duration: ", mobEvent.DurationHours, " hour ", mobEvent.DurationMinutes, " minutes");
         }
 
         public static string GetFormattedLocalDate(this DateTimeOffset dateTime)
         {
             var localDateTime = TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.Local).DateTime;
-            return String.Format("{0:dddd, MMMM d, yyyy}", localDateTime);
+            return string.Format("{0:dddd, MMMM d, yyyy}", localDateTime);
         }
 
         public static string GetFormattedLocalTime(this DateTimeOffset dateTime)
@@ -46,15 +49,18 @@
             {
                 return "Active";
             }
-            else if (mobEvent.EventStatusId == 2)
+
+            if (mobEvent.EventStatusId == 2)
             {
                 return "Full";
             }
-            else if (mobEvent.EventStatusId == 3)
+
+            if (mobEvent.EventStatusId == 3)
             {
                 return "Cancelled";
             }
-            else if (mobEvent.EventStatusId == 4)
+
+            if (mobEvent.EventStatusId == 4)
             {
                 return "Complete";
             }
@@ -91,7 +97,7 @@
 
         public static EventViewModel ToEventViewModel(this Event mobEvent)
         {
-            var eventViewModel = new EventViewModel()
+            var eventViewModel = new EventViewModel
             {
                 Address = mobEvent.ToAddressViewModel(),
                 Id = mobEvent.Id,

@@ -14,7 +14,6 @@
 
         public static IServiceCollection AddTrashMobServices(this IServiceCollection services)
         {
-
             services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IUserService, UserService>();
 
@@ -23,7 +22,9 @@
             services.AddSingleton<IDocusignRestService, DocusignRestService>();
             services.AddSingleton<IEventAttendeeRestService, EventAttendeeRestService>();
             services.AddSingleton<IEventPartnerLocationServiceRestService, EventPartnerLocationServiceRestService>();
-            services.AddSingleton<IEventPartnerLocationServiceStatusRestService, EventPartnerLocationServiceStatusRestService>();
+            services
+                .AddSingleton<IEventPartnerLocationServiceStatusRestService,
+                    EventPartnerLocationServiceStatusRestService>();
             services.AddSingleton<IEventSummaryRestService, EventSummaryRestService>();
             services.AddSingleton<IEventTypeRestService, EventTypeRestService>();
             services.AddSingleton<ILitterReportManager, LitterReportManager>();
@@ -43,7 +44,8 @@
             return services;
         }
 
-        public static IServiceCollection AddRestClientServices(this IServiceCollection services, ConfigurationManager configuration)
+        public static IServiceCollection AddRestClientServices(this IServiceCollection services,
+            ConfigurationManager configuration)
         {
             /* When running in an emulator localhost would not work as expected.
              * You need to do forwarding, you can use ngrok, check an example before
@@ -54,14 +56,14 @@
             services.AddScoped<BaseAddressAuthorizationMessageHandler>();
             services.AddHttpClient($"{ASSEMBLY_NAME}.ServerAPI", client =>
                     client.BaseAddress = new Uri(Settings.ApiBaseUrl))
-                                            .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>()
-                                            .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
-                                            .AddPolicyHandler(GetRetryPolicy());
+                .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>()
+                .SetHandlerLifetime(TimeSpan.FromMinutes(5)) //Set lifetime to five minutes
+                .AddPolicyHandler(GetRetryPolicy());
 
             services.AddHttpClient($"{ASSEMBLY_NAME}.ServerAPI.Anonymous", client =>
                     client.BaseAddress = new Uri(Settings.ApiBaseUrl))
-                                            .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
-                                            .AddPolicyHandler(GetRetryPolicy());
+                .SetHandlerLifetime(TimeSpan.FromMinutes(5)) //Set lifetime to five minutes
+                .AddPolicyHandler(GetRetryPolicy());
 
             services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>()
                 .CreateClient($"{ASSEMBLY_NAME}.ServerAPI"));
@@ -78,7 +80,7 @@
                 .HandleTransientHttpError()
                 .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
                 .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,
-                                                                            retryAttempt)));
+                    retryAttempt)));
         }
     }
 }

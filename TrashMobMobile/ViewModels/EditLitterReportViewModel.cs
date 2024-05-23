@@ -7,9 +7,8 @@ using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
-public partial class CreateLitterReportViewModel : BaseViewModel
+public partial class EditLitterReportViewModel : BaseViewModel
 {
-    private const string DefaultLitterReportName = "New Litter Report";
     private const int NewLitterReportStatus = 1;
     public const int MaxImages = 5;
     private readonly ILitterReportManager litterReportManager;
@@ -26,22 +25,20 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     [ObservableProperty]
     private bool hasNoImages = true;
 
-    [ObservableProperty]
-    private LitterReportViewModel litterReportViewModel;
+    private LitterReport litterReport;
 
-    private string name = DefaultLitterReportName;
+    [ObservableProperty]
+    private string litterReportStatus;
+
+    private string name = string.Empty;
 
     [ObservableProperty]
     private bool reportIsValid;
 
-    public CreateLitterReportViewModel(ILitterReportManager litterReportManager, IMapRestService mapRestService)
+    public EditLitterReportViewModel(ILitterReportManager litterReportManager, IMapRestService mapRestService)
     {
         this.litterReportManager = litterReportManager;
         this.mapRestService = mapRestService;
-        LitterReportViewModel = new LitterReportViewModel
-        {
-            LitterReportStatusId = NewLitterReportStatus
-        };
     }
 
     public string Name
@@ -71,6 +68,32 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     public LitterImageViewModel? SelectedLitterImageViewModel { get; set; }
 
     public string LocalFilePath { get; set; } = string.Empty;
+
+    public async Task Init(Guid litterReportId)
+    {
+        IsBusy = true;
+
+        litterReport = await litterReportManager.GetLitterReportAsync(litterReportId, ImageSizeEnum.Thumb);
+
+        if (litterReport != null)
+        {
+            Name = litterReport.Name;
+            Description = litterReport.Description;
+
+            LitterReportStatus = LitterReportExtensions.GetLitterStatusFromId(litterReport.LitterReportStatusId);
+            Name = litterReport.Name;
+            Description = litterReport.Description;
+
+            LitterImageViewModels.Clear();
+            foreach (var litterImage in litterReport.LitterImages)
+            {
+                var litterImageViewModel = litterImage.ToLitterImageViewModel();
+                LitterImageViewModels.Add(litterImageViewModel);
+            }
+        }
+
+        IsBusy = false;
+    }
 
     public async Task AddImageToCollection()
     {
@@ -149,10 +172,9 @@ public partial class CreateLitterReportViewModel : BaseViewModel
             return;
         }
 
-        var litterReport = LitterReportViewModel.ToLitterReport();
         litterReport.Name = Name;
         litterReport.Description = Description;
-
+        litterReport.LitterImages.Clear();
         foreach (var litterImageViewModel in LitterImageViewModels)
         {
             var litterImage = new LitterImage
@@ -166,6 +188,10 @@ public partial class CreateLitterReportViewModel : BaseViewModel
                 PostalCode = litterImageViewModel.Address.PostalCode,
                 Region = litterImageViewModel.Address.Region,
                 StreetAddress = litterImageViewModel.Address.StreetAddress,
+                CreatedByUserId = litterImageViewModel.CreatedByUserId,
+                LastUpdatedByUserId = litterImageViewModel.LastUpdatedByUserId,
+                CreatedDate = litterImageViewModel.CreatedDate,
+                LastUpdatedDate = litterImageViewModel.LastUpdatedDate,
 
                 // Use the Azure Blob Url as local file on create
                 AzureBlobURL = litterImageViewModel.FilePath
@@ -174,11 +200,11 @@ public partial class CreateLitterReportViewModel : BaseViewModel
             litterReport.LitterImages.Add(litterImage);
         }
 
-        await litterReportManager.AddLitterReportAsync(litterReport);
+        var updatedLitterReport = await litterReportManager.UpdateLitterReportAsync(litterReport);
 
         IsBusy = false;
 
-        await Notify("Litter Report has been submitted.");
+        await Notify("Litter Report has been updated.");
 
         await Navigation.PopAsync();
     }

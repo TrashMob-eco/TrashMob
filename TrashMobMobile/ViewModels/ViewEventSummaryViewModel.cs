@@ -1,8 +1,8 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
@@ -12,40 +12,35 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
     private readonly IMobEventManager mobEventManager;
     private readonly IPickupLocationManager pickupLocationManager;
 
+    [ObservableProperty]
+    private bool enableAddPickupLocation;
+
+    [ObservableProperty]
+    private bool enableEditEventSummary;
+
+    [ObservableProperty]
+    private EventSummaryViewModel eventSummaryViewModel;
+
+    [ObservableProperty]
+    private EventViewModel eventViewModel;
+
+    private PickupLocationViewModel selectedPickupLocationViewModel;
+
     public ViewEventSummaryViewModel(IMobEventManager mobEventManager, IPickupLocationManager pickupLocationManager)
     {
-        EditEventSummaryCommand = new Command(async () => await EditEventSummary());
-        AddPickupLocationCommand = new Command(async () => await AddPickupLocation());
         this.mobEventManager = mobEventManager;
         this.pickupLocationManager = pickupLocationManager;
     }
 
-    [ObservableProperty]
-    EventSummaryViewModel eventSummaryViewModel;
-
-    [ObservableProperty]
-    EventViewModel eventViewModel;
-
-    PickupLocationViewModel selectedPickupLocationViewModel;
-
-    public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = new ObservableCollection<PickupLocationViewModel>();
-
-    [ObservableProperty]
-    bool enableEditEventSummary;
-
-    [ObservableProperty]
-    bool enableAddPickupLocation;
-
-    public ICommand EditEventSummaryCommand { get; set; }
-    public ICommand AddPickupLocationCommand { get; set; }
+    public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = new();
 
     public PickupLocationViewModel SelectedPickupLocation
     {
-        get { return selectedPickupLocationViewModel; }
+        get => selectedPickupLocationViewModel;
         set
         {
             selectedPickupLocationViewModel = value;
-            OnPropertyChanged(nameof(SelectedPickupLocation));
+            OnPropertyChanged();
 
             if (selectedPickupLocationViewModel != null)
             {
@@ -62,7 +57,7 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
-        
+
         var mobEvent = await mobEventManager.GetEventAsync(eventId);
         EventViewModel = mobEvent.ToEventViewModel();
 
@@ -76,7 +71,7 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
                 DurationInMinutes = eventSummary.DurationInMinutes,
                 EventId = eventId,
                 Notes = eventSummary.Notes,
-                NumberOfBags = eventSummary.NumberOfBags,
+                NumberOfBags = eventSummary.NumberOfBags
             };
         }
 
@@ -100,7 +95,7 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
                     Longitude = pickupLocation.Longitude.Value,
                     PostalCode = pickupLocation.PostalCode,
                     Region = pickupLocation.Region,
-                    StreetAddress = pickupLocation.StreetAddress,
+                    StreetAddress = pickupLocation.StreetAddress
                 },
                 Id = pickupLocation.Id,
                 Notes = pickupLocation.Notes,
@@ -109,7 +104,7 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
                 NotifyError = NotifyError,
                 Navigation = Navigation,
                 PickupLocation = pickupLocation,
-                ImageUrl = pickupLocation.ImageUrl,
+                ImageUrl = pickupLocation.ImageUrl
             };
 
             await pickupLocationViewModel.Init(eventId);
@@ -120,11 +115,13 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
         IsBusy = false;
     }
 
+    [RelayCommand]
     private async Task AddPickupLocation()
     {
         await Shell.Current.GoToAsync($"{nameof(CreatePickupLocationPage)}?EventId={EventSummaryViewModel.EventId}");
     }
 
+    [RelayCommand]
     private async Task EditEventSummary()
     {
         await Shell.Current.GoToAsync($"{nameof(EditEventSummaryPage)}?EventId={EventSummaryViewModel.EventId}");

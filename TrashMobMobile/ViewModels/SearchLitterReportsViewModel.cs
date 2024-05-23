@@ -1,48 +1,48 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
 public partial class SearchLitterReportsViewModel : BaseViewModel
 {
-    private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
-    private string? selectedCountry;
-    private string? selectedRegion;
-    private string? selectedCity;
-
     private readonly ILitterReportManager litterReportManager;
-    private LitterReportViewModel? selectedLitterReport;
-    private LitterImageViewModel? selectedLitterImage;
-
-    public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
-
-    [ObservableProperty]
-    AddressViewModel userLocation;
 
     [ObservableProperty]
     private string reportStatus = "New";
+
+    private string? selectedCity;
+    private string? selectedCountry;
+    private LitterImageViewModel? selectedLitterImage;
+    private LitterReportViewModel? selectedLitterReport;
+    private string? selectedRegion;
+
+    [ObservableProperty]
+    private AddressViewModel userLocation;
+
+    public SearchLitterReportsViewModel(ILitterReportManager litterReportManager)
+    {
+        this.litterReportManager = litterReportManager;
+    }
+
+    private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
+
+    public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
 
     public ObservableCollection<string> CountryCollection { get; set; } = [];
     public ObservableCollection<string> RegionCollection { get; set; } = [];
     public ObservableCollection<string> CityCollection { get; set; } = [];
 
-    public ICommand ClearSelectionsCommand { get; set; }
-
     public string? SelectedCountry
     {
-        get 
-        { 
-            return selectedCountry;
-        }
+        get => selectedCountry;
         set
         {
             selectedCountry = value;
-            OnPropertyChanged(nameof(SelectedCountry));
+            OnPropertyChanged();
 
             HandleCountrySelected(value);
         }
@@ -50,14 +50,11 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
     public string? SelectedRegion
     {
-        get
-        {
-            return selectedRegion;
-        }
+        get => selectedRegion;
         set
         {
             selectedRegion = value;
-            OnPropertyChanged(nameof(SelectedRegion));
+            OnPropertyChanged();
 
             HandleRegionSelected(value);
         }
@@ -65,36 +62,27 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
     public string? SelectedCity
     {
-        get
-        {
-            return selectedCity;
-        }
+        get => selectedCity;
         set
         {
             selectedCity = value;
-            OnPropertyChanged(nameof(SelectedCity));
+            OnPropertyChanged();
 
             HandleCitySelected(value);
         }
-    }
-
-    public SearchLitterReportsViewModel(ILitterReportManager litterReportManager)
-    {
-        this.litterReportManager = litterReportManager;
-        ClearSelectionsCommand = new Command(async () => await ClearSelections());
     }
 
     public ObservableCollection<LitterReportViewModel> LitterReports { get; set; } = [];
 
     public LitterReportViewModel? SelectedLitterReport
     {
-        get { return selectedLitterReport; }
+        get => selectedLitterReport;
         set
         {
             if (selectedLitterReport != value)
             {
                 selectedLitterReport = value;
-                OnPropertyChanged(nameof(SelectedLitterReport));
+                OnPropertyChanged();
 
                 if (selectedLitterReport != null)
                 {
@@ -106,17 +94,18 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
     public LitterImageViewModel? SelectedLitterImage
     {
-        get { return selectedLitterImage; }
+        get => selectedLitterImage;
         set
         {
             if (selectedLitterImage != value)
             {
                 selectedLitterImage = value;
-                OnPropertyChanged(nameof(SelectedLitterImage));
+                OnPropertyChanged();
 
                 if (selectedLitterImage != null)
                 {
-                    var litterReport = RawLitterReports.FirstOrDefault(l => l.LitterImages.Any(i => i.Id == selectedLitterImage.Id));
+                    var litterReport =
+                        RawLitterReports.FirstOrDefault(l => l.LitterImages.Any(i => i.Id == selectedLitterImage.Id));
                     PerformNavigation(litterReport.Id);
                 }
             }
@@ -270,7 +259,7 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
         LitterReports.Clear();
         LitterImages.Clear();
 
-        foreach (var litterReport in RawLitterReports)
+        foreach (var litterReport in RawLitterReports.OrderByDescending(l => l.CreatedDate))
         {
             var vm = litterReport.ToLitterReportViewModel();
 
@@ -288,6 +277,7 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
         }
     }
 
+    [RelayCommand]
     private async Task ClearSelections()
     {
         IsBusy = true;

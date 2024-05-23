@@ -4,10 +4,8 @@ using TrashMob.Models;
 
 public partial class App : Application
 {
-    public static User? CurrentUser { get; set; }
-
     public App()
-	{
+    {
         // TODO: uncomment if we need syncfusion
         //var sfLicense = Constants.GetSyncfusionKey();
 
@@ -16,5 +14,7 @@ public partial class App : Application
         InitializeComponent();
 
         MainPage = new AppShell();
-	}
+    }
+
+    public static User? CurrentUser { get; set; }
 }

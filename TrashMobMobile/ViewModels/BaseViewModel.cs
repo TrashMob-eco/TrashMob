@@ -4,15 +4,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 public abstract partial class BaseViewModel : ObservableObject
 {
-    public BaseViewModel()
-    {
-    }
+    [ObservableProperty]
+    private bool isBusy;
 
     [ObservableProperty]
-    bool isBusy = false;
-
-    [ObservableProperty]
-    bool isError = false;
+    private bool isError;
 
     public INavigation Navigation { get; set; }
 

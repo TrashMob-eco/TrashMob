@@ -1,11 +1,8 @@
 ﻿namespace TrashMobMobile.Data;
 
-using Newtonsoft.Json;
-using System;
 using System.Diagnostics;
 using System.Net.Http.Json;
-using System.Threading;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 using TrashMob.Models;
 using TrashMob.Models.Poco;
 
@@ -13,11 +10,8 @@ public class EventPartnerLocationServiceRestService : RestServiceBase, IEventPar
 {
     protected override string Controller => "eventpartnerlocationservices";
 
-    public EventPartnerLocationServiceRestService()
-    {
-    }
-
-    public async Task<PartnerLocation> GetHaulingPartnerLocationAsync(Guid eventId, CancellationToken cancellationToken = default)
+    public async Task<PartnerLocation> GetHaulingPartnerLocationAsync(Guid eventId,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -26,7 +20,7 @@ public class EventPartnerLocationServiceRestService : RestServiceBase, IEventPar
             using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
-                string content = await response.Content.ReadAsStringAsync(cancellationToken);
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
                 var result = JsonConvert.DeserializeObject<PartnerLocation>(content);
                 return result;
             }
@@ -38,7 +32,8 @@ public class EventPartnerLocationServiceRestService : RestServiceBase, IEventPar
         }
     }
 
-    public async Task<IEnumerable<DisplayEventPartnerLocation>> GetEventPartnerLocationsAsync(Guid eventId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<DisplayEventPartnerLocation>> GetEventPartnerLocationsAsync(Guid eventId,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -47,7 +42,7 @@ public class EventPartnerLocationServiceRestService : RestServiceBase, IEventPar
             using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
-                string content = await response.Content.ReadAsStringAsync(cancellationToken);
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
                 var result = JsonConvert.DeserializeObject<List<DisplayEventPartnerLocation>>(content);
                 return result;
             }
@@ -59,7 +54,8 @@ public class EventPartnerLocationServiceRestService : RestServiceBase, IEventPar
         }
     }
 
-    public async Task<IEnumerable<DisplayEventPartnerLocationService>> GetEventPartnerLocationServicesAsync(Guid eventId, Guid partnerId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<DisplayEventPartnerLocationService>> GetEventPartnerLocationServicesAsync(
+        Guid eventId, Guid partnerId, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -68,7 +64,7 @@ public class EventPartnerLocationServiceRestService : RestServiceBase, IEventPar
             using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
-                string content = await response.Content.ReadAsStringAsync(cancellationToken);
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
                 var result = JsonConvert.DeserializeObject<List<DisplayEventPartnerLocationService>>(content);
                 return result;
             }
@@ -80,14 +76,16 @@ public class EventPartnerLocationServiceRestService : RestServiceBase, IEventPar
         }
     }
 
-    public async Task<EventPartnerLocationService> UpdateEventPartnerLocationService(EventPartnerLocationService eventPartnerLocationService, CancellationToken cancellationToken = default)
+    public async Task<EventPartnerLocationService> UpdateEventPartnerLocationService(
+        EventPartnerLocationService eventPartnerLocationService, CancellationToken cancellationToken = default)
     {
         try
         {
-            var content = JsonContent.Create(eventPartnerLocationService, typeof(EventPartnerLocationService), null, SerializerOptions);
+            var content = JsonContent.Create(eventPartnerLocationService, typeof(EventPartnerLocationService), null,
+                SerializerOptions);
             var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken);
             response.EnsureSuccessStatusCode();
-            string returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
+            var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
             return JsonConvert.DeserializeObject<EventPartnerLocationService>(returnContent);
         }
         catch (Exception ex)
@@ -97,14 +95,16 @@ public class EventPartnerLocationServiceRestService : RestServiceBase, IEventPar
         }
     }
 
-    public async Task<EventPartnerLocationService> AddEventPartnerLocationService(EventPartnerLocationService eventPartnerLocationService, CancellationToken cancellationToken = default)
+    public async Task<EventPartnerLocationService> AddEventPartnerLocationService(
+        EventPartnerLocationService eventPartnerLocationService, CancellationToken cancellationToken = default)
     {
         try
         {
-            var content = JsonContent.Create(eventPartnerLocationService, typeof(EventPartnerLocationService), null, SerializerOptions);
+            var content = JsonContent.Create(eventPartnerLocationService, typeof(EventPartnerLocationService), null,
+                SerializerOptions);
             var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken);
             response.EnsureSuccessStatusCode();
-            string returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
+            var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
             return JsonConvert.DeserializeObject<EventPartnerLocationService>(returnContent);
         }
         catch (Exception ex)
@@ -114,11 +114,13 @@ public class EventPartnerLocationServiceRestService : RestServiceBase, IEventPar
         }
     }
 
-    public async Task DeleteEventPartnerLocationServiceAsync(EventPartnerLocationService eventPartnerLocationService, CancellationToken cancellationToken = default)
+    public async Task DeleteEventPartnerLocationServiceAsync(EventPartnerLocationService eventPartnerLocationService,
+        CancellationToken cancellationToken = default)
     {
         try
         {
-            var requestUri = string.Concat(Controller, $"/{eventPartnerLocationService.EventId}/{eventPartnerLocationService.PartnerLocationId}/{eventPartnerLocationService.ServiceTypeId}");
+            var requestUri = string.Concat(Controller,
+                $"/{eventPartnerLocationService.EventId}/{eventPartnerLocationService.PartnerLocationId}/{eventPartnerLocationService.ServiceTypeId}");
 
             using (var response = await AuthorizedHttpClient.DeleteAsync(requestUri, cancellationToken))
             {
@@ -130,7 +132,5 @@ public class EventPartnerLocationServiceRestService : RestServiceBase, IEventPar
             Debug.WriteLine(@"\tERROR {0}", ex.Message);
             throw;
         }
-
-        return;
     }
 }

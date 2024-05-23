@@ -1,18 +1,35 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
-#nullable enable
-
 using CommunityToolkit.Mvvm.ComponentModel;
 
 public partial class AddressViewModel : ObservableObject
 {
-    public AddressViewModel()
-    {
-    }
+    private string city = string.Empty;
+
+    [ObservableProperty]
+    private string country;
+
+    [ObservableProperty]
+    private string county;
+
+    [ObservableProperty]
+    private string displayAddress;
+
+    [ObservableProperty]
+    private double? latitude;
+
+    [ObservableProperty]
+    private Location location;
+
+    [ObservableProperty]
+    private double? longitude;
+
+    [ObservableProperty]
+    private string postalCode;
+
+    private string region = string.Empty;
 
     private string streetAddress = string.Empty;
-    private string city = string.Empty;
-    private string region = string.Empty;
 
     public string StreetAddress
     {
@@ -20,7 +37,7 @@ public partial class AddressViewModel : ObservableObject
         set
         {
             streetAddress = value;
-            OnPropertyChanged(nameof(StreetAddress));
+            OnPropertyChanged();
             UpdateDisplayAddress();
         }
     }
@@ -31,13 +48,10 @@ public partial class AddressViewModel : ObservableObject
         set
         {
             city = value;
-            OnPropertyChanged(nameof(City));
+            OnPropertyChanged();
             UpdateDisplayAddress();
         }
     }
-
-    [ObservableProperty]
-    string county;
 
     public string Region
     {
@@ -45,28 +59,10 @@ public partial class AddressViewModel : ObservableObject
         set
         {
             region = value;
-            OnPropertyChanged(nameof(Region));
+            OnPropertyChanged();
             UpdateDisplayAddress();
         }
     }
-
-    [ObservableProperty]
-    string country;
-
-    [ObservableProperty]
-    string postalCode;
-
-    [ObservableProperty]
-    double? latitude;
-
-    [ObservableProperty]
-    double? longitude;
-
-    [ObservableProperty]
-    Location location;
-
-    [ObservableProperty]
-    string displayAddress;
 
     private void UpdateDisplayAddress()
     {
