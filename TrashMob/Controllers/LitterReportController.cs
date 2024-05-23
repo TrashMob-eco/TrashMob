@@ -15,6 +15,7 @@ namespace TrashMob.Controllers
     using System;
     using Microsoft.Extensions.Logging;
     using TrashMob.Shared.Poco;
+    using System.Linq;
 
     [Route("api/litterreport")]
     public class LitterReportController : SecureController
@@ -115,6 +116,24 @@ namespace TrashMob.Controllers
             var fullLitterReports = await ToFullLitterReport(result, cancellationToken);
 
             return Ok(fullLitterReports);
+        }
+
+        [HttpGet]
+        [Route("filteredlitterreports")]
+        public async Task<IActionResult> GetFilteredLitterReports([FromBody] LitterReportFilter filter, CancellationToken cancellationToken)
+        {
+            var result = await litterReportManager.GetFilteredLitterReportsAsync(filter, cancellationToken).ConfigureAwait(false);
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("locationsbytimerange")]
+        public async Task<IActionResult> GetLitterLocationsByTimeRange([FromQuery]DateTimeOffset? startTime, [FromQuery]DateTimeOffset? endTime, CancellationToken cancellationToken)
+        {
+            var result = await litterReportManager.GeLitterLocationsByTimeRangeAsync(startTime, endTime, cancellationToken).ConfigureAwait(false);
+
+            return Ok(result);
         }
 
         [HttpPost]
