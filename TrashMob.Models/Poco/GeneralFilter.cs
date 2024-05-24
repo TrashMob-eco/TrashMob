@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TrashMob.Shared.Poco
+﻿namespace TrashMob.Models.Poco
 {
     public class GeneralFilter
 {
@@ -15,6 +13,5 @@ namespace TrashMob.Shared.Poco
         public string City { get; set; }
 
         public Guid? CreatedByUserId { get; set; }
-
     }
 }

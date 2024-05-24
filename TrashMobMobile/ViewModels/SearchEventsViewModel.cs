@@ -18,6 +18,7 @@ public partial class SearchEventsViewModel : BaseViewModel
     private string? selectedCountry;
     private EventViewModel selectedEvent;
     private string? selectedRegion;
+    private IEnumerable<TrashMob.Models.Poco.Location> locations = [];
 
     [ObservableProperty]
     private AddressViewModel userLocation;
@@ -106,6 +107,18 @@ public partial class SearchEventsViewModel : BaseViewModel
 
         Events.Clear();
 
+        locations = await mobEventManager.GetLocationsByTimeRangeAsync(DateTimeOffset.Now.AddDays(-180), DateTimeOffset.Now);
+        CountryCollection.Clear();
+        RegionCollection.Clear();
+        CityCollection.Clear();
+
+        var countries = locations.Select(l => l.Country).Distinct();
+
+        foreach (var country in countries)
+        {
+            CountryCollection.Add(country);
+        }
+
         if (EventStatus == "Upcoming")
         {
             RawEvents = await mobEventManager.GetActiveEventsAsync();
@@ -120,15 +133,6 @@ public partial class SearchEventsViewModel : BaseViewModel
         }
 
         var countryList = RawEvents.Select(e => e.Country).Distinct();
-
-        CountryCollection.Clear();
-        RegionCollection.Clear();
-        CityCollection.Clear();
-
-        foreach (var country in countryList)
-        {
-            CountryCollection.Add(country);
-        }
 
         UpdateEventReportViewModels();
 
@@ -155,11 +159,11 @@ public partial class SearchEventsViewModel : BaseViewModel
 
     private void RefreshRegionList()
     {
-        var regionList = RawEvents.Select(e => e.Region).Distinct();
-
         RegionCollection.Clear();
 
-        foreach (var region in regionList)
+        var regions = locations.Where(l => l.Country == selectedCountry).Select(l => l.Region).Distinct();
+
+        foreach (var region in regions)
         {
             RegionCollection.Add(region);
         }
@@ -183,11 +187,11 @@ public partial class SearchEventsViewModel : BaseViewModel
 
     private void RefreshCityList()
     {
-        var cityList = RawEvents.Select(e => e.City).Distinct();
-
         CityCollection.Clear();
 
-        foreach (var city in cityList)
+        var cities = locations.Where(l => l.Country == selectedCountry && l.Region == selectedRegion).Select(l => l.City).Distinct();
+
+        foreach (var city in cities)
         {
             CityCollection.Add(city);
         }

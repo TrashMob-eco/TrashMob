@@ -13,6 +13,7 @@
     using TrashMob.Models.Extensions;
     using TrashMob.Shared.Poco;
     using System.Linq;
+    using TrashMob.Models.Poco;
 
     public class EventManager : KeyedManager<Event>, IKeyedManager<Event>, IEventManager
     {

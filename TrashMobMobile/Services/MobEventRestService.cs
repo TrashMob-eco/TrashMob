@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
 using TrashMob.Models;
+using TrashMob.Models.Poco;
 using TrashMobMobile.Models;
 
 public class MobEventRestService : RestServiceBase, IMobEventRestService
@@ -192,5 +193,23 @@ public class MobEventRestService : RestServiceBase, IMobEventRestService
         }
 
         return mobEvents;
+    }
+
+    public async Task<IEnumerable<Location>> GetLocationsByTimeRangeAsync(DateTimeOffset startDate, DateTimeOffset endDate, CancellationToken cancellationToken = default)
+    {
+        var requestUri = Controller + "/locationsbytimerange?startTime=" + startDate + "&endTime=" + endDate;
+
+        using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
+        {
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            if (string.IsNullOrEmpty(content))
+            {
+                return [];
+            }
+
+            return JsonConvert.DeserializeObject<IEnumerable<TrashMob.Models.Poco.Location>>(content);
+        }
     }
 }
