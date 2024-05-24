@@ -315,3 +315,31 @@ IFTTT.com testing is currently in progress. There are a couple of steps needed t
 - The test user id needed for submitting the IFTTT tests is stored in the Dev KeyVault as IFTTTTestUserId. 
 - The test user password needed for submitting the IFTTT tests is stored in the Dev KeyVault as IFTTTPasswordWebsite.
 - The password needed for logging in to the Email account for the test user id is stored in the Dev KeyVault as IFTTTTestPassword.
+
+## SSL Cert Update Instructions
+
+Every year, the SSL certificate for the TrashMob.eco site will need to be updated. The process for updating the certificate is stored in the TrashMob.eco OneNote under "Renewing the SSL Certificate".
+
+## Android App Signing Instructions
+
+### Test Environment
+- The Android app is signed with a keystore file. 
+- The keystore file is stored ?
+- The password for the keystore is stored in the Dev KeyVault as AndroidSiginingKeyPassword. 
+- The alias for the key is stored in the Dev KeyVault as AndroidSigningAlias. 
+- The key is stored in the Dev KeyVault as AndroidSiginingKey.
+
+### Production Environment
+- The Android app is signed with a keystore file. 
+- The keystore file is stored ?
+- The password for the keystore is stored in the Prod KeyVault as AndroidSiginingKeyPassword. 
+- The alias for the key is stored in the Prod KeyVault as AndroidSigningAlias. 
+- The key is stored in the Prod KeyVault as AndroidSiginingKey.
+
+## iOS App Signing Instructions
+
+### Test Environment
+TBD
+
+### Production Environment
+TBD
