@@ -12,10 +12,10 @@ public interface IUserService
 public class UserService : IUserService
 {
     private readonly HttpClient _httpClient;
-    
+
     public UserService(IHttpClientFactory factory)
     {
-        _httpClient = factory.CreateClient(AuthConstants.AUTHENTICATED_CLIENT);
+        _httpClient = factory.CreateClient(AuthConstants.AuthenticatedClient);
     }
 
     public async Task<User> GetUserByEmailAsync(string email)

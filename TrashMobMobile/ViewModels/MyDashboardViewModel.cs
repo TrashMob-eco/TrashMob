@@ -1,21 +1,26 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
 public partial class MyDashboardViewModel : BaseViewModel
 {
-    private EventViewModel? upcomingSelectedEvent;
-    private EventViewModel? completedSelectedEvent;
-    private LitterReportViewModel? selectedLitterReport;
+    private readonly ILitterReportManager litterReportManager;
     private readonly IMobEventManager mobEventManager;
     private readonly IStatsRestService statsRestService;
-    private readonly ILitterReportManager litterReportManager;
+    private EventViewModel? completedSelectedEvent;
+    private LitterReportViewModel? selectedLitterReport;
 
-    public MyDashboardViewModel(IMobEventManager mobEventManager, IStatsRestService statsRestService, ILitterReportManager litterReportManager)
+    [ObservableProperty]
+    public StatisticsViewModel statisticsViewModel;
+
+    private EventViewModel? upcomingSelectedEvent;
+
+    public MyDashboardViewModel(IMobEventManager mobEventManager, IStatsRestService statsRestService,
+        ILitterReportManager litterReportManager)
     {
         this.mobEventManager = mobEventManager;
         this.statsRestService = statsRestService;
@@ -28,18 +33,15 @@ public partial class MyDashboardViewModel : BaseViewModel
 
     public ObservableCollection<LitterReportViewModel> LitterReports { get; set; } = [];
 
-    [ObservableProperty]
-    public StatisticsViewModel statisticsViewModel;
-
     public EventViewModel? UpcomingSelectedEvent
     {
-        get { return upcomingSelectedEvent; }
+        get => upcomingSelectedEvent;
         set
         {
             if (upcomingSelectedEvent != value)
             {
                 upcomingSelectedEvent = value;
-                OnPropertyChanged(nameof(UpcomingSelectedEvent));
+                OnPropertyChanged();
 
                 if (upcomingSelectedEvent != null)
                 {
@@ -51,13 +53,13 @@ public partial class MyDashboardViewModel : BaseViewModel
 
     public EventViewModel? CompletedSelectedEvent
     {
-        get { return completedSelectedEvent; }
+        get => completedSelectedEvent;
         set
         {
             if (completedSelectedEvent != value)
             {
                 completedSelectedEvent = value;
-                OnPropertyChanged(nameof(CompletedSelectedEvent));
+                OnPropertyChanged();
 
                 if (completedSelectedEvent != null)
                 {
@@ -69,13 +71,13 @@ public partial class MyDashboardViewModel : BaseViewModel
 
     public LitterReportViewModel? SelectedLitterReport
     {
-        get { return selectedLitterReport; }
+        get => selectedLitterReport;
         set
         {
             if (selectedLitterReport != value)
             {
                 selectedLitterReport = value;
-                OnPropertyChanged(nameof(SelectedLitterReport));
+                OnPropertyChanged();
 
                 if (SelectedLitterReport != null)
                 {
@@ -88,13 +90,13 @@ public partial class MyDashboardViewModel : BaseViewModel
     public async Task Init()
     {
         IsBusy = true;
-        
+
         var task1 = RefreshEvents();
         var task2 = RefreshStatistics();
         var task3 = RefreshLitterReports();
 
         await Task.WhenAll(task1, task2, task3);
-        
+
         IsBusy = false;
     }
 
@@ -110,14 +112,13 @@ public partial class MyDashboardViewModel : BaseViewModel
 
     private async Task RefreshStatistics()
     {
-
         var stats = await statsRestService.GetUserStatsAsync(App.CurrentUser.Id);
 
         StatisticsViewModel = new StatisticsViewModel
         {
             TotalBags = stats.TotalBags,
             TotalEvents = stats.TotalEvents,
-            TotalHours = stats.TotalHours,
+            TotalHours = stats.TotalHours
         };
     }
 

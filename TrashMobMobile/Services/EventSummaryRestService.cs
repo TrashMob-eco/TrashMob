@@ -1,22 +1,16 @@
 ﻿namespace TrashMobMobile.Data
 {
-    using Newtonsoft.Json;
-    using System;
     using System.Diagnostics;
-    using System.Net.Http;
     using System.Net.Http.Json;
-    using System.Threading.Tasks;
+    using Newtonsoft.Json;
     using TrashMob.Models;
 
     public class EventSummaryRestService : RestServiceBase, IEventSummaryRestService
     {
         protected override string Controller => "eventsummaries";
 
-        public EventSummaryRestService()
-        {
-        }
-
-        public async Task<EventSummary> GetEventSummaryAsync(Guid eventId, CancellationToken cancellationToken = default)
+        public async Task<EventSummary> GetEventSummaryAsync(Guid eventId,
+            CancellationToken cancellationToken = default)
         {
             try
             {
@@ -27,7 +21,7 @@
                     try
                     {
                         response.EnsureSuccessStatusCode();
-                        string content = await response.Content.ReadAsStringAsync(cancellationToken);
+                        var content = await response.Content.ReadAsStringAsync(cancellationToken);
                         return JsonConvert.DeserializeObject<EventSummary>(content);
                     }
                     catch (HttpRequestException)
@@ -40,7 +34,7 @@
                                 ActualNumberOfAttendees = 0,
                                 DurationInMinutes = 0,
                                 NumberOfBags = 0,
-                                Notes = string.Empty,
+                                Notes = string.Empty
                             };
 
                             return eventSummary;
@@ -57,7 +51,8 @@
             }
         }
 
-        public async Task<EventSummary> UpdateEventSummaryAsync(EventSummary eventSummary, CancellationToken cancellationToken = default)
+        public async Task<EventSummary> UpdateEventSummaryAsync(EventSummary eventSummary,
+            CancellationToken cancellationToken = default)
         {
             try
             {
@@ -77,7 +72,8 @@
             }
         }
 
-        public async Task<EventSummary> AddEventSummaryAsync(EventSummary eventSummary, CancellationToken cancellationToken = default)
+        public async Task<EventSummary> AddEventSummaryAsync(EventSummary eventSummary,
+            CancellationToken cancellationToken = default)
         {
             try
             {

@@ -8,14 +8,14 @@ public partial class MyDashboardPage : ContentPage
     private readonly MyDashboardViewModel _viewModel;
 
     public MyDashboardPage(MyDashboardViewModel viewModel)
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         _viewModel = viewModel;
         _viewModel.Navigation = Navigation;
         _viewModel.Notify = Notify;
         BindingContext = _viewModel;
     }
-    
+
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
@@ -24,9 +24,9 @@ public partial class MyDashboardPage : ContentPage
 
     private async Task Notify(string message)
     {
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        var cancellationTokenSource = new CancellationTokenSource();
 
-        ToastDuration duration = ToastDuration.Short;
+        var duration = ToastDuration.Short;
         double fontSize = 14;
 
         var toast = Toast.Make(message, duration, fontSize);

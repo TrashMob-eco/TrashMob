@@ -1,25 +1,22 @@
 ﻿namespace TrashMobMobile.Data;
 
-using System;
 using System.Diagnostics;
 using System.Net.Http.Json;
-using System.Threading.Tasks;
 using TrashMob.Models;
 
 public class EventAttendeeRestService : RestServiceBase, IEventAttendeeRestService
 {
     protected override string Controller => "eventattendees";
 
-    public EventAttendeeRestService()
-    {
-    }
-
-    public async Task<IEnumerable<EventAttendee>> GetEventAttendeesAsync(Guid eventId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<EventAttendee>> GetEventAttendeesAsync(Guid eventId,
+        CancellationToken cancellationToken = default)
     {
         try
         {
             var requestUri = string.Concat(Controller, $"/{eventId}");
-            var eventAttendees = await AuthorizedHttpClient.GetFromJsonAsync<IEnumerable<EventAttendee>>(requestUri, SerializerOptions, cancellationToken);
+            var eventAttendees =
+                await AuthorizedHttpClient.GetFromJsonAsync<IEnumerable<EventAttendee>>(requestUri, SerializerOptions,
+                    cancellationToken);
             return eventAttendees ?? [];
         }
         catch (Exception ex)
@@ -60,7 +57,5 @@ public class EventAttendeeRestService : RestServiceBase, IEventAttendeeRestServi
             Debug.WriteLine(@"\tERROR {0}", ex.Message);
             throw;
         }
-
-        return;
     }
 }

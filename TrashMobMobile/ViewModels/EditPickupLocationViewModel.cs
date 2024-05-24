@@ -1,24 +1,27 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
 public partial class EditPickupLocationViewModel : BaseViewModel
 {
-    [ObservableProperty]
-    PickupLocationViewModel pickupLocationViewModel;
+    private readonly IMobEventManager mobEventManager;
+
+    private readonly IPickupLocationManager pickupLocationManager;
 
     [ObservableProperty]
-    EventViewModel eventViewModel;
+    private EventViewModel eventViewModel;
 
     private PickupLocation pickupLocation;
 
+    [ObservableProperty]
+    private PickupLocationViewModel pickupLocationViewModel;
+
     public EditPickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMobEventManager mobEventManager)
     {
-        SavePickupLocationCommand = new Command(async () => await SavePickupLocation());
         this.pickupLocationManager = pickupLocationManager;
         this.mobEventManager = mobEventManager;
     }
@@ -26,7 +29,7 @@ public partial class EditPickupLocationViewModel : BaseViewModel
     public async Task Init(Guid eventId, Guid pickupLocationId)
     {
         IsBusy = true;
-        
+
         var mobEvent = await mobEventManager.GetEventAsync(eventId);
 
         EventViewModel = mobEvent.ToEventViewModel();
@@ -44,11 +47,7 @@ public partial class EditPickupLocationViewModel : BaseViewModel
         IsBusy = false;
     }
 
-    public ICommand SavePickupLocationCommand { get; set; }
-
-    private readonly IPickupLocationManager pickupLocationManager;
-    private readonly IMobEventManager mobEventManager;
-
+    [RelayCommand]
     private async Task SavePickupLocation()
     {
         IsBusy = true;

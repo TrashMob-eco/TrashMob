@@ -19,22 +19,25 @@
         }
 
         protected override async void OnNavigatedTo(NavigatedToEventArgs args)
-        {            
+        {
             base.OnNavigatedTo(args);
             await _viewModel.Init();
 
             if (_viewModel?.UserLocation?.Location != null)
             {
-                var mapSpan = new MapSpan(new Location(_viewModel.UserLocation.Location.Latitude, _viewModel.UserLocation.Location.Longitude), 0.05, 0.05);
+                var mapSpan =
+                    new MapSpan(
+                        new Location(_viewModel.UserLocation.Location.Latitude,
+                            _viewModel.UserLocation.Location.Longitude), 0.05, 0.05);
                 upcomingEventsMap.MoveToRegion(mapSpan);
             }
         }
 
         private async Task Notify(string message)
         {
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+            var cancellationTokenSource = new CancellationTokenSource();
 
-            ToastDuration duration = ToastDuration.Short;
+            var duration = ToastDuration.Short;
             double fontSize = 14;
 
             var toast = Toast.Make(message, duration, fontSize);
@@ -43,7 +46,7 @@
 
         private async void Pin_InfoWindowClicked(object sender, PinClickedEventArgs e)
         {
-            Pin p = (Pin)sender;
+            var p = (Pin)sender;
 
             var eventId = p.AutomationId;
             await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventId}");

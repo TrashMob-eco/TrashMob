@@ -12,6 +12,8 @@
     using TrashMob.Shared.Extensions;
     using TrashMob.Models.Extensions;
     using TrashMob.Shared.Poco;
+    using System.Linq;
+    using TrashMob.Models.Poco;
 
     public class EventManager : KeyedManager<Event>, IKeyedManager<Event>, IEventManager
     {
@@ -155,6 +157,29 @@
                                   && e.EventStatusId == (int)EventStatusEnum.Canceled
                                   && (!futureEventsOnly || e.EventDate >= DateTimeOffset.UtcNow))
                              .ToListAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<Event>> GetFilteredEventsAsync(GeneralFilter filter, CancellationToken cancellationToken = default)
+        {
+            return await Repo.Get(e => (filter.StartDate == null || e.CreatedDate >= filter.StartDate) &&
+                                        (filter.EndDate == null || e.CreatedDate <= filter.EndDate) &&
+                                        (filter.Country == null || e.Country == filter.Country) &&
+                                        (filter.Region == null || e.Region == filter.Region) &&
+                                        (filter.City == null || e.City == filter.City) &&
+                                        (filter.CreatedByUserId == null || e.CreatedByUserId == filter.CreatedByUserId))
+                                .ToListAsync(cancellationToken).ConfigureAwait(false);              
+        }
+
+        public async Task<IEnumerable<Location>> GeEventLocationsByTimeRangeAsync(DateTimeOffset? startTime, DateTimeOffset? endTime, CancellationToken cancellationToken = default)
+        {
+            var locations = await Repo.Get()
+                            .Where(e => (startTime == null || e.CreatedDate >= startTime) &&
+                                            (endTime == null || e.CreatedDate <= endTime))
+                            .GroupBy(e => new { e.Country, e.Region, e.City })
+                            .Select(group => new Location { Country = group.Key.Country, Region = group.Key.Region, City = group.Key.City })
+                            .ToListAsync(cancellationToken).ConfigureAwait(false);
+
+            return locations;
         }
 
         // Delete the record of a particular Mob Event    

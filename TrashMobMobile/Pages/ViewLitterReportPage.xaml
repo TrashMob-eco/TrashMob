@@ -71,22 +71,32 @@
                     </maps:Map.ItemTemplate>
                 </maps:Map>
 
-                <Grid ColumnDefinitions="1*,1*, 1*, 1*"
+                <Grid ColumnDefinitions="1*,1*, 1*"
                   RowDefinitions="Auto"
                   VerticalOptions="End"
                   Margin="0,0,0,20">
                     <Button Grid.Row="0"
                             Grid.Column="0"
-                            Grid.ColumnSpan="2"
+                            Grid.ColumnSpan="1"
                             Command="{Binding DeleteLitterReportCommand}"
                             HorizontalOptions="Center"
                             Style="{StaticResource RoundButton}"
-                            Text="Delete Litter Report" 
+                            Text="Delete Report" 
                             IsEnabled="{Binding CanDeleteLitterReport}" 
                             IsVisible="{Binding CanDeleteLitterReport}" />
+
+                    <Button Grid.Row="0" 
+                            Grid.Column="1" 
+                            Text="Edit Report" 
+                            Command="{Binding EditLitterReportCommand}" 
+                            IsEnabled="{Binding CanEditLitterReport}" 
+                            IsVisible="{Binding CanDeleteLitterReport}"
+                            Margin="10" 
+                            Style="{StaticResource RoundButton}" />
+
                     <Button Grid.Row="0"
                             Grid.Column="2"
-                            Grid.ColumnSpan="2"
+                            Grid.ColumnSpan="1"
                             Command="{Binding MarkLitterReportCleanedCommand}"
                             HorizontalOptions="Center"
                             Style="{StaticResource RoundButton}"
@@ -100,7 +110,7 @@
                  SelectionMode="None" >
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Border StrokeThickness="1">
+                            <Border Style="{StaticResource RoundBorder}">
                                 <Grid WidthRequest = "400"
                                   ColumnDefinitions="*, 1*" 
                                   RowDefinitions="Auto"

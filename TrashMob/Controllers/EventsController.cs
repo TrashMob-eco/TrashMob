@@ -15,8 +15,10 @@ namespace TrashMob.Controllers
     using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
     using TrashMob.Shared.Poco;
     using TrashMob.Shared.Extensions;
+    using TrashMob.Shared.Managers.LitterReport;
 
     [Route("api/events")]
     public class EventsController : SecureController
@@ -146,6 +148,24 @@ namespace TrashMob.Controllers
             }
 
             return Ok(mobEvent);
+        }
+
+        [HttpGet]
+        [Route("filteredevents")]
+        public async Task<IActionResult> GetFilteredEvents([FromBody] GeneralFilter filter, CancellationToken cancellationToken)
+        {
+            var result = await eventManager.GetFilteredEventsAsync(filter, cancellationToken).ConfigureAwait(false);
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("locationsbytimerange")]
+        public async Task<IActionResult> GetEventLocationsByTimeRange([FromQuery]DateTimeOffset? startTime, [FromQuery]DateTimeOffset? endTime, CancellationToken cancellationToken)
+        {
+            var result = await eventManager.GeEventLocationsByTimeRangeAsync(startTime, endTime, cancellationToken).ConfigureAwait(false);
+
+            return Ok(result);
         }
 
         [HttpPut]

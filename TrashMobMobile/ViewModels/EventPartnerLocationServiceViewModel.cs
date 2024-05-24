@@ -1,38 +1,54 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 
 public partial class EventPartnerLocationServiceViewModel : BaseViewModel
 {
-    public EventPartnerLocationServiceViewModel(IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService)
+    private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService;
+
+    [ObservableProperty]
+    private bool canRequestService;
+
+    [ObservableProperty]
+    private bool canUnrequestService;
+
+    [ObservableProperty]
+    private Guid eventId;
+
+    [ObservableProperty]
+    private Guid partnerLocationId;
+
+    [ObservableProperty]
+    private string partnerLocationName;
+
+    [ObservableProperty]
+    private string partnerLocationNotes;
+
+    [ObservableProperty]
+    private string serviceName;
+
+    [ObservableProperty]
+    private string serviceStatus;
+
+    private int serviceStatusId;
+
+    [ObservableProperty]
+    private int serviceTypeId;
+
+    public EventPartnerLocationServiceViewModel(
+        IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService)
     {
-        RequestServiceCommand = new Command(async () => await RequestService());
-        UnrequestServiceCommand = new Command(async () => await UnrequestService());
         this.eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
         CanRequestService = true;
         CanUnrequestService = false;
     }
 
-    [ObservableProperty]
-    Guid eventId;
-
-    [ObservableProperty]
-    Guid partnerLocationId;
-
-    [ObservableProperty]
-    int serviceTypeId;
-
-    private int serviceStatusId;
-
     public int ServiceStatusId
     {
-        get
-        {
-            return serviceStatusId;
-        }
+        get => serviceStatusId;
         set
         {
             if (serviceStatusId != value)
@@ -45,39 +61,17 @@ public partial class EventPartnerLocationServiceViewModel : BaseViewModel
         }
     }
 
-    [ObservableProperty]
-    string partnerLocationName;
-
-    [ObservableProperty]
-    string partnerLocationNotes;
-
-    [ObservableProperty]
-    string serviceName;
-
-    [ObservableProperty]
-    string serviceStatus;
-
-    [ObservableProperty]
-    bool canRequestService;
-
-    [ObservableProperty]
-    bool canUnrequestService;
-    private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService;
-
-    public ICommand RequestServiceCommand { get; set; }
-
-    public ICommand UnrequestServiceCommand { get; set; }
-
+    [RelayCommand]
     private async Task RequestService()
     {
         IsBusy = true;
-        
-        var eventPartnerLocationService = new EventPartnerLocationService()
+
+        var eventPartnerLocationService = new EventPartnerLocationService
         {
             EventId = EventId,
             PartnerLocationId = PartnerLocationId,
             ServiceTypeId = ServiceTypeId,
-            EventPartnerLocationServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Requested,
+            EventPartnerLocationServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Requested
         };
 
         await eventPartnerLocationServiceRestService.AddEventPartnerLocationService(eventPartnerLocationService);
@@ -88,19 +82,21 @@ public partial class EventPartnerLocationServiceViewModel : BaseViewModel
         IsBusy = true;
     }
 
+    [RelayCommand]
     private async Task UnrequestService()
     {
         IsBusy = true;
-        
-        var eventPartnerLocationService = new EventPartnerLocationService()
+
+        var eventPartnerLocationService = new EventPartnerLocationService
         {
             EventId = EventId,
             PartnerLocationId = PartnerLocationId,
             ServiceTypeId = ServiceTypeId,
-            EventPartnerLocationServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Requested,
+            EventPartnerLocationServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Requested
         };
 
-        await eventPartnerLocationServiceRestService.DeleteEventPartnerLocationServiceAsync(eventPartnerLocationService);
+        await eventPartnerLocationServiceRestService
+            .DeleteEventPartnerLocationServiceAsync(eventPartnerLocationService);
 
         ServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.None;
         ServiceStatus = EventPartnerLocationServiceStatusEnum.None.ToString();

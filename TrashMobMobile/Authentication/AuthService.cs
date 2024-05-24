@@ -8,34 +8,19 @@ using TrashMobMobile.Data;
 
 public class AuthService : IAuthService
 {
-    private IPublicClientApplication _pca;
+    private readonly IUserManager userManager;
 
     private string _accessToken = string.Empty;
 
     private DateTimeOffset _expiresOn;
-    
+    private IPublicClientApplication _pca;
+
     private string _userEmail = string.Empty;
-    private readonly IUserManager userManager;
 
     public AuthService(IUserManager userManager)
     {
         this.userManager = userManager;
         InitializeClient();
-    }
-
-    private void InitializeClient()
-    {
-        var pcaBuilder = PublicClientApplicationBuilder
-            .Create(AuthConstants.ClientId)
-            .WithAuthority(AuthConstants.AuthoritySignIn)
-#if IOS
-            .WithIosKeychainSecurityGroup(AuthConstants.IosKeychainSecurityGroup)
-#elif ANDROID
-            .WithParentActivityOrWindow(() => Platform.CurrentActivity)
-#endif
-            .WithRedirectUri(AuthConstants.RedirectUri);
-
-        _pca = pcaBuilder.Build();
     }
 
     public async Task<SignInResult> SignInAsync()
@@ -83,7 +68,7 @@ public class AuthService : IAuthService
         catch (Exception ex)
         {
             // TODO: handle
-            Debug.WriteLine($"MSAL Silent Error: {ex.Message}");            
+            Debug.WriteLine($"MSAL Silent Error: {ex.Message}");
         }
     }
 
@@ -100,8 +85,8 @@ public class AuthService : IAuthService
         try
         {
             result = await _pca
-                    .AcquireTokenSilent(AuthConstants.Scopes, accounts.FirstOrDefault())
-                    .ExecuteAsync();
+                .AcquireTokenSilent(AuthConstants.Scopes, accounts.FirstOrDefault())
+                .ExecuteAsync();
         }
         catch (MsalUiRequiredException)
         {
@@ -109,13 +94,11 @@ public class AuthService : IAuthService
             {
                 return await SignInInteractive();
             }
-            else
+
+            return new SignInResult
             {
-                return new SignInResult
-                {
-                    Succeeded = false
-                };
-            }
+                Succeeded = false
+            };
         }
 
         if (result != null && !string.IsNullOrWhiteSpace(result.AccessToken))
@@ -134,82 +117,21 @@ public class AuthService : IAuthService
         };
     }
 
-    private async Task<SignInResult> SignInInteractive()
-    {
-        if (_pca == null)
-        {
-            InitializeClient();
-        }
-
-        try
-        {
-            AuthenticationResult result = await _pca
-                .AcquireTokenInteractive(AuthConstants.Scopes)
-                .ExecuteAsync();
-
-            if (result != null && !string.IsNullOrWhiteSpace(result.AccessToken))
-            {
-                await SetAuthenticated(result);
-
-                return new SignInResult
-                {
-                    Succeeded = true
-                };
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            
-        }
-
-        return new SignInResult
-        {
-            Succeeded = false
-        };
-    }
-
-    private async Task SetAuthenticated(AuthenticationResult result)
-    {
-        _accessToken = result.AccessToken;
-        _expiresOn = result.ExpiresOn;
-
-        var emailClaim = result.ClaimsPrincipal.Claims.FirstOrDefault(c => c.Type == "email");
-        var context = GetUserContext(result);
-        
-        if (emailClaim != null)
-        {
-            _userEmail = emailClaim.Value;
-            var user = await userManager.GetUserByEmailAsync(context.EmailAddress, context);
-
-            App.CurrentUser = user;
-        }
-
-        UserState.UserContext = context;
-
-    }
-
-    private bool IsTokenExpired()
-    {
-        var bufferTime = TimeSpan.FromMinutes(5);
-        return DateTimeOffset.UtcNow > _expiresOn - bufferTime;
-    }
-    
     public async Task<string> GetAccessTokenAsync()
     {
         if (!string.IsNullOrWhiteSpace(_accessToken) && !IsTokenExpired())
         {
             return _accessToken;
         }
-        
+
         var accounts = await _pca.GetAccountsAsync();
-        
+
         try
         {
             var result = await _pca
-                    .AcquireTokenSilent(AuthConstants.Scopes, accounts.FirstOrDefault())
-                    .ExecuteAsync();
-            
+                .AcquireTokenSilent(AuthConstants.Scopes, accounts.FirstOrDefault())
+                .ExecuteAsync();
+
             await SetAuthenticated(result);
 
             return result.AccessToken;
@@ -231,6 +153,80 @@ public class AuthService : IAuthService
         return _userEmail;
     }
 
+    private void InitializeClient()
+    {
+        var pcaBuilder = PublicClientApplicationBuilder
+            .Create(AuthConstants.ClientId)
+            .WithAuthority(AuthConstants.AuthoritySignIn)
+#if IOS
+            .WithIosKeychainSecurityGroup(AuthConstants.IosKeychainSecurityGroup)
+#elif ANDROID
+            .WithParentActivityOrWindow(() => Platform.CurrentActivity)
+#endif
+            .WithRedirectUri(AuthConstants.RedirectUri);
+
+        _pca = pcaBuilder.Build();
+    }
+
+    private async Task<SignInResult> SignInInteractive()
+    {
+        if (_pca == null)
+        {
+            InitializeClient();
+        }
+
+        try
+        {
+            var result = await _pca
+                .AcquireTokenInteractive(AuthConstants.Scopes)
+                .ExecuteAsync();
+
+            if (result != null && !string.IsNullOrWhiteSpace(result.AccessToken))
+            {
+                await SetAuthenticated(result);
+
+                return new SignInResult
+                {
+                    Succeeded = true
+                };
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+
+        return new SignInResult
+        {
+            Succeeded = false
+        };
+    }
+
+    private async Task SetAuthenticated(AuthenticationResult result)
+    {
+        _accessToken = result.AccessToken;
+        _expiresOn = result.ExpiresOn;
+
+        var emailClaim = result.ClaimsPrincipal.Claims.FirstOrDefault(c => c.Type == "email");
+        var context = GetUserContext(result);
+
+        if (emailClaim != null)
+        {
+            _userEmail = emailClaim.Value;
+            var user = await userManager.GetUserByEmailAsync(context.EmailAddress, context);
+
+            App.CurrentUser = user;
+        }
+
+        UserState.UserContext = context;
+    }
+
+    private bool IsTokenExpired()
+    {
+        var bufferTime = TimeSpan.FromMinutes(5);
+        return DateTimeOffset.UtcNow > _expiresOn - bufferTime;
+    }
+
     private UserContext GetUserContext(AuthenticationResult ar)
     {
         var newContext = new UserContext
@@ -238,7 +234,7 @@ public class AuthService : IAuthService
             IsLoggedOn = false
         };
 
-        JObject user = ParseIdToken(ar.IdToken);
+        var user = ParseIdToken(ar.IdToken);
 
         newContext.AccessToken = ar.AccessToken;
 

@@ -59,7 +59,7 @@
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
                                 <StackLayout Margin="5">
-                                    <Border Padding="3" Stroke="Green">
+                                    <Border Style="{StaticResource RoundBorder}">
                                         <Grid ColumnDefinitions="1*, 1*, 1*, 1*"                                  
                                   RowDefinitions="Auto"
                                   x:Name="LitterReportItem">

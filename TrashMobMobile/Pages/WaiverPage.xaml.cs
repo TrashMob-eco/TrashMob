@@ -8,8 +8,8 @@ public partial class WaiverPage : ContentPage
     private readonly WaiverViewModel _viewModel;
 
     public WaiverPage(WaiverViewModel viewModel)
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         _viewModel = viewModel;
         _viewModel.Navigation = Navigation;
         _viewModel.Notify = Notify;
@@ -18,9 +18,9 @@ public partial class WaiverPage : ContentPage
 
     private async Task Notify(string message)
     {
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        var cancellationTokenSource = new CancellationTokenSource();
 
-        ToastDuration duration = ToastDuration.Short;
+        var duration = ToastDuration.Short;
         double fontSize = 14;
 
         var toast = Toast.Make(message, duration, fontSize);

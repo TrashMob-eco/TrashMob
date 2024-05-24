@@ -161,8 +161,7 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="vm:EventViewModel">
                             <StackLayout Margin="5">
-                                <Border Padding="3"
-                                        Stroke="Green">
+                                <Border Style="{StaticResource RoundBorder}">
                                     <Grid x:Name="EventItem"
                                           ColumnDefinitions="1*, 1*"
                                           RowDefinitions="Auto, Auto, Auto, Auto">

@@ -1,29 +1,28 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Config;
 using TrashMobMobile.Data;
 using TrashMobMobile.Models;
 
 public partial class WaiverViewModel : BaseViewModel
 {
+    private readonly IWaiverManager waiverManager;
+
+    [ObservableProperty]
+    private string name;
+
     public WaiverViewModel(IWaiverManager waiverManager)
     {
-        SignWaiverCommand = new Command(async () => await SignWaiver());
         this.waiverManager = waiverManager;
     }
 
-    [ObservableProperty]
-    string name;
-    private readonly IWaiverManager waiverManager;
-
-    public ICommand SignWaiverCommand { get; set; } 
-
+    [RelayCommand]
     private async Task SignWaiver()
     {
         IsBusy = true;
-        
+
         var envelopeRequest = new EnvelopeRequest();
         envelopeRequest.SignerEmail = App.CurrentUser.Email;
         envelopeRequest.CreatedByUserId = App.CurrentUser.Id;

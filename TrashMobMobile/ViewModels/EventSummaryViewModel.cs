@@ -4,25 +4,21 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 public partial class EventSummaryViewModel : ObservableObject
 {
-    public EventSummaryViewModel()
-    {
-    }
+    [ObservableProperty]
+    private int actualNumberOfAttendees;
 
     [ObservableProperty]
-    Guid eventId;
+    private int durationInMinutes;
 
     [ObservableProperty]
-    int numberOfBuckets;
+    private Guid eventId;
 
     [ObservableProperty]
-    int numberOfBags;
+    private string notes;
 
     [ObservableProperty]
-    int durationInMinutes;
+    private int numberOfBags;
 
     [ObservableProperty]
-    int actualNumberOfAttendees;
-
-    [ObservableProperty]
-    string notes;
+    private int numberOfBuckets;
 }

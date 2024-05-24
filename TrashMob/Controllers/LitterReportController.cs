@@ -15,6 +15,7 @@ namespace TrashMob.Controllers
     using System;
     using Microsoft.Extensions.Logging;
     using TrashMob.Shared.Poco;
+    using System.Linq;
 
     [Route("api/litterreport")]
     public class LitterReportController : SecureController
@@ -117,6 +118,24 @@ namespace TrashMob.Controllers
             return Ok(fullLitterReports);
         }
 
+        [HttpGet]
+        [Route("filteredlitterreports")]
+        public async Task<IActionResult> GetFilteredLitterReports([FromBody] LitterReportFilter filter, CancellationToken cancellationToken)
+        {
+            var result = await litterReportManager.GetFilteredLitterReportsAsync(filter, cancellationToken).ConfigureAwait(false);
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("locationsbytimerange")]
+        public async Task<IActionResult> GetLitterLocationsByTimeRange([FromQuery]DateTimeOffset? startTime, [FromQuery]DateTimeOffset? endTime, CancellationToken cancellationToken)
+        {
+            var result = await litterReportManager.GeLitterLocationsByTimeRangeAsync(startTime, endTime, cancellationToken).ConfigureAwait(false);
+
+            return Ok(result);
+        }
+
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
@@ -196,7 +215,7 @@ namespace TrashMob.Controllers
 
             var result = await litterReportManager.DeleteAsync(id, UserId, cancellationToken).ConfigureAwait(false);
 
-            if(result != -1)
+            if (result != -1)
             {
                 TelemetryClient.TrackEvent(nameof(DeleteLitterReport));
                 return Ok(id);

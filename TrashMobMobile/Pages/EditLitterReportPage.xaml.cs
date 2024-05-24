@@ -2,19 +2,35 @@ namespace TrashMobMobile.Pages;
 
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using Microsoft.Maui.Maps;
 
-public partial class CreateLitterReportPage : ContentPage
+[QueryProperty(nameof(LitterReportId), nameof(LitterReportId))]
+public partial class EditLitterReportPage : ContentPage
 {
-    private readonly CreateLitterReportViewModel _viewModel;
+    private readonly EditLitterReportViewModel _viewModel;
 
-    public CreateLitterReportPage(CreateLitterReportViewModel viewModel)
+    public EditLitterReportPage(EditLitterReportViewModel viewModel)
     {
         InitializeComponent();
         _viewModel = viewModel;
-        _viewModel.Notify = Notify;
-        _viewModel.NotifyError = NotifyError;
         _viewModel.Navigation = Navigation;
+        _viewModel.Notify = Notify;
         BindingContext = _viewModel;
+    }
+
+    public string LitterReportId { get; set; }
+
+    protected override async void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+        await _viewModel.Init(new Guid(LitterReportId));
+
+        if (_viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location != null)
+        {
+            var mapSpan = new MapSpan(_viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location, 0.05,
+                0.05);
+            litterReportLocationMap.MoveToRegion(mapSpan);
+        }
     }
 
     private async Task Notify(string message)
@@ -26,26 +42,6 @@ public partial class CreateLitterReportPage : ContentPage
 
         var toast = Toast.Make(message, duration, fontSize);
         await toast.Show(cancellationTokenSource.Token);
-    }
-
-    private async Task NotifyError(string message)
-    {
-        var cancellationTokenSource = new CancellationTokenSource();
-
-        var snackbarOptions = new SnackbarOptions
-        {
-            BackgroundColor = Colors.Red,
-            TextColor = Colors.White,
-            CornerRadius = new CornerRadius(10),
-            Font = Microsoft.Maui.Font.SystemFontOfSize(14)
-        };
-
-        var text = message;
-        var duration = TimeSpan.FromSeconds(3);
-
-        var snackbar = Snackbar.Make(text, duration: duration, visualOptions: snackbarOptions);
-
-        await snackbar.Show(cancellationTokenSource.Token);
     }
 
     private async void TakePhoto_Clicked(object sender, EventArgs e)

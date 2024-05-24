@@ -1,34 +1,34 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
 public partial class SearchEventsViewModel : BaseViewModel
 {
-    private IEnumerable<Event> RawEvents { get; set; } = [];
-    private string? selectedCountry;
-    private string? selectedRegion;
-    private string? selectedCity;
     private readonly IMobEventManager mobEventManager;
-    private EventViewModel selectedEvent;
 
-    public ICommand ClearSelectionsCommand { get; set; }
+    [ObservableProperty]
+    private string eventStatus = "Upcoming";
+
+    private string? selectedCity;
+    private string? selectedCountry;
+    private EventViewModel selectedEvent;
+    private string? selectedRegion;
+    private IEnumerable<TrashMob.Models.Poco.Location> locations = [];
+
+    [ObservableProperty]
+    private AddressViewModel userLocation;
 
     public SearchEventsViewModel(IMobEventManager mobEventManager)
     {
         this.mobEventManager = mobEventManager;
-        ClearSelectionsCommand = new Command(async () => await ClearSelections());
     }
 
-    [ObservableProperty]
-    AddressViewModel userLocation;
-
-    [ObservableProperty]
-    private string eventStatus = "Upcoming";
+    private IEnumerable<Event> RawEvents { get; set; } = [];
 
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
 
@@ -38,14 +38,11 @@ public partial class SearchEventsViewModel : BaseViewModel
 
     public string? SelectedCountry
     {
-        get
-        {
-            return selectedCountry;
-        }
+        get => selectedCountry;
         set
         {
             selectedCountry = value;
-            OnPropertyChanged(nameof(SelectedCountry));
+            OnPropertyChanged();
 
             HandleCountrySelected(value);
         }
@@ -53,14 +50,11 @@ public partial class SearchEventsViewModel : BaseViewModel
 
     public string? SelectedRegion
     {
-        get
-        {
-            return selectedRegion;
-        }
+        get => selectedRegion;
         set
         {
             selectedRegion = value;
-            OnPropertyChanged(nameof(SelectedRegion));
+            OnPropertyChanged();
 
             HandleRegionSelected(value);
         }
@@ -68,14 +62,11 @@ public partial class SearchEventsViewModel : BaseViewModel
 
     public string? SelectedCity
     {
-        get
-        {
-            return selectedCity;
-        }
+        get => selectedCity;
         set
         {
             selectedCity = value;
-            OnPropertyChanged(nameof(SelectedCity));
+            OnPropertyChanged();
 
             HandleCitySelected(value);
         }
@@ -83,7 +74,7 @@ public partial class SearchEventsViewModel : BaseViewModel
 
     public EventViewModel SelectedEvent
     {
-        get { return selectedEvent; }
+        get => selectedEvent;
         set
         {
             if (selectedEvent != value)
@@ -116,6 +107,18 @@ public partial class SearchEventsViewModel : BaseViewModel
 
         Events.Clear();
 
+        locations = await mobEventManager.GetLocationsByTimeRangeAsync(DateTimeOffset.Now.AddDays(-180), DateTimeOffset.Now);
+        CountryCollection.Clear();
+        RegionCollection.Clear();
+        CityCollection.Clear();
+
+        var countries = locations.Select(l => l.Country).Distinct();
+
+        foreach (var country in countries)
+        {
+            CountryCollection.Add(country);
+        }
+
         if (EventStatus == "Upcoming")
         {
             RawEvents = await mobEventManager.GetActiveEventsAsync();
@@ -130,15 +133,6 @@ public partial class SearchEventsViewModel : BaseViewModel
         }
 
         var countryList = RawEvents.Select(e => e.Country).Distinct();
-        
-        CountryCollection.Clear();
-        RegionCollection.Clear();
-        CityCollection.Clear();
-
-        foreach (var country in countryList)
-        {
-            CountryCollection.Add(country);
-        }
 
         UpdateEventReportViewModels();
 
@@ -165,11 +159,11 @@ public partial class SearchEventsViewModel : BaseViewModel
 
     private void RefreshRegionList()
     {
-        var regionList = RawEvents.Select(e => e.Region).Distinct();
-
         RegionCollection.Clear();
 
-        foreach (var region in regionList)
+        var regions = locations.Where(l => l.Country == selectedCountry).Select(l => l.Region).Distinct();
+
+        foreach (var region in regions)
         {
             RegionCollection.Add(region);
         }
@@ -193,11 +187,11 @@ public partial class SearchEventsViewModel : BaseViewModel
 
     private void RefreshCityList()
     {
-        var cityList = RawEvents.Select(e => e.City).Distinct();
-
         CityCollection.Clear();
 
-        foreach (var city in cityList)
+        var cities = locations.Where(l => l.Country == selectedCountry && l.Region == selectedRegion).Select(l => l.City).Distinct();
+
+        foreach (var city in cities)
         {
             CityCollection.Add(city);
         }
@@ -228,6 +222,7 @@ public partial class SearchEventsViewModel : BaseViewModel
         }
     }
 
+    [RelayCommand]
     private async Task ClearSelections()
     {
         IsBusy = true;

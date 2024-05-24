@@ -7,19 +7,20 @@
     <ScrollView>
         <Grid>
             <VerticalStackLayout Spacing="5">
-
                 <Grid RowDefinitions="Auto, Auto, Auto, *">
                     <HorizontalStackLayout Grid.Row="0">
                         <RadioButton Content="New" IsChecked="True" RadioButtonGroup.GroupName="LitterReportStatus" CheckedChanged="OnReportStatusRadioButtonCheckedChanged" />
                         <RadioButton Content="Assigned" RadioButtonGroup.GroupName="LitterReportStatus" CheckedChanged="OnReportStatusRadioButtonCheckedChanged"/>
                         <RadioButton Content="Cleaned" RadioButtonGroup.GroupName="LitterReportStatus" CheckedChanged="OnReportStatusRadioButtonCheckedChanged"/>
                     </HorizontalStackLayout>
-                    <Grid Grid.Row="1" ColumnDefinitions="1*, 1*, 1*, 1*">
-                        <Picker x:Name="CountryPicker" Title="Select a country" ItemsSource="{Binding CountryCollection}" SelectedItem="{Binding SelectedCountry}" FontSize="Micro" Grid.Column="0" />
-                        <Picker x:Name="RegionPicker" Title="Select a state" ItemsSource="{Binding RegionCollection}" SelectedItem="{Binding SelectedRegion}" FontSize="Micro" Grid.Column="1" />
-                        <Picker x:Name="CityPicker" Title="Select a city" ItemsSource="{Binding CityCollection}" SelectedItem="{Binding SelectedCity}" FontSize="Micro" Grid.Column="2"/>
-                        <Button Text="Clear Selections" Command="{Binding ClearSelectionsCommand}" Margin="10" FontSize="Micro"  Grid.Column="3" />
+                    <Border Grid.Row="1" Style="{StaticResource RoundBorder}" >
+                    <Grid ColumnDefinitions="1*, 1*, 1*, 1*">
+                            <Picker x:Name="CountryPicker" Title="Select a country" ItemsSource="{Binding CountryCollection}" SelectedItem="{Binding SelectedCountry}" FontSize="Micro" Grid.Column="0" />
+                            <Picker x:Name="RegionPicker" Title="Select a state" ItemsSource="{Binding RegionCollection}" SelectedItem="{Binding SelectedRegion}" FontSize="Micro" Grid.Column="1" />
+                            <Picker x:Name="CityPicker" Title="Select a city" ItemsSource="{Binding CityCollection}" SelectedItem="{Binding SelectedCity}" FontSize="Micro" Grid.Column="2"/>
+                            <Button Text="Clear Selections" Command="{Binding ClearSelectionsCommand}" Margin="10" FontSize="Micro"  Grid.Column="3" />
                     </Grid>
+                    </Border>
                     <HorizontalStackLayout Grid.Row="2">
                         <RadioButton Content="Map" IsChecked="True" x:Name="viewMap" FontSize="Micro" />
                         <RadioButton Content="List" x:Name="viewList" FontSize="Micro" />
@@ -51,7 +52,7 @@
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
                                 <StackLayout Margin="5">
-                                    <Border Padding="3" Stroke="Green">
+                                    <Border Style="{StaticResource RoundBorder}" >
                                         <Grid ColumnDefinitions="1*, 1*"                                  
                                   RowDefinitions="Auto, Auto, Auto"
                                   x:Name="LitterReportItem">

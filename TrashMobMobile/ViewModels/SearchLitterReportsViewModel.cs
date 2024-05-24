@@ -1,48 +1,48 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
 public partial class SearchLitterReportsViewModel : BaseViewModel
 {
-    private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
-    private string? selectedCountry;
-    private string? selectedRegion;
-    private string? selectedCity;
-
     private readonly ILitterReportManager litterReportManager;
-    private LitterReportViewModel? selectedLitterReport;
-    private LitterImageViewModel? selectedLitterImage;
-
-    public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
-
-    [ObservableProperty]
-    AddressViewModel userLocation;
 
     [ObservableProperty]
     private string reportStatus = "New";
+
+    private string? selectedCity;
+    private string? selectedCountry;
+    private LitterImageViewModel? selectedLitterImage;
+    private LitterReportViewModel? selectedLitterReport;
+    private string? selectedRegion;
+
+    [ObservableProperty]
+    private AddressViewModel userLocation;
+
+    public SearchLitterReportsViewModel(ILitterReportManager litterReportManager)
+    {
+        this.litterReportManager = litterReportManager;
+    }
+
+    private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
+
+    public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
 
     public ObservableCollection<string> CountryCollection { get; set; } = [];
     public ObservableCollection<string> RegionCollection { get; set; } = [];
     public ObservableCollection<string> CityCollection { get; set; } = [];
 
-    public ICommand ClearSelectionsCommand { get; set; }
-
     public string? SelectedCountry
     {
-        get 
-        { 
-            return selectedCountry;
-        }
+        get => selectedCountry;
         set
         {
             selectedCountry = value;
-            OnPropertyChanged(nameof(SelectedCountry));
+            OnPropertyChanged();
 
             HandleCountrySelected(value);
         }
@@ -50,14 +50,11 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
     public string? SelectedRegion
     {
-        get
-        {
-            return selectedRegion;
-        }
+        get => selectedRegion;
         set
         {
             selectedRegion = value;
-            OnPropertyChanged(nameof(SelectedRegion));
+            OnPropertyChanged();
 
             HandleRegionSelected(value);
         }
@@ -65,36 +62,27 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
     public string? SelectedCity
     {
-        get
-        {
-            return selectedCity;
-        }
+        get => selectedCity;
         set
         {
             selectedCity = value;
-            OnPropertyChanged(nameof(SelectedCity));
+            OnPropertyChanged();
 
             HandleCitySelected(value);
         }
-    }
-
-    public SearchLitterReportsViewModel(ILitterReportManager litterReportManager)
-    {
-        this.litterReportManager = litterReportManager;
-        ClearSelectionsCommand = new Command(async () => await ClearSelections());
     }
 
     public ObservableCollection<LitterReportViewModel> LitterReports { get; set; } = [];
 
     public LitterReportViewModel? SelectedLitterReport
     {
-        get { return selectedLitterReport; }
+        get => selectedLitterReport;
         set
         {
             if (selectedLitterReport != value)
             {
                 selectedLitterReport = value;
-                OnPropertyChanged(nameof(SelectedLitterReport));
+                OnPropertyChanged();
 
                 if (selectedLitterReport != null)
                 {
@@ -106,17 +94,18 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
     public LitterImageViewModel? SelectedLitterImage
     {
-        get { return selectedLitterImage; }
+        get => selectedLitterImage;
         set
         {
             if (selectedLitterImage != value)
             {
                 selectedLitterImage = value;
-                OnPropertyChanged(nameof(SelectedLitterImage));
+                OnPropertyChanged();
 
                 if (selectedLitterImage != null)
                 {
-                    var litterReport = RawLitterReports.FirstOrDefault(l => l.LitterImages.Any(i => i.Id == selectedLitterImage.Id));
+                    var litterReport =
+                        RawLitterReports.FirstOrDefault(l => l.LitterImages.Any(i => i.Id == selectedLitterImage.Id));
                     PerformNavigation(litterReport.Id);
                 }
             }
@@ -134,11 +123,25 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
         await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportId}");
     }
 
+    private IEnumerable<TrashMob.Models.Poco.Location> locations = [];
+
     private async Task RefreshLitterReports()
     {
         IsBusy = true;
 
         LitterReports.Clear();
+
+        locations = await litterReportManager.GetLocationsByTimeRangeAsync(DateTimeOffset.Now.AddDays(-180), DateTimeOffset.Now);
+        CountryCollection.Clear();
+        RegionCollection.Clear();
+        CityCollection.Clear();
+
+        var countries = locations.Select(l => l.Country).Distinct();
+
+        foreach (var country in countries)
+        {
+            CountryCollection.Add(country);
+        }
 
         if (ReportStatus == "Assigned")
         {
@@ -155,23 +158,6 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
         else
         {
             RawLitterReports = await litterReportManager.GetAllLitterReportsAsync();
-        }
-
-        var countryList = new List<string>();
-        foreach (var litterReport in RawLitterReports)
-        {
-            countryList.AddRange(litterReport.LitterImages.Select(i => i.Country));
-        }
-
-        CountryCollection.Clear();
-        RegionCollection.Clear();
-        CityCollection.Clear();
-
-        var countries = countryList.Distinct();
-
-        foreach (var country in countries)
-        {
-            CountryCollection.Add(country);
         }
 
         UpdateLitterReportViewModels();
@@ -199,16 +185,9 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
     private void RefreshRegionList()
     {
-        var regionList = new List<string>();
-
-        foreach (var litterReport in RawLitterReports)
-        {
-            regionList.AddRange(litterReport.LitterImages.Select(i => i.Region));
-        }
-
         RegionCollection.Clear();
 
-        var regions = regionList.Distinct();
+        var regions = locations.Where(l => l.Country == selectedCountry).Select(l => l.Region).Distinct();
 
         foreach (var region in regions)
         {
@@ -234,16 +213,9 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
     private void RefreshCityList()
     {
-        var cityList = new List<string>();
-
-        foreach (var litterReport in RawLitterReports)
-        {
-            cityList.AddRange(litterReport.LitterImages.Select(i => i.City));
-        }
-
         CityCollection.Clear();
 
-        var cities = cityList.Distinct();
+        var cities = locations.Where(l => l.Country == selectedCountry && l.Region == selectedRegion).Select(l => l.City).Distinct();
 
         foreach (var city in cities)
         {
@@ -270,7 +242,7 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
         LitterReports.Clear();
         LitterImages.Clear();
 
-        foreach (var litterReport in RawLitterReports)
+        foreach (var litterReport in RawLitterReports.OrderByDescending(l => l.CreatedDate))
         {
             var vm = litterReport.ToLitterReportViewModel();
 
@@ -288,6 +260,7 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
         }
     }
 
+    [RelayCommand]
     private async Task ClearSelections()
     {
         IsBusy = true;

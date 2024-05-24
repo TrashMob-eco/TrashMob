@@ -1,19 +1,17 @@
 ﻿namespace TrashMobMobile.Data
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
     using TrashMobMobile.Models;
 
     public class MobEventManager : IMobEventManager
     {
-        private readonly IMobEventRestService mobEventRestService;
-        private readonly IEventSummaryRestService eventSummaryRestService;
         private readonly IEventAttendeeRestService eventAttendeeRestService;
+        private readonly IEventSummaryRestService eventSummaryRestService;
+        private readonly IMobEventRestService mobEventRestService;
 
-        public MobEventManager(IMobEventRestService service, IEventAttendeeRestService eventAttendeeRestService, IEventSummaryRestService eventSummaryRestService)
+        public MobEventManager(IMobEventRestService service, IEventAttendeeRestService eventAttendeeRestService,
+            IEventSummaryRestService eventSummaryRestService)
         {
             mobEventRestService = service;
             this.eventAttendeeRestService = eventAttendeeRestService;
@@ -35,7 +33,8 @@
             return mobEventRestService.GetAllEventsAsync(cancellationToken);
         }
 
-        public Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly,
+            CancellationToken cancellationToken = default)
         {
             return mobEventRestService.GetUserEventsAsync(userId, showFutureEventsOnly, cancellationToken);
         }
@@ -60,7 +59,8 @@
             return mobEventRestService.AddEventAsync(mobEvent, cancellationToken);
         }
 
-        public Task DeleteEventAsync(EventCancellationRequest cancelEvent, CancellationToken cancellationToken = default)
+        public Task DeleteEventAsync(EventCancellationRequest cancelEvent,
+            CancellationToken cancellationToken = default)
         {
             return mobEventRestService.DeleteEventAsync(cancelEvent, cancellationToken);
         }
@@ -75,7 +75,8 @@
             return eventAttendeeRestService.RemoveAttendeeAsync(eventAttendee, cancellationToken);
         }
 
-        public async Task<bool> IsUserAttendingAsync(Guid eventId, Guid userId, CancellationToken cancellationToken = default)
+        public async Task<bool> IsUserAttendingAsync(Guid eventId, Guid userId,
+            CancellationToken cancellationToken = default)
         {
             var events = await mobEventRestService.GetEventsUserIsAttending(userId, cancellationToken);
 
@@ -87,15 +88,21 @@
             return eventSummaryRestService.GetEventSummaryAsync(eventId, cancellationToken);
         }
 
-        public Task<EventSummary> UpdateEventSummaryAsync(EventSummary eventSummary, CancellationToken cancellationToken = default)
+        public Task<EventSummary> UpdateEventSummaryAsync(EventSummary eventSummary,
+            CancellationToken cancellationToken = default)
         {
             return eventSummaryRestService.UpdateEventSummaryAsync(eventSummary, cancellationToken);
         }
 
-        public Task<EventSummary> AddEventSummaryAsync(EventSummary eventSummary, CancellationToken cancellationToken = default)
+        public Task<EventSummary> AddEventSummaryAsync(EventSummary eventSummary,
+            CancellationToken cancellationToken = default)
         {
             return eventSummaryRestService.AddEventSummaryAsync(eventSummary, cancellationToken);
         }
+
+        public Task<IEnumerable<Location>> GetLocationsByTimeRangeAsync(DateTimeOffset startDate, DateTimeOffset endDate, CancellationToken cancellationToken = default)
+        {
+            return mobEventRestService.GetLocationsByTimeRangeAsync(startDate, endDate, cancellationToken);
+        }
     }
 }
-

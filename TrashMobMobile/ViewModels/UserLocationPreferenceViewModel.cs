@@ -1,39 +1,38 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
 public partial class UserLocationPreferenceViewModel : BaseViewModel
 {
-    private readonly IUserManager userManager;
     private readonly IMapRestService mapRestService;
-
-    public ObservableCollection<AddressViewModel> Addresses { get; set; } = [];
-
-    [ObservableProperty]
-    string units;
+    private readonly IUserManager userManager;
 
     [ObservableProperty]
-    int travelDistance;
+    private AddressViewModel address;
 
     [ObservableProperty]
-    AddressViewModel address;
+    private int travelDistance;
+
+    [ObservableProperty]
+    private string units;
 
     public UserLocationPreferenceViewModel(IUserManager userManager, IMapRestService mapRestService)
     {
-        UpdateLocationCommand = new Command(async () => await UpdateLocation());
         this.userManager = userManager;
         this.mapRestService = mapRestService;
         address = new AddressViewModel();
     }
 
+    public ObservableCollection<AddressViewModel> Addresses { get; set; } = [];
+
     public void Init()
     {
         IsBusy = true;
-        
+
         Addresses.Clear();
         Address = App.CurrentUser.GetAddress();
         Addresses.Add(Address);
@@ -42,8 +41,6 @@ public partial class UserLocationPreferenceViewModel : BaseViewModel
 
         IsBusy = false;
     }
-
-    public ICommand UpdateLocationCommand { get; set; }
 
     public async Task ChangeLocation(Location location)
     {
@@ -66,6 +63,7 @@ public partial class UserLocationPreferenceViewModel : BaseViewModel
         IsBusy = false;
     }
 
+    [RelayCommand]
     private async Task UpdateLocation()
     {
         IsBusy = true;

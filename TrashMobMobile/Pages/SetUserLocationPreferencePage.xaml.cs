@@ -10,8 +10,8 @@ public partial class SetUserLocationPreferencePage : ContentPage
     private readonly UserLocationPreferenceViewModel _viewModel;
 
     public SetUserLocationPreferencePage(UserLocationPreferenceViewModel viewModel)
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         _viewModel = viewModel;
         _viewModel.Navigation = Navigation;
         _viewModel.Notify = Notify;
@@ -21,12 +21,14 @@ public partial class SetUserLocationPreferencePage : ContentPage
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-    
+
         _viewModel.Init();
 
         if (_viewModel?.Address?.Latitude != null && _viewModel?.Address?.Longitude != null)
         {
-            var mapSpan = new MapSpan(new Location(_viewModel.Address.Latitude.Value, _viewModel.Address.Longitude.Value), 0.01, 0.01);
+            var mapSpan =
+                new MapSpan(new Location(_viewModel.Address.Latitude.Value, _viewModel.Address.Longitude.Value), 0.01,
+                    0.01);
             userLocationMap.MoveToRegion(mapSpan);
         }
     }
@@ -38,9 +40,9 @@ public partial class SetUserLocationPreferencePage : ContentPage
 
     private async Task Notify(string message)
     {
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        var cancellationTokenSource = new CancellationTokenSource();
 
-        ToastDuration duration = ToastDuration.Short;
+        var duration = ToastDuration.Short;
         double fontSize = 14;
 
         var toast = Toast.Make(message, duration, fontSize);

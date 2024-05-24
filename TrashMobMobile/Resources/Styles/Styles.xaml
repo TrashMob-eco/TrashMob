@@ -17,6 +17,14 @@
         <Setter Property="StrokeThickness" Value="1" />
     </Style>
 
+    <Style x:Key="RoundBorder" TargetType="Border">
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Gray100}}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 15" />
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="Padding" Value="10" />
+        <Setter Property="Margin" Value="5,0,5,0" />
+    </Style>
+
     <Style TargetType="BoxView">
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
     </Style>

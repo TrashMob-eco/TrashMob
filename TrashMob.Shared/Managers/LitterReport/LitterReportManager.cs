@@ -16,7 +16,7 @@ namespace TrashMob.Shared.Managers.LitterReport
     using TrashMob.Shared.Poco;
     using TrashMob.Shared.Extensions;
 
-    public class LitterReportManager : KeyedManager<LitterReport>, ILitterReportManager
+  public class LitterReportManager : KeyedManager<LitterReport>, ILitterReportManager
     {
         private readonly ILitterImageManager litterImageManager;
         private readonly ILogger<LitterReportManager> logger;
@@ -33,6 +33,67 @@ namespace TrashMob.Shared.Managers.LitterReport
             this.logger = logger;
             this.dbTransaction = dbTransaction;
             this.emailManager = emailManager;
+        }
+
+        public override async Task<LitterReport> UpdateAsync(LitterReport litterReport, Guid userId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (litterReport.LitterImages == null || litterReport.LitterImages.Count == 0)
+                {
+                    return null;
+                }
+
+                logger.LogInformation("Updating litter report");
+
+                var existingInstance = Repo.Get().Where(l => l.Id == litterReport.Id)
+                                        .Include(l => l.LitterImages)
+                                        .FirstOrDefault();
+
+                if (existingInstance == null)
+                {
+                    return null;
+                }
+
+                existingInstance.Name = litterReport.Name;
+                existingInstance.Description = litterReport.Description;
+                existingInstance.LitterReportStatusId = litterReport.LitterReportStatusId;
+
+                foreach (var litterImage in litterReport.LitterImages)
+                {
+                    if (litterImage.CreatedByUserId == Guid.Empty)
+                    {
+                        litterImage.LitterReportId = litterReport.Id;
+                        litterImage.CreatedByUserId = userId;
+                        litterImage.CreatedDate = DateTime.UtcNow;
+                        existingInstance.LitterImages.Add(litterImage);
+                    }
+                }
+
+                var deletedIds = new List<Guid>();
+                foreach (var litterImage in existingInstance.LitterImages)
+                {
+                    if (!litterReport.LitterImages.Select(x => x.Id).Contains(litterImage.Id))
+                    {
+                        deletedIds.Add(litterImage.Id);
+                    }
+                }
+
+                foreach (var deletedId in deletedIds)
+                {
+                    await litterImageManager.DeleteAsync(deletedId, userId, cancellationToken);
+                    existingInstance.LitterImages.Remove(existingInstance.LitterImages.First(x => x.Id == deletedId));
+                }
+
+                var resultLitterReport = await base.UpdateAsync(existingInstance, userId, cancellationToken);
+
+                return resultLitterReport;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error adding litter report");
+                return null;
+            }
         }
 
         public override async Task<LitterReport> AddAsync(LitterReport litterReport, Guid userId, CancellationToken cancellationToken)
@@ -218,6 +279,34 @@ namespace TrashMob.Shared.Managers.LitterReport
         public override async Task<LitterReport> GetAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await Repository.Get(lr => lr.Id == id).Include(lr => lr.LitterImages).FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<Location>> GeLitterLocationsByTimeRangeAsync(DateTimeOffset? startTime, DateTimeOffset? endTime, CancellationToken cancellationToken=default)
+        {
+            var locations = await Repository.Get()
+                            .Where(lr => lr.LitterImages.Any(li => li.Country != null && li.Region != null && li.City != null) &&
+                                            (startTime == null || lr.CreatedDate >= startTime) &&
+                                            (endTime == null || lr.CreatedDate <= endTime))
+                            .SelectMany(lr => lr.LitterImages)
+                            .Where(li => li.Country != null && li.Region != null && li.City != null)
+                            .GroupBy(li => new { li.Country, li.Region, li.City })
+                            .Select(group => new Location { Country = group.Key.Country, Region = group.Key.Region, City = group.Key.City })
+                            .ToListAsync(cancellationToken)
+                            .ConfigureAwait(false);
+
+            return locations;
+        }
+
+        public async Task<IEnumerable<LitterReport>> GetFilteredLitterReportsAsync(LitterReportFilter filter, CancellationToken cancellationToken = default)
+        {
+            return await Repo.Get(lr => (filter.StartDate == null || lr.CreatedDate >= filter.StartDate) &&
+                                        (filter.EndDate == null || lr.CreatedDate <= filter.EndDate) &&
+                                        (filter.CreatedByUserId == null || lr.CreatedByUserId == filter.CreatedByUserId) &&
+                                        (filter.LitterReportStatusId == null || lr.LitterReportStatusId == filter.LitterReportStatusId) &&
+                                        (filter.Country == null || lr.LitterImages.Any(li => li.Country == filter.Country)) &&
+                                        (filter.Region == null || lr.LitterImages.Any(li => li.Region == filter.Region)) &&
+                                        (filter.City == null || lr.LitterImages.Any(li => li.City == filter.City)))
+                                .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

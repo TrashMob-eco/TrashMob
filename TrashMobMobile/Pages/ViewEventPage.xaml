@@ -20,12 +20,12 @@
 
                 <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3" ColumnDefinitions="1*, 1*">
-                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding EventViewModel.DisplayDate}" FontAttributes="Bold" />
-                    <Label Grid.Row="1" Grid.Column="0" Text="{Binding EventViewModel.DisplayTime}" FontSize="Micro"/>
-                    <Button Grid.Row="2" Grid.Column="0" Text="Add To Calendar" TextColor="Green" BackgroundColor="LightGray" />
-                    <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding EventViewModel.Address.DisplayAddress }" FontAttributes="Bold" />
-                    <Button Grid.Row="4" Grid.Column="0" Text="Get Directions" TextColor="Green" BackgroundColor="LightGray" />
+                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3" ColumnDefinitions="1*, 2*">
+                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding SelectedEventType}" FontSize="Small" Margin="10, 0, 10,0" Grid.ColumnSpan="2" />
+                    <Label Grid.Row="1" Grid.Column="0" Text="{Binding EventViewModel.DisplayDate}" FontAttributes="Bold" Margin="10,0,10,0" Grid.ColumnSpan="2" />
+                    <Label Grid.Row="2" Grid.Column="0" Text="{Binding EventViewModel.DisplayTime}" FontSize="Micro" Margin="10, 0, 10,0" />
+                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding DisplayDuration}" FontSize="Micro" Margin="10, 0, 10,0" />
+                    <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding EventViewModel.Address.DisplayAddress }" FontAttributes="Bold" Margin="10,0,10,0" />
                     <maps:Map Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="eventLocationMap" ItemsSource="{Binding Events}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True">
                         <maps:Map.ItemTemplate>
                             <DataTemplate>
@@ -35,7 +35,7 @@
                             </DataTemplate>
                         </maps:Map.ItemTemplate>
                     </maps:Map>
-                    <Label Grid.Row="6" Grid.Column="0" Text="About this event" FontAttributes="Bold" />
+                    <Label Grid.Row="6" Grid.Column="0" Text="About this event" FontAttributes="Bold" Grid.ColumnSpan="2" />
                     <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding EventViewModel.Description}" FontSize="Micro" />
                     <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding WhatToExpect}" FontSize="Micro" />
                     <Label Grid.Row="9" Grid.Column="0" Text="Attendees" FontSize="Micro" />

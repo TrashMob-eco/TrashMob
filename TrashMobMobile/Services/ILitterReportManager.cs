@@ -2,7 +2,7 @@
 {
     using TrashMob.Models;
 
-    public interface ILitterReportRestService
+    public interface ILitterReportManager
     {
         Task<IEnumerable<LitterReport>> GetAllLitterReportsAsync(CancellationToken cancellationToken = default);
 
@@ -20,15 +20,13 @@
         Task<IEnumerable<LitterReport>> GetUserLitterReportsAsync(Guid userId,
             CancellationToken cancellationToken = default);
 
-        Task<LitterReport> GetLitterReportAsync(Guid litterReportId, CancellationToken cancellationToken = default);
+        Task<LitterReport> GetLitterReportAsync(Guid litterReportId, ImageSizeEnum imageSize,
+            CancellationToken cancellationToken = default);
 
         Task<LitterReport> UpdateLitterReportAsync(LitterReport litterReport,
             CancellationToken cancellationToken = default);
 
         Task<LitterReport> AddLitterReportAsync(LitterReport litterReport,
-            CancellationToken cancellationToken = default);
-
-        Task<string> GetLitterImageUrlAsync(Guid litterImageId, ImageSizeEnum imageSize,
             CancellationToken cancellationToken = default);
 
         Task DeleteLitterReportAsync(Guid litterReportId, CancellationToken cancellationToken = default);
