@@ -15,6 +15,7 @@ namespace TrashMob.Controllers
     using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
     using TrashMob.Shared.Poco;
     using TrashMob.Shared.Extensions;
     using TrashMob.Shared.Managers.LitterReport;

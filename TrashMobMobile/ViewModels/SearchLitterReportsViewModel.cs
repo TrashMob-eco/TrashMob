@@ -123,11 +123,25 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
         await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportId}");
     }
 
+    private IEnumerable<TrashMob.Models.Poco.Location> locations = [];
+
     private async Task RefreshLitterReports()
     {
         IsBusy = true;
 
         LitterReports.Clear();
+
+        locations = await litterReportManager.GetLocationsByTimeRangeAsync(DateTimeOffset.Now.AddDays(-180), DateTimeOffset.Now);
+        CountryCollection.Clear();
+        RegionCollection.Clear();
+        CityCollection.Clear();
+
+        var countries = locations.Select(l => l.Country).Distinct();
+
+        foreach (var country in countries)
+        {
+            CountryCollection.Add(country);
+        }
 
         if (ReportStatus == "Assigned")
         {
@@ -144,23 +158,6 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
         else
         {
             RawLitterReports = await litterReportManager.GetAllLitterReportsAsync();
-        }
-
-        var countryList = new List<string>();
-        foreach (var litterReport in RawLitterReports)
-        {
-            countryList.AddRange(litterReport.LitterImages.Select(i => i.Country));
-        }
-
-        CountryCollection.Clear();
-        RegionCollection.Clear();
-        CityCollection.Clear();
-
-        var countries = countryList.Distinct();
-
-        foreach (var country in countries)
-        {
-            CountryCollection.Add(country);
         }
 
         UpdateLitterReportViewModels();
@@ -188,16 +185,9 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
     private void RefreshRegionList()
     {
-        var regionList = new List<string>();
-
-        foreach (var litterReport in RawLitterReports)
-        {
-            regionList.AddRange(litterReport.LitterImages.Select(i => i.Region));
-        }
-
         RegionCollection.Clear();
 
-        var regions = regionList.Distinct();
+        var regions = locations.Where(l => l.Country == selectedCountry).Select(l => l.Region).Distinct();
 
         foreach (var region in regions)
         {
@@ -223,16 +213,9 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
     private void RefreshCityList()
     {
-        var cityList = new List<string>();
-
-        foreach (var litterReport in RawLitterReports)
-        {
-            cityList.AddRange(litterReport.LitterImages.Select(i => i.City));
-        }
-
         CityCollection.Clear();
 
-        var cities = cityList.Distinct();
+        var cities = locations.Where(l => l.Country == selectedCountry && l.Region == selectedRegion).Select(l => l.City).Distinct();
 
         foreach (var city in cities)
         {

@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobile.Data
 {
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
     using TrashMobMobile.Models;
 
     public class MobEventManager : IMobEventManager
@@ -97,6 +98,11 @@
             CancellationToken cancellationToken = default)
         {
             return eventSummaryRestService.AddEventSummaryAsync(eventSummary, cancellationToken);
+        }
+
+        public Task<IEnumerable<Location>> GetLocationsByTimeRangeAsync(DateTimeOffset startDate, DateTimeOffset endDate, CancellationToken cancellationToken = default)
+        {
+            return mobEventRestService.GetLocationsByTimeRangeAsync(startDate, endDate, cancellationToken);
         }
     }
 }

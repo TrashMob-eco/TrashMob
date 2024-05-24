@@ -5,6 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
     using TrashMob.Shared.Poco;
 
     public interface IEventManager : IKeyedManager<Event>

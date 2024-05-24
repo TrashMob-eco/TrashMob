@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Poco
+﻿namespace TrashMob.Models.Poco
 {
     using System;
 
