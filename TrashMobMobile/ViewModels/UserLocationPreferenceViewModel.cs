@@ -3,6 +3,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using TrashMobMobile.Config;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
@@ -15,7 +16,7 @@ public partial class UserLocationPreferenceViewModel : BaseViewModel
     private AddressViewModel address;
 
     [ObservableProperty]
-    private int travelDistance;
+    private int travelDistance = Settings.DefaultTravelDistance;
 
     [ObservableProperty]
     private string units;

@@ -14,21 +14,11 @@
                 <Grid ColumnDefinitions="1*, 1*"
                       RowDefinitions="Auto">
                     <Button Grid.Column="0"
-                            Background="Transparent"
                             Command="{Binding SearchEventsCommand}"
-                            FontSize="Small"
-                            HeightRequest="40"
-                            HorizontalOptions="Center"
-                            Text="Search Events"
-                            TextColor="Purple" />
+                            Text="Search Events" />
                     <Button Grid.Column="1"
-                            Background="Transparent"
                             Command="{Binding SearchLitterReportsCommand}"
-                            FontSize="Small"
-                            HeightRequest="40"
-                            HorizontalOptions="Center"
-                            Text="Search Litter Reports"
-                            TextColor="Purple" />
+                            Text="Search Litter Reports" />
                 </Grid>
                 <Frame Margin="5,0"
                        Style="{x:DynamicResource Frame}">
@@ -104,12 +94,9 @@
                       RowDefinitions="Auto, Auto, Auto">
                     <Button Grid.Row="0"
                             Grid.Column="1"
-                            Background="Transparent"
+                            Style="{StaticResource LinkButton}"
                             Command="{Binding MyDashboardCommand}"
-                            FontSize="Micro"
-                            HorizontalOptions="End"
-                            Text="View My Dashboard"
-                            TextColor="Green" />
+                            Text="View My Dashboard" />
                     <Label Grid.Row="1"
                            Grid.Column="0"
                            FontAttributes="Bold"
@@ -125,12 +112,9 @@
                     </HorizontalStackLayout>
                     <Button Grid.Row="2"
                             Grid.Column="1"
-                            Background="Transparent"
+                            Style="{StaticResource LinkButton}"
                             Command="{Binding SetLocationPreferenceCommand}"
-                            FontSize="Micro"
-                            HorizontalOptions="End"
-                            Text="{Binding UserLocationDisplay}"
-                            TextColor="Green" />
+                            Text="{Binding UserLocationDisplay}" />
                 </Grid>
 
                 <maps:Map x:Name="upcomingEventsMap"
