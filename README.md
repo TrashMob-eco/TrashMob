@@ -3,7 +3,7 @@
 **Meet up. Clean up. Feel good.**
 
 # What is TrashMob?
-TrashMob is a website dedicated to organizing groups of people to clean up the world we live in. Users create cleanup events, publicize them, and recruit people to join up, as well as ask for assistance from communities and partners to help haul away the garbage once it is gathered. The idea is to turn what can be an intimidating process for event organizers into a few mouse clicks and simple forms. And once the process is simple, events will spring up all over the world, and the cleanup of the world can begin.
+TrashMob.eco is a platform dedicated to organizing groups of people to clean up the world we live in. Users create cleanup events, publicize them, and recruit people to join up, as well as ask for assistance from communities and partners to help haul away the garbage once it is gathered. The idea is to turn what can be an intimidating process for event organizers into a few clicks and simple forms. And once the process is simple, events will spring up all over the world, and the cleanup of the world can begin.
 
 # Where did this idea come from?
 Years ago, Scott Hanselman (and others at Microsoft) built out the NerdDinner.com site as a demo of the capabilities of ASP.NET MVC. I actually went to a bunch of the nerd dinners. They were fantastic and had a huge roll in my career, including eventually leading me to join Microsoft. This site is based on both that code and the idea that getting people together to do small good things results in larger good things in the long term.
@@ -29,17 +29,17 @@ As of 5/15/2022, we are now in full production launch. The site is up and runnin
 
 ## Are you looking for contributors?
 
-ABSOLUTELY! Ping [info@trashmob.eco](mailto:info@trashmob.eco) if you want to get involved. All kinds of skills needed, from reactjs to website design, to aspnet core, to .NET MAUI, to PowerBI, to deployment / github skills. If you have a couple of hours a week, and want to contribute, let us know!
+ABSOLUTELY! Ping [info@trashmob.eco](mailto:info@trashmob.eco) if you want to get involved. All kinds of skills are needed, from reactjs to website design, to aspnet core, to .NET MAUI, to PowerBI, to deployment / github skills. If you have a couple of hours a week, and want to contribute, let us know!
  
 ## I have an idea for a TrashMob feature!
 
-Fantastic! We want to build this out to be best site on the internet! But before you send us your idea, please take a look at the lists of [projects](https://github.com/orgs/TrashMob-eco/projects) and [issues](https://github.com/TrashMob-eco/TrashMob/issues) we already have going. We may already be working on your idea. If your idea is not there, feel free to reach out to us at [info@trashmob.eco](mailto:info@trashmob.eco)
+Fantastic! We want to build this out to be best platform on the internet! But before you send us your idea, please take a look at the lists of [projects](https://github.com/orgs/TrashMob-eco/projects) and [issues](https://github.com/TrashMob-eco/TrashMob/issues) we already have going. We may already be working on your idea. If your idea is not there, feel free to reach out to us at [info@trashmob.eco](mailto:info@trashmob.eco)
 
 # Development Notes
 
 ## Getting Started - Development
 
-1. You must install the .NET 6 SDK
+1. You must install the .NET 8 SDK
 1. Install Visual Studio Code
 1. Connect to github and clone the repo
 1. Send your github id to info@trashmob.eco to be added as a contributor to the repository
@@ -162,38 +162,28 @@ If you are, however, attempting to test or alter the Docusign workflow, here are
 
 The mobile app is written using .NET MAUI. It requires a few prerequisites in order to get it compiling and running.
 
+### If you are working on a Windows machine:
 1. Ensure you have installed the latest version of Visual Studio and the .NET MAUI Framework option
-2. Install Android Studio https://developer.android.com/studio 
-3. Create an Android Emulator device in Android Studio
-4. Load the TrashMobMobileApp.sln Project in Visual Studio.
-5. Set your startup project to TrashMobMobileApp
-5. In order to have the maps feature work, you will need to do the following:
+1. Install Android Studio https://developer.android.com/studio 
+1. Create an Android Emulator device in Android Studio
+1. Load the TrashMobMobileApp.sln Project in Visual Studio.
+1. Set your startup project to TrashMobMobileApp
+1. In order to have the maps feature work, you will need to do the following:
     1. Create a Google Maps account: https://developers.google.com/maps/gmp-get-started
-    2. Get your Google API Key from your Google Project
-    3. Create a gradle.properties file in your GRADLE_USER_HOME (i.e. c:\users\\<username>\.gradle)
-    4. Add the following line to your gradle properties file: 
+    1. Get your Google API Key from your Google Project
+    1. Open the Platforms/Android/AndroidManifest.xml file
+    1. Paste your GoogleMaps key to the value of the following line:
+	```xml
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="<insert your api key here>" />
     ```
-    GOOGLE_API_KEY = "<Your api key>"
-    ```
-    5. Restart your emulator. Maps should work now
 
     <b>Never check in any file that contains your real api key.</b>
-6. Add a file to the root of the mobile project called `ConstantsLocal.cs`
-7. Get the Syncfusion license key from Key Vault (get help from another dev if needed)
-8. Add the following code:
 
-```csharp
-namespace TrashMobMobile;
-
-public partial class Constants
-{
-    public static partial string GetSyncfusionKey()
-    {
-        return "<<Replace with Syncfusion license key>>";
-    }
-}
-```
-9. ❗**Important** _Before_ committing any changes, check your git status to ensure that this file is not being tracked. If it is, check for typos in the filename or incorrect path. Check the `.gitignore` file for guidance.
+### If you are working on a Mac:
+1. Ensure you have installed the latest version of Visual Studio and the .NET MAUI Framework option
+1. Load the TrashMobMobileApp.sln Project in Visual Studio.
+1. Set your startup project to TrashMobMobileApp
+1. More detail needed here
 
 ## To Build the Web App:
 
@@ -225,7 +215,7 @@ If the app loads, but data does not, it is likely that the firewall rule is not 
 As the site's feature set has grown, so have the scenarios that need to be tested after large changes have been made. Please see the [Test Scenarios](./TestScenarios.md) document for a list of checks that should be run. At some point we will need to automate these tests.
 
 ## To Update the Database Model
-The project uses Entity Framework Core V6 Model-First database updates.
+The project uses Entity Framework Core V8 Model-First database updates.
 
 1. Update the models / MobDbContext as needed in the repo.
 2. To create the migration, do either of the following steps
@@ -275,10 +265,12 @@ Use Visual Studio Publish to publish the site to the dev server.
 If setting up a new environment, you will need to add the IP Address of the App Service to the list of IP Addresses accessible in the SQL Server. This needs to be automated in the future to make sure that a change to an IP address doesn't break the site.
 
 ## The site is asking me to login
-If you try to access a secure page, you will need a user id on the site. When you hit a secured page, the site will redirect you to a sign in page. Click the Sign up now link at the bottom of the login box. Multiple identity providers are now available, including Facebook, Twitter, Google, and Microsoft, along with the TrashMob tenant itself if you prefer not to use an integrated signup.
+If you try to access a secure page, you will need a user id on the site. When you hit a secured page, the site will redirect you to a sign in page. Click the Sign up now link at the bottom of the login box. Multiple identity providers are now available, including Facebook, LinkedIn, Google, and Microsoft, along with the TrashMob tenant itself if you prefer not to use an integrated signup.
 
 ## How to Change Mobile App from Test to Prod
-It is currently hard-coded in the Mobile app that if you run a Debug build, you will point to the test environment, and if you run the release build, you will point to the production environment. 
+It is currently hard-coded in the Mobile app that if you run a Debug build, you will point to the test environment, and if you run the release build, you will point to the production environment.
+
+The Release build is the one that is published to the app stores. We are working on having a second app store entry for testing only.
 
 ## My Android Pull Request is Failing with Unable to Open jar File
 In Debug mode, by default, the Android package format is set to apk, and does not build the bundle needed for signing. In order to change that
@@ -286,18 +278,13 @@ In Debug mode, by default, the Android package format is set to apk, and does no
 2. Right click on the TrashMobMobileApp project
 3. Select "Properties"
 4. Go to the Android Settings / Options
-5. Change the Android Package Format for Debug & net7.0-android to "bundle" instead of "apk".
-6. Save you changes and push to your branch.
+5. Change the Android Package Format for Debug & net8.0-android to "bundle" instead of "apk".
+6. Save your changes and push to your branch.
 
 Note: this may make deployments to your local emulator slower (more data must be copied into the emulator session). You can change this back to "apk" for local development, but failure to switch it back to "bundle" before checkin will cause the PR build to fail. There may be a way to pass this setting in on the command line for the publish step. That has not yet been investigated.
 
 ## How do I get a test distribution of the Mobile App?
-We currently use Microsoft App Center for building and distributing the Mobile apps. In order to get notified of a new distribution (or to download it). 
-1. Send a note to info@trashmob.eco requesting access to App Center. Please include the email address you wish to use to access App Center in the request and why you want to use a dev build.
-2. A TrashMob.eco admin will review your request and if approved, will add you to the testers group.
-3. You will receive an email notification when your request has been approved.
-4. Click on the link to complete your onboarding.
-5. You can either download the latest package at that point, or wait for the next build to be completed. You will be notified when a new version is available.
+We are currently working on a way to distribute the test version of the mobile app. For now, you can build the app from the source code and deploy it to your device.
 
 ## How do I get a production distribution of the Mobile App?
 The production mobile app can be downloaded here:
@@ -325,6 +312,34 @@ IFTTT.com testing is currently in progress. There are a couple of steps needed t
 
 ## IFTTT Test User ID
 
-The test user id needed for submitting the IFTTT tests is stored in the Dev KeyVault as IFTTTTestUserId. 
-The test user password needed for submitting the IFTTT tests is stored in the Dev KeyVault as IFTTTPasswordWebsite.
-The password needed for logging in to the Email account for the test user id is stored in the Dev KeyVault as IFTTTTestPassword.
+- The test user id needed for submitting the IFTTT tests is stored in the Dev KeyVault as IFTTTTestUserId. 
+- The test user password needed for submitting the IFTTT tests is stored in the Dev KeyVault as IFTTTPasswordWebsite.
+- The password needed for logging in to the Email account for the test user id is stored in the Dev KeyVault as IFTTTTestPassword.
+
+## SSL Cert Update Instructions
+
+Every year, the SSL certificate for the TrashMob.eco site will need to be updated. The process for updating the certificate is stored in the TrashMob.eco OneNote under "Renewing the SSL Certificate".
+
+## Android App Signing Instructions
+
+### Test Environment
+- The Android app is signed with a keystore file. 
+- The keystore file is stored ?
+- The password for the keystore is stored in the Dev KeyVault as AndroidSiginingKeyPassword. 
+- The alias for the key is stored in the Dev KeyVault as AndroidSigningAlias. 
+- The key is stored in the Dev KeyVault as AndroidSiginingKey.
+
+### Production Environment
+- The Android app is signed with a keystore file. 
+- The keystore file is stored ?
+- The password for the keystore is stored in the Prod KeyVault as AndroidSiginingKeyPassword. 
+- The alias for the key is stored in the Prod KeyVault as AndroidSigningAlias. 
+- The key is stored in the Prod KeyVault as AndroidSiginingKey.
+
+## iOS App Signing Instructions
+
+### Test Environment
+TBD
+
+### Production Environment
+TBD
