@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobile.Extensions
 {
     using TrashMob.Models;
+    using TrashMobMobile.Config;
     using TrashMobMobile.Models;
 
     public static class UserExtensions
@@ -32,6 +33,17 @@
                 PostalCode = user.PostalCode,
                 Region = user.Region,
                 Location = new Location(user.Latitude ?? 0, user.Longitude ?? 0)
+            };
+        }
+
+        public static AddressViewModel GetDefaultAddress(this User user)
+        {
+            return new AddressViewModel
+            {
+                City = Settings.DefaultCity,
+                Region = Settings.DefaultRegion,
+                Country = Settings.DefaultCountry,
+                Location = new Location(Settings.DefaultLatitude, Settings.DefaultLongitude)
             };
         }
     }
