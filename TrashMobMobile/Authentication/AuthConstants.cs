@@ -7,7 +7,7 @@ public static class AuthConstants
     private const string EditProfilePolicyId = "B2C_1A_TM_PROFILEEDIT";
     private const string DeleteProfilePolicyId = "B2C_1A_TM_DEREGISTER";
 
-#if DEBUG
+#if USETEST
     public const string ClientId = "31cb1c9a-eaa6-4fd0-b59f-0bd0099845ee";
     private const string TenantName = "TrashmobDev";
     private const string TenantId = $"{TenantName}.onmicrosoft.com";

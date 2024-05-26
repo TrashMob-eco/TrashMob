@@ -13,10 +13,11 @@ on:
 env:
   DOTNET_VERSION: '8.0.x'  # set this to the dotnet version to use
   DOTNET_VERSION2: '8.0.x'  # set this to the dotnet version to use
-  CONFIGURATION: Debug      # Values: Debug, Release
+  CONFIGURATION: Release      # Values: Debug, Release
   ENVIRONMENT: test         # Values: test, production
   IOS_BUNDLE_ID: 'eco.trashmobdev.trashmobmobile'   # Values: 'eco.trashmobdev.trashmobmobile', 'eco.trashmob'
   IOS_PROFILE_TYPE: 'IOS_APP_STORE'           # Values: 'IOS_APP_DEVELOPMENT', 'IOS_APP_STORE'
+  DEFINE_CONSTANTS: 'USETEST'
 
 jobs:
   generate-build-number:

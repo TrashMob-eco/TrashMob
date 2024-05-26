@@ -19,6 +19,7 @@
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+    <DefineConstants>USETEST</DefineConstants>
 
 		<!-- Display name -->
 		<ApplicationTitle>TrashMobMobile</ApplicationTitle>
