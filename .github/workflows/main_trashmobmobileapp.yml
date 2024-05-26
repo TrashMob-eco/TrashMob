@@ -85,6 +85,7 @@ jobs:
       release_number: ${{ needs.generate-build-number.outputs.releaseNumber }}
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
       bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
+      android_key_name: "upload"
     secrets:
       android_keystore: ${{ secrets.ANDROID_KEYSTORE }}
       android_keystore_password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}

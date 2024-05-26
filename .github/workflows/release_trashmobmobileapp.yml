@@ -101,6 +101,7 @@ jobs:
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
       bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.android_bundle_id }}
       version: ${{ github.event.inputs.version }}
+      android_key_name: "key"
     secrets:
       android_keystore: ${{ secrets.ANDROID_KEYSTORE }}
       android_keystore_password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
