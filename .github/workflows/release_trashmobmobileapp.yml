@@ -102,6 +102,7 @@ jobs:
       bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.android_bundle_id }}
       version: ${{ github.event.inputs.version }}
       android_key_name: "key"
+      define_constants: ${{ env.DEFINE_CONSTANTS }}
     secrets:
       android_keystore: ${{ secrets.ANDROID_KEYSTORE }}
       android_keystore_password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -120,6 +121,7 @@ jobs:
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
       ios_provisioning_profile_type: ${{ needs.exposeEnvironmentVariables.outputs.ios_provisioning_profile_type }}
       version: ${{ github.event.inputs.version }}
+      define_constants: ${{ env.DEFINE_CONSTANTS }}
     secrets:
       ios_signing_certificate: ${{ secrets.IOS_CERTIFICATES_P12 }}
       ios_signing_certificate_password: ${{ secrets.IOS_CERTIFICATES_P12_PASSWORD }}
