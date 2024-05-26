@@ -74,6 +74,9 @@ jobs:
         - name: Update Bundle ID
           run: sed -i '' "s|<ApplicationId>.*</ApplicationId>|<ApplicationId>${{ inputs.bundle_id }}</ApplicationId>|g" TrashMobMobile/TrashMobMobile.csproj
 
+        - name: Update the Signing Key
+          run: sed -i '' "s|<CodesignKey>iPhone Developer</CodesignKey>|<CodesignKey>iPhone Distribution</CodesignKey>|g" TrashMobMobile/TrashMobMobile.csproj
+        
         - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
           uses: actions/setup-dotnet@v3
           with:
@@ -106,14 +109,6 @@ jobs:
             issuer-id: ${{ secrets.apple_issuer_id }}
             api-key-id: ${{ secrets.apple_key_id }}
             api-private-key: ${{ secrets.apple_key }}
-
-        - name: Update the Signing Key
-          run: |
-            $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
-
-            $newContent = $content -replace "<CodesignKey>iPhone Developer</CodesignKey>", "<CodesignKey>iPhone Distribution</CodesignKey>"
-
-            Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
 
         - name: Build MAUI iOS
           run: dotnet publish TrashMobMobile/TrashMobMobile.csproj -c ${{ inputs.configuration }} -f net8.0-ios -r ios-arm64 --self-contained /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=true /p:PublishTrimmed=true
