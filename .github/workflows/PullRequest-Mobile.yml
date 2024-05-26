@@ -89,7 +89,7 @@ jobs:
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
       bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
       android_key_name: "upload"
-      define_constants: ${{ env.DEFINE_CONSTANTS }}
+      define_constants: USETEST
     secrets:
       android_keystore: ${{ secrets.ANDROID_KEYSTORE }}
       android_keystore_password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -107,7 +107,7 @@ jobs:
       bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
       ios_provisioning_profile_type: ${{ needs.exposeEnvironmentVariables.outputs.ios_provisioning_profile_type }}
-      define_constants: ${{ env.DEFINE_CONSTANTS }}
+      define_constants: "USETEST"
     secrets:
       ios_signing_certificate: ${{ secrets.IOS_CERTIFICATES_P12 }}
       ios_signing_certificate_password: ${{ secrets.IOS_CERTIFICATES_P12_PASSWORD }}
