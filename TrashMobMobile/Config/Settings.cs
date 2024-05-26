@@ -4,7 +4,7 @@ using TrashMobMobile.Models;
 
 public static class Settings
 {
-#if DEBUG
+#if USETEST
     public const string ApiBaseUrl = "https://as-tm-dev-westus2.azurewebsites.net/api/";
 
     public const string SiteBaseUrl = "https://as-tm-dev-westus2.azurewebsites.net";

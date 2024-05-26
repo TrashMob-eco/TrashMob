@@ -27,6 +27,9 @@ on:
             android_key_name:
                 required: true
                 type: string
+            define_constants:
+                required: true
+                type: string
         secrets:
             android_keystore:
                 required: true
@@ -85,6 +88,14 @@ jobs:
 
             Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
 
+        - name: Update define constants
+          run: |
+              $content = Get-Content TrashMobMobile/TrashMobMobile.csproj -Raw
+  
+              $newContent = $content -replace '<DefineConstants>USETEST</DefineConstants>', "<DefineConstants>${{ inputs.define_constants }}</DefineConstants>"
+  
+              Set-Content TrashMobMobile/TrashMobMobile.csproj -Value $newContent
+  
         - name: Update GoogleMaps Key
           run: |
               $content = Get-Content TrashMobMobile/Platforms/Android/AndroidManifest.xml -Raw
