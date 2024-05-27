@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage x:Class="TrashMobMobile.Pages.CreateEventPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -39,9 +40,8 @@
                                VerticalOptions="Center" />
 
                         <Border Style="{x:StaticResource RoundBorder}">
-                            <DatePicker Grid.Row="1"
-                                        Grid.Column="1"
-                                        Date="{Binding EventViewModel.EventDateOnly}" />
+                            <DatePicker
+                                Date="{Binding EventViewModel.EventDateOnly}" />
                         </Border>
                     </VerticalStackLayout>
 
@@ -58,9 +58,8 @@
                                VerticalOptions="Center" />
 
                         <Border Style="{x:StaticResource RoundBorder}">
-                            <TimePicker Grid.Row="2"
-                                        Grid.Column="1"
-                                        Time="{Binding EventViewModel.EventTime}" />
+                            <TimePicker
+                                Time="{Binding EventViewModel.EventTime}" />
                         </Border>
                     </VerticalStackLayout>
 
@@ -299,29 +298,34 @@
                 </Grid>
 
                 <Grid ColumnDefinitions="1*,1*, 1*, 1*"
-                  RowDefinitions="Auto"
-                  VerticalOptions="End"
-                  Margin="0,0,0,20">
+                      RowDefinitions="Auto"
+                      VerticalOptions="End"
+                      Margin="0,0,0,20">
 
                     <Button Margin="10"
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="2"
-                        Command="{Binding SaveEventCommand}"
-                        Text="Save Event">
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="2"
+                            Command="{Binding SaveEventCommand}"
+                            Text="Save Event">
                         <Button.Triggers>
                             <MultiTrigger TargetType="Button">
                                 <MultiTrigger.Conditions>
-                                    <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
-                                                  Value="True" />
-                                    <BindingCondition Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}"
-                                                  Value="True" />
-                                    <BindingCondition Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}"
-                                                  Value="True" />
-                                    <BindingCondition Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}"
-                                                  Value="True" />
-                                    <BindingCondition Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}"
-                                                  Value="True" />
+                                    <BindingCondition
+                                        Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
+                                        Value="True" />
+                                    <BindingCondition
+                                        Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}"
+                                        Value="True" />
+                                    <BindingCondition
+                                        Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}"
+                                        Value="True" />
+                                    <BindingCondition
+                                        Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}"
+                                        Value="True" />
+                                    <BindingCondition
+                                        Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}"
+                                        Value="True" />
                                 </MultiTrigger.Conditions>
                                 <Setter Property="IsEnabled" Value="True" />
                             </MultiTrigger>
@@ -329,13 +333,13 @@
                     </Button>
 
                     <Button Margin="10"
-                        Grid.Row="0"
-                        Grid.Column="2"
-                        Grid.ColumnSpan="2"
-                        Command="{Binding ManageEventPartnersCommand}"
-                        IsEnabled="{Binding IsManageEventPartnersEnabled}"
-                        IsVisible="{Binding IsManageEventPartnersEnabled}"
-                        Text="Manage Partners" />
+                            Grid.Row="0"
+                            Grid.Column="2"
+                            Grid.ColumnSpan="2"
+                            Command="{Binding ManageEventPartnersCommand}"
+                            IsEnabled="{Binding IsManageEventPartnersEnabled}"
+                            IsVisible="{Binding IsManageEventPartnersEnabled}"
+                            Text="Manage Partners" />
                 </Grid>
 
                 <!--TODO: check with Shiyi, but I think the validations should be with their respective elements
@@ -351,14 +355,18 @@
                             <MultiTrigger.Conditions>
                                 <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
                                                   Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}"
-                                                  Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}"
-                                                  Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}"
-                                                  Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}"
-                                                  Value="True" />
+                                <BindingCondition
+                                    Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}"
+                                    Value="True" />
+                                <BindingCondition
+                                    Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}"
+                                    Value="True" />
+                                <BindingCondition
+                                    Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}"
+                                    Value="True" />
+                                <BindingCondition
+                                    Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}"
+                                    Value="True" />
                             </MultiTrigger.Conditions>
                             <Setter Property="IsVisible" Value="False" />
                         </MultiTrigger>
@@ -372,9 +380,10 @@
                                      Value="False">
                             <Setter Property="Text" Value="Description is required and must be at least 10 characters." />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}"
-                                     TargetType="Label"
-                                     Value="False">
+                        <DataTrigger
+                            Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}"
+                            TargetType="Label"
+                            Value="False">
                             <Setter Property="Text" Value="Maximum Participants cannot be less than 0." />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}"

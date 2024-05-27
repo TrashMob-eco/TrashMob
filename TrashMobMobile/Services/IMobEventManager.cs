@@ -38,6 +38,7 @@
         Task<EventSummary> AddEventSummaryAsync(EventSummary eventSummary,
             CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<TrashMob.Models.Poco.Location>> GetLocationsByTimeRangeAsync(DateTimeOffset startDate, DateTimeOffset endDate, CancellationToken cancellationToken = default);
+        Task<IEnumerable<TrashMob.Models.Poco.Location>> GetLocationsByTimeRangeAsync(DateTimeOffset startDate,
+            DateTimeOffset endDate, CancellationToken cancellationToken = default);
     }
 }

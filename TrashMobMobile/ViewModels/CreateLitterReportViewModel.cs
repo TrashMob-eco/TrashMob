@@ -40,7 +40,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
         this.mapRestService = mapRestService;
         LitterReportViewModel = new LitterReportViewModel
         {
-            LitterReportStatusId = NewLitterReportStatus
+            LitterReportStatusId = NewLitterReportStatus,
         };
     }
 
@@ -168,7 +168,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
                 StreetAddress = litterImageViewModel.Address.StreetAddress,
 
                 // Use the Azure Blob Url as local file on create
-                AzureBlobURL = litterImageViewModel.FilePath
+                AzureBlobURL = litterImageViewModel.FilePath,
             };
 
             litterReport.LitterImages.Add(litterImage);

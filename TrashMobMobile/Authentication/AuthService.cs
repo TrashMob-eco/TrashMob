@@ -42,7 +42,7 @@ public class AuthService : IAuthService
             Debug.WriteLine($"MSAL Silent Error: {ex.Message}");
             return new SignInResult
             {
-                Succeeded = false
+                Succeeded = false,
             };
         }
     }
@@ -97,7 +97,7 @@ public class AuthService : IAuthService
 
             return new SignInResult
             {
-                Succeeded = false
+                Succeeded = false,
             };
         }
 
@@ -107,13 +107,13 @@ public class AuthService : IAuthService
 
             return new SignInResult
             {
-                Succeeded = true
+                Succeeded = true,
             };
         }
 
         return new SignInResult
         {
-            Succeeded = false
+            Succeeded = false,
         };
     }
 
@@ -187,7 +187,7 @@ public class AuthService : IAuthService
 
                 return new SignInResult
                 {
-                    Succeeded = true
+                    Succeeded = true,
                 };
             }
         }
@@ -198,7 +198,7 @@ public class AuthService : IAuthService
 
         return new SignInResult
         {
-            Succeeded = false
+            Succeeded = false,
         };
     }
 
@@ -227,11 +227,11 @@ public class AuthService : IAuthService
         return DateTimeOffset.UtcNow > _expiresOn - bufferTime;
     }
 
-    private UserContext GetUserContext(AuthenticationResult ar)
+    private static UserContext GetUserContext(AuthenticationResult ar)
     {
         var newContext = new UserContext
         {
-            IsLoggedOn = false
+            IsLoggedOn = false,
         };
 
         var user = ParseIdToken(ar.IdToken);
@@ -248,7 +248,7 @@ public class AuthService : IAuthService
         return newContext;
     }
 
-    private JObject ParseIdToken(string idToken)
+    private static JObject ParseIdToken(string idToken)
     {
         // Get the piece with actual user info
         idToken = idToken.Split('.')[1];
@@ -256,12 +256,12 @@ public class AuthService : IAuthService
         return JObject.Parse(idToken);
     }
 
-    private string Base64UrlDecode(string s)
+    private static string Base64UrlDecode(string s)
     {
         s = s.Replace('-', '+').Replace('_', '/');
         s = s.PadRight(s.Length + (4 - s.Length % 4) % 4, '=');
         var byteArray = Convert.FromBase64String(s);
-        var decoded = Encoding.UTF8.GetString(byteArray, 0, byteArray.Count());
+        var decoded = Encoding.UTF8.GetString(byteArray, 0, byteArray.Length);
         return decoded;
     }
 }

@@ -2,14 +2,8 @@
 
 namespace TrashMob.Models
 {
-    using System;
-
-    public partial class PartnerAdminInvitation : KeyedModel
+    public class PartnerAdminInvitation : KeyedModel
     {
-        public PartnerAdminInvitation()
-        {
-        }
-
         public Guid PartnerId { get; set; }
 
         public string Email { get; set; }

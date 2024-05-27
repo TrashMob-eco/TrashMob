@@ -71,7 +71,7 @@ public partial class EventPartnerLocationServiceViewModel : BaseViewModel
             EventId = EventId,
             PartnerLocationId = PartnerLocationId,
             ServiceTypeId = ServiceTypeId,
-            EventPartnerLocationServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Requested
+            EventPartnerLocationServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Requested,
         };
 
         await eventPartnerLocationServiceRestService.AddEventPartnerLocationService(eventPartnerLocationService);
@@ -92,7 +92,7 @@ public partial class EventPartnerLocationServiceViewModel : BaseViewModel
             EventId = EventId,
             PartnerLocationId = PartnerLocationId,
             ServiceTypeId = ServiceTypeId,
-            EventPartnerLocationServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Requested
+            EventPartnerLocationServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Requested,
         };
 
         await eventPartnerLocationServiceRestService

@@ -89,7 +89,7 @@ public partial class MainViewModel : BaseViewModel
             else
             {
                 TravelDistance = Settings.DefaultTravelDistance;
-                UserLocation = user.GetDefaultAddress();
+                UserLocation = GetDefaultAddress();
             }
 
             UserLocationDisplay = $"{UserLocation.City}, {UserLocation.Region}";
@@ -182,5 +182,16 @@ public partial class MainViewModel : BaseViewModel
     private async Task SearchEvents()
     {
         await Shell.Current.GoToAsync(nameof(SearchEventsPage));
+    }
+
+    private static AddressViewModel GetDefaultAddress()
+    {
+        return new AddressViewModel
+        {
+            City = Settings.DefaultCity,
+            Region = Settings.DefaultRegion,
+            Country = Settings.DefaultCountry,
+            Location = new Location(Settings.DefaultLatitude, Settings.DefaultLongitude),
+        };
     }
 }

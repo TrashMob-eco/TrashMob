@@ -1,12 +1,8 @@
 ﻿#nullable disable
 
-using TrashMob;
-
 namespace TrashMob.Models
 {
-    using System.Collections.Generic;
-
-    public partial class SocialMediaAccountType : LookupModel
+    public class SocialMediaAccountType : LookupModel
     {
         public SocialMediaAccountType()
         {

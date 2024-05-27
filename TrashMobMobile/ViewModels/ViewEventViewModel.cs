@@ -18,6 +18,9 @@ public partial class ViewEventViewModel : BaseViewModel
     private string attendeeCount;
 
     [ObservableProperty]
+    private string displayDuration;
+
+    [ObservableProperty]
     private bool enableEditEvent;
 
     [ObservableProperty]
@@ -36,9 +39,6 @@ public partial class ViewEventViewModel : BaseViewModel
 
     [ObservableProperty]
     private string selectedEventType;
-
-    [ObservableProperty]
-    private string displayDuration;
 
     [ObservableProperty]
     private string spotsLeft;
@@ -141,7 +141,7 @@ public partial class ViewEventViewModel : BaseViewModel
         var eventAttendee = new EventAttendee
         {
             EventId = EventViewModel.Id,
-            UserId = App.CurrentUser.Id
+            UserId = App.CurrentUser.Id,
         };
 
         await mobEventManager.AddEventAttendeeAsync(eventAttendee);
@@ -162,7 +162,7 @@ public partial class ViewEventViewModel : BaseViewModel
         var eventAttendee = new EventAttendee
         {
             EventId = EventViewModel.Id,
-            UserId = App.CurrentUser.Id
+            UserId = App.CurrentUser.Id,
         };
 
         await mobEventManager.RemoveEventAttendeeAsync(eventAttendee);

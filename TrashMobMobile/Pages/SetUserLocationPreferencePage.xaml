@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
@@ -8,22 +9,22 @@
         <Grid>
             <VerticalStackLayout Spacing="5">
 
-                <Label 
-            Text="Click on the map to set your preferred location."
-            FontSize="Micro"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center"
-            Margin="5"/>
+                <Label
+                    Text="Click on the map to set your preferred location."
+                    FontSize="Micro"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    Margin="5" />
 
-                <maps:Map x:Name="userLocationMap" 
-                  ItemsSource="{Binding Addresses}" 
-                  MapClicked="OnMapClicked">
+                <maps:Map x:Name="userLocationMap"
+                          ItemsSource="{Binding Addresses}"
+                          MapClicked="OnMapClicked">
                     <maps:Map.ItemTemplate>
                         <DataTemplate>
                             <maps:Pin Location="{Binding Location}"
-                                  Address="{Binding StreetAddress}"
-                                  Label="Your Preferred Location" />
+                                      Address="{Binding StreetAddress}"
+                                      Label="Your Preferred Location" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
                 </maps:Map>
@@ -31,22 +32,22 @@
                 <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 1*" Margin="10">
                     <VerticalStackLayout Spacing="5" Grid.Row="0" Grid.Column="0" Margin="10">
                         <Label Text="Set the Max Travel Distance you are willing to travel for an event."
-                   FontSize="Micro"
-                   VerticalOptions="Center" 
-                   HorizontalOptions="Start"
-                   HorizontalTextAlignment="Center"
-                   FontAttributes="Bold" />
-                        <Border Style="{x:StaticResource RoundBorder}" >
+                               FontSize="Micro"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               FontAttributes="Bold" />
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Entry Text="{Binding TravelDistance}" Keyboard="Numeric" FontSize="Small" />
                         </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="0" Grid.Column="1" Margin="10">
                         <Label Text="Set your preferred Units of measure."
-                   FontSize="Micro"
-                   VerticalOptions="Center" 
-                   HorizontalOptions="Start"
-                   HorizontalTextAlignment="Center"
-                   FontAttributes="Bold" />
+                               FontSize="Micro"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               FontAttributes="Bold" />
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Picker SelectedItem="{Binding Units}" FontSize="Small">
                                 <Picker.ItemsSource>
@@ -60,44 +61,44 @@
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="1" Grid.Column="0" Margin="10">
                         <Label Text="City"
-                   FontSize="Micro"
-                   VerticalOptions="Center" 
-                   HorizontalOptions="Start"
-                   HorizontalTextAlignment="Center"
-                   FontAttributes="Bold" />
+                               FontSize="Micro"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               FontAttributes="Bold" />
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding Address.City }" FontSize="Small" />
                         </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="1" Grid.Column="1" Margin="10">
                         <Label Text="State/Region"
-                    FontSize="Micro"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    FontAttributes="Bold" />
+                               FontSize="Micro"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               FontAttributes="Bold" />
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding Address.Region }" FontSize="Small" />
                         </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="2" Grid.Column="0" Margin="10">
                         <Label Text="Country"
-                    FontSize="Micro"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    FontAttributes="Bold" />
+                               FontSize="Micro"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               FontAttributes="Bold" />
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding Address.Country }" FontSize="Small" />
                         </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="2" Grid.Column="1" Margin="10">
                         <Label Text="Postal Code"
-                    FontSize="Micro"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    FontAttributes="Bold" />
+                               FontSize="Micro"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center"
+                               FontAttributes="Bold" />
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding Address.PostalCode }" FontSize="Small" />
                         </Border>
@@ -106,8 +107,10 @@
 
                 <Button Text="Update Location" Command="{Binding UpdateLocationCommand}" Margin="10" />
             </VerticalStackLayout>
-            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
+                     VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
+                               HorizontalOptions="Center" />
         </Grid>
     </ScrollView>
 </ContentPage>

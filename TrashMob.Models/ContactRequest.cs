@@ -2,12 +2,8 @@
 
 namespace TrashMob.Models
 {
-    public partial class ContactRequest : KeyedModel
+    public class ContactRequest : KeyedModel
     {
-        public ContactRequest()
-        {
-        }
-
         public string Name { get; set; }
 
         public string Email { get; set; }

@@ -2,16 +2,13 @@
 
 namespace TrashMob.Models
 {
-    using System;
-    using System.Collections.Generic;
-
-    public partial class Event : KeyedModel
+    public class Event : KeyedModel
     {
         public Event()
         {
-            UserNotifications = new HashSet<UserNotification>();
-            PickupLocations = new HashSet<PickupLocation>();
-            EventAttendees = new HashSet<EventAttendee>();
+            UserNotifications = [];
+            PickupLocations = [];
+            EventAttendees = [];
         }
 
         public string Name { get; set; }
@@ -54,14 +51,14 @@ namespace TrashMob.Models
 
         public virtual EventSummary EventSummary { get; set; }
 
-        public virtual ICollection<EventAttendee> EventAttendees {get;set;}
+        public virtual ICollection<EventAttendee> EventAttendees { get; set; }
 
         public virtual ICollection<EventAttendeeRoute> EventAttendeeRoutes { get; set; }
 
         public virtual ICollection<UserNotification> UserNotifications { get; set; }
 
         public virtual ICollection<PickupLocation> PickupLocations { get; set; }
-        
+
         public virtual ICollection<EventLitterReport> EventLitterReports { get; set; }
     }
 }

@@ -1,12 +1,8 @@
 ﻿#nullable disable
 
-using TrashMob;
-
 namespace TrashMob.Models
 {
-    using System.Collections.Generic;
-
-    public partial class EventType : LookupModel
+    public class EventType : LookupModel
     {
         public EventType()
         {

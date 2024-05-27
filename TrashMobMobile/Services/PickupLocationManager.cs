@@ -73,7 +73,7 @@
                         Notes = pickupLocation.Notes,
                         PostalCode = pickupLocation.PostalCode,
                         Region = pickupLocation.Region,
-                        StreetAddress = pickupLocation.StreetAddress
+                        StreetAddress = pickupLocation.StreetAddress,
                     };
 
                     pickupLocationImages.Add(pickupLocationImage);
@@ -116,7 +116,7 @@
                 Notes = pickupLocation.Notes,
                 PostalCode = pickupLocation.PostalCode,
                 Region = pickupLocation.Region,
-                StreetAddress = pickupLocation.StreetAddress
+                StreetAddress = pickupLocation.StreetAddress,
             };
 
             return pickupLocationImage;

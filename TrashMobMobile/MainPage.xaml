@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage x:Class="TrashMobMobile.MainPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
-             xmlns:sensors="clr-namespace:Microsoft.Maui.Devices.Sensors;assembly=Microsoft.Maui.Essentials"
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="vm:MainViewModel">
 
@@ -23,7 +23,7 @@
                             Text="Search Litter Reports" />
                 </Grid>
                 <Border Margin="5,0"
-                       Style="{x:StaticResource RoundBorder}">
+                        Style="{x:StaticResource RoundBorder}">
                     <Grid ColumnDefinitions="1*, 1*, 1*, 1*"
                           RowDefinitions="Auto, Auto, Auto, Auto">
                         <Label Grid.Row="0"

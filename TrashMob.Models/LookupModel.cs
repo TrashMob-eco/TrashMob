@@ -1,7 +1,5 @@
 ﻿#nullable disable
 
-using TrashMob;
-
 namespace TrashMob.Models
 {
     public abstract class LookupModel

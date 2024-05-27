@@ -1,7 +1,6 @@
 ﻿namespace TrashMob.Models.Extensions
 {
     using System.Text;
-    using TrashMob.Models;
 
     public static class EventExtensions
     {

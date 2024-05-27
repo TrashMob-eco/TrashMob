@@ -2,7 +2,7 @@
 
 namespace TrashMob.Models
 {
-    public partial class PickupLocation : KeyedModel
+    public class PickupLocation : KeyedModel
     {
         public Guid EventId { get; set; }
 

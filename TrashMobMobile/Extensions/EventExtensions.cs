@@ -21,7 +21,8 @@
         public static string GetFormattedDuration(this Event mobEvent)
         {
             //TODO: move hard code string to resource file
-            return string.Concat("Expected Duration: ", mobEvent.DurationHours, " hour ", mobEvent.DurationMinutes, " minutes");
+            return string.Concat("Expected Duration: ", mobEvent.DurationHours, " hour ", mobEvent.DurationMinutes,
+                " minutes");
         }
 
         public static string GetFormattedLocalDate(this DateTimeOffset dateTime)
@@ -111,7 +112,7 @@
                 IsEventPublic = mobEvent.IsEventPublic,
                 MaxNumberOfParticipants = mobEvent.MaxNumberOfParticipants,
                 Name = mobEvent.Name,
-                UserRoleForEvent = mobEvent.IsEventLead() ? "Lead" : "Attendee"
+                UserRoleForEvent = mobEvent.IsEventLead() ? "Lead" : "Attendee",
             };
 
             return eventViewModel;
@@ -128,7 +129,7 @@
                 PostalCode = mobEvent.PostalCode,
                 Region = mobEvent.Region,
                 StreetAddress = mobEvent.StreetAddress,
-                Location = new Location(mobEvent.Latitude.Value, mobEvent.Longitude.Value)
+                Location = new Location(mobEvent.Latitude.Value, mobEvent.Longitude.Value),
             };
         }
     }

@@ -2,9 +2,7 @@
 
 namespace TrashMob.Models
 {
-    using System;
-
-    public partial class PartnerLocation : KeyedModel
+    public class PartnerLocation : KeyedModel
     {
         public PartnerLocation()
         {

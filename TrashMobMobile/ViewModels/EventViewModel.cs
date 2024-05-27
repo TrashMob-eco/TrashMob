@@ -155,7 +155,7 @@ public partial class EventViewModel : ObservableObject
             PostalCode = Address.PostalCode,
             Region = Address.Region,
             StreetAddress = Address.StreetAddress,
-            EventStatusId = EventStatusId
+            EventStatusId = EventStatusId,
         };
     }
 

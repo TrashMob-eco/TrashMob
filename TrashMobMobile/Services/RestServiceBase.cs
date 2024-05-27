@@ -14,7 +14,7 @@
 
             authorizedHttpClient = new HttpClient
             {
-                BaseAddress = new Uri(string.Concat(TrashMobApiAddress, Controller))
+                BaseAddress = new Uri(string.Concat(TrashMobApiAddress, Controller)),
             };
 
             authorizedHttpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
@@ -22,7 +22,7 @@
 
             AnonymousHttpClient = new HttpClient
             {
-                BaseAddress = new Uri(string.Concat(TrashMobApiAddress, Controller))
+                BaseAddress = new Uri(string.Concat(TrashMobApiAddress, Controller)),
             };
 
             AnonymousHttpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
@@ -31,7 +31,7 @@
         protected static JsonSerializerOptions SerializerOptions { get; } = new()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = true
+            WriteIndented = true,
         };
 
         protected string TrashMobApiAddress { get; }
@@ -51,7 +51,7 @@
 
                     authorizedHttpClient = new HttpClient
                     {
-                        BaseAddress = new Uri(string.Concat(TrashMobApiAddress, Controller))
+                        BaseAddress = new Uri(string.Concat(TrashMobApiAddress, Controller)),
                     };
 
                     authorizedHttpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");

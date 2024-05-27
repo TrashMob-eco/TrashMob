@@ -3,9 +3,8 @@
 namespace TrashMob.Models
 {
     using NetTopologySuite.Geometries;
-    using System;
 
-    public partial class EventAttendeeRoute : KeyedModel
+    public class EventAttendeeRoute : KeyedModel
     {
         public Guid EventId { get; set; }
 

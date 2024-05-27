@@ -4,11 +4,6 @@ namespace TrashMob.Models
 {
     public class LitterReport : KeyedModel
     {
-        public LitterReport()
-        {
-            
-        }
-
         public string Name { get; set; } = string.Empty;
 
         public string Description { get; set; } = string.Empty;

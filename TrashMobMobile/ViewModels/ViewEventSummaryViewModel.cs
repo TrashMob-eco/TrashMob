@@ -71,7 +71,7 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
                 DurationInMinutes = eventSummary.DurationInMinutes,
                 EventId = eventId,
                 Notes = eventSummary.Notes,
-                NumberOfBags = eventSummary.NumberOfBags
+                NumberOfBags = eventSummary.NumberOfBags,
             };
         }
 
@@ -95,7 +95,7 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
                     Longitude = pickupLocation.Longitude.Value,
                     PostalCode = pickupLocation.PostalCode,
                     Region = pickupLocation.Region,
-                    StreetAddress = pickupLocation.StreetAddress
+                    StreetAddress = pickupLocation.StreetAddress,
                 },
                 Id = pickupLocation.Id,
                 Notes = pickupLocation.Notes,
@@ -104,7 +104,7 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
                 NotifyError = NotifyError,
                 Navigation = Navigation,
                 PickupLocation = pickupLocation,
-                ImageUrl = pickupLocation.ImageUrl
+                ImageUrl = pickupLocation.ImageUrl,
             };
 
             await pickupLocationViewModel.Init(eventId);

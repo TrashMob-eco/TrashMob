@@ -47,7 +47,7 @@ public partial class CreatePickupLocationViewModel : BaseViewModel
             Address = new AddressViewModel(),
             Notify = Notify,
             NotifyError = NotifyError,
-            Navigation = Navigation
+            Navigation = Navigation,
         };
 
         await PickupLocationViewModel.Init(eventId);
@@ -131,7 +131,7 @@ public partial class CreatePickupLocationViewModel : BaseViewModel
             PostalCode = PickupLocationViewModel.Address.PostalCode,
             Region = PickupLocationViewModel.Address.Region,
             StreetAddress = PickupLocationViewModel.Address.StreetAddress,
-            County = PickupLocationViewModel.Address.County
+            County = PickupLocationViewModel.Address.County,
         };
 
         var updatedPickupLocation = await pickupLocationManager.AddPickupLocationAsync(pickupLocation);

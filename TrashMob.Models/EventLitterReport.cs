@@ -2,8 +2,6 @@
 
 namespace TrashMob.Models
 {
-    using System;
-
     public class EventLitterReport : BaseModel
     {
         public Guid EventId { get; set; }

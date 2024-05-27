@@ -54,7 +54,7 @@ public partial class CreatePickupLocationPage : ContentPage
             BackgroundColor = Colors.Red,
             TextColor = Colors.White,
             CornerRadius = new CornerRadius(10),
-            Font = Microsoft.Maui.Font.SystemFontOfSize(14)
+            Font = Microsoft.Maui.Font.SystemFontOfSize(14),
         };
 
         var text = message;

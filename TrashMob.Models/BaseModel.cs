@@ -2,8 +2,6 @@
 
 namespace TrashMob.Models
 {
-    using System;
-
     public abstract class BaseModel
     {
         public Guid CreatedByUserId { get; set; }
