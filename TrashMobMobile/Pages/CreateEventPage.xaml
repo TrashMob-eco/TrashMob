@@ -5,7 +5,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Create Event">
     <ScrollView>
         <Grid>
@@ -24,7 +23,11 @@
                                Text="Name"
                                VerticalOptions="Center" />
 
-                        <controls:TMEntry Text="{Binding EventViewModel.Name}" />
+                        <Entry Text="{Binding EventViewModel.Name}">
+                            <Entry.Behaviors>
+                                <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
+                            </Entry.Behaviors>
+                        </Entry>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="1"
@@ -75,16 +78,12 @@
                                Text="Duration Hours"
                                VerticalOptions="Center" />
 
-                        <controls:TMEntry Keyboard="Numeric"
+                        <Entry Keyboard="Numeric"
                                           Text="{Binding EventVieWModel.DurationHours}">
-                            <controls:BehaviorAttachment.PassthroughBehavior>
-                                <toolkit:NumericValidationBehavior x:Name="durationHoursValidator"
-                                                                   Flags="ValidateOnValueChanged"
-                                                                   MaximumDecimalPlaces="0"
-                                                                   MaximumValue="10"
-                                                                   MinimumValue="1" />
-                            </controls:BehaviorAttachment.PassthroughBehavior>
-                        </controls:TMEntry>
+                            <Entry.Behaviors>
+                                <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged" x:Name="durationHoursValidator" MinimumValue="1" MaximumValue="10" MaximumDecimalPlaces="0" />
+                            </Entry.Behaviors>
+                        </Entry>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="2"
@@ -99,16 +98,12 @@
                                Text="Duration Minutes"
                                VerticalOptions="Center" />
 
-                        <controls:TMEntry Keyboard="Numeric"
+                        <Entry Keyboard="Numeric"
                                           Text="{Binding EventViewModel.DurationMinutes}">
-                            <controls:BehaviorAttachment.PassthroughBehavior>
-                                <toolkit:NumericValidationBehavior x:Name="durationMinutesValidator"
-                                                                   Flags="ValidateOnValueChanged"
-                                                                   MaximumDecimalPlaces="0"
-                                                                   MaximumValue="59"
-                                                                   MinimumValue="0" />
-                            </controls:BehaviorAttachment.PassthroughBehavior>
-                        </controls:TMEntry>
+                            <Entry.Behaviors>
+                                <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged" x:Name="durationMinutesValidator" MinimumValue="0" MaximumValue="59" MaximumDecimalPlaces="0" />
+                            </Entry.Behaviors>
+                        </Entry>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="3"
@@ -122,13 +117,11 @@
                                Text="Description"
                                VerticalOptions="Center" />
 
-                        <controls:TMEditor Text="{Binding EventViewModel.Description}">
-                            <controls:BehaviorAttachment.PassthroughBehavior>
-                                <toolkit:TextValidationBehavior x:Name="descriptionValidator"
-                                                                Flags="ValidateOnValueChanged"
-                                                                MinimumLength="10" />
-                            </controls:BehaviorAttachment.PassthroughBehavior>
-                        </controls:TMEditor>
+                        <Editor Text="{Binding EventViewModel.Description}">
+                            <Editor.Behaviors>
+                                <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10" x:Name="descriptionValidator" />
+                            </Editor.Behaviors>
+                        </Editor>
                     </VerticalStackLayout>
 
 
@@ -162,15 +155,12 @@
                                Text="Max Attendees"
                                VerticalOptions="Center" />
 
-                        <controls:TMEntry Keyboard="Numeric"
+                        <Entry Keyboard="Numeric"
                                           Text="{Binding EventViewModel.MaxNumberOfParticipants}">
-                            <controls:BehaviorAttachment.PassthroughBehavior>
-                                <toolkit:NumericValidationBehavior x:Name="maxNumberOfParticipantsValidator"
-                                                                   Flags="ValidateOnValueChanged"
-                                                                   MaximumDecimalPlaces="0"
-                                                                   MinimumValue="0" />
-                            </controls:BehaviorAttachment.PassthroughBehavior>
-                        </controls:TMEntry>
+                            <Entry.Behaviors>
+                                <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged" x:Name="maxNumberOfParticipantsValidator" MinimumValue="0" MaximumDecimalPlaces="0" />
+                            </Entry.Behaviors>
+                        </Entry>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="4"

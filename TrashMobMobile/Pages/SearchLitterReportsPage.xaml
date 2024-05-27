@@ -9,12 +9,12 @@
         <Grid>
             <VerticalStackLayout Spacing="5">
                 <Grid RowDefinitions="Auto, Auto, Auto, *">
-                    <HorizontalStackLayout Grid.Row="0">
-                        <RadioButton Content="New" IsChecked="True" RadioButtonGroup.GroupName="LitterReportStatus"
+                    <HorizontalStackLayout Grid.Row="0" >
+                        <RadioButton Content="New" IsChecked="True" GroupName="LitterReportStatus"
                                      CheckedChanged="OnReportStatusRadioButtonCheckedChanged" />
-                        <RadioButton Content="Assigned" RadioButtonGroup.GroupName="LitterReportStatus"
+                        <RadioButton Content="Assigned" GroupName="LitterReportStatus"
                                      CheckedChanged="OnReportStatusRadioButtonCheckedChanged" />
-                        <RadioButton Content="Cleaned" RadioButtonGroup.GroupName="LitterReportStatus"
+                        <RadioButton Content="Cleaned" GroupName="LitterReportStatus"
                                      CheckedChanged="OnReportStatusRadioButtonCheckedChanged" />
                     </HorizontalStackLayout>
                     <Border Grid.Row="1" Style="{StaticResource RoundBorder}">
