@@ -7,15 +7,15 @@ using Microsoft.Maui.Maps;
 [QueryProperty(nameof(LitterReportId), nameof(LitterReportId))]
 public partial class EditLitterReportPage : ContentPage
 {
-    private readonly EditLitterReportViewModel _viewModel;
+    private readonly EditLitterReportViewModel viewModel;
 
     public EditLitterReportPage(EditLitterReportViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _viewModel.Navigation = Navigation;
-        _viewModel.Notify = Notify;
-        BindingContext = _viewModel;
+        this.viewModel = viewModel;
+        this.viewModel.Navigation = Navigation;
+        this.viewModel.Notify = Notify;
+        BindingContext = this.viewModel;
     }
 
     public string LitterReportId { get; set; }
@@ -23,11 +23,11 @@ public partial class EditLitterReportPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await _viewModel.Init(new Guid(LitterReportId));
+        await viewModel.Init(new Guid(LitterReportId));
 
-        if (_viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location != null)
+        if (viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location != null)
         {
-            var mapSpan = new MapSpan(_viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location, 0.05,
+            var mapSpan = new MapSpan(viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location, 0.05,
                 0.05);
             litterReportLocationMap.MoveToRegion(mapSpan);
         }
@@ -53,14 +53,14 @@ public partial class EditLitterReportPage : ContentPage
             if (photo != null)
             {
                 // save the file into local storage
-                _viewModel.LocalFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
+                viewModel.LocalFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
 
                 using var sourceStream = await photo.OpenReadAsync();
-                using var localFileStream = File.OpenWrite(_viewModel.LocalFilePath);
+                using var localFileStream = File.OpenWrite(viewModel.LocalFilePath);
 
                 await sourceStream.CopyToAsync(localFileStream);
-                await _viewModel.AddImageToCollection();
-                _viewModel.ValidateReport();
+                await viewModel.AddImageToCollection();
+                viewModel.ValidateReport();
             }
         }
     }
@@ -72,9 +72,9 @@ public partial class EditLitterReportPage : ContentPage
 
         if (litterImageViewModel != null)
         {
-            _viewModel.LitterImageViewModels.Remove(litterImageViewModel);
+            viewModel.LitterImageViewModels.Remove(litterImageViewModel);
         }
 
-        _viewModel.ValidateReport();
+        viewModel.ValidateReport();
     }
 }

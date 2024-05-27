@@ -5,10 +5,10 @@ using Maui.BindableProperty.Generator.Core;
 public partial class TMEntry : ContentView
 {
     [AutoBindable(OnChanged = nameof(OnKeyboardChanged))]
-    private readonly Keyboard _keyboard;
+    private readonly Keyboard keyboard;
 
     [AutoBindable(DefaultBindingMode = "TwoWay", OnChanged = nameof(TextPropertyChanged))]
-    private readonly string _text;
+    private readonly string text;
 
     [AutoBindable(OnChanged = nameof(HorizontalTextAlignmentPropertyChanged))]
     private readonly TextAlignment horizontalTextAlignment;

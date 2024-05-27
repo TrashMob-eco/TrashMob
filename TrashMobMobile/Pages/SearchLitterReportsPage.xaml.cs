@@ -7,27 +7,27 @@ using Microsoft.Maui.Maps;
 
 public partial class SearchLitterReportsPage : ContentPage
 {
-    private readonly SearchLitterReportsViewModel _viewModel;
+    private readonly SearchLitterReportsViewModel viewModel;
 
     public SearchLitterReportsPage(SearchLitterReportsViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _viewModel.Notify = Notify;
-        _viewModel.Navigation = Navigation;
-        BindingContext = _viewModel;
+        this.viewModel = viewModel;
+        this.viewModel.Notify = Notify;
+        this.viewModel.Navigation = Navigation;
+        BindingContext = this.viewModel;
     }
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await _viewModel.Init();
+        await viewModel.Init();
 
-        if (_viewModel?.UserLocation?.Location != null)
+        if (viewModel?.UserLocation?.Location != null)
         {
             var mapSpan =
                 new MapSpan(
-                    new Location(_viewModel.UserLocation.Location.Latitude, _viewModel.UserLocation.Location.Longitude),
+                    new Location(viewModel.UserLocation.Location.Latitude, viewModel.UserLocation.Location.Longitude),
                     0.05, 0.05);
             litterImagesMap.MoveToRegion(mapSpan);
         }
@@ -48,8 +48,8 @@ public partial class SearchLitterReportsPage : ContentPage
     {
         if (sender is RadioButton radioButton && radioButton.IsChecked)
         {
-            _viewModel.ReportStatus = (string)radioButton.Content;
-            await _viewModel.Init();
+            viewModel.ReportStatus = (string)radioButton.Content;
+            await viewModel.Init();
         }
     }
 

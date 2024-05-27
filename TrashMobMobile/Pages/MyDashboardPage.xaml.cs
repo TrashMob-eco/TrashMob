@@ -5,21 +5,21 @@ using CommunityToolkit.Maui.Core;
 
 public partial class MyDashboardPage : ContentPage
 {
-    private readonly MyDashboardViewModel _viewModel;
+    private readonly MyDashboardViewModel viewModel;
 
     public MyDashboardPage(MyDashboardViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _viewModel.Navigation = Navigation;
-        _viewModel.Notify = Notify;
-        BindingContext = _viewModel;
+        this.viewModel = viewModel;
+        this.viewModel.Navigation = Navigation;
+        this.viewModel.Notify = Notify;
+        BindingContext = this.viewModel;
     }
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await _viewModel.Init();
+        await viewModel.Init();
     }
 
     private async Task Notify(string message)

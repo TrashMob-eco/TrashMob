@@ -7,27 +7,27 @@ using Microsoft.Maui.Maps;
 
 public partial class SetUserLocationPreferencePage : ContentPage
 {
-    private readonly UserLocationPreferenceViewModel _viewModel;
+    private readonly UserLocationPreferenceViewModel viewModel;
 
     public SetUserLocationPreferencePage(UserLocationPreferenceViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _viewModel.Navigation = Navigation;
-        _viewModel.Notify = Notify;
-        BindingContext = _viewModel;
+        this.viewModel = viewModel;
+        this.viewModel.Navigation = Navigation;
+        this.viewModel.Notify = Notify;
+        BindingContext = this.viewModel;
     }
 
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
 
-        _viewModel.Init();
+        viewModel.Init();
 
-        if (_viewModel?.Address?.Latitude != null && _viewModel?.Address?.Longitude != null)
+        if (viewModel?.Address?.Latitude != null && viewModel?.Address?.Longitude != null)
         {
             var mapSpan =
-                new MapSpan(new Location(_viewModel.Address.Latitude.Value, _viewModel.Address.Longitude.Value), 0.01,
+                new MapSpan(new Location(viewModel.Address.Latitude.Value, viewModel.Address.Longitude.Value), 0.01,
                     0.01);
             userLocationMap.MoveToRegion(mapSpan);
         }
@@ -35,7 +35,7 @@ public partial class SetUserLocationPreferencePage : ContentPage
 
     private async void OnMapClicked(object sender, MapClickedEventArgs e)
     {
-        await _viewModel.ChangeLocation(e.Location);
+        await viewModel.ChangeLocation(e.Location);
     }
 
     private async Task Notify(string message)

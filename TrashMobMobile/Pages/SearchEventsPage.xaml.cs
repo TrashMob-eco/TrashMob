@@ -7,27 +7,27 @@ using Microsoft.Maui.Maps;
 
 public partial class SearchEventsPage : ContentPage
 {
-    private readonly SearchEventsViewModel _viewModel;
+    private readonly SearchEventsViewModel viewModel;
 
     public SearchEventsPage(SearchEventsViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _viewModel.Navigation = Navigation;
-        _viewModel.Notify = Notify;
-        BindingContext = _viewModel;
+        this.viewModel = viewModel;
+        this.viewModel.Navigation = Navigation;
+        this.viewModel.Notify = Notify;
+        BindingContext = this.viewModel;
     }
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await _viewModel.Init();
+        await viewModel.Init();
 
-        if (_viewModel?.UserLocation?.Location != null)
+        if (viewModel?.UserLocation?.Location != null)
         {
             var mapSpan =
                 new MapSpan(
-                    new Location(_viewModel.UserLocation.Location.Latitude, _viewModel.UserLocation.Location.Longitude),
+                    new Location(viewModel.UserLocation.Location.Latitude, viewModel.UserLocation.Location.Longitude),
                     0.05, 0.05);
             eventsMap.MoveToRegion(mapSpan);
         }
@@ -48,8 +48,8 @@ public partial class SearchEventsPage : ContentPage
     {
         if (sender is RadioButton radioButton && radioButton.IsChecked)
         {
-            _viewModel.EventStatus = (string)radioButton.Content;
-            await _viewModel.Init();
+            viewModel.EventStatus = (string)radioButton.Content;
+            await viewModel.Init();
         }
     }
 

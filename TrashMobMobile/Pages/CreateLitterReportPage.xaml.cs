@@ -5,16 +5,16 @@ using CommunityToolkit.Maui.Core;
 
 public partial class CreateLitterReportPage : ContentPage
 {
-    private readonly CreateLitterReportViewModel _viewModel;
+    private readonly CreateLitterReportViewModel viewModel;
 
     public CreateLitterReportPage(CreateLitterReportViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _viewModel.Notify = Notify;
-        _viewModel.NotifyError = NotifyError;
-        _viewModel.Navigation = Navigation;
-        BindingContext = _viewModel;
+        this.viewModel = viewModel;
+        this.viewModel.Notify = Notify;
+        this.viewModel.NotifyError = NotifyError;
+        this.viewModel.Navigation = Navigation;
+        BindingContext = this.viewModel;
     }
 
     private async Task Notify(string message)
@@ -57,14 +57,14 @@ public partial class CreateLitterReportPage : ContentPage
             if (photo != null)
             {
                 // save the file into local storage
-                _viewModel.LocalFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
+                viewModel.LocalFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
 
                 using var sourceStream = await photo.OpenReadAsync();
-                using var localFileStream = File.OpenWrite(_viewModel.LocalFilePath);
+                using var localFileStream = File.OpenWrite(viewModel.LocalFilePath);
 
                 await sourceStream.CopyToAsync(localFileStream);
-                await _viewModel.AddImageToCollection();
-                _viewModel.ValidateReport();
+                await viewModel.AddImageToCollection();
+                viewModel.ValidateReport();
             }
         }
     }
@@ -76,9 +76,9 @@ public partial class CreateLitterReportPage : ContentPage
 
         if (litterImageViewModel != null)
         {
-            _viewModel.LitterImageViewModels.Remove(litterImageViewModel);
+            viewModel.LitterImageViewModels.Remove(litterImageViewModel);
         }
 
-        _viewModel.ValidateReport();
+        viewModel.ValidateReport();
     }
 }

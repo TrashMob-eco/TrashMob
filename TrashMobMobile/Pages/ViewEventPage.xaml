@@ -12,12 +12,8 @@
                     <Image Source="bannerlogo.png" />
                 </Frame>
                 <Label
-                    Text="{Binding EventViewModel.Name}"
-                    FontSize="Large"
+                    Text="{Binding EventViewModel.Name}" Style="{StaticResource Headline}"
                     VerticalOptions="Center"
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    TextColor="Purple"
                     Margin="5" />
 
                 <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />

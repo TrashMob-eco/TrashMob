@@ -7,28 +7,28 @@ using Microsoft.Maui.Maps;
 
 public partial class CreateEventPage : ContentPage
 {
-    private readonly CreateEventViewModel _viewModel;
+    private readonly CreateEventViewModel viewModel;
 
     public CreateEventPage(CreateEventViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _viewModel.Notify = Notify;
-        _viewModel.NotifyError = NotifyError;
-        _viewModel.Navigation = Navigation;
-        BindingContext = _viewModel;
+        this.viewModel = viewModel;
+        this.viewModel.Notify = Notify;
+        this.viewModel.NotifyError = NotifyError;
+        this.viewModel.Navigation = Navigation;
+        BindingContext = this.viewModel;
     }
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await _viewModel.Init();
+        await viewModel.Init();
 
-        if (_viewModel?.UserLocation?.Location != null)
+        if (viewModel?.UserLocation?.Location != null)
         {
             var mapSpan =
                 new MapSpan(
-                    new Location(_viewModel.UserLocation.Location.Latitude, _viewModel.UserLocation.Location.Longitude),
+                    new Location(viewModel.UserLocation.Location.Latitude, viewModel.UserLocation.Location.Longitude),
                     0.05, 0.05);
             eventLocationMap.MoveToRegion(mapSpan);
         }
@@ -36,7 +36,7 @@ public partial class CreateEventPage : ContentPage
 
     private async void OnMapClicked(object sender, MapClickedEventArgs e)
     {
-        await _viewModel.ChangeLocation(e.Location);
+        await viewModel.ChangeLocation(e.Location);
     }
 
     // TODO: These can be moved to a service/abstraction

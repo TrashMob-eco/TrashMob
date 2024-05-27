@@ -7,28 +7,28 @@
 
     public partial class MainPage : ContentPage
     {
-        private readonly MainViewModel _viewModel;
+        private readonly MainViewModel viewModel;
 
         public MainPage(MainViewModel viewModel)
         {
             InitializeComponent();
-            _viewModel = viewModel;
-            _viewModel.Navigation = Navigation;
-            _viewModel.Notify = Notify;
-            BindingContext = _viewModel;
+            this.viewModel = viewModel;
+            this.viewModel.Navigation = Navigation;
+            this.viewModel.Notify = Notify;
+            BindingContext = this.viewModel;
         }
 
         protected override async void OnNavigatedTo(NavigatedToEventArgs args)
         {
             base.OnNavigatedTo(args);
-            await _viewModel.Init();
+            await viewModel.Init();
 
-            if (_viewModel?.UserLocation?.Location != null)
+            if (viewModel?.UserLocation?.Location != null)
             {
                 var mapSpan =
                     new MapSpan(
-                        new Location(_viewModel.UserLocation.Location.Latitude,
-                            _viewModel.UserLocation.Location.Longitude), 0.05, 0.05);
+                        new Location(viewModel.UserLocation.Location.Latitude,
+                            viewModel.UserLocation.Location.Longitude), 0.05, 0.05);
                 upcomingEventsMap.MoveToRegion(mapSpan);
             }
         }

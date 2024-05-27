@@ -2,19 +2,19 @@ namespace TrashMobMobile.Pages;
 
 public partial class LogoutPage : ContentPage
 {
-    private readonly LogoutViewModel _viewModel;
+    private readonly LogoutViewModel viewModel;
 
     public LogoutPage(LogoutViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _viewModel.Navigation = Navigation;
-        BindingContext = _viewModel;
+        this.viewModel = viewModel;
+        this.viewModel.Navigation = Navigation;
+        BindingContext = this.viewModel;
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.Init();
+        await viewModel.Init();
     }
 }
