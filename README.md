@@ -323,7 +323,8 @@ Every year, the SSL certificate for the TrashMob.eco site will need to be update
 ## Android App Signing Instructions
 
 ### Test Environment
-- The Android app is signed with a keystore file. 
+- To generate a keystore file, follow: https://developer.android.com/studio/publish/app-signing#generate-key
+- - The Android app is signed with a keystore file. 
 - The keystore file is stored ?
 - The password for the keystore is stored in the Dev KeyVault as AndroidSiginingKeyPassword. 
 - The alias for the key is stored in the Dev KeyVault as AndroidSigningAlias. 

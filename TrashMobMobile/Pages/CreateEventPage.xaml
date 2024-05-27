@@ -38,11 +38,11 @@
                                Text="Event Date"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <DatePicker Grid.Row="1"
                                         Grid.Column="1"
                                         Date="{Binding EventViewModel.EventDateOnly}" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="1"
@@ -57,11 +57,11 @@
                                Text="Event Time"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <TimePicker Grid.Row="2"
                                         Grid.Column="1"
                                         Time="{Binding EventViewModel.EventTime}" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="2"
@@ -145,11 +145,11 @@
                                Text="Event Type"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Picker Title="Event Type"
                                     ItemsSource="{Binding ETypes}"
                                     SelectedItem="{Binding SelectedEventType}" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="4"
@@ -185,9 +185,9 @@
                                Text="Is Event Public?"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <CheckBox IsChecked="{Binding EventViewModel.IsEventPublic}" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
 
                     <Label Grid.Row="5"
@@ -231,10 +231,10 @@
                                Text="Address"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Label FontSize="Micro"
                                    Text="{Binding EventViewModel.Address.StreetAddress}" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="1"
                                          Grid.Column="0"
@@ -247,10 +247,10 @@
                                Text="City"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Label FontSize="Micro"
                                    Text="{Binding EventViewModel.Address.City}" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="1"
                                          Grid.Column="1"
@@ -263,10 +263,10 @@
                                Text="State/Region"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Label FontSize="Micro"
                                    Text="{Binding EventViewModel.Address.Region}" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="2"
                                          Grid.Column="0"
@@ -279,10 +279,10 @@
                                Text="Country"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Label FontSize="Micro"
                                    Text="{Binding EventViewModel.Address.Country}" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="2"
                                          Grid.Column="1"
@@ -295,10 +295,10 @@
                                Text="Postal Code"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Label FontSize="Micro"
                                    Text="{Binding EventViewModel.Address.PostalCode}" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                 </Grid>
 

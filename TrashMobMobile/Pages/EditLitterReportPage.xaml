@@ -18,9 +18,9 @@
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Center"
                         FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Entry Text="{Binding Name}"/>
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="5" Grid.Row="1" Grid.ColumnSpan="2" Margin="10">
@@ -31,9 +31,9 @@
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Center"
                         FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Editor Text="{Binding Description}" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="2" Grid.ColumnSpan="2" Margin="10">
                         <Label 
@@ -43,13 +43,13 @@
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Center"
                         FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Label 
                         Text="{Binding LitterReportStatus}"
                         VerticalOptions="Center" 
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Center"/>
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
 
                     <Button Grid.Row="3" Grid.Column="0"
