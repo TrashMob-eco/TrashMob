@@ -1,14 +1,14 @@
 ﻿namespace TrashMob.Controllers.IFTTT
 {
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
     using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Security;
-    using TrashMob.Shared.Poco.IFTTT;
-    using TrashMob.Shared.Managers.Interfaces;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
+    using TrashMob.Security;
     using TrashMob.Shared;
+    using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco.IFTTT;
 
     [Route("api/ifttt/v1/[controller]")]
     [RequiredScope(Constants.TrashMobIFTTTScope)]
@@ -17,7 +17,7 @@
     {
         private readonly IQueriesManager queriesManager;
 
-        public QueriesController(IQueriesManager queriesManager) 
+        public QueriesController(IQueriesManager queriesManager)
         {
             this.queriesManager = queriesManager;
         }
@@ -29,7 +29,7 @@
         {
             var events = await queriesManager.GetEventsQueryDataAsync(queriesRequest, UserId, cancellationToken);
 
-            var response = new DataResponse()
+            var response = new DataResponse
             {
                 Data = events,
             };

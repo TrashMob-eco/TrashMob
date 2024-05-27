@@ -8,6 +8,7 @@
 
     public interface IQueriesManager
     {
-        public Task<List<IftttEventResponse>> GetEventsQueryDataAsync(QueriesRequest queriesRequest, Guid userId, CancellationToken cancellationToken);
+        public Task<List<IftttEventResponse>> GetEventsQueryDataAsync(QueriesRequest queriesRequest, Guid userId,
+            CancellationToken cancellationToken);
     }
 }

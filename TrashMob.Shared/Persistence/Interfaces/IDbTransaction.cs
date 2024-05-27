@@ -1,5 +1,5 @@
 namespace TrashMob.Shared.Persistence.Interfaces
-{    
+{
     using System.Threading.Tasks;
 
     public interface IDbTransaction

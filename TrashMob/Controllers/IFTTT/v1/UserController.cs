@@ -1,20 +1,19 @@
 ﻿namespace TrashMob.Controllers.IFTTT
 {
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
     using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/ifttt/v1/[controller]")]
     [ApiController]
-
     public class UserController : SecureController
     {
         private readonly IUserManager userManager;
 
-        public UserController(IUserManager userManager) 
+        public UserController(IUserManager userManager)
         {
             this.userManager = userManager;
         }
@@ -35,7 +34,7 @@
             var userResponse = new UserInfoResponse
             {
                 Name = user.Email,
-                Id = user.Id.ToString()
+                Id = user.Id.ToString(),
             };
 
             dataResponse.Data = userResponse;

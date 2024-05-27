@@ -6,7 +6,6 @@
 
     [Route("api/ifttt/v1/test/[controller]")]
     [ApiController]
-
     public class SetupController : Controller
     {
         private readonly IKeyVaultManager keyVaultManager;
@@ -27,7 +26,7 @@
             var sampleResponse = new SampleResponse
             {
                 accessToken = accessToken,
-                samples = new Sample()
+                samples = new Sample(),
             };
 
             dataResponse.Data = sampleResponse;

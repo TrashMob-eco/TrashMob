@@ -1,28 +1,27 @@
 ﻿namespace TrashMob.Shared.Managers.Events
 {
-    using Microsoft.EntityFrameworkCore;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
     using TrashMob.Shared.Extensions;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
-    using TrashMob.Shared.Poco;
 
-    public class EventSummaryManager : BaseManager<EventSummary>,  IEventSummaryManager
+    public class EventSummaryManager : BaseManager<EventSummary>, IEventSummaryManager
     {
-        private readonly IKeyedRepository<Event> eventRepository;
-        private readonly IEventManager eventManager;
         private readonly IEventAttendeeManager eventAttendeeManager;
+        private readonly IEventManager eventManager;
+        private readonly IKeyedRepository<Event> eventRepository;
 
-        public EventSummaryManager(IBaseRepository<EventSummary> repository, 
-                                   IKeyedRepository<Event> eventRepository, 
-                                   IEventManager eventManager,
-                                   IEventAttendeeManager eventAttendeeManager) : base(repository)
+        public EventSummaryManager(IBaseRepository<EventSummary> repository,
+            IKeyedRepository<Event> eventRepository,
+            IEventManager eventManager,
+            IEventAttendeeManager eventAttendeeManager) : base(repository)
         {
             this.eventRepository = eventRepository;
             this.eventManager = eventManager;
@@ -36,7 +35,8 @@
             stats.TotalEvents = await events.CountAsync(cancellationToken);
 
             var eventSummaries = await Repository.Get().ToListAsync(cancellationToken);
-            stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) + (eventSummaries.Sum(es => es.NumberOfBuckets) / 3);
+            stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) +
+                              eventSummaries.Sum(es => es.NumberOfBuckets) / 3;
             stats.TotalHours = eventSummaries.Sum(es => es.DurationInMinutes * es.ActualNumberOfAttendees / 60);
             stats.TotalParticipants = eventSummaries.Sum(es => es.ActualNumberOfAttendees);
 
@@ -47,21 +47,25 @@
         {
             var stats = new Stats();
             var result1 = await eventManager.GetUserEventsAsync(userId, false, cancellationToken);
-            var result2 = await eventAttendeeManager.GetEventsUserIsAttendingAsync(userId, false, cancellationToken).ConfigureAwait(false);
+            var result2 = await eventAttendeeManager.GetEventsUserIsAttendingAsync(userId, false, cancellationToken)
+                .ConfigureAwait(false);
 
             var allResults = result1.Union(result2, new EventComparer());
 
             stats.TotalEvents = allResults.Count();
             var eventIds = allResults.Select(e => e.Id);
 
-            var eventSummaries = await Repository.Get(es => eventIds.Contains(es.EventId)).ToListAsync(cancellationToken);
-            stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) + (eventSummaries.Sum(es => es.NumberOfBuckets) / 3);
+            var eventSummaries =
+                await Repository.Get(es => eventIds.Contains(es.EventId)).ToListAsync(cancellationToken);
+            stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) +
+                              eventSummaries.Sum(es => es.NumberOfBuckets) / 3;
             stats.TotalHours = eventSummaries.Sum(es => es.DurationInMinutes) / 60;
 
             return stats;
         }
 
-        public async Task<IEnumerable<DisplayEventSummary>> GetFilteredAsync(LocationFilter locationFilter, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<DisplayEventSummary>> GetFilteredAsync(LocationFilter locationFilter,
+            CancellationToken cancellationToken = default)
         {
             var eventSummaries = Repository.Get();
 
@@ -69,16 +73,21 @@
 
             foreach (var eventSummary in eventSummaries)
             {
-                var mobEvent = await eventRepository.GetAsync(eventSummary.EventId, cancellationToken).ConfigureAwait(false);
+                var mobEvent = await eventRepository.GetAsync(eventSummary.EventId, cancellationToken)
+                    .ConfigureAwait(false);
 
                 if (mobEvent != null)
                 {
-                    if ((string.IsNullOrWhiteSpace(locationFilter.Country) || string.Equals(mobEvent.Country, locationFilter.Country, StringComparison.OrdinalIgnoreCase)) &&
-                        (string.IsNullOrWhiteSpace(locationFilter.Region) || string.Equals(mobEvent.Region, locationFilter.Region, StringComparison.OrdinalIgnoreCase)) &&
-                        (string.IsNullOrWhiteSpace(locationFilter.City) || mobEvent.City.Contains(locationFilter.City, StringComparison.OrdinalIgnoreCase)) &&
-                        (string.IsNullOrWhiteSpace(locationFilter.PostalCode) || mobEvent.PostalCode.Contains(locationFilter.PostalCode, StringComparison.OrdinalIgnoreCase)))
+                    if ((string.IsNullOrWhiteSpace(locationFilter.Country) || string.Equals(mobEvent.Country,
+                            locationFilter.Country, StringComparison.OrdinalIgnoreCase)) &&
+                        (string.IsNullOrWhiteSpace(locationFilter.Region) || string.Equals(mobEvent.Region,
+                            locationFilter.Region, StringComparison.OrdinalIgnoreCase)) &&
+                        (string.IsNullOrWhiteSpace(locationFilter.City) ||
+                         mobEvent.City.Contains(locationFilter.City, StringComparison.OrdinalIgnoreCase)) &&
+                        (string.IsNullOrWhiteSpace(locationFilter.PostalCode) ||
+                         mobEvent.PostalCode.Contains(locationFilter.PostalCode, StringComparison.OrdinalIgnoreCase)))
                     {
-                        var displayEvent = new DisplayEventSummary()
+                        var displayEvent = new DisplayEventSummary
                         {
                             ActualNumberOfAttendees = eventSummary.ActualNumberOfAttendees,
                             City = mobEvent.City,
@@ -92,7 +101,8 @@
                             PostalCode = mobEvent.PostalCode,
                             Region = mobEvent.Region,
                             StreetAddress = mobEvent.StreetAddress,
-                            TotalWorkHours = eventSummary.ActualNumberOfAttendees * eventSummary.DurationInMinutes / 60.0
+                            TotalWorkHours = eventSummary.ActualNumberOfAttendees * eventSummary.DurationInMinutes /
+                                             60.0,
                         };
 
                         displaySummaries.Add(displayEvent);
@@ -105,7 +115,8 @@
 
         public override async Task<int> DeleteAsync(Guid parentId, CancellationToken cancellationToken)
         {
-            var eventSummary = await Repository.Get(es => es.EventId == parentId).FirstOrDefaultAsync(cancellationToken);
+            var eventSummary =
+                await Repository.Get(es => es.EventId == parentId).FirstOrDefaultAsync(cancellationToken);
             return await Repository.DeleteAsync(eventSummary);
         }
     }

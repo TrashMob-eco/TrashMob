@@ -1,16 +1,29 @@
-﻿
-namespace TrashMob.Shared.Engine
+﻿namespace TrashMob.Shared.Engine
 {
-    using Microsoft.Extensions.Logging;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
     public class EventSummaryAttendeeNotifier : NotificationEngineBase, INotificationEngine
     {
+        public EventSummaryAttendeeNotifier(IEventManager eventManager,
+            IKeyedManager<User> userManager,
+            IEventAttendeeManager eventAttendeeManager,
+            IKeyedManager<UserNotification> userNotificationManager,
+            INonEventUserNotificationManager nonEventUserNotificationManager,
+            IEmailSender emailSender,
+            IEmailManager emailManager,
+            IMapManager mapRepository,
+            ILogger logger) :
+            base(eventManager, userManager, eventAttendeeManager, userNotificationManager,
+                nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
+        {
+        }
+
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.EventSummaryAttendee;
 
         protected override int MaxNumberOfHoursInWindow => -24;
@@ -19,26 +32,13 @@ namespace TrashMob.Shared.Engine
 
         protected override string EmailSubject => "Thank you for attending a TrashMob.eco event!";
 
-        public EventSummaryAttendeeNotifier(IEventManager eventManager,
-                                            IKeyedManager<User> userManager,
-                                            IEventAttendeeManager eventAttendeeManager,
-                                            IKeyedManager<UserNotification> userNotificationManager,
-                                            INonEventUserNotificationManager nonEventUserNotificationManager,
-                                            IEmailSender emailSender,
-                                            IEmailManager emailManager,
-                                            IMapManager mapRepository,
-                                            ILogger logger) :
-            base(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
-        {
-        }
-
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
             Logger.LogInformation("Generating Notifications for {0}", NotificationType);
 
             // Get list of users who have notifications turned on for locations
             var users = await UserManager.GetAsync(cancellationToken).ConfigureAwait(false);
-            int notificationCounter = 0;
+            var notificationCounter = 0;
 
             Logger.LogInformation("Generating {0} Notifications for {1} total users", NotificationType, users.Count());
 
@@ -51,7 +51,8 @@ namespace TrashMob.Shared.Engine
                 var events = await EventManager.GetCompletedEventsAsync(cancellationToken).ConfigureAwait(false);
 
                 // Get list of events user has attended
-                var eventsUserIsAttending = await EventAttendeeManager.GetEventsUserIsAttendingAsync(user.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var eventsUserIsAttending = await EventAttendeeManager
+                    .GetEventsUserIsAttendingAsync(user.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 // For all completed events where the user was not the lead
                 foreach (var mobEvent in events.Where(e => e.CreatedByUserId != user.Id))
@@ -63,7 +64,8 @@ namespace TrashMob.Shared.Engine
                     }
 
                     // Has the user already received the notification for this event?
-                    if (await UserHasAlreadyReceivedNotification(user, mobEvent, cancellationToken).ConfigureAwait(false))
+                    if (await UserHasAlreadyReceivedNotification(user, mobEvent, cancellationToken)
+                            .ConfigureAwait(false))
                     {
                         continue;
                     }
@@ -72,7 +74,8 @@ namespace TrashMob.Shared.Engine
                     eventsToNotifyUserFor.Add(mobEvent);
                 }
 
-                notificationCounter += await SendNotifications(user, eventsToNotifyUserFor, cancellationToken).ConfigureAwait(false);
+                notificationCounter += await SendNotifications(user, eventsToNotifyUserFor, cancellationToken)
+                    .ConfigureAwait(false);
             }
 
             Logger.LogInformation("Generating {0} Total {1} Notifications", notificationCounter, NotificationType);

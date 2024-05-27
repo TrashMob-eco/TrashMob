@@ -1,23 +1,21 @@
-﻿
-namespace TrashMob.Controllers
+﻿namespace TrashMob.Controllers
 {
-    using Microsoft.AspNetCore.Mvc;
-    using System.Threading;
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/stats")]
     public class StatsController : BaseController
     {
+        private readonly IEventAttendeeManager eventAttendeeManager;
         private readonly IEventManager eventManager;
         private readonly IEventSummaryManager eventSummaryManager;
-        private readonly IEventAttendeeManager eventAttendeeManager;
 
         public StatsController(IEventManager eventManager,
-                               IEventSummaryManager eventSummaryManager,
-                               IEventAttendeeManager eventAttendeeManager)
-            : base()
+            IEventSummaryManager eventSummaryManager,
+            IEventAttendeeManager eventAttendeeManager)
         {
             this.eventManager = eventManager;
             this.eventSummaryManager = eventSummaryManager;

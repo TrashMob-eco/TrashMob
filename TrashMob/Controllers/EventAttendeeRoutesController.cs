@@ -1,17 +1,15 @@
-﻿
-namespace TrashMob.Controllers
+﻿namespace TrashMob.Controllers
 {
     using System;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
-    using TrashMob.Shared;
-    using System.Threading;
-    using Microsoft.ApplicationInsights;
     using TrashMob.Models;
     using TrashMob.Security;
+    using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
 
@@ -20,7 +18,7 @@ namespace TrashMob.Controllers
     {
         private readonly IEventAttendeeRouteManager eventAttendeeRouteManager;
 
-        public EventAttendeeRoutesController(IEventAttendeeRouteManager eventAttendeeRouteManager) : base()
+        public EventAttendeeRoutesController(IEventAttendeeRouteManager eventAttendeeRouteManager)
         {
             this.eventAttendeeRouteManager = eventAttendeeRouteManager;
         }
@@ -28,23 +26,28 @@ namespace TrashMob.Controllers
         [HttpGet("{eventId}")]
         public async Task<IActionResult> GetEventAttendeeRoutes(Guid eventId)
         {
-            var result = (await eventAttendeeRouteManager.GetByParentIdAsync(eventId, CancellationToken.None).ConfigureAwait(false)).Select(u => u.User.ToDisplayUser());
+            var result =
+                (await eventAttendeeRouteManager.GetByParentIdAsync(eventId, CancellationToken.None)
+                    .ConfigureAwait(false)).Select(u => u.User.ToDisplayUser());
             TelemetryClient.TrackEvent(nameof(GetEventAttendeeRoutes));
             return Ok(result);
         }
 
         [HttpPut("{id}")]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> UpdateEventAttendeeRoute(EventAttendeeRoute eventAttendeeRoute, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateEventAttendeeRoute(EventAttendeeRoute eventAttendeeRoute,
+            CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, eventAttendeeRoute, AuthorizationPolicyConstants.UserOwnsEntity);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, eventAttendeeRoute,
+                AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
 
-            var updatedEventAttendeeRoute = await eventAttendeeRouteManager.UpdateAsync(eventAttendeeRoute, UserId, cancellationToken).ConfigureAwait(false);
+            var updatedEventAttendeeRoute = await eventAttendeeRouteManager
+                .UpdateAsync(eventAttendeeRoute, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdateEventAttendeeRoute));
 
             return Ok(updatedEventAttendeeRoute);
@@ -53,9 +56,11 @@ namespace TrashMob.Controllers
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> AddEventAttendeeRoute(EventAttendeeRoute eventAttendeeRoute, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddEventAttendeeRoute(EventAttendeeRoute eventAttendeeRoute,
+            CancellationToken cancellationToken)
         {
-            await eventAttendeeRouteManager.AddAsync(eventAttendeeRoute, UserId, cancellationToken).ConfigureAwait(false);
+            await eventAttendeeRouteManager.AddAsync(eventAttendeeRoute, UserId, cancellationToken)
+                .ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddEventAttendeeRoute));
             return Ok();
         }
@@ -64,7 +69,8 @@ namespace TrashMob.Controllers
         // Todo: Tighten this down
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> DeleteEventAttendeeRoute(Guid eventId, Guid userId, Guid routeId, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteEventAttendeeRoute(Guid eventId, Guid userId, Guid routeId,
+            CancellationToken cancellationToken)
         {
             await eventAttendeeRouteManager.DeleteAsync(routeId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(DeleteEventAttendeeRoute));

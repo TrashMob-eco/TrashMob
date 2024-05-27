@@ -9,17 +9,6 @@
     {
         private TelemetryClient telemetryClient;
 
-        protected TelemetryClient TelemetryClient
-        {
-            get
-            {
-                return telemetryClient ?? (telemetryClient = HttpContext.RequestServices.GetService<TelemetryClient>());
-            }
-            private set
-            {
-                telemetryClient = value;
-            }
-        }
         public BaseController()
         {
         }
@@ -27,6 +16,12 @@
         public BaseController(TelemetryClient telemetryClient)
         {
             TelemetryClient = telemetryClient;
+        }
+
+        protected TelemetryClient TelemetryClient
+        {
+            get => telemetryClient ?? (telemetryClient = HttpContext.RequestServices.GetService<TelemetryClient>());
+            private set => telemetryClient = value;
         }
     }
 }

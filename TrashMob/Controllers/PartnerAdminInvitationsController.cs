@@ -1,13 +1,11 @@
 ﻿namespace TrashMob.Controllers
 {
-    using Microsoft.ApplicationInsights;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
@@ -21,9 +19,8 @@
         private readonly IKeyedManager<User> userManager;
 
         public PartnerAdminInvitationsController(IKeyedManager<User> userManager,
-                                                 IPartnerAdminInvitationManager partnerAdminInvitationManager,
-                                                 IKeyedManager<Partner> partnerManager)
-            : base()
+            IPartnerAdminInvitationManager partnerAdminInvitationManager,
+            IKeyedManager<Partner> partnerManager)
         {
             this.partnerManager = partnerManager;
             this.userManager = userManager;
@@ -34,7 +31,8 @@
         public async Task<IActionResult> GetPartnerAdminInvitations(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
+                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -53,17 +51,21 @@
         }
 
         [HttpGet("{partnerId}/{email}")]
-        public async Task<IActionResult> GetPartnerAdminInvite(Guid partnerId, string email, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetPartnerAdminInvite(Guid partnerId, string email,
+            CancellationToken cancellationToken = default)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
+                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
 
-            var partnerInvite = (await partnerAdminInvitationManager.GetByParentIdAsync(partnerId, cancellationToken)).FirstOrDefault(pu => pu.Email == email);
+            var partnerInvite =
+                (await partnerAdminInvitationManager.GetByParentIdAsync(partnerId, cancellationToken)).FirstOrDefault(
+                    pu => pu.Email == email);
 
             if (partnerInvite == null)
             {
@@ -74,37 +76,46 @@
         }
 
         [HttpPost]
-
-        public async Task<IActionResult> AddPartnerAdminInvitation(PartnerAdminInvitation partnerAdminInvitation, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddPartnerAdminInvitation(PartnerAdminInvitation partnerAdminInvitation,
+            CancellationToken cancellationToken)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
             var partner = await partnerManager.GetAsync(partnerAdminInvitation.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
+                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
 
-            var result = await partnerAdminInvitationManager.AddAsync(partnerAdminInvitation, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await partnerAdminInvitationManager.AddAsync(partnerAdminInvitation, UserId, cancellationToken)
+                .ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddPartnerAdminInvitation));
 
-            return CreatedAtAction(nameof(GetPartnerAdminInvite), new { partnerAdminInvitation.PartnerId, partnerAdminInvitation.Email }, result);
+            return CreatedAtAction(nameof(GetPartnerAdminInvite),
+                new { partnerAdminInvitation.PartnerId, partnerAdminInvitation.Email }, result);
         }
 
         [HttpPost("resend/{partnerAdminInvitationId}")]
-        public async Task<IActionResult> ResendPartnerAdminInvitation(Guid partnerAdminInvitationId, CancellationToken cancellationToken)
+        public async Task<IActionResult> ResendPartnerAdminInvitation(Guid partnerAdminInvitationId,
+            CancellationToken cancellationToken)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var partner = await partnerAdminInvitationManager.GetPartnerForInvitation(partnerAdminInvitationId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            var partner =
+                await partnerAdminInvitationManager.GetPartnerForInvitation(partnerAdminInvitationId,
+                    cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
+                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
 
-            var result = await partnerAdminInvitationManager.ResendPartnerAdminInvitation(partnerAdminInvitationId, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await partnerAdminInvitationManager
+                .ResendPartnerAdminInvitation(partnerAdminInvitationId, UserId, cancellationToken)
+                .ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(ResendPartnerAdminInvitation));
 
             return Ok(result);
@@ -112,9 +123,11 @@
 
         [HttpPost("accept/{partnerAdminInvitationId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
-        public async Task<IActionResult> AcceptPartnerAdminInvitation(Guid partnerAdminInvitationId, CancellationToken cancellationToken)
+        public async Task<IActionResult> AcceptPartnerAdminInvitation(Guid partnerAdminInvitationId,
+            CancellationToken cancellationToken)
         {
-            await partnerAdminInvitationManager.AcceptInvitation(partnerAdminInvitationId, UserId, cancellationToken).ConfigureAwait(false);
+            await partnerAdminInvitationManager.AcceptInvitation(partnerAdminInvitationId, UserId, cancellationToken)
+                .ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AcceptPartnerAdminInvitation));
 
             return Ok();
@@ -122,28 +135,35 @@
 
         [HttpPost("decline/{partnerAdminInvitationId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
-        public async Task<IActionResult> DeclinePartnerAdminInvitation(Guid partnerAdminInvitationId, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeclinePartnerAdminInvitation(Guid partnerAdminInvitationId,
+            CancellationToken cancellationToken)
         {
-            await partnerAdminInvitationManager.DeclineInvitation(partnerAdminInvitationId, UserId, cancellationToken).ConfigureAwait(false);
+            await partnerAdminInvitationManager.DeclineInvitation(partnerAdminInvitationId, UserId, cancellationToken)
+                .ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AcceptPartnerAdminInvitation));
 
             return Ok();
         }
 
         [HttpDelete("{partnerAdminInvitationId}")]
-        public async Task<IActionResult> DeletePartnerAdminInvitation(Guid partnerAdminInvitationId, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeletePartnerAdminInvitation(Guid partnerAdminInvitationId,
+            CancellationToken cancellationToken)
         {
-            var partner = await partnerAdminInvitationManager.GetPartnerForInvitation(partnerAdminInvitationId, cancellationToken);
+            var partner =
+                await partnerAdminInvitationManager.GetPartnerForInvitation(partnerAdminInvitationId,
+                    cancellationToken);
 
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
+                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
 
-            var result = await partnerAdminInvitationManager.DeleteAsync(partnerAdminInvitationId, cancellationToken).ConfigureAwait(false);
+            var result = await partnerAdminInvitationManager.DeleteAsync(partnerAdminInvitationId, cancellationToken)
+                .ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddPartnerAdminInvitation));
 
             return Ok(result);

@@ -14,7 +14,7 @@
                 Email = user.Email,
                 Id = user.Id,
                 MemberSince = user.MemberSince,
-                Region = user.Region
+                Region = user.Region,
             };
         }
 

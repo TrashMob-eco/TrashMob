@@ -7,6 +7,7 @@
 
     public interface IPartnerSocialMediaAccountManager : IKeyedManager<PartnerSocialMediaAccount>
     {
-        Task<Partner> GetPartnerForSocialMediaAccount(Guid partnerSocialMediaAccountId, CancellationToken cancellationToken);
+        Task<Partner> GetPartnerForSocialMediaAccount(Guid partnerSocialMediaAccountId,
+            CancellationToken cancellationToken);
     }
 }

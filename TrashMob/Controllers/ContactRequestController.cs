@@ -1,8 +1,8 @@
 ﻿namespace TrashMob.Controllers
 {
-    using Microsoft.AspNetCore.Mvc;
-    using System.Threading.Tasks;
     using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 

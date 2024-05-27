@@ -2,14 +2,14 @@
 {
     using Microsoft.Extensions.DependencyInjection;
     using TrashMob.Models;
-    using TrashMob.Shared.Persistence.Interfaces;
-    using TrashMob.Shared.Persistence;
-    using TrashMob.Shared.Managers.Events;
-    using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Managers.Partners;
     using TrashMob.Shared.Managers;
+    using TrashMob.Shared.Managers.Events;
     using TrashMob.Shared.Managers.IFTTT;
+    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Managers.LitterReport;
+    using TrashMob.Shared.Managers.Partners;
+    using TrashMob.Shared.Persistence;
+    using TrashMob.Shared.Persistence.Interfaces;
 
     public static class ServiceBuilder
     {
@@ -20,7 +20,9 @@
             services.AddScoped<IBaseManager<EventAttendee>, EventAttendeeManager>();
             services.AddScoped<IKeyedManager<EventAttendeeRoute>, EventAttendeeRouteManager>();
             services.AddScoped<IKeyedManager<Event>, EventManager>();
-            services.AddScoped<ILookupManager<EventPartnerLocationServiceStatus>, LookupManager<EventPartnerLocationServiceStatus>>();
+            services
+                .AddScoped<ILookupManager<EventPartnerLocationServiceStatus>,
+                    LookupManager<EventPartnerLocationServiceStatus>>();
             services.AddScoped<IBaseManager<EventPartnerLocationService>, EventPartnerLocationServiceManager>();
             services.AddScoped<ILookupManager<EventStatus>, LookupManager<EventStatus>>();
             services.AddScoped<IBaseManager<EventSummary>, EventSummaryManager>();
@@ -89,8 +91,11 @@
             services.AddScoped<IKeyedRepository<Event>, KeyedRepository<Event>>();
             services.AddScoped<IBaseRepository<EventAttendee>, BaseRepository<EventAttendee>>();
             services.AddScoped<IKeyedRepository<EventAttendeeRoute>, KeyedRepository<EventAttendeeRoute>>();
-            services.AddScoped<IBaseRepository<EventPartnerLocationService>, BaseRepository<EventPartnerLocationService>>();
-            services.AddScoped<ILookupRepository<EventPartnerLocationServiceStatus>, LookupRepository<EventPartnerLocationServiceStatus>>();
+            services
+                .AddScoped<IBaseRepository<EventPartnerLocationService>, BaseRepository<EventPartnerLocationService>>();
+            services
+                .AddScoped<ILookupRepository<EventPartnerLocationServiceStatus>,
+                    LookupRepository<EventPartnerLocationServiceStatus>>();
             services.AddScoped<ILookupRepository<EventStatus>, LookupRepository<EventStatus>>();
             services.AddScoped<IBaseRepository<EventSummary>, BaseRepository<EventSummary>>();
             services.AddScoped<ILookupRepository<EventType>, LookupRepository<EventType>>();
@@ -108,7 +113,8 @@
             services.AddScoped<IBaseRepository<PartnerLocationService>, BaseRepository<PartnerLocationService>>();
             services.AddScoped<IKeyedRepository<PartnerRequest>, KeyedRepository<PartnerRequest>>();
             services.AddScoped<ILookupRepository<PartnerRequestStatus>, LookupRepository<PartnerRequestStatus>>();
-            services.AddScoped<IKeyedRepository<PartnerSocialMediaAccount>, KeyedRepository<PartnerSocialMediaAccount>>();
+            services
+                .AddScoped<IKeyedRepository<PartnerSocialMediaAccount>, KeyedRepository<PartnerSocialMediaAccount>>();
             services.AddScoped<ILookupRepository<PartnerStatus>, LookupRepository<PartnerStatus>>();
             services.AddScoped<ILookupRepository<PartnerType>, LookupRepository<PartnerType>>();
             services.AddScoped<IKeyedRepository<PickupLocation>, KeyedRepository<PickupLocation>>();

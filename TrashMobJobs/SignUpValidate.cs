@@ -1,12 +1,11 @@
-
 namespace TrashMobJobs
 {
     //using System;
     //using System.Linq;
     //using System.Text;
+    using System.Net;
     using System.Text.Json;
     using System.Threading.Tasks;
-    using System.Net;
     using Microsoft.Azure.Functions.Worker;
     using Microsoft.Azure.Functions.Worker.Http;
     using Microsoft.Extensions.Logging;
@@ -15,8 +14,8 @@ namespace TrashMobJobs
 
     public class SignUpValidate
     {
-        private readonly ILogger logger;
         private readonly IActiveDirectoryManager activeDirectoryManager;
+        private readonly ILogger logger;
 
         public SignUpValidate(ILoggerFactory loggerFactory, IActiveDirectoryManager activeDirectoryManager)
         {

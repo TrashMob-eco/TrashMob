@@ -1,5 +1,4 @@
-﻿
-namespace TrashMobJobs
+﻿namespace TrashMobJobs
 {
     using System;
 

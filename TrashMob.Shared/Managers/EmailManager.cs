@@ -1,9 +1,5 @@
-﻿
-namespace TrashMob.Shared.Managers
+﻿namespace TrashMob.Shared.Managers
 {
-    using Microsoft.EntityFrameworkCore.Query.Internal;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -11,6 +7,8 @@ namespace TrashMob.Shared.Managers
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
@@ -27,38 +25,6 @@ namespace TrashMob.Shared.Managers
             this.emailSender.ApiKey = configuration["sendGridApiKey"];
         }
 
-        public string GetEmailTemplate(string notificationType)
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.txt", notificationType);
-            logger.LogInformation("Getting email template: {resourceName}", resourceName);
-            string result;
-
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-            using (StreamReader reader = new(stream))
-            {
-                result = reader.ReadToEnd();
-            }
-
-            return result;
-        }
-
-        public string GetHtmlEmailTemplate(string notificationType)
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.html", notificationType);
-            logger.LogInformation("Getting email template: {resourceName}", resourceName);
-            string result;
-
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-            using (StreamReader reader = new(stream))
-            {
-                result = reader.ReadToEnd();
-            }
-
-            return result;
-        }
-
         public string GetHtmlEmailCopy(string notificationType)
         {
             var assembly = Assembly.GetExecutingAssembly();
@@ -66,7 +32,7 @@ namespace TrashMob.Shared.Managers
             logger.LogInformation("Getting email copy: {resourceName}", resourceName);
             string result;
 
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            using (var stream = assembly.GetManifestResourceStream(resourceName))
             using (StreamReader reader = new(stream))
             {
                 result = reader.ReadToEnd();
@@ -75,7 +41,8 @@ namespace TrashMob.Shared.Managers
             return result;
         }
 
-        public async Task SendTemplatedEmailAsync(string subject, string templateId, int groupId, object dynamicTemplateData, List<EmailAddress> recipients, CancellationToken cancellationToken = default)
+        public async Task SendTemplatedEmailAsync(string subject, string templateId, int groupId,
+            object dynamicTemplateData, List<EmailAddress> recipients, CancellationToken cancellationToken = default)
         {
             var email = new Email
             {
@@ -107,6 +74,38 @@ namespace TrashMob.Shared.Managers
             }
 
             return Task.FromResult(emailTemplates.AsEnumerable());
+        }
+
+        public string GetEmailTemplate(string notificationType)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.txt", notificationType);
+            logger.LogInformation("Getting email template: {resourceName}", resourceName);
+            string result;
+
+            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            using (StreamReader reader = new(stream))
+            {
+                result = reader.ReadToEnd();
+            }
+
+            return result;
+        }
+
+        public string GetHtmlEmailTemplate(string notificationType)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.html", notificationType);
+            logger.LogInformation("Getting email template: {resourceName}", resourceName);
+            string result;
+
+            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            using (StreamReader reader = new(stream))
+            {
+                result = reader.ReadToEnd();
+            }
+
+            return result;
         }
     }
 }

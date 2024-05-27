@@ -1,15 +1,13 @@
 ﻿namespace TrashMob.Controllers
 {
-    using Microsoft.ApplicationInsights;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Managers.Partners;
 
     [Authorize]
     [Route("api/partnersocialmediaaccounts")]
@@ -19,18 +17,19 @@
         private readonly IKeyedManager<Partner> partnerManager;
 
         public PartnerSocialMediaAccountController(IPartnerSocialMediaAccountManager partnerSocialMediaAccountManager,
-                                                   IKeyedManager<Partner> partnerManager)
-            : base()
+            IKeyedManager<Partner> partnerManager)
         {
-            this.manager = partnerSocialMediaAccountManager;
+            manager = partnerSocialMediaAccountManager;
             this.partnerManager = partnerManager;
         }
 
         [HttpGet("getbypartner/{partnerId}")]
-        public async Task<IActionResult> GetPartnerSocialMediaAccounts(Guid partnerId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetPartnerSocialMediaAccounts(Guid partnerId,
+            CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
+                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -51,10 +50,12 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPartnerSocialMediaAccount(PartnerSocialMediaAccount partnerSocialMediaAccount, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddPartnerSocialMediaAccount(
+            PartnerSocialMediaAccount partnerSocialMediaAccount, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerSocialMediaAccount.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
+                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -68,28 +69,33 @@
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdatePartnerSocialMediaAccount(PartnerSocialMediaAccount partnerSocialMediaAccount, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdatePartnerSocialMediaAccount(
+            PartnerSocialMediaAccount partnerSocialMediaAccount, CancellationToken cancellationToken)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
             var partner = await partnerManager.GetAsync(partnerSocialMediaAccount.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
+                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
 
-            var result = await manager.UpdateAsync(partnerSocialMediaAccount, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await manager.UpdateAsync(partnerSocialMediaAccount, UserId, cancellationToken)
+                .ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdatePartnerSocialMediaAccount));
 
             return Ok(result);
         }
 
         [HttpDelete("{partnerSocialMediaAccountId}")]
-        public async Task<IActionResult> DeletePartnerSocialMediaAccount(Guid partnerSocialMediaAccountId, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeletePartnerSocialMediaAccount(Guid partnerSocialMediaAccountId,
+            CancellationToken cancellationToken)
         {
             var partner = await manager.GetPartnerForSocialMediaAccount(partnerSocialMediaAccountId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
+                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {

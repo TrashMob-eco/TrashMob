@@ -2,7 +2,7 @@
 {
     using System;
 
-    public partial class DisplayUser
+    public class DisplayUser
     {
         public Guid Id { get; set; }
 

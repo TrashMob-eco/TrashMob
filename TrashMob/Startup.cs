@@ -1,12 +1,15 @@
 namespace TrashMob
 {
+    using System;
+    using System.Text;
+    using System.Text.Json;
+    using System.Text.Json.Nodes;
+    using System.Text.Json.Serialization;
     using Azure.Identity;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Azure;
@@ -15,11 +18,6 @@ namespace TrashMob
     using Microsoft.Extensions.Hosting;
     using Microsoft.Identity.Web;
     using Microsoft.OpenApi.Models;
-    using System;
-    using System.Text;
-    using System.Text.Json;
-    using System.Text.Json.Nodes;
-    using System.Text.Json.Serialization;
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers;
@@ -35,67 +33,69 @@ namespace TrashMob
         }
 
         public IConfiguration Configuration { get; }
-        private IWebHostEnvironment CurrentEnvironment { get; set; }
+        private IWebHostEnvironment CurrentEnvironment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             // The following line enables Application Insights telemetry collection.
             services.AddApplicationInsightsTelemetry();
-            
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApi(options => {
-                    Configuration.Bind("AzureAdB2C", options);
-
-                    options.TokenValidationParameters.NameClaimType = "name";
-                    options.TokenValidationParameters.ValidateLifetime = true;
-                    options.TokenValidationParameters.ValidateAudience = false;
-
-                    options.Events = new JwtBearerEvents
+                .AddMicrosoftIdentityWebApi(options =>
                     {
-                        OnChallenge = async context =>
+                        Configuration.Bind("AzureAdB2C", options);
+
+                        options.TokenValidationParameters.NameClaimType = "name";
+                        options.TokenValidationParameters.ValidateLifetime = true;
+                        options.TokenValidationParameters.ValidateAudience = false;
+
+                        options.Events = new JwtBearerEvents
                         {
-                            context.HandleResponse();
-
-                            if (context.AuthenticateFailure != null)
+                            OnChallenge = async context =>
                             {
-                                context.Response.StatusCode = 401;
-                                context.Response.ContentType = "application/json";
+                                context.HandleResponse();
 
-                                var error = new
+                                if (context.AuthenticateFailure != null)
                                 {
-                                    errors = new JsonArray
+                                    context.Response.StatusCode = 401;
+                                    context.Response.ContentType = "application/json";
+
+                                    var error = new
                                     {
-                                        new
+                                        errors = new JsonArray
                                         {
-                                            message = "Invalid access token."
-                                        }
-                                    }
-                                };
+                                            new
+                                            {
+                                                message = "Invalid access token.",
+                                            },
+                                        },
+                                    };
 
-                                var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(error));
-                                await context.Response.Body.WriteAsync(bytes);
-                            }
-                        }
-                    };
-                },
-
-            options => { Configuration.Bind("AzureAdB2C", options); });
+                                    var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(error));
+                                    await context.Response.Body.WriteAsync(bytes);
+                                }
+                            },
+                        };
+                    },
+                    options => { Configuration.Bind("AzureAdB2C", options); });
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(AuthorizationPolicyConstants.ValidUser, policy => policy.AddRequirements(new UserIsValidUserRequirement()));
-                options.AddPolicy(AuthorizationPolicyConstants.UserOwnsEntity, policy => policy.AddRequirements(new UserOwnsEntityRequirement()));
-                options.AddPolicy(AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin, policy => policy.AddRequirements(new UserOwnsEntityOrIsAdminRequirement()));
-                options.AddPolicy(AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin, policy => policy.AddRequirements(new UserIsPartnerUserOrIsAdminRequirement()));
-                options.AddPolicy(AuthorizationPolicyConstants.UserIsAdmin, policy => policy.AddRequirements(new UserIsAdminRequirement()));
+                options.AddPolicy(AuthorizationPolicyConstants.ValidUser,
+                    policy => policy.AddRequirements(new UserIsValidUserRequirement()));
+                options.AddPolicy(AuthorizationPolicyConstants.UserOwnsEntity,
+                    policy => policy.AddRequirements(new UserOwnsEntityRequirement()));
+                options.AddPolicy(AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin,
+                    policy => policy.AddRequirements(new UserOwnsEntityOrIsAdminRequirement()));
+                options.AddPolicy(AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin,
+                    policy => policy.AddRequirements(new UserIsPartnerUserOrIsAdminRequirement()));
+                options.AddPolicy(AuthorizationPolicyConstants.UserIsAdmin,
+                    policy => policy.AddRequirements(new UserIsAdminRequirement()));
             });
 
             // In production, the React files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "client-app/build";
-            });
+            services.AddSpaStaticFiles(configuration => { configuration.RootPath = "client-app/build"; });
 
             services.AddControllers().AddJsonOptions(x =>
             {
@@ -123,9 +123,9 @@ namespace TrashMob
                 services.AddScoped<IDocusignAuthenticator, DocusignStringAuthenticator>();
                 services.AddAzureClients(azureClientFactoryBuilder =>
                 {
-                    azureClientFactoryBuilder.UseCredential(new DefaultAzureCredential(new DefaultAzureCredentialOptions()
+                    azureClientFactoryBuilder.UseCredential(new DefaultAzureCredential(new DefaultAzureCredentialOptions
                     {
-                        VisualStudioTenantId = Configuration.GetValue<string>("TrashMobBackendTenantId")
+                        VisualStudioTenantId = Configuration.GetValue<string>("TrashMobBackendTenantId"),
                     }));
                     azureClientFactoryBuilder.AddBlobServiceClient(Configuration.GetValue<Uri>("StorageAccountUri"));
                 });
@@ -174,10 +174,7 @@ namespace TrashMob
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
@@ -187,7 +184,7 @@ namespace TrashMob
                 if (env.IsDevelopment())
                 {
                     spa.Options.SourcePath = "client-app";
-                    spa.UseReactDevelopmentServer(npmScript: "start");
+                    spa.UseReactDevelopmentServer("start");
                 }
             });
         }

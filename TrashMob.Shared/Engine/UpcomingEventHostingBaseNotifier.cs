@@ -1,28 +1,27 @@
-﻿
-namespace TrashMob.Shared.Engine
+﻿namespace TrashMob.Shared.Engine
 {
-    using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Persistence.Interfaces;
 
     public abstract class UpcomingEventHostingBaseNotifier : NotificationEngineBase, INotificationEngine
     {
         public UpcomingEventHostingBaseNotifier(IEventManager eventManager,
-                                                IKeyedManager<User> userManager,
-                                                IEventAttendeeManager eventAttendeeManager,
-                                                IKeyedManager<UserNotification> userNotificationManager,
-                                                INonEventUserNotificationManager nonEventUserNotificationManager,
-                                                IEmailSender emailSender,
-                                                IEmailManager emailManager,
-                                                IMapManager mapRepository,
-                                                ILogger logger) :
-            base(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
+            IKeyedManager<User> userManager,
+            IEventAttendeeManager eventAttendeeManager,
+            IKeyedManager<UserNotification> userNotificationManager,
+            INonEventUserNotificationManager nonEventUserNotificationManager,
+            IEmailSender emailSender,
+            IEmailManager emailManager,
+            IMapManager mapRepository,
+            ILogger logger) :
+            base(eventManager, userManager, eventAttendeeManager, userNotificationManager,
+                nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
         {
         }
 
@@ -32,7 +31,7 @@ namespace TrashMob.Shared.Engine
 
             // Get list of users who have notifications turned on for locations
             var users = await UserManager.GetAsync(cancellationToken).ConfigureAwait(false);
-            int notificationCounter = 0;
+            var notificationCounter = 0;
 
             Logger.LogInformation("Generating {0} Notifications for {1} total users", NotificationType, users.Count());
 
@@ -45,10 +44,14 @@ namespace TrashMob.Shared.Engine
                 var events = await EventManager.GetActiveEventsAsync(cancellationToken).ConfigureAwait(false);
 
                 // Limit the list of events to process to those in the next window UTC
-                foreach (var mobEvent in events.Where(e => e.CreatedByUserId == user.Id && e.EventDate >= DateTimeOffset.UtcNow.AddHours(MinNumberOfHoursInWindow) && e.EventDate <= DateTimeOffset.UtcNow.AddHours(MaxNumberOfHoursInWindow)))
+                foreach (var mobEvent in events.Where(e =>
+                             e.CreatedByUserId == user.Id &&
+                             e.EventDate >= DateTimeOffset.UtcNow.AddHours(MinNumberOfHoursInWindow) &&
+                             e.EventDate <= DateTimeOffset.UtcNow.AddHours(MaxNumberOfHoursInWindow)))
                 {
-                    if (await UserHasAlreadyReceivedNotification(user, mobEvent, cancellationToken).ConfigureAwait(false))
-                    { 
+                    if (await UserHasAlreadyReceivedNotification(user, mobEvent, cancellationToken)
+                            .ConfigureAwait(false))
+                    {
                         continue;
                     }
 
@@ -57,7 +60,8 @@ namespace TrashMob.Shared.Engine
                 }
 
                 // Populate email
-                notificationCounter += await SendNotifications(user, eventsToNotifyUserFor, cancellationToken).ConfigureAwait(false);
+                notificationCounter += await SendNotifications(user, eventsToNotifyUserFor, cancellationToken)
+                    .ConfigureAwait(false);
             }
 
             Logger.LogInformation("Generating {0} Total {1} Notifications", notificationCounter, NotificationType);

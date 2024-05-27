@@ -1,22 +1,21 @@
-﻿
-namespace TrashMob.Shared.Managers
+﻿namespace TrashMob.Shared.Managers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text.Json;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.NotificationHubs;
-    using System.Collections.Generic;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using System;
-    using System.Text.Json;
-    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Models;
-    using System.Threading;
+    using TrashMob.Shared.Managers.Interfaces;
 
     public class NotificationManager : INotificationManager
     {
         private readonly ILogger<NotificationManager> logger;
 
-        private NotificationHubClient hub;
+        private readonly NotificationHubClient hub;
 
         public NotificationManager(IConfiguration configuration, ILogger<NotificationManager> logger)
         {
@@ -26,7 +25,8 @@ namespace TrashMob.Shared.Managers
             this.logger = logger;
         }
 
-        public async Task SendMessageRequestAsync(MessageRequest messageRequest, CancellationToken cancellationToken = default)
+        public async Task SendMessageRequestAsync(MessageRequest messageRequest,
+            CancellationToken cancellationToken = default)
         {
             // Apple requires the apns-push-type header for all requests
             var headers = new Dictionary<string, string> { { "apns-push-type", "alert" } };
@@ -35,7 +35,7 @@ namespace TrashMob.Shared.Managers
             // "messageParam" and the proper tags will receive the notifications.
             // This includes APNS, GCM/FCM, WNS, and MPNS template registrations.
 
-            Dictionary<string, string> templateParams = new Dictionary<string, string>();
+            var templateParams = new Dictionary<string, string>();
 
             templateParams["messageParam"] = messageRequest.Message;
 
@@ -45,7 +45,7 @@ namespace TrashMob.Shared.Managers
 
                 logger.LogInformation("Result from sending notification:  {0}", JsonSerializer.Serialize(result));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.LogError(ex, "Unable to send notification");
                 throw;

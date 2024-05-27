@@ -1,20 +1,19 @@
-
 namespace TrashMobJobs
 {
+    using System;
+    using System.Net;
     using System.Text.Json;
     using System.Threading.Tasks;
-    using System.Net;
     using Microsoft.Azure.Functions.Worker;
     using Microsoft.Azure.Functions.Worker.Http;
     using Microsoft.Extensions.Logging;
     using TrashMob.Shared.Managers.Interfaces;
-    using System;
     using TrashMob.Shared.Poco;
 
     public class DeleteUser
     {
-        private readonly ILogger logger;
         private readonly IActiveDirectoryManager activeDirectoryManager;
+        private readonly ILogger logger;
 
         public DeleteUser(ILoggerFactory loggerFactory, IActiveDirectoryManager activeDirectoryManager)
         {
@@ -23,7 +22,8 @@ namespace TrashMobJobs
         }
 
         [Function("DeleteUser")]
-        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "DeleteUser")] HttpRequestData req)
+        public async Task<HttpResponseData> Run(
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "DeleteUser")] HttpRequestData req)
         {
             var json = await req.ReadAsStringAsync();
             var activeDirectoryDeleteUserRequest = JsonSerializer.Deserialize<ActiveDirectoryDeleteUserRequest>(json);
@@ -32,7 +32,8 @@ namespace TrashMobJobs
 
             try
             {
-                var deleteResponse = await activeDirectoryManager.DeleteUserAsync(activeDirectoryDeleteUserRequest.objectId);
+                var deleteResponse =
+                    await activeDirectoryManager.DeleteUserAsync(activeDirectoryDeleteUserRequest.objectId);
 
                 HttpResponseData response;
                 switch (deleteResponse.action)
@@ -42,12 +43,14 @@ namespace TrashMobJobs
                         response = req.CreateResponse(HttpStatusCode.OK);
                         var validationResponse = deleteResponse as ActiveDirectoryValidationFailedResponse;
                         response.WriteString(JsonSerializer.Serialize(validationResponse));
-                        logger.LogError($"User with objectId {activeDirectoryDeleteUserRequest.objectId} was not found. Skipping.");
+                        logger.LogError(
+                            $"User with objectId {activeDirectoryDeleteUserRequest.objectId} was not found. Skipping.");
                         break;
                     default:
                         response = req.CreateResponse(HttpStatusCode.OK);
                         response.WriteString(JsonSerializer.Serialize(deleteResponse));
-                        logger.LogInformation($"User with objectId {activeDirectoryDeleteUserRequest.objectId} deleted. Message: {JsonSerializer.Serialize(deleteResponse)}");
+                        logger.LogInformation(
+                            $"User with objectId {activeDirectoryDeleteUserRequest.objectId} deleted. Message: {JsonSerializer.Serialize(deleteResponse)}");
                         break;
                 }
 
@@ -61,11 +64,12 @@ namespace TrashMobJobs
                 {
                     action = "Failed",
                     version = "1.0.0",
-                    userMessage = "User failed to delete."
+                    userMessage = "User failed to delete.",
                 };
 
                 response.WriteString(JsonSerializer.Serialize(blockingResponse));
-                logger.LogError(ex, $"User with objectId {activeDirectoryDeleteUserRequest.objectId} failed to delete. Message: {ex.Message}, InnerException:  {ex.InnerException}");
+                logger.LogError(ex,
+                    $"User with objectId {activeDirectoryDeleteUserRequest.objectId} failed to delete. Message: {ex.Message}, InnerException:  {ex.InnerException}");
                 return response;
             }
         }

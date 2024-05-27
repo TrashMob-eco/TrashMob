@@ -1,8 +1,8 @@
 ﻿namespace TrashMob.Controllers
 {
-    using Microsoft.AspNetCore.Mvc;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/waivers")]
@@ -10,7 +10,7 @@
     {
         private readonly IWaiverManager waiverManager;
 
-        public WaiverController(IWaiverManager waiverManager) : base()
+        public WaiverController(IWaiverManager waiverManager)
         {
             this.waiverManager = waiverManager;
         }

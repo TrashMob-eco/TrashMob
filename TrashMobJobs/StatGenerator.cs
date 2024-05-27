@@ -150,14 +150,16 @@ namespace TrashMobJobs
 
         private static async Task<int> CountEventAttendees(ILogger log, SqlConnection conn)
         {
-            var sql = "SELECT count(*) FROM dbo.EventAttendees ea inner join dbo.Events e on ea.EventId = e.id WHERE eventstatusid != 3";
+            var sql =
+                "SELECT count(*) FROM dbo.EventAttendees ea inner join dbo.Events e on ea.EventId = e.id WHERE eventstatusid != 3";
             var numberOfEventAttendees = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
             {
                 numberOfEventAttendees = (int)await cmd.ExecuteScalarAsync().ConfigureAwait(false);
 
-                log.LogInformation("There are currently '{numberOfEventAttendees}' EventAttendees.", numberOfEventAttendees);
+                log.LogInformation("There are currently '{numberOfEventAttendees}' EventAttendees.",
+                    numberOfEventAttendees);
             }
 
             await AddSiteMetrics(log, conn, "TotalEventAttendees", numberOfEventAttendees).ConfigureAwait(false);
@@ -167,14 +169,16 @@ namespace TrashMobJobs
 
         private static async Task<int> CountFutureEventAttendees(ILogger log, SqlConnection conn)
         {
-            var sql = "  Select count(*) from dbo.EventAttendees ea inner join dbo.Events e on ea.EventId = e.id WHERE e.EventDate > GetDate() and eventstatusid != 3";
+            var sql =
+                "  Select count(*) from dbo.EventAttendees ea inner join dbo.Events e on ea.EventId = e.id WHERE e.EventDate > GetDate() and eventstatusid != 3";
             var numberOfEventAttendees = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
             {
                 numberOfEventAttendees = (int)await cmd.ExecuteScalarAsync().ConfigureAwait(false);
 
-                log.LogInformation("There are currently '{numberOfEventAttendees}' EventAttendees.", numberOfEventAttendees);
+                log.LogInformation("There are currently '{numberOfEventAttendees}' EventAttendees.",
+                    numberOfEventAttendees);
             }
 
             await AddSiteMetrics(log, conn, "TotalFutureEventAttendees", numberOfEventAttendees).ConfigureAwait(false);
@@ -191,7 +195,8 @@ namespace TrashMobJobs
             {
                 numberOfContactRequests = (int)await cmd.ExecuteScalarAsync().ConfigureAwait(false);
 
-                log.LogInformation("There are currently '{numberOfContactRequests}' Contact Requests.", numberOfContactRequests);
+                log.LogInformation("There are currently '{numberOfContactRequests}' Contact Requests.",
+                    numberOfContactRequests);
             }
 
             await AddSiteMetrics(log, conn, "TotalContactRequests", numberOfContactRequests).ConfigureAwait(false);
@@ -208,7 +213,8 @@ namespace TrashMobJobs
             {
                 numberOfLitterReports = (int)await cmd.ExecuteScalarAsync().ConfigureAwait(false);
 
-                log.LogInformation("There are currently '{numberOfLitterReports}' Litter Reports.", numberOfLitterReports);
+                log.LogInformation("There are currently '{numberOfLitterReports}' Litter Reports.",
+                    numberOfLitterReports);
             }
 
             await AddSiteMetrics(log, conn, "TotalLitterReports", numberOfLitterReports).ConfigureAwait(false);
@@ -218,14 +224,16 @@ namespace TrashMobJobs
 
         private static async Task<int> CountNewLitterReports(ILogger log, SqlConnection conn)
         {
-            var sql = "SELECT count(*) FROM dbo.LitterReports where LitterReportStatusId == " + LitterReportStatusEnum.New;
+            var sql = "SELECT count(*) FROM dbo.LitterReports where LitterReportStatusId == " +
+                      LitterReportStatusEnum.New;
             var numberOfLitterReports = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
             {
                 numberOfLitterReports = (int)await cmd.ExecuteScalarAsync().ConfigureAwait(false);
 
-                log.LogInformation("There are currently '{numberOfLitterReports}' New Litter Reports.", numberOfLitterReports);
+                log.LogInformation("There are currently '{numberOfLitterReports}' New Litter Reports.",
+                    numberOfLitterReports);
             }
 
             await AddSiteMetrics(log, conn, "TotalNewLitterReports", numberOfLitterReports).ConfigureAwait(false);
@@ -235,14 +243,16 @@ namespace TrashMobJobs
 
         private static async Task<int> CountCleanedLitterReports(ILogger log, SqlConnection conn)
         {
-            var sql = "SELECT count(*) FROM dbo.LitterReports where LitterReportStatusId == " + LitterReportStatusEnum.Cleaned;
+            var sql = "SELECT count(*) FROM dbo.LitterReports where LitterReportStatusId == " +
+                      LitterReportStatusEnum.Cleaned;
             var numberOfLitterReports = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
             {
                 numberOfLitterReports = (int)await cmd.ExecuteScalarAsync().ConfigureAwait(false);
 
-                log.LogInformation("There are currently '{numberOfLitterReports}' Cleaned Litter Reports.", numberOfLitterReports);
+                log.LogInformation("There are currently '{numberOfLitterReports}' Cleaned Litter Reports.",
+                    numberOfLitterReports);
             }
 
             await AddSiteMetrics(log, conn, "TotalCleanedLitterReports", numberOfLitterReports).ConfigureAwait(false);
@@ -254,14 +264,15 @@ namespace TrashMobJobs
         {
             var id = Guid.NewGuid();
             var processedTime = DateTimeOffset.Now;
-            var sql = "INSERT INTO dbo.SiteMetrics (id, processedtime, metricType, metricValue) VALUES (@id, @processedTime, @metricType, @metricValue)";
+            var sql =
+                "INSERT INTO dbo.SiteMetrics (id, processedtime, metricType, metricValue) VALUES (@id, @processedTime, @metricType, @metricValue)";
             using var command = new SqlCommand(sql, conn);
             command.Parameters.AddWithValue("@id", id);
             command.Parameters.AddWithValue("@processedTime", processedTime);
             command.Parameters.AddWithValue("@metricType", metricType);
             command.Parameters.AddWithValue("@metricValue", metricValue);
 
-            int result = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+            var result = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
 
             // Check Error
             if (result < 0)
@@ -287,17 +298,18 @@ namespace TrashMobJobs
             sb.AppendLine($"Total Number of Litter Reports: {siteStats.LitterReportsCount}\n");
             sb.AppendLine($"Total Number of New Litter Reports: {siteStats.NewLitterReportsCount}\n");
             sb.AppendLine($"Total Number of Cleaned Litter Reports: {siteStats.CleanedLitterReportsCount}\n");
-            sb.AppendLine($"End Report.\n");
+            sb.AppendLine("End Report.\n");
 
             var email = new Email
             {
                 Subject = $"Summary Report for '{instanceName}'",
-                Message = sb.ToString()
+                Message = sb.ToString(),
             };
 
-            email.Addresses.Add(new EmailAddress() { Email = Constants.TrashMobEmailAddress, Name = Constants.TrashMobEmailName });
+            email.Addresses.Add(new EmailAddress
+                { Email = Constants.TrashMobEmailAddress, Name = Constants.TrashMobEmailName });
 
-            var emailSender = new EmailSender() { ApiKey = sendGridApiKey };
+            var emailSender = new EmailSender { ApiKey = sendGridApiKey };
             return emailSender.SendEmailAsync(email);
         }
     }

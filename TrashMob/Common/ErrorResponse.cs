@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-
-namespace TrashMob.Common
+﻿namespace TrashMob.Common
 {
+    using System.Collections.Generic;
+
     public class ErrorResponse
     {
-        public List<ErrorModel> Error { get; set; } = new List<ErrorModel>();
+        public List<ErrorModel> Error { get; set; } = new();
         public bool Successful { get; set; }
     }
 }

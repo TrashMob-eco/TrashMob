@@ -1,27 +1,26 @@
 ﻿namespace TrashMob.Controllers
 {
-    using Microsoft.ApplicationInsights;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Identity.Web.Resource;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
     using TrashMob.Security;
     using TrashMob.Shared;
-    using TrashMob.Shared.Managers;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
 
     [Route("api/pickuplocations")]
     public class PickupLocationsController : KeyedController<PickupLocation>
     {
-        private readonly IPickupLocationManager pickupLocationManager;
         private readonly IEventManager eventManager;
         private readonly IImageManager imageManager;
+        private readonly IPickupLocationManager pickupLocationManager;
 
-        public PickupLocationsController(IPickupLocationManager pickupLocationManager, IEventManager eventManager, IImageManager imageManager) 
+        public PickupLocationsController(IPickupLocationManager pickupLocationManager, IEventManager eventManager,
+            IImageManager imageManager)
             : base(pickupLocationManager)
         {
             this.pickupLocationManager = pickupLocationManager;
@@ -51,7 +50,9 @@
         public async Task<IActionResult> Update(PickupLocation pickupLocation, CancellationToken cancellationToken)
         {
             // Todo: Add security
-            var authResult = await AuthorizationService.AuthorizeAsync(User, pickupLocation, AuthorizationPolicyConstants.UserOwnsEntity);
+            var authResult =
+                await AuthorizationService.AuthorizeAsync(User, pickupLocation,
+                    AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -67,7 +68,7 @@
         [HttpPost("markpickedup/{pickupLocationId}")]
         [Authorize(AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> MarkAsPickedUp(Guid pickupLocationId, CancellationToken cancellationToken)
-        {            
+        {
             // Todo: Add security
             //var authResult = await AuthorizationService.AuthorizeAsync(User, pickupLocation, AuthorizationPolicyConstants.UserOwnsEntity);
 
@@ -76,7 +77,8 @@
             //    return Forbid();
             //}
 
-            await pickupLocationManager.MarkAsPickedUpAsync(pickupLocationId, UserId, cancellationToken).ConfigureAwait(false);
+            await pickupLocationManager.MarkAsPickedUpAsync(pickupLocationId, UserId, cancellationToken)
+                .ConfigureAwait(false);
             TelemetryClient.TrackEvent("MarkAsPickedUp");
 
             return Ok();
@@ -88,7 +90,8 @@
         {
             var mobEvent = await eventManager.GetAsync(instance.EventId, cancellationToken);
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
+            var authResult =
+                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -108,7 +111,8 @@
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
+            var authResult =
+                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -123,10 +127,12 @@
         }
 
         [HttpPost("image/{eventId}")]
-        public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload, Guid eventId, CancellationToken cancellationToken)
+        public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload, Guid eventId,
+            CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
+            var authResult =
+                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -152,7 +158,8 @@
         }
 
         [HttpGet("image/{pickupLocationId}/{imageSize}")]
-        public async Task<IActionResult> GetImage(Guid pickupLocationId, ImageSizeEnum imageSize, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetImage(Guid pickupLocationId, ImageSizeEnum imageSize,
+            CancellationToken cancellationToken)
         {
             var url = await imageManager.GetImageUrlAsync(pickupLocationId, ImageTypeEnum.Pickup, imageSize);
 

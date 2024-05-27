@@ -1,8 +1,8 @@
 ﻿namespace TrashMob.Shared.Managers
 {
-    using Microsoft.Extensions.Configuration;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Configuration;
     using TrashMob.Shared.Managers.Interfaces;
 
     public class LocalKeyVaultManager : IKeyVaultManager

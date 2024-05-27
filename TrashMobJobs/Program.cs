@@ -1,23 +1,19 @@
-
 namespace TrashMobJobs
 {
-    using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.DependencyInjection;
-    using TrashMob.Shared;
-    using TrashMob.Shared.Persistence;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
+    using TrashMob.Shared;
     using TrashMob.Shared.Engine;
+    using TrashMob.Shared.Persistence;
 
     public class Program
     {
         public static async Task Main()
         {
             var host = new HostBuilder()
-                .ConfigureAppConfiguration(c =>
-                {
-                    c.AddEnvironmentVariables();
-                })
+                .ConfigureAppConfiguration(c => { c.AddEnvironmentVariables(); })
                 .ConfigureFunctionsWorkerDefaults()
                 .ConfigureServices(services =>
                 {

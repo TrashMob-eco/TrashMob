@@ -1,5 +1,4 @@
-﻿
-namespace TrashMob.Shared.Managers
+﻿namespace TrashMob.Shared.Managers
 {
     using System;
     using System.Threading;
@@ -12,16 +11,9 @@ namespace TrashMob.Shared.Managers
     {
         public KeyedManager(IKeyedRepository<T> repository) : base(repository)
         {
-
         }
 
-        protected IKeyedRepository<T> Repo
-        {
-            get
-            {
-                return Repository as IKeyedRepository<T>;
-            }
-        }
+        protected IKeyedRepository<T> Repo => Repository as IKeyedRepository<T>;
 
         public override Task<T> AddAsync(T instance, CancellationToken cancellationToken = default)
         {
