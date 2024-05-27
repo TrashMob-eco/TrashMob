@@ -18,12 +18,7 @@
 
                 <maps:Map x:Name="userLocationMap" 
                   ItemsSource="{Binding Addresses}" 
-                  IsShowingUser="True" 
-                  HeightRequest="250" 
-                  WidthRequest="350"
-                  IsScrollEnabled="True"
-                  MapClicked="OnMapClicked"
-                  Margin="10,0">
+                  MapClicked="OnMapClicked">
                     <maps:Map.ItemTemplate>
                         <DataTemplate>
                             <maps:Pin Location="{Binding Location}"

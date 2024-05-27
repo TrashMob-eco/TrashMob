@@ -167,7 +167,7 @@
             HorizontalTextAlignment="Center"
             Margin="5"/>
 
-                <maps:Map x:Name="eventLocationMap" ItemsSource="{Binding Events}" IsShowingUser="True" HeightRequest="250" IsScrollEnabled="True" MapClicked="OnMapClicked" Margin="10">
+                <maps:Map x:Name="eventLocationMap" ItemsSource="{Binding Events}" IsShowingUser="True" MapClicked="OnMapClicked" >
                     <maps:Map.ItemTemplate>
                         <DataTemplate>
                             <maps:Pin Location="{Binding Address.Location}"

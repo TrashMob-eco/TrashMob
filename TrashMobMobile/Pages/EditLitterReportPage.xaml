@@ -74,7 +74,7 @@
                            IsVisible="{Binding HasNoImages}"
                            Text="Please add between 1 and 5 images of the litter to your report." />
 
-                    <maps:Map Grid.Row="1" x:Name="litterReportLocationMap" ItemsSource="{Binding LitterImageViewModels}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True" Margin="10">
+                    <maps:Map Grid.Row="1" x:Name="litterReportLocationMap" ItemsSource="{Binding LitterImageViewModels}" >
                         <maps:Map.ItemTemplate>
                             <DataTemplate>
                                 <maps:Pin Location="{Binding Address.Location}"

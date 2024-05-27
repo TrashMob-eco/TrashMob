@@ -28,10 +28,7 @@
 
                     <maps:Map x:Name="litterImagesMap" 
                           Grid.Row="3"  
-                          IsShowingUser="True" 
                           ItemsSource="{Binding LitterImages}" 
-                          HeightRequest="300" 
-                          IsScrollEnabled="True" 
                           IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}" >
                         <maps:Map.ItemTemplate>
                             <DataTemplate>

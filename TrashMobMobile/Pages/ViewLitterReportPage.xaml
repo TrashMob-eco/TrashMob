@@ -61,7 +61,7 @@
                     </VerticalStackLayout>
                 </Grid>
 
-                <maps:Map x:Name="litterReportLocationMap" ItemsSource="{Binding LitterImageViewModels}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True" Margin="10">
+                <maps:Map x:Name="litterReportLocationMap" ItemsSource="{Binding LitterImageViewModels}" >
                     <maps:Map.ItemTemplate>
                         <DataTemplate>
                             <maps:Pin Location="{Binding Address.Location}"

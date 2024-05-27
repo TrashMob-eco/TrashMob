@@ -202,10 +202,6 @@
                     <maps:Map x:Name="eventLocationMap"
                               Grid.Row="6"
                               Grid.ColumnSpan="4"
-                              Margin="10"
-                              HeightRequest="250"
-                              IsScrollEnabled="True"
-                              IsShowingUser="True"
                               ItemsSource="{Binding Events}"
                               MapClicked="OnMapClicked">
                         <maps:Map.ItemTemplate>

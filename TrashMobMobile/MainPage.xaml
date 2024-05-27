@@ -10,7 +10,9 @@
     <Grid>
         <ScrollView>
             <VerticalStackLayout Spacing="5">
-                <Image Source="bannerlogo.png" />
+                <Frame Style="{StaticResource Frame}" Padding="1">
+                    <Image Source="bannerlogo.png" />
+                </Frame>
                 <Grid ColumnDefinitions="1*, 1*"
                       RowDefinitions="Auto">
                     <Button Grid.Column="0"
@@ -123,10 +125,6 @@
                 </Grid>
 
                 <maps:Map x:Name="upcomingEventsMap"
-                          Margin="5"
-                          HeightRequest="300"
-                          IsScrollEnabled="True"
-                          IsShowingUser="True"
                           IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}"
                           ItemsSource="{Binding UpcomingEvents}">
                     <maps:Map.ItemTemplate>

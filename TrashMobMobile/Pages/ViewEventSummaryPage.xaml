@@ -75,11 +75,8 @@
                     </CollectionView>
 
                     <maps:Map x:Name="pickupLocationsMap"
-                      IsShowingUser="True"
                       ItemsSource="{Binding PickupLocations}"
-                      HeightRequest="300"
                       IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}"
-                      IsScrollEnabled="True"
                       Grid.Row="4"
                       Grid.ColumnSpan="2">
                         <maps:Map.ItemTemplate>

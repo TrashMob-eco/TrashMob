@@ -48,7 +48,7 @@
 
                 <Image x:Name="pickupPhoto" IsVisible="false" MaximumHeightRequest="200" />
 
-                <maps:Map x:Name="pickupLocationMap" ItemsSource="{Binding PickupLocations}" IsShowingUser="True" HeightRequest="250" IsScrollEnabled="True" Margin="10" WidthRequest="300" >
+                <maps:Map x:Name="pickupLocationMap" ItemsSource="{Binding PickupLocations}" >
                     <maps:Map.ItemTemplate>
                         <DataTemplate>
                             <maps:Pin Location="{Binding Address.Location}"
