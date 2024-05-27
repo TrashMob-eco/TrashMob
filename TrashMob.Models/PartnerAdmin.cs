@@ -2,14 +2,8 @@
 
 namespace TrashMob.Models
 {
-    using System;
-
-    public partial class PartnerAdmin : BaseModel
+    public class PartnerAdmin : BaseModel
     {
-        public PartnerAdmin()
-        {
-        }
-
         public Guid PartnerId { get; set; }
 
         public Guid UserId { get; set; }

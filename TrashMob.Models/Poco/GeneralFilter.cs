@@ -1,7 +1,7 @@
 ﻿namespace TrashMob.Models.Poco
 {
     public class GeneralFilter
-{
+    {
         public DateTimeOffset? StartDate { get; set; }
 
         public DateTimeOffset? EndDate { get; set; }

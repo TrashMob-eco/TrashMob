@@ -11,6 +11,8 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 {
     private readonly ILitterReportManager litterReportManager;
 
+    private IEnumerable<TrashMob.Models.Poco.Location> locations = [];
+
     [ObservableProperty]
     private string reportStatus = "New";
 
@@ -123,15 +125,14 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
         await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportId}");
     }
 
-    private IEnumerable<TrashMob.Models.Poco.Location> locations = [];
-
     private async Task RefreshLitterReports()
     {
         IsBusy = true;
 
         LitterReports.Clear();
 
-        locations = await litterReportManager.GetLocationsByTimeRangeAsync(DateTimeOffset.Now.AddDays(-180), DateTimeOffset.Now);
+        locations = await litterReportManager.GetLocationsByTimeRangeAsync(DateTimeOffset.Now.AddDays(-180),
+            DateTimeOffset.Now);
         CountryCollection.Clear();
         RegionCollection.Clear();
         CityCollection.Clear();
@@ -215,7 +216,8 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
     {
         CityCollection.Clear();
 
-        var cities = locations.Where(l => l.Country == selectedCountry && l.Region == selectedRegion).Select(l => l.City).Distinct();
+        var cities = locations.Where(l => l.Country == selectedCountry && l.Region == selectedRegion)
+            .Select(l => l.City).Distinct();
 
         foreach (var city in cities)
         {

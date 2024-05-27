@@ -2,14 +2,8 @@
 
 namespace TrashMob.Models
 {
-    using System;
-
-    public partial class EventSummary : BaseModel
+    public class EventSummary : BaseModel
     {
-        public EventSummary()
-        {
-        }
-
         public Guid EventId { get; set; }
 
         public int NumberOfBuckets { get; set; }

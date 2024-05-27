@@ -2,10 +2,7 @@
 
 namespace TrashMob.Models
 {
-    using System;
-    using System.Collections.Generic;
-
-    public partial class User : KeyedModel
+    public class User : KeyedModel
     {
         public User()
         {
@@ -156,11 +153,11 @@ namespace TrashMob.Models
         public virtual ICollection<PickupLocation> PickupLocationsCreated { get; set; }
 
         public virtual ICollection<PickupLocation> PickupLocationsUpdated { get; set; }
-        
+
         public virtual ICollection<EventLitterReport> EventLitterReportsCreated { get; set; }
 
         public virtual ICollection<EventLitterReport> EventLitterReportsUpdated { get; set; }
-        
+
         public virtual ICollection<LitterReport> LitterReportsCreated { get; set; }
 
         public virtual ICollection<LitterReport> LitterReportsUpdated { get; set; }

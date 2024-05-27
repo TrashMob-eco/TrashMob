@@ -1,6 +1,5 @@
 ﻿namespace TrashMob.Models.Extensions
 {
-    using TrashMob.Models;
     using TrashMob.Models.Poco;
 
     public static class LitterReportExtensions
@@ -17,7 +16,9 @@
                 CreatedDate = litterReport.CreatedDate,
                 LastUpdatedByUserId = litterReport.LastUpdatedByUserId,
                 LastUpdatedDate = litterReport.LastUpdatedDate,
-                LitterImages = litterReport.LitterImages == null ? [] : litterReport.LitterImages.Select(image => image.ToFullLitterImage()).ToList(),
+                LitterImages = litterReport.LitterImages == null
+                    ? []
+                    : litterReport.LitterImages.Select(image => image.ToFullLitterImage()).ToList(),
                 CreateByUserName = userName,
             };
         }
@@ -34,7 +35,9 @@
                 CreatedDate = litterReport.CreatedDate,
                 LastUpdatedByUserId = litterReport.LastUpdatedByUserId,
                 LastUpdatedDate = litterReport.LastUpdatedDate,
-                LitterImages = litterReport.LitterImages == null ? [] : litterReport.LitterImages.Select(image => image.ToFullLitterImage()).ToList(),                
+                LitterImages = litterReport.LitterImages == null
+                    ? []
+                    : litterReport.LitterImages.Select(image => image.ToFullLitterImage()).ToList(),
             };
         }
 

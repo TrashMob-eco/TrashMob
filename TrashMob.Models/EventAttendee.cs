@@ -2,9 +2,7 @@
 
 namespace TrashMob.Models
 {
-    using System;
-
-    public partial class EventAttendee : BaseModel
+    public class EventAttendee : BaseModel
     {
         public Guid EventId { get; set; }
 

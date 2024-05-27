@@ -1,7 +1,5 @@
 ﻿namespace TrashMob.Models.Poco
 {
-    using System;
-
     public class LocationFilter
     {
         public string City { get; set; }

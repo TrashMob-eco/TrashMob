@@ -22,7 +22,7 @@
         Sent = 2,
         Accepted = 3,
         Canceled = 4,
-        Declined = 5
+        Declined = 5,
     }
 
     public enum PartnerRequestStatusEnum
@@ -68,6 +68,7 @@
         Pickup = 3,
         LitterImage = 4,
     }
+
     public enum ImageSizeEnum
     {
         Raw = 1,

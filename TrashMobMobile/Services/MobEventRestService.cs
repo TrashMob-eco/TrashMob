@@ -160,7 +160,7 @@ public class MobEventRestService : RestServiceBase, IMobEventRestService
             {
                 Method = HttpMethod.Delete,
                 Content = content,
-                RequestUri = AuthorizedHttpClient.BaseAddress
+                RequestUri = AuthorizedHttpClient.BaseAddress,
             };
 
             response = await AuthorizedHttpClient.SendAsync(httpRequestMessage, cancellationToken);
@@ -195,7 +195,8 @@ public class MobEventRestService : RestServiceBase, IMobEventRestService
         return mobEvents;
     }
 
-    public async Task<IEnumerable<Location>> GetLocationsByTimeRangeAsync(DateTimeOffset startDate, DateTimeOffset endDate, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Location>> GetLocationsByTimeRangeAsync(DateTimeOffset startDate,
+        DateTimeOffset endDate, CancellationToken cancellationToken = default)
     {
         var requestUri = Controller + "/locationsbytimerange?startTime=" + startDate + "&endTime=" + endDate;
 
@@ -209,7 +210,7 @@ public class MobEventRestService : RestServiceBase, IMobEventRestService
                 return [];
             }
 
-            return JsonConvert.DeserializeObject<IEnumerable<TrashMob.Models.Poco.Location>>(content);
+            return JsonConvert.DeserializeObject<IEnumerable<Location>>(content);
         }
     }
 }

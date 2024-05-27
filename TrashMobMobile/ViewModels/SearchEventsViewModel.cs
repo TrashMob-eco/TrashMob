@@ -14,11 +14,12 @@ public partial class SearchEventsViewModel : BaseViewModel
     [ObservableProperty]
     private string eventStatus = "Upcoming";
 
+    private IEnumerable<TrashMob.Models.Poco.Location> locations = [];
+
     private string? selectedCity;
     private string? selectedCountry;
     private EventViewModel selectedEvent;
     private string? selectedRegion;
-    private IEnumerable<TrashMob.Models.Poco.Location> locations = [];
 
     [ObservableProperty]
     private AddressViewModel userLocation;
@@ -107,7 +108,8 @@ public partial class SearchEventsViewModel : BaseViewModel
 
         Events.Clear();
 
-        locations = await mobEventManager.GetLocationsByTimeRangeAsync(DateTimeOffset.Now.AddDays(-180), DateTimeOffset.Now);
+        locations = await mobEventManager.GetLocationsByTimeRangeAsync(DateTimeOffset.Now.AddDays(-180),
+            DateTimeOffset.Now);
         CountryCollection.Clear();
         RegionCollection.Clear();
         CityCollection.Clear();
@@ -189,7 +191,8 @@ public partial class SearchEventsViewModel : BaseViewModel
     {
         CityCollection.Clear();
 
-        var cities = locations.Where(l => l.Country == selectedCountry && l.Region == selectedRegion).Select(l => l.City).Distinct();
+        var cities = locations.Where(l => l.Country == selectedCountry && l.Region == selectedRegion)
+            .Select(l => l.City).Distinct();
 
         foreach (var city in cities)
         {

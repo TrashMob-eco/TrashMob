@@ -1,8 +1,5 @@
-
 namespace TrashMob.Models.Poco
 {
-    using System;
-
     public class FullLitterImage
     {
         public Guid Id { get; set; }

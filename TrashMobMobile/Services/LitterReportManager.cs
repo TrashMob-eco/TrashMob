@@ -82,7 +82,8 @@
             return litterReportRestService.DeleteLitterReportAsync(litterReportId, cancellationToken);
         }
 
-        public Task<IEnumerable<TrashMob.Models.Poco.Location>> GetLocationsByTimeRangeAsync(DateTimeOffset startDate, DateTimeOffset endDate, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<TrashMob.Models.Poco.Location>> GetLocationsByTimeRangeAsync(DateTimeOffset startDate,
+            DateTimeOffset endDate, CancellationToken cancellationToken = default)
         {
             return litterReportRestService.GetLocationsByTimeRangeAsync(startDate, endDate, cancellationToken);
         }

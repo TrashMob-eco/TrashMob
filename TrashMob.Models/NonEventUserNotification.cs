@@ -2,9 +2,7 @@
 
 namespace TrashMob.Models
 {
-    using System;
-
-    public partial class NonEventUserNotification : KeyedModel
+    public class NonEventUserNotification : KeyedModel
     {
         public Guid UserId { get; set; }
 

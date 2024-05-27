@@ -14,10 +14,10 @@ public static class Settings
     public const string SiteBaseUrl = "https://www.trashmob.eco";
 #endif
 
-    public static WaiverVersion CurrentTrashMobWaiverVersion = new()
+    public static WaiverVersion CurrentTrashMobWaiverVersion => new()
     {
         VersionId = "1.0",
-        VersionDate = "2023-07-01 00:00:00"
+        VersionDate = "2023-07-01 00:00:00",
     };
 
     public const int DefaultTravelDistance = 20;

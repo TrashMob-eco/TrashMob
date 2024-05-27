@@ -1,8 +1,5 @@
 namespace TrashMob.Models.Poco
 {
-    using System;
-    using System.Collections.Generic;
-
     public class FullLitterReport
     {
         public Guid Id { get; set; }
@@ -13,7 +10,7 @@ namespace TrashMob.Models.Poco
 
         public int LitterReportStatusId { get; set; } = 1;
 
-        public List<FullLitterImage> LitterImages { get; set; } = new List<FullLitterImage>();
+        public List<FullLitterImage> LitterImages { get; set; } = [];
 
         public Guid CreatedByUserId { get; set; }
 

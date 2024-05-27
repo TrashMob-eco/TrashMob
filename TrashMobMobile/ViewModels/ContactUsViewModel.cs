@@ -35,7 +35,7 @@ public partial class ContactUsViewModel : BaseViewModel
         {
             Name = Name,
             Email = Email,
-            Message = Message
+            Message = Message,
         };
 
         await contactRequestManager.AddContactRequestAsync(contactRequest);

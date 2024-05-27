@@ -36,7 +36,7 @@ public partial class EditEventSummaryViewModel : BaseViewModel
                 DurationInMinutes = EventSummary.DurationInMinutes,
                 EventId = EventSummary.EventId,
                 Notes = EventSummary.Notes,
-                NumberOfBags = EventSummary.NumberOfBags
+                NumberOfBags = EventSummary.NumberOfBags,
             };
         }
 

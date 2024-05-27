@@ -42,11 +42,11 @@ public partial class CreateEventViewModel : BaseViewModel
     public string DefaultEventName { get; } = "New Event";
 
     // This is only for the map point
-    public ObservableCollection<EventViewModel> Events { get; set; } = new();
+    public ObservableCollection<EventViewModel> Events { get; set; } = [];
 
-    private List<EventType> EventTypes { get; set; } = new();
+    private List<EventType> EventTypes { get; set; } = [];
 
-    public ObservableCollection<string> ETypes { get; set; } = new();
+    public ObservableCollection<string> ETypes { get; set; } = [];
 
     public async Task Init()
     {
@@ -73,7 +73,7 @@ public partial class CreateEventViewModel : BaseViewModel
             DurationMinutes = 0,
             Address = UserLocation,
             EventTypeId = EventTypes.OrderBy(e => e.DisplayOrder).First().Id,
-            EventStatusId = ActiveEventStatus
+            EventStatusId = ActiveEventStatus,
         };
 
         SelectedEventType = EventTypes.OrderBy(e => e.DisplayOrder).First().Name;
@@ -125,7 +125,7 @@ public partial class CreateEventViewModel : BaseViewModel
     [RelayCommand]
     private async Task ManageEventPartners()
     {
-        await Shell.Current.GoToAsync($"{nameof(ManageEventPartnersPage)}?EventId={eventViewModel.Id}");
+        await Shell.Current.GoToAsync($"{nameof(ManageEventPartnersPage)}?EventId={EventViewModel.Id}");
     }
 
     public async Task ChangeLocation(Location location)

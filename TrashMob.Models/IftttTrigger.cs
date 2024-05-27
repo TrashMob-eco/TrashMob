@@ -2,8 +2,6 @@
 
 namespace TrashMob.Models
 {
-    using System;
-
     public class IftttTrigger : BaseModel
     {
         public string TriggerId { get; set; }

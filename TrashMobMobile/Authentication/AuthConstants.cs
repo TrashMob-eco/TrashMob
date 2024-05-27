@@ -3,9 +3,6 @@ namespace TrashMobMobile.Authentication;
 public static class AuthConstants
 {
     private const string SignInPolicy = "B2C_1A_TM_SIGNUP_SIGNIN";
-    private const string ResetPasswordPolicyId = "";
-    private const string EditProfilePolicyId = "B2C_1A_TM_PROFILEEDIT";
-    private const string DeleteProfilePolicyId = "B2C_1A_TM_DEREGISTER";
 
 #if USETEST
     public const string ClientId = "31cb1c9a-eaa6-4fd0-b59f-0bd0099845ee";
@@ -20,13 +17,13 @@ public static class AuthConstants
 #endif
 
     public static readonly string[] Scopes =
-    {
+    [
         $"https://{TenantId}/api/TrashMob.Writes",
         $"https://{TenantId}/api/TrashMob.Read",
         "email",
         "openid",
-        "offline_access"
-    };
+        "offline_access",
+    ];
 
     private const string AuthorityBase = $"https://{TenantName}.b2clogin.com/tfp/{TenantId}/";
     public const string AuthoritySignIn = $"{AuthorityBase}{SignInPolicy}";

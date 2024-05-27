@@ -17,7 +17,7 @@
                 Name = litterReport.Name,
                 Description = litterReport.Description,
                 LitterReportStatusId = litterReport.LitterReportStatusId,
-                CreatedDate = litterReport.CreatedDate?.GetFormattedLocalDate() ?? string.Empty
+                CreatedDate = litterReport.CreatedDate?.GetFormattedLocalDate() ?? string.Empty,
             };
 
             foreach (var litterImage in litterReport.LitterImages)
@@ -40,7 +40,7 @@
                 Name = litterReportViewModel.Name,
                 Description = litterReportViewModel.Description,
                 LitterReportStatusId = litterReportViewModel.LitterReportStatusId,
-                LitterImages = []
+                LitterImages = [],
             };
         }
 
@@ -49,7 +49,7 @@
             return new LitterImage
             {
                 Id = litterImageViewModel.Id,
-                LitterReportId = litterImageViewModel.LitterReportId
+                LitterReportId = litterImageViewModel.LitterReportId,
             };
         }
 
@@ -78,8 +78,8 @@
                     PostalCode = litterImage.PostalCode,
                     Region = litterImage.Region,
                     StreetAddress = litterImage.StreetAddress,
-                    Location = new Location(litterImage.Latitude.Value, litterImage.Longitude.Value)
-                }
+                    Location = new Location(litterImage.Latitude.Value, litterImage.Longitude.Value),
+                },
             };
         }
     }

@@ -2,8 +2,6 @@
 
 namespace TrashMob.Models
 {
-    using System;
-
     public class LitterImage : KeyedModel
     {
         public Guid LitterReportId { get; set; }
@@ -19,7 +17,7 @@ namespace TrashMob.Models
         public string Country { get; set; }
 
         public string PostalCode { get; set; }
-        
+
         public double? Latitude { get; set; }
 
         public double? Longitude { get; set; }

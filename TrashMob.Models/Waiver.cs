@@ -1,5 +1,4 @@
-﻿
-namespace TrashMob.Models
+﻿namespace TrashMob.Models
 {
     public class Waiver : KeyedModel
     {
