@@ -12,12 +12,12 @@
                 <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
                 <Grid RowDefinitions="Auto, Auto, *">
-                    <HorizontalStackLayout Grid.Row="0">
-                        <RadioButton Content="Upcoming" IsChecked="True" RadioButtonGroup.GroupName="EventStatus"
+                    <HorizontalStackLayout Grid.Row="0" >
+                        <RadioButton Content="Upcoming" IsChecked="True" GroupName="EventStatus"
                                      CheckedChanged="OnEventStatusRadioButtonCheckedChanged" FontSize="Micro" />
-                        <RadioButton Content="Complete" RadioButtonGroup.GroupName="EventStatus"
+                        <RadioButton Content="Complete" GroupName="EventStatus"
                                      CheckedChanged="OnEventStatusRadioButtonCheckedChanged" FontSize="Micro" />
-                        <RadioButton Content="Both" RadioButtonGroup.GroupName="EventStatus"
+                        <RadioButton Content="Both" GroupName="EventStatus"
                                      CheckedChanged="OnEventStatusRadioButtonCheckedChanged" FontSize="Micro" />
                     </HorizontalStackLayout>
                     <Border Grid.Row="1" Style="{StaticResource RoundBorder}">

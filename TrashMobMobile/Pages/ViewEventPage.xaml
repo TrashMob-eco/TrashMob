@@ -8,7 +8,7 @@
     <ScrollView>
         <Grid>
             <VerticalStackLayout>
-                <Frame Style="{StaticResource Frame}" Padding="1">
+                <Frame Style="{DynamicResource Frame}" Padding="1">
                     <Image Source="bannerlogo.png" />
                 </Frame>
                 <Label

@@ -10,7 +10,7 @@
     <Grid>
         <ScrollView>
             <VerticalStackLayout Spacing="5">
-                <Frame Style="{StaticResource Frame}" Padding="1">
+                <Frame Style="{DynamicResource Frame}" Padding="1">
                     <Image Source="bannerlogo.png" />
                 </Frame>
                 <Grid ColumnDefinitions="1*, 1*"
