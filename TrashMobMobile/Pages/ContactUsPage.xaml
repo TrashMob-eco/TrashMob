@@ -20,7 +20,7 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Entry 
                         Text="{Binding Name}"             
                         FontSize="Small">
@@ -28,7 +28,7 @@
                                     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
                                 </Entry.Behaviors>
                             </Entry>
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="5" Grid.Row="1" Margin="10">
@@ -40,7 +40,7 @@
                     HorizontalTextAlignment="Start"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Entry 
                         Text="{Binding Email}"
                         Keyboard="Email"
@@ -52,7 +52,7 @@
                                     </toolkit:MultiValidationBehavior>
                                 </Entry.Behaviors>
                             </Entry>
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="5" Grid.Row="2" Margin="10">
@@ -64,7 +64,7 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Editor 
                         Text="{Binding Message}"
                         FontSize="Small"
@@ -76,7 +76,7 @@
                                     <toolkit:TextValidationBehavior x:Name="messageValidator" Flags="ValidateOnValueChanged" MinimumLength="10" />
                                 </Editor.Behaviors>
                             </Editor>
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="3" Margin="10">
                         <Button 

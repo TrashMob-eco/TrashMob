@@ -17,9 +17,9 @@
                            HorizontalOptions="Start"
                            HorizontalTextAlignment="Center"
                            FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}" >
+                        <Border Style="{x:StaticResource RoundBorder}" >
                             <Label Text="{Binding EventViewModel.Name}" FontSize="Small" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="5" Grid.Row="1" Margin="10">
@@ -29,9 +29,9 @@
                            HorizontalOptions="Start"
                            HorizontalTextAlignment="Center"
                            FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}" >
+                        <Border Style="{x:StaticResource RoundBorder}" >
                             <Label Text="{Binding EventViewModel.EventViewModel.DisplayDate}" FontSize="Small" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="5" Grid.Row="2" Margin="10">
@@ -41,9 +41,9 @@
                            HorizontalOptions="Start"
                            HorizontalTextAlignment="Center"
                            FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}" >
+                        <Border Style="{x:StaticResource RoundBorder}" >
                             <Label Text="{Binding EventViewModel.EventViewModel.DisplayTime}" FontSize="Small" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="5" Grid.Row="2" Margin="10">
@@ -53,13 +53,13 @@
                            HorizontalOptions="Start"
                            HorizontalTextAlignment="Center"
                            FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}" >
+                        <Border Style="{x:StaticResource RoundBorder}" >
                             <Editor Text="{Binding EventViewModel.CancellationReason}">
                                 <Editor.Behaviors>
                                     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10" x:Name="cancellationReasonValidator" />
                                 </Editor.Behaviors>
                             </Editor>
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                 </Grid>
 

@@ -20,9 +20,9 @@
                                Text="Name"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Entry Text="{Binding Name}" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="1"
                                          Margin="10"
@@ -34,9 +34,9 @@
                                Text="Description"
                                VerticalOptions="Center" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Editor Text="{Binding Description}" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
 
                     <Button Grid.Row="2"

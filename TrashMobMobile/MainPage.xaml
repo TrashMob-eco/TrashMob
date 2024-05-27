@@ -10,7 +10,9 @@
     <Grid>
         <ScrollView>
             <VerticalStackLayout Spacing="5">
-                <Image Source="bannerlogo.png" />
+                <Frame Style="{StaticResource Frame}" Padding="1">
+                    <Image Source="bannerlogo.png" />
+                </Frame>
                 <Grid ColumnDefinitions="1*, 1*"
                       RowDefinitions="Auto">
                     <Button Grid.Column="0"
@@ -20,8 +22,8 @@
                             Command="{Binding SearchLitterReportsCommand}"
                             Text="Search Litter Reports" />
                 </Grid>
-                <Frame Margin="5,0"
-                       Style="{x:DynamicResource Frame}">
+                <Border Margin="5,0"
+                       Style="{x:StaticResource RoundBorder}">
                     <Grid ColumnDefinitions="1*, 1*, 1*, 1*"
                           RowDefinitions="Auto, Auto, Auto, Auto">
                         <Label Grid.Row="0"
@@ -87,7 +89,7 @@
                                HorizontalTextAlignment="Center"
                                Text="Hours Spent" />
                     </Grid>
-                </Frame>
+                </Border>
 
                 <Grid Margin="5"
                       ColumnDefinitions="1*, 1*"
@@ -101,6 +103,11 @@
                            Grid.Column="0"
                            FontAttributes="Bold"
                            Text="Find Nearby Events" />
+                    <Label Grid.Row="1"
+                           Grid.Column="1"
+                           FontSize="Micro"
+                           HorizontalOptions="Center"
+                           Text="Your Location" />
                     <HorizontalStackLayout Grid.Row="2">
                         <RadioButton x:Name="viewMap"
                                      Content="Map"
@@ -118,10 +125,6 @@
                 </Grid>
 
                 <maps:Map x:Name="upcomingEventsMap"
-                          Margin="5"
-                          HeightRequest="300"
-                          IsScrollEnabled="True"
-                          IsShowingUser="True"
                           IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}"
                           ItemsSource="{Binding UpcomingEvents}">
                     <maps:Map.ItemTemplate>

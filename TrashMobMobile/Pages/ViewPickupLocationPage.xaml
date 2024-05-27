@@ -20,13 +20,13 @@
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Center"
                         FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Entry Text="{Binding PickupLocationViewModel.Name}" >
                                 <Entry.Behaviors>
                                     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
                                 </Entry.Behaviors>
                             </Entry>
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="2" Margin="10">
                         <Label 
@@ -36,25 +36,20 @@
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Center"
                         FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Editor Text="{Binding PickupLocationViewModel.Notes}" >
                                 <Editor.Behaviors>
                                     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10" x:Name="notesValidator" />
                                 </Editor.Behaviors>
                             </Editor>
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                 </Grid>
 
 
                 <maps:Map x:Name="pickupLocationsMap"
-                      IsShowingUser="True"
                       ItemsSource="{Binding PickupLocations}"
-                      HeightRequest="300"
-                      IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}"
-                      IsScrollEnabled="True"
-                      Grid.Row="4"
-                      Grid.ColumnSpan="2">
+                      IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}">
                     <maps:Map.ItemTemplate>
                         <DataTemplate>
                             <maps:Pin Location="{Binding Address.Location}"
@@ -75,9 +70,9 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding PickupLocationViewModel.Address.StreetAddress }"  FontSize="Micro"/>
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="1" Grid.Column="0" Margin="10">
                         <Label 
@@ -88,9 +83,9 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding PickupLocationViewModel.Address.City }"  FontSize="Micro"/>
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="1" Grid.Column="1" Margin="10">
                         <Label 
@@ -101,9 +96,9 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding PickupLocationViewModel.Address.Region }"  FontSize="Micro"/>
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="2" Grid.Column="0" Margin="10">
                         <Label 
@@ -114,9 +109,9 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding PickupLocationViewModel.Address.Country }"  FontSize="Micro"/>
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="2" Grid.Column="1" Margin="10">
                         <Label 
@@ -127,9 +122,9 @@
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding PickupLocationViewModel.Address.PostalCode }" FontSize="Micro" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                 </Grid>
             </VerticalStackLayout>

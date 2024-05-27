@@ -18,12 +18,7 @@
 
                 <maps:Map x:Name="userLocationMap" 
                   ItemsSource="{Binding Addresses}" 
-                  IsShowingUser="True" 
-                  HeightRequest="250" 
-                  WidthRequest="350"
-                  IsScrollEnabled="True"
-                  MapClicked="OnMapClicked"
-                  Margin="10,0">
+                  MapClicked="OnMapClicked">
                     <maps:Map.ItemTemplate>
                         <DataTemplate>
                             <maps:Pin Location="{Binding Location}"
@@ -41,9 +36,9 @@
                    HorizontalOptions="Start"
                    HorizontalTextAlignment="Center"
                    FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}" >
+                        <Border Style="{x:StaticResource RoundBorder}" >
                             <Entry Text="{Binding TravelDistance}" Keyboard="Numeric" FontSize="Small" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="0" Grid.Column="1" Margin="10">
                         <Label Text="Set your preferred Units of measure."
@@ -52,7 +47,7 @@
                    HorizontalOptions="Start"
                    HorizontalTextAlignment="Center"
                    FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Picker SelectedItem="{Binding Units}" FontSize="Small">
                                 <Picker.ItemsSource>
                                     <x:Array Type="{x:Type x:String}">
@@ -61,7 +56,7 @@
                                     </x:Array>
                                 </Picker.ItemsSource>
                             </Picker>
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="1" Grid.Column="0" Margin="10">
                         <Label Text="City"
@@ -70,9 +65,9 @@
                    HorizontalOptions="Start"
                    HorizontalTextAlignment="Center"
                    FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding Address.City }" FontSize="Small" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="1" Grid.Column="1" Margin="10">
                         <Label Text="State/Region"
@@ -81,9 +76,9 @@
                     HorizontalOptions="Start"
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding Address.Region }" FontSize="Small" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="2" Grid.Column="0" Margin="10">
                         <Label Text="Country"
@@ -92,9 +87,9 @@
                     HorizontalOptions="Start"
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding Address.Country }" FontSize="Small" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="2" Grid.Column="1" Margin="10">
                         <Label Text="Postal Code"
@@ -103,9 +98,9 @@
                     HorizontalOptions="Start"
                     HorizontalTextAlignment="Center"
                     FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding Address.PostalCode }" FontSize="Small" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                 </Grid>
 

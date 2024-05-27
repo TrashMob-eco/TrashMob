@@ -18,13 +18,13 @@
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Center"
                         FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Label 
                         Text="{Binding LitterReportViewModel.Name}"
                         VerticalOptions="Center" 
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Center"/>
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="5" Grid.Row="1" Margin="10">
@@ -35,13 +35,13 @@
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Center"
                         FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Label 
                         Text="{Binding LitterReportViewModel.Description}"
                         VerticalOptions="Center" 
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Center"/>
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="5" Grid.Row="2" Margin="10">
                         <Label 
@@ -51,17 +51,17 @@
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Center"
                         FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Label 
                         Text="{Binding LitterReportStatus}"
                         VerticalOptions="Center" 
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Center"/>
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                 </Grid>
 
-                <maps:Map x:Name="litterReportLocationMap" ItemsSource="{Binding LitterImageViewModels}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True" Margin="10">
+                <maps:Map x:Name="litterReportLocationMap" ItemsSource="{Binding LitterImageViewModels}" >
                     <maps:Map.ItemTemplate>
                         <DataTemplate>
                             <maps:Pin Location="{Binding Address.Location}"
