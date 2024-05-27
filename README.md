@@ -323,19 +323,50 @@ Every year, the SSL certificate for the TrashMob.eco site will need to be update
 ## Android App Signing Instructions
 
 ### Test Environment
-- To generate a keystore file, follow: https://developer.android.com/studio/publish/app-signing#generate-key
-- - The Android app is signed with a keystore file. 
-- The keystore file is stored ?
-- The password for the keystore is stored in the Dev KeyVault as AndroidSiginingKeyPassword. 
-- The alias for the key is stored in the Dev KeyVault as AndroidSigningAlias. 
-- The key is stored in the Dev KeyVault as AndroidSiginingKey.
+- To generate a new keystore file, follow: https://developer.android.com/studio/publish/app-signing#generate-key
+- For the existing JKS:
+    - The Android app is signed with a keystore file which is stored as a base 64 encoded string in the Prod KeyVault as Dev-Android-JKS
+    - The password for the keystore is stored in the Prod KeyVault as Dev-android-JKS-Password.
+    - The alias for the key is "upload"
+  - To generate a new Key, extract the base64 keystore file from the KeyVault, and then save it as a KeyStore file using the following powershell command:
+  ``` powershell
+- $base64 = "<base64 string>"
+- $bytes = [Convert]::FromBase64String($base64)
+- [System.IO.File]::WriteAllBytes("C:\temp\Dev-Android-JKS.jks", $bytes)
+  ```
+- Then, open the command prompt and run the following command to generate a new key:
+  ``` cmd
+  keytool -export -rfc -keystore your-upload-keystore.jks -alias upload-alias -file
+  ```
+- Follow the instructions in the link above to set the key for the app in the Google Play Console.
+- Note that the key must be set in the Google Play Console before the app can be uploaded to the Play Store and that changing the key will require a few days for the change to take effect.
+- In order to have the GitHub actions work, you will need to update the following secrets in the GitHub repository in the Test environment:
+  - ANDROID_KEYSTORE_PASSWORD
+  - ANDROID_KEYSTORE
+- The alias is passed into the workflow as a parameter, so it does not need to be updated in the secrets.
 
 ### Production Environment
-- The Android app is signed with a keystore file. 
-- The keystore file is stored ?
-- The password for the keystore is stored in the Prod KeyVault as AndroidSiginingKeyPassword. 
-- The alias for the key is stored in the Prod KeyVault as AndroidSigningAlias. 
-- The key is stored in the Prod KeyVault as AndroidSiginingKey.
+- To generate a new keystore file, follow: https://developer.android.com/studio/publish/app-signing#generate-key
+- For the existing JKS:
+    - The Android app is signed with a keystore file which is stored as a base 64 encoded string in the Prod KeyVault as Prod-Android-JKS (not ready yet)
+    - The password for the keystore is stored in the Prod KeyVault as Dev-android-JKS-Password. (Not ready yet)
+    - The alias for the key is "upload" (Not ready yet)
+  - To generate a new Key, extract the base64 keystore file from the KeyVault, and then save it as a KeyStore file using the following powershell command:
+  ``` powershell
+- $base64 = "<base64 string>"
+- $bytes = [Convert]::FromBase64String($base64)
+- [System.IO.File]::WriteAllBytes("C:\temp\Prod-Android-JKS.jks", $bytes)
+  ```
+- Then, open the command prompt and run the following command to generate a new key:
+  ``` cmd
+  keytool -export -rfc -keystore your-upload-keystore.jks -alias upload-alias -file
+  ```
+- Follow the instructions in the link above to set the key for the app in the Google Play Console.
+- Note that the key must be set in the Google Play Console before the app can be uploaded to the Play Store and that changing the key will require a few days for the change to take effect.
+- In order to have the GitHub actions work, you will need to update the following secrets in the GitHub repository in the Prod environment:
+  - ANDROID_KEYSTORE_PASSWORD
+  - ANDROID_KEYSTORE
+- The alias is passed into the workflow as a parameter, so it does not need to be updated in the secrets.
 
 ## iOS App Signing Instructions
 
@@ -344,3 +375,19 @@ TBD
 
 ### Production Environment
 TBD
+
+## Deployment Instructions - Mobile App
+
+Deploying the mobile app to the app stores is a multi-step process.
+1. The Workflows in GitHub Main are set to deploy an instance of the app to the Test Apple and Google Play store apps. This is done automatically with each push to the Main branch. 
+    1. For the Apple Dev store, go to https://appstoreconnect.apple.com/apps/1661581619/testflight/  ios and ensure there are no pending checks. If there are, the app will not be updated, and users will not get an update email.
+      1. For the Google Play store, go to https://play.google.com/console/u/0/developers/8993160244638881894/app/4973591329514420131/app-dashboard.
+        1. Click on Internal Testing to see the list of version that have been uploaded.
+        1. When the internal testing is complete, click on the Promote to Open Testing button to move the app to the open testing stage
+1. The Workflows in GitHub Release are set to deploy an instance of the app to the Prod Apple and Google Play store apps. This is done automatically with each push to the Release branch.
+  1. For the Apple Prod store, go to https://appstoreconnect.apple.com/apps/1599996743/testflight/ios  and ensure there are no pending checks. If there are, the app will not be updated, and users will not get an update email.
+  1. For the Google Play store, go to https://play.google.com/console/u/0/developers/8993160244638881894/app/4972402459959745838/app-dashboard.
+    1. Click on Internal Testing to see the list of version that have been uploaded.
+    1. When the internal testing is complete, click on the Promote to Open Testing button to move the app to the open testing stage
+1. The app must be manually submitted to the Apple and Google Play stores but only on the Prod stores. This is done by the TrashMob.eco team.
+
