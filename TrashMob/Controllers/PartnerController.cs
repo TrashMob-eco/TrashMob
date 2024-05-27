@@ -1,10 +1,9 @@
 ﻿namespace TrashMob.Controllers
 {
-    using Microsoft.ApplicationInsights;
-    using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
@@ -12,7 +11,7 @@
     [Route("api/partners")]
     public class PartnersController : KeyedController<Partner>
     {
-        public PartnersController(IKeyedManager<Partner> partnerManager) 
+        public PartnersController(IKeyedManager<Partner> partnerManager)
             : base(partnerManager)
         {
         }
@@ -26,7 +25,8 @@
         [HttpPut]
         public async Task<IActionResult> Update(Partner partner, CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
+                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {

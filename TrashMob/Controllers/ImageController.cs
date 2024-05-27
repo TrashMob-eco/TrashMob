@@ -1,9 +1,9 @@
 ﻿namespace TrashMob.Controllers
 {
-    using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
@@ -13,20 +13,22 @@
     [ApiController]
     public class ImageController : SecureController
     {
-        private readonly IImageManager imageManager;
         private readonly IEventManager eventManager;
+        private readonly IImageManager imageManager;
 
-        public ImageController(IImageManager imageManager, IEventManager eventManager) 
+        public ImageController(IImageManager imageManager, IEventManager eventManager)
         {
             this.imageManager = imageManager;
             this.eventManager = eventManager;
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload, CancellationToken cancellationToken)
+        public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload,
+            CancellationToken cancellationToken)
         {
             var mobEvent = eventManager.GetAsync(imageUpload.ParentId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
+            var authResult =
+                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -39,17 +41,16 @@
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteImage(Guid parentId, ImageTypeEnum imageType, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteImage(Guid parentId, ImageTypeEnum imageType,
+            CancellationToken cancellationToken)
         {
             var deleted = await imageManager.DeleteImage(parentId, imageType);
-            if(deleted)
+            if (deleted)
             {
                 return Ok();
             }
-            else
-            {
-                return BadRequest("The image is not deleted");
-            }
+
+            return BadRequest("The image is not deleted");
         }
     }
 }

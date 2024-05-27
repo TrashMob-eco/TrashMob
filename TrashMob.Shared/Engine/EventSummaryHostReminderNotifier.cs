@@ -1,37 +1,37 @@
-﻿
-namespace TrashMob.Shared.Engine
+﻿namespace TrashMob.Shared.Engine
 {
-    using Microsoft.Extensions.Logging;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
     public class EventSummaryHostReminderNotifier : NotificationEngineBase, INotificationEngine
     {
+        public EventSummaryHostReminderNotifier(IEventManager eventManager,
+            IKeyedManager<User> userManager,
+            IEventAttendeeManager eventAttendeeManager,
+            IKeyedManager<UserNotification> userNotificationManager,
+            INonEventUserNotificationManager nonEventUserNotificationManager,
+            IEmailSender emailSender,
+            IEmailManager emailManager,
+            IMapManager mapRepository,
+            ILogger logger) :
+            base(eventManager, userManager, eventAttendeeManager, userNotificationManager,
+                nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
+        {
+        }
+
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.EventSummaryHostReminder;
 
         protected override int MaxNumberOfHoursInWindow => -5;
 
         protected override int MinNumberOfHoursInWindow => -2;
 
-        protected override string EmailSubject => "Your TrashMob.eco event has completed. We'd love to know how it went!";
-
-        public EventSummaryHostReminderNotifier(IEventManager eventManager,
-                                                IKeyedManager<User> userManager,
-                                                IEventAttendeeManager eventAttendeeManager,
-                                                IKeyedManager<UserNotification> userNotificationManager,
-                                                INonEventUserNotificationManager nonEventUserNotificationManager,
-                                                IEmailSender emailSender,
-                                                IEmailManager emailManager,
-                                                IMapManager mapRepository,
-                                                ILogger logger) :
-            base(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
-        {
-        }
+        protected override string EmailSubject =>
+            "Your TrashMob.eco event has completed. We'd love to know how it went!";
 
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
@@ -39,7 +39,7 @@ namespace TrashMob.Shared.Engine
 
             // Get list of users who have notifications turned on for locations
             var users = await UserManager.GetAsync(cancellationToken).ConfigureAwait(false);
-            int notificationCounter = 0;
+            var notificationCounter = 0;
 
             Logger.LogInformation("Generating {0} Notifications for {1} total users", NotificationType, users.Count());
 
@@ -53,7 +53,8 @@ namespace TrashMob.Shared.Engine
 
                 foreach (var mobEvent in events.Where(e => e.CreatedByUserId == user.Id))
                 {
-                    if (await UserHasAlreadyReceivedNotification(user, mobEvent, cancellationToken).ConfigureAwait(false))
+                    if (await UserHasAlreadyReceivedNotification(user, mobEvent, cancellationToken)
+                            .ConfigureAwait(false))
                     {
                         continue;
                     }
@@ -62,7 +63,8 @@ namespace TrashMob.Shared.Engine
                     eventsToNotifyUserFor.Add(mobEvent);
                 }
 
-                notificationCounter += await SendNotifications(user, eventsToNotifyUserFor, cancellationToken).ConfigureAwait(false);
+                notificationCounter += await SendNotifications(user, eventsToNotifyUserFor, cancellationToken)
+                    .ConfigureAwait(false);
             }
 
             Logger.LogInformation("Generating {0} Total {1} Notifications", notificationCounter, NotificationType);

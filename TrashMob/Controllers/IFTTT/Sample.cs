@@ -2,14 +2,6 @@
 {
     public class Sample
     {
-        public IftttTrigger triggers { get; set; }
-        
-        public IftttTriggerFieldValidation triggerFieldValidations { get; set; }
-
-        public IftttAction actions { get; set; }
-
-        public IftttActionRecordSkipping actionRecordSkipping { get; set; }
-
         public Sample()
         {
             triggers = new IftttTrigger();
@@ -17,5 +9,13 @@
             actionRecordSkipping = new IftttActionRecordSkipping();
             triggerFieldValidations = new IftttTriggerFieldValidation();
         }
+
+        public IftttTrigger triggers { get; set; }
+
+        public IftttTriggerFieldValidation triggerFieldValidations { get; set; }
+
+        public IftttAction actions { get; set; }
+
+        public IftttActionRecordSkipping actionRecordSkipping { get; set; }
     }
 }

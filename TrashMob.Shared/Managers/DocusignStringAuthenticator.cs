@@ -1,9 +1,9 @@
 ﻿namespace TrashMob.Shared.Managers
 {
-    using DocuSign.eSign.Client;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using DocuSign.eSign.Client;
     using TrashMob.Shared.Managers.Interfaces;
     using static DocuSign.eSign.Client.Auth.OAuth;
 
@@ -17,10 +17,11 @@
         }
 
         /// <summary>
-        /// Uses Json Web Token (JWT) Authentication Method to obtain the necessary information needed to make API calls.
+        ///     Uses Json Web Token (JWT) Authentication Method to obtain the necessary information needed to make API calls.
         /// </summary>
         /// <returns>Auth token needed for API calls</returns>
-        public OAuthToken AuthenticateWithJWT(string clientId, string impersonatedUserId, string authServer, out string baseUri)
+        public OAuthToken AuthenticateWithJWT(string clientId, string impersonatedUserId, string authServer,
+            out string baseUri)
         {
             baseUri = string.Empty;
 
@@ -29,10 +30,10 @@
 
             var apiClient = new DocuSignClient();
             var scopes = new List<string>
-                {
-                    "signature",
-                    "impersonation",
-                };
+            {
+                "signature",
+                "impersonation",
+            };
 
             var token = apiClient.RequestJWTUserToken(clientId, impersonatedUserId, authServer, privateKey, 1, scopes);
 

@@ -30,7 +30,7 @@
         Task<T> GetAsync(Guid parentId, Guid secondId, CancellationToken cancellationToken);
 
         Task<IEnumerable<T>> GetCollectionAsync(Guid parentId, Guid secondId, CancellationToken cancellationToken);
-        
+
         Task<int> DeleteAsync(Guid parentId, CancellationToken cancellationToken);
 
         Task<int> Delete(Guid parentId, int secondId, CancellationToken cancellationToken);

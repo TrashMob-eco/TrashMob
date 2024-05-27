@@ -1,7 +1,7 @@
 ﻿namespace TrashMob.Shared.Poco
 {
-    using Microsoft.AspNetCore.Http;
     using System;
+    using Microsoft.AspNetCore.Http;
     using TrashMob.Models;
 
     public class ImageUpload

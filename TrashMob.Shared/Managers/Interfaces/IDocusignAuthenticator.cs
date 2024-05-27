@@ -4,6 +4,7 @@
 
     public interface IDocusignAuthenticator
     {
-        OAuthToken AuthenticateWithJWT(string clientId, string impersonatedUserId, string authServer, out string baseUri);
+        OAuthToken AuthenticateWithJWT(string clientId, string impersonatedUserId, string authServer,
+            out string baseUri);
     }
 }

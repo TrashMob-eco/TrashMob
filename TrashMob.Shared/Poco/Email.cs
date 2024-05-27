@@ -1,5 +1,4 @@
-﻿
-namespace TrashMob.Shared.Poco
+﻿namespace TrashMob.Shared.Poco
 {
     using System.Collections.Generic;
 
@@ -12,7 +11,7 @@ namespace TrashMob.Shared.Poco
 
     public class Email
     {
-        public List<EmailAddress> Addresses { get; } = new List<EmailAddress>();
+        public List<EmailAddress> Addresses { get; } = new();
 
         public string Subject { get; set; }
 

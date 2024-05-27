@@ -1,12 +1,11 @@
 namespace TrashMob.Shared.Managers.Interfaces
-{    
+{
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using System.Threading;
+    using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
-    using TrashMob.Shared.Poco;
 
     public interface ILitterReportManager : IKeyedManager<LitterReport>
     {
@@ -16,15 +15,19 @@ namespace TrashMob.Shared.Managers.Interfaces
 
         Task<IEnumerable<LitterReport>> GetCleanedLitterReportsAsync(CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<LitterReport>> GetNotCancelledLitterReportsAsync(CancellationToken cancellationToken = default);
+        Task<IEnumerable<LitterReport>>
+            GetNotCancelledLitterReportsAsync(CancellationToken cancellationToken = default);
 
         Task<IEnumerable<LitterReport>> GetCancelledLitterReportsAsync(CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<LitterReport>> GetUserLitterReportsAsync(Guid userId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<LitterReport>> GetUserLitterReportsAsync(Guid userId,
+            CancellationToken cancellationToken = default);
 
-        public Task<IEnumerable<LitterReport>> GetFilteredLitterReportsAsync(LitterReportFilter filter, CancellationToken cancellationToken = default);
+        public Task<IEnumerable<LitterReport>> GetFilteredLitterReportsAsync(LitterReportFilter filter,
+            CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<Location>> GeLitterLocationsByTimeRangeAsync(DateTimeOffset? startTime, DateTimeOffset? endTime, CancellationToken cancellationToken=default);
+        Task<IEnumerable<Location>> GeLitterLocationsByTimeRangeAsync(DateTimeOffset? startTime,
+            DateTimeOffset? endTime, CancellationToken cancellationToken = default);
 
         Task<int> DeleteAsync(Guid id, Guid userId, CancellationToken cancellationToken = default);
     }

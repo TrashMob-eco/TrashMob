@@ -17,12 +17,14 @@
     {
         private readonly IKeyedRepository<Event> eventRepository;
 
-        public TriggersManager(IBaseRepository<IftttTrigger> repository, IKeyedRepository<Event> eventRepository) : base(repository)
+        public TriggersManager(IBaseRepository<IftttTrigger> repository, IKeyedRepository<Event> eventRepository) :
+            base(repository)
         {
             this.eventRepository = eventRepository;
         }
 
-        public async Task<List<IftttEventResponse>> GetEventsTriggerDataAsync(TriggersRequest triggersRequest, Guid userId, CancellationToken cancellationToken)
+        public async Task<List<IftttEventResponse>> GetEventsTriggerDataAsync(TriggersRequest triggersRequest,
+            Guid userId, CancellationToken cancellationToken)
         {
             if (triggersRequest == null)
             {
@@ -33,9 +35,9 @@
             var trigger = Repository.Get(t => t.TriggerId == triggersRequest.trigger_identity).FirstOrDefault();
 
             // Store Trigger in database if it does not exist
-            if (trigger == null)       
+            if (trigger == null)
             {
-                trigger = new IftttTrigger()
+                trigger = new IftttTrigger
                 {
                     TriggerId = triggersRequest.trigger_identity,
                     CreatedByUserId = userId,
@@ -63,23 +65,25 @@
             }
             else
             {
-                events = eventRepository.Get(e => (e.City == eventFields.city || string.IsNullOrWhiteSpace(eventFields.city)) &&
-                                                      (e.Region == eventFields.region || string.IsNullOrWhiteSpace(eventFields.region)) &&
-                                                      (e.Country == eventFields.country || string.IsNullOrWhiteSpace(eventFields.country)) &&
-                                                      (e.PostalCode == eventFields.postal_code || string.IsNullOrWhiteSpace(eventFields.postal_code)));
+                events = eventRepository.Get(e =>
+                    (e.City == eventFields.city || string.IsNullOrWhiteSpace(eventFields.city)) &&
+                    (e.Region == eventFields.region || string.IsNullOrWhiteSpace(eventFields.region)) &&
+                    (e.Country == eventFields.country || string.IsNullOrWhiteSpace(eventFields.country)) &&
+                    (e.PostalCode == eventFields.postal_code || string.IsNullOrWhiteSpace(eventFields.postal_code)));
             }
 
-            
+
             var triggersResponses = new List<IftttEventResponse>();
 
             // Get all the public events in the future
-            foreach (var mobEvent in events.Where(e => e.IsEventPublic && e.EventDate >= DateTimeOffset.UtcNow).ToList().OrderByDescending(e => e.CreatedDate).Take(triggersRequest.limit))
+            foreach (var mobEvent in events.Where(e => e.IsEventPublic && e.EventDate >= DateTimeOffset.UtcNow).ToList()
+                         .OrderByDescending(e => e.CreatedDate).Take(triggersRequest.limit))
             {
                 var triggersResponse = new IftttEventResponse();
-                triggersResponse.meta = new MetaResponse()
+                triggersResponse.meta = new MetaResponse
                 {
                     id = mobEvent.Id.ToString(),
-                    timestamp = mobEvent.CreatedDate.Value.ToUnixTimeSeconds()
+                    timestamp = mobEvent.CreatedDate.Value.ToUnixTimeSeconds(),
                 };
 
                 triggersResponse.event_id = mobEvent.Id.ToString();
@@ -108,9 +112,9 @@
                     {
                         new
                         {
-                            message = "triggerFields missing from request body."
-                        }
-                    }
+                            message = "triggerFields missing from request body.",
+                        },
+                    },
                 };
 
                 return error;
@@ -126,9 +130,9 @@
                     {
                         new
                         {
-                            message = "triggerFields must have country."
-                        }
-                    }
+                            message = "triggerFields must have country.",
+                        },
+                    },
                 };
 
                 return error;
@@ -142,9 +146,9 @@
                     {
                         new
                         {
-                            message = "triggerFields must have region."
-                        }
-                    }
+                            message = "triggerFields must have region.",
+                        },
+                    },
                 };
 
                 return error;
@@ -158,9 +162,9 @@
                     {
                         new
                         {
-                            message = "triggerFields must have city."
-                        }
-                    }
+                            message = "triggerFields must have city.",
+                        },
+                    },
                 };
 
                 return error;
@@ -174,9 +178,9 @@
                     {
                         new
                         {
-                            message = "triggerFields must have postal_code."
-                        }
-                    }
+                            message = "triggerFields must have postal_code.",
+                        },
+                    },
                 };
 
                 return error;

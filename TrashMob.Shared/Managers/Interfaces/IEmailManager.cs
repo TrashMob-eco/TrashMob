@@ -7,7 +7,8 @@
 
     public interface IEmailManager
     {
-        Task SendTemplatedEmailAsync(string subject, string templateId, int groupId, object dynamicTemplateData, List<EmailAddress> recipients, CancellationToken cancellationToken);
+        Task SendTemplatedEmailAsync(string subject, string templateId, int groupId, object dynamicTemplateData,
+            List<EmailAddress> recipients, CancellationToken cancellationToken);
 
         string GetHtmlEmailCopy(string notificationType);
 

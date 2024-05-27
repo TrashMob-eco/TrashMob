@@ -1,5 +1,4 @@
-﻿
-namespace TrashMob.Controllers
+﻿namespace TrashMob.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;

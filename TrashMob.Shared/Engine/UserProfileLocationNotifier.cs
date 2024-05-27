@@ -1,36 +1,36 @@
-﻿
-namespace TrashMob.Shared.Engine
+﻿namespace TrashMob.Shared.Engine
 {
-    using Microsoft.Extensions.Logging;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Linq;
+    using Microsoft.Extensions.Logging;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
     public class UserProfileLocationNotifier : NotificationEngineBase
     {
+        public UserProfileLocationNotifier(IEventManager eventManager,
+            IKeyedManager<User> userManager,
+            IEventAttendeeManager eventAttendeeManager,
+            IKeyedManager<UserNotification> userNotificationManager,
+            INonEventUserNotificationManager nonEventUserNotificationManager,
+            IEmailSender emailSender,
+            IEmailManager emailManager,
+            IMapManager mapRepository,
+            ILogger logger) :
+            base(eventManager, userManager, eventAttendeeManager, userNotificationManager,
+                nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
+        {
+        }
+
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UserProfileUpdateLocation;
 
         protected override int MaxNumberOfHoursInWindow => 24;
 
         protected override int MinNumberOfHoursInWindow => 2;
 
-        protected override string EmailSubject => "Set your User Location in TrashMob to get Upcoming Event Notifications!";
-
-        public UserProfileLocationNotifier(IEventManager eventManager, 
-                                           IKeyedManager<User> userManager, 
-                                           IEventAttendeeManager eventAttendeeManager,
-                                           IKeyedManager<UserNotification> userNotificationManager,
-                                           INonEventUserNotificationManager nonEventUserNotificationManager,
-                                           IEmailSender emailSender,
-                                           IEmailManager emailManager,
-                                           IMapManager mapRepository,
-                                           ILogger logger) : 
-            base(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
-        {
-
-        }
+        protected override string EmailSubject =>
+            "Set your User Location in TrashMob to get Upcoming Event Notifications!";
 
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
@@ -38,8 +38,8 @@ namespace TrashMob.Shared.Engine
 
             // Get list of all users
             var users = await UserManager.GetAsync(cancellationToken).ConfigureAwait(false);
-            
-            int notificationCounter = 0;
+
+            var notificationCounter = 0;
 
             Logger.LogInformation("Generating {0} Notifications for {1} total users", NotificationType, users.Count());
 
@@ -48,7 +48,8 @@ namespace TrashMob.Shared.Engine
             {
                 if (await UserHasAlreadyReceivedNotification(user, cancellationToken).ConfigureAwait(false))
                 {
-                    Logger.LogInformation("User {0} has already received notification {1}. Skipping.", user.Id, NotificationType);
+                    Logger.LogInformation("User {0} has already received notification {1}. Skipping.", user.Id,
+                        NotificationType);
                     continue;
                 }
 
@@ -61,8 +62,9 @@ namespace TrashMob.Shared.Engine
                         notificationCounter += await SendNotification(user, cancellationToken).ConfigureAwait(false);
                     }
                     else
-                    {                       
-                        Logger.LogInformation("User {0} has not set their location. We're in debug mode so skipping.", user.Id);
+                    {
+                        Logger.LogInformation("User {0} has not set their location. We're in debug mode so skipping.",
+                            user.Id);
                     }
                 }
             }

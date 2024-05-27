@@ -1,9 +1,9 @@
 ﻿namespace TrashMob.Shared.Managers
 {
-    using Azure.Security.KeyVault.Secrets;
     using System;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+    using Azure.Security.KeyVault.Secrets;
     using TrashMob.Shared.Managers.Interfaces;
 
     public class KeyVaultManager : IKeyVaultManager
@@ -21,11 +21,13 @@
 
             if (secret == null)
             {
-                throw new InvalidOperationException($"Unable to find certificate with secret name {certificateSecretName}");
+                throw new InvalidOperationException(
+                    $"Unable to find certificate with secret name {certificateSecretName}");
             }
 
             var pfxBytes = Convert.FromBase64String(secret.Value.Value);
-            return new X509Certificate2(pfxBytes, string.Empty, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.EphemeralKeySet);
+            return new X509Certificate2(pfxBytes, string.Empty,
+                X509KeyStorageFlags.Exportable | X509KeyStorageFlags.EphemeralKeySet);
         }
 
         public string GetSecret(string secretName)

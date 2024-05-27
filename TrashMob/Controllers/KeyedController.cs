@@ -1,23 +1,22 @@
 ﻿namespace TrashMob.Controllers
 {
-    using Microsoft.ApplicationInsights;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
 
     public abstract class KeyedController<T> : SecureController where T : KeyedModel
     {
-        protected IKeyedManager<T> Manager { get; }
-
-        public KeyedController(IKeyedManager<T> manager) : base()
+        public KeyedController(IKeyedManager<T> manager)
         {
             Manager = manager;
         }
+
+        protected IKeyedManager<T> Manager { get; }
 
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
@@ -45,7 +44,8 @@
         {
             var entity = Manager.GetAsync(id, cancellationToken);
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, entity, AuthorizationPolicyConstants.UserOwnsEntity);
+            var authResult =
+                await AuthorizationService.AuthorizeAsync(User, entity, AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {

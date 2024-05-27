@@ -1,5 +1,4 @@
-﻿
-namespace TrashMob.Shared.Engine
+﻿namespace TrashMob.Shared.Engine
 {
     using Microsoft.Extensions.Logging;
     using TrashMob.Models;
@@ -7,6 +6,20 @@ namespace TrashMob.Shared.Engine
 
     public class UpcomingEventHostingSoonNotifier : UpcomingEventHostingBaseNotifier, INotificationEngine
     {
+        public UpcomingEventHostingSoonNotifier(IEventManager eventManager,
+            IKeyedManager<User> userManager,
+            IEventAttendeeManager eventAttendeeManager,
+            IKeyedManager<UserNotification> userNotificationManager,
+            INonEventUserNotificationManager nonEventUserNotificationManager,
+            IEmailSender emailSender,
+            IEmailManager emailManager,
+            IMapManager mapRepository,
+            ILogger logger) :
+            base(eventManager, userManager, eventAttendeeManager, userNotificationManager,
+                nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
+        {
+        }
+
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UpcomingEventHostingSoon;
 
         protected override int MaxNumberOfHoursInWindow => 24;
@@ -14,18 +27,5 @@ namespace TrashMob.Shared.Engine
         protected override int MinNumberOfHoursInWindow => 1;
 
         protected override string EmailSubject => "You're hosting a TrashMob.eco event soon!";
-
-        public UpcomingEventHostingSoonNotifier(IEventManager eventManager, 
-                                                IKeyedManager<User> userManager,
-                                                IEventAttendeeManager eventAttendeeManager, 
-                                                IKeyedManager<UserNotification> userNotificationManager,
-                                                INonEventUserNotificationManager nonEventUserNotificationManager,
-                                                IEmailSender emailSender,
-                                                IEmailManager emailManager,
-                                                IMapManager mapRepository,
-                                                ILogger logger) :
-            base(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
-        {
-        }
     }
 }

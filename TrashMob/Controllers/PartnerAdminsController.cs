@@ -1,13 +1,12 @@
 ﻿namespace TrashMob.Controllers
 {
-    using Microsoft.ApplicationInsights;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
@@ -22,9 +21,8 @@
         private readonly IKeyedManager<User> userManager;
 
         public PartnerAdminsController(IKeyedManager<User> userManager,
-                                       IPartnerAdminManager partnerAdminManager, 
-                                       IKeyedManager<Partner> partnerManager)
-            : base()
+            IPartnerAdminManager partnerAdminManager,
+            IKeyedManager<Partner> partnerManager)
         {
             this.partnerManager = partnerManager;
             this.userManager = userManager;
@@ -35,7 +33,8 @@
         public async Task<IActionResult> GetPartnerAdmins(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
+                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -54,17 +53,21 @@
         }
 
         [HttpGet("{partnerId}/{userId}")]
-        public async Task<IActionResult> GetPartnerUser(Guid partnerId, Guid userId, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetPartnerUser(Guid partnerId, Guid userId,
+            CancellationToken cancellationToken = default)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
+                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
 
-            var partnerUser = (await partnerAdminManager.GetByParentIdAsync(partnerId, cancellationToken)).FirstOrDefault(pu => pu.UserId == userId);
+            var partnerUser =
+                (await partnerAdminManager.GetByParentIdAsync(partnerId, cancellationToken)).FirstOrDefault(pu =>
+                    pu.UserId == userId);
 
             if (partnerUser == null)
             {
@@ -78,7 +81,8 @@
         public async Task<IActionResult> GetUsers(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
+                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -104,27 +108,29 @@
         }
 
         [HttpPost("{partnerId}/{userId}")]
-
-        public async Task<IActionResult> AddPartnerUser(Guid partnerId, Guid userId, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddPartnerUser(Guid partnerId, Guid userId,
+            CancellationToken cancellationToken)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
+                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
 
-            var partnerUser = new PartnerAdmin()
+            var partnerUser = new PartnerAdmin
             {
                 PartnerId = partnerId,
                 UserId = userId,
                 CreatedByUserId = UserId,
-                LastUpdatedByUserId = UserId
+                LastUpdatedByUserId = UserId,
             };
 
-            var result = await partnerAdminManager.AddAsync(partnerUser, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await partnerAdminManager.AddAsync(partnerUser, UserId, cancellationToken)
+                .ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddPartnerUser));
 
             return CreatedAtAction(nameof(GetPartnerUser), new { partnerId, userId }, result);

@@ -1,12 +1,11 @@
-﻿
-namespace TrashMob.Shared.Engine
+﻿namespace TrashMob.Shared.Engine
 {
-    using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
@@ -14,28 +13,30 @@ namespace TrashMob.Shared.Engine
     {
         private readonly IBaseManager<EventSummary> eventSummaryManager;
 
+        public EventSummaryHostWeekReminderNotifier(IEventManager eventManager,
+            IKeyedManager<User> userManager,
+            IEventAttendeeManager eventAttendeeManager,
+            IKeyedManager<UserNotification> userNotificationManager,
+            INonEventUserNotificationManager nonEventUserNotificationManager,
+            IEmailSender emailSender,
+            IEmailManager emailManager,
+            IMapManager mapRepository,
+            IBaseManager<EventSummary> eventSummaryManager,
+            ILogger logger) :
+            base(eventManager, userManager, eventAttendeeManager, userNotificationManager,
+                nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
+        {
+            this.eventSummaryManager = eventSummaryManager;
+        }
+
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.EventSummaryHostWeekReminder;
 
         protected override int MaxNumberOfHoursInWindow => -5;
 
         protected override int MinNumberOfHoursInWindow => -2;
 
-        protected override string EmailSubject => "Thanks for leading a TrashMob.eco event! We'd love to know how it went!";
-
-        public EventSummaryHostWeekReminderNotifier(IEventManager eventManager, 
-                                                IKeyedManager<User> userManager, 
-                                                IEventAttendeeManager eventAttendeeManager,
-                                                IKeyedManager<UserNotification> userNotificationManager,
-                                                INonEventUserNotificationManager nonEventUserNotificationManager,
-                                                IEmailSender emailSender,
-                                                IEmailManager emailManager,
-                                                IMapManager mapRepository,
-                                                IBaseManager<EventSummary> eventSummaryManager,
-                                                ILogger logger) :
-            base(eventManager, userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
-        {
-            this.eventSummaryManager = eventSummaryManager;
-        }
+        protected override string EmailSubject =>
+            "Thanks for leading a TrashMob.eco event! We'd love to know how it went!";
 
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
@@ -43,7 +44,7 @@ namespace TrashMob.Shared.Engine
 
             // Get list of users who have notifications turned on for locations
             var users = await UserManager.GetAsync(cancellationToken).ConfigureAwait(false);
-            int notificationCounter = 0;
+            var notificationCounter = 0;
 
             Logger.LogInformation("Generating {0} Notifications for {1} total users", NotificationType, users.Count());
 
@@ -57,7 +58,8 @@ namespace TrashMob.Shared.Engine
 
                 foreach (var mobEvent in events.Where(e => e.CreatedByUserId == user.Id))
                 {
-                    if (await UserHasAlreadyReceivedNotification(user, mobEvent, cancellationToken).ConfigureAwait(false))
+                    if (await UserHasAlreadyReceivedNotification(user, mobEvent, cancellationToken)
+                            .ConfigureAwait(false))
                     {
                         continue;
                     }
@@ -68,7 +70,8 @@ namespace TrashMob.Shared.Engine
                         continue;
                     }
 
-                    var eventSummary = await eventSummaryManager.GetAsync(es => es.EventId == mobEvent.Id, cancellationToken).ConfigureAwait(false);
+                    var eventSummary = await eventSummaryManager
+                        .GetAsync(es => es.EventId == mobEvent.Id, cancellationToken).ConfigureAwait(false);
 
                     // Only send an email if the summary has not been completed.
                     if (eventSummary?.FirstOrDefault() == null)
@@ -78,7 +81,8 @@ namespace TrashMob.Shared.Engine
                     }
                 }
 
-                notificationCounter += await SendNotifications(user, eventsToNotifyUserFor, cancellationToken).ConfigureAwait(false);
+                notificationCounter += await SendNotifications(user, eventsToNotifyUserFor, cancellationToken)
+                    .ConfigureAwait(false);
             }
 
             Logger.LogInformation("Generating {0} Total {1} Notifications", notificationCounter, NotificationType);

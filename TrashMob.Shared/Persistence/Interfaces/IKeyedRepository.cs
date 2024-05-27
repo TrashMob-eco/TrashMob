@@ -6,7 +6,7 @@
     using TrashMob.Models;
 
     /// <summary>
-    /// Generic IRepository to cut down on boilerplate code
+    ///     Generic IRepository to cut down on boilerplate code
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface IKeyedRepository<T> : IBaseRepository<T> where T : KeyedModel

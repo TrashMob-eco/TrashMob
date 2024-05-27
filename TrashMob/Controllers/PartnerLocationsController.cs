@@ -1,12 +1,11 @@
 ﻿namespace TrashMob.Controllers
 {
-    using Microsoft.ApplicationInsights;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
@@ -19,8 +18,7 @@
         private readonly IKeyedManager<Partner> partnerManager;
 
         public PartnerLocationsController(IPartnerLocationManager partnerLocationManager,
-                                          IKeyedManager<Partner> partnerManager)
-            : base()
+            IKeyedManager<Partner> partnerManager)
         {
             this.partnerLocationManager = partnerLocationManager;
             this.partnerManager = partnerManager;
@@ -34,9 +32,12 @@
         }
 
         [HttpGet("{partnerLocationId}")]
-        public async Task<IActionResult> GetPartnerLocation(Guid partnerLocationId, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetPartnerLocation(Guid partnerLocationId,
+            CancellationToken cancellationToken = default)
         {
-            var partnerLocation = (await partnerLocationManager.GetAsync(pl => pl.Id == partnerLocationId, cancellationToken)).FirstOrDefault();
+            var partnerLocation =
+                (await partnerLocationManager.GetAsync(pl => pl.Id == partnerLocationId, cancellationToken))
+                .FirstOrDefault();
 
             if (partnerLocation == null)
             {
@@ -47,28 +48,34 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPartnerLocation(PartnerLocation partnerLocation, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddPartnerLocation(PartnerLocation partnerLocation,
+            CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerLocation.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
+                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
 
-            var result = await partnerLocationManager.AddAsync(partnerLocation, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await partnerLocationManager.AddAsync(partnerLocation, UserId, cancellationToken)
+                .ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddPartnerLocation));
 
             return CreatedAtAction(nameof(GetPartnerLocation), new { partnerLocationId = partnerLocation.Id }, result);
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdatePartnerLocation(PartnerLocation partnerLocation, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdatePartnerLocation(PartnerLocation partnerLocation,
+            CancellationToken cancellationToken)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
-            var partner = await partnerLocationManager.GetPartnerForLocationAsync(partnerLocation.Id, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            var partner =
+                await partnerLocationManager.GetPartnerForLocationAsync(partnerLocation.Id, cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
+                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -82,10 +89,12 @@
         }
 
         [HttpDelete("{partnerLocationId}")]
-        public async Task<IActionResult> DeletePartnerLocation(Guid partnerLocationId, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeletePartnerLocation(Guid partnerLocationId,
+            CancellationToken cancellationToken)
         {
             var partner = await partnerLocationManager.GetPartnerForLocationAsync(partnerLocationId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
+                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {

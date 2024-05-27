@@ -1,10 +1,9 @@
 ﻿namespace TrashMob.Controllers
 {
-    using Microsoft.ApplicationInsights;
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
-    using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Security;
     using TrashMob.Shared;
@@ -15,7 +14,7 @@
     {
         private readonly IMessageRequestManager messageRequestManager;
 
-        public MessageRequestController(IMessageRequestManager messageRequestManager) : base()
+        public MessageRequestController(IMessageRequestManager messageRequestManager)
         {
             this.messageRequestManager = messageRequestManager;
         }

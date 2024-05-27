@@ -1,14 +1,14 @@
 ﻿namespace TrashMob.Controllers.IFTTT
 {
-    using Microsoft.AspNetCore.Mvc;
     using System.Threading;
     using System.Threading.Tasks;
-    using TrashMob.Shared.Poco.IFTTT;
-    using TrashMob.Shared.Managers.Interfaces;
-    using Microsoft.Identity.Web.Resource;
-    using TrashMob.Shared;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Identity.Web.Resource;
     using TrashMob.Security;
+    using TrashMob.Shared;
+    using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco.IFTTT;
 
     [Route("api/ifttt/v1/[controller]")]
     [RequiredScope(Constants.TrashMobIFTTTScope)]
@@ -35,7 +35,7 @@
 
             var events = await triggersManager.GetEventsTriggerDataAsync(triggersRequest, UserId, cancellationToken);
 
-            var response = new DataResponse()
+            var response = new DataResponse
             {
                 Data = events,
             };
@@ -45,7 +45,8 @@
 
         [HttpPost("new_event_created_by_country")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
-        public async Task<ActionResult> GetByCountry(TriggersRequest triggersRequest, CancellationToken cancellationToken)
+        public async Task<ActionResult> GetByCountry(TriggersRequest triggersRequest,
+            CancellationToken cancellationToken)
         {
             var error = triggersManager.ValidateRequest(triggersRequest, EventRequestType.ByCountry);
 
@@ -56,7 +57,7 @@
 
             var events = await triggersManager.GetEventsTriggerDataAsync(triggersRequest, UserId, cancellationToken);
 
-            var response = new DataResponse()
+            var response = new DataResponse
             {
                 Data = events,
             };
@@ -66,7 +67,8 @@
 
         [HttpPost("new_event_created_by_region")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
-        public async Task<ActionResult> GetByRegion(TriggersRequest triggersRequest, CancellationToken cancellationToken)
+        public async Task<ActionResult> GetByRegion(TriggersRequest triggersRequest,
+            CancellationToken cancellationToken)
         {
             var error = triggersManager.ValidateRequest(triggersRequest, EventRequestType.ByRegion);
 
@@ -77,7 +79,7 @@
 
             var events = await triggersManager.GetEventsTriggerDataAsync(triggersRequest, UserId, cancellationToken);
 
-            var response = new DataResponse()
+            var response = new DataResponse
             {
                 Data = events,
             };
@@ -98,7 +100,7 @@
 
             var events = await triggersManager.GetEventsTriggerDataAsync(triggersRequest, UserId, cancellationToken);
 
-            var response = new DataResponse()
+            var response = new DataResponse
             {
                 Data = events,
             };
@@ -108,7 +110,8 @@
 
         [HttpPost("new_event_created_by_postal_code")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
-        public async Task<ActionResult> GetByPostalCode(TriggersRequest triggersRequest, CancellationToken cancellationToken)
+        public async Task<ActionResult> GetByPostalCode(TriggersRequest triggersRequest,
+            CancellationToken cancellationToken)
         {
             var error = triggersManager.ValidateRequest(triggersRequest, EventRequestType.ByPostalCode);
 
@@ -119,7 +122,7 @@
 
             var events = await triggersManager.GetEventsTriggerDataAsync(triggersRequest, UserId, cancellationToken);
 
-            var response = new DataResponse()
+            var response = new DataResponse
             {
                 Data = events,
             };

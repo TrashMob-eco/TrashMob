@@ -1,33 +1,33 @@
-﻿
-namespace TrashMob.Shared.Managers
+﻿namespace TrashMob.Shared.Managers
 {
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
+    using System.IO;
+    using System.Threading;
+    using System.Threading.Tasks;
     using DocuSign.eSign.Api;
     using DocuSign.eSign.Client;
     using DocuSign.eSign.Model;
-    using static DocuSign.eSign.Client.Auth.OAuth;
-    using System.IO;
-    using System.Threading.Tasks;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
-    using System.Threading;
+    using static DocuSign.eSign.Client.Auth.OAuth;
 
     public class DocusignManager : IDocusignManager
     {
         private readonly IConfiguration configuration;
-        private readonly ILogger<DocusignManager> logger;
         private readonly IDocusignAuthenticator docusignAuthenticator;
-        private string clientId;
-        private string impersonatedUserId;
-        private string authServer;
-        private string accountId;
+        private readonly ILogger<DocusignManager> logger;
+        private readonly string accountId;
+        private readonly string authServer;
         private string basePath;
-        private string redirectHome;
+        private readonly string clientId;
+        private readonly string impersonatedUserId;
+        private readonly string redirectHome;
 
-        public DocusignManager(IConfiguration configuration, ILogger<DocusignManager> logger, IDocusignAuthenticator docusignAuthenticator)
+        public DocusignManager(IConfiguration configuration, ILogger<DocusignManager> logger,
+            IDocusignAuthenticator docusignAuthenticator)
         {
             this.configuration = configuration;
             this.logger = logger;
@@ -47,7 +47,9 @@ namespace TrashMob.Shared.Managers
 
             try
             {
-                accessToken = docusignAuthenticator.AuthenticateWithJWT(clientId, impersonatedUserId, authServer, out localBaseUri);
+                accessToken =
+                    docusignAuthenticator.AuthenticateWithJWT(clientId, impersonatedUserId, authServer,
+                        out localBaseUri);
             }
             catch (Exception ex)
             {
@@ -55,8 +57,9 @@ namespace TrashMob.Shared.Managers
                 if (ex.Message.Contains("consent_required"))
                 {
                     // build a URL to provide consent for this Integratio Key and this userId
-                    string url = "https://" + authServer + "/oauth/auth?response_type=code^&scope=impersonation%20signature&client_id=" +
-                                clientId + "&redirect_uri=" + redirectHome;
+                    var url = "https://" + authServer +
+                              "/oauth/auth?response_type=code^&scope=impersonation%20signature&client_id=" +
+                              clientId + "&redirect_uri=" + redirectHome;
                     logger.LogError($"Consent is required - launch browser (URL is {url})");
                 }
 
@@ -71,56 +74,101 @@ namespace TrashMob.Shared.Managers
             var apiClient = new DocuSignClient(basePath);
             apiClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + accessToken.access_token);
 
-            string docxDocument = "Docusign\\TrashMob_Volunteer_Waiver_V2.docx";
+            var docxDocument = "Docusign\\TrashMob_Volunteer_Waiver_V2.docx";
 
-            EnvelopesApi envelopesApi = new EnvelopesApi(apiClient);
+            var envelopesApi = new EnvelopesApi(apiClient);
 
-            EnvelopeDefinition envelope = MakeEnvelope(envelopeRequest.SignerEmail, envelopeRequest.SignerName, envelopeRequest.CreatedByUserId, docxDocument);
-            EnvelopeSummary result = envelopesApi.CreateEnvelope(accountId, envelope);
+            var envelope = MakeEnvelope(envelopeRequest.SignerEmail, envelopeRequest.SignerName,
+                envelopeRequest.CreatedByUserId, docxDocument);
+            var result = envelopesApi.CreateEnvelope(accountId, envelope);
 
             var envelopeId = result.EnvelopeId;
             var returnUrl = envelopeRequest.ReturnUrl + "/" + envelopeId;
 
             // Step 3. create the recipient view, the Signing Ceremony
-            RecipientViewRequest viewRequest = MakeRecipientViewRequest(envelopeRequest.SignerEmail, envelopeRequest.SignerName, returnUrl, envelopeRequest.CreatedByUserId, envelopeRequest.PingUrl);
+            var viewRequest = MakeRecipientViewRequest(envelopeRequest.SignerEmail, envelopeRequest.SignerName,
+                returnUrl, envelopeRequest.CreatedByUserId, envelopeRequest.PingUrl);
 
             // call the CreateRecipientView API
-            ViewUrl results1 = envelopesApi.CreateRecipientView(accountId, envelopeId, viewRequest);
+            var results1 = envelopesApi.CreateRecipientView(accountId, envelopeId, viewRequest);
 
             // Step 4. Redirect the user to the Signing Ceremony
             // Don't use an iFrame!
             // State can be stored/recovered using the framework's session or a
             // query parameter on the returnUrl (see the makeRecipientViewRequest method)
-            string redirectUrl = results1.Url;
+            var redirectUrl = results1.Url;
 
             // returning both the envelopeId as well as the url to be used for embedded signing
             return new EnvelopeResponse
             {
                 EnvelopeId = envelopeId,
-                RedirectUrl = redirectUrl
+                RedirectUrl = redirectUrl,
             };
         }
 
-        private static EnvelopeDefinition MakeEnvelope(string signerEmail, string signerName, Guid signerClientId, string docxDocument)
+        public async Task<string> GetEnvelopeStatusAsync(string envelopeId,
+            CancellationToken cancellationToken = default)
         {
-            string docxDocumentBytes = Convert.ToBase64String(File.ReadAllBytes(docxDocument));
+            OAuthToken accessToken;
+            string localBaseUri;
 
-            EnvelopeDefinition env = new EnvelopeDefinition
+            try
             {
-                EmailSubject = "TrashMob.eco Volunteer Waiver"
+                accessToken =
+                    docusignAuthenticator.AuthenticateWithJWT(clientId, impersonatedUserId, authServer,
+                        out localBaseUri);
+            }
+            catch (Exception ex)
+            {
+                // Consent for impersonation must be obtained to use JWT Grant
+                if (ex.Message.Contains("consent_required"))
+                {
+                    // build a URL to provide consent for this Integratio Key and this userId
+                    var url = "https://" + authServer +
+                              "/oauth/auth?response_type=code^&scope=impersonation%20signature&client_id=" +
+                              clientId + "&redirect_uri=" + redirectHome;
+                    logger.LogError($"Consent is required - launch browser (URL is {url})");
+                }
+
+                throw;
+            }
+
+            if (!string.IsNullOrWhiteSpace(localBaseUri))
+            {
+                basePath = localBaseUri;
+            }
+
+            var apiClient = new DocuSignClient(basePath);
+            apiClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + accessToken.access_token);
+
+            var envelopesApi = new EnvelopesApi(apiClient);
+
+            var envelope = await envelopesApi.GetEnvelopeAsync(accountId, envelopeId);
+
+            return envelope.Status;
+        }
+
+        private static EnvelopeDefinition MakeEnvelope(string signerEmail, string signerName, Guid signerClientId,
+            string docxDocument)
+        {
+            var docxDocumentBytes = Convert.ToBase64String(File.ReadAllBytes(docxDocument));
+
+            var env = new EnvelopeDefinition
+            {
+                EmailSubject = "TrashMob.eco Volunteer Waiver",
             };
 
-            Document waiverDoc = new Document
+            var waiverDoc = new Document
             {
                 DocumentBase64 = docxDocumentBytes,
                 Name = "Waiver", // can be different from actual file name
                 FileExtension = "docx",
-                DocumentId = "1"
+                DocumentId = "1",
             };
 
             env.Documents = new List<Document> { waiverDoc };
 
-            Signer signer = new Signer
+            var signer = new Signer
             {
                 Email = signerEmail,
                 Name = signerName,
@@ -129,7 +177,7 @@ namespace TrashMob.Shared.Managers
                 ClientUserId = signerClientId.ToString(),
             };
 
-            SignHere signHere = new SignHere
+            var signHere = new SignHere
             {
                 AnchorString = "/sn1/",
                 AnchorUnits = "pixels",
@@ -138,7 +186,7 @@ namespace TrashMob.Shared.Managers
                 ScaleValue = "1.5",
             };
 
-            FullName fullName = new FullName
+            var fullName = new FullName
             {
                 AnchorString = "/fn1/",
                 AnchorUnits = "pixels",
@@ -148,7 +196,7 @@ namespace TrashMob.Shared.Managers
                 FontSize = "Size12",
             };
 
-            DateSigned dateSigned = new DateSigned
+            var dateSigned = new DateSigned
             {
                 AnchorString = "/ds1/",
                 AnchorUnits = "pixels",
@@ -158,7 +206,7 @@ namespace TrashMob.Shared.Managers
                 FontSize = "Size12",
             };
 
-            Tabs signerTabs = new Tabs
+            var signerTabs = new Tabs
             {
                 SignHereTabs = new List<SignHere> { signHere },
                 FullNameTabs = new List<FullName> { fullName },
@@ -168,7 +216,7 @@ namespace TrashMob.Shared.Managers
             signer.Tabs = signerTabs;
 
             // Add the recipients to the envelope object
-            Recipients recipients = new Recipients
+            var recipients = new Recipients
             {
                 Signers = new List<Signer> { signer },
             };
@@ -179,7 +227,8 @@ namespace TrashMob.Shared.Managers
             return env;
         }
 
-        private static RecipientViewRequest MakeRecipientViewRequest(string signerEmail, string signerName, string returnUrl, Guid signerClientId, string pingUrl = null)
+        private static RecipientViewRequest MakeRecipientViewRequest(string signerEmail, string signerName,
+            string returnUrl, Guid signerClientId, string pingUrl = null)
         {
             // Data for this method
             // signerEmail 
@@ -188,7 +237,7 @@ namespace TrashMob.Shared.Managers
             // signerClientId -- class global
             // dsReturnUrl -- class global
 
-            RecipientViewRequest viewRequest = new RecipientViewRequest();
+            var viewRequest = new RecipientViewRequest();
             // Set the url where you want the recipient to go once they are done signing
             // should typically be a callback route somewhere in your app.
             // The query parameter is included as an example of how
@@ -223,44 +272,6 @@ namespace TrashMob.Shared.Managers
             }
 
             return viewRequest;
-        }
-
-        public async Task<string> GetEnvelopeStatusAsync(string envelopeId, CancellationToken cancellationToken = default)
-        {
-            OAuthToken accessToken;
-            string localBaseUri;
-
-            try
-            {
-                accessToken = docusignAuthenticator.AuthenticateWithJWT(clientId, impersonatedUserId, authServer, out localBaseUri);
-            }
-            catch (Exception ex)
-            {
-                // Consent for impersonation must be obtained to use JWT Grant
-                if (ex.Message.Contains("consent_required"))
-                {
-                    // build a URL to provide consent for this Integratio Key and this userId
-                    string url = "https://" + authServer + "/oauth/auth?response_type=code^&scope=impersonation%20signature&client_id=" +
-                                clientId + "&redirect_uri=" + redirectHome;
-                    logger.LogError($"Consent is required - launch browser (URL is {url})");
-                }
-
-                throw;
-            }
-
-            if (!string.IsNullOrWhiteSpace(localBaseUri))
-            {
-                basePath = localBaseUri;
-            }
-
-            var apiClient = new DocuSignClient(basePath);
-            apiClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + accessToken.access_token);
-
-            EnvelopesApi envelopesApi = new EnvelopesApi(apiClient);
-
-            var envelope = await envelopesApi.GetEnvelopeAsync(accountId, envelopeId);
-
-            return envelope.Status;
         }
     }
 }

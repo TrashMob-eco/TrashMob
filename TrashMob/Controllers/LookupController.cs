@@ -1,19 +1,18 @@
 ﻿namespace TrashMob.Controllers
 {
-    using Microsoft.ApplicationInsights;
-    using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
     public abstract class LookupController<T> : BaseController where T : LookupModel
     {
-        protected ILookupManager<T> Manager { get; }
-
-        public LookupController(ILookupManager<T> manager) : base()
+        public LookupController(ILookupManager<T> manager)
         {
             Manager = manager;
         }
+
+        protected ILookupManager<T> Manager { get; }
 
         [HttpGet]
         public async Task<IActionResult> Get()

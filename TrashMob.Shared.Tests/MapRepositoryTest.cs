@@ -1,12 +1,6 @@
 ﻿namespace TrashMob.Shared.Tests
 {
-    using AzureMapsToolkit.Timezone;
-    using System;
-    using System.Net;
-    using System.Threading.Tasks;
-    using Xunit;
-
-    public class MapRepositoryTest  
+    public class MapRepositoryTest
     {
         //[Fact]
         //public async Task GetTimeForPoint_Succeeds()
@@ -34,4 +28,3 @@
         //}
     }
 }
-
