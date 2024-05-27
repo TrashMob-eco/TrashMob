@@ -8,11 +8,11 @@
     <ScrollView>
         <Grid>
 
-            <VerticalStackLayout Spacing="5">
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
                 <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
                 <Grid RowDefinitions="Auto, Auto, *">
-                    <HorizontalStackLayout Grid.Row="0" >
+                    <HorizontalStackLayout Grid.Row="0">
                         <RadioButton Content="Upcoming" IsChecked="True" GroupName="EventStatus"
                                      CheckedChanged="OnEventStatusRadioButtonCheckedChanged" FontSize="Micro" />
                         <RadioButton Content="Complete" GroupName="EventStatus"

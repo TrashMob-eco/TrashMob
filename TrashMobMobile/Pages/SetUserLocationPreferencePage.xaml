@@ -7,8 +7,7 @@
              Title="Set Your Location">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout Spacing="5">
-
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
                 <Label
                     Text="Click on the map to set your preferred location."
                     FontSize="Micro"
@@ -30,24 +29,15 @@
                 </maps:Map>
 
                 <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 1*" Margin="10">
-                    <VerticalStackLayout Spacing="5" Grid.Row="0" Grid.Column="0" Margin="10">
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="0">
                         <Label Text="Set the Max Travel Distance you are willing to travel for an event."
-                               FontSize="Micro"
-                               VerticalOptions="Center"
-                               HorizontalOptions="Start"
-                               HorizontalTextAlignment="Center"
-                               FontAttributes="Bold" />
+                               Style="{StaticResource FieldLabel}" />
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Entry Text="{Binding TravelDistance}" Keyboard="Numeric" FontSize="Small" />
                         </Border>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="5" Grid.Row="0" Grid.Column="1" Margin="10">
-                        <Label Text="Set your preferred Units of measure."
-                               FontSize="Micro"
-                               VerticalOptions="Center"
-                               HorizontalOptions="Start"
-                               HorizontalTextAlignment="Center"
-                               FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="1">
+                        <Label Text="Set your preferred Units of measure." Style="{StaticResource FieldLabel}" />
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Picker SelectedItem="{Binding Units}" FontSize="Small">
                                 <Picker.ItemsSource>
@@ -59,46 +49,26 @@
                             </Picker>
                         </Border>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="5" Grid.Row="1" Grid.Column="0" Margin="10">
-                        <Label Text="City"
-                               FontSize="Micro"
-                               VerticalOptions="Center"
-                               HorizontalOptions="Start"
-                               HorizontalTextAlignment="Center"
-                               FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="1" Grid.Column="0">
+                        <Label Text="City" Style="{StaticResource FieldLabel}" />
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding Address.City }" FontSize="Small" />
                         </Border>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="5" Grid.Row="1" Grid.Column="1" Margin="10">
-                        <Label Text="State/Region"
-                               FontSize="Micro"
-                               VerticalOptions="Center"
-                               HorizontalOptions="Start"
-                               HorizontalTextAlignment="Center"
-                               FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="1" Grid.Column="1">
+                        <Label Text="State/Region" Style="{StaticResource FieldLabel}" />
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding Address.Region }" FontSize="Small" />
                         </Border>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="5" Grid.Row="2" Grid.Column="0" Margin="10">
-                        <Label Text="Country"
-                               FontSize="Micro"
-                               VerticalOptions="Center"
-                               HorizontalOptions="Start"
-                               HorizontalTextAlignment="Center"
-                               FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="2" Grid.Column="0">
+                        <Label Text="Country" Style="{StaticResource FieldLabel}" />
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding Address.Country }" FontSize="Small" />
                         </Border>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="5" Grid.Row="2" Grid.Column="1" Margin="10">
-                        <Label Text="Postal Code"
-                               FontSize="Micro"
-                               VerticalOptions="Center"
-                               HorizontalOptions="Start"
-                               HorizontalTextAlignment="Center"
-                               FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="2" Grid.Column="1">
+                        <Label Text="Postal Code" Style="{StaticResource FieldLabel}" />
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding Address.PostalCode }" FontSize="Small" />
                         </Border>

@@ -8,7 +8,7 @@
              Title="Create Pickup Location">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout Spacing="5">
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
 
                 <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="1*">
                     <Label
@@ -16,14 +16,8 @@
                         Grid.Row="0" FontSize="Micro" Margin="10" HorizontalTextAlignment="Center"
                         HorizontalOptions="Center" />
                     <Button Text="Take Photo" Clicked="TakePhoto_Clicked" Grid.Row="1" Margin="10" />
-                    <VerticalStackLayout Spacing="5" Grid.Row="2" Margin="10">
-                        <Label
-                            Text="Name"
-                            FontSize="Micro"
-                            VerticalOptions="Center"
-                            HorizontalOptions="Start"
-                            HorizontalTextAlignment="Center"
-                            FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="2">
+                        <Label Text="Name" Style="{StaticResource FieldLabel}" />
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Entry Text="{Binding PickupLocationViewModel.Name}">
                                 <Entry.Behaviors>
@@ -33,14 +27,8 @@
                             </Entry>
                         </Border>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="5" Grid.Row="3" Margin="10">
-                        <Label
-                            Text="Description"
-                            FontSize="Micro"
-                            VerticalOptions="Center"
-                            HorizontalOptions="Start"
-                            HorizontalTextAlignment="Center"
-                            FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="3">
+                        <Label Text="Description" Style="{StaticResource FieldLabel}" />
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Editor Text="{Binding PickupLocationViewModel.Notes}">
                                 <Editor.Behaviors>
@@ -65,66 +53,36 @@
                 </maps:Map>
 
                 <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="1*, 1*">
-                    <VerticalStackLayout Spacing="5" Grid.Row="0" Margin="10" Grid.ColumnSpan="2">
-                        <Label
-                            Text="Address"
-                            FontSize="Micro"
-                            VerticalOptions="Center"
-                            HorizontalOptions="Start"
-                            HorizontalTextAlignment="Center"
-                            FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2">
+                        <Label Text="Address" Style="{StaticResource FieldLabel}" />
 
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding PickupLocationViewModel.Address.StreetAddress }" FontSize="Micro" />
                         </Border>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="5" Grid.Row="1" Grid.Column="0" Margin="10">
-                        <Label
-                            Text="City"
-                            FontSize="Micro"
-                            VerticalOptions="Center"
-                            HorizontalOptions="Start"
-                            HorizontalTextAlignment="Center"
-                            FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="1" Grid.Column="0">
+                        <Label Text="City" Style="{StaticResource FieldLabel}" />
 
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding PickupLocationViewModel.Address.City }" FontSize="Micro" />
                         </Border>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="5" Grid.Row="1" Grid.Column="1" Margin="10">
-                        <Label
-                            Text="State/Region"
-                            FontSize="Micro"
-                            VerticalOptions="Center"
-                            HorizontalOptions="Start"
-                            HorizontalTextAlignment="Center"
-                            FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="1" Grid.Column="1">
+                        <Label Text="State/Region" Style="{StaticResource FieldLabel}" />
 
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding PickupLocationViewModel.Address.Region }" FontSize="Micro" />
                         </Border>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="5" Grid.Row="2" Grid.Column="0" Margin="10">
-                        <Label
-                            Text="Country"
-                            FontSize="Micro"
-                            VerticalOptions="Center"
-                            HorizontalOptions="Start"
-                            HorizontalTextAlignment="Center"
-                            FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="2" Grid.Column="0">
+                        <Label Text="Country" Style="{StaticResource FieldLabel}" />
 
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding PickupLocationViewModel.Address.Country }" FontSize="Micro" />
                         </Border>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="5" Grid.Row="2" Grid.Column="1" Margin="10">
-                        <Label
-                            Text="Postal Code"
-                            FontSize="Micro"
-                            VerticalOptions="Center"
-                            HorizontalOptions="Start"
-                            HorizontalTextAlignment="Center"
-                            FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Row="2" Grid.Column="1">
+                        <Label Text="Postal Code" Style="{StaticResource FieldLabel}" />
 
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding PickupLocationViewModel.Address.PostalCode }" FontSize="Micro" />

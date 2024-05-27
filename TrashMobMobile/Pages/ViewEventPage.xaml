@@ -7,7 +7,7 @@
              Title="Event Details">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout>
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
                 <Frame Style="{DynamicResource Frame}" Padding="1">
                     <Image Source="bannerlogo.png" />
                 </Frame>

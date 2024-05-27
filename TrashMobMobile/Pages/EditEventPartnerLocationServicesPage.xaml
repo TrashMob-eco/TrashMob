@@ -6,7 +6,7 @@
              Title="Partner Services">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout Spacing="5">
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
 
                 <Grid RowDefinitions="Auto, Auto">
                     <Label Grid.Row="0"

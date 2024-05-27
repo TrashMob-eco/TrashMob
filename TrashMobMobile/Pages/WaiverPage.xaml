@@ -7,8 +7,7 @@
              Title="TrashMob.eco Waiver">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout Spacing="5">
-
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
                 <Label
                     Text="In order to create or participate in TrashMob.eco events, you must agree to a liability waiver. Please click the
                 Sign Waiver button below. This will open a browser which will ask you to view and sign the waiver.
@@ -32,14 +31,8 @@
                     HorizontalOptions="Center"
                     HorizontalTextAlignment="Center" />
 
-                <VerticalStackLayout Spacing="5" Margin="10">
-                    <Label
-                        Text="Full Name"
-                        FontSize="Micro"
-                        VerticalOptions="Center"
-                        HorizontalOptions="Start"
-                        HorizontalTextAlignment="Center"
-                        FontAttributes="Bold" />
+                <VerticalStackLayout>
+                    <Label Text="Full Name" Style="{StaticResource FieldLabel}" />
 
                     <Entry Text="{Binding Name}"
                            FontSize="Small"

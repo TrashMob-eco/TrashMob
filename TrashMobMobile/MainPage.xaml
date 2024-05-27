@@ -9,7 +9,7 @@
 
     <Grid>
         <ScrollView>
-            <VerticalStackLayout Spacing="5">
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
                 <Frame Style="{DynamicResource Frame}" Padding="1">
                     <Image Source="bannerlogo.png" />
                 </Frame>

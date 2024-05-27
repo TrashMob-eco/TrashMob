@@ -258,6 +258,14 @@
         <Setter Property="HorizontalTextAlignment" Value="Center" />
     </Style>
 
+    <Style x:Key="FieldLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="Micro" />
+        <Setter Property="HorizontalOptions" Value="Start" />
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="FontAttributes" Value="Bold" />
+    </Style>
+
     <Style TargetType="ListView">
         <Setter Property="SeparatorColor"
                 Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
@@ -538,6 +546,15 @@
                 Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray950}}" />
         <Setter Property="SelectedTabColor"
                 Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
+    </Style>
+
+    <Style TargetType="VerticalStackLayout">
+        <Setter Property="Spacing" Value="5" />
+        <Setter Property="Margin" Value="10" />
+    </Style>
+
+    <Style x:Key="OuterVerticalStack" TargetType="VerticalStackLayout">
+        <Setter Property="Margin" Value="2" />
     </Style>
 
 </ResourceDictionary>

@@ -7,7 +7,7 @@
              x:Class="TrashMobMobile.Pages.WelcomePage">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout Spacing="5">
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
                 <Label
                     Text="Welcome to TrashMob.eco!"
                     FontSize="Large"
