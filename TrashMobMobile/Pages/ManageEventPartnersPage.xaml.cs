@@ -6,16 +6,16 @@ using CommunityToolkit.Maui.Core;
 [QueryProperty(nameof(EventId), nameof(EventId))]
 public partial class ManageEventPartnersPage : ContentPage
 {
-    private readonly ManageEventPartnersViewModel _viewModel;
+    private readonly ManageEventPartnersViewModel viewModel;
 
     public ManageEventPartnersPage(ManageEventPartnersViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _viewModel.Notify = Notify;
-        _viewModel.NotifyError = NotifyError;
-        _viewModel.Navigation = Navigation;
-        BindingContext = _viewModel;
+        this.viewModel = viewModel;
+        this.viewModel.Notify = Notify;
+        this.viewModel.NotifyError = NotifyError;
+        this.viewModel.Navigation = Navigation;
+        BindingContext = this.viewModel;
     }
 
     public string EventId { get; set; }
@@ -23,7 +23,7 @@ public partial class ManageEventPartnersPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await _viewModel.Init(new Guid(EventId));
+        await viewModel.Init(new Guid(EventId));
     }
 
     private async Task Notify(string message)

@@ -6,33 +6,19 @@
              Title="Submit Litter Report">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout>
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
 
                 <!--  Litter Report Top  -->
                 <Grid RowDefinitions="Auto, *, Auto">
-                    <VerticalStackLayout Grid.Row="0"
-                                         Margin="10"
-                                         Spacing="5">
-                        <Label FontAttributes="Bold"
-                               FontSize="Micro"
-                               HorizontalOptions="Start"
-                               HorizontalTextAlignment="Center"
-                               Text="Name"
-                               VerticalOptions="Center" />
+                    <VerticalStackLayout Grid.Row="0">
+                        <Label Text="Name" Style="{StaticResource FieldLabel}" />
 
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Entry Text="{Binding Name}" />
                         </Border>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="1"
-                                         Margin="10"
-                                         Spacing="5">
-                        <Label FontAttributes="Bold"
-                               FontSize="Micro"
-                               HorizontalOptions="Start"
-                               HorizontalTextAlignment="Center"
-                               Text="Description"
-                               VerticalOptions="Center" />
+                    <VerticalStackLayout Grid.Row="1">
+                        <Label Text="Description" Style="{StaticResource FieldLabel}" />
 
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Editor Text="{Binding Description}" />

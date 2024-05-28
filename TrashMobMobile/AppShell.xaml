@@ -28,7 +28,7 @@
                             <VisualState x:Name="Selected">
                                 <VisualState.Setters>
                                     <Setter Property="BackgroundColor"
-                                            Value="{StaticResource FlyoutSelectedItemColor}" />
+                                            Value="{AppThemeBinding Light={StaticResource LightFlyoutSelectedItemColor}, Dark={StaticResource DarkFlyoutSelectedItemColor}}" />
                                 </VisualState.Setters>
                             </VisualState>
                         </VisualStateGroup>
@@ -69,7 +69,7 @@
                             <VisualState x:Name="Selected">
                                 <VisualState.Setters>
                                     <Setter Property="BackgroundColor"
-                                            Value="{StaticResource FlyoutSelectedItemColor}" />
+                                            Value="{AppThemeBinding Light={StaticResource LightFlyoutSelectedItemColor}, Dark={StaticResource DarkFlyoutSelectedItemColor}}" />
                                 </VisualState.Setters>
                             </VisualState>
                         </VisualStateGroup>
@@ -132,29 +132,30 @@
 
     <FlyoutItem x:Name="Home"
                 Title="Home"
-                Icon="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconHome}, Color={StaticResource TextBase}}">
+                
+                Icon="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconHome}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
         <ShellContent ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
     </FlyoutItem>
 
     <MenuItem x:Name="Dashboard"
               Text="My Dashboard"
               Clicked="OnMyDashboardClicked"
-              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconPulse}, Color={StaticResource TextBase}}" />
+              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconPulse}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
 
     <MenuItem x:Name="PrivacyPolicy"
               Text="Privacy Policy"
               Clicked="OnPrivacyPolicyClicked"
-              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconBook}, Color={StaticResource TextBase}}" />
+              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconBook}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
 
     <MenuItem x:Name="TermsOfUse"
               Text="Terms of Use"
               Clicked="OnTermsOfUseClicked"
-              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconBook}, Color={StaticResource TextBase}}" />
+              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconFileBox}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
 
     <MenuItem x:Name="Contact"
               Text="Contact us"
               Clicked="OnContactUsClicked"
-              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconInbox}, Color={StaticResource TextBase}}" />
+              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconInbox}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
 
     <Shell.FlyoutFooter>
         <VerticalStackLayout Padding="28,48">
@@ -162,7 +163,7 @@
                     ContentLayout="Left, 10"
                     Clicked="OnLogoutClicked"
                     Text="Sign out"
-                    ImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconSignOut}, Color={StaticResource Primary}}" />
+                    ImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconSignOut}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
         </VerticalStackLayout>
     </Shell.FlyoutFooter>
 

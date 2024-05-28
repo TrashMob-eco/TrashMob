@@ -7,15 +7,15 @@ using Microsoft.Maui.Maps;
 [QueryProperty(nameof(LitterReportId), nameof(LitterReportId))]
 public partial class ViewLitterReportPage : ContentPage
 {
-    private readonly ViewLitterReportViewModel _viewModel;
+    private readonly ViewLitterReportViewModel viewModel;
 
     public ViewLitterReportPage(ViewLitterReportViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _viewModel.Navigation = Navigation;
-        _viewModel.Notify = Notify;
-        BindingContext = _viewModel;
+        this.viewModel = viewModel;
+        this.viewModel.Navigation = Navigation;
+        this.viewModel.Notify = Notify;
+        BindingContext = this.viewModel;
     }
 
     public string LitterReportId { get; set; }
@@ -23,11 +23,11 @@ public partial class ViewLitterReportPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await _viewModel.Init(new Guid(LitterReportId));
+        await viewModel.Init(new Guid(LitterReportId));
 
-        if (_viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location != null)
+        if (viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location != null)
         {
-            var mapSpan = new MapSpan(_viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location, 0.05,
+            var mapSpan = new MapSpan(viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location, 0.05,
                 0.05);
             litterReportLocationMap.MoveToRegion(mapSpan);
         }

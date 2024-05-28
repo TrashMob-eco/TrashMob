@@ -1,7 +1,6 @@
 ﻿namespace TrashMobMobile.Extensions
 {
     using TrashMob.Models;
-    using TrashMobMobile.Config;
     using TrashMobMobile.Models;
 
     public static class UserExtensions

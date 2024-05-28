@@ -5,7 +5,7 @@ using Maui.BindableProperty.Generator.Core;
 public partial class TMEditor : ContentView
 {
     [AutoBindable(DefaultBindingMode = "TwoWay", OnChanged = nameof(TextPropertyChanged))]
-    private readonly string _text;
+    private readonly string text;
 
     [AutoBindable(OnChanged = nameof(PlaceholderPropertyChanged))]
     private readonly string placeholder;

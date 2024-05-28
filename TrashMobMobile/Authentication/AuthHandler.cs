@@ -4,17 +4,17 @@ using System.Net.Http.Headers;
 
 public class AuthHandler : DelegatingHandler
 {
-    private readonly IAuthService _authService;
+    private readonly IAuthService authService;
 
     public AuthHandler(IAuthService authService)
     {
-        _authService = authService;
+        this.authService = authService;
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        var accessToken = await _authService.GetAccessTokenAsync();
+        var accessToken = await authService.GetAccessTokenAsync();
 
         if (!string.IsNullOrEmpty(accessToken))
         {

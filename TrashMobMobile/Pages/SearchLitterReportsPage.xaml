@@ -7,9 +7,9 @@
              Title="Search Litter Reports">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout Spacing="5">
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
                 <Grid RowDefinitions="Auto, Auto, Auto, *">
-                    <HorizontalStackLayout Grid.Row="0" >
+                    <HorizontalStackLayout Grid.Row="0">
                         <RadioButton Content="New" IsChecked="True" GroupName="LitterReportStatus"
                                      CheckedChanged="OnReportStatusRadioButtonCheckedChanged" />
                         <RadioButton Content="Assigned" GroupName="LitterReportStatus"

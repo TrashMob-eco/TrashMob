@@ -133,7 +133,7 @@
 
     <Style TargetType="Editor">
         <Setter Property="TextColor"
-                Value="{AppThemeBinding Light={StaticResource TextBase}, Dark={StaticResource White}}" />
+                Value="{AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="LexendRegular" />
         <Setter Property="FontSize" Value="14" />
@@ -159,7 +159,7 @@
 
     <Style TargetType="Entry">
         <Setter Property="TextColor"
-                Value="{AppThemeBinding Light={StaticResource TextBase}, Dark={StaticResource White}}" />
+                Value="{AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="LexendRegular" />
         <Setter Property="FontSize" Value="14" />
@@ -218,7 +218,7 @@
 
     <Style TargetType="Label">
         <Setter Property="TextColor"
-                Value="{AppThemeBinding Light={StaticResource TextBase}, Dark={StaticResource White}}" />
+                Value="{AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="LexendRegular" />
         <Setter Property="FontSize" Value="14" />
@@ -239,12 +239,12 @@
 
     <Style TargetType="Span">
         <Setter Property="TextColor"
-                Value="{AppThemeBinding Light={StaticResource TextBase}, Dark={StaticResource White}}" />
+                Value="{AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}" />
     </Style>
 
     <Style x:Key="Headline" TargetType="Label">
         <Setter Property="TextColor"
-                Value="{AppThemeBinding Light={StaticResource MidnightBlue}, Dark={StaticResource White}}" />
+                Value="{AppThemeBinding Light={StaticResource MidnightBlue}, Dark={StaticResource DarkTextBase}}" />
         <Setter Property="FontSize" Value="32" />
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
@@ -252,10 +252,18 @@
 
     <Style x:Key="SubHeadline" TargetType="Label">
         <Setter Property="TextColor"
-                Value="{AppThemeBinding Light={StaticResource MidnightBlue}, Dark={StaticResource White}}" />
+                Value="{AppThemeBinding Light={StaticResource MidnightBlue}, Dark={StaticResource DarkTextBase}}" />
         <Setter Property="FontSize" Value="24" />
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="FieldLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="Micro" />
+        <Setter Property="HorizontalOptions" Value="Start" />
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="FontAttributes" Value="Bold" />
     </Style>
 
     <Style TargetType="ListView">
@@ -320,7 +328,7 @@
     <Style TargetType="RadioButton">
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="TextColor"
-                Value="{AppThemeBinding Light={StaticResource TextBase}, Dark={StaticResource White}}" />
+                Value="{AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource White}}" />
         <Setter Property="FontFamily" Value="LexendRegular" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="MinimumHeightRequest" Value="44" />
@@ -431,7 +439,7 @@
 
     <Style TargetType="SwipeItem">
         <Setter Property="BackgroundColor"
-                Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource TextBase}}" />
+                Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource LightTextBase}}" />
     </Style>
 
     <Style TargetType="Switch">
@@ -502,16 +510,16 @@
         <Setter Property="Shell.BackgroundColor"
                 Value="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}" />
         <Setter Property="Shell.ForegroundColor"
-                Value="{OnPlatform WinUI={StaticResource Primary}, Default={StaticResource TextBase}}" />
+                Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
         <Setter Property="Shell.TitleColor"
-                Value="{AppThemeBinding Light={StaticResource TextBase}, Dark={StaticResource SecondaryDarkText}}" />
+                Value="{AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource SecondaryDarkText}}" />
         <Setter Property="Shell.DisabledColor"
                 Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray950}}" />
         <Setter Property="Shell.UnselectedColor"
                 Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray200}}" />
         <Setter Property="Shell.NavBarHasShadow" Value="False" />
         <Setter Property="Shell.TabBarBackgroundColor"
-                Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource TextBase}}" />
+                Value="{AppThemeBinding Light={StaticResource DarkTextBase}, Dark={StaticResource LightTextBase}}" />
         <Setter Property="Shell.TabBarForegroundColor"
                 Value="{AppThemeBinding Light={StaticResource Magenta}, Dark={StaticResource White}}" />
         <Setter Property="Shell.TabBarTitleColor"
@@ -538,6 +546,15 @@
                 Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray950}}" />
         <Setter Property="SelectedTabColor"
                 Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
+    </Style>
+
+    <Style TargetType="VerticalStackLayout">
+        <Setter Property="Spacing" Value="5" />
+        <Setter Property="Margin" Value="10" />
+    </Style>
+
+    <Style x:Key="OuterVerticalStack" TargetType="VerticalStackLayout">
+        <Setter Property="Margin" Value="2" />
     </Style>
 
 </ResourceDictionary>

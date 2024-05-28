@@ -7,16 +7,16 @@ using CommunityToolkit.Maui.Core;
 [QueryProperty(nameof(PartnerLocationId), nameof(PartnerLocationId))]
 public partial class EditEventPartnerLocationServicesPage : ContentPage
 {
-    private readonly EditEventPartnerLocationServicesViewModel _viewModel;
+    private readonly EditEventPartnerLocationServicesViewModel viewModel;
 
     public EditEventPartnerLocationServicesPage(EditEventPartnerLocationServicesViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _viewModel.Notify = Notify;
-        _viewModel.NotifyError = NotifyError;
-        _viewModel.Navigation = Navigation;
-        BindingContext = _viewModel;
+        this.viewModel = viewModel;
+        this.viewModel.Notify = Notify;
+        this.viewModel.NotifyError = NotifyError;
+        this.viewModel.Navigation = Navigation;
+        BindingContext = this.viewModel;
     }
 
     public string EventId { get; set; }
@@ -26,7 +26,7 @@ public partial class EditEventPartnerLocationServicesPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await _viewModel.Init(new Guid(EventId), new Guid(PartnerLocationId));
+        await viewModel.Init(new Guid(EventId), new Guid(PartnerLocationId));
     }
 
     private async Task Notify(string message)

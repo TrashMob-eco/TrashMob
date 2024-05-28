@@ -6,7 +6,7 @@
              Title="Manage Event Partners">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout Spacing="5">
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
                 <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
                 <Grid RowDefinitions="Auto, Auto">

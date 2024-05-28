@@ -51,9 +51,11 @@
     <Color x:Key="InputBorderActive">#679D94</Color>
     <Color x:Key="InputBorderInactive">#E4E5DE</Color>
 
-    <Color x:Key="FlyoutSelectedItemColor">#F5F7EB</Color>
+    <Color x:Key="LightFlyoutSelectedItemColor">#F5F7EB</Color>
+    <Color x:Key="DarkFlyoutSelectedItemColor">#1C1C1A</Color>
 
-    <Color x:Key="TextBase">#1C1C1A</Color>
+    <Color x:Key="LightTextBase">#1C1C1A</Color>
+    <Color x:Key="DarkTextBase">White</Color>
 
     <Color x:Key="GlobalBorderBase">#E4E5DE</Color>
 </ResourceDictionary>

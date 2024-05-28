@@ -10,12 +10,12 @@ public class AuthService : IAuthService
 {
     private readonly IUserManager userManager;
 
-    private string _accessToken = string.Empty;
+    private string accessToken = string.Empty;
 
-    private DateTimeOffset _expiresOn;
-    private IPublicClientApplication _pca;
+    private DateTimeOffset expiresOn;
+    private IPublicClientApplication pca;
 
-    private string _userEmail = string.Empty;
+    private string userEmail = string.Empty;
 
     public AuthService(IUserManager userManager)
     {
@@ -25,12 +25,12 @@ public class AuthService : IAuthService
 
     public async Task<SignInResult> SignInAsync()
     {
-        if (_pca == null)
+        if (pca == null)
         {
             InitializeClient();
         }
 
-        _ = await _pca.GetAccountsAsync();
+        _ = await pca.GetAccountsAsync();
 
         try
         {
@@ -49,18 +49,18 @@ public class AuthService : IAuthService
 
     public async Task SignOutAsync()
     {
-        if (_pca == null)
+        if (pca == null)
         {
             InitializeClient();
         }
 
-        var accounts = await _pca.GetAccountsAsync();
+        var accounts = await pca.GetAccountsAsync();
 
         try
         {
             foreach (var account in accounts)
             {
-                await _pca.RemoveAsync(account);
+                await pca.RemoveAsync(account);
             }
 
             App.CurrentUser = null;
@@ -74,17 +74,17 @@ public class AuthService : IAuthService
 
     public async Task<SignInResult> SignInSilentAsync(bool AllowInteractive = true)
     {
-        if (_pca == null)
+        if (pca == null)
         {
             InitializeClient();
         }
 
-        var accounts = await _pca.GetAccountsAsync();
+        var accounts = await pca.GetAccountsAsync();
         AuthenticationResult result;
 
         try
         {
-            result = await _pca
+            result = await pca
                 .AcquireTokenSilent(AuthConstants.Scopes, accounts.FirstOrDefault())
                 .ExecuteAsync();
         }
@@ -119,16 +119,16 @@ public class AuthService : IAuthService
 
     public async Task<string> GetAccessTokenAsync()
     {
-        if (!string.IsNullOrWhiteSpace(_accessToken) && !IsTokenExpired())
+        if (!string.IsNullOrWhiteSpace(accessToken) && !IsTokenExpired())
         {
-            return _accessToken;
+            return accessToken;
         }
 
-        var accounts = await _pca.GetAccountsAsync();
+        var accounts = await pca.GetAccountsAsync();
 
         try
         {
-            var result = await _pca
+            var result = await pca
                 .AcquireTokenSilent(AuthConstants.Scopes, accounts.FirstOrDefault())
                 .ExecuteAsync();
 
@@ -145,12 +145,12 @@ public class AuthService : IAuthService
 
     public string GetUserEmail()
     {
-        if (string.IsNullOrWhiteSpace(_userEmail))
+        if (string.IsNullOrWhiteSpace(userEmail))
         {
             throw new Exception("User is not authenticated");
         }
 
-        return _userEmail;
+        return userEmail;
     }
 
     private void InitializeClient()
@@ -165,19 +165,19 @@ public class AuthService : IAuthService
 #endif
             .WithRedirectUri(AuthConstants.RedirectUri);
 
-        _pca = pcaBuilder.Build();
+        pca = pcaBuilder.Build();
     }
 
     private async Task<SignInResult> SignInInteractive()
     {
-        if (_pca == null)
+        if (pca == null)
         {
             InitializeClient();
         }
 
         try
         {
-            var result = await _pca
+            var result = await pca
                 .AcquireTokenInteractive(AuthConstants.Scopes)
                 .ExecuteAsync();
 
@@ -204,15 +204,15 @@ public class AuthService : IAuthService
 
     private async Task SetAuthenticated(AuthenticationResult result)
     {
-        _accessToken = result.AccessToken;
-        _expiresOn = result.ExpiresOn;
+        accessToken = result.AccessToken;
+        expiresOn = result.ExpiresOn;
 
         var emailClaim = result.ClaimsPrincipal.Claims.FirstOrDefault(c => c.Type == "email");
         var context = GetUserContext(result);
 
         if (emailClaim != null)
         {
-            _userEmail = emailClaim.Value;
+            userEmail = emailClaim.Value;
             var user = await userManager.GetUserByEmailAsync(context.EmailAddress, context);
 
             App.CurrentUser = user;
@@ -224,7 +224,7 @@ public class AuthService : IAuthService
     private bool IsTokenExpired()
     {
         var bufferTime = TimeSpan.FromMinutes(5);
-        return DateTimeOffset.UtcNow > _expiresOn - bufferTime;
+        return DateTimeOffset.UtcNow > expiresOn - bufferTime;
     }
 
     private static UserContext GetUserContext(AuthenticationResult ar)

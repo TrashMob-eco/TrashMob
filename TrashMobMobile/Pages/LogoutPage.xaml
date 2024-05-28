@@ -7,7 +7,7 @@
              x:Class="TrashMobMobile.Pages.LogoutPage">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout Spacing="5">
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
                 <Label
                     Text="Logging you out of TrashMob.eco!"
                     FontSize="Large"

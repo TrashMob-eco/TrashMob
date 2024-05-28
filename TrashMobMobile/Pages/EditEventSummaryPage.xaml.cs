@@ -6,15 +6,15 @@ using CommunityToolkit.Maui.Core;
 [QueryProperty(nameof(EventId), nameof(EventId))]
 public partial class EditEventSummaryPage : ContentPage
 {
-    private readonly EditEventSummaryViewModel _viewModel;
+    private readonly EditEventSummaryViewModel viewModel;
 
     public EditEventSummaryPage(EditEventSummaryViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _viewModel.Navigation = Navigation;
-        _viewModel.Notify = Notify;
-        BindingContext = _viewModel;
+        this.viewModel = viewModel;
+        this.viewModel.Navigation = Navigation;
+        this.viewModel.Notify = Notify;
+        BindingContext = this.viewModel;
     }
 
     public string EventId { get; set; }
@@ -22,7 +22,7 @@ public partial class EditEventSummaryPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await _viewModel.Init(EventId);
+        await viewModel.Init(EventId);
     }
 
     private async Task Notify(string message)

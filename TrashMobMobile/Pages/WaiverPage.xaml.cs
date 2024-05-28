@@ -5,15 +5,15 @@ using CommunityToolkit.Maui.Core;
 
 public partial class WaiverPage : ContentPage
 {
-    private readonly WaiverViewModel _viewModel;
+    private readonly WaiverViewModel viewModel;
 
     public WaiverPage(WaiverViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _viewModel.Navigation = Navigation;
-        _viewModel.Notify = Notify;
-        BindingContext = _viewModel;
+        this.viewModel = viewModel;
+        this.viewModel.Navigation = Navigation;
+        this.viewModel.Notify = Notify;
+        BindingContext = this.viewModel;
     }
 
     private async Task Notify(string message)
