@@ -37,7 +37,7 @@ on:
                 required: true
             appsettings:
                 required: true
-            googlemaps_android_key:
+            android_google_apikey:
                 required: true
         outputs:
             artifact_name:
@@ -100,7 +100,7 @@ jobs:
           run: |
               $content = Get-Content TrashMobMobile/Platforms/Android/AndroidManifest.xml -Raw
   
-              $newContent = $content -replace '<meta-data android:name="com.google.android.geo.API_KEY" android:value=".*" />', '<meta-data android:name="com.google.android.geo.API_KEY" android:value="${{secrets.googlemaps_android_key}}" />'
+              $newContent = $content -replace '<meta-data android:name="com.google.android.geo.API_KEY" android:value=".*" />', '<meta-data android:name="com.google.android.geo.API_KEY" android:value="${{secrets.android_google_apikey}}" />'
   
               Set-Content TrashMobMobile/Platforms/Android/AndroidManifest.xml -Value $newContent
   
